@@ -1,4 +1,4 @@
-require("dotenv").load(); // Load configuration variables
+require("dotenv").config({silent: true}); // Load configuration variables
 var http = require("http");
 var express = require("express");
 var compression = require("compression");
