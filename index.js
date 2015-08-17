@@ -1,6 +1,7 @@
 require("dotenv").config({silent: true}); // Load configuration variables
 var http = require("http");
 var express = require("express");
+var bodyParser = require("body-parser");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
@@ -8,6 +9,8 @@ var WebSocketServer = require("ws").Server;
 var db = require("./db");
 
 var app = express();
+app.use(bodyParser.urlencoded({extended: false})); // Parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // Parse application/json
 app.use(compression()); // Compress all requests
 app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
@@ -24,6 +27,13 @@ app.get("/", function(req, res) {
 // Show live logs
 app.get("/logs", function(req, res) {
   res.render("logs", {title: "FGLab"});
+});
+
+// Post experiments
+app.post("/experiment", function(req, res) {
+  db.insertExperiment(req.body, function() {
+    res.send("Inserted");
+  });
 });
 
 // Error handler

@@ -11,3 +11,13 @@ exports.listExperiments = function(cb) {
     cb(result); // Return results in callback
   });
 };
+
+// Inserts experiment
+exports.insertExperiment = function(experiment, cb) {
+  db.experiments.insert(experiment, function(err) {
+    if (err) {
+      throw err;
+    }
+    cb(); // Callback if successful
+  });
+};
