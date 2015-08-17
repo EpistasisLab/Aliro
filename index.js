@@ -4,11 +4,26 @@ var WebSocketServer = require("ws").Server;
 var port = process.env.PORT || 5000;
 
 var app = express();
-app.use(express.static(__dirname + "/public")); // Static directory
+app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
 app.set("view engine", "jade"); // Jade template engine
 
+// Show list of experiments
 app.get("/", function(req, res) {
   res.render("index", {title: "FGLab"});
+});
+
+// Show live logs
+app.get("/logs", function(req, res) {
+  res.render("logs", {title: "FGLab"});
+});
+
+// Error handler
+app.use(function(err, req, res, next) {
+  if (res.headersSent) {
+    return next(err); // Delegate to Express' default error handling
+  }
+  res.status(500);
+  res.send("Error: " + err);
 });
 
 // Create HTTP server
@@ -18,19 +33,19 @@ server.listen(port); // Listen for connections
 // Add websocket server
 var wss = new WebSocketServer({server: server});
 
-// Calls on connection from new client
+// Call on connection from new client
 wss.on("connection", function(ws) {
   console.log("Client opened connection");
 
   // Send one message
   ws.send("Connected to server");
 
-  // Prints received messages
+  // Print received messages
   ws.on("message", function(message) {
     console.log(message);
   });
 
-  // Performs clean up if necessary
+  // Perform clean up if necessary
   ws.on("close", function() {
     console.log("Client closed connection");
   });
