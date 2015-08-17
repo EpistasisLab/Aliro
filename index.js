@@ -1,7 +1,8 @@
+require("dotenv").load(); // Load configuration variables
 var http = require("http");
 var express = require("express");
 var WebSocketServer = require("ws").Server;
-var port = process.env.PORT || 5000;
+var db = require("./db");
 
 var app = express();
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
@@ -9,7 +10,9 @@ app.set("view engine", "jade"); // Jade template engine
 
 // Show list of experiments
 app.get("/", function(req, res) {
-  res.render("index", {title: "FGLab"});
+  db.listExperiments(function(result) {
+    res.render("index", {title: "FGLab", experiments: result});
+  });
 });
 
 // Show live logs
@@ -28,7 +31,7 @@ app.use(function(err, req, res, next) {
 
 // Create HTTP server
 var server = http.createServer(app);
-server.listen(port); // Listen for connections
+server.listen(process.env.PORT); // Listen for connections
 
 // Add websocket server
 var wss = new WebSocketServer({server: server});
