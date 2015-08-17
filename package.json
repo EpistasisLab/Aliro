@@ -21,11 +21,14 @@
   },
   "homepage": "https://github.com/Kaixhin/FGLab#readme",
   "dependencies": {
+    "compression": "^1.5.2",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
     "jade": "^1.11.0",
     "mongodb": "^1.4.39",
     "mongoskin": "^1.4.13",
+    "morgan": "^1.6.1",
+    "serve-favicon": "^2.3.0",
     "ws": "^0.7.2"
   }
 }

@@ -1,12 +1,18 @@
 require("dotenv").load(); // Load configuration variables
 var http = require("http");
 var express = require("express");
+var compression = require("compression");
+var favicon = require("serve-favicon");
+var morgan = require("morgan");
 var WebSocketServer = require("ws").Server;
 var db = require("./db");
 
 var app = express();
+app.use(compression()); // Compress all requests
+app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
 app.set("view engine", "jade"); // Jade template engine
+app.use(morgan("tiny")); // Log requests
 
 // Show list of experiments
 app.get("/", function(req, res) {
