@@ -6,4 +6,5 @@ html
     h1 Experiments
     ul#experiments
       - each item in experiments
-        li= item
+        li
+          a(href="/experiments/" + item._id) #{item._id}

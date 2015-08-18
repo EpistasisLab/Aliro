@@ -80,6 +80,25 @@ app.delete("/api/:collection/:id", function(req, res, next) {
   });
 });
 
+// List experiments on homepage
+app.get("/", function(req, res, next) {
+  db.experiments.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.render("index", {experiments: results});
+  });
+});
+
+// List details of single experiment
+app.get("/experiments/:id", function(req, res, next) {
+  db.experiments.findById(req.params.id, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    res.render("experiment", {experiment: result});
+  });
+});
 
 // Show live logs
 app.get("/logs", function(req, res) {

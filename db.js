@@ -1,8 +1,8 @@
 var db = require("mongoskin").db(process.env.MONGODB_URI, {native_parser: true}); // Connect to db
 
-/*
 db.bind("experiments"); // Register db.experiments collection
 
+/*
 // Returns list of experiments
 exports.listExperiments = function(cb) {
   db.experiments.find().toArray(function(err, result) {
