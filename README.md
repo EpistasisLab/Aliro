@@ -2,6 +2,8 @@
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. It uses RESTful endpoints to pass data to a (MongoDB) database, which allows analytics to be performed on experiments after their completion.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 ## Objects
 
 ### Experiments

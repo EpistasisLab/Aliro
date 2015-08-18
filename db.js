@@ -1,3 +1,5 @@
+process.env.MONGODB_URI = process.env.MONGODB_URI || process.env.MONGOLAB_URI; // TODO Remove dependency on provider
+
 var db = require("mongoskin").db(process.env.MONGODB_URI, {native_parser: true}); // Connect to db
 
 db.bind("experiments"); // Register db.experiments collection
