@@ -11,17 +11,18 @@ An **experiment** is one complete training and testing run of a specific machine
 The current schema is:
 
 ```
+timestamp: Int (ms since epoch)
 hyperparams: {Object}
 model: String
 train:
   losses: [Number]
-  freq: Int
+  freq: Int (number of iterations between logging loss)
 val:
   losses: [Number]
   freq: Int
 test:
   loss: Number
-  accuracy: Number
+  score: Number (e.g. classification accuracy)
 ```
 
 The endpoints are as follows:

@@ -21,34 +21,62 @@ app.use(morgan("tiny")); // Log requests
 
 /* Routes */
 
-// Return all experiments
-app.get("/api/experiments", function(req, res) {
-  
-  /*db.listExperiments(function(result) {
-    res.render("index", {title: "FGLab", experiments: result});
-  });*/
+// Get collection for all API endpoints
+app.param("collection", function(req, res, next, collection) {
+  req.collection = db.collection(collection);
+  return next();
 });
 
-// Create new experiment
-app.post("/api/experiments", jsonParser, function(req, res) {
-  /*db.insertExperiment(req.body, function() {
-    res.send("Inserted");
-  });*/
+// Return all entries
+app.get("/api/:collection", function(req, res) {
+  req.collection.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.send(results);
+  });
 });
 
-// Return single experiment
-app.get("/api/experiments/:id", function(req, res) {
-  var id = req.id;
+// Create new entry
+app.post("/api/:collection", jsonParser, function(req, res) {
+  req.collection.insert(req.body, {}, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    res.send(result);
+  });
 });
 
-// Update existing experiment
-app.put("/api/experiments/:id", jsonParser, function(req, res) {
-  var id = req.id;
+// Return single entry
+app.get("/api/:collection/:id", function(req, res) {
+  req.collection.findById(req.params.id, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    res.send(result);
+  });
 });
 
-// Delete existing experiment
-app.delete("/api/experiments/:id", function(req, res) {
-  var id = req.id;
+// Update existing entry
+app.put("/api/:collection/:id", jsonParser, function(req, res) {
+  req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}. function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    // Update returns the count of affected objects
+    res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+  });
+});
+
+// Delete existing entry
+app.del("/api/:collection/:id", function(req, res) {
+  req.collection.remove({_id: req.collection.id(req.params.id)}, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    // Remove returns the count of affected objects
+    res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+  });
 });
 
 
