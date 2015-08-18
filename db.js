@@ -1,7 +1,7 @@
-var db = require("mongoskin").db(process.env.MONGODB_URI); // Connect to db
+var db = require("mongoskin").db(process.env.MONGODB_URI, {native_parser: true}); // Connect to db
 
 /*
-db.bind("experiments"); // Allow db.experiments. usage
+db.bind("experiments"); // Register db.experiments collection
 
 // Returns list of experiments
 exports.listExperiments = function(cb) {
@@ -13,3 +13,5 @@ exports.listExperiments = function(cb) {
   });
 };
 */
+
+module.exports.db = db;

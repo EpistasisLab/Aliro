@@ -7,7 +7,7 @@ var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var WebSocketServer = require("ws").Server;
-var db = require("./db");
+var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
@@ -33,7 +33,7 @@ app.get("/api/:collection", function(req, res) {
     if (err) {
       return next(err);
     }
-    res.send(results);
+    res.send(results[0]);
   });
 });
 
@@ -59,7 +59,7 @@ app.get("/api/:collection/:id", function(req, res) {
 
 // Update existing entry
 app.put("/api/:collection/:id", jsonParser, function(req, res) {
-  req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}. function(err, result) {
+  req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(err, result) {
     if (err) {
       return next(err);
     }
@@ -69,8 +69,8 @@ app.put("/api/:collection/:id", jsonParser, function(req, res) {
 });
 
 // Delete existing entry
-app.del("/api/:collection/:id", function(req, res) {
-  req.collection.remove({_id: req.collection.id(req.params.id)}, function(err, result) {
+app.delete("/api/:collection/:id", function(req, res) {
+  req.collection.removeById(req.params.id, function(err, result) {
     if (err) {
       return next(err);
     }
