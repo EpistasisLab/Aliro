@@ -28,8 +28,18 @@ app.param("collection", function(req, res, next, collection) {
 });
 
 // Return all entries
-app.get("/api/:collection", function(req, res) {
+app.get("/api/:collection", function(req, res, next) {
   req.collection.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.send(results);
+  });
+});
+
+// Create new entry
+app.post("/api/:collection", jsonParser, function(req, res, next) {
+  req.collection.insert(req.body, {}, function(err, results) {
     if (err) {
       return next(err);
     }
@@ -37,18 +47,8 @@ app.get("/api/:collection", function(req, res) {
   });
 });
 
-// Create new entry
-app.post("/api/:collection", jsonParser, function(req, res) {
-  req.collection.insert(req.body, {}, function(err, result) {
-    if (err) {
-      return next(err);
-    }
-    res.send(result);
-  });
-});
-
 // Return single entry
-app.get("/api/:collection/:id", function(req, res) {
+app.get("/api/:collection/:id", function(req, res, next) {
   req.collection.findById(req.params.id, function(err, result) {
     if (err) {
       return next(err);
@@ -58,7 +58,8 @@ app.get("/api/:collection/:id", function(req, res) {
 });
 
 // Update existing entry
-app.put("/api/:collection/:id", jsonParser, function(req, res) {
+app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
+  delete req.body._id; // Delete ID (will not update otherwise)
   req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(err, result) {
     if (err) {
       return next(err);
@@ -69,7 +70,7 @@ app.put("/api/:collection/:id", jsonParser, function(req, res) {
 });
 
 // Delete existing entry
-app.delete("/api/:collection/:id", function(req, res) {
+app.delete("/api/:collection/:id", function(req, res, next) {
   req.collection.removeById(req.params.id, function(err, result) {
     if (err) {
       return next(err);
