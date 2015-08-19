@@ -26,6 +26,8 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 A project is created online and defines a (JSON) schema for hyperparameters. Any machine that is set up for a project must then register itself with the project, specifying its own network address. Thereby one can choose hyperparameters and start an experiment, dependent on machine availability. Machines implement an endpoint that returns their capacity, allowing for automatic load balancing of experiments.
 
+Note that machines are completely implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
+
 ### Experiments
 
 An experiment is one complete training and testing run of a specific machine learning *model* on a specific *dataset* with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs.
@@ -104,3 +106,5 @@ The current schema has room for expansion, but this is likely to be heavily depe
 ## Future Work
 
 Due to variability in the objects, future work should focus on creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
+
+Other work would involve specifying what machines store, and how to access this via FGLab.
