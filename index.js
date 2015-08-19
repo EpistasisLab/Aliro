@@ -20,6 +20,7 @@ try {
   specs = JSON.parse(fs.readFileSync("specs.json", "utf-8"));
 } catch (err) {
   specs = {
+    address: process.env.ADDRESS + ":" + process.env.PORT,
     hostname: os.hostname(),
     os: {
       type: os.type(),
