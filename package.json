@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/Kaixhin/FGMachine",
   "dependencies": {
+    "bytes": "^2.1.0",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
-    "morgan": "^1.6.1"
+    "morgan": "^1.6.1",
+    "request": "^2.60.0"
   }
 }
