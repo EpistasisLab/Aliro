@@ -115,12 +115,11 @@ app.use(function(err, req, res, next) {
   res.send("Error: " + err);
 });
 
-/* HTTP Server */
-// Create HTTP server
-var server = http.createServer(app);
+/* HTTP server */
+var server = http.createServer(app); // Create HTTP server
 server.listen(process.env.PORT); // Listen for connections
 
-/* WebSocket Server */
+/* WebSocket server */
 // Add websocket server
 var wss = new WebSocketServer({server: server});
 
