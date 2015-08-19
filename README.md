@@ -1,20 +1,34 @@
 # FGLab
 
-FGLab is a machine learning dashboard, designed to facilitate performing experiments. It uses RESTful endpoints to pass data to a (MongoDB) database, which allows analytics to be performed on experiments after their completion.
+FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion.
+
+The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 ## Installation
 
-### Normal
+### Local
 
-Requires [Node.js](https://nodejs.org/) and [MongoDB](https://www.mongodb.org/).
+1. Install [Node.js](https://nodejs.org/).
+1. Install [MongoDB](https://www.mongodb.org/).
+1. Make sure that the MongoDB daemon is running (`mongod`).
+1. Clone this repository.
+1. Move inside and run `npm install`.
+1. Create `.env` with the following schema:
 
-**TODO** Detailed instructions
+```
+MONGOLAB_URI=<MongoDB database URI>
+PORT=<port>
+```
 
-### Docker Image
+Run `node index.js` to start FGLab.
+
+### Docker
 
 **TODO** Image creation
 
-### Heroku Deploy
+### Heroku
+
+The deploy button provisions a free dyno running FGLab on [Heroku](https://www.heroku.com), with a free 500MB MongoDB database from [MongoLab](https://mongolab.com/).
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
@@ -28,18 +42,24 @@ A project is created online and defines a (JSON) schema for hyperparameters. One
 
 ### Machine
 
+A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. FGLab queries all machines in order to determine a machine with the ability to run an experiment.
+
 The current schema is:
 
 ```
 address: String
-specs:
-  CPU: String
-  RAM: String
-  GPU: [String]
-framework: String (e.g. Torch7, Theano, Caffe etc.)
+hostname: String
+os:
+  type: String
+  platform: String
+  arch: String
+  release: String
+cpus: [String]
+mem: String
+gpus: [String]
 ```
 
-Note that machines are completely implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
+Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
 
 ### Experiments
 
@@ -98,7 +118,8 @@ Each machine should first register itself on the service.
 #### FGLab
 
 1. Create a project with hyperparameter schema online.
-1. Start an experiment by choosing hyperparameters.
+1. Query machines for experiment availability.
+1. If a machine is available, tart an experiment by choosing hyperparameters.
 
 #### Machine
 
@@ -119,6 +140,8 @@ Each machine should first register itself on the service.
 | /api/:objects/:id | DELETE    |      | Deletes existing entry |
 
 ## Future Work
+
+Using WebSockets to enable live querying of experiment logs.
 
 Due to variability in the objects, future work should focus on creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
 
