@@ -29,6 +29,7 @@
     "mongodb": "^1.4.39",
     "mongoskin": "^1.4.13",
     "morgan": "^1.6.1",
+    "request": "^2.60.0",
     "serve-favicon": "^2.3.0",
     "ws": "^0.7.2"
   }

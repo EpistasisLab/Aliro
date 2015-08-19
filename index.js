@@ -6,6 +6,7 @@ var bodyParser = require("body-parser");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
+var request = require("request");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
