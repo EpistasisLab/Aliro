@@ -1,0 +1,28 @@
+{
+  "name": "FGMachine",
+  "version": "0.0.1",
+  "description": "Future Gadget Machine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kaixhin/FGMachine.git"
+  },
+  "keywords": [
+    "\"machine",
+    "learning\""
+  ],
+  "author": "Kaixhin <design@kaixhin.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kaixhin/FGMachine/issues"
+  },
+  "homepage": "https://github.com/Kaixhin/FGMachine",
+  "dependencies": {
+    "dotenv": "^1.2.0",
+    "express": "^4.13.3",
+    "morgan": "^1.6.1"
+  }
+}
