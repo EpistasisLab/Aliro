@@ -24,7 +24,20 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 ### Project
 
-A project is created online and defines a (JSON) schema for hyperparameters. Any machine that is set up for a project must then register itself with the project, specifying its own network address. Thereby one can choose hyperparameters and start an experiment, dependent on machine availability. Machines implement an endpoint that returns their capacity, allowing for automatic load balancing of experiments.
+A project is created online and defines a (JSON) schema for hyperparameters. One can choose hyperparameters and start an experiment, dependent on *machine* availability. Machines implement an endpoint that returns their capacity (which may be 0 if it is busy or does not implement the project's hyperparameters), allowing for automatic load balancing of experiments.
+
+### Machine
+
+The current schema is:
+
+```
+address: String
+specs:
+  CPU: String
+  RAM: String
+  GPU: [String]
+framework: String (e.g. Torch7, Theano, Caffe etc.)
+```
 
 Note that machines are completely implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
 
@@ -36,6 +49,7 @@ The current schema is:
 
 ```
 timestamp: Int (ms since epoch)
+machine: Machine
 hyperparams:
   dataset: Dataset,
   model: Model,
@@ -79,19 +93,20 @@ The current schema has room for expansion, but this is likely to be heavily depe
 
 ### Workflow
 
+Each machine should first register itself on the service.
+
 #### FGLab
 
-1. Create a project with hyperparameter schema online
-1. Register each available machine with the project by performing a POST to /api/projects/:id/register
-1. Start an experiment by choosing hyperparameters
+1. Create a project with hyperparameter schema online.
+1. Start an experiment by choosing hyperparameters.
 
 #### Machine
 
-1. Wait for experiment ID and hyperparameters from FGLab
-1. Instantiate the dataset and attempt to create new dataset entry (overwrites any existing entry)
-1. Instantiate the model and attempt to create new model entry (overwrites any existing entry)
-1. Update the experiment with training and validation losses
-1. Update the experiment with testing loss and score
+1. Wait for experiment ID and hyperparameters from FGLab.
+1. Instantiate the dataset and attempt to create new dataset entry (overwrites any existing entry).
+1. Instantiate the model and attempt to create new model entry (overwrites any existing entry).
+1. Update the experiment with training and validation losses.
+1. Update the experiment with testing loss and score.
 
 ### Endpoints
 
