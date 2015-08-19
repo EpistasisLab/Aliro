@@ -28,3 +28,5 @@ node_modules
 
 # Environment configuration variables
 .env
+# Machine specs
+specs.json
