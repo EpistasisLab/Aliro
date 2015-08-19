@@ -1,5 +1,7 @@
 # FGMachine
 
+The machine client for [FGLab](https://github.com/Kaixhin/FGLab).
+
 ## Requirements
 
 - Linux (for getting GPUs with `lspci`)
