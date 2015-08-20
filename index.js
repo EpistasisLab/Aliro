@@ -81,13 +81,24 @@ app.delete("/api/:collection/:id", function(req, res, next) {
   });
 });
 
-// List experiments on homepage
+// List projects and machines on homepage
 app.get("/", function(req, res, next) {
+  db.machines.find({}, {sort: [["hostname", -1]]}).toArray(function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.render("index", {projects: [], machines: results});
+  });
+});
+
+
+// List experiments
+app.get("/experiments", function(req, res, next) {
   db.experiments.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
     if (err) {
       return next(err);
     }
-    res.render("index", {experiments: results});
+    res.render("experiments", {experiments: results});
   });
 });
 
@@ -122,6 +133,7 @@ server.listen(process.env.PORT); // Listen for connections
 
 /* WebSocket server */
 // Add websocket server
+/*
 var wss = new WebSocketServer({server: server});
 
 // Call on connection from new client
@@ -141,3 +153,4 @@ wss.on("connection", function(ws) {
     console.log("Client closed connection");
   });
 });
+*/

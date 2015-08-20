@@ -119,7 +119,7 @@ Each machine should first register itself on the service.
 
 1. Create a project with hyperparameter schema online.
 1. Query machines for experiment availability.
-1. If a machine is available, tart an experiment by choosing hyperparameters.
+1. If a machine is available, start an experiment by choosing hyperparameters.
 
 #### Machine
 

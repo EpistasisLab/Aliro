@@ -3,8 +3,14 @@ html(lang="en")
   head
     title FGLab
   body
-    h1 Experiments
-    ul#experiments
-      - each item in experiments
+    h1 Projects
+    ul#projects
+      - each project in projects
         li
-          a(href="/experiments/" + item._id) #{item._id}
+          a(href="/projects/" + project.name) #{project.name}
+
+    h1 Machines
+    ul#machines
+      - each machine in machines
+        li
+          a(href="/machines/" + machine.hostname) #{machine.hostname}
