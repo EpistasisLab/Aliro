@@ -5,5 +5,7 @@
 1. Server decodes and saves results
 
 Server requirements: results.proto
+
 Client requirements: project.proto
+
 ML requirements: project.proto, results.proto
