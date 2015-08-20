@@ -2,6 +2,7 @@
 require("dotenv").config({silent: true}); // Load configuration variables
 var os = require("os");
 var fs = require("fs");
+var spawn= require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
 var http = require("http");
 var url = require("url");
@@ -52,6 +53,79 @@ try {
     fs.writeFileSync("specs.json", JSON.stringify(body));
   });
 }
+
+/* Project specifications */
+var projects = {};
+try {
+  // Attempt to read existing projects
+  projects = JSON.parse(fs.readFileSync("projects.json", "utf-8"));
+} catch (err) {
+  console.log(err);
+}
+
+/* Global max capacity */
+var maxCapacity = 1;
+
+var getCapacity = function(projId) {
+  var capacity = 0;
+  if (projects[projId]) {
+    capacity = Math.floor(maxCapacity / projects[projId].usage);
+  }
+  return capacity;
+};
+
+/* Routes */
+// Checks capacity
+app.get("/projects/:id", function(req, res) {
+  res.send({capacity: getCapacity(req.params.id)});
+});
+
+// Starts experiment
+app.post("/projects/:id", function(req, res) {
+  // Check if capacity still available
+  if (getCapacity(req.params.id) === 0) {
+    res.status(501);
+    return res.send({error: "No capacity available"});
+  }
+
+  var project = projects[req.params.id];
+  // Process args
+  var args = [];
+  // TODO Make sure ID is passed from server
+  for (var prop in req.params.hyperparams) {
+    if (project.args === "single-dash") {
+      args.push("-" + prop);
+      args.push(req.params.hyperparams[prop]);
+    } else if (project.args === "double-dash") {
+      args.push("--" + prop + "=" + req.params.hyperparams[prop]);
+    }
+  }
+
+  // Spawn experiment
+  var experiment = spawn(project.command, args);
+  maxCapacity -= project.capacity; // Reduce capacity of machine
+
+  // Log stdout
+  experiment.stdout.on("data", function(data) {
+    console.log(data);
+  });
+
+  // Log errors
+  experiment.stderr.on("data", function(data) {
+    console.log("Error: " + data);
+  });
+
+  // TODO Consider how to kill experiments
+
+  // Clean up
+  experiment.on("exit", function(exitCode) {
+    maxCapacity += project.capacity; // Add back capacity
+    if (exitCode !== 0) {
+      // TODO Error handling
+    }
+    // TODO Inform server finished/post results
+  });
+});
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server

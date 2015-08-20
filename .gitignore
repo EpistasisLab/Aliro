@@ -30,3 +30,5 @@ node_modules
 .env
 # Machine specs
 specs.json
+# Project specs
+projects.json
