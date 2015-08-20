@@ -4,6 +4,7 @@ var os = require("os");
 var fs = require("fs");
 var spawnSync = require("child_process").spawnSync;
 var http = require("http");
+var url = require("url");
 var bytes = require("bytes");
 var express = require("express");
 var morgan = require("morgan");
@@ -20,7 +21,7 @@ try {
   specs = JSON.parse(fs.readFileSync("specs.json", "utf-8"));
 } catch (err) {
   specs = {
-    address: process.env.ADDRESS + ":" + process.env.PORT,
+    address: process.env.FGMACHINE_URL,
     hostname: os.hostname(),
     os: {
       type: os.type(),
@@ -33,12 +34,13 @@ try {
     gpus: []
   };
   // GPU models
-  specs.gpus = [];
-  var lspci = spawnSync("lspci", []);
-  var grep = spawnSync("grep", ["-i", "vga"], {input: lspci.stdout});
-  var gpuStrings = grep.stdout.toString().split("\n");
-  for (var i = 0; i < gpuStrings.length - 1; i++) {
-    specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
+  if (os.platform() === 'linux') {
+    var lspci = spawnSync("lspci", []);
+    var grep = spawnSync("grep", ["-i", "vga"], {input: lspci.stdout});
+    var gpuStrings = grep.stdout.toString().split("\n");
+    for (var i = 0; i < gpuStrings.length - 1; i++) {
+      specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
+    }
   }
 
   // Register details
@@ -53,4 +55,4 @@ try {
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
-server.listen(process.env.PORT); // Listen for connections
+server.listen(url.parse(process.env.FGMACHINE_URL).port); // Listen for connections
