@@ -17,7 +17,7 @@ try {
     if (err) {
       return console.log(err);
     }
-    console.log(body);
+    console.log("Project " + args[0] + " registered successfully.");
   });
 } catch(err) {
   console.log(err);

@@ -58,7 +58,7 @@ try {
 var projects = {};
 try {
   // Attempt to read existing projects
-  projects = JSON.parse(fs.readFileSync("projects.json", "utf-8"));
+  projects = JSON.parse(fs.readFileSync("projects.json", "utf-8") || "{}");
 } catch (err) {
   console.log(err);
 }
@@ -69,7 +69,7 @@ var maxCapacity = 1;
 var getCapacity = function(projId) {
   var capacity = 0;
   if (projects[projId]) {
-    capacity = Math.floor(maxCapacity / projects[projId].usage);
+    capacity = Math.floor(maxCapacity / projects[projId].capacity);
   }
   return capacity;
 };
@@ -91,15 +91,9 @@ app.post("/projects/:id", function(req, res) {
   var project = projects[req.params.id];
   // Process args
   var args = [];
-  // TODO Make sure ID is passed from server
-  for (var prop in req.params.hyperparams) {
-    if (project.args === "single-dash") {
-      args.push("-" + prop);
-      args.push(req.params.hyperparams[prop]);
-    } else if (project.args === "double-dash") {
-      args.push("--" + prop + "=" + req.params.hyperparams[prop]);
-    }
-  }
+  args.push(project.file);
+  args.push(project.option);
+  args.push(req.body); // TODO Make sure ID is passed from server
 
   // Spawn experiment
   var experiment = spawn(project.command, args);
