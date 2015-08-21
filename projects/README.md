@@ -4,19 +4,18 @@ This folder is used to store [Protocol Buffers](https://developers.google.com/pr
 
 FGLab/FGMachine use the [proto3](https://developers.google.com/protocol-buffers/docs/proto3) syntax. Each field has a name, type and unique numbered tag.
 
-## Example
+## Instructions
 
-The following is an example message for a project:
+A project's .proto file must have the same name as its message e.g. the following example would be stored under `projects/Mnist.proto`:
 
 ```protobuf
 syntax = "proto3";
 
 message Mnist {
-  string name = 1;
-  string id = 2;
-  int32 seed = 3 [default = 123];
-  int32 batchSize = 4 [default = 8];
-  int32 maxEpochs = 5 [default = 100];
+  string id = 1;
+  int32 seed = 2;
+  int32 batchSize = 3;
+  int32 maxEpochs = 4;
 
   enum Method {
     SGD = 0;
@@ -28,15 +27,18 @@ message Mnist {
   }
 
   message Solver {
-    Method method = 1 [default = ADAGRAD];
-    float learningRate = 2 [default = 0.001];
-    float momentum = 3 [default = 0.9];
-    bool L2 = 4 [default = true];
+    Method method = 1;
+    float learningRate = 2;
+    float momentum = 3;
+    bool L2 = 4;
   }
 
+  string model = 5;
   Solver solver = 6;
 }
 ```
+
+To register a project with FGLab, run `node register.js <message name>` e.g. `node register.js Mnist`.
 
 ## Recommended libaries
 
