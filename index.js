@@ -89,18 +89,14 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 
 // List projects and machines on homepage
 app.get("/", function(req, res, next) {
-  // TODO Promisify better
-  db.projects.find({}, {sort: [["name", -1]]}).toArray(function(err, projRes) {
-    if (err) {
-      return next(err);
-    }
-    db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync()
-    .then(function(macRes) {
-      return res.render("index", {projects: projRes, machines: macRes});
-    })
-    .catch(function(err) {
-      return next(err);
-    });
+  var projP = db.projects.find({}, {sort: [["name", -1]]}).toArrayAsync();
+  var macP = db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync();
+  Promise.all([projP, macP])
+  .then(function(results) {
+    return res.render("index", {projects: results[0], machines: results[1]});
+  })
+  .catch(function(err) {
+    return next(err);
   });
 });
 
