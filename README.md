@@ -38,98 +38,78 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 ### Project
 
-A project is created online and defines a (JSON) schema for hyperparameters. One can choose hyperparameters and start an experiment, dependent on *machine* availability. Machines implement an endpoint that returns their capacity (which may be 0 if it is busy or does not implement the project's hyperparameters), allowing for automatic load balancing of experiments.
+A project is created by uploading a [Protocol Buffer](https://developers.google.com/protocol-buffers/) that defines a set of hyperparameters. Protocol buffers allow a structure to be defined for a protocol buffer *message*, which can both be read and written by a variety of languages, as well as be efficiently serialized. FGLab/FGMachine use the [proto3](https://developers.google.com/protocol-buffers/docs/proto3) syntax. Each field has a name, type and unique numbered tag.
 
-### Machine
+The following is an example message file for a project, and should be uploaded with the name corresponding to the message i.e. `Mnist.proto`:
 
-A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. FGLab queries all machines in order to determine a machine with the ability to run an experiment.
+```protobuf
+syntax = "proto3";
 
-The current schema is:
+message Mnist {
+  string id = 1; // Automatically assigned by FGLab
+  int32 seed = 2;
+  int32 batchSize = 3;
+  int32 maxEpochs = 4;
 
+  enum Method {
+    SGD = 0;
+    RMSPROP = 1;
+    ADAGRAD = 3;
+  }
+
+  message Solver {
+    Method method = 1;
+    float learningRate = 2;
+    float momentum = 3;
+    bool L2 = 4;
+  }
+
+  Solver solver = 5;
+}
 ```
-address: String
-hostname: String
-os:
-  type: String
-  platform: String
-  arch: String
-  release: String
-cpus: [String]
-mem: String
-gpus: [String]
-```
 
-Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
+This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The serialized hyperparameters are sent to 
+your machine learning program via the FGMachine client. Your machine learning program then uses the same `.proto` file to deserialize the hyperparameters. The following libraries can be used to compile `.proto` files for use within your code.
+
+- [C++/Java/Python](https://github.com/google/protobuf)
+- [MATLAB/Octave](https://github.com/elap/protobuf-matlab)
+- [Lua](https://github.com/starwing/lua-protobuf)
+- [JavaScript](https://github.com/dcodeIO/ProtoBuf.js)
+
+Once finished your machine learning code then returns the experiment results (serialized using `Results.proto`) to FGLab via FGMachine.
 
 ### Experiments
 
-An experiment is one complete training and testing run of a specific machine learning *model* on a specific *dataset* with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs.
+An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs.
 
-The current schema is:
+The current schema of `Results.proto` is:
 
-```
-timestamp: Int (ms since epoch)
-machine: Machine
-hyperparams:
-  dataset: Dataset,
-  model: Model,
-  ...
-train:
-  losses: [Number]
-  freq: Int (number of iterations between logging loss)
-val:
-  losses: [Number]
-  freq: Int
-test:
-  loss: Number
-  score: Number (e.g. classification accuracy)
+```protobuf
+syntax = "proto3";
+
+message Results {
+  repeated double trainLosses = 1 [packed = true];
+  int32 trainFreq = 2; // Number of iterations between logging training loss
+  repeated double valLosses = 3 [packed = true];
+  int32 valFreq = 4; // Number of iterations between logging validation loss
+  double testLoss = 5;
+  double testScore = 6; // For example, classification accuracy
+}
 ```
 
-### Datasets
+Serialised results should be sent to FGLab via FGMachine, where it will then be concatenated with the machine ID and the chosen hyperparameters; this provides a comprehensive record of the experiment as a whole.
 
-A dataset is a special hyperparameter that refers to an actual object, uniquely defined by its name as a String.
+**TODO** Graphing results and comparing results across experiments
 
-The current schema is:
+### Machine
 
-```
-name: String
-```
+A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. Before a new experiment is chosen to be run, FGLab queries all machines in order to determine a machine with the capacity to run the experiment.
 
-The current schema has room for expansion, e.g. including information on training, validation and test sets. Rather than including information on the dataset with every experiment, the dataset information can be adjusted separately.
-
-### Models
-
-A model is a special hyperparameter that refers to an actual object, uniquely defined by its name as a String.
-
-The current schema is:
-
-```
-name: String
-```
-
-The current schema has room for expansion, but this is likely to be heavily dependent on the type of model involved. Rather than including information on the model with every experiment, the model information can be adjusted separately.
+Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
 
 ## API
 
-### Workflow
-
-Each machine should first register itself on the service.
-
-#### FGLab
-
-1. Create a project with hyperparameter schema online.
-1. Query machines for experiment availability.
-1. If a machine is available, start an experiment by choosing hyperparameters.
-
-#### Machine
-
-1. Wait for experiment ID and hyperparameters from FGLab.
-1. Instantiate the dataset and attempt to create new dataset entry (overwrites any existing entry).
-1. Instantiate the model and attempt to create new model entry (overwrites any existing entry).
-1. Update the experiment with training and validation losses.
-1. Update the experiment with testing loss and score.
-
-### Endpoints
+The following endpoints allow programmatic access to projects, experiments and machines. HTTP GETs return their results as JSON.
 
 | URL               | HTTP Verb | Body | Result                 |
 |-------------------|-----------|------|------------------------|
