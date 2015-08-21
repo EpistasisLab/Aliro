@@ -7,6 +7,7 @@ var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var request = require("request");
+var ProtoBuf = require("protobufjs");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
@@ -83,14 +84,78 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 
 // List projects and machines on homepage
 app.get("/", function(req, res, next) {
-  db.machines.find({}, {sort: [["hostname", -1]]}).toArray(function(err, results) {
+  db.projects.find({}, {sort: [["name", -1]]}).toArray(function(err, projRes) {
     if (err) {
       return next(err);
     }
-    res.render("index", {projects: [], machines: results});
+    db.machines.find({}, {sort: [["hostname", -1]]}).toArray(function(err, macRes) {
+      if (err) {
+        return next(err);
+      }
+      res.render("index", {projects: projRes, machines: macRes});
+    });
   });
 });
 
+// Gets HTML form input type for proto types
+var getFormType = function(type) {
+  if (type === "double" || type === "float" || type === "int32" || type === "int64" || type === "uint32" || type === "uint64" || type === "sint32" || type === "sint64" || type === "fixed32" || type === "fixed64" || type === "sfixed32" || type === "sfixed64") {
+    return "number";
+  } else if (type === "bool" || type === "string" || type === "bytes") {
+    return "text";
+  } else if (type === "enum") {
+    return "select";
+  } else if (type === "message") {
+    return "fieldset";
+  }
+};
+
+// Processes fields recursively
+var procFields = function(builder, name, formFields) {
+  // Use reflection
+  var reflector = builder.lookup(name);
+  var fields = reflector.getChildren(ProtoBuf.Reflect.Message.Field);
+
+  while (fields.length !== 0) {
+    var field = fields.shift(); // Get first field
+    var fieldObj = {
+      name: field.name,
+      type: getFormType(field.type.name)
+    };
+    // Process enums
+    if (fieldObj.type === "select") {
+      var enums = field.resolvedType.children;
+      var enumVals = [];
+      enums.forEach(function(enumObj) {
+        enumVals.push(enumObj.name);
+      });
+      fieldObj.values = enumVals;
+    }
+    // Process messages recursively
+    if (fieldObj.type === "fieldset") {
+      var messageName = field.resolvedType.name;
+      procFields(builder, name + "." + messageName, formFields);
+    } else {
+      formFields.push(fieldObj);
+    }
+  }
+  return formFields;
+};
+
+// Project page
+app.get("/projects/:id", function(req, res, next) {
+  db.projects.findById(req.params.id, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    var builder = ProtoBuf.loadProto(result.proto);
+    // Use reflection to construct form
+    var formFields = procFields(builder, result.name, []);
+    //var Project = processProto(result.name, result.proto);
+    //var p = new Project();
+    res.render("project", {project: result, form: formFields});
+  });
+});
 
 // List experiments
 app.get("/experiments", function(req, res, next) {

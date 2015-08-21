@@ -1,0 +1,20 @@
+doctype html
+html(lang="en")
+  head
+    title FGLab - Project #{project.name}
+  body
+    h1 Project: #{project.name}
+    form(method="POST")
+      each field in form
+        if field.values
+          p
+            label(for="#{field.name}") #{field.name}
+            select(name="#{field.name}")
+              each val in field.values
+                option(value="#{val}") #{val}
+        else
+          p
+            label(for="#{field.name}") #{field.name}
+            input(type="#{field.type}", name="#{field.name}")
+      p.buttons
+        input(type="submit", value="Start Experiment")

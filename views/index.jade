@@ -7,10 +7,10 @@ html(lang="en")
     ul#projects
       - each project in projects
         li
-          a(href="/projects/" + project.name) #{project.name}
+          a(href="/projects/" + project._id) #{project.name}
 
     h1 Machines
     ul#machines
       - each machine in machines
         li
-          a(href="/machines/" + machine.hostname) #{machine.hostname}
+          a(href="/machines/" + machine._id) #{machine.hostname}
