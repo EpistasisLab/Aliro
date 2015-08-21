@@ -31,68 +31,75 @@ app.param("collection", function(req, res, next, collection) {
 
 // Return all entries
 app.get("/api/:collection", function(req, res, next) {
-  req.collection.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
-    if (err) {
-      return next(err);
-    }
+  req.collection.find({}, {sort: [["timestamp", 1]]}).toArrayAsync()
+  .then(function(results) {
     res.send(results);
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // Create new entry
 app.post("/api/:collection", jsonParser, function(req, res, next) {
-  req.collection.insert(req.body, {}, function(err, results) {
-    if (err) {
-      return next(err);
-    }
+  req.collection.insertAsync(req.body, {})
+  .then(function(results) {
     res.send(results[0]);
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // Return single entry
 app.get("/api/:collection/:id", function(req, res, next) {
-  req.collection.findById(req.params.id, function(err, result) {
-    if (err) {
-      return next(err);
-    }
+  req.collection.findByIdAsync(req.params.id)
+  .then(function(result) {
     res.send(result);
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // Update existing entry
 app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
   delete req.body._id; // Delete ID (will not update otherwise)
-  req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(err, result) {
-    if (err) {
-      return next(err);
-    }
+  req.collection.updateByIdAsync(req.params.id, {$set: req.body}, {safe: true, multi: false})
+  .then(function(result) {
     // Update returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // Delete existing entry
 app.delete("/api/:collection/:id", function(req, res, next) {
-  req.collection.removeById(req.params.id, function(err, result) {
-    if (err) {
-      return next(err);
-    }
+  req.collection.removeByIdAsync(req.params.id)
+  .then(function(result) {
     // Remove returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // List projects and machines on homepage
 app.get("/", function(req, res, next) {
+  // TODO Promisify better
   db.projects.find({}, {sort: [["name", -1]]}).toArray(function(err, projRes) {
     if (err) {
       return next(err);
     }
-    db.machines.find({}, {sort: [["hostname", -1]]}).toArray(function(err, macRes) {
-      if (err) {
-        return next(err);
-      }
-      res.render("index", {projects: projRes, machines: macRes});
+    db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync()
+    .then(function(macRes) {
+      return res.render("index", {projects: projRes, machines: macRes});
+    })
+    .catch(function(err) {
+      return next(err);
     });
   });
 });
@@ -144,36 +151,39 @@ var procFields = function(builder, name, formFields) {
 
 // Project page
 app.get("/projects/:id", function(req, res, next) {
-  db.projects.findById(req.params.id, function(err, result) {
-    if (err) {
-      return next(err);
-    }
+  db.projects.findByIdAsync(req.params.id)
+  .then(function(result) {
     var builder = ProtoBuf.loadProto(result.proto);
     // Use reflection to construct form
     var formFields = procFields(builder, result.name, []);
     //var Project = processProto(result.name, result.proto);
     //var p = new Project();
     res.render("project", {project: result, form: formFields});
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // List experiments
 app.get("/experiments", function(req, res, next) {
-  db.experiments.find({}, {sort: [["timestamp", 1]]}).toArray(function(err, results) {
-    if (err) {
-      return next(err);
-    }
+  db.experiments.find({}, {sort: [["timestamp", 1]]}).toArrayAsync()
+  .then(function(results) {
     res.render("experiments", {experiments: results});
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 
 // List details of single experiment
 app.get("/experiments/:id", function(req, res, next) {
-  db.experiments.findById(req.params.id, function(err, result) {
-    if (err) {
-      return next(err);
-    }
+  db.experiments.findByIdAsync(req.params.id)
+  .then(function(result) {
     res.render("experiment", {experiment: result});
+  })
+  .catch(function(err) {
+    next(err);
   });
 });
 

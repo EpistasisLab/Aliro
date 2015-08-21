@@ -1,20 +1,20 @@
-var db = require("mongoskin").db(process.env.MONGOLAB_URI, {native_parser: true}); // Connect to db
+var Promise = require("bluebird");
+var mongoskin = require("mongoskin");
+var db = mongoskin.db(process.env.MONGOLAB_URI, {native_parser: true}); // Connect to db
 
 // Bind collections
 db.bind("projects");
 db.bind("machines");
 db.bind("experiments");
 
-/*
-// Returns list of experiments
-exports.listExperiments = function(cb) {
-  db.experiments.find().toArray(function(err, result) {
-    if (err) {
-      throw err;
-    }
-    cb(result); // Return results in callback
-  });
-};
-*/
+// Promisify all methods
+Object.keys(mongoskin).forEach(function(key) {
+  var value = mongoskin[key];
+  if (typeof value === "function") {
+    Promise.promisifyAll(value);
+    Promise.promisifyAll(value.prototype);
+  }
+});
+Promise.promisifyAll(mongoskin);
 
 module.exports.db = db;

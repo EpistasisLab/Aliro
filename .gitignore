@@ -28,5 +28,3 @@ node_modules
 
 # Environment configuration variables
 .env
-# Test projects file
-projects.json
