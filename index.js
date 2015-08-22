@@ -3,18 +3,21 @@ require("dotenv").config({silent: true}); // Load configuration variables
 var http = require("http");
 var express = require("express");
 var bodyParser = require("body-parser");
+var multer = require("multer");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
-var request = require("request");
+//var request = require("request");
+var Promise = require("bluebird");
 var ProtoBuf = require("protobufjs");
-var WebSocketServer = require("ws").Server;
+//var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
 //var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
 var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
+var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all requests
 app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
@@ -98,6 +101,12 @@ app.get("/", function(req, res, next) {
   .catch(function(err) {
     return next(err);
   });
+});
+
+// Constructs a project from an uploaded .proto file
+app.post("/projects", upload.single("proto"), function(req, res, next) {
+  console.log(req.file);
+  res.send("OK");
 });
 
 // Gets HTML form input type for proto types
