@@ -104,9 +104,19 @@ app.get("/", function(req, res, next) {
 });
 
 // Constructs a project from an uploaded .proto file
-app.post("/projects", upload.single("proto"), function(req, res, next) {
-  console.log(req.file);
-  res.send("OK");
+app.post("/new-project", upload.single("protofile"), function(req, res, next) {
+  // Extract file name
+  var name = req.file.originalname.replace(".proto", "");
+  // Extract .proto as string
+  var proto = req.file.buffer.toString();
+  // Store
+  db.projects.insertAsync({name: name, proto: proto}, {})
+  .then(function() {
+    res.send("New project successfully created - please return to the homepage.");
+  })
+  .catch(function(err) {
+    next(err);
+  });
 });
 
 // Gets HTML form input type for proto types
