@@ -6,11 +6,10 @@ html(lang="en")
     h1 Projects
     h2 New Project
     form(action="/new-project", method="POST", enctype="multipart/form-data")
-      p
+      .form-group
         label(for="protofile") Project.proto
         input(type="file", name="protofile")
-      p.buttons
-        input(type="submit", value="Upload project")
+      button(type="submit") Upload project
 
     h2 Existing Projects
     ul#projects

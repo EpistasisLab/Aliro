@@ -15,7 +15,7 @@ var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
-//var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
+var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
 var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all requests
@@ -141,7 +141,7 @@ var procFields = function(builder, name, formFields) {
   while (fields.length !== 0) {
     var field = fields.shift(); // Get first field
     var fieldObj = {
-      name: field.name,
+      name: name + "." + field.name,
       type: getFormType(field.type.name)
     };
     // Process enums
@@ -171,9 +171,26 @@ app.get("/projects/:id", function(req, res, next) {
     var builder = ProtoBuf.loadProto(result.proto);
     // Use reflection to construct form
     var formFields = procFields(builder, result.name, []);
-    //var Project = processProto(result.name, result.proto);
-    //var p = new Project();
+    // Remove top-level name from fields
+    formFields.forEach(function(field) {
+      field.name = field.name.replace(new RegExp(result.name + "\."), "");
+    });
+    // TODO Perform form validation
     res.render("project", {project: result, form: formFields});
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+// Constructs an experiment from the form
+app.post("/new-experiment/:id", urlencodedParser, function(req, res, next) {
+  db.projects.findByIdAsync(req.params.id)
+  .then(function(result) {
+    var builder = ProtoBuf.loadProto(result.proto);
+    var Project = builder.build(result.name);
+    var p = new Project(req.body);
+    res.send("OK");
   })
   .catch(function(err) {
     next(err);

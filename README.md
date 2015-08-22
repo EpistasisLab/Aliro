@@ -38,9 +38,9 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 ### Project
 
-A project is created by uploading a [Protocol Buffer](https://developers.google.com/protocol-buffers/) that defines a set of hyperparameters. Protocol buffers allow a structure to be defined for a protocol buffer *message*, which can both be read and written by a variety of languages, as well as be efficiently serialized. FGLab/FGMachine use the [proto3](https://developers.google.com/protocol-buffers/docs/proto3) syntax. Each field has a name, type and unique numbered tag.
+A project is created by uploading a [Protocol Buffer](https://developers.google.com/protocol-buffers/) that defines a set of hyperparameters. Protocol buffers allow a structure to be defined for a protocol buffer *message*, which can both be read and written by a variety of languages, as well as be efficiently serialized. FGLab uses the [proto3](https://developers.google.com/protocol-buffers/docs/proto3) syntax. Each field has a name, type and unique numbered tag.
 
-The following is an example message file for a project, and should be uploaded with the name corresponding to the message i.e. `Mnist.proto`:
+The following is an example message file for a project, and should be uploaded with the name corresponding to the top-level message i.e. `Mnist.proto`:
 
 ```protobuf
 syntax = "proto3";
