@@ -1,5 +1,7 @@
 # FGMachine
 
+[![Build Status](https://travis-ci.org/Kaixhin/FGMachine.svg)](https://travis-ci.org/Kaixhin/FGMachine)
+
 The machine client for [FGLab](https://github.com/Kaixhin/FGLab).
 
 FGMachine currently only reads GPU information on Linux.
