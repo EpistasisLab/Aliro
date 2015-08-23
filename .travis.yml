@@ -19,3 +19,4 @@ deploy:
   app: fglab
   on:
     repo: Kaixhin/FGLab
+  skip_cleanup: true

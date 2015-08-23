@@ -1,5 +1,7 @@
 # FGLab
 
+[![Build Status](https://travis-ci.org/Kaixhin/FGLab.svg?branch=master)](https://travis-ci.org/Kaixhin/FGLab)
+
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion.
 
 The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
