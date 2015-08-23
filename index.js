@@ -7,7 +7,7 @@ var multer = require("multer");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
-//var request = require("request");
+var request = require("request");
 var dot = require("dot-object");
 var Promise = require("bluebird");
 var ProtoBuf = require("protobufjs");
@@ -148,15 +148,15 @@ var getFormType = function(type) {
 };
 
 // Processes fields recursively
-var procFields = function(builder, name, formFields) {
+var procFields = function(builder, typeName, varName, formFields) {
   // Use reflection
-  var reflector = builder.lookup(name);
+  var reflector = builder.lookup(typeName);
   var fields = reflector.getChildren(ProtoBuf.Reflect.Message.Field);
 
   while (fields.length !== 0) {
     var field = fields.shift(); // Get first field
     var fieldObj = {
-      name: name + "." + field.name,
+      name: varName + "." + field.name,
       type: getFormType(field.type.name),
       protoType: field.type.name
     };
@@ -172,7 +172,7 @@ var procFields = function(builder, name, formFields) {
     // Process messages recursively
     if (fieldObj.type === "fieldset") {
       var messageName = field.resolvedType.name;
-      procFields(builder, name + "." + messageName, formFields);
+      procFields(builder, typeName + "." + messageName, varName + "." + field.name, formFields);
     } else {
       formFields.push(fieldObj);
     }
@@ -186,10 +186,10 @@ app.get("/projects/:id", function(req, res, next) {
   .then(function(result) {
     var builder = ProtoBuf.loadProto(result.proto);
     // Use reflection to construct form
-    var formFields = procFields(builder, result.name, []);
-    // Remove top-level name from fields
+    var formFields = procFields(builder, result.name, "", []);
+    // Remove leading . from fields
     formFields.forEach(function(field) {
-      field.name = field.name.replace(new RegExp(result.name + "\."), "");
+      field.name = field.name.replace(new RegExp("^\."), "");
     });
     res.render("project", {project: result, form: formFields});
   })
@@ -201,21 +201,31 @@ app.get("/projects/:id", function(req, res, next) {
 // Constructs an experiment from the form
 app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
   // TODO Find available machine and concatenate machine ID
-  var obj = dot.object(req.body); // Expand object
+  var obj = req.body;
+  dot.object(obj); // Expand object
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
   var expP = db.experiments.insertAsync({hyperparams: obj, machine: {}}, {}); // Create experiment
-  Promise.all([projP, expP])
+  var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync(); // TODO Replace with available machine
+  Promise.all([projP, expP, macP])
   .then(function(results) {
     // Get objects
     var proj = results[0];
     var exp = results[1][0];
+    var mac = results[2][0];
     // Create message
     var builder = ProtoBuf.loadProto(proj.proto);
     var Project = builder.build(proj.name);
-    obj.id = exp._id; // TODO Consider if ID should be part of hyperparams
+    obj.id = exp._id.toString(); // TODO Consider if ID should be part of hyperparams
     var message = new Project(obj);
     var encString = message.toBase64();
-    res.send(encString);
+    // Send project
+    request({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encString}, function(err, response, body) {
+      if (err || status === 501) { // TODO Why is err null?
+        res.status(501);
+        res.send(err);
+      }
+      res.send(body);
+    });
   })
   .catch(function(err) {
     next(err);
