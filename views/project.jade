@@ -2,9 +2,10 @@ doctype html
 html(lang="en")
   head
     title FGLab - Project #{project.name}
+    script(src="/javascripts/jquery.min.js")
   body
     h1 Project: #{project.name}
-    form(method="POST", action="/new-experiment/#{project._id}")
+    form#new-experiment(method="POST", action="/new-experiment/#{project._id}")
       each field in form
         if (field.name === "id")
           .form-group
@@ -20,3 +21,12 @@ html(lang="en")
             label(for="#{field.name}") #{field.name}
             input(type="#{field.type}", name="#{field.name}")
       button(type="submit") Start Experiment
+
+    script.
+      $(function() {
+        $("#new-experiment").on("submit", function(event) {
+          var formGroups = $(this).serializeArray();
+          console.log(formGroups);
+          return false; // Stop event and propagation
+        });
+      });
