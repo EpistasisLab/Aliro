@@ -191,7 +191,6 @@ app.get("/projects/:id", function(req, res, next) {
     formFields.forEach(function(field) {
       field.name = field.name.replace(new RegExp(result.name + "\."), "");
     });
-    // TODO Perform form validation
     res.render("project", {project: result, form: formFields});
   })
   .catch(function(err) {
@@ -201,13 +200,22 @@ app.get("/projects/:id", function(req, res, next) {
 
 // Constructs an experiment from the form
 app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
-  db.projects.findByIdAsync(req.params.id)
-  .then(function(result) {
-    var builder = ProtoBuf.loadProto(result.proto);
-    var Project = builder.build(result.name);
-    req.body.id = "uniqueid1234"; // TODO Set properly
-    var p = new Project(dot.object(req.body)); // Create message from expanded object
-    res.send("OK");
+  // TODO Find available machine and concatenate machine ID
+  var obj = dot.object(req.body); // Expand object
+  var projP = db.projects.findByIdAsync(req.params.id); // Get project
+  var expP = db.experiments.insertAsync({hyperparams: obj, machine: {}}, {}); // Create experiment
+  Promise.all([projP, expP])
+  .then(function(results) {
+    // Get objects
+    var proj = results[0];
+    var exp = results[1][0];
+    // Create message
+    var builder = ProtoBuf.loadProto(proj.proto);
+    var Project = builder.build(proj.name);
+    obj.id = exp._id; // TODO Consider if ID should be part of hyperparams
+    var message = new Project(obj);
+    var encString = message.toBase64();
+    res.send(encString);
   })
   .catch(function(err) {
     next(err);
