@@ -5,28 +5,98 @@ html(lang="en")
     script(src="/javascripts/jquery.min.js")
   body
     h1 Project: #{project.name}
-    form#new-experiment(method="POST", action="/new-experiment/#{project._id}")
+    form#new-experiment
       each field in form
         if (field.name === "id")
           .form-group
-            input(type="hidden", name="id")
+            input(type="hidden", data-proto="#{field.protoType}", name="id")
         else if field.values
           .form-group
             label(for="#{field.name}") #{field.name}
-            select(name="#{field.name}")
+            select(data-proto="#{field.protoType}", name="#{field.name}")
               each val in field.values
                 option(value="#{val}") #{val}
+            p.help-block
         else
           .form-group
             label(for="#{field.name}") #{field.name}
-            input(type="#{field.type}", name="#{field.name}")
+            input(type="#{field.type}", data-proto="#{field.protoType}", step="any" name="#{field.name}", required)
+            p.help-block
       button(type="submit") Start Experiment
 
     script.
+      var checkType = function(val, type) {
+        var isVal = null; // Error message
+        switch(type) {
+          case "double":
+          case "float":
+            val = Number(val);
+            if (isNaN(val)) {
+              isVal = "Not a valid float/double.";
+            }
+            break;
+          case "int32":
+          case "int64":
+          case "uint32":
+          case "uint64":
+          case "sint32":
+          case "sint64":
+          case "fixed32":
+          case "fixed64":
+          case "sfixed32":
+          case "sfixed64":
+            val = Number(val);
+            if (isNaN(val) || val % 1 !== 0) {
+              isVal = "Not a valid integer.";
+            }
+            break;
+          case "bool":
+            if (val === "true") {
+              val = true;
+            } else if (val === "false") {
+              val = false;
+            } else {
+              isVal = "Not a valid boolean.";
+            }
+            break;
+          case "string":
+          case "bytes":
+          case "enum":
+            break;
+        }
+        return [isVal, val];
+      };
+
       $(function() {
         $("#new-experiment").on("submit", function(event) {
-          var formGroups = $(this).serializeArray();
-          console.log(formGroups);
+          var protoArr = [];
+          // Perform type checking
+          var isValid = true;
+          $(this).find(":input:not(button)").each(function() {
+            var $formEl = $(this);
+            var name = $formEl.attr("name");
+            var val = $formEl.val();
+            var protoType = $formEl.data("proto");
+            var validation = checkType(val, protoType);
+            // Display validation errors
+            $formEl.parent().children(".help-block").html(validation[0]);
+            // Set invalid flag if necessary
+            isValid = !validation[0];
+            protoArr.push({name: name, val: validation[1]}); // Store values
+          });
+          // Continue if valid
+          if (isValid) {
+            var protoObj = {};
+            protoArr.forEach(function(o) {
+              protoObj[o.name] = o.val;
+            });
+            $.ajax({
+              url: "/new-experiment/#{project._id}",
+              type: "POST",
+              contentType: "application/json",
+              data: JSON.stringify(protoObj)
+            });
+          }
           return false; // Stop event and propagation
         });
       });

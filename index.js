@@ -8,6 +8,7 @@ var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
 //var request = require("request");
+var dot = require("dot-object");
 var Promise = require("bluebird");
 var ProtoBuf = require("protobufjs");
 //var WebSocketServer = require("ws").Server;
@@ -15,7 +16,7 @@ var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
-var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
+//var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
 var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all requests
@@ -121,14 +122,28 @@ app.post("/new-project", upload.single("protofile"), function(req, res, next) {
 
 // Gets HTML form input type for proto types
 var getFormType = function(type) {
-  if (type === "double" || type === "float" || type === "int32" || type === "int64" || type === "uint32" || type === "uint64" || type === "sint32" || type === "sint64" || type === "fixed32" || type === "fixed64" || type === "sfixed32" || type === "sfixed64") {
-    return "number";
-  } else if (type === "bool" || type === "string" || type === "bytes") {
-    return "text";
-  } else if (type === "enum") {
-    return "select";
-  } else if (type === "message") {
-    return "fieldset";
+  switch(type) {
+    case "double":
+    case "float":
+    case "int32":
+    case "int64":
+    case "uint32":
+    case "uint64":
+    case "sint32":
+    case "sint64":
+    case "fixed32":
+    case "fixed64":
+    case "sfixed32":
+    case "sfixed64":
+      return "number";
+    case "bool":
+    case "string":
+    case "bytes":
+      return "text";
+    case "enum":
+      return "select";
+    case "message":
+      return "fieldset";
   }
 };
 
@@ -142,7 +157,8 @@ var procFields = function(builder, name, formFields) {
     var field = fields.shift(); // Get first field
     var fieldObj = {
       name: name + "." + field.name,
-      type: getFormType(field.type.name)
+      type: getFormType(field.type.name),
+      protoType: field.type.name
     };
     // Process enums
     if (fieldObj.type === "select") {
@@ -184,12 +200,13 @@ app.get("/projects/:id", function(req, res, next) {
 });
 
 // Constructs an experiment from the form
-app.post("/new-experiment/:id", urlencodedParser, function(req, res, next) {
+app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
   db.projects.findByIdAsync(req.params.id)
   .then(function(result) {
     var builder = ProtoBuf.loadProto(result.proto);
     var Project = builder.build(result.name);
-    var p = new Project(req.body);
+    req.body.id = "uniqueid1234"; // TODO Set properly
+    var p = new Project(dot.object(req.body)); // Create message from expanded object
     res.send("OK");
   })
   .catch(function(err) {
