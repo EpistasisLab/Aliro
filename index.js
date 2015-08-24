@@ -221,16 +221,20 @@ app.get("/", function(req, res, next) {
 
 // Project page
 app.get("/projects/:id", function(req, res, next) {
-  db.projects.findByIdAsync(req.params.id)
-  .then(function(result) {
-    var builder = ProtoBuf.loadProto(result.proto);
+  var projP = db.projects.findByIdAsync(req.params.id);
+  var expP = db.experiments.find({project: db.toObjectID(req.params.id)}, {sort: [["_id", -1]]}).toArrayAsync(); // Find experiments for this project
+  Promise.all([projP, expP])
+  .then(function(results) {
+    var proj = results[0];
+    var experiments = results[1];
+    var builder = ProtoBuf.loadProto(proj.proto);
     // Use reflection to construct form
-    var formFields = procFields(builder, result.name, "", []);
+    var formFields = procFields(builder, proj.name, "", []);
     // Remove leading . from fields
     formFields.forEach(function(field) {
       field.name = field.name.replace(new RegExp("^\."), "");
     });
-    res.render("project", {project: result, form: formFields});
+    res.render("project", {project: proj, form: formFields, experiments: experiments});
   })
   .catch(function(err) {
     next(err);

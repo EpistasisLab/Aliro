@@ -5,6 +5,7 @@ html(lang="en")
     script(src="/javascripts/jquery.min.js")
   body
     h1 Project: #{project.name} (#{project._id})
+    h2 New Experiment
     form#new-experiment
       each field in form
         if (field.name === "id")
@@ -23,6 +24,14 @@ html(lang="en")
             input(type="#{field.type}", data-proto="#{field.protoType}", step="any" name="#{field.name}", required)
             p.help-block
       button(type="submit") Start Experiment
+
+    h2 Experiments
+    ul
+      - each experiment in experiments
+        li
+          a(href="/experiments/" + experiment._id) #{experiment._id}
+          | &nbsp;
+          a(href="/api/experiments/" + experiment._id, class="delete") (delete)
 
     script.
       var checkType = function(val, type) {
@@ -68,6 +77,7 @@ html(lang="en")
       };
 
       $(function() {
+        // Creates new experiment
         $("#new-experiment").on("submit", function() {
           var protoArr = [];
           // Perform type checking
@@ -97,6 +107,18 @@ html(lang="en")
               data: JSON.stringify(protoObj)
             });
           }
+          return false; // Stop event and propagation
+        });
+
+        // Deletes existing experiment
+        $("a.delete").on("click", function() {
+          $.ajax({
+            url: $(this).attr("href"),
+            type: "DELETE"
+          })
+          .then(function() {
+            location.reload(); // Refresh page
+          });
           return false; // Stop event and propagation
         });
       });

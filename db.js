@@ -17,4 +17,7 @@ Object.keys(mongoskin).forEach(function(key) {
 });
 Promise.promisifyAll(mongoskin);
 
+// Add helper method to db
+db.toObjectID = mongoskin.helper.toObjectID;
+
 module.exports.db = db;
