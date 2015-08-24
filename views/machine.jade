@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+  head
+    title FGLab - Machine #{machine.hostname}
+  body
+    h1 Machine #{machine.hostname} (#{machine._id})
+    p Address: #{machine.address}
+    p Hostname: #{machine.hostname}
+    p OS: #{machine.os.type} #{machine.os.arch} #{machine.os.release}
+    p CPUS:
+    ul
+      - each cpu in machine.cpus
+        li= cpu
+    p RAM: #{machine.mem}
+    p GPUS:
+    ul
+      - each gpu in machine.gpus
+        li= gpu

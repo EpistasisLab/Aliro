@@ -4,7 +4,7 @@ html(lang="en")
     title FGLab - Project #{project.name}
     script(src="/javascripts/jquery.min.js")
   body
-    h1 Project: #{project.name}
+    h1 Project: #{project.name} (#{project._id})
     form#new-experiment
       each field in form
         if (field.name === "id")

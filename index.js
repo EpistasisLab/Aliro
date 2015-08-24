@@ -25,7 +25,7 @@ app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); //
 app.set("view engine", "jade"); // Jade template engine
 app.use(morgan("tiny")); // Log requests
 
-/* Routes */
+/* API */
 
 // Get collection for all API endpoints
 app.param("collection", function(req, res, next, collection) {
@@ -91,34 +91,7 @@ app.delete("/api/:collection/:id", function(req, res, next) {
   });
 });
 
-// List projects and machines on homepage
-app.get("/", function(req, res, next) {
-  var projP = db.projects.find({}, {sort: [["name", -1]]}).toArrayAsync();
-  var macP = db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync();
-  Promise.all([projP, macP])
-  .then(function(results) {
-    return res.render("index", {projects: results[0], machines: results[1]});
-  })
-  .catch(function(err) {
-    return next(err);
-  });
-});
-
-// Constructs a project from an uploaded .proto file
-app.post("/new-project", upload.single("protofile"), function(req, res, next) {
-  // Extract file name
-  var name = req.file.originalname.replace(".proto", "");
-  // Extract .proto as string
-  var proto = req.file.buffer.toString();
-  // Store
-  db.projects.insertAsync({name: name, proto: proto}, {})
-  .then(function() {
-    res.send("New project successfully created - please return to the homepage.");
-  })
-  .catch(function(err) {
-    next(err);
-  });
-});
+/* Processing Routes */
 
 // Gets HTML form input type for proto types
 var getFormType = function(type) {
@@ -180,18 +153,16 @@ var procFields = function(builder, typeName, varName, formFields) {
   return formFields;
 };
 
-// Project page
-app.get("/projects/:id", function(req, res, next) {
-  db.projects.findByIdAsync(req.params.id)
-  .then(function(result) {
-    var builder = ProtoBuf.loadProto(result.proto);
-    // Use reflection to construct form
-    var formFields = procFields(builder, result.name, "", []);
-    // Remove leading . from fields
-    formFields.forEach(function(field) {
-      field.name = field.name.replace(new RegExp("^\."), "");
-    });
-    res.render("project", {project: result, form: formFields});
+// Constructs a project from an uploaded .proto file
+app.post("/new-project", upload.single("protofile"), function(req, res, next) {
+  // Extract file name
+  var name = req.file.originalname.replace(".proto", "");
+  // Extract .proto as string
+  var proto = req.file.buffer.toString();
+  // Store
+  db.projects.insertAsync({name: name, proto: proto}, {})
+  .then(function() {
+    res.send("New project successfully created - please return to the homepage.");
   })
   .catch(function(err) {
     next(err);
@@ -232,6 +203,56 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
     next(err);
   });
 });
+
+/* Rendering Routes */
+
+// List projects and machines on homepage
+app.get("/", function(req, res, next) {
+  var projP = db.projects.find({}, {sort: [["name", -1]]}).toArrayAsync();
+  var macP = db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync();
+  Promise.all([projP, macP])
+  .then(function(results) {
+    return res.render("index", {projects: results[0], machines: results[1]});
+  })
+  .catch(function(err) {
+    return next(err);
+  });
+});
+
+// Project page
+app.get("/projects/:id", function(req, res, next) {
+  db.projects.findByIdAsync(req.params.id)
+  .then(function(result) {
+    var builder = ProtoBuf.loadProto(result.proto);
+    // Use reflection to construct form
+    var formFields = procFields(builder, result.name, "", []);
+    // Remove leading . from fields
+    formFields.forEach(function(field) {
+      field.name = field.name.replace(new RegExp("^\."), "");
+    });
+    res.render("project", {project: result, form: formFields});
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+// Machine page
+app.get("/machines/:id", function(req, res, next) {
+  db.machines.findByIdAsync(req.params.id)
+  .then(function(result) {
+    res.render("machine", {machine: result});
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+
+
+
+
+
 
 // List experiments
 app.get("/experiments", function(req, res, next) {
