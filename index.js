@@ -8,11 +8,13 @@ var http = require("http");
 var url = require("url");
 var bytes = require("bytes");
 var express = require("express");
+var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
 
 /* App instantiation */
 var app = express();
+var rawParser = bodyParser.raw({limit: "50mb"}); // Parses application/octet-stream
 app.use(morgan("tiny")); // Log requests
 
 /* Machine specifications */
@@ -82,7 +84,7 @@ app.get("/projects/:id", function(req, res) {
 });
 
 // Starts experiment
-app.post("/projects/:id", function(req, res) {
+app.post("/projects/:id", rawParser, function(req, res) {
   // Check if capacity still available
   if (getCapacity(req.params.id) === 0) {
     res.status(501);
@@ -94,7 +96,7 @@ app.post("/projects/:id", function(req, res) {
   var args = [];
   args.push(project.file);
   args.push(project.option);
-  args.push(req.body); // TODO Make sure ID is passed from server
+  args.push(req.body.toString("base64")); // TODO Make sure ID is passed from server outside of hyperparams...
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
@@ -102,12 +104,12 @@ app.post("/projects/:id", function(req, res) {
 
   // Log stdout
   experiment.stdout.on("data", function(data) {
-    console.log(data);
+    console.log(data.toString());
   });
 
   // Log errors
   experiment.stderr.on("data", function(data) {
-    console.log("Error: " + data);
+    console.log("Error: " + data.toString());
   });
 
   // TODO Consider how to kill experiments
@@ -120,6 +122,7 @@ app.post("/projects/:id", function(req, res) {
     }
     // TODO Inform server finished/post results
   });
+  res.send(req.body);
 });
 
 /* HTTP Server */

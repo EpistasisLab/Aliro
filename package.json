@@ -1,6 +1,6 @@
 {
   "name": "FGMachine",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Future Gadget Machine",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Kaixhin/FGMachine",
   "dependencies": {
+    "body-parser": "^1.13.3",
     "bytes": "^2.1.0",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
