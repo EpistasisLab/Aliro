@@ -9,7 +9,7 @@ var url = require("url");
 var bytes = require("bytes");
 var express = require("express");
 var morgan = require("morgan");
-var request = require("request");
+var rp = require("request-promise");
 
 /* App instantiation */
 var app = express();
@@ -45,13 +45,14 @@ try {
   }
 
   // Register details
-  request({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs}, function(err, response, body) {
-    if (err) {
-      return console.log(err);
-    }
+  rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs})
+  .then(function(body) {
     // Save ID and specs
     fs.writeFileSync("specs.json", JSON.stringify(body));
-  });
+  })
+  .catch(function(err) {
+    console.log(err);
+  })
 }
 
 /* Project specifications */
@@ -96,7 +97,7 @@ app.post("/projects/:id", function(req, res) {
   args.push(req.body); // TODO Make sure ID is passed from server
 
   // Spawn experiment
-  var experiment = spawn(project.command, args);
+  var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
 
   // Log stdout

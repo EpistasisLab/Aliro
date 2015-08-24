@@ -48,6 +48,7 @@ After a project has been created on FGLab, if this machine is available to run e
 
 ```json
 "<id>": {
+  "cwd": "<working directory>",
   "command": "<binary>",
   "file": "<file>",
   "option": "<command line option flag>",
@@ -59,8 +60,9 @@ For example:
 
 ```json
 "55d716ff269de6a02af9be4b": {
+  "cwd": "/projects/mnist",
   "command": "th",
-  "file": "/projects/mnist/main.lua",
+  "file": "main.lua",
   "option": "-params",
   "capacity": "0.3"
 }
