@@ -40,62 +40,64 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 ### Project
 
-A project is created by uploading a [Protocol Buffer](https://developers.google.com/protocol-buffers/) that defines a set of hyperparameters. Protocol buffers allow a structure to be defined for a protocol buffer *message*, which can both be read and written by a variety of languages, as well as be efficiently serialized. FGLab uses the [proto3](https://developers.google.com/protocol-buffers/docs/proto3) syntax. Each field has a name, type and unique numbered tag.
+A project is created by uploading a JSON schema, which abides by [MessagePack](http://msgpack.org/)'s [type system](https://github.com/msgpack/msgpack/blob/master/spec.md#types). JSON is a widely-used, human-readable data exchange format. MessagePack provides an efficient binary serialization format, with implementations for [many languages](http://msgpack.org).
 
-The following is an example message file for a project, and should be uploaded with the name corresponding to the top-level message i.e. `Mnist.proto`:
+The JSON schema represents a map/associative array (without nesting), where the values are an object comprising of several fields:
 
-```protobuf
-syntax = "proto3";
+- **type**: One out of "int"/"float"/"bool"/"string"/"enum".
+- **default**: Set a default value.
+- **values** (only with type: enum): An array of strings comprising an enum.
 
-message Mnist {
-  string id = 1; // Automatically assigned by FGLab
-  int32 seed = 2;
-  int32 batchSize = 3;
-  int32 maxEpochs = 4;
+The following is an example schema for a project, and should be uploaded with the filename corresponding to the desired name for the project i.e. `mnist.json`:
 
-  enum Method {
-    SGD = 0;
-    RMSPROP = 1;
-    ADAGRAD = 3;
+```json
+{
+  "seed": {
+    "type": "int",
+    "default": 123
+  },
+  "batchSize": {
+    "type": "int",
+    "default": 8
+  },
+  "maxEpochs": {
+    "type": "int",
+    "default": 100
+  },
+  "optimiser": {
+    "type": "enum",
+    "default": "ADAGRAD",
+    "values": ["SGD", "RMSPROP", "ADAGRAD"]
+  },
+  "learningRate": {
+    "type": "float",
+    "default": 0.0001
+  },
+  "L2": {
+    "type": "bool",
+    "default": true
   }
-
-  message Solver {
-    Method method = 1;
-    float learningRate = 2;
-    float momentum = 3;
-    bool L2 = 4;
-  }
-
-  Solver solver = 5;
 }
 ```
 
-This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The serialized hyperparameters are sent to 
-your machine learning program via the FGMachine client. Your machine learning program then uses the same `.proto` file to deserialize the hyperparameters. The following libraries can be used to compile `.proto` files for use within your code.
+This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The MessagePack-serialized hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native MessagePack library to deserialize the hyperparameters.
 
-- [C++/Java/Python](https://github.com/google/protobuf)
-- [MATLAB/Octave](https://github.com/elap/protobuf-matlab)
-- [Lua](https://github.com/Sravan2j/lua-pb)
-- [JavaScript](https://github.com/dcodeIO/ProtoBuf.js)
-
-Once finished your machine learning code then returns the experiment results (serialized using `Results.proto`) to FGLab via FGMachine.
+Once finished your machine learning code then returns serialized experiment results to FGLab via FGMachine.
 
 ### Experiments
 
 An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs.
 
-The current schema of `Results.proto` is:
+The current "schema", where the "freq" fields represent the number of iterations between logging losses, is:
 
-```protobuf
-syntax = "proto3";
-
-message Results {
-  repeated double trainLosses = 1 [packed = true];
-  int32 trainFreq = 2; // Number of iterations between logging training loss
-  repeated double valLosses = 3 [packed = true];
-  int32 valFreq = 4; // Number of iterations between logging validation loss
-  double testLoss = 5;
-  double testScore = 6; // For example, classification accuracy
+```json
+{
+  "trainLosses": ["float"],
+  "trainFreq": "int",
+  "valLosses": ["float"],
+  "valFreq": "int",
+  "testLoss": "float",
+  "testScore": "float"
 }
 ```
 
