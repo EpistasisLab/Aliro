@@ -75,7 +75,7 @@ your machine learning program via the FGMachine client. Your machine learning pr
 
 - [C++/Java/Python](https://github.com/google/protobuf)
 - [MATLAB/Octave](https://github.com/elap/protobuf-matlab)
-- [Lua](https://github.com/google/upb)
+- [Lua](https://github.com/Sravan2j/lua-pb)
 - [JavaScript](https://github.com/dcodeIO/ProtoBuf.js)
 
 Once finished your machine learning code then returns the experiment results (serialized using `Results.proto`) to FGLab via FGMachine.
