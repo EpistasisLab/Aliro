@@ -7,22 +7,36 @@ html(lang="en")
     h1 Project: #{project.name} (#{project._id})
     h2 New Experiment
     form#new-experiment
-      each field in form
-        if (field.name === "id")
+      each val, key in project.schema
+        if (val.type === "int")
           .form-group
-            input(type="hidden", data-proto="#{field.protoType}", name="id")
-        else if field.values
+            label(for="#{key}") #{key}
+            | &nbsp;
+            input(type="number", value="#{val.default}", name="#{key}", required)
+        else if (val.type === "float")
           .form-group
-            label(for="#{field.name}") #{field.name}
-            select(data-proto="#{field.protoType}", name="#{field.name}")
-              each val in field.values
-                option(value="#{val}") #{val}
-            p.help-block
-        else
+            label(for="#{key}") #{key}
+            | &nbsp;
+            input(type="number", value="#{val.default}", step="any", name="#{key}", required)
+        else if (val.type === "bool")
           .form-group
-            label(for="#{field.name}") #{field.name}
-            input(type="#{field.type}", data-proto="#{field.protoType}", step="any" name="#{field.name}", required)
-            p.help-block
+            label(for="#{key}") #{key}
+            | &nbsp;
+            input(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", required)
+        else if (val.type === "string")
+          .form-group
+            label(for="#{key}") #{key}
+            | &nbsp;
+            input(type="text", value="#{val.default}", name="#{key}", required)
+        else if (val.type === "enum")
+          .form-group
+            label(for="#{key}") #{key}
+            select(name="#{key}")
+              each value in val.values
+                if (value === val.default)
+                  option(value="#{value}", selected="selected") #{value}
+                else
+                  option(value="#{value}") #{value}
       button(type="submit") Start Experiment
 
     h2 Experiments
@@ -34,79 +48,31 @@ html(lang="en")
           a(href="/api/experiments/" + experiment._id, class="delete") (delete)
 
     script.
-      var checkType = function(val, type) {
-        var isVal = null; // Error message
-        switch(type) {
-          case "double":
-          case "float":
-            val = Number(val);
-            if (isNaN(val)) {
-              isVal = "Not a valid float/double.";
-            }
-            break;
-          case "int32":
-          case "int64":
-          case "uint32":
-          case "uint64":
-          case "sint32":
-          case "sint64":
-          case "fixed32":
-          case "fixed64":
-          case "sfixed32":
-          case "sfixed64":
-            val = Number(val);
-            if (isNaN(val) || val % 1 !== 0) {
-              isVal = "Not a valid integer.";
-            }
-            break;
-          case "bool":
-            if (val === "true") {
-              val = true;
-            } else if (val === "false") {
-              val = false;
-            } else {
-              isVal = "Not a valid boolean.";
-            }
-            break;
-          case "string":
-          case "bytes":
-          case "enum":
-            break;
-        }
-        return [isVal, val];
-      };
-
       $(function() {
         // Creates new experiment
         $("#new-experiment").on("submit", function() {
-          var protoArr = [];
-          // Perform type checking
-          var isValid = true;
-          $(this).find(":input:not(button)").each(function() {
-            var $formEl = $(this);
-            var name = $formEl.attr("name");
-            var val = $formEl.val();
-            var protoType = $formEl.data("proto");
-            var validation = checkType(val, protoType);
-            // Display validation errors
-            $formEl.parent().children(".help-block").html(validation[0]);
-            // Set invalid flag if necessary
-            isValid = !validation[0];
-            protoArr.push({name: name, val: validation[1]}); // Store values
+          var formObj = {};
+          // Loop over form simply (does not work on nested data)
+          $(this).find(":input").not(":submit").each(function(ind, el) {
+            var $el = $(el);
+            var name = $el.attr("name");
+            var val = $el.val();
+            // Test for bools
+            if ($el.attr("pattern")) {
+              val = (val === "true");
+            }
+            formObj[name] = val; // Set key and value
           });
-          // Continue if valid
-          if (isValid) {
-            var protoObj = {};
-            protoArr.forEach(function(o) {
-              protoObj[o.name] = o.val;
-            });
-            $.ajax({
-              url: "/new-experiment/#{project._id}",
-              type: "POST",
-              contentType: "application/json",
-              data: JSON.stringify(protoObj)
-            });
-          }
+
+          $.ajax({
+            url: "/new-experiment/#{project._id}",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(formObj)
+          }).
+          then(function() {
+            location.reload(); // TODO Move to new experiment page
+          });
           return false; // Stop event and propagation
         });
 

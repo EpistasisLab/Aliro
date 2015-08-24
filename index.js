@@ -92,39 +92,6 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 
 /* Processing Routes */
 
-// Processes fields recursively
-var procFields = function(builder, typeName, varName, formFields) {
-  // Use reflection
-  var reflector = builder.lookup(typeName);
-  var fields = reflector.getChildren(ProtoBuf.Reflect.Message.Field);
-
-  while (fields.length !== 0) {
-    var field = fields.shift(); // Get first field
-    var fieldObj = {
-      name: varName + "." + field.name,
-      type: getFormType(field.type.name),
-      protoType: field.type.name
-    };
-    // Process enums
-    if (fieldObj.type === "select") {
-      var enums = field.resolvedType.children;
-      var enumVals = [];
-      enums.forEach(function(enumObj) {
-        enumVals.push(enumObj.name);
-      });
-      fieldObj.values = enumVals;
-    }
-    // Process messages recursively
-    if (fieldObj.type === "fieldset") {
-      var messageName = field.resolvedType.name;
-      procFields(builder, typeName + "." + messageName, varName + "." + field.name, formFields);
-    } else {
-      formFields.push(fieldObj);
-    }
-  }
-  return formFields;
-};
-
 // Constructs a project from an uploaded .json file
 app.post("/new-project", upload.single("schema"), function(req, res, next) {
   // Extract file name
@@ -199,14 +166,7 @@ app.get("/projects/:id", function(req, res, next) {
   .then(function(results) {
     var proj = results[0];
     var experiments = results[1];
-    var builder = ProtoBuf.loadProto(proj.proto);
-    // Use reflection to construct form
-    var formFields = procFields(builder, proj.name, "", []);
-    // Remove leading . from fields
-    formFields.forEach(function(field) {
-      field.name = field.name.replace(new RegExp("^\."), "");
-    });
-    res.render("project", {project: proj, form: formFields, experiments: experiments});
+    res.render("project", {project: proj, experiments: experiments});
   })
   .catch(function(err) {
     next(err);
