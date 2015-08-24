@@ -33,7 +33,7 @@
     "morgan": "^1.6.1",
     "multer": "^1.0.3",
     "protobufjs": "^4.0.0",
-    "request": "^2.60.0",
+    "request-promise": "^0.4.3",
     "serve-favicon": "^2.3.0",
     "ws": "^0.7.2"
   }

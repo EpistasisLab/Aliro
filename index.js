@@ -7,7 +7,7 @@ var multer = require("multer");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
-var request = require("request");
+var rp = require("request-promise");
 var dot = require("dot-object");
 var Promise = require("bluebird");
 var ProtoBuf = require("protobufjs");
@@ -219,12 +219,13 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
     var message = new Project(obj);
     var encString = message.toBase64();
     // Send project
-    request({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encString}, function(err, response, body) {
-      if (err || status === 501) { // TODO Why is err null?
-        res.status(501);
-        res.send(err);
-      }
+    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encString})
+    .then(function(body) {
       res.send(body);
+    })
+    .catch(function(err) {
+      res.status(501);
+      res.send(err);
     });
   })
   .catch(function(err) {
