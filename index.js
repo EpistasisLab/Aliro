@@ -16,7 +16,6 @@ var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
-//var urlencodedParser = bodyParser.urlencoded({extended: false, limit: '50mb'}); // Parses application/x-www-form-urlencoded
 var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all requests
@@ -175,7 +174,7 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
   var obj = req.body;
   dot.object(obj); // Expand object
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
-  var expP = db.experiments.insertAsync({hyperparams: obj, machine: {}}, {}); // Create experiment
+  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine: {}}, {}); // Create experiment
   var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync(); // TODO Replace with available machine
   Promise.all([projP, expP, macP])
   .then(function(results) {
@@ -188,9 +187,9 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
     var Project = builder.build(proj.name);
     obj.id = exp._id.toString(); // TODO Consider if ID should be part of hyperparams
     var message = new Project(obj);
-    var encString = message.toBase64();
+    var encBuffer = message.toBuffer(); // Encode in base64 and create buffer
     // Send project
-    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encString})
+    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encBuffer, headers: {"Content-Type": "application/octet-stream"}})
     .then(function(body) {
       res.send(body);
     })
@@ -222,7 +221,7 @@ app.get("/", function(req, res, next) {
 // Project page
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
-  var expP = db.experiments.find({project: db.toObjectID(req.params.id)}, {sort: [["_id", -1]]}).toArrayAsync(); // Find experiments for this project
+  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {sort: [["_id", -1]]}).toArrayAsync(); // Find experiments for this project
   Promise.all([projP, expP])
   .then(function(results) {
     var proj = results[0];
@@ -252,24 +251,7 @@ app.get("/machines/:id", function(req, res, next) {
   });
 });
 
-
-
-
-
-
-
-// List experiments
-app.get("/experiments", function(req, res, next) {
-  db.experiments.find({}, {sort: [["timestamp", 1]]}).toArrayAsync()
-  .then(function(results) {
-    res.render("experiments", {experiments: results});
-  })
-  .catch(function(err) {
-    next(err);
-  });
-});
-
-// List details of single experiment
+// Experiment page
 app.get("/experiments/:id", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id)
   .then(function(result) {
