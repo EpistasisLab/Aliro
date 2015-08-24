@@ -10,7 +10,7 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var dot = require("dot-object");
 var Promise = require("bluebird");
-var ProtoBuf = require("protobufjs");
+var msgpack = require("msgpack5");
 //var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
@@ -92,33 +92,6 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 
 /* Processing Routes */
 
-// Gets HTML form input type for proto types
-var getFormType = function(type) {
-  switch(type) {
-    case "double":
-    case "float":
-    case "int32":
-    case "int64":
-    case "uint32":
-    case "uint64":
-    case "sint32":
-    case "sint64":
-    case "fixed32":
-    case "fixed64":
-    case "sfixed32":
-    case "sfixed64":
-      return "number";
-    case "bool":
-    case "string":
-    case "bytes":
-      return "text";
-    case "enum":
-      return "select";
-    case "message":
-      return "fieldset";
-  }
-};
-
 // Processes fields recursively
 var procFields = function(builder, typeName, varName, formFields) {
   // Use reflection
@@ -152,16 +125,16 @@ var procFields = function(builder, typeName, varName, formFields) {
   return formFields;
 };
 
-// Constructs a project from an uploaded .proto file
-app.post("/new-project", upload.single("protofile"), function(req, res, next) {
+// Constructs a project from an uploaded .json file
+app.post("/new-project", upload.single("schema"), function(req, res, next) {
   // Extract file name
-  var name = req.file.originalname.replace(".proto", "");
-  // Extract .proto as string
-  var proto = req.file.buffer.toString();
+  var name = req.file.originalname.replace(".json", "");
+  // Extract .json as object
+  var schema = JSON.parse(req.file.buffer.toString());
   // Store
-  db.projects.insertAsync({name: name, proto: proto}, {})
-  .then(function() {
-    res.send("New project successfully created - please return to the homepage.");
+  db.projects.insertAsync({name: name, schema: schema}, {})
+  .then(function(result) {
+    res.send(result);
   })
   .catch(function(err) {
     next(err);

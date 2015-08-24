@@ -6,10 +6,11 @@ html(lang="en")
   body
     h1 Projects
     h2 New Project
-    form(action="/new-project", method="POST", enctype="multipart/form-data")
+    form#new-project
       .form-group
-        label(for="protofile") Project.proto
-        input(type="file", name="protofile")
+        label(for="schema") project.json
+        | &nbsp;
+        input(type="file", name="schema")
       button(type="submit") Upload project
 
     h2 Existing Projects
@@ -30,6 +31,23 @@ html(lang="en")
 
     script.
       $(function() {
+        $("#new-project").on("submit", function() {
+          // Extract file
+          var fd = new FormData($(this)[0]);
+          // Send
+          $.ajax({
+            url: "/new-project",
+            type: "POST",
+            data: fd,
+            processData: false,
+            contentType: false
+          })
+          .then(function() {
+            location.reload(); // Refresh page
+          });
+          return false; // Stop event and propagation
+        });
+
         $("a.delete").on("click", function() {
           $.ajax({
             url: $(this).attr("href"),
