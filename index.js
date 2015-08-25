@@ -11,11 +11,10 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
-var ProtoBuf = require("protobufjs");
 
 /* App instantiation */
 var app = express();
-var rawParser = bodyParser.raw({limit: "50mb"}); // Parses application/octet-stream
+var jsonParser = bodyParser.json({limit: "50mb"}); // Parses application/json
 app.use(morgan("tiny")); // Log requests
 
 /* Machine specifications */
@@ -48,7 +47,7 @@ try {
   }
 
   // Register details
-  rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs})
+  rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs, gzip: true})
   .then(function(body) {
     // Save ID and specs
     fs.writeFileSync("specs.json", JSON.stringify(body));
@@ -85,7 +84,7 @@ app.get("/projects/:id", function(req, res) {
 });
 
 // Starts experiment
-app.post("/projects/:id", rawParser, function(req, res) {
+app.post("/projects/:id", jsonParser, function(req, res) {
   // Check if capacity still available
   if (getCapacity(req.params.id) === 0) {
     res.status(501);
@@ -97,15 +96,7 @@ app.post("/projects/:id", rawParser, function(req, res) {
   var args = [];
   args.push(project.file);
   args.push(project.option);
-  var optString = req.body.toString("base64");
-  // Convert to JSON string if necessary
-  if (project.format === "json") {
-    // Decode message
-    var builder = ProtoBuf.loadProtoFile("projects/" + project.name + ".proto");
-    var Project = builder.build(project.name);
-    optString = JSON.stringify(Project.decode(req.body));
-  }
-  args.push(optString); // TODO Make sure ID is passed from server outside of hyperparams...
+  args.push(req.body);
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
