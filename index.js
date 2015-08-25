@@ -121,7 +121,7 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
     var mac = results[2][0]; // TODO Stop using just first machine
     obj.id = exp._id.toString(); // Add ID to hyperparameters
     // Send project
-    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: JSON.stringify(obj), gzip: true})
+    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: obj, gzip: true})
     .then(function(body) {
       res.send(body);
     })
