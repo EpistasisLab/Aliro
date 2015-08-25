@@ -48,13 +48,12 @@ After a project has been created on FGLab, if this machine is available to run e
 
 ```json
 "<id>": {
-  "name": "<project name>",
   "cwd": "<working directory>",
   "command": "<binary>",
   "file": "<file>",
   "option": "<command line option flag>",
   "capacity": "<machine capacity needed / 1>",
-  "format": "<export format: protobuf/json>"
+  "results": "<results directory (without experiment ID)>"
 }
 ```
 
@@ -62,13 +61,12 @@ For example:
 
 ```json
 "55d716ff269de6a02af9be4b": {
-  "name": "Mnist",
   "cwd": "/projects/mnist",
   "command": "th",
   "file": "main.lua",
   "option": "-params",
   "capacity": "0.3",
-  "format": "json"
+  "results": "/data/mnist"
 }
 ```
 

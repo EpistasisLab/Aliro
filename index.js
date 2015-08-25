@@ -1,7 +1,7 @@
 /* Modules */
 require("dotenv").config({silent: true}); // Load configuration variables
 var os = require("os");
-var fs = require("fs");
+var fs = require("mz/fs");
 var spawn= require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
 var http = require("http");
@@ -19,10 +19,12 @@ app.use(morgan("tiny")); // Log requests
 
 /* Machine specifications */
 var specs = {};
-try {
-  // Attempt to read existing specs
-  specs = JSON.parse(fs.readFileSync("specs.json", "utf-8"));
-} catch (err) {
+// Attempt to read existing specs
+fs.readFile("specs.json", "utf-8")
+.then(function(sp) {
+  specs = JSON.parse(sp);
+})
+.catch(function() {
   specs = {
     address: process.env.FGMACHINE_URL,
     hostname: os.hostname(),
@@ -50,21 +52,23 @@ try {
   rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs, gzip: true})
   .then(function(body) {
     // Save ID and specs
-    fs.writeFileSync("specs.json", JSON.stringify(body));
+    fs.writeFile("specs.json", JSON.stringify(body));
   })
   .catch(function(err) {
     console.log(err);
   })
-}
+});
 
 /* Project specifications */
 var projects = {};
-try {
-  // Attempt to read existing projects
-  projects = JSON.parse(fs.readFileSync("projects.json", "utf-8") || "{}");
-} catch (err) {
-  console.log(err);
-}
+// Attempt to read existing projects
+fs.readFile("projects.json", "utf-8")
+.then(function(proj) {
+  projects = JSON.parse(proj || "{}");
+})
+.catch(function(err) {
+  projects = {};
+});
 
 /* Global max capacity */
 var maxCapacity = 1;
@@ -91,8 +95,8 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     return res.send({error: "No capacity available"});
   }
 
-  var project = projects[req.params.id];
   // Process args
+  var project = projects[req.params.id];
   var args = [];
   args.push(project.file);
   args.push(project.option);
