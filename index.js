@@ -9,7 +9,6 @@ var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
-var msgpack = require("msgpack5")();
 //var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
@@ -17,7 +16,7 @@ var db = require("./db").db;
 var app = express();
 var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
-app.use(compression()); // Compress all requests
+app.use(compression()); // Compress all Express requests
 app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
 app.set("view engine", "jade"); // Jade template engine
@@ -109,22 +108,20 @@ app.post("/new-project", upload.single("schema"), function(req, res, next) {
 
 // Constructs an experiment from the form
 app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
-  // TODO Find available machine and concatenate machine ID
   var obj = req.body;
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
-  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine: {}}, {}); // Create experiment
-  var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync(); // TODO Replace with available machine
-  Promise.all([projP, expP, macP])
+  // TODO Find available machine and concatenate machine ID
+  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: ""}, {}); // Create experiment
+   // TODO Replace with available machine
+  var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync();  Promise.all([projP, expP, macP])
   .then(function(results) {
     // Get objects
     var proj = results[0];
     var exp = results[1][0];
     var mac = results[2][0]; // TODO Stop using just first machine
-    // Create message
-    obj.id = exp._id.toString(); // TODO Consider if ID should be part of hyperparams
-    var encBuffer = msgpack.encode(obj); // Encode in hex and create buffer
+    obj.id = exp._id.toString(); // Add ID to hyperparameters
     // Send project
-    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encBuffer, headers: {"Content-Type": "application/octet-stream"}})
+    rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: JSON.stringify(obj), gzip: true})
     .then(function(body) {
       res.send(body);
     })

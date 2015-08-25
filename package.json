@@ -1,6 +1,6 @@
 {
   "name": "FGLab",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Future Gadget Laboratory",
   "main": "index.js",
   "scripts": {
@@ -30,10 +30,9 @@
     "mongodb": "^1.4.39",
     "mongoskin": "^1.4.13",
     "morgan": "^1.6.1",
-    "msgpack5": "^3.1.0",
     "multer": "^1.0.3",
     "request-promise": "^0.4.3",
     "serve-favicon": "^2.3.0",
-    "ws": "^0.7.2"
+    "ws": "^0.8.0"
   }
 }
