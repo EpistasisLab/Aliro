@@ -15,11 +15,11 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 1. Make sure that the MongoDB daemon is running (`mongod`).
 1. Clone this repository.
 1. Move inside and run `npm install`.
-1. Create `.env` with the following schema:
+1. Export the following environment variables or create `.env` with the following format:
 
 ```
 MONGOLAB_URI=<MongoDB database URI>
-PORT=<port>
+FGLAB_PORT=<port>
 ```
 
 Run `node index.js` to start FGLab.
@@ -40,13 +40,13 @@ FGLab is based on several classes of object. One begins with a *project*, which 
 
 ### Project
 
-A project is created by uploading a JSON schema, which abides by [MessagePack](http://msgpack.org/)'s [type system](https://github.com/msgpack/msgpack/blob/master/spec.md#types). JSON is a widely-used, human-readable data exchange format. MessagePack provides an efficient binary serialization format, with implementations for [many languages](http://msgpack.org).
+A project is created by uploading a [JSON](http://json.org/) schema. JSON is a human-readable data-interchange format that is widely used and has mature libraries available for most programming languages.
 
 The JSON schema represents a map/associative array (without nesting), where the values are an object comprising of several fields:
 
 - **type**: One out of "int"/"float"/"bool"/"string"/"enum".
-- **default**: Set a default value.
-- **values** (only with type: enum): An array of strings comprising an enum.
+- **default**: Default value.
+- **values (only with type: enum)**: An array of strings comprising the enum.
 
 The following is an example schema for a project, and should be uploaded with the filename corresponding to the desired name for the project i.e. `mnist.json`:
 
@@ -80,30 +80,32 @@ The following is an example schema for a project, and should be uploaded with th
 }
 ```
 
-This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The MessagePack-serialized hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native MessagePack library to deserialize the hyperparameters.
+This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the hyperparameters from a JSON string. **Note that the "id" field is reserved, as this will store the experiment ID as a string**.
 
-Once finished your machine learning code then returns serialized experiment results to FGLab via FGMachine.
+The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
+
+**TODO:** Live logging from stdout.
 
 ### Experiments
 
-An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs.
+An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain results (discussed below), an ID, a project ID, a machine ID, and the chosen hyperparameters; this provides a comprehensive record of the experiment as a whole.
 
-The current "schema", where the "freq" fields represent the number of iterations between logging losses, is:
+The current format for results, where the "freq" fields represent the number of iterations between logging losses, is:
 
 ```json
 {
-  "trainLosses": ["float"],
+  "trainLosses": "float[]",
   "trainFreq": "int",
-  "valLosses": ["float"],
+  "valLosses": "float[]",
   "valFreq": "int",
   "testLoss": "float",
   "testScore": "float"
 }
 ```
 
-Serialised results should be sent to FGLab via FGMachine, where it will then be concatenated with the machine ID and the chosen hyperparameters; this provides a comprehensive record of the experiment as a whole.
+Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"testScore": 85}` will update the testScore field for the experiment.
 
-**TODO** Graphing results and comparing results across experiments
+**TODO:** Graphing results and comparing results across experiments.
 
 ### Machine
 
