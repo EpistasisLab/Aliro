@@ -8,9 +8,8 @@ var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
-var dot = require("dot-object");
 var Promise = require("bluebird");
-var msgpack = require("msgpack5");
+var msgpack = require("msgpack5")();
 //var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
@@ -112,7 +111,6 @@ app.post("/new-project", upload.single("schema"), function(req, res, next) {
 app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
   // TODO Find available machine and concatenate machine ID
   var obj = req.body;
-  dot.object(obj); // Expand object
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
   var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine: {}}, {}); // Create experiment
   var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync(); // TODO Replace with available machine
@@ -121,13 +119,10 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
     // Get objects
     var proj = results[0];
     var exp = results[1][0];
-    var mac = results[2][0];
+    var mac = results[2][0]; // TODO Stop using just first machine
     // Create message
-    var builder = ProtoBuf.loadProto(proj.proto);
-    var Project = builder.build(proj.name);
     obj.id = exp._id.toString(); // TODO Consider if ID should be part of hyperparams
-    var message = new Project(obj);
-    var encBuffer = message.toBuffer(); // Encode in base64 and create buffer
+    var encBuffer = msgpack.encode(obj); // Encode in hex and create buffer
     // Send project
     rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", body: encBuffer, headers: {"Content-Type": "application/octet-stream"}})
     .then(function(body) {
