@@ -11,6 +11,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
+var ProtoBuf = require("protobufjs");
 
 /* App instantiation */
 var app = express();
@@ -96,7 +97,15 @@ app.post("/projects/:id", rawParser, function(req, res) {
   var args = [];
   args.push(project.file);
   args.push(project.option);
-  args.push(req.body.toString("base64")); // TODO Make sure ID is passed from server outside of hyperparams...
+  var optString = req.body.toString("base64");
+  // Convert to JSON string if necessary
+  if (project.format === "json") {
+    // Decode message
+    var builder = ProtoBuf.loadProtoFile("projects/" + project.name + ".proto");
+    var Project = builder.build(project.name);
+    optString = JSON.stringify(Project.decode(req.body));
+  }
+  args.push(optString); // TODO Make sure ID is passed from server outside of hyperparams...
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
