@@ -96,7 +96,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   var args = [];
   args.push(project.file);
   args.push(project.option);
-  args.push(req.body);
+  args.push(JSON.stringify(req.body));
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
