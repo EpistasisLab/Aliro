@@ -11,6 +11,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
+var watch = require("watch");
 
 /* App instantiation */
 var app = express();
