@@ -109,7 +109,7 @@ The current format for results, where the "freq" fields represent the number of 
 }
 ```
 
-Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"score": 85}}` will update the `test.score` field for the experiment.
+Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"loss": 0.962871, "score": 85}}` will update the `test` field for the experiment. Nested fields cannot be updated separately e.g. `test.score`.
 
 **TODO:** Graphing results and comparing results across experiments.
 
