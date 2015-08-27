@@ -111,7 +111,6 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // PUTs JSON files
   var putFile = function(path) {
     if (path.match(/\.json$/)) { // Only pass JSON files
-      console.log(path);
       fs.readFile(path, "utf-8")
       .then(function(results) {
         rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});

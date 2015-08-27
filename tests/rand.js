@@ -1,4 +1,5 @@
 var fs = require("mz/fs");
+var _ = require("lodash");
 
 // Read and log out options
 var opts = JSON.parse(process.argv[3]);
@@ -7,19 +8,19 @@ console.log(opts);
 // Make results directory
 fs.mkdirSync(opts.id);
 
-// Fills an Array with a random number
-var randFill = function(arr) {
-  return Array.apply(null, arr).map(Number.prototype.valueOf, Math.random());
+// Creates an Array filled with random numbers
+var randFill = function(numEls) {
+  return _.map(Array(numEls), Math.random);
 };
 
 // Save random results
 var train = {
-  losses: randFill(Array(100000)),
+  losses: randFill(1000000), // Creates huge array
   freq: 1
 };
 fs.writeFileSync(opts.id + "/train.json", JSON.stringify({train: train}));
 var val = {
-  losses: randFill(Array(1000)),
+  losses: randFill(10000),
   freq: 100
 };
 fs.writeFileSync(opts.id + "/val.json", JSON.stringify({val: val}));
