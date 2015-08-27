@@ -8,7 +8,7 @@ FGMachine currently only reads GPU information on Linux.
 
 ## Installation
 
-1. Install [Node.js](https://nodejs.org/) >= 0.12.
+1. Install [Node.js](https://nodejs.org/).
 1. Clone this repository.
 1. Move inside and run `npm install`.
 1. Create `projects.json`.

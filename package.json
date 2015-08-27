@@ -22,11 +22,11 @@
   "dependencies": {
     "body-parser": "^1.13.3",
     "bytes": "^2.1.0",
+    "chokidar": "^1.0.5",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
     "morgan": "^1.6.1",
     "mz": "^2.0.0",
-    "request-promise": "^0.4.3",
-    "watch": "^0.16.0"
+    "request-promise": "^0.4.3"
   }
 }

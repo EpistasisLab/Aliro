@@ -33,4 +33,4 @@ specs.json
 # Project specs
 projects.json
 # Results generated in tests
-tests/*.json
+tests/*/*.json

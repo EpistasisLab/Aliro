@@ -11,7 +11,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
-var watch = require("watch");
+var chokidar = require("chokidar");
 
 /* App instantiation */
 var app = express();
@@ -97,6 +97,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   }
 
   // Process args
+  var experimentId = req.body.id;
   var project = projects[req.params.id];
   var args = [];
   args.push(project.file);
@@ -106,6 +107,26 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
+
+  // PUTs JSON files
+  var putFile = function(path) {
+    if (path.match(/\.json$/)) { // Only pass JSON files
+      console.log(path);
+      fs.readFile(path, "utf-8")
+      .then(function(results) {
+        rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+      });
+    }
+  };
+
+  // Set up file watching
+  var watcher = chokidar.watch(project.results + "/" + experimentId, {ignored: /[\/\\]\./, ignoreInitial: true}); // Ignore dotfiles and existing files
+  watcher.on("ready", function() {
+    console.log("Watching for experiment " + experimentId + " results.");
+  });
+  // Send files as they are written
+  watcher.on("add", putFile);
+  watcher.on("change", putFile);
 
   // Log stdout
   experiment.stdout.on("data", function(data) {
@@ -125,6 +146,10 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     if (exitCode !== 0) {
       // TODO Error handling
     }
+    // Wait a minute to send all results
+    setTimeout(function() {
+      watcher.close(); // Close watcher
+    }, 60000);
     // TODO Inform server finished/post results
   });
   res.send(req.body);

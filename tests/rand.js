@@ -4,6 +4,9 @@ var fs = require("mz/fs");
 var opts = JSON.parse(process.argv[3]);
 console.log(opts);
 
+// Make results directory
+fs.mkdirSync(opts.id);
+
 // Fills an Array with a random number
 var randFill = function(arr) {
   return Array.apply(null, arr).map(Number.prototype.valueOf, Math.random());
@@ -11,17 +14,17 @@ var randFill = function(arr) {
 
 // Save random results
 var train = {
-  losses: randFill(Array(10000)),
+  losses: randFill(Array(100000)),
   freq: 1
 };
-fs.writeFile("train.json", JSON.stringify(train));
+fs.writeFileSync(opts.id + "/train.json", JSON.stringify({train: train}));
 var val = {
-  losses: randFill(Array(100)),
+  losses: randFill(Array(1000)),
   freq: 100
 };
-fs.writeFile("val.json", JSON.stringify(val));
+fs.writeFileSync(opts.id + "/val.json", JSON.stringify({val: val}));
 var test = {
   loss: Math.random(),
   score: Math.random()
 };
-fs.writeFile("test.json", JSON.stringify(test));
+fs.writeFileSync(opts.id + "/test.json", JSON.stringify({test: test}));
