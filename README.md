@@ -94,16 +94,22 @@ The current format for results, where the "freq" fields represent the number of 
 
 ```json
 {
-  "trainLosses": "float[]",
-  "trainFreq": "int",
-  "valLosses": "float[]",
-  "valFreq": "int",
-  "testLoss": "float",
-  "testScore": "float"
+  "train": {
+    "losses": "float[]",
+    "freq": "int",
+  },
+  "val": {
+    "losses": "float[]",
+    "freq": "int"
+  },
+  "test": {
+    "loss": "float",
+    "score": "float"
+  }
 }
 ```
 
-Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"testScore": 85}` will update the testScore field for the experiment.
+Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"score": 85}}` will update the `test.score` field for the experiment.
 
 **TODO:** Graphing results and comparing results across experiments.
 

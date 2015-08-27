@@ -4,9 +4,7 @@ html(lang="en")
     title FGLab - Experiment #{experiment._id}
   body
     h1 Experiment #{experiment._id}
-    p Timestamp: #{experiment.timestamp}
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
-    p Model: #{experiment.model}
     p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
     p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
     p Test Loss: #{experiment.test.loss}
