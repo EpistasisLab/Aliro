@@ -111,7 +111,7 @@ app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
   var obj = req.body;
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
   // TODO Find available machine and concatenate machine ID
-  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: ""}, {}); // Create experiment
+  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: "", status: "running"}, {}); // Create experiment
    // TODO Replace with available machine
   var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync();  Promise.all([projP, expP, macP])
   .then(function(results) {

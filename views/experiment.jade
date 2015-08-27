@@ -3,9 +3,12 @@ html(lang="en")
   head
     title FGLab - Experiment #{experiment._id}
   body
-    h1 Experiment #{experiment._id}
+    h1 Experiment #{experiment._id} (#{experiment.status})
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
-    p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
-    p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
-    p Test Loss: #{experiment.test.loss}
-    p Test Score: #{experiment.test.score}
+    if experiment.train
+      p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
+    if experiment.val
+      p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
+    if experiment.test
+      p Test Loss: #{experiment.test.loss}
+      p Test Score: #{experiment.test.score}
