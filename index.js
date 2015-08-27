@@ -142,14 +142,15 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Clean up
   experiment.on("exit", function(exitCode) {
     maxCapacity += project.capacity; // Add back capacity
-    if (exitCode !== 0) {
-      // TODO Error handling
-    }
-    // Wait a minute to send all results
+    
+    // Wait 10 minutes to send all results
     setTimeout(function() {
       watcher.close(); // Close watcher
-    }, 60000);
-    // TODO Inform server finished/post results
+    }, 600000);
+
+    // Send status
+    var status = (exitCode === 0) ? "succeeded" : "failed";
+    rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {status: status}, gzip: true});
   });
   res.send(req.body);
 });

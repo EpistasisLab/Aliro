@@ -15,12 +15,12 @@ var randFill = function(numEls) {
 
 // Save random results
 var train = {
-  losses: randFill(1000000), // Creates huge array
+  losses: randFill(100000),
   freq: 1
 };
 fs.writeFileSync(opts.id + "/train.json", JSON.stringify({train: train}));
 var val = {
-  losses: randFill(10000),
+  losses: randFill(1000),
   freq: 100
 };
 fs.writeFileSync(opts.id + "/val.json", JSON.stringify({val: val}));
