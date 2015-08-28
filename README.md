@@ -30,6 +30,7 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 
 ```json
 {
+  "_id": "String",
   "address": "String",
   "hostname": "String",
   "os": {
@@ -47,7 +48,7 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`.
 
 ```json
-"<id>": {
+"<project_id>": {
   "cwd": "<working directory>",
   "command": "<binary>",
   "file": "<file>",
@@ -70,10 +71,31 @@ For example:
 }
 ```
 
+Results must be saved as JSON files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`, containing `results-pt1.json` and `results2.json`.
+
+The current format for results, where the "freq" fields represent the number of iterations between logging losses, is:
+
+```json
+{
+  "train": {
+    "losses": "float[]",
+    "freq": "int",
+  },
+  "val": {
+    "losses": "float[]",
+    "freq": "int"
+  },
+  "test": {
+    "loss": "float",
+    "score": "float"
+  }
+}
+```
+
+Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"loss": 0.962871, "score": 85}}` will update the `test` field for the experiment. Nested fields cannot be updated separately e.g. `test.score`.
+
 ## Future Work
 
-Kill switch from server.
-
-Live logging from stdout.
-
-Enable Mac OS X GPU support via `system_profiler`.
+- Sort out capacity properly.
+- Live logging from stdout.
+- Enable Mac OS X GPU support via `system_profiler`.
