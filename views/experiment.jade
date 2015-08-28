@@ -2,7 +2,9 @@ doctype html
 html(lang="en")
   head
     title FGLab - Experiment #{experiment._id}
-    script(src="/javascripts/jquery.min.js")
+    script(src="/javascripts/jquery/jquery.min.js")
+    script(src="/javascripts/lodash/lodash.min.js")
+    script(src="/javascripts/chart/Chart.min.js")
   body
     h1 Experiment #{experiment._id} (#{experiment.status})
 
@@ -11,15 +13,40 @@ html(lang="en")
 
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
     if experiment.train
-      p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
+      canvas#resGraph(width="1280", height="720")
+      //p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
     if experiment.val
-      p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
+      //p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
     if experiment.test
       p Test Loss: #{experiment.test.loss}
       p Test Score: #{experiment.test.score}
 
     script.
       $(function() {
+        // Process data
+        var valLosses = JSON.parse('[!{experiment.val.losses}]');
+        var data = {
+          labels: _.map(Array(trainLosses.length), function(val, ind) {return ind;}),
+          datasets: [{
+            label: "Training Losses",
+            fillColor: "rgba(220, 220, 220, 0.2)",
+            strokeColor: "rgba(220, 220, 220, 1)",
+            pointColor: "rgba(220, 220, 220, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220, 200, 220, 1)",
+            data: valLosses
+          }]
+        };
+        var opts = {
+          pointDot: false,
+          datasetStrokeWidth: 1,
+          datasetFill: false
+        };
+        Chart.defaults.global.response = true; // Make charts responsive
+        var ctx = $("#resGraph")[0].getContext("2d"); // Get chart context
+        var resChart = new Chart(ctx).Line(data, opts); // Create chart
+
         // Kills experiment
         $("button.kill").on("click", function() {
           $.ajax({
