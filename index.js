@@ -32,7 +32,7 @@ app.param("collection", function(req, res, next, collection) {
 
 // Return all entries
 app.get("/api/:collection", function(req, res, next) {
-  req.collection.find({}, {sort: [["timestamp", 1]]}).toArrayAsync()
+  req.collection.find({}).toArrayAsync()
   .then(function(results) {
     res.send(results);
   })
@@ -108,7 +108,7 @@ app.post("/new-project", upload.single("schema"), function(req, res, next) {
 
 // Checks availability for an experiment
 app.post("/experiments/:id/check", function(req, res, next) {
-  db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync()
+  db.machines.find({}, {address: 1}).sort({hostname: 1}).toArrayAsync() // Get machine addresses
   .then(function(machines) {
     var availables = [];
     // Push promises
@@ -127,16 +127,14 @@ app.post("/experiments/:id/check", function(req, res, next) {
 // Constructs an experiment from the form
 app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
   var obj = req.body;
-  var projP = db.projects.findByIdAsync(req.params.id); // Get project
-  var macP = db.machines.findByIdAsync(req.params.macId); // Get machine
+  var macP = db.machines.findByIdAsync(req.params.macId, {address: 1}); // Get machine address
   var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: db.toObjectID(req.params.macId), status: "running"}, {}); // Create experiment
-  Promise.all([projP, macP, expP])
+  Promise.all([macP, expP])
   .then(function(results) {
     // Get objects
-    var proj = results[0];
-    var mac = results[1];
-    var exp = results[2][0];
-    obj.id = exp._id.toString(); // Add ID to sent hyperparameters
+    var mac = results[0];
+    var exp = results[1][0];
+    obj.id = exp._id.toString(); // Add experiment ID to sent hyperparameters
     // Send project
     rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: obj, gzip: true})
     .then(function(body) {
@@ -156,8 +154,8 @@ app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
 
 // List projects and machines on homepage
 app.get("/", function(req, res, next) {
-  var projP = db.projects.find({}, {sort: [["name", -1]]}).toArrayAsync();
-  var macP = db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync();
+  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  var macP = db.machines.find({}, {hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine hostnames
   Promise.all([projP, macP])
   .then(function(results) {
     return res.render("index", {projects: results[0], machines: results[1]});
@@ -170,7 +168,7 @@ app.get("/", function(req, res, next) {
 // Project page
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
-  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {sort: [["_id", -1]]}).toArrayAsync(); // Find experiments for this project
+  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {_id: 1}).sort({_id: 1}).toArrayAsync(); // Find experiment IDs for this project
   Promise.all([projP, expP])
   .then(function(results) {
     var proj = results[0];
@@ -197,8 +195,7 @@ app.get("/machines/:id", function(req, res, next) {
 app.get("/experiments/:id", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id)
   .then(function(result) {
-    // Find machine for address
-    db.machines.findByIdAsync(result.machine_id)
+    db.machines.findByIdAsync(result.machine_id, {address: 1}) // Find machine address
     .then(function(mac) {
       res.render("experiment", {experiment: result, mac: mac.address});
     })
