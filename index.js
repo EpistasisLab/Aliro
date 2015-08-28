@@ -11,7 +11,6 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var rp = require("request-promise");
-var chokidar = require("chokidar");
 
 /* App instantiation */
 var app = express();
@@ -116,25 +115,6 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Save experiment
   experiments[experimentId] = experiment;
 
-  // PUTs JSON files
-  var putFile = function(path) {
-    if (path.match(/\.json$/)) { // Only pass JSON files
-      fs.readFile(path, "utf-8")
-      .then(function(results) {
-        rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
-      });
-    }
-  };
-
-  // Set up file watching
-  var watcher = chokidar.watch(project.results + "/" + experimentId, {ignored: /[\/\\]\./, ignoreInitial: true}); // Ignore dotfiles and existing files
-  watcher.on("ready", function() {
-    console.log("Watching for experiment " + experimentId + " results.");
-  });
-  // Send files as they are written
-  watcher.on("add", putFile);
-  watcher.on("change", putFile);
-
   // Log stdout
   experiment.stdout.on("data", function(data) {
     console.log(data.toString());
@@ -145,15 +125,23 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     console.log("Error: " + data.toString());
   });
 
-  // Clean up
+  // Processes results
   experiment.on("exit", function(exitCode) {
     maxCapacity += project.capacity; // Add back capacity
-    
-    // Wait 3 minutes to send all results
-    setTimeout(function() {
-      console.log("Finished watching for experiment " + experimentId + " results.");
-      watcher.close(); // Close watcher
-    }, 180000);
+
+    // Send all result files
+    var resultsDir = project.results + "/" + experimentId;
+    fs.readdir(resultsDir)
+    .then(function(files) {
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].match(/\.json$/)) { // Only pass JSON files
+          fs.readFile(resultsDir + "/" + files[i], "utf-8")
+          .then(function(results) {
+            rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+          });
+        }
+      }
+    });
 
     // Send status
     var status = (exitCode === 0) ? "succeeded" : "failed";
