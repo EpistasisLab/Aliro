@@ -18,8 +18,12 @@ var app = express();
 var jsonParser = bodyParser.json({limit: "50mb"}); // Parses application/json
 app.use(morgan("tiny")); // Log requests
 
-/* Machine specifications */
+// Variables
 var specs = {};
+var projects = {};
+var experiments = {};
+
+/* Machine specifications */
 // Attempt to read existing specs
 fs.readFile("specs.json", "utf-8")
 .then(function(sp) {
@@ -54,6 +58,8 @@ fs.readFile("specs.json", "utf-8")
   .then(function(body) {
     // Save ID and specs
     fs.writeFile("specs.json", JSON.stringify(body));
+    // Reload specs with _id
+    specs = body;
   })
   .catch(function(err) {
     console.log(err);
@@ -61,7 +67,6 @@ fs.readFile("specs.json", "utf-8")
 });
 
 /* Project specifications */
-var projects = {};
 // Attempt to read existing projects
 fs.readFile("projects.json", "utf-8")
 .then(function(proj) {
@@ -85,7 +90,7 @@ var getCapacity = function(projId) {
 /* Routes */
 // Checks capacity
 app.get("/projects/:id", function(req, res) {
-  res.send({capacity: getCapacity(req.params.id)});
+  res.send({capacity: getCapacity(req.params.id), hostname: specs.hostname, id: specs._id});
 });
 
 // Starts experiment
@@ -107,6 +112,9 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
+
+  // Save experiment
+  experiments[experimentId] = experiment;
 
   // PUTs JSON files
   var putFile = function(path) {
@@ -137,22 +145,33 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     console.log("Error: " + data.toString());
   });
 
-  // TODO Consider how to kill experiments
-
   // Clean up
   experiment.on("exit", function(exitCode) {
     maxCapacity += project.capacity; // Add back capacity
     
-    // Wait 10 minutes to send all results
+    // Wait 3 minutes to send all results
     setTimeout(function() {
+      console.log("Finished watching for experiment " + experimentId + " results.");
       watcher.close(); // Close watcher
-    }, 600000);
+    }, 180000);
 
     // Send status
     var status = (exitCode === 0) ? "succeeded" : "failed";
     rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {status: status}, gzip: true});
+
+    // Delete experiment
+    delete experiments[experimentId];
   });
   res.send(req.body);
+});
+
+// Kills experiment
+app.post("/experiments/:id/kill", function(req, res) {
+  if (experiments[req.params.id]) {
+    experiments[req.params.id].kill();
+  }
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
+  res.send(JSON.stringify({status: "killed"}));
 });
 
 /* HTTP Server */
