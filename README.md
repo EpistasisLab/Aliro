@@ -111,8 +111,6 @@ The current format for results, where the "freq" fields represent the number of 
 
 Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"loss": 0.962871, "score": 85}}` will update the `test` field for the experiment. Nested fields cannot be updated separately e.g. `test.score`.
 
-**TODO:** Graphing results and comparing results across experiments.
-
 ### Machine
 
 A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. Before a new experiment is chosen to be run, FGLab queries all machines in order to determine a machine with the capacity to run the experiment.
@@ -133,8 +131,6 @@ The following endpoints allow programmatic access to projects, experiments and m
 
 ## Future Work
 
-Using WebSockets to enable live querying of experiment logs.
-
-Due to variability in the objects, future work should focus on creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
-
-Other work would involve specifying what machines store, and how to access this via FGLab.
+- Using WebSockets to enable live querying of experiment logs.
+- Due to variability in the objects, future work should focus on creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
+- Other work would involve specifying what machines store, and how to access this via FGLab.
