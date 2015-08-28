@@ -168,7 +168,7 @@ app.get("/", function(req, res, next) {
 // Project page
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
-  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1}).sort({"test.score": -1}).toArrayAsync(); // Sort experiment scores for this project
+  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1, hyperparams: 1}).sort({"test.score": -1}).toArrayAsync(); // Sort experiment scores for this project
   Promise.all([projP, expP])
   .then(function(results) {
     var proj = results[0];

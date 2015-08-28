@@ -22,7 +22,7 @@ html(lang="en")
     - if (experiment.status === "running")
       button(class="kill") Kill Experiment
 
-    p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
+    p= "Hyperparams: " + JSON.stringify(experiment.hyperparams)
     if experiment.train
       #resGraph
       //p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}

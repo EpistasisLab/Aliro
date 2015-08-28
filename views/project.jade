@@ -46,13 +46,15 @@ html(lang="en")
     ul
       - each experiment in experiments
         li
-          a(href="/experiments/" + experiment._id) #{experiment._id}
-          | &nbsp;
           a(href="/api/experiments/" + experiment._id, class="delete") (delete)
+          | &nbsp;
+          a(href="/experiments/" + experiment._id) #{experiment._id}
           | &nbsp;
           if experiment.test
             if experiment.test.score
               = "score: " + experiment.test.score
+          | &nbsp;
+          span= JSON.stringify(experiment.hyperparams)
 
     script.
       $(function() {
