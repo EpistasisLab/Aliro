@@ -106,20 +106,37 @@ app.post("/new-project", upload.single("schema"), function(req, res, next) {
   });
 });
 
+// Checks availability for an experiment
+app.post("/experiments/:id/check", function(req, res, next) {
+  db.machines.find({}, {sort: [["hostname", -1]]}).toArrayAsync()
+  .then(function(machines) {
+    var availables = [];
+    // Push promises
+    for (var i = 0; i < machines.length; i++) {
+      availables.push(rp({uri: machines[i].address + "/projects/" + req.params.id, method: "GET"}))
+    }
+    Promise.all(availables).then(function(results) {
+      res.send(results);
+    });
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
 // Constructs an experiment from the form
-app.post("/new-experiment/:id", jsonParser, function(req, res, next) {
+app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
   var obj = req.body;
   var projP = db.projects.findByIdAsync(req.params.id); // Get project
-  // TODO Find available machine and concatenate machine ID
-  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: "", status: "running"}, {}); // Create experiment
-   // TODO Replace with available machine
-  var macP = db.machines.find({}, {sort: [["timestamp", 1]]}).toArrayAsync();  Promise.all([projP, expP, macP])
+  var macP = db.machines.findByIdAsync(req.params.macId); // Get machine
+  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: db.toObjectID(req.params.macId), status: "running"}, {}); // Create experiment
+  Promise.all([projP, macP, expP])
   .then(function(results) {
     // Get objects
     var proj = results[0];
-    var exp = results[1][0];
-    var mac = results[2][0]; // TODO Stop using just first machine
-    obj.id = exp._id.toString(); // Add ID to hyperparameters
+    var mac = results[1];
+    var exp = results[2][0];
+    obj.id = exp._id.toString(); // Add ID to sent hyperparameters
     // Send project
     rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: obj, gzip: true})
     .then(function(body) {
@@ -180,7 +197,14 @@ app.get("/machines/:id", function(req, res, next) {
 app.get("/experiments/:id", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id)
   .then(function(result) {
-    res.render("experiment", {experiment: result});
+    // Find machine for address
+    db.machines.findByIdAsync(result.machine_id)
+    .then(function(mac) {
+      res.render("experiment", {experiment: result, mac: mac.address});
+    })
+    .catch(function(err) {
+      next(err);
+    });
   })
   .catch(function(err) {
     next(err);

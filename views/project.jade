@@ -37,7 +37,10 @@ html(lang="en")
                   option(value="#{value}", selected="selected") #{value}
                 else
                   option(value="#{value}") #{value}
-      button(type="submit") Start Experiment
+      button(type="submit") Check Availability
+
+    h3 Available Machines
+    #available-machines
 
     h2 Experiments
     ul
@@ -49,11 +52,32 @@ html(lang="en")
 
     script.
       $(function() {
-        // Creates new experiment
+        // Checks availability
         $("#new-experiment").on("submit", function() {
+           $.ajax({
+            url: "/experiments/#{project._id}/check", // TODO Change to query params
+            type: "POST"
+          }).
+          then(function(responses) {
+            var $list = $("#available-machines");
+            $list.html(""); // Empty list
+            // Fill list
+            responses.forEach(function(mac) {
+              mac = JSON.parse(mac); // Extract information from string
+              $list.append("<button data-id='" + mac.id + "'>" + mac.hostname + "</button>");
+            });
+          });
+          return false; // Stop event and propagation
+        });
+
+        // Submits experiment (with dynamically added buttons)
+        $("#available-machines").on("click", "button", function() {
+          // Get machine
+          var macId = $(this).data("id");
+          // Process form
           var formObj = {};
           // Loop over form simply (does not work on nested data)
-          $(this).find(":input").not(":submit").each(function(ind, el) {
+          $("#new-experiment").find(":input").not(":submit").each(function(ind, el) {
             var $el = $(el);
             var name = $el.attr("name");
             var val = $el.val();
@@ -64,14 +88,15 @@ html(lang="en")
             formObj[name] = val; // Set key and value
           });
 
+          // TODO Sort race condition for capacity
           $.ajax({
-            url: "/new-experiment/#{project._id}",
+            url: "/new-experiment/#{project._id}/" + macId,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(formObj)
           }).
-          then(function() {
-            location.reload(); // TODO Move to new experiment page
+          then(function(resp) {
+            location.assign("/experiments/" + resp.id); // Move to new experiment page
           });
           return false; // Stop event and propagation
         });

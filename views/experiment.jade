@@ -2,8 +2,13 @@ doctype html
 html(lang="en")
   head
     title FGLab - Experiment #{experiment._id}
+    script(src="/javascripts/jquery.min.js")
   body
     h1 Experiment #{experiment._id} (#{experiment.status})
+
+    - if (experiment.status === "running")
+      button(class="kill") Kill Experiment
+
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
     if experiment.train
       p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
@@ -12,3 +17,17 @@ html(lang="en")
     if experiment.test
       p Test Loss: #{experiment.test.loss}
       p Test Score: #{experiment.test.score}
+
+    script.
+      $(function() {
+        // Kills experiment
+        $("button.kill").on("click", function() {
+          $.ajax({
+            url: "#{mac}/experiments/#{experiment._id}/kill",
+            type: "POST"
+          }).then(function(response) {
+            location.reload(); // May have succeeded before kill
+          }).catch(function(err) {console.log(err);});
+          return false; // Stop event and propagation
+        });
+      });
