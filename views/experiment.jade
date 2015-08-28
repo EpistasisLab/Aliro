@@ -4,9 +4,12 @@ html(lang="en")
     title FGLab - Experiment #{experiment._id}
     style(type="text/css").
       path {
-        stroke: steelblue;
+        stroke: green;
         stroke-width: 1;
         fill: none;
+      }
+      path.valLoss {
+        stroke: blue;
       }
       line {
         stroke: black;
@@ -23,47 +26,53 @@ html(lang="en")
       button(class="kill") Kill Experiment
 
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams)
-    if experiment.train
-      #resGraph
-      //p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
-    if experiment.val
-      p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
+    #resGraph
     if experiment.test
       p Test Loss: #{experiment.test.loss}
       p Test Score: #{experiment.test.score}
 
     script.
+      // TODO Use frequency information?
+      var plotLength = 120;
       var downsample = function(arr) {
         var len = arr.length;
-        var step = Math.floor(len / 120);
+        var step = Math.floor(len / plotLength);
         var down = [];
         for (var i = 0; i < len; i += step) {
           down.push(arr[i]);
+        }
+        while (down.length > plotLength) {
+          down.pop();
         }
         return down;
       };
 
       $(function() {
-        // Chart variables
-        var trainLosses = JSON.parse('[!{experiment.train.losses}]'); // Parse array
-        trainLosses = downsample(trainLosses); // Downsample
-        var width = 1200;
-        var height = 600;
-        var margin = 25;
-        // Create scales
-        var y = d3.scale.linear().domain([d3.max(trainLosses), 0]).range([0 + margin, height - margin]); // Reverse y-scale for easier data mapping
-        var x = d3.scale.linear().domain([0, trainLosses.length]).range([0 + margin, width - margin]);
-        // Create chart
-        var vis = d3.select("#resGraph").append("svg:svg").attr("width", width).attr("height", height);
-        var g = vis.append("svg:g");
-        // Create line
-        var line = d3.svg.line().x(function(d, i) {return x(i);}).y(function(d) {return y(d);});
-        g.append("svg:path").attr("d", line(trainLosses));
-        // Create axes
-        var yAxis = d3.svg.axis().scale(y).orient("left");
-        var xAxis = d3.svg.axis().scale(x);
-        vis.append("svg:g").attr("class", "yAxis").attr("transform", "translate(" + margin +", 0)").call(yAxis);
-        vis.append("svg:g").attr("class", "xAxis").attr("transform", "translate(0, " + (height - margin) + ")").call(xAxis);
+        if ("#{experiment.val}") {
+          // Chart variables
+          var trainLosses = downsample(JSON.parse('[!{experiment.train.losses}]'));
+          var valLosses = downsample(JSON.parse('[!{experiment.val.losses}]'));
+          var width = 10*plotLength;
+          var height = 6*plotLength;
+          var margin = 25;
+          // Create scales
+          var yMax = Math.max(d3.max(trainLosses), d3.max(valLosses));
+          var y = d3.scale.linear().domain([yMax, 0]).range([0 + margin, height - margin]); // Reverse y-scale for easier data mapping
+          // TODO Restore scale
+          var x = d3.scale.linear().domain([0, trainLosses.length]).range([0 + margin, width - margin]);
+          // Create chart
+          var vis = d3.select("#resGraph").append("svg:svg").attr("width", width).attr("height", height);
+          var g = vis.append("svg:g");
+          // Create line
+          var line = d3.svg.line().x(function(d, i) {return x(i);}).y(function(d) {return y(d);});
+          g.append("svg:path").attr("d", line(trainLosses)).attr("class", "trainLoss");
+          g.append("svg:path").attr("d", line(valLosses)).attr("class", "valLoss");
+          // Create axes
+          var yAxis = d3.svg.axis().scale(y).orient("left");
+          var xAxis = d3.svg.axis().scale(x);
+          vis.append("svg:g").attr("class", "yAxis").attr("transform", "translate(" + margin +", 0)").call(yAxis);
+          vis.append("svg:g").attr("class", "xAxis").attr("transform", "translate(0, " + (height - margin) + ")").call(xAxis);
+        }
 
         // Kills experiment
         $("button.kill").on("click", function() {
