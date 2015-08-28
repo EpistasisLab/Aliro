@@ -49,6 +49,10 @@ html(lang="en")
           a(href="/experiments/" + experiment._id) #{experiment._id}
           | &nbsp;
           a(href="/api/experiments/" + experiment._id, class="delete") (delete)
+          | &nbsp;
+          if experiment.test
+            if experiment.test.score
+              = "score: " + experiment.test.score
 
     script.
       $(function() {
