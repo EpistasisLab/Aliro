@@ -3,8 +3,7 @@ html(lang="en")
   head
     title FGLab - Experiment #{experiment._id}
     script(src="/javascripts/jquery/jquery.min.js")
-    script(src="/javascripts/lodash/lodash.min.js")
-    script(src="/javascripts/chart/Chart.min.js")
+    script(src="/javascripts/d3/d3.min.js")
   body
     h1 Experiment #{experiment._id} (#{experiment.status})
 
@@ -13,39 +12,35 @@ html(lang="en")
 
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams, null, 2)
     if experiment.train
-      canvas#resGraph(width="1280", height="720")
+      #resGraph
       //p Training Losses (every #{experiment.train.freq} iterations): #{experiment.train.losses}
     if experiment.val
-      //p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
+      p Validation Losses (every #{experiment.val.freq} iterations): #{experiment.val.losses}
     if experiment.test
       p Test Loss: #{experiment.test.loss}
       p Test Score: #{experiment.test.score}
 
     script.
       $(function() {
-        // Process data
-        var valLosses = JSON.parse('[!{experiment.val.losses}]');
-        var data = {
-          labels: _.map(Array(trainLosses.length), function(val, ind) {return ind;}),
-          datasets: [{
-            label: "Training Losses",
-            fillColor: "rgba(220, 220, 220, 0.2)",
-            strokeColor: "rgba(220, 220, 220, 1)",
-            pointColor: "rgba(220, 220, 220, 1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220, 200, 220, 1)",
-            data: valLosses
-          }]
-        };
-        var opts = {
-          pointDot: false,
-          datasetStrokeWidth: 1,
-          datasetFill: false
-        };
-        Chart.defaults.global.response = true; // Make charts responsive
-        var ctx = $("#resGraph")[0].getContext("2d"); // Get chart context
-        var resChart = new Chart(ctx).Line(data, opts); // Create chart
+        // Chart variables
+        var trainLosses = JSON.parse('[!{experiment.val.losses}]'); 
+        var width = 800;
+        var height = 600;
+        var margin = 25;
+        var y = d3.scale.linear().domain([0, d3.max(trainLosses)]).range([0 + margin, height - margin]);
+        var x = d3.scale.linear().domain([0, trainLosses.length]).range([0 + margin, width - margin]);
+        // Create chart
+        var vis = d3.select("#resGraph").append("svg:svg").attr("width", width).attr("height", height);
+        var g = vis.append("svg:g").attr("transform", "translate(0, 200)");
+        // Create line
+        var line = d3.svg.line().x(function(d, i) {return x(i);}).y(function(d) {return -1 * y(d);});
+        g.append("svg:path").attr("d", line(trainLosses));
+        // Create axes
+        g.append("svg:line").attr("x1", x(0)).attr("y1", -1 * y(0)).attr("x2", x(width)).attr("y2", -1 * y(0));
+        g.append("svg:line").attr("x1", x(0)).attr("y1", -1 * y(0)).attr("x2", x(0)).attr("y2", -1 * y(d3.max(trainLosses)));
+        // Create labels
+
+
 
         // Kills experiment
         $("button.kill").on("click", function() {

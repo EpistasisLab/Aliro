@@ -172,7 +172,7 @@ app.get("/projects/:id", function(req, res, next) {
   Promise.all([projP, expP])
   .then(function(results) {
     var proj = results[0];
-    var experiments = JSON.stringify(results[1]); // Stringify to parse in script
+    var experiments = results[1];
     res.render("project", {project: proj, experiments: experiments});
   })
   .catch(function(err) {
