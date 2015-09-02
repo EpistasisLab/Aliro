@@ -19,7 +19,7 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 ```
 MONGOLAB_URI=<MongoDB database URI>
-FGLAB_PORT=<port>
+PORT=<port>
 ```
 
 Run `node index.js` to start FGLab.

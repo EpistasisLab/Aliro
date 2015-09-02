@@ -225,7 +225,7 @@ app.use(function(err, req, res, next) {
 
 /* HTTP server */
 var server = http.createServer(app); // Create HTTP server
-server.listen(process.env.FGLAB_PORT); // Listen for connections
+server.listen(process.env.PORT); // Listen for connections
 
 /* WebSocket server */
 // Add websocket server
