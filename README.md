@@ -19,7 +19,7 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 1. Move inside and run `npm install`.
 1. Export the following environment variables or create `.env` with the following format:
 
-```
+```sh
 MONGODB_URI=<MongoDB database URI>
 PORT=<port>
 ```
@@ -28,9 +28,9 @@ Run `node index.js` to start FGLab.
 
 ### Docker
 
-Start a MongoDB container and link it to the FGLab container:
+Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
 
-```
+```sh
 sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
 sudo docker run --name fglab --link mongodb:mongo -dP kaixhin/fglab
 ```
