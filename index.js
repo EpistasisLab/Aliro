@@ -1,5 +1,5 @@
 /* Modules */
-require("dotenv").config({silent: true}); // Load configuration variables
+require("./env"); // Load configuration variables
 var http = require("http");
 var express = require("express");
 var bodyParser = require("body-parser");

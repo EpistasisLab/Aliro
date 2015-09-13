@@ -19,7 +19,7 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 1. Export the following environment variables or create `.env` with the following format:
 
 ```
-MONGOLAB_URI=<MongoDB database URI>
+MONGODB_URI=<MongoDB database URI>
 PORT=<port>
 ```
 

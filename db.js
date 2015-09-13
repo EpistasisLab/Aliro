@@ -1,6 +1,6 @@
 var Promise = require("bluebird");
 var mongoskin = require("mongoskin");
-var db = mongoskin.db(process.env.MONGOLAB_URI, {native_parser: true}); // Connect to db
+var db = mongoskin.db(process.env.MONGODB_URI, {native_parser: true}); // Connect to db
 
 // Bind collections
 db.bind("projects");
