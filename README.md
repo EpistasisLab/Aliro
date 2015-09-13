@@ -1,6 +1,7 @@
-# FGMachine
+[![Build Status](https://img.shields.io/travis/Kaixhin/FGMachine.svg)](https://travis-ci.org/Kaixhin/FGMachine)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/LICENSE)
 
-[![Build Status](https://travis-ci.org/Kaixhin/FGMachine.svg)](https://travis-ci.org/Kaixhin/FGMachine)
+# FGMachine
 
 The machine client for [FGLab](https://github.com/Kaixhin/FGLab).
 
