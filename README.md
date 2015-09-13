@@ -1,6 +1,7 @@
-# FGLab
+[![Build Status](https://img.shields.io/travis/Kaixhin/FGLab.svg)](https://travis-ci.org/Kaixhin/FGLab)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Kaixhin/FGLab/master/LICENSE)
 
-[![Build Status](https://travis-ci.org/Kaixhin/FGLab.svg?branch=master)](https://travis-ci.org/Kaixhin/FGLab)
+# FGLab
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion.
 
