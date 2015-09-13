@@ -16,14 +16,14 @@ FGMachine currently only reads GPU information on Linux.
 1. Create `projects.json`.
 1. Export the following environment variables or create `.env` with the following format:
 
-```
+```sh
 FGMACHINE_URL=<FGMachine URL (must include port)>
 FGLAB_URL=<FGLab URL>
 ```
 
 For example:
 
-```
+```sh
 FGMACHINE_URL=http://localhost:5080
 FGLAB_URL=http://localhost:8000
 ```
