@@ -19,6 +19,7 @@ var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
 app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
 app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
+app.use("/bower_components", express.static(__dirname + "/bower_components", {index: false, maxAge: '1d'})); // Bower components
 app.set("view engine", "jade"); // Jade template engine
 app.use(morgan("tiny")); // Log requests
 

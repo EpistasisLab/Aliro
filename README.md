@@ -14,9 +14,11 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 1. Install [Node.js](https://nodejs.org/).
 1. Install [MongoDB](https://www.mongodb.org/).
+1. Install [Bower](http://bower.io/).
 1. Make sure that the MongoDB daemon is running (`mongod`).
-1. Clone this repository.
-1. Move inside and run `npm install`.
+1. Clone this repository and move inside.
+1. Run `npm install`.
+1. Run `bower install`.
 1. Export the following environment variables or create `.env` with the following format:
 
 ```sh
