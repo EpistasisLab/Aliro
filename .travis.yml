@@ -12,6 +12,7 @@ before_script:
 cache:
   directories:
     - node_modules
+    - bower_components
 deploy:
   provider: heroku
   api_key:

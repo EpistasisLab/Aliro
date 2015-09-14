@@ -14,11 +14,9 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 1. Install [Node.js](https://nodejs.org/).
 1. Install [MongoDB](https://www.mongodb.org/).
-1. Install [Bower](http://bower.io/).
 1. Make sure that the MongoDB daemon is running (`mongod`).
 1. Clone this repository and move inside.
 1. Run `npm install`.
-1. Run `bower install`.
 1. Export the following environment variables or create `.env` with the following format:
 
 ```sh
@@ -95,8 +93,6 @@ This is stored by FGLab, and is used to construct a form which lets one choose h
 
 The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
-**TODO:** Live logging from stdout.
-
 ### Experiments
 
 An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain results (discussed below), an ID, a project ID, a machine ID, the chosen hyperparameters and the current status (running/succeeded/failed); this provides a comprehensive record of the experiment as a whole.
@@ -142,7 +138,10 @@ The following endpoints allow programmatic access to projects, experiments and m
 
 ## Future Work
 
+- Add query params to collection GET to expand API.
+- Convert form validation into a proper API (can be used to check schema defaults as well).
 - Using WebSockets to enable live querying of experiment logs.
-- Due to variability in the objects, future work should focus on creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
-- Other work would involve specifying what machines store, and how to access this via FGLab.
+- Creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
+- Specifying what other data machines store, and how to access this via FGLab.
 - Implement [random search for hyperparameter optimisation](http://www.jmlr.org/papers/v13/bergstra12a.html) on validation score.
+- Test suite.
