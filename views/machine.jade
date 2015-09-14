@@ -2,6 +2,8 @@ doctype html
 html(lang="en")
   head
     title FGLab - Machine #{machine.hostname}
+    link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
+    link(href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css", rel="stylesheet")
   body
     h1 Machine #{machine.hostname} (#{machine._id})
     p Address: #{machine.address}
