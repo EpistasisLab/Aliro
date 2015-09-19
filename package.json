@@ -1,6 +1,6 @@
 {
   "name": "FGMachine",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Future Gadget Machine",
   "main": "index.js",
   "scripts": {
@@ -30,5 +30,8 @@
   },
   "devDependencies": {
     "lodash": "^3.10.1"
+  },
+  "engines": {
+    "node": "4.x"
   }
 }
