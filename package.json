@@ -1,6 +1,6 @@
 {
   "name": "FGLab",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Future Gadget Laboratory",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "homepage": "https://github.com/Kaixhin/FGLab#readme",
   "dependencies": {
     "bluebird": "^2.10.0",
-    "body-parser": "^1.13.3",
+    "body-parser": "^1.14.0",
     "bower": "^1.5.2",
     "compression": "^1.5.2",
     "dotenv": "^1.2.0",
@@ -32,10 +32,13 @@
     "mongodb": "^1.4.39",
     "mongoskin": "^1.4.13",
     "morgan": "^1.6.1",
-    "multer": "^1.0.3",
+    "multer": "^1.0.4",
     "request-promise": "^0.4.3",
     "serve-favicon": "^2.3.0",
     "ws": "^0.8.0"
+  },
+  "engines": {
+    "node": "4.x"
   },
   "cacheDirectories": [
     "node_modules",
