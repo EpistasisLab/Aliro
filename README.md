@@ -14,19 +14,11 @@ FGMachine currently only reads GPU information on Linux.
 1. Clone this repository.
 1. Move inside and run `npm install`.
 1. Create `projects.json`.
-1. Export the following environment variables or create `.env` with the following format:
+1. Set the following environment variables:
+  - FGLAB_URL (FGLab URL)
+  - FGMACHINE_URL (FGMachine URL, including port)
 
-```sh
-FGMACHINE_URL=<FGMachine URL (must include port)>
-FGLAB_URL=<FGLab URL>
-```
-
-For example:
-
-```sh
-FGMACHINE_URL=http://localhost:5080
-FGLAB_URL=http://localhost:8000
-```
+The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file (`example.env` can be used as a starting point).
 
 Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. `specs.json` follows the following format:
 
@@ -101,3 +93,4 @@ Each field can be updated separately on FGLab by writing a new file e.g. creatin
 - Sort out capacity properly.
 - Live logging from stdout.
 - Enable Mac OS X GPU support via `system_profiler`.
+- Find a way to enable Windows GPU support.
