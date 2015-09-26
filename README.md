@@ -14,17 +14,16 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 ### Local
 
-1. Install [Node.js](https://nodejs.org/).
-1. Install [MongoDB](https://www.mongodb.org/).
+1. Install Node.js from the [website](https://nodejs.org/) or your package manager.
+1. Install MongoDB from the [website](https://www.mongodb.org/) or your package manager.
 1. Make sure that the MongoDB daemon is running (`mongod`).
 1. Clone this repository and move inside.
 1. Run `npm install`.
-1. Export the following environment variables or create `.env` with the following format:
+1. Set the following environment variables:
+  - MONGODB_URI (MongoDB database URI)
+  - PORT (port)
 
-```sh
-MONGODB_URI=<MongoDB database URI>
-PORT=<port>
-```
+The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file (`example.env` can be used as a starting point).
 
 Run `node index.js` to start FGLab.
 
