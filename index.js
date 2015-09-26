@@ -22,6 +22,12 @@ var specs = {};
 var projects = {};
 var experiments = {};
 
+/* FGLab check */
+if (!process.env.FGLAB_URL) {
+  console.log("Error: No FGLab address specified");
+  process.exit(1);
+}
+
 /* Machine specifications */
 // Attempt to read existing specs
 fs.readFile("specs.json", "utf-8")
@@ -55,6 +61,7 @@ fs.readFile("specs.json", "utf-8")
   // Register details
   rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs, gzip: true})
   .then(function(body) {
+    console.log("Registered with FGLab successfully");
     // Save ID and specs
     fs.writeFile("specs.json", JSON.stringify(body));
     // Reload specs with _id
@@ -62,7 +69,7 @@ fs.readFile("specs.json", "utf-8")
   })
   .catch(function(err) {
     console.log(err);
-  })
+  });
 });
 
 /* Project specifications */
@@ -71,7 +78,7 @@ fs.readFile("projects.json", "utf-8")
 .then(function(proj) {
   projects = JSON.parse(proj || "{}");
 })
-.catch(function(err) {
+.catch(function() {
   projects = {};
 });
 
@@ -129,16 +136,18 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   experiment.on("exit", function(exitCode) {
     maxCapacity += project.capacity; // Add back capacity
 
+    // Results-sending function
+    var sendResults = function(results) {
+      rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+    };
+
     // Send all result files
     var resultsDir = project.results + "/" + experimentId;
     fs.readdir(resultsDir)
     .then(function(files) {
       for (var i = 0; i < files.length; i++) {
         if (files[i].match(/\.json$/)) { // Only pass JSON files
-          fs.readFile(resultsDir + "/" + files[i], "utf-8")
-          .then(function(results) {
-            rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
-          });
+          fs.readFile(resultsDir + "/" + files[i], "utf-8").then(sendResults);
         }
       }
     });
@@ -164,4 +173,13 @@ app.post("/experiments/:id/kill", function(req, res) {
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
-server.listen(url.parse(process.env.FGMACHINE_URL).port); // Listen for connections
+if (!process.env.FGMACHINE_URL) {
+  console.log("Error: No FGMachine address specified");
+  process.exit(1);
+} else {
+  // Listen for connections
+  var port = url.parse(process.env.FGMACHINE_URL).port;
+  server.listen(port, function() {
+    console.log("Server listening on port " + port);
+  });
+}

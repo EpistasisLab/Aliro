@@ -8,9 +8,15 @@ console.log(opts);
 // Make results directory
 fs.mkdirSync(opts.id);
 
-// Creates an Array filled with random numbers
+// Creates an exponential decay curve with noise
+var noisyExp = function(val, ind, coll) {
+  var exp = Math.pow(0.9, ind/coll.length) - 0.9;
+  return exp + exp*Math.random();
+};
+
+// Creates an Array filled with a decay curve
 var randFill = function(numEls) {
-  return _.map(Array(numEls), Math.random);
+  return _.map(Array(numEls), noisyExp);
 };
 
 // Save random results
