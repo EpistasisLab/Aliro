@@ -226,7 +226,15 @@ app.use(function(err, req, res, next) {
 
 /* HTTP server */
 var server = http.createServer(app); // Create HTTP server
-server.listen(process.env.PORT); // Listen for connections
+if (!process.env.PORT) {
+  console.log("Error: No port specified");
+  process.exit(1);
+} else {
+  // Listen for connections
+  server.listen(process.env.PORT, function() {
+    console.log("Server listening on port " + process.env.PORT);
+  });
+}
 
 /* WebSocket server */
 // Add websocket server
