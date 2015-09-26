@@ -1,7 +1,7 @@
 {
   "name": "FGLab",
   "main": "index.js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "homepage": "https://github.com/Kaixhin/FGLab",
   "description": "Future Gadget Laboratory",
   "moduleType": [
@@ -22,8 +22,11 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.5",
+    "bootstrap": "~4.0.0-alpha",
     "d3": "~3.5.6",
-    "jquery": "~2.1.4"
+    "jquery": "~3.0.0-alpha"
+  },
+  "resolutions": {
+    "jquery": "~3.0.0-alpha"
   }
 }
