@@ -36,6 +36,9 @@ block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
   script(src="/bower_components/d3/d3.min.js")
   script.
+    // Parse from string instead prior to accessing internal objects via Jade
+    var experiment = !{JSON.stringify(experiment)};
+
     // TODO Use frequency information?
     var plotLength = 120;
     var downsample = function(arr) {
@@ -52,10 +55,10 @@ block scripts
     };
 
     $(function() {
-      if ("#{experiment.val}") {
+      if (experiment.val) {
         // Chart variables
-        var trainLosses = downsample(JSON.parse('[!{experiment.train.losses}]'));
-        var valLosses = downsample(JSON.parse('[!{experiment.val.losses}]'));
+        var trainLosses = downsample(experiment.train.losses);
+        var valLosses = downsample(experiment.val.losses);
         var width = 10*plotLength;
         var height = 6*plotLength;
         var margin = 25;

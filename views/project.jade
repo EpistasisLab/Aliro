@@ -77,7 +77,7 @@ block scripts
           // Fill list
           responses.forEach(function(mac) {
             mac = JSON.parse(mac); // Extract information from string
-            $list.append("<button data-id='" + mac.id + "' class='btn btn-success>" + mac.hostname + "</button>");
+            $list.append("<button data-id='" + mac.id + "' class='btn btn-success'>" + mac.hostname + "</button>");
           });
         });
         return false; // Stop event and propagation

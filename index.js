@@ -45,8 +45,8 @@ app.get("/api/:collection", function(req, res, next) {
 // Create new entry
 app.post("/api/:collection", jsonParser, function(req, res, next) {
   req.collection.insertAsync(req.body, {})
-  .then(function(results) {
-    res.send(results[0]);
+  .then(function(result) {
+    res.send(result.ops[0]);
   })
   .catch(function(err) {
     next(err);
@@ -67,7 +67,7 @@ app.get("/api/:collection/:id", function(req, res, next) {
 // Update existing entry
 app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
   delete req.body._id; // Delete ID (will not update otherwise)
-  req.collection.updateByIdAsync(req.params.id, {$set: req.body}, {safe: true, multi: false})
+  req.collection.updateByIdAsync(req.params.id, {$set: req.body})
   .then(function(result) {
     // Update returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg : "error"});
@@ -114,7 +114,7 @@ app.post("/experiments/:id/check", function(req, res, next) {
     var availables = [];
     // Push promises
     for (var i = 0; i < machines.length; i++) {
-      availables.push(rp({uri: machines[i].address + "/projects/" + req.params.id, method: "GET"}))
+      availables.push(rp({uri: machines[i].address + "/projects/" + req.params.id, method: "GET"}));
     }
     Promise.all(availables).then(function(results) {
       res.send(results);
@@ -134,7 +134,7 @@ app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
   .then(function(results) {
     // Get objects
     var mac = results[0];
-    var exp = results[1][0];
+    var exp = results[1].ops[0];
     obj.id = exp._id.toString(); // Add experiment ID to sent hyperparameters
     // Send project
     rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: obj, gzip: true})
