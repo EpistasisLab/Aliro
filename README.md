@@ -18,7 +18,7 @@ FGMachine currently only reads GPU information on Linux.
   - FGLAB_URL (FGLab URL)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file (`example.env` can be used as a starting point).
+The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) can be used as a starting point).
 
 Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. `specs.json` follows the following format:
 
