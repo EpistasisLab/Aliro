@@ -10,33 +10,34 @@ html(lang="en")
     link(href="/css/main.css", rel="stylesheet")
 
   body.container
-    div.row
-      div.col-sm-6
+    .row
+      .col-sm-6
         h1 Projects
         h2 New Project
         form#new-project
-          .form-group
-            label(for="schema") project.json
-            | &nbsp;
-            input(type="file", name="schema")
-          button(type="submit") Upload project
+          fieldset.form-group
+            label(for="schema") Project schema
+            input#schema.form-control-file(name="schema", type="file")
+            small.text-muted Upload a valid project schema. The name of the JSON file will be used to name the project.
+          button.btn.btn-primary(type="submit") Create Project
 
+        br
         h2 Existing Projects
-        ul#projects
+        ul#projects.list-unstyled
           - each project in projects
             li
               a(href="/projects/" + project._id) #{project.name}
               | &nbsp;
-              a(href="/api/projects/" + project._id, class="delete") (delete)
+              button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/projects/" + project._id, type="button") delete
 
-      div.col-sm-6
+      .col-sm-6
         h1 Machines
-        ul#machines
+        ul#machines.list-unstyled
           - each machine in machines
             li
               a(href="/machines/" + machine._id) #{machine.hostname}
               | &nbsp;
-              a(href="/api/machines/" + machine._id, class="delete") (delete)
+              button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/machines/" + machine._id, type="button") delete
 
     script(src="/bower_components/jquery/dist/jquery.min.js")
     script.
@@ -58,9 +59,10 @@ html(lang="en")
           return false; // Stop event and propagation
         });
 
-        $("a.delete").on("click", function() {
+        // Delete project or machine
+        $("button.delete").on("click", function() {
           $.ajax({
-            url: $(this).attr("href"),
+            url: $(this).data("href"),
             type: "DELETE"
           })
           .then(function() {

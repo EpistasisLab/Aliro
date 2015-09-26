@@ -25,10 +25,10 @@ html(lang="en")
       }
 
   body.container
-    h1 Experiment #{experiment._id} (#{experiment.status})
+    h1 Experiment: #{experiment._id} #[small.text-muted (#{experiment.status})]
 
     - if (experiment.status === "running")
-      button(class="kill") Kill Experiment
+      button.btn.btn-danger.kill Kill Experiment
 
     p= "Hyperparams: " + JSON.stringify(experiment.hyperparams)
     #resGraph

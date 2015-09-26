@@ -10,16 +10,23 @@ html(lang="en")
     link(href="/css/main.css", rel="stylesheet")
     
   body.container
-    h1 Machine #{machine.hostname} (#{machine._id})
-    p Address: #{machine.address}
-    p Hostname: #{machine.hostname}
-    p OS: #{machine.os.type} #{machine.os.arch} #{machine.os.release}
-    p CPUS:
-    ul
-      - each cpu in machine.cpus
-        li= cpu
-    p RAM: #{machine.mem}
-    p GPUS:
-    ul
-      - each gpu in machine.gpus
-        li= gpu
+    h1 Machine: #{machine.hostname} #[small.text-muted (#{machine._id})]
+    dl.dl-horizontal
+      dt.col-sm-3 Hostname
+      dd.col-sm-9 #{machine.hostname}
+      dt.col-sm-3 Address
+      dd.col-sm-9 #{machine.address}
+      dt.col-sm-3 OS
+      dd.col-sm-9 #{machine.os.type} #{machine.os.arch} #{machine.os.release}
+      dt.col-sm-3 CPUS
+      dd.col-sm-9
+        ul.list-unstyled
+          - each cpu in machine.cpus
+            li= cpu
+      dt.col-sm-3 RAM
+      dd.col-sm-9 #{machine.mem}
+      dt.col-sm-3 GPUS
+      dd.col-sm-9
+        ul.list-unstyled
+          - each gpu in machine.gpus
+            li= gpu

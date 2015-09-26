@@ -23,7 +23,7 @@ The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
   - MONGODB_URI (MongoDB database URI)
   - PORT (port)
 
-The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file (`example.env` can be used as a starting point).
+The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGLab/blob/master/example.env) can be used as a starting point).
 
 Run `node index.js` to start FGLab.
 
