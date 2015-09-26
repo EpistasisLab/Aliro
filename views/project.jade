@@ -3,6 +3,9 @@ extends ./layout.jade
 block title
   title FGLab: Project #{project.name}
 
+block styles
+  link(href="/bower_components/bootstrap-table/dist/bootstrap-table.min.css", rel="stylesheet")
+
 block content 
   h1 Project: #{project.name} #[small.text-muted (#{project._id})]
   h2 New Experiment
@@ -48,21 +51,31 @@ block content
   #available-machines
 
   h2 Experiments
-  ul.list-unstyled
-    - each experiment in experiments
-      li
-        button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/experiments/" + experiment._id, type="button") delete
-        | &nbsp;
-        a(href="/experiments/" + experiment._id) #{experiment._id}
-        | &nbsp;
-        if experiment.test
-          if experiment.test.score
-            = "score: " + experiment.test.score
-        | &nbsp;
-        span= JSON.stringify(experiment.hyperparams)
+  table(data-toggle="table")
+    thead.thead-inverse
+      tr
+        th ID
+        th Score
+        - each val, key in experiments[0].hyperparams
+          th= key
+        th Delete
+    tbody
+      - each experiment in experiments
+        tr
+          td
+            a(href="/experiments/" + experiment._id) #{experiment._id}
+          td
+            if experiment.test
+              if experiment.test.score
+                = experiment.test.score
+          - each val in experiment.hyperparams
+            td= val
+          td  
+            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/experiments/" + experiment._id, type="button") delete
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
+  script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
   script.
     $(function() {
       // Checks availability
