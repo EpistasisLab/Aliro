@@ -1,11 +1,15 @@
 doctype html
 html(lang="en")
   head
-    title FGLab - Project #{project.name}
+    title FGLab: Project #{project.name}
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+
     link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css", rel="stylesheet")
-    script(src="/bower_components/jquery/dist/jquery.min.js")
-  body
+    link(href="/css/main.css", rel="stylesheet")
+
+  body.container
     h1 Project: #{project.name} (#{project._id})
     h2 New Experiment
     form#new-experiment
@@ -58,6 +62,7 @@ html(lang="en")
           | &nbsp;
           span= JSON.stringify(experiment.hyperparams)
 
+    script(src="/bower_components/jquery/dist/jquery.min.js")
     script.
       $(function() {
         // Checks availability

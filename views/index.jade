@@ -2,35 +2,43 @@ doctype html
 html(lang="en")
   head
     title FGLab
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+
     link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css", rel="stylesheet")
+    link(href="/css/main.css", rel="stylesheet")
+
+  body.container
+    div.row
+      div.col-sm-6
+        h1 Projects
+        h2 New Project
+        form#new-project
+          .form-group
+            label(for="schema") project.json
+            | &nbsp;
+            input(type="file", name="schema")
+          button(type="submit") Upload project
+
+        h2 Existing Projects
+        ul#projects
+          - each project in projects
+            li
+              a(href="/projects/" + project._id) #{project.name}
+              | &nbsp;
+              a(href="/api/projects/" + project._id, class="delete") (delete)
+
+      div.col-sm-6
+        h1 Machines
+        ul#machines
+          - each machine in machines
+            li
+              a(href="/machines/" + machine._id) #{machine.hostname}
+              | &nbsp;
+              a(href="/api/machines/" + machine._id, class="delete") (delete)
+
     script(src="/bower_components/jquery/dist/jquery.min.js")
-  body
-    h1 Projects
-    h2 New Project
-    form#new-project
-      .form-group
-        label(for="schema") project.json
-        | &nbsp;
-        input(type="file", name="schema")
-      button(type="submit") Upload project
-
-    h2 Existing Projects
-    ul#projects
-      - each project in projects
-        li
-          a(href="/projects/" + project._id) #{project.name}
-          | &nbsp;
-          a(href="/api/projects/" + project._id, class="delete") (delete)
-
-    h1 Machines
-    ul#machines
-      - each machine in machines
-        li
-          a(href="/machines/" + machine._id) #{machine.hostname}
-          | &nbsp;
-          a(href="/api/machines/" + machine._id, class="delete") (delete)
-
     script.
       $(function() {
         $("#new-project").on("submit", function() {

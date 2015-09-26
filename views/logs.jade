@@ -1,12 +1,18 @@
 doctype html
 html(lang="en")
   head
-    title!= title
+    title!= FGLab: Logs
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+
     link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css", rel="stylesheet")
-  body
+    link(href="/css/main.css", rel="stylesheet")
+
+  body.container
     h1 Messages
     ul#messages
+
     script.
       var host = location.origin.replace(/^http/, 'ws');
       var ws = new WebSocket(host);
