@@ -1,0 +1,27 @@
+{
+  "seed": {
+    "type": "int",
+    "default": 123
+  },
+  "batchSize": {
+    "type": "int",
+    "default": 8
+  },
+  "maxEpochs": {
+    "type": "int",
+    "default": 100
+  },
+  "optimiser": {
+    "type": "enum",
+    "default": "adagrad",
+    "values": ["sgd", "rmsprop", "adagrad"]
+  },
+  "learningRate": {
+    "type": "float",
+    "default": 0.0001
+  },
+  "L2": {
+    "type": "bool",
+    "default": true
+  }
+}

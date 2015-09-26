@@ -58,37 +58,7 @@ The JSON schema represents a map/associative array (without nesting), where the 
 - **default**: Default value.
 - **values (only with type: enum)**: An array of strings comprising the enum.
 
-The following is an example schema for a project, and should be uploaded with the filename corresponding to the desired name for the project i.e. `mnist.json`:
-
-```json
-{
-  "seed": {
-    "type": "int",
-    "default": 123
-  },
-  "batchSize": {
-    "type": "int",
-    "default": 8
-  },
-  "maxEpochs": {
-    "type": "int",
-    "default": 100
-  },
-  "optimiser": {
-    "type": "enum",
-    "default": "ADAGRAD",
-    "values": ["SGD", "RMSPROP", "ADAGRAD"]
-  },
-  "learningRate": {
-    "type": "float",
-    "default": 0.0001
-  },
-  "L2": {
-    "type": "bool",
-    "default": true
-  }
-}
-```
+See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/tests/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`:
 
 This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the hyperparameters from a JSON string. **Note that the "id" field is reserved, as this will store the experiment ID as a string**.
 
