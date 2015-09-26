@@ -39,7 +39,8 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 }
 ```
 
-After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`.
+After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
+
 
 ```json
 "<project_id>": {
@@ -49,19 +50,6 @@ After a project has been created on FGLab, if this machine is available to run e
   "option": "<command line option flag>",
   "capacity": "<machine capacity needed / 1>",
   "results": "<results directory (without experiment ID)>"
-}
-```
-
-For example:
-
-```json
-"55d716ff269de6a02af9be4b": {
-  "cwd": "/projects/mnist",
-  "command": "th",
-  "file": "main.lua",
-  "option": "-params",
-  "capacity": "0.3",
-  "results": "/data/mnist"
 }
 ```
 

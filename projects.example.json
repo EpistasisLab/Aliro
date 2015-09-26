@@ -1,0 +1,10 @@
+{
+  "55d716ff269de6a02af9be4b": {
+    "cwd": "./tests",
+    "command": "node",
+    "file": "rand.js",
+    "option": "",
+    "capacity": "0.3",
+    "results": "./tests"
+  }
+}
