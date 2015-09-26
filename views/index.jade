@@ -1,73 +1,68 @@
-doctype html
-html(lang="en")
-  head
-    title FGLab
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1")
-    meta(http-equiv="x-ua-compatible", content="ie=edge")
+extends ./layout.jade
 
-    link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/css/main.css", rel="stylesheet")
+block title
+  title FGLab
 
-  body.container
-    .row
-      .col-sm-6
-        h1 Projects
-        h2 New Project
-        form#new-project
-          fieldset.form-group
-            label(for="schema") Project schema
-            input#schema.form-control-file(name="schema", type="file")
-            small.text-muted Upload a valid project schema. The name of the JSON file will be used to name the project.
-          button.btn.btn-primary(type="submit") Create Project
+block content
+  .row
+    .col-sm-6
+      h1 Projects
+      h2 New Project
+      form#new-project
+        fieldset.form-group
+          label(for="schema") Project schema
+          input#schema.form-control-file(name="schema", type="file")
+          small.text-muted Upload a valid project schema. The name of the JSON file will be used to name the project.
+        button.btn.btn-primary(type="submit") Create Project
 
-        br
-        h2 Existing Projects
-        ul#projects.list-unstyled
-          - each project in projects
-            li
-              a(href="/projects/" + project._id) #{project.name}
-              | &nbsp;
-              button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/projects/" + project._id, type="button") delete
+      br
+      h2 Existing Projects
+      ul#projects.list-unstyled
+        - each project in projects
+          li
+            a(href="/projects/" + project._id) #{project.name}
+            | &nbsp;
+            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/projects/" + project._id, type="button") delete
 
-      .col-sm-6
-        h1 Machines
-        ul#machines.list-unstyled
-          - each machine in machines
-            li
-              a(href="/machines/" + machine._id) #{machine.hostname}
-              | &nbsp;
-              button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/machines/" + machine._id, type="button") delete
+    .col-sm-6
+      h1 Machines
+      ul#machines.list-unstyled
+        - each machine in machines
+          li
+            a(href="/machines/" + machine._id) #{machine.hostname}
+            | &nbsp;
+            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/machines/" + machine._id, type="button") delete
 
-    script(src="/bower_components/jquery/dist/jquery.min.js")
-    script.
-      $(function() {
-        $("#new-project").on("submit", function() {
-          // Extract file
-          var fd = new FormData($(this)[0]);
-          // Send
-          $.ajax({
-            url: "/new-project",
-            type: "POST",
-            data: fd,
-            processData: false,
-            contentType: false
-          })
-          .then(function() {
-            location.reload(); // Refresh page
-          });
-          return false; // Stop event and propagation
+block scripts
+  script(src="/bower_components/jquery/dist/jquery.min.js")
+  script.
+    $(function() {
+      $("#new-project").on("submit", function() {
+        // Extract file
+        var fd = new FormData($(this)[0]);
+        // Send
+        $.ajax({
+          url: "/new-project",
+          type: "POST",
+          data: fd,
+          processData: false,
+          contentType: false
+        })
+        .then(function() {
+          location.reload(); // Refresh page
         });
-
-        // Delete project or machine
-        $("button.delete").on("click", function() {
-          $.ajax({
-            url: $(this).data("href"),
-            type: "DELETE"
-          })
-          .then(function() {
-            location.reload(); // Refresh page
-          });
-          return false; // Stop event and propagation
-        });
+        return false; // Stop event and propagation
       });
+
+      // Delete project or machine
+      $("button.delete").on("click", function() {
+        $.ajax({
+          url: $(this).data("href"),
+          type: "DELETE"
+        })
+        .then(function() {
+          location.reload(); // Refresh page
+        });
+        return false; // Stop event and propagation
+      });
+    });

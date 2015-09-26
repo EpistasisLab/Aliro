@@ -1,133 +1,128 @@
-doctype html
-html(lang="en")
-  head
-    title FGLab: Project #{project.name}
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1")
-    meta(http-equiv="x-ua-compatible", content="ie=edge")
+extends ./layout.jade
 
-    link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/css/main.css", rel="stylesheet")
+block title
+  title FGLab: Project #{project.name}
 
-  body.container
-    h1 Project: #{project.name} #[small.text-muted (#{project._id})]
-    h2 New Experiment
-    // TODO Form validation with Bootstrap styles
-    form#new-experiment
-      each val, key in project.schema
-        if (val.type === "int")
-          .form-group.row
-            label.form-control-label.col-sm-3(for="#{key}") #{key}
-            .col-sm-9
-              input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", required)
-        else if (val.type === "float")
-          .form-group.row
-            label.form-control-label.col-sm-3(for="#{key}") #{key}
-            .col-sm-9
-              input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", required)
-        else if (val.type === "bool")
-          // TODO Consider replacing with two radio buttons
-          .form-group.row
-            label.form-control-label.col-sm-3(for="#{key}") #{key}
-            .col-sm-9
-              input.form-control(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", id="#{key}", required)
-        else if (val.type === "string")
-          .form-group.row
-            label.form-control-label.col-sm-3(for="#{key}") #{key}
-            .col-sm-9
-              input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
-        else if (val.type === "enum")
-          .form-group.row
-            label.form-control-label.col-sm-3(for="#{key}") #{key}
-            .col-sm-9
-              select.form-control(name="#{key}", id="#{key}")
-                each value in val.values
-                  if (value === val.default)
-                    option(value="#{value}", selected="selected") #{value}
-                  else
-                    option(value="#{value}") #{value}
-      .form-group.row
-        .col-sm-9.col-sm-offset-3
-          button.btn.btn-primary(type="submit") Check Availability
+block content 
+  h1 Project: #{project.name} #[small.text-muted (#{project._id})]
+  h2 New Experiment
+  // TODO Form validation with Bootstrap styles
+  form#new-experiment
+    each val, key in project.schema
+      if (val.type === "int")
+        .form-group.row
+          label.form-control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", required)
+      else if (val.type === "float")
+        .form-group.row
+          label.form-control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", required)
+      else if (val.type === "bool")
+        // TODO Consider replacing with two radio buttons
+        .form-group.row
+          label.form-control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            input.form-control(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", id="#{key}", required)
+      else if (val.type === "string")
+        .form-group.row
+          label.form-control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
+      else if (val.type === "enum")
+        .form-group.row
+          label.form-control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            select.form-control(name="#{key}", id="#{key}")
+              each value in val.values
+                if (value === val.default)
+                  option(value="#{value}", selected="selected") #{value}
+                else
+                  option(value="#{value}") #{value}
+    .form-group.row
+      .col-sm-9.col-sm-offset-3
+        button.btn.btn-primary(type="submit") Check Availability
 
-    h3 Available Machines
-    #available-machines
+  h3 Available Machines
+  #available-machines
 
-    h2 Experiments
-    ul.list-unstyled
-      - each experiment in experiments
-        li
-          button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/experiments/" + experiment._id, type="button") delete
-          | &nbsp;
-          a(href="/experiments/" + experiment._id) #{experiment._id}
-          | &nbsp;
-          if experiment.test
-            if experiment.test.score
-              = "score: " + experiment.test.score
-          | &nbsp;
-          span= JSON.stringify(experiment.hyperparams)
+  h2 Experiments
+  ul.list-unstyled
+    - each experiment in experiments
+      li
+        button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/experiments/" + experiment._id, type="button") delete
+        | &nbsp;
+        a(href="/experiments/" + experiment._id) #{experiment._id}
+        | &nbsp;
+        if experiment.test
+          if experiment.test.score
+            = "score: " + experiment.test.score
+        | &nbsp;
+        span= JSON.stringify(experiment.hyperparams)
 
-    script(src="/bower_components/jquery/dist/jquery.min.js")
-    script.
-      $(function() {
-        // Checks availability
-        $("#new-experiment").on("submit", function() {
-           $.ajax({
-            url: "/experiments/#{project._id}/check", // TODO Change to query params
-            type: "POST"
-          }).
-          then(function(responses) {
-            var $list = $("#available-machines");
-            $list.html(""); // Empty list
-            // Fill list
-            responses.forEach(function(mac) {
-              mac = JSON.parse(mac); // Extract information from string
-              $list.append("<button data-id='" + mac.id + "' class='btn btn-success>" + mac.hostname + "</button>");
-            });
+block scripts
+  script(src="/bower_components/jquery/dist/jquery.min.js")
+  script.
+    $(function() {
+      // Checks availability
+      $("#new-experiment").on("submit", function() {
+         $.ajax({
+          url: "/experiments/#{project._id}/check", // TODO Change to query params
+          type: "POST"
+        }).
+        then(function(responses) {
+          var $list = $("#available-machines");
+          $list.html(""); // Empty list
+          // Fill list
+          responses.forEach(function(mac) {
+            mac = JSON.parse(mac); // Extract information from string
+            $list.append("<button data-id='" + mac.id + "' class='btn btn-success>" + mac.hostname + "</button>");
           });
-          return false; // Stop event and propagation
         });
-
-        // Submits experiment (with dynamically added buttons)
-        $("#available-machines").on("click", "button", function() {
-          // Get machine
-          var macId = $(this).data("id");
-          // Process form
-          var formObj = {};
-          // Loop over form simply (does not work on nested data)
-          $("#new-experiment").find(":input").not(":submit").each(function(ind, el) {
-            var $el = $(el);
-            var name = $el.attr("name");
-            var val = $el.val();
-            // Test for bools
-            if ($el.attr("pattern")) {
-              val = (val === "true");
-            }
-            formObj[name] = val; // Set key and value
-          });
-
-          // TODO Sort race condition for capacity
-          $.ajax({
-            url: "/new-experiment/#{project._id}/" + macId,
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(formObj)
-          }).
-          then(function(resp) {
-            location.assign("/experiments/" + resp.id); // Move to new experiment page
-          });
-          return false; // Stop event and propagation
-        });
-
-        // Deletes experiment
-        $("button.delete").on("click", function() {
-          $.ajax({
-            url: $(this).data("href"),
-            type: "DELETE"
-          })
-          .then(function() {
-            location.reload(); // Refresh page
-          });
-          return false; // Stop event and propagation
-        });
+        return false; // Stop event and propagation
       });
+
+      // Submits experiment (with dynamically added buttons)
+      $("#available-machines").on("click", "button", function() {
+        // Get machine
+        var macId = $(this).data("id");
+        // Process form
+        var formObj = {};
+        // Loop over form simply (does not work on nested data)
+        $("#new-experiment").find(":input").not(":submit").each(function(ind, el) {
+          var $el = $(el);
+          var name = $el.attr("name");
+          var val = $el.val();
+          // Test for bools
+          if ($el.attr("pattern")) {
+            val = (val === "true");
+          }
+          formObj[name] = val; // Set key and value
+        });
+
+        // TODO Sort race condition for capacity
+        $.ajax({
+          url: "/new-experiment/#{project._id}/" + macId,
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(formObj)
+        }).
+        then(function(resp) {
+          location.assign("/experiments/" + resp.id); // Move to new experiment page
+        });
+        return false; // Stop event and propagation
+      });
+
+      // Deletes experiment
+      $("button.delete").on("click", function() {
+        $.ajax({
+          url: $(this).data("href"),
+          type: "DELETE"
+        })
+        .then(function() {
+          location.reload(); // Refresh page
+        });
+        return false; // Stop event and propagation
+      });
+    });

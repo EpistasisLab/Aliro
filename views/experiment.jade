@@ -1,94 +1,91 @@
-doctype html
-html(lang="en")
-  head
-    title FGLab: Experiment #{experiment._id}
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1")
-    meta(http-equiv="x-ua-compatible", content="ie=edge")
-    
-    link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/css/main.css", rel="stylesheet")
-    style(type="text/css").
-      path {
-        stroke: green;
-        stroke-width: 1;
-        fill: none;
+extends ./layout.jade
+
+block title
+  title FGLab: Experiment #{experiment._id}
+
+block styles
+  style(type="text/css").
+    path {
+      stroke: green;
+      stroke-width: 1;
+      fill: none;
+    }
+    path.valLoss {
+      stroke: blue;
+    }
+    line {
+      stroke: black;
+    }
+    text {
+      font-size: 9pt;
+    }
+
+block content
+  h1 Experiment: #{experiment._id} #[small.text-muted (#{experiment.status})]
+
+  - if (experiment.status === "running")
+    button.btn.btn-danger.kill Kill Experiment
+
+  p= "Hyperparams: " + JSON.stringify(experiment.hyperparams)
+  #resGraph
+  if experiment.test
+    p Test Loss: #{experiment.test.loss}
+    p Test Score: #{experiment.test.score}
+
+block scripts
+  script(src="/bower_components/jquery/dist/jquery.min.js")
+  script(src="/bower_components/d3/d3.min.js")
+  script.
+    // TODO Use frequency information?
+    var plotLength = 120;
+    var downsample = function(arr) {
+      var len = arr.length;
+      var step = Math.floor(len / plotLength);
+      var down = [];
+      for (var i = 0; i < len; i += step) {
+        down.push(arr[i]);
       }
-      path.valLoss {
-        stroke: blue;
+      while (down.length > plotLength) {
+        down.pop();
       }
-      line {
-        stroke: black;
+      return down;
+    };
+
+    $(function() {
+      if ("#{experiment.val}") {
+        // Chart variables
+        var trainLosses = downsample(JSON.parse('[!{experiment.train.losses}]'));
+        var valLosses = downsample(JSON.parse('[!{experiment.val.losses}]'));
+        var width = 10*plotLength;
+        var height = 6*plotLength;
+        var margin = 25;
+        // Create scales
+        var yMax = Math.max(d3.max(trainLosses), d3.max(valLosses));
+        var y = d3.scale.linear().domain([yMax, 0]).range([0 + margin, height - margin]); // Reverse y-scale for easier data mapping
+        // TODO Restore scale
+        var x = d3.scale.linear().domain([0, trainLosses.length]).range([0 + margin, width - margin]);
+        // Create chart
+        var vis = d3.select("#resGraph").append("svg:svg").attr("width", width).attr("height", height);
+        var g = vis.append("svg:g");
+        // Create line
+        var line = d3.svg.line().x(function(d, i) {return x(i);}).y(function(d) {return y(d);});
+        g.append("svg:path").attr("d", line(trainLosses)).attr("class", "trainLoss");
+        g.append("svg:path").attr("d", line(valLosses)).attr("class", "valLoss");
+        // Create axes
+        var yAxis = d3.svg.axis().scale(y).orient("left");
+        var xAxis = d3.svg.axis().scale(x);
+        vis.append("svg:g").attr("class", "yAxis").attr("transform", "translate(" + margin +", 0)").call(yAxis);
+        vis.append("svg:g").attr("class", "xAxis").attr("transform", "translate(0, " + (height - margin) + ")").call(xAxis);
       }
-      text {
-        font-size: 9pt;
-      }
 
-  body.container
-    h1 Experiment: #{experiment._id} #[small.text-muted (#{experiment.status})]
-
-    - if (experiment.status === "running")
-      button.btn.btn-danger.kill Kill Experiment
-
-    p= "Hyperparams: " + JSON.stringify(experiment.hyperparams)
-    #resGraph
-    if experiment.test
-      p Test Loss: #{experiment.test.loss}
-      p Test Score: #{experiment.test.score}
-
-    script(src="/bower_components/jquery/dist/jquery.min.js")
-    script(src="/bower_components/d3/d3.min.js")
-    script.
-      // TODO Use frequency information?
-      var plotLength = 120;
-      var downsample = function(arr) {
-        var len = arr.length;
-        var step = Math.floor(len / plotLength);
-        var down = [];
-        for (var i = 0; i < len; i += step) {
-          down.push(arr[i]);
-        }
-        while (down.length > plotLength) {
-          down.pop();
-        }
-        return down;
-      };
-
-      $(function() {
-        if ("#{experiment.val}") {
-          // Chart variables
-          var trainLosses = downsample(JSON.parse('[!{experiment.train.losses}]'));
-          var valLosses = downsample(JSON.parse('[!{experiment.val.losses}]'));
-          var width = 10*plotLength;
-          var height = 6*plotLength;
-          var margin = 25;
-          // Create scales
-          var yMax = Math.max(d3.max(trainLosses), d3.max(valLosses));
-          var y = d3.scale.linear().domain([yMax, 0]).range([0 + margin, height - margin]); // Reverse y-scale for easier data mapping
-          // TODO Restore scale
-          var x = d3.scale.linear().domain([0, trainLosses.length]).range([0 + margin, width - margin]);
-          // Create chart
-          var vis = d3.select("#resGraph").append("svg:svg").attr("width", width).attr("height", height);
-          var g = vis.append("svg:g");
-          // Create line
-          var line = d3.svg.line().x(function(d, i) {return x(i);}).y(function(d) {return y(d);});
-          g.append("svg:path").attr("d", line(trainLosses)).attr("class", "trainLoss");
-          g.append("svg:path").attr("d", line(valLosses)).attr("class", "valLoss");
-          // Create axes
-          var yAxis = d3.svg.axis().scale(y).orient("left");
-          var xAxis = d3.svg.axis().scale(x);
-          vis.append("svg:g").attr("class", "yAxis").attr("transform", "translate(" + margin +", 0)").call(yAxis);
-          vis.append("svg:g").attr("class", "xAxis").attr("transform", "translate(0, " + (height - margin) + ")").call(xAxis);
-        }
-
-        // Kills experiment
-        $("button.kill").on("click", function() {
-          $.ajax({
-            url: "#{mac}/experiments/#{experiment._id}/kill",
-            type: "POST"
-          }).then(function(response) {
-            location.reload(); // May have succeeded before kill
-          }).catch(function(err) {console.log(err);});
-          return false; // Stop event and propagation
-        });
+      // Kills experiment
+      $("button.kill").on("click", function() {
+        $.ajax({
+          url: "#{mac}/experiments/#{experiment._id}/kill",
+          type: "POST"
+        }).then(function(response) {
+          location.reload(); // May have succeeded before kill
+        }).catch(function(err) {console.log(err);});
+        return false; // Stop event and propagation
       });
+    });

@@ -1,26 +1,21 @@
-doctype html
-html(lang="en")
-  head
-    title!= FGLab: Logs
-    meta(charset="utf-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1")
-    meta(http-equiv="x-ua-compatible", content="ie=edge")
+extends ./layout.jade
 
-    link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-    link(href="/css/main.css", rel="stylesheet")
+block title
+  title FGLab: Logs
 
-  body.container
-    h1 Messages
-    ul#messages
+block content
+  h1 Messages
+  ul#messages
 
-    script.
-      var host = location.origin.replace(/^http/, 'ws');
-      var ws = new WebSocket(host);
-      ws.onopen = function(event) {
-        ws.send("Connected to client"); // Send must wait for connection establishment
-      };
-      ws.onmessage = function(event) {
-        var li = document.createElement("li");
-        li.innerHTML = event.data;
-        document.querySelector("#messages").appendChild(li);
-      };
+block scripts
+  script.
+    var host = location.origin.replace(/^http/, 'ws');
+    var ws = new WebSocket(host);
+    ws.onopen = function(event) {
+      ws.send("Connected to client"); // Send must wait for connection establishment
+    };
+    ws.onmessage = function(event) {
+      var li = document.createElement("li");
+      li.innerHTML = event.data;
+      document.querySelector("#messages").appendChild(li);
+    };
