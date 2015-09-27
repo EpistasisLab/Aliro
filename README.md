@@ -68,26 +68,7 @@ The machine learning program may log to stdout, so results must be stored as JSO
 
 An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain results (discussed below), an ID, a project ID, a machine ID, the chosen hyperparameters and the current status (running/succeeded/failed); this provides a comprehensive record of the experiment as a whole.
 
-The current format for results, where the "freq" fields represent the number of iterations between logging losses, is:
-
-```json
-{
-  "train": {
-    "losses": "float[]",
-    "freq": "int",
-  },
-  "val": {
-    "losses": "float[]",
-    "freq": "int"
-  },
-  "test": {
-    "loss": "float",
-    "score": "float"
-  }
-}
-```
-
-Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"loss": 0.962871, "score": 85}}` will update the `test` field for the experiment. Nested fields cannot be updated separately e.g. `test.score`.
+The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 ### Machine
 
