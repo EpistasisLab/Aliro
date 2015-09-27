@@ -207,9 +207,10 @@ app.get("/machines/:id", function(req, res, next) {
 app.get("/experiments/:id", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id)
   .then(function(result) {
-    db.machines.findByIdAsync(result.machine_id, {address: 1}) // Find machine address
+    // TODO Get project name as well
+    db.machines.findByIdAsync(result.machine_id, {hostname: 1, address: 1}) // Find machine hostname and address
     .then(function(mac) {
-      res.render("experiment", {experiment: result, mac: mac.address});
+      res.render("experiment", {experiment: result, machine: mac});
     })
     .catch(function(err) {
       next(err);
