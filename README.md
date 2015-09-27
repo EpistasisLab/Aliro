@@ -39,6 +39,10 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 }
 ```
 
+## Objects
+
+### Projects
+
 After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
 
 
@@ -52,6 +56,8 @@ After a project has been created on FGLab, if this machine is available to run e
   "results": "<results directory (without experiment ID)>"
 }
 ```
+
+### Experiments
 
 Results must be saved as JSON files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`, containing `results-pt1.json` and `results2.json`.
 
