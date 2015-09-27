@@ -89,6 +89,17 @@ app.delete("/api/:collection/:id", function(req, res, next) {
   });
 });
 
+// Return all experiments for a project
+app.get("/api/projects/:id/experiments", function(req, res, next) {
+  db.experiments.find({project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
+  .then(function(result) {
+    res.send(result);
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
 /* Processing Routes */
 
 // Constructs a project from an uploaded .json file
