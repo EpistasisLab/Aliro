@@ -55,7 +55,9 @@ block content
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
+  script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
+  script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
   script.
     // Flattens JSON objects
     JSON.flatten = function(data) {
@@ -90,12 +92,15 @@ block scripts
     var experiments = !{JSON.stringify(experiments)};
 
     // Create columns from hyperparams
-    var columns = [{field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}}, {field: "test.score", title: "Score", sortable: "true"}];
+    var columns = [
+      {field: "_id", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
+      {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
+      {field: "test.score", title: "Score", sortable: "true"}
+    ];
     // Utilises 2 functions to solve loop scope problem
     for (var key in schema) {
       columns.push({field: "hyperparams." + key, title: key, sortable: true});
     }
-    columns.push({field: "_id", title: "Delete", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}});
 
     // Flatten each experiment
     for (var i = 0; i < experiments.length; i++) {
@@ -110,9 +115,16 @@ block scripts
         striped: true,
         sortName: "test.score",
         sortOrder: "desc",
+        iconsPrefix: "octicon",
         search: true,
         columns: columns,
-        data: experiments
+        data: experiments,
+        showMultiSort: true,
+        icons: {
+          sort: "octicon-list-ordered",
+          plus: "octicon-plus",
+          minus: "octicon-dash"
+        }
       });
       
       // Checks availability
