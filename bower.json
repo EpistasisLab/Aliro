@@ -25,7 +25,8 @@
     "jquery": "~3.0.0-alpha",
     "bootstrap": "~4.0.0-alpha",
     "bootstrap-table": "~1.8.1",
-    "d3": "~3.5.6"
+    "d3": "~3.5.6",
+    "octicons": "~3.1.0"
   },
   "resolutions": {
     "jquery": "~3.0.0-alpha"
