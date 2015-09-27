@@ -51,33 +51,82 @@ block content
   #available-machines
 
   h2 Experiments
-  table(data-toggle="table")
-    thead.thead-inverse
-      tr
-        th ID
-        th Score
-        - each val, key in experiments[0].hyperparams
-          th= key
-        th Delete
-    tbody
-      - each experiment in experiments
-        tr
-          td
-            a(href="/experiments/" + experiment._id) #{experiment._id}
-          td
-            if experiment.test
-              if experiment.test.score
-                = experiment.test.score
-          - each val in experiment.hyperparams
-            td= val
-          td  
-            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/experiments/" + experiment._id, type="button") delete
+  table#experiments
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
   script.
+    // Flattens JSON objects
+    JSON.flatten = function(data) {
+      var result = {};
+      function recurse (cur, prop) {
+        if (Object(cur) !== cur) {
+          result[prop] = cur;
+        } else if (Array.isArray(cur)) {
+          for(var i = 0, l = cur.length; i < l; i++) {
+            recurse(cur[i], prop ? prop + "." + i : "" + i);
+          }
+          if (l == 0) {
+            result[prop] = [];
+          }
+        } else {
+          var isEmpty = true;
+          for (var p in cur) {
+            isEmpty = false;
+            recurse(cur[p], prop ? prop + "." + p : p);
+          }
+          if (isEmpty) {
+            result[prop] = {};
+          }
+        }
+      }
+      recurse(data, "");
+      return result;
+    }
+
+    // Parse from string instead prior to accessing internal objects via Jade
+    var schema = !{JSON.stringify(project.schema)};
+    var experiments = !{JSON.stringify(experiments)};
+
+    // Create columns from hyperparams
+    var columns = [{field: "_id", title: "ID", sortable: "true"}, {field: "test.score", title: "Score", sortable: "true"}];
+    // Utilises 2 functions to solve loop scope problem
+    for (var key in schema) {
+      columns.push({field: "hyperparams." + key, title: key, sortable: true});
+    }
+    columns.push({field: "delete", title: "Delete"});
+
+    // Flatten each experiment
+    for (var i = 0; i < experiments.length; i++) {
+      experiments[i] = JSON.flatten(experiments[i]);
+    }
+
     $(function() {
+      // Initialise experiment table
+      $("#experiments").bootstrapTable({
+        classes: "table",
+        undefinedText: "",
+        striped: true,
+        search: true,
+        columns: columns,
+        data: experiments
+      });
+      
+      // Deletes experiment
+      $("#experiments").on("click-cell.bs.table", function(event, field, val, obj) {
+        if (field === "delete") {
+          $.ajax({
+            url: "/api/experiments/" + obj._id,
+            type: "DELETE"
+          })
+          .then(function() {
+            location.reload(); // Refresh page
+          });
+          return false; // Stop event and propagation
+        }
+      });
+
       // Checks availability
       $("#new-experiment").on("submit", function() {
          $.ajax({
@@ -107,7 +156,11 @@ block scripts
           var $el = $(el);
           var name = $el.attr("name");
           var val = $el.val();
-          // Test for bools
+          // Convert ints/floats
+          if ($el.attr("type") === "number") {
+            val = Number(val);
+          }
+          // Convert bools
           if ($el.attr("pattern")) {
             val = (val === "true");
           }
@@ -127,15 +180,4 @@ block scripts
         return false; // Stop event and propagation
       });
 
-      // Deletes experiment
-      $("button.delete").on("click", function() {
-        $.ajax({
-          url: $(this).data("href"),
-          type: "DELETE"
-        })
-        .then(function() {
-          location.reload(); // Refresh page
-        });
-        return false; // Stop event and propagation
-      });
     });
