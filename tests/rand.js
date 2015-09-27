@@ -8,26 +8,31 @@ console.log(opts);
 // Make results directory
 fs.mkdirSync(opts.id);
 
+// Creates a linear scale
+var linScale = function(numEls, step, start) {
+  return _.map(Array(numEls), function(val, ind) {
+    return start + step*ind;
+  });
+};
+
 // Creates an exponential decay curve with noise
 var noisyExp = function(val, ind, coll) {
   var exp = Math.pow(0.9, ind/coll.length) - 0.9;
   return exp + exp*Math.random();
 };
-
-// Creates an Array filled with a decay curve
 var randFill = function(numEls) {
   return _.map(Array(numEls), noisyExp);
 };
 
 // Save random results
 var train = {
-  losses: randFill(100000),
-  freq: 1
+  indices: linScale(100000, 1, 1),
+  losses: randFill(100000)
 };
 fs.writeFileSync(opts.id + "/train.json", JSON.stringify({train: train}));
 var val = {
-  losses: randFill(1000),
-  freq: 100
+  indices: linScale(1000, 100, 1),
+  losses: randFill(1000)
 };
 fs.writeFileSync(opts.id + "/val.json", JSON.stringify({val: val}));
 var test = {

@@ -55,17 +55,17 @@ After a project has been created on FGLab, if this machine is available to run e
 
 Results must be saved as JSON files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`, containing `results-pt1.json` and `results2.json`.
 
-The current format for results, where the "freq" fields represent the number of iterations between logging losses, is:
+The current format for results, where the "indices" field contains the iterations for logging losses, is:
 
 ```json
 {
   "train": {
+    "indices": "int[]",
     "losses": "float[]",
-    "freq": "int",
   },
   "val": {
-    "losses": "float[]",
-    "freq": "int"
+    "indices": "int[]",
+    "losses": "float[]"
   },
   "test": {
     "loss": "float",
