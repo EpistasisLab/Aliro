@@ -48,7 +48,7 @@ The deploy button provisions a free dyno running FGLab on [Heroku](https://www.h
 
 FGLab is based on several classes of object. One begins with a *project*, which involves adjusting variables to achieve the desired results. In machine learning, these variables are *hyperparameters*, which are set for the project. A project will then comprise of a set of *experiments* derived from adjusting hyperparameters.
 
-### Project
+### Projects
 
 A project is created by uploading a [JSON](http://json.org/) schema. JSON is a human-readable data-interchange format that is widely used and has mature libraries available for most programming languages.
 
@@ -70,7 +70,7 @@ An experiment is one complete training and testing run with a specific set of hy
 
 The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
 
-### Machine
+### Machines
 
 A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. Before a new experiment is chosen to be run, FGLab queries all machines in order to determine a machine with the capacity to run the experiment.
 
