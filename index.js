@@ -82,7 +82,7 @@ app.delete("/api/:collection/:id", function(req, res, next) {
   req.collection.removeByIdAsync(req.params.id)
   .then(function(result) {
     // Remove returns the count of affected objects
-    res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+    res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
   .catch(function(err) {
     next(err);
@@ -92,6 +92,17 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 // Return all experiments for a project
 app.get("/api/projects/:id/experiments", function(req, res, next) {
   db.experiments.find({project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
+  .then(function(result) {
+    res.send(result);
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+// Delete all experiments for a project
+app.delete("/api/projects/:id/experiments", function(req, res, next) {
+  db.experiments.removeAsync({project_id: db.toObjectID(req.params.id)}) // Get experiments for project
   .then(function(result) {
     res.send(result);
   })

@@ -20,7 +20,7 @@ block content
       ul#projects.list-unstyled
         - each project in projects
           li
-            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/projects/" + project._id, type="button") #[span.octicon.octicon-trashcan]
+            button.btn.btn-danger-outline.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
             | &nbsp;
             a(href="/projects/" + project._id) #{project.name}
 
@@ -29,7 +29,7 @@ block content
       ul#machines.list-unstyled
         - each machine in machines
           li
-            button.btn.btn-danger-outline.btn-sm.delete(data-href="/api/machines/" + machine._id, type="button") #[span.octicon.octicon-trashcan]
+            button.btn.btn-danger-outline.btn-sm.delete(data-type="machines", data-id="#{machine._id}", type="button") #[span.octicon.octicon-trashcan]
             | &nbsp;
             a(href="/machines/" + machine._id) #{machine.hostname}
 
@@ -56,12 +56,26 @@ block scripts
 
       // Delete project or machine
       $("button.delete").on("click", function() {
+        var $el = $(this);
+        var type = $el.data("type");
+        var id = $el.data("id");
         $.ajax({
-          url: $(this).data("href"),
+          url: "/api/" + type + "/" + id,
           type: "DELETE"
         })
         .then(function() {
-          location.reload(); // Refresh page
+          // Delete experiments as well if project deleted
+          if (type === "projects") {
+            $.ajax({
+              url: "/api/" + type + "/" + id + "/experiments",
+              type: "DELETE"
+            })
+            .then(function() {
+              location.reload(); // Refresh page
+            });
+          } else {
+            location.reload(); // Refresh page
+          }
         });
         return false; // Stop event and propagation
       });

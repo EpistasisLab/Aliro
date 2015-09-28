@@ -3,6 +3,10 @@
     "type": "int",
     "default": 123
   },
+  "model": {
+    "type": "string",
+    "default": "cnnv2"
+  },
   "batchSize": {
     "type": "int",
     "default": 8
