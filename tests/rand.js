@@ -6,7 +6,7 @@ var opts = JSON.parse(process.argv[3]);
 console.log(opts);
 
 // Make results directory
-fs.mkdirSync(opts.id);
+fs.mkdirSync(opts._id);
 
 // Creates a linear scale
 var linScale = function(numEls, step, start) {
@@ -29,14 +29,14 @@ var train = {
   indices: linScale(100000, 1, 1),
   losses: randFill(100000)
 };
-fs.writeFileSync(opts.id + "/train.json", JSON.stringify({train: train}));
+fs.writeFileSync(opts._id + "/train.json", JSON.stringify({train: train}));
 var val = {
   indices: linScale(1000, 100, 1),
   losses: randFill(1000)
 };
-fs.writeFileSync(opts.id + "/val.json", JSON.stringify({val: val}));
+fs.writeFileSync(opts._id + "/val.json", JSON.stringify({val: val}));
 var test = {
   loss: Math.random(),
   score: Math.random()
 };
-fs.writeFileSync(opts.id + "/test.json", JSON.stringify({test: test}));
+fs.writeFileSync(opts._id + "/test.json", JSON.stringify({test: test}));

@@ -108,7 +108,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   }
 
   // Process args
-  var experimentId = req.body.id;
+  var experimentId = req.body._id;
   var project = projects[req.params.id];
   var args = [];
   args.push(project.file);
@@ -153,7 +153,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     });
 
     // Send status
-    var status = (exitCode === 0) ? "succeeded" : "failed";
+    var status = (exitCode === 0) ? "success" : "fail";
     rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {status: status}, gzip: true});
 
     // Delete experiment
