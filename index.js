@@ -157,7 +157,7 @@ app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
     // Get objects
     var mac = results[0];
     var exp = results[1].ops[0];
-    obj.id = exp._id.toString(); // Add experiment ID to sent hyperparameters
+    obj._id = exp._id.toString(); // Add experiment ID to sent hyperparameters
     // Send project
     rp({uri: mac.address + "/projects/" + req.params.id, method: "POST", json: obj, gzip: true})
     .then(function(body) {

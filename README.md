@@ -54,13 +54,20 @@ A project is created by uploading a [JSON](http://json.org/) schema. JSON is a h
 
 The JSON schema represents a map/associative array (without nesting), where the values are an object comprising of several fields:
 
-- **type**: One out of "int"/"float"/"bool"/"string"/"enum".
-- **default**: Default value.
-- **values (only with type: enum)**: An array of strings comprising the enum.
+- **type**:
+  - `int`
+  - `float`
+  - `bool`
+  - `string`
+  - `enum`
+- **default**: Default value
+- **values**: An array of strings comprising the `enum`
 
-See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/tests/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`:
+See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/tests/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
 
-This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the hyperparameters from a JSON string. **Note that the "id" field is reserved, as this will store the experiment ID as a string**.
+Often it is hard to specify some hyperparameters in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing hyperparameters and versioning manually e.g. `cnn.v2`.
+
+This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the hyperparameters from a JSON string. **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
 
 The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
