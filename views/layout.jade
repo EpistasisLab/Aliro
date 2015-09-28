@@ -11,6 +11,12 @@ html(lang="en")
     link(href="/css/main.css", rel="stylesheet")
     block styles
 
-  body.container
-    block content
+  body
+    nav#nav.navbar.navbar-dark.bg-inverse
+      a.navbar-brand(href="#") FGLab
+      ul.nav.navbar-nav
+        li.nav-item
+          a.nav-link(href="/") #[span.octicon.octicon-home]
+    .container
+      block content
     block scripts

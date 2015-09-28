@@ -37,6 +37,10 @@ block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
   script.
     $(function() {
+      // Make home button active
+      $("#nav .nav-item:first-child").addClass("active");
+
+      // Create new project
       $("#new-project").on("submit", function() {
         // Extract file
         var fd = new FormData($(this)[0]);
