@@ -98,14 +98,18 @@ block scripts
       {field: "status", title: "Status", sortable: "true", formatter: function(val) {
         // Colour-code status
         var textClass;
-        if (val === "succeeded") {
+        var iconClass;
+        if (val === "success") {
           textClass = "text-success";
-        } else if (val === "failed") {
+          iconClass = "octicon octicon-check text-success";
+        } else if (val === "fail") {
           textClass = "text-danger";
+          iconClass = "octicon octicon-circle-slash text-danger";
         } else if (val == "running") {
           textClass = "text-info";
+          iconClass = "octicon octicon-clock text-info";
         }
-        return "<span class='" + textClass + "'>" + val + "</span>";
+        return "<span class='" + textClass + "'>" + val + "</span> <span class='" + iconClass + "'></span>";
       }},
       {field: "test.score", title: "Score", sortable: "true"}
     ];

@@ -22,11 +22,13 @@ block styles
     }
 
 block content
-  h1 Experiment: #{experiment._id} #[small.text-muted (#{experiment.status})]
+  h1 Experiment: #{experiment._id}
   - if (experiment.status === "running")
     button.btn.btn-danger.kill Kill Experiment
 
   dl.dl-horizontal
+    dt.col-sm-3 Status
+    dd#status.col-sm-9 #{experiment.status} #[span.octicon]
     dt.col-sm-3 Project ID
     dd.col-sm-9 #{experiment.project_id}
     dt.col-sm-3 Machine
@@ -57,20 +59,41 @@ block scripts
     var plotLength = 1000;
     var downsample = function(arr) {
       var len = arr.length;
-      var step = Math.floor(len / plotLength);
-      var down = [];
-      for (var i = 0; i < len; i += step) {
-        down.push(arr[i]);
+      if (len > plotLength) {
+        var step = Math.floor(len / plotLength);
+        var down = [];
+        for (var i = 0; i < len; i += step) {
+          down.push(arr[i]);
+        }
+        while (down.length > plotLength) {
+          down.pop();
+        }
+        return down;
+      } else {
+        return arr;
       }
-      while (down.length > plotLength) {
-        down.pop();
-      }
-      return down;
     };
 
     $(function() {
-      var chart;
+      // Adjust status
+      var status = "#{experiment.status}";
+      var textClass;
+      var iconClass;
+      if (status === "success") {
+        textClass = "text-success";
+        iconClass = "octicon-check text-success";
+      } else if (status === "fail") {
+        textClass = "text-danger";
+        iconClass = "octicon-circle-slash text-danger";
+      } else if (status == "running") {
+        textClass = "text-info";
+        iconClass = "octicon-clock text-info";
+      }
+      $("#status").addClass(textClass);
+      $("#status .octicon").addClass(iconClass);
+
       // Create chart for training
+      var chart;
       if (experiment.train) {
         // Chart variables
         var trainIndices = downsample(experiment.train.indices);
@@ -99,9 +122,9 @@ block scripts
       // Add validation to chart if it exists
       if (experiment.val) {
         // Chart variables
-        var valIndices = experiment.val.indices;
+        var valIndices = downsample(experiment.val.indices);
         valIndices.unshift("valIndices");
-        var valLosses = experiment.val.losses;
+        var valLosses = downsample(experiment.val.losses);
         valLosses.unshift("Val");
 
         // Load validation data
