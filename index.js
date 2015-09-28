@@ -118,6 +118,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
+  rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {_started: new Date()}, gzip: true}); // Send start time
 
   // Save experiment
   experiments[experimentId] = experiment;
@@ -152,9 +153,9 @@ app.post("/projects/:id", jsonParser, function(req, res) {
       }
     });
 
-    // Send status
+    // Send status and finish time
     var status = (exitCode === 0) ? "success" : "fail";
-    rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {status: status}, gzip: true});
+    rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {_status: status, _finished: new Date()}, gzip: true});
 
     // Delete experiment
     delete experiments[experimentId];
