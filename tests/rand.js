@@ -41,4 +41,4 @@ var test = {
   score: Math.random()
 };
 fs.writeFileSync(opts._id + "/test.json", JSON.stringify({_test: test}));
-fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({custom: "This is a custom field"}));
+fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({"Custom Field": "This is a custom field"}));
