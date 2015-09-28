@@ -27,6 +27,8 @@ The final instruction can be performed by either exporting the variables to the 
 
 Run `node index.js` to start FGLab.
 
+To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
+
 ### Docker
 
 Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
@@ -73,7 +75,7 @@ The machine learning program may log to stdout, so results must be stored as JSO
 
 ### Experiments
 
-An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain results (discussed below), an ID, a project ID, a machine ID, the chosen hyperparameters and the current status (running/success/fail); this provides a comprehensive record of the experiment as a whole.
+An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain an ID, a project ID, a machine ID, the chosen hyperparameters, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
 
 The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
 

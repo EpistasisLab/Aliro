@@ -5,7 +5,7 @@
   },
   "model": {
     "type": "string",
-    "default": "cnnv2"
+    "default": "cnn.v2"
   },
   "batchSize": {
     "type": "int",

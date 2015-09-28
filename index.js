@@ -151,7 +151,7 @@ app.post("/experiments/:id/check", function(req, res, next) {
 app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
   var obj = req.body;
   var macP = db.machines.findByIdAsync(req.params.macId, {address: 1}); // Get machine address
-  var expP = db.experiments.insertAsync({hyperparams: obj, project_id: db.toObjectID(req.params.id), machine_id: db.toObjectID(req.params.macId), status: "running"}, {}); // Create experiment
+  var expP = db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(req.params.id), _machine_id: db.toObjectID(req.params.macId), _status: "running"}, {}); // Create experiment
   Promise.all([macP, expP])
   .then(function(results) {
     // Get objects
@@ -165,7 +165,7 @@ app.post("/new-experiment/:id/:macId", jsonParser, function(req, res, next) {
     })
     .catch(function(err) {
       res.status(501);
-      res.send(err);
+      res.send(err.error);
     });
   })
   .catch(function(err) {
@@ -192,7 +192,7 @@ app.get("/", function(req, res, next) {
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
   var macP = db.machines.find({}, {hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine hostnames
-  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1, status: 1, hyperparams: 1}).toArrayAsync(); // Sort experiment scores for this project
+  var expP = db.experiments.find({_project_id: db.toObjectID(req.params.id)}, {"_test.score": 1, _status: 1, _hyperparams: 1}).toArrayAsync(); // Sort experiment scores for this project
   Promise.all([projP, macP, expP])
   .then(function(results) {
     var proj = results[0];
@@ -221,7 +221,7 @@ app.get("/experiments/:id", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id)
   .then(function(result) {
     // TODO Get project name as well
-    db.machines.findByIdAsync(result.machine_id, {hostname: 1, address: 1}) // Find machine hostname and address
+    db.machines.findByIdAsync(result._machine_id, {hostname: 1, address: 1}) // Find machine hostname and address
     .then(function(mac) {
       res.render("experiment", {experiment: result, machine: mac});
     })

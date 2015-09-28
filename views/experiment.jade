@@ -23,28 +23,39 @@ block styles
 
 block content
   h1 Experiment: #{experiment._id}
-  - if (experiment.status === "running")
+  - if (experiment._status === "running")
     button.btn.btn-danger.kill Kill Experiment
 
   dl.dl-horizontal
     dt.col-sm-3 Status
-    dd#status.col-sm-9 #{experiment.status} #[span.octicon]
+    dd#status.col-sm-9 #{experiment._status} #[span.octicon]
     dt.col-sm-3 Project ID
-    dd.col-sm-9 #{experiment.project_id}
+    dd.col-sm-9 #{experiment._project_id}
     dt.col-sm-3 Machine
     dd.col-sm-9 #{machine.hostname}
+    if experiment._started
+      dt.col-sm-3 Started
+      dd.col-sm-9 #{experiment._started}
+    if experiment._finished
+      dt.col-sm-3 Finished
+      dd.col-sm-9 #{experiment._finished}
     dt.col-sm-3 Hyperparams
-    dd.col-sm-9= JSON.stringify(experiment.hyperparams)
-    if experiment.test
+    dd.col-sm-9= JSON.stringify(experiment._hyperparams)
+    if experiment._test
       dt.col-sm-3 Test Loss
-      dd.col-sm-9 #{experiment.test.loss}
+      dd.col-sm-9 #{experiment._test.loss}
       dt.col-sm-3 Test Score
-      dd.col-sm-9 #{experiment.test.score}
-    if experiment.train
+      dd.col-sm-9 #{experiment._test.score}
+    if experiment._train
       dt.col-sm-3 Loss Graph #[small.text-muted (zoom enabled)]
       dd.col-sm-9#chart-buttons Toggle
-  if experiment.train
+  if experiment._train
     #chart
+  dl.dl-horizontal
+    - for (var key in experiment)
+      if (key[0] !== "_")
+        dt.col-sm-3 #{key}
+        dd.col-sm-9= experiment[key]
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
@@ -76,7 +87,7 @@ block scripts
 
     $(function() {
       // Adjust status
-      var status = "#{experiment.status}";
+      var status = "#{experiment._status}";
       var textClass;
       var iconClass;
       if (status === "success") {
@@ -94,11 +105,11 @@ block scripts
 
       // Create chart for training
       var chart;
-      if (experiment.train) {
+      if (experiment._train) {
         // Chart variables
-        var trainIndices = downsample(experiment.train.indices);
+        var trainIndices = downsample(experiment._train.indices);
         trainIndices.unshift("trainIndices");
-        var trainLosses = downsample(experiment.train.losses);
+        var trainLosses = downsample(experiment._train.losses);
         trainLosses.unshift("Train");
 
         // C3 chart
@@ -120,11 +131,11 @@ block scripts
         $("#chart-buttons").append("&nbsp;<button data-plot='Train' class='btn btn-primary active' data-toggle='button' aria-pressed='true'>Train</button>");
       }
       // Add validation to chart if it exists
-      if (experiment.val) {
+      if (experiment._val) {
         // Chart variables
-        var valIndices = downsample(experiment.val.indices);
+        var valIndices = downsample(experiment._val.indices);
         valIndices.unshift("valIndices");
-        var valLosses = downsample(experiment.val.losses);
+        var valLosses = downsample(experiment._val.losses);
         valLosses.unshift("Val");
 
         // Load validation data
