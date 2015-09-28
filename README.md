@@ -13,37 +13,22 @@ FGMachine currently only reads GPU information on Linux.
 1. Install [Node.js](https://nodejs.org/).
 1. Clone this repository.
 1. Move inside and run `npm install`.
-1. Create `projects.json`.
+1. Create `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
 1. Set the following environment variables:
   - FGLAB_URL (FGLab URL)
   - FGMACHINE_URL (FGMachine URL, including port)
 
 The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) can be used as a starting point).
 
-Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. `specs.json` follows the following format:
+Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab.
 
-```json
-{
-  "_id": "String",
-  "address": "String",
-  "hostname": "String",
-  "os": {
-    "type": "String",
-    "platform": "String",
-    "arch": "String",
-    "release": "String"
-  },
-  "cpus": "String[]",
-  "mem": "String",
-  "gpus": "String[]"
-}
-```
+To re-register, delete `specs.json` before running FGMachine again.
 
 ## Objects
 
 ### Projects
 
-After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
+After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`.
 
 
 ```json
@@ -52,35 +37,34 @@ After a project has been created on FGLab, if this machine is available to run e
   "command": "<binary>",
   "file": "<file>",
   "option": "<command line option flag>",
-  "capacity": "<machine capacity needed / 1>",
+  "capacity": "<machine capacity needed (as a fraction)>",
   "results": "<results directory (without experiment ID)>"
 }
 ```
 
 ### Experiments
 
-Results must be saved as JSON files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`, containing `results-pt1.json` and `results2.json`.
-
-The current format for results, where the "indices" field contains the iterations for logging losses, is:
+Results and custom data must be saved as JSON files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. The current format for results, where the `indices` field contains the iterations for logging losses, and `score` represents the performance of the model, is:
 
 ```json
 {
-  "train": {
+  "_train": {
     "indices": "int[]",
     "losses": "float[]",
   },
-  "val": {
+  "_val": {
     "indices": "int[]",
-    "losses": "float[]"
+    "losses": "float[]",
+    "score": "float"
   },
-  "test": {
+  "_test": {
     "loss": "float",
     "score": "float"
   }
 }
 ```
 
-Each field can be updated separately on FGLab by writing a new file e.g. creating a new file `results23.json` with `{"test": {"loss": 0.962871, "score": 85}}` will update the `test` field for the experiment. Nested fields cannot be updated separately e.g. `test.score`.
+Each field should be updated separately on FGLab by writing a new file e.g. creating a new file `val.json` with `{"_val": {"indices": [1, 2, 3], "losses": [0.962, 0.629, 0.488], "score": 8}}` will update the `_val` field for the experiment. Nested fields cannot be updated separately e.g. `_test.score`. FGLab expects `_train`, `_val` and `_test` - other JSON files can be used to upload custom data. For a simple example, see [rand.js](https://github.com/Kaixhin/FGMachine/blob/master/tests/rand.js). **Note that fields preceded with `_` are reserved for processing by FGLab**.
 
 ## Future Work
 

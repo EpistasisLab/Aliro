@@ -29,14 +29,16 @@ var train = {
   indices: linScale(100000, 1, 1),
   losses: randFill(100000)
 };
-fs.writeFileSync(opts._id + "/train.json", JSON.stringify({train: train}));
+fs.writeFileSync(opts._id + "/train.json", JSON.stringify({_train: train}));
 var val = {
   indices: linScale(1000, 100, 1),
-  losses: randFill(1000)
+  losses: randFill(1000),
+  score: Math.random()
 };
-fs.writeFileSync(opts._id + "/val.json", JSON.stringify({val: val}));
+fs.writeFileSync(opts._id + "/val.json", JSON.stringify({_val: val}));
 var test = {
   loss: Math.random(),
   score: Math.random()
 };
-fs.writeFileSync(opts._id + "/test.json", JSON.stringify({test: test}));
+fs.writeFileSync(opts._id + "/test.json", JSON.stringify({_test: test}));
+fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({custom: "This is a custom field"}));
