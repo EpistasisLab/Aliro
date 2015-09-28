@@ -114,7 +114,7 @@ app.delete("/api/projects/:id/experiments", function(req, res, next) {
 /* Processing Routes */
 
 // Constructs a project from an uploaded .json file
-app.post("/new-project", upload.single("schema"), function(req, res, next) {
+app.post("/projects/schema", upload.single("schema"), function(req, res, next) {
   // Extract file name
   var name = req.file.originalname.replace(".json", "");
   // Extract .json as object
@@ -191,7 +191,7 @@ app.get("/", function(req, res, next) {
 // Project page
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
-  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1, hyperparams: 1}).sort({"test.score": -1}).toArrayAsync(); // Sort experiment scores for this project
+  var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1, status: 1, hyperparams: 1}).toArrayAsync(); // Sort experiment scores for this project
   Promise.all([projP, expP])
   .then(function(results) {
     var proj = results[0];

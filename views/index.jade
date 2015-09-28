@@ -46,7 +46,7 @@ block scripts
         var fd = new FormData($(this)[0]);
         // Send
         $.ajax({
-          url: "/new-project",
+          url: "/projects/schema",
           type: "POST",
           data: fd,
           processData: false,

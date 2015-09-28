@@ -95,11 +95,30 @@ block scripts
     var columns = [
       {field: "_id", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
       {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
+      {field: "status", title: "Status", sortable: "true", formatter: function(val) {
+        // Colour-code status
+        var textClass;
+        if (val === "succeeded") {
+          textClass = "text-success";
+        } else if (val === "failed") {
+          textClass = "text-danger";
+        } else if (val == "running") {
+          textClass = "text-info";
+        }
+        return "<span class='" + textClass + "'>" + val + "</span>";
+      }},
       {field: "test.score", title: "Score", sortable: "true"}
     ];
     // Utilises 2 functions to solve loop scope problem
     for (var key in schema) {
-      columns.push({field: "hyperparams." + key, title: key, sortable: true});
+      columns.push({field: "hyperparams." + key, title: key, sortable: true, formatter: function(k) {return function(val) {
+        var textClass = "";
+        // Mute default options
+        if (val === schema[k].default) {
+          textClass = "text-muted";
+        }
+        return "<span class='" + textClass + "'>" + val + "</span>";
+      }}(key)});
     }
 
     // Flatten each experiment
