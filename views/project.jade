@@ -44,11 +44,10 @@ block content
                 else
                   option(value="#{value}") #{value}
     .form-group.row
-      .col-sm-9.col-sm-offset-3
-        button.btn.btn-primary(type="submit") Check Availability
-
-  h3 Available Machines
-  #available-machines
+      label.col-sm-3 Submit to machine
+      .col-sm-9
+        - each machine in machines
+          button.btn.btn-primary #{machine.hostname}
 
   h2 Experiments
   table#experiments

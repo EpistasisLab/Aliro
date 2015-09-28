@@ -14,7 +14,7 @@ var db = require("./db").db;
 
 /* App instantiation */
 var app = express();
-var jsonParser = bodyParser.json({limit: '50mb'}); // Parses application/json
+var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
 app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
@@ -70,7 +70,7 @@ app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
   req.collection.updateByIdAsync(req.params.id, {$set: req.body})
   .then(function(result) {
     // Update returns the count of affected objects
-    res.send((result === 1) ? {msg: "success"} : {msg : "error"});
+    res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
   .catch(function(err) {
     next(err);
@@ -191,12 +191,14 @@ app.get("/", function(req, res, next) {
 // Project page
 app.get("/projects/:id", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
+  var macP = db.machines.find({}, {hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine hostnames
   var expP = db.experiments.find({project_id: db.toObjectID(req.params.id)}, {"test.score": 1, status: 1, hyperparams: 1}).toArrayAsync(); // Sort experiment scores for this project
-  Promise.all([projP, expP])
+  Promise.all([projP, macP, expP])
   .then(function(results) {
     var proj = results[0];
-    var experiments = results[1];
-    res.render("project", {project: proj, experiments: experiments});
+    var machines = results[1];
+    var experiments = results[2];
+    res.render("project", {project: proj, machines: machines, experiments: experiments});
   })
   .catch(function(err) {
     next(err);
