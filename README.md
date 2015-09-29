@@ -24,6 +24,8 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 
 To re-register, delete `specs.json` before running FGMachine again.
 
+To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
+
 ## Objects
 
 ### Projects
