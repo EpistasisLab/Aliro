@@ -57,5 +57,5 @@ fs.writeFileSync(opts._id + "/test.json", JSON.stringify({_test: test}));
 console.log("Testing finished");
 
 fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({"Custom Field": "This is a custom field"}));
-fs.writeFileSync(opts._id + "/note.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment."}));
+fs.writeFileSync(opts._id + "/note.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
 console.log("Program finished");
