@@ -17,6 +17,10 @@ html(lang="en")
       ul.nav.navbar-nav
         li.nav-item
           a.nav-link(href="/") #[span.octicon.octicon-home]
+        li.nav-item
+          a.nav-link(href="javascript:history.back()") #[span.octicon.octicon-chevron-left]
+        li.nav-item
+          a.nav-link(href="javascript:history.forward()") #[span.octicon.octicon-chevron-right]
     .container
       block content
     block scripts
