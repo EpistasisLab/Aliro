@@ -111,9 +111,22 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   var experimentId = req.body._id;
   var project = projects[req.params.id];
   var args = [];
-  args.push(project.file);
-  args.push(project.option);
-  args.push(JSON.stringify(req.body));
+  for (var i = 0; i < project.args.length; i++) {
+    args.push(project.args[i]);
+  }
+  var hyperparams = req.body;
+  // Command-line parsing
+  for (var prop in hyperparams) {
+    if (project.options === "plain") {
+      args.push(prop);
+      args.push(hyperparams[prop]);
+    } else if (project.options === "single-dash") {
+      args.push("-" + prop);
+      args.push(hyperparams[prop]);
+    } else if (project.options === "double-dash") {
+      args.push("--" + prop + "=" + hyperparams[prop]);
+    }
+  }
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});

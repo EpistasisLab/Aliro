@@ -37,12 +37,20 @@ After a project has been created on FGLab, if this machine is available to run e
 "<project_id>": {
   "cwd": "<working directory>",
   "command": "<binary>",
-  "file": "<file>",
-  "option": "<command line option flag>",
+  "args": "<first command line options (e.g. for a file)>",
+  "options": "<command line options style for hyperparameters>",
   "capacity": "<machine capacity needed (as a fraction)>",
   "results": "<results directory (without experiment ID)>"
 }
 ```
+
+`options` processes the options in 3 different ways. For hyperparameter settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
+
+| `options`   | Program | Command Line                                     |
+|-------------|---------|--------------------------------------------------|
+| plain       | node    | node [args] seed 123 model cnn.v2 L2 true        |
+| single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true       |
+| double-dash | caffe   | caffe [args] --seed=123 --model=cnn.v2 --L2=true |
 
 ### Experiments
 
