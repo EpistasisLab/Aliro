@@ -43,12 +43,9 @@ block content
                   option(value="#{value}", selected="selected") #{value}
                 else
                   option(value="#{value}") #{value}
-  form
-    #machines.form-group.row
-      label.col-sm-3 Submit to machine
-      .col-sm-9
-        - each machine in machines
-          button.btn.btn-primary(data-id="#{machine._id}") #{machine.hostname}
+    .form-group.row
+      .col-sm-9.col-sm-offset-3
+        button.btn.btn-primary(type="submit") Submit
 
   h2 Experiments
   table#experiments
@@ -139,7 +136,7 @@ block scripts
         classes: "table",
         undefinedText: "",
         striped: true,
-        sortName: "test.score",
+        sortName: "_val.score",
         sortOrder: "desc",
         iconsPrefix: "octicon",
         search: true,
@@ -154,14 +151,12 @@ block scripts
       });
       
       // Submits experiment
-      $("#machines").on("click", "button", function() {
-        // Get machine
-        var macId = $(this).data("id");
+      $("#new-experiment").on("submit", function() {
         // Process form
         var formObj = {};
         // Loop over form simply (does not work on nested data)
         var hasErrors = false;
-        $("#new-experiment").find(":input").each(function(ind, el) {
+        $(this).find(":input").not(":submit").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
           // Remove previous validation
@@ -224,7 +219,7 @@ block scripts
         }
 
         $.ajax({
-          url: "/api/experiments/submit?project=#{project._id}&machine=" + macId,
+          url: "/api/experiments/submit?project=#{project._id}",
           type: "POST",
           contentType: "application/json",
           data: JSON.stringify(formObj)
