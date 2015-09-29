@@ -224,7 +224,7 @@ block scripts
         }
 
         $.ajax({
-          url: "/api/experiments/machines/" + macId + "/#{project._id}",
+          url: "/api/experiments/submit?project=#{project._id}&machine=" + macId,
           type: "POST",
           contentType: "application/json",
           data: JSON.stringify(formObj)

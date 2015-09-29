@@ -128,10 +128,12 @@ app.post("/api/projects/schema", upload.single("schema"), function(req, res, nex
 });
 
 // Constructs an experiment from the form
-app.post("/api/experiments/machines/:macId/:projId", jsonParser, function(req, res, next) {
-  var obj = req.body;
-  var macP = db.machines.findByIdAsync(req.params.macId, {address: 1}); // Get machine address
-  var expP = db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(req.params.projId), _machine_id: db.toObjectID(req.params.macId), _status: "running"}, {}); // Create experiment
+app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
+  var projId = req.query.project;
+  var macId = req.query.machine;
+  var obj = req.body; // Assumes that preprocessing has occured
+  var macP = db.machines.findByIdAsync(macId, {address: 1}); // Get machine address
+  var expP = db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(macId), _status: "running"}, {}); // Create experiment
   Promise.all([macP, expP])
   .then(function(results) {
     // Get objects
@@ -139,11 +141,12 @@ app.post("/api/experiments/machines/:macId/:projId", jsonParser, function(req, r
     var exp = results[1].ops[0];
     obj._id = exp._id.toString(); // Add experiment ID to sent hyperparameters
     // Send project
-    rp({uri: mac.address + "/projects/" + req.params.projId, method: "POST", json: obj, gzip: true})
+    rp({uri: mac.address + "/projects/" + projId, method: "POST", json: obj, gzip: true})
     .then(function(body) {
       res.send(body);
     })
     .catch(function(err) {
+      db.experiments.removeByIdAsync(exp._id); // Delete failed experiment
       res.status(501);
       res.send(err.error);
     });
