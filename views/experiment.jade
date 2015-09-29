@@ -29,10 +29,10 @@ block content
   dl.dl-horizontal
     dt.col-sm-3 Status
     dd#status.col-sm-9 #{experiment._status} #[span.octicon]
-    dt.col-sm-3 Project ID
-    dd.col-sm-9 #{experiment._project_id}
+    dt.col-sm-3 Project
+    dd.col-sm-9 #[a(href="/projects/#{project._id}") #{project.name}]
     dt.col-sm-3 Machine
-    dd.col-sm-9 #{machine.hostname}
+    dd.col-sm-9 #[a(href="/machines/#{machine._id}") #{machine.hostname}]
     if experiment._started
       dt.col-sm-3 Started
       dd.col-sm-9 #{experiment._started}
@@ -41,6 +41,9 @@ block content
       dd.col-sm-9 #{experiment._finished}
     dt.col-sm-3 Hyperparams
     dd.col-sm-9= JSON.stringify(experiment._hyperparams)
+    if experiment._val
+      dt.col-sm-3 Val Score
+      dd.col-sm-9 #{experiment._val.score}
     if experiment._test
       dt.col-sm-3 Test Loss
       dd.col-sm-9 #{experiment._test.loss}

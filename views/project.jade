@@ -110,8 +110,8 @@ block scripts
         }
         return "<span class='" + textClass + "'>" + val + "</span> <span class='" + iconClass + "'></span>";
       }},
-      {field: "_test.score", title: "Test Score", sortable: "true"},
-      {field: "_val.score", title: "Val Score", sortable: "true"}
+      {field: "_val.score", title: "Val Score", sortable: "true"},
+      {field: "_test.score", title: "Test Score", sortable: "true"}
     ];
     // Utilises 2 functions to solve loop scope problem
     for (var key in schema) {
@@ -124,6 +124,8 @@ block scripts
         return "<span class='" + textClass + "'>" + val + "</span>";
       }}(key)});
     }
+    columns.push({field: "_started", title: "Started", sortable: "true"});
+    columns.push({field: "_finished", title: "Finished", sortable: "true"});
 
     // Flatten each experiment
     for (var i = 0; i < experiments.length; i++) {
@@ -150,25 +152,7 @@ block scripts
         }
       });
       
-      // Checks availability
-      $("#new-experiment").on("submit", function() {
-         $.ajax({
-          url: "/experiments/#{project._id}/check", // TODO Change to query params
-          type: "POST"
-        }).
-        then(function(responses) {
-          var $list = $("#available-machines");
-          $list.html(""); // Empty list
-          // Fill list
-          responses.forEach(function(mac) {
-            mac = JSON.parse(mac); // Extract information from string
-            $list.append("<button data-id='" + mac.id + "' class='btn btn-success'>" + mac.hostname + "</button>");
-          });
-        });
-        return false; // Stop event and propagation
-      });
-
-      // Submits experiment (with dynamically added buttons)
+      // Submits experiment
       $("#machines").on("click", "button", function() {
         // Get machine
         var macId = $(this).data("id");
@@ -192,7 +176,7 @@ block scripts
 
         // TODO Sort race condition for capacity
         $.ajax({
-          url: "/new-experiment/#{project._id}/" + macId,
+          url: "/api/experiments/machines/" + macId + "/#{project._id}",
           type: "POST",
           contentType: "application/json",
           data: JSON.stringify(formObj)
