@@ -92,10 +92,11 @@ block scripts
       // Create chart for training
       var chart;
       // Use Largest-Triangle-Three-Buckets downsampling
+      var downsampleFactor = 500;
       if (experiment._train) {
         // Chart variables
         var zippedTraining = _.zip(experiment._train.indices, experiment._train.losses);
-        var downsampledTraining = _.unzip(largestTriangleThreeBuckets(zippedTraining, 1000, 0, 1));
+        var downsampledTraining = _.unzip(largestTriangleThreeBuckets(zippedTraining, downsampleFactor, 0, 1));
         var trainIndices = downsampledTraining[0];
         trainIndices.unshift("trainIndices");
         var trainLosses = downsampledTraining[1];
@@ -109,8 +110,8 @@ block scripts
             columns: [trainIndices, trainLosses]
           },
           axis: {
-            x: {label: {text: "Iterations", position: "outer-center"}},
-            y: {label: {text: "Loss", position: "outer-middle"}}
+            x: {label: {text: "Iterations", position: "outer-center"}, padding: {left: 0}},
+            y: {label: {text: "Loss", position: "outer-middle"}, padding: 0}
           },
           point: {show: false},
           zoom: {enabled: true}
@@ -123,7 +124,7 @@ block scripts
       if (experiment._val) {
         // Chart variables
         var zippedValidation = _.zip(experiment._val.indices, experiment._val.losses);
-        var downsampledValidation = _.unzip(largestTriangleThreeBuckets(zippedValidation, 1000, 0, 1));
+        var downsampledValidation = _.unzip(largestTriangleThreeBuckets(zippedValidation, downsampleFactor, 0, 1));
         var valIndices = downsampledValidation[0];
         valIndices.unshift("valIndices");
         var valLosses = downsampledValidation[1];

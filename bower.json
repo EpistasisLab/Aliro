@@ -25,7 +25,7 @@
     "jquery": "~3.0.0-alpha",
     "lodash": "~3.10.1",
     "bootstrap": "~4.0.0-alpha",
-    "bootstrap-table": "~1.9.0",
+    "bootstrap-table": "~1.8.0",
     "octicons": "~3.1.0",
     "d3": "~3.5.6",
     "c3": "~0.4.11",
