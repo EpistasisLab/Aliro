@@ -1,6 +1,6 @@
 {
   "name": "FGLab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Future Gadget Laboratory",
   "main": "index.js",
   "scripts": {
@@ -25,11 +25,11 @@
     "bluebird": "^2.10.1",
     "body-parser": "^1.14.0",
     "bower": "^1.5.2",
-    "compression": "^1.5.2",
+    "compression": "^1.6.0",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
     "jade": "^1.11.0",
-    "mongodb": "^2.0.43",
+    "mongodb": "^2.0.44",
     "mongoskin": "^2.0.0",
     "morgan": "^1.6.1",
     "multer": "^1.0.4",
