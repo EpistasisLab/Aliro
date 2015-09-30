@@ -127,18 +127,61 @@ app.post("/api/projects/schema", upload.single("schema"), function(req, res, nex
   });
 });
 
+var hyperparamChecker = function(schema, obj) {
+  for (var prop in schema) {
+    var schemaField = schema[prop];
+    var val = obj[prop];
+    // Check field exists
+    if (val === undefined) {
+      return {error: "Field " + prop + " missing"};
+    }
+    // Check field is valid
+    var type = schemaField.type;
+    // int float bool string enum
+    if (type === "int") {
+      if (isNaN(val) ||  val % 1 !== 0) {
+        return {error: "Field " + prop + " of type " + type + " is invalid"};
+      }
+    } else if (type === "float") {
+      if (isNaN(val)) {
+        return {error: "Field " + prop + " of type " + type + " is invalid"};
+      }
+    } else if (type === "bool") {
+      if (val !== true && val !== false) {
+        return {error: "Field " + prop + " of type " + type + " is invalid"};
+      }
+    } else if (type === "string") {
+      if (val.length === 0) {
+        return {error: "Field " + prop + " of type " + type + " is invalid"};
+      }
+    } else if (type === "enum") {
+      if (schemaField.values.indexOf(val) === -1) {
+        return {error: "Field " + prop + " of type " + type + " is invalid"};
+      }
+    }
+  }
+  return {success: "Hyperparameters validated"};
+};
+
 // Constructs an experiment from the form
 app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
   var projId = req.query.project;
   // Check project actually exists
-  db.projects.findByIdAsync(projId)
-  .then(function(result) {
-    if (result === null) {
-      res.status(501);
+  db.projects.findByIdAsync(projId, {schema: 1})
+  .then(function(project) {
+    if (project === null) {
+      res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      // TODO Check object in case of API requests
-      var obj = req.body; // Assumes that preprocessing has occured
+      var obj = req.body;
+
+      // Validate
+      var validation = hyperparamChecker(project.schema, obj);
+      if (validation.error) {
+        res.status(400);
+        res.send(validation);
+      }
+
       db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
       .then(function(machines) {
         var macsP = Array(machines.length);
@@ -146,11 +189,13 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
         for (var i = 0; i < machines.length; i++) {
           macsP[i] = rp({uri: machines[i].address + "/projects/" + projId + "/capacity", method: "GET", data: null});
         }
+
         // Loop over reponses
         Promise.any(macsP)
         // First machine with capacity, so use
         .then(function(availableMac) {
           availableMac = JSON.parse(availableMac);
+
           // Create experiment
           db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
           .then(function(exp) {
@@ -162,11 +207,11 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
             })
             .catch(function() {
               db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-              res.status(501);
+              res.status(500);
               res.send({error: "Experiment failed to run"});
             });
           })
-          .catch(function() {
+          .catch(function(err) {
             next(err);
           });
         })
