@@ -99,7 +99,7 @@ app.get("/projects/:id/capacity", function(req, res) {
   var capacity = getCapacity(req.params.id);
   if (capacity === 0) {
     res.status(501);
-    res.send("Error: No capacity available");
+    res.send({error: "No capacity available"});
   } else {
     res.send({capacity: capacity, address: specs.address, _id: specs._id});
   }
@@ -110,7 +110,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Check if capacity still available
   if (getCapacity(req.params.id) === 0) {
     res.status(501);
-    return res.send("Error: No capacity available");
+    return res.send({error: "No capacity available"});
   }
 
   // Process args
