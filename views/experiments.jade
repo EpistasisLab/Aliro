@@ -1,0 +1,124 @@
+extends ./layout.jade
+
+block title
+  title FGLab: Project #{project.name} Experiments
+
+block styles
+  link(href="/bower_components/bootstrap-table/dist/bootstrap-table.min.css", rel="stylesheet")
+
+block content 
+  h1 Project: #{project.name} Experiments #[small.text-muted (#{project._id})]
+  table#experiments
+
+block scripts
+  script(src="/bower_components/jquery/dist/jquery.min.js")
+  script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
+  script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
+  script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
+  script.
+    // Flattens JSON objects
+    JSON.flatten = function(data) {
+      var result = {};
+      function recurse (cur, prop) {
+        if (Object(cur) !== cur) {
+          result[prop] = cur;
+        } else if (Array.isArray(cur)) {
+          for(var i = 0, l = cur.length; i < l; i++) {
+            recurse(cur[i], prop ? prop + "." + i : "" + i);
+          }
+          if (l == 0) {
+            result[prop] = [];
+          }
+        } else {
+          var isEmpty = true;
+          for (var p in cur) {
+            isEmpty = false;
+            recurse(cur[p], prop ? prop + "." + p : p);
+          }
+          if (isEmpty) {
+            result[prop] = {};
+          }
+        }
+      }
+      recurse(data, "");
+      return result;
+    }
+
+    // Parse from string instead prior to accessing internal objects via Jade
+    var schema = !{JSON.stringify(project.schema)};
+    var experiments = !{JSON.stringify(experiments)};
+
+    // Create columns from hyperparams
+    var columns = [
+      {field: "_id", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
+      {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
+      {field: "_status", title: "Status", sortable: "true", formatter: function(val) {
+        // Colour-code status
+        var textClass;
+        var iconClass;
+        if (val === "success") {
+          textClass = "text-success";
+          iconClass = "octicon octicon-check text-success";
+        } else if (val === "fail") {
+          textClass = "text-danger";
+          iconClass = "octicon octicon-circle-slash text-danger";
+        } else if (val == "running") {
+          textClass = "text-info";
+          iconClass = "octicon octicon-clock text-info";
+        }
+        return "<span class='" + textClass + "'>" + val + "</span> <span class='" + iconClass + "'></span>";
+      }},
+      {field: "_val.score", title: "Val Score", sortable: "true"},
+      {field: "_test.score", title: "Test Score", sortable: "true"}
+    ];
+    // Utilises 2 functions to solve loop scope problem
+    for (var key in schema) {
+      columns.push({field: "_hyperparams." + key, title: key, sortable: true, formatter: function(k) {return function(val) {
+        var textClass = "";
+        // Mute default options
+        if (val === schema[k].default) {
+          textClass = "text-muted";
+        }
+        return "<span class='" + textClass + "'>" + val + "</span>";
+      }}(key)});
+    }
+    columns.push({field: "_started", title: "Started", sortable: "true"});
+    columns.push({field: "_finished", title: "Finished", sortable: "true"});
+
+    // Flatten each experiment
+    for (var i = 0; i < experiments.length; i++) {
+      experiments[i] = JSON.flatten(experiments[i]);
+    }
+
+    $(function() {
+      // Initialise experiment table
+      $("#experiments").bootstrapTable({
+        classes: "table",
+        undefinedText: "",
+        striped: true,
+        sortName: "_test.score",
+        sortOrder: "desc",
+        iconsPrefix: "octicon",
+        search: true,
+        columns: columns,
+        data: experiments,
+        showMultiSort: true,
+        icons: {
+          sort: "octicon-list-ordered",
+          plus: "octicon-plus",
+          minus: "octicon-dash"
+        }
+      });
+
+      // Delete experiment
+      $("button.delete").on("click", function() {
+        $.ajax({
+          url: "/api/experiments/" + $(this).data("id"),
+          type: "DELETE"
+        })
+        .then(function() {
+          location.reload(); // Refresh page
+        });
+        return false; // Stop event and propagation
+      });
+    });

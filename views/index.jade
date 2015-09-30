@@ -17,12 +17,23 @@ block content
 
       br
       h2 Existing Projects
-      ul#projects.list-unstyled
-        - each project in projects
-          li
-            button.btn.btn-danger-outline.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
-            | &nbsp;
-            a(href="/projects/" + project._id) #{project.name}
+      table#projects.table
+        thead
+          tr
+            th
+            th Name
+            th New
+            th Optimisation
+            th Experiments
+        tbody
+          - each project in projects
+            tr
+              th
+                button.btn.btn-danger-outline.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
+              th #{project.name}
+              th #[a(href="/projects/" + project._id) new experiment]
+              th #[a(href="/projects/" + project._id + "/optimisation") optimisation]
+              th #[a(href="/projects/" + project._id + "/experiments") experiments]
 
     .col-sm-6
       h1 Machines

@@ -1,10 +1,10 @@
 extends ./layout.jade
 
 block title
-  title FGLab: Project #{project.name}
+  title FGLab: Project #{project.name} Optimisation
 
 block content 
-  h1 Project: #{project.name} #[small.text-muted (#{project._id})]
+  h1 Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
   form#new-experiment
     each val, key in project.schema
       if (val.type === "int")
