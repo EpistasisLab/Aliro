@@ -87,15 +87,16 @@ Note that machines are implementation-independent, and may well store their own 
 
 ## API
 
-The following endpoints allow programmatic access to projects, experiments and machines. HTTP GETs return their results as JSON.
+The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
 
-| URL               | HTTP Verb | Body | Result                 |
-|-------------------|-----------|------|------------------------|
-| /api/:objects     | GET       |      | Returns all entries    |
-| /api/:objects     | POST      | JSON | Creates new entry      |
-| /api/:objects/:id | GET       |      | Returns single entry   |
-| /api/:objects/:id | PUT       | JSON | Updates existing entry |
-| /api/:objects/:id | DELETE    |      | Deletes existing entry |
+```
+POST /api/experiments/submit?project={project ID}
+
+e.g. curl -X POST -H "Content-Type: application/json" -d '{project hyperparameters}' http://{FGLab address}/api/experiments/submit?project={project ID}
+```
+
+If the project does not exist, returns `{"error": "Project ID <project ID> does not exist"}`. If no machines are available to run the job, returns `{"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `{"error": "Experiment failed to run"}`. If successful, returns `{"_id": "<experiment ID>"}`.
+
 
 ## Future Work
 
