@@ -35,7 +35,7 @@ block content
             select.form-control(name="#{key}", id="#{key}")
               each value in val.values
                 if (value === val.default)
-                  option(value="#{value}", selected="selected") #{value}
+                  option(value="#{value}", selected) #{value}
                 else
                   option(value="#{value}") #{value}
     .form-group.row

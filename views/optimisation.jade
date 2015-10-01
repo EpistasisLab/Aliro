@@ -5,24 +5,48 @@ block title
 
 block content 
   h1 Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
-  form#new-experiment
+  h2 Grid Search
+  form#new-optimisation
     each val, key in project.schema
       if (val.type === "int")
         .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", required)
+          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key} (min) (max) (step) (scale)
+          .col-sm-2
+            input.form-control(type="number", value="#{val.default}", id="#{key}_min", required)
+          .col-sm-2
+            input.form-control(type="number", value="#{val.default}", id="#{key}_max", required)
+          .col-sm-2
+            input.form-control(type="number", value="1", step="any", id="#{key}_step", required)
+          .col-sm-3
+            select.form-control(id="#{key}_scale")
+              option(value="linear", selected) Linear
+              option(value="log") Log
+          br
+          br
+          .col-sm-9.col-sm-offset-3
+            input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", disabled)
       else if (val.type === "float")
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", required)
+          .col-sm-2
+            input.form-control(type="number", value="#{val.default}", step="any", id="#{key}_min", required)
+          .col-sm-2
+            input.form-control(type="number", value="#{val.default}", step="any", id="#{key}_max", required)
+          .col-sm-2
+            input.form-control(type="number", value="1", step="any", id="#{key}_step", required)
+          .col-sm-3
+            select.form-control(id="#{key}_scale")
+              option(value="linear", selected) Linear
+              option(value="log") Log
+          br
+          br
+          .col-sm-9.col-sm-offset-3
+            input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", disabled)
       else if (val.type === "bool")
-        // TODO Consider replacing with two radio buttons
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
           .col-sm-9
-            input.form-control(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", id="#{key}", required)
+            input.form-control(type="text", value="true,false", name="#{key}", id="#{key}", disabled)
       else if (val.type === "string")
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
@@ -32,12 +56,7 @@ block content
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
           .col-sm-9
-            select.form-control(name="#{key}", id="#{key}")
-              each value in val.values
-                if (value === val.default)
-                  option(value="#{value}", selected="selected") #{value}
-                else
-                  option(value="#{value}") #{value}
+            input.form-control(type="text", value="#{val.values}", name="#{key}", id="#{key}", disabled)
     .form-group.row
       .col-sm-9.col-sm-offset-3
         button.btn.btn-primary(type="submit") Submit
