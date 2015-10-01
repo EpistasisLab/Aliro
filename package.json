@@ -29,7 +29,7 @@
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
     "jade": "^1.11.0",
-    "mongodb": "^2.0.44",
+    "mongodb": "^2.0.45",
     "mongoskin": "^2.0.0",
     "morgan": "^1.6.1",
     "multer": "^1.0.4",

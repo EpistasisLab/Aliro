@@ -8,45 +8,29 @@ block content
   h2 Grid Search
   form#new-optimisation
     each val, key in project.schema
-      if (val.type === "int")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key} (min) (max) (step) (scale)
-          .col-sm-2
-            input.form-control(type="number", value="#{val.default}", id="#{key}_min", required)
-          .col-sm-2
-            input.form-control(type="number", value="#{val.default}", id="#{key}_max", required)
-          .col-sm-2
-            input.form-control(type="number", value="1", step="any", id="#{key}_step", required)
-          .col-sm-3
-            select.form-control(id="#{key}_scale")
-              option(value="linear", selected) Linear
-              option(value="log") Log
-          br
-          br
-          .col-sm-9.col-sm-offset-3
-            input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", disabled)
-      else if (val.type === "float")
-        .form-group.row
+      if (val.type === "int" || "float")
+        .form-group.row(data-type="#{val.type}")
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
+          .col-sm-9
+            input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", readonly)
+          label.form-control-label.control-label.col-sm-3 (min) (max) (num) (scale) (pow)
           .col-sm-2
-            input.form-control(type="number", value="#{val.default}", step="any", id="#{key}_min", required)
+            input.form-control(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="min", required)
           .col-sm-2
-            input.form-control(type="number", value="#{val.default}", step="any", id="#{key}_max", required)
+            input.form-control(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="max", required)
           .col-sm-2
-            input.form-control(type="number", value="1", step="any", id="#{key}_step", required)
-          .col-sm-3
-            select.form-control(id="#{key}_scale")
+            input.form-control(type="number", value="1", data-key="#{key}", data-opt="num", required)
+          .col-sm-2
+            select.form-control(data-key="#{key}", data-opt="scale")
               option(value="linear", selected) Linear
               option(value="log") Log
-          br
-          br
-          .col-sm-9.col-sm-offset-3
-            input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", disabled)
+          .col-sm-1
+            input.form-control(type="number", value="1", step="any", data-key="#{key}", data-opt="pow", required)
       else if (val.type === "bool")
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
           .col-sm-9
-            input.form-control(type="text", value="true,false", name="#{key}", id="#{key}", disabled)
+            input.form-control(type="text", value="true,false", name="#{key}", id="#{key}", readonly)
       else if (val.type === "string")
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
@@ -56,7 +40,7 @@ block content
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
           .col-sm-9
-            input.form-control(type="text", value="#{val.values}", name="#{key}", id="#{key}", disabled)
+            input.form-control(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
     .form-group.row
       .col-sm-9.col-sm-offset-3
         button.btn.btn-primary(type="submit") Submit
@@ -69,6 +53,51 @@ block scripts
     var schema = !{JSON.stringify(project.schema)};
 
     $(function() {
+      $("[data-opt]").on("change", function() {
+        // Elements
+        var $formGroup = $(this).closest(".form-group");
+        var $min = $formGroup.find("[data-opt='min']");
+        var $max = $formGroup.find("[data-opt='max']");
+        var $num = $formGroup.find("[data-opt='num']");
+        var $scale = $formGroup.find("[data-opt='scale']");
+        var $pow = $formGroup.find("[data-opt='pow']");
+        var $val = $formGroup.find("#" + $min.data("key"));
+
+        // Values
+        var min = parseFloat($min.val());
+        var max = parseFloat($max.val());
+        var num = parseInt($num.val());
+        var scale = $scale.val();
+        var pow = parseFloat($pow.val());
+        var type = $formGroup.data("type");
+
+        // Check validity
+        if (num <= 0) {
+          return console.log("err");
+        }
+        if (pow <= 0) {
+          return console.log("err");
+        }
+        if (min > max) {
+          return console.log("err");
+        }
+
+        // Loop through values
+        var values = Array(num);
+        var step = (max - min)/num;
+        for (var s = 0; s < num; s++) {
+          values[s] = min + s*step;
+          if (scale === "log") {
+            values[s] = Math.pow(pow, values[s]);
+          }
+          if (type === "int") {
+            values[s] = Math.round(values[s]);
+          }
+        }
+        $val.val(values);
+      });
+
+
       // Submits experiment
       $("#new-experiment").on("submit", function() {
         // Process form

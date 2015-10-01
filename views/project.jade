@@ -4,7 +4,7 @@ block title
   title FGLab: Project #{project.name}
 
 block content 
-  h1 #[span.mega-octicon.octicon-plus] Project: #{project.name} #[small.text-muted (#{project._id})]
+  h1 #[span.mega-octicon.octicon-diff-added] Project: #{project.name} #[small.text-muted (#{project._id})]
   form#new-experiment
     each val, key in project.schema
       if (val.type === "int")

@@ -2,6 +2,10 @@ div.container, h1, h2, h3 {
   margin-top: 1rem;
 }
 
+.mega-octicon {
+  font-size: 2.5rem;
+}
+
 #nav {
   border-radius: 0;
 }
