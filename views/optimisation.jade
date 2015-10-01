@@ -4,7 +4,7 @@ block title
   title FGLab: Project #{project.name} Optimisation
 
 block content 
-  h1 Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
+  h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
   h2 Grid Search
   form#new-optimisation
     each val, key in project.schema

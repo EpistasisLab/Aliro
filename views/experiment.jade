@@ -22,7 +22,7 @@ block styles
     }
 
 block content
-  h1 Experiment: #{experiment._id}
+  h1 #[span.mega-octicon.octicon-graph] Experiment: #{experiment._id}
   - if (experiment._status === "running")
     button.btn.btn-danger.kill Kill Experiment
 
