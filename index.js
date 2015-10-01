@@ -241,8 +241,7 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      var obj = req.body;
-
+      //var obj = req.body;
       // Validate
       //var validation = hyperparamChecker(project.schema, obj);
       var validation = {};
@@ -250,7 +249,6 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
         res.status(400);
         res.send(validation);
       } else {
-        console.log(obj);
         res.status(501);
         res.send({error: "Under development"});
         /*

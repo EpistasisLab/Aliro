@@ -116,6 +116,23 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
+      var recurseGrid = function(arr) {
+        if (arr.length === 0) {
+          return [];
+        } else if (arr.length === 1) {
+          return arr[0];
+        } else {
+          var result = [];
+          var tail = recurseGrid(arr.slice(1)); // Recurse with rest of array
+          for (var c in tail) {
+            for (var i = 0; i < arr[0].length; i++) {
+              result.push(arr[0][i] + tail[c]);
+            }
+          }
+          return result;
+        }
+      }
+
       // Submits experiment
       $("#new-optimisation").on("submit", function() {
         // Process form
@@ -140,6 +157,15 @@ block scripts
           });
           formObj[name] = vals; // Set key and value
         });
+
+        // Construct grid
+        var props = []; // Store properties in array
+        for (var prop in formObj) {
+          props.push(formObj[prop]);
+        }
+        console.log(props);
+        console.log(recurseGrid(props));
+        return false;
 
         $.ajax({
           url: "/api/projects/optimisation?project=#{project._id}",
