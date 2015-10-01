@@ -32,7 +32,7 @@ block content
         .form-group.row
           label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
           .col-sm-9
-            select.form-control(name="#{key}", id="#{key}")
+            select.form-control.c-select(name="#{key}", id="#{key}")
               each value in val.values
                 if (value === val.default)
                   option(value="#{value}", selected) #{value}

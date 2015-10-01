@@ -231,6 +231,82 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
   });
 });
 
+// Constructs a grid search optimiser from the form
+app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
+  var projId = req.query.project;
+  // Check project actually exists
+  db.projects.findByIdAsync(projId, {schema: 1})
+  .then(function(project) {
+    if (project === null) {
+      res.status(400);
+      res.send({error: "Project ID " + projId + " does not exist"});
+    } else {
+      var obj = req.body;
+
+      // Validate
+      //var validation = hyperparamChecker(project.schema, obj);
+      var validation = {};
+      if (validation.error) {
+        res.status(400);
+        res.send(validation);
+      } else {
+        console.log(obj);
+        res.status(501);
+        res.send({error: "Under development"});
+        /*
+        db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
+        .then(function(machines) {
+          var macsP = Array(machines.length);
+          // Check machine capacities
+          for (var i = 0; i < machines.length; i++) {
+            macsP[i] = rp({uri: machines[i].address + "/projects/" + projId + "/capacity", method: "GET", data: null});
+          }
+
+          // Loop over reponses
+          Promise.any(macsP)
+          // First machine with capacity, so use
+          .then(function(availableMac) {
+            availableMac = JSON.parse(availableMac);
+
+            // Create experiment
+            db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
+            .then(function(exp) {
+              obj._id = exp.ops[0]._id.toString(); // Add experiment ID to sent hyperparameters
+              // Send project
+              rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: obj, gzip: true})
+              .then(function(body) {
+                res.send(body);
+              })
+              .catch(function() {
+                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+                res.status(500);
+                res.send({error: "Experiment failed to run"});
+              });
+            })
+            .catch(function(err) {
+              next(err);
+            });
+          })
+          // No machines responded, therefore fail
+          .catch(function() {
+            res.status(501);
+            res.send({error: "No machine capacity available"});
+          });
+        })
+        .catch(function(err) {
+          next(err);
+        });
+        */
+      }
+    }
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+
+
 // Adds started time to experiment
 app.put("/api/experiments/:id/started", function(req, res, next) {
   db.experiments.updateByIdAsync(req.params.id, {$set: {_started: new Date()}})

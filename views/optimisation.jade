@@ -8,41 +8,41 @@ block content
   h2 Grid Search
   form#new-optimisation
     each val, key in project.schema
-      if (val.type === "int" || "float")
-        .form-group.row(data-type="#{val.type}")
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
+      if (val.type === "int" || val.type === "float")
+        .form-group.row.has-success(data-type="#{val.type}")
+          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          .col-sm-10(style="margin-bottom: 5px")
             input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", readonly)
-          label.form-control-label.control-label.col-sm-3 (min) (max) (num) (scale) (pow)
+          label.form-control-label.control-label.col-sm-2.text-muted [min, max) # scale base
           .col-sm-2
-            input.form-control(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="min", required)
+            input.form-control.form-control-success(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="min", required)
           .col-sm-2
-            input.form-control(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="max", required)
+            input.form-control.form-control-success(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="max", required)
           .col-sm-2
-            input.form-control(type="number", value="1", data-key="#{key}", data-opt="num", required)
+            input.form-control.form-control-success(type="number", value="1", data-key="#{key}", data-opt="num", required)
           .col-sm-2
-            select.form-control(data-key="#{key}", data-opt="scale")
+            select.form-control.c-select.form-control-success(data-key="#{key}", data-opt="scale")
               option(value="linear", selected) Linear
               option(value="log") Log
-          .col-sm-1
-            input.form-control(type="number", value="1", step="any", data-key="#{key}", data-opt="pow", required)
+          .col-sm-2
+            input.form-control.form-control-success(type="number", value="10", step="any", data-key="#{key}", data-opt="pow", required)
       else if (val.type === "bool")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="text", value="true,false", name="#{key}", id="#{key}", readonly)
+        .form-group.row.has-success(data-type="#{val.type}")
+          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          .col-sm-10
+            input.form-control.form-control-success(type="text", value="true,false", name="#{key}", id="#{key}", readonly)
       else if (val.type === "string")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
+        .form-group.row.has-success(data-type="#{val.type}")
+          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          .col-sm-10
+            input.form-control.form-control-success(type="text", value="#{val.default}", name="#{key}", id="#{key}", data-type="string", required)
       else if (val.type === "enum")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
+        .form-group.row.has-success(data-type="#{val.type}")
+          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          .col-sm-10
+            input.form-control.form-control-success(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
     .form-group.row
-      .col-sm-9.col-sm-offset-3
+      .col-sm-10.col-sm-offset-2
         button.btn.btn-primary(type="submit") Submit
 
 block scripts
@@ -55,7 +55,8 @@ block scripts
     $(function() {
       $("[data-opt]").on("change", function() {
         // Elements
-        var $formGroup = $(this).closest(".form-group");
+        var $el = $(this);
+        var $formGroup = $el.closest(".form-group");
         var $min = $formGroup.find("[data-opt='min']");
         var $max = $formGroup.find("[data-opt='max']");
         var $num = $formGroup.find("[data-opt='num']");
@@ -63,23 +64,22 @@ block scripts
         var $pow = $formGroup.find("[data-opt='pow']");
         var $val = $formGroup.find("#" + $min.data("key"));
 
+        $el.removeClass("form-control-success form-control-error");
+        $formGroup.removeClass("has-success has-error");
+
         // Values
         var min = parseFloat($min.val());
         var max = parseFloat($max.val());
-        var num = parseInt($num.val());
+        var num = parseFloat($num.val());
         var scale = $scale.val();
         var pow = parseFloat($pow.val());
         var type = $formGroup.data("type");
 
         // Check validity
-        if (num <= 0) {
-          return console.log("err");
-        }
-        if (pow <= 0) {
-          return console.log("err");
-        }
-        if (min > max) {
-          return console.log("err");
+        if (num <= 0 || pow <= 0 || min > max || num % 1 !== 0) {
+          $el.addClass("form-control-error");
+          $formGroup.addClass("has-error");
+          return;
         }
 
         // Loop through values
@@ -89,91 +89,66 @@ block scripts
           values[s] = min + s*step;
           if (scale === "log") {
             values[s] = Math.pow(pow, values[s]);
-          }
-          if (type === "int") {
+          } else if (type === "int") {
             values[s] = Math.round(values[s]);
           }
         }
         $val.val(values);
+
+        $el.addClass("form-control-success");
+        $formGroup.addClass("has-success");
       });
 
+      $("[data-type='string']").on("change", function() {
+        var $el = $(this);
+        var $formGroup = $el.closest(".form-group");
+
+        $el.removeClass("form-control-success form-control-error");
+        $formGroup.removeClass("has-success has-error");
+
+        if ($el.val().length === 0) {
+          $el.addClass("form-control-error");
+          $formGroup.addClass("has-error");
+          return;
+        }
+
+        $el.addClass("form-control-success");
+        $formGroup.addClass("has-success");
+      });
 
       // Submits experiment
-      $("#new-experiment").on("submit", function() {
+      $("#new-optimisation").on("submit", function() {
         // Process form
         var formObj = {};
         // Loop over form simply (does not work on nested data)
-        var hasErrors = false;
-        $(this).find(":input").not(":submit").each(function(ind, el) {
+        $(this).find("[id]:input").not(":submit").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
-          // Remove previous validation
-          $el.removeClass("form-control-success form-control-error");
-          $formGroup.removeClass("has-success has-error");
           var name = $el.attr("name");
           var val = $el.val();
-          // Validate
-          if ($el.attr("type") === "number") {
-            val = parseFloat(val);
-            // Check floats
-            if (isNaN(val)) {
-              $el.addClass("form-control-error");
-              $formGroup.addClass("has-error");
-              hasErrors = true;
-            } else {
-              if ($el.attr("step")) {
-                $el.addClass("form-control-success");
-                $formGroup.addClass("has-success");
-              } else {
-                // Check ints
-                if (val % 1 !== 0) {
-                  $el.addClass("form-control-error");
-                  $formGroup.addClass("has-error");
-                  hasErrors = true;
-                } else {
-                  $el.addClass("form-control-success");
-                  $formGroup.addClass("has-success");
-                }
-              }
+          var type = $formGroup.data("type");
+
+          // Get all elements
+          var vals = [];
+          val.split(",").forEach(function(a) {
+            if (type === "int" || type === "float") {
+              a = parseFloat(a);
+            } else if (type === "bool") {
+              a = (a === "true");
             }
-          } else if ($el.attr("pattern")) {
-            if (val !== "true" && val !== "false") {
-              // Check bools
-              $el.addClass("form-control-error");
-              $formGroup.addClass("has-error");
-              hasErrors = true;
-            } else {
-              // Convert bools
-              val = (val === "true");
-              $el.addClass("form-control-success");
-              $formGroup.addClass("has-success");
-            }
-          } else {
-            if (val === "") {
-              // Check strings
-              $el.addClass("form-control-error");
-              $formGroup.addClass("has-error");
-              hasErrors = true;
-            } else {
-              $el.addClass("form-control-success");
-              $formGroup.addClass("has-success");
-            }
-          }
-          formObj[name] = val; // Set key and value
+            vals.push(a);
+          });
+          formObj[name] = vals; // Set key and value
         });
-        // Stop if form has errors
-        if (hasErrors) {
-          return false;
-        }
 
         $.ajax({
-          url: "/api/experiments/submit?project=#{project._id}",
+          url: "/api/projects/optimisation?project=#{project._id}",
           type: "POST",
           contentType: "application/json",
           data: JSON.stringify(formObj)
         })
         .then(function(resp) {
-          location.assign("/experiments/" + resp._id); // Move to new experiment page
+          location.assign("/experiments"); // Move to experiments page
         })
         .catch(function(err) {
           alert(err.responseText);
