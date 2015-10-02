@@ -105,13 +105,14 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
-      $("[data-type='string']").on("change", function() {
+      // TODO Check
+      /*$("[data-type='string']").on("change", function() {
         var $el = $(this);
         var $formGroup = $el.closest(".form-group");
 
         $el.removeClass("form-control-success form-control-error");
         $formGroup.removeClass("has-success has-error");
-
+        console.log($el.val());
         if ($el.val().length === 0) {
           $el.addClass("form-control-error");
           $formGroup.addClass("has-error");
@@ -120,7 +121,7 @@ block scripts
 
         $el.addClass("form-control-success");
         $formGroup.addClass("has-success");
-      });
+      });*/
 
       $("[name='_evaluations']").on("change", function() {
         var $el = $(this);

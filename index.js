@@ -250,6 +250,20 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
   });
 });
 
+// Submit job with retry
+var submitJobRetry = function(projId, hyperparams) {
+  submitJob(projId, hyperparams)
+  .then(function() {
+    // TODO Keep track of batch jobs
+  })
+  .catch(function() {
+    // Retry in a random 1s interval
+    setTimeout(function() {
+      submitJobRetry(projId, hyperparams);
+    }, 1000*Math.random());
+  });
+};
+
 // Constructs an optimiser from a list of hyperparams
 app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
   var projId = req.query.project;
@@ -273,50 +287,10 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
         res.status(400);
         res.send(validationList[0]); // Send first validation error       
       } else {
-        /*
-        db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
-        .then(function(machines) {
-          var macsP = Array(machines.length);
-          // Check machine capacities
-          for (var i = 0; i < machines.length; i++) {
-            macsP[i] = rp({uri: machines[i].address + "/projects/" + projId + "/capacity", method: "GET", data: null});
-          }
-
-          // Loop over reponses
-          Promise.any(macsP)
-          // First machine with capacity, so use
-          .then(function(availableMac) {
-            availableMac = JSON.parse(availableMac);
-
-            // Create experiment
-            db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
-            .then(function(exp) {
-              obj._id = exp.ops[0]._id.toString(); // Add experiment ID to sent hyperparameters
-              // Send project
-              rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: obj, gzip: true})
-              .then(function(body) {
-                res.send(body);
-              })
-              .catch(function() {
-                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                res.status(500);
-                res.send({error: "Experiment failed to run"});
-              });
-            })
-            .catch(function(err) {
-              next(err);
-            });
-          })
-          // No machines responded, therefore fail
-          .catch(function() {
-            res.status(501);
-            res.send({error: "No machine capacity available"});
-          });
-        })
-        .catch(function(err) {
-          next(err);
-        });
-        */
+        // Loop over jobs
+        for (var j = 0; j < expList.length; j++) {
+         submitJobRetry(projId, expList[j]);
+        }
         res.send({status: "Started"});
       }
     }
