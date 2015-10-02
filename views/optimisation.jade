@@ -5,7 +5,7 @@ block title
 
 block content 
   h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
-  h2 Grid Search
+  h2 Random Search
   form#new-optimisation
     each val, key in project.schema
       if (val.type === "int" || val.type === "float")
@@ -41,6 +41,12 @@ block content
           label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
           .col-sm-10
             input.form-control.form-control-success(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
+    hr
+    .form-group.row.has-success(data-type="_evaluations")
+      label.form-control-label.control-label.col-sm-2(for="#{key}") # Evaluations
+      .col-sm-10
+        input.form-control.form-control-success(type="number", value="1", name="_evaluations", id="#_evaluations", required)
+ 
     .form-group.row
       .col-sm-10.col-sm-offset-2
         button.btn.btn-primary(type="submit") Submit
@@ -116,6 +122,25 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
+      $("[name='_evaluations']").on("change", function() {
+        var $el = $(this);
+        var $formGroup = $el.closest(".form-group");
+
+        $el.removeClass("form-control-success form-control-error");
+        $formGroup.removeClass("has-success has-error");
+
+        var val = parseFloat($el.val());
+        if (isNaN(val) || val % 1 !== 0) {
+          $el.addClass("form-control-error");
+          $formGroup.addClass("has-error");
+          return;
+        }
+
+        $el.addClass("form-control-success");
+        $formGroup.addClass("has-success");
+      });
+
+      // TODO Modify for objects to create grid search
       var recurseGrid = function(arr) {
         if (arr.length === 0) {
           return [];
@@ -158,13 +183,33 @@ block scripts
           formObj[name] = vals; // Set key and value
         });
 
-        // Construct grid
-        var props = []; // Store properties in array
-        for (var prop in formObj) {
-          props.push(formObj[prop]);
+        // Process range for random search
+        var rangeObj = {};
+        $(this).find("[data-opt]").each(function(ind, el) {
+          var $el = $(el);
+          var key = $el.data("key");
+          var opt = $el.data("opt");
+          var val = $el.val();
+          if (opt !== "scale") {
+            val = parseFloat(val);
+          }
+          // Create key if it doesn't exist 
+          if (!rangeObj[key]) {
+            rangeObj[key] = {};
+          }
+          rangeObj[key][opt] = val;
+        });
+
+        // Extract evaluations for random search
+        var evaluations = parseInt(formObj._evaluations[0]);
+        delete formObj._evaluations;
+
+        // Create experiment list
+        var expList = Array(evaluations);
+        for (var i = 0; i < evaluations; i++) {
+          expList[i] = formObj;
         }
-        console.log(props);
-        console.log(recurseGrid(props));
+        console.log(expList);
         return false;
 
         $.ajax({
