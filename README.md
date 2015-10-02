@@ -73,6 +73,8 @@ This is stored by FGLab, and is used to construct a form which lets one choose h
 
 The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
+A random search optimiser has also been implemented, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
+
 ### Experiments
 
 An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain an ID, a project ID, a machine ID, the chosen hyperparameters, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
@@ -89,21 +91,33 @@ Note that machines are implementation-independent, and may well store their own 
 
 The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
 
+**Submit a new experiment with a set of hyperparameters**
 ```
 POST /api/experiments/submit?project={project ID}
 
 e.g. curl -X POST -H "Content-Type: application/json" -d '{project hyperparameters}' http://{FGLab address}/api/experiments/submit?project={project ID}
 ```
 
-If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If the hyperparameters, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `501 {"error": "Experiment failed to run"}`. If successful, returns `200 {"_id": "<experiment ID>"}`.
+If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If the hyperparameters are invalid, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `501 {"error": "Experiment failed to run"}`. If successful, returns `200 {"_id": "<experiment ID>"}`.
 
+**Start a batch job with a list of hyperparameter sets**
+```
+POST /api/projects/optimisation?project={project ID}
+
+e.g. curl -X POST -H "Content-Type: application/json" -d '[{project hyperparameters}]' http://{FGLab address}/api/projects/optimisation?project={project ID}
+```
+
+If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the hyperparameters are invalid, returns `400 {"error": "<validation message>"}` for the first set of hyperparameters that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
 
 ## Future Work
 
+- **Make experiments have events to implement webhooks - can be notified once finished**.
+- Implement grid search optimiser.
 - Add query params to collection GET to expand API.
-- Convert form validation into a proper API (can be used to check schema defaults as well).
+- Create a separate optimisation object that can be used to check status etc.
+- Merge client-side and server-side form validation?
 - Using WebSockets to enable live querying of experiment logs.
 - Creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
 - Specifying what other data machines store, and how to access this via FGLab.
-- Implement [random search for hyperparameter optimisation](http://www.jmlr.org/papers/v13/bergstra12a.html) on validation score.
-- Test suite.
+- Implement Bayesian optimiser.
+- Create a test suite.

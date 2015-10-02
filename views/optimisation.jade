@@ -199,6 +199,9 @@ block scripts
           }
           rangeObj[key][opt] = val;
         });
+        for (var prop in rangeObj) {
+          rangeObj[prop].type = $("#" + prop).closest(".form-group").data("type");
+        }
 
         // Extract evaluations for random search
         var evaluations = parseInt(formObj._evaluations[0]);
@@ -207,19 +210,37 @@ block scripts
         // Create experiment list
         var expList = Array(evaluations);
         for (var i = 0; i < evaluations; i++) {
-          expList[i] = formObj;
+          var expObj = {};
+          for (var prop in formObj) {
+            if (rangeObj[prop]) {
+              // Continuous uniform
+              rObj = rangeObj[prop];
+              var rand = Math.random()*(rObj.max - rObj.min) + rObj.min;
+              if (rObj.scale === "log") {
+                rand = Math.pow(rObj.pow, rand);
+              }
+              if (rObj.type === "int") {
+                rand = Math.round(rand);
+              }
+              expObj[prop] = rand;
+            } else {
+              // Discrete uniform
+              var list = formObj[prop];
+              var ind = Math.floor(Math.random() * list.length);
+              expObj[prop] = list[ind];
+            }
+          }
+          expList[i] = expObj;
         }
-        console.log(expList);
-        return false;
 
         $.ajax({
           url: "/api/projects/optimisation?project=#{project._id}",
           type: "POST",
           contentType: "application/json",
-          data: JSON.stringify(formObj)
+          data: JSON.stringify(expList)
         })
         .then(function(resp) {
-          location.assign("/experiments"); // Move to experiments page
+          location.assign("/projects/#{project._id}/experiments"); // Move to experiments page
         })
         .catch(function(err) {
           alert(err.responseText);

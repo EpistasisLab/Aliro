@@ -163,6 +163,51 @@ var hyperparamChecker = function(schema, obj) {
   return {success: "Hyperparameters validated"};
 };
 
+var submitJob = function(projId, hyperparams) {
+  return new Promise(function(resolve, reject) {
+    db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
+    .then(function(machines) {
+      var macsP = Array(machines.length);
+      // Check machine capacities
+      for (var i = 0; i < machines.length; i++) {
+        macsP[i] = rp({uri: machines[i].address + "/projects/" + projId + "/capacity", method: "GET", data: null});
+      }
+
+      // Loop over reponses
+      Promise.any(macsP)
+      // First machine with capacity, so use
+      .then(function(availableMac) {
+        availableMac = JSON.parse(availableMac);
+
+        // Create experiment
+        db.experiments.insertAsync({_hyperparams: hyperparams, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
+        .then(function(exp) {
+          hyperparams._id = exp.ops[0]._id.toString(); // Add experiment ID to sent hyperparameters
+          // Send project
+          rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: hyperparams, gzip: true})
+          .then(function(body) {
+            resolve(body);
+          })
+          .catch(function() {
+            db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+            reject({error: "Experiment failed to run"});
+          });
+        })
+        .catch(function(err) {
+          reject(err);
+        });
+      })
+      // No machines responded, therefore fail
+      .catch(function() {
+        reject({error: "No machine capacity available"});
+      });
+    })
+    .catch(function(err) {
+      reject(err);
+    });
+  });
+};
+
 // Constructs an experiment from the form
 app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
   var projId = req.query.project;
@@ -181,47 +226,21 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
         res.status(400);
         res.send(validation);
       } else {
-        db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
-        .then(function(machines) {
-          var macsP = Array(machines.length);
-          // Check machine capacities
-          for (var i = 0; i < machines.length; i++) {
-            macsP[i] = rp({uri: machines[i].address + "/projects/" + projId + "/capacity", method: "GET", data: null});
-          }
-
-          // Loop over reponses
-          Promise.any(macsP)
-          // First machine with capacity, so use
-          .then(function(availableMac) {
-            availableMac = JSON.parse(availableMac);
-
-            // Create experiment
-            db.experiments.insertAsync({_hyperparams: obj, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
-            .then(function(exp) {
-              obj._id = exp.ops[0]._id.toString(); // Add experiment ID to sent hyperparameters
-              // Send project
-              rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: obj, gzip: true})
-              .then(function(body) {
-                res.send(body);
-              })
-              .catch(function() {
-                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                res.status(500);
-                res.send({error: "Experiment failed to run"});
-              });
-            })
-            .catch(function(err) {
-              next(err);
-            });
-          })
-          // No machines responded, therefore fail
-          .catch(function() {
-            res.status(501);
-            res.send({error: "No machine capacity available"});
-          });
+        submitJob(projId, obj)
+        .then(function(resp) {
+          res.send(resp);
         })
         .catch(function(err) {
-          next(err);
+          // TODO Check comprehensiveness of error catching
+          if (err.error === "No machine capacity available") {
+            res.status(501);
+            res.send(err);
+          } else if (err.error === "Experiment failed to run") {
+            res.status(500);
+            res.send(err);
+          } else {
+            next(err);
+          }
         });
       }
     }
@@ -231,7 +250,7 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
   });
 });
 
-// Constructs a grid search optimiser from the form
+// Constructs an optimiser from a list of hyperparams
 app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
   var projId = req.query.project;
   // Check project actually exists
@@ -241,16 +260,19 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      //var obj = req.body;
+      var expList = req.body;
       // Validate
-      //var validation = hyperparamChecker(project.schema, obj);
-      var validation = {};
-      if (validation.error) {
+      var validationList = [];
+      for (var i = 0; i < expList.length; i++) {
+       var validation = hyperparamChecker(project.schema, expList[i]);
+        if (validation.error) {
+          validationList.push(validation);
+        }
+      }
+      if (validationList.length > 0) {
         res.status(400);
-        res.send(validation);
+        res.send(validationList[0]); // Send first validation error       
       } else {
-        res.status(501);
-        res.send({error: "Under development"});
         /*
         db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
         .then(function(machines) {
@@ -295,6 +317,7 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
           next(err);
         });
         */
+        res.send({status: "Started"});
       }
     }
   })
