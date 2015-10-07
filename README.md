@@ -104,12 +104,12 @@ If the project does not exist, returns `400 {"error": "Project ID <project ID> d
 
 **Start a batch job with a list of hyperparameter sets**
 ```
-POST /api/projects/optimisation?project={project ID}
+POST /api/projects/optimisation?project={project ID}&retry={(optional) retry timeout}
 
 e.g. curl -X POST -H "Content-Type: application/json" -d '[{project hyperparameters}]' http://{FGLab address}/api/projects/optimisation?project={project ID}
 ```
 
-If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the hyperparameters are invalid, returns `400 {"error": "<validation message>"}` for the first set of hyperparameters that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
+The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the hyperparameters are invalid, returns `400 {"error": "<validation message>"}` for the first set of hyperparameters that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
 
 ## Future Work
 

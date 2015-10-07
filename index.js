@@ -251,7 +251,7 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
 });
 
 // Submit job with retry
-var submitJobRetry = function(projId, hyperparams) {
+var submitJobRetry = function(projId, hyperparams, retryT) {
   submitJob(projId, hyperparams)
   .then(function() {
     // TODO Keep track of batch jobs
@@ -259,14 +259,15 @@ var submitJobRetry = function(projId, hyperparams) {
   .catch(function() {
     // Retry in a random 1s interval
     setTimeout(function() {
-      submitJobRetry(projId, hyperparams);
-    }, 1000*Math.random());
+      submitJobRetry(projId, hyperparams, retryT);
+    }, 1000*retryT*Math.random());
   });
 };
 
 // Constructs an optimiser from a list of hyperparams
 app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
   var projId = req.query.project;
+  var retryTimeout = parseInt(req.query.retry) || 60*60; // Default is an hour
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
   .then(function(project) {
@@ -289,7 +290,7 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
       } else {
         // Loop over jobs
         for (var j = 0; j < expList.length; j++) {
-         submitJobRetry(projId, expList[j]);
+          submitJobRetry(projId, expList[j], retryTimeout);
         }
         res.send({status: "Started"});
       }
