@@ -10,6 +10,8 @@ FGLab is a machine learning dashboard, designed to facilitate performing experim
 
 The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
 
+Some screenshots can be found on the [project website](http://kaixhin.github.io/FGLab/).
+
 ## Installation
 
 ### Local
