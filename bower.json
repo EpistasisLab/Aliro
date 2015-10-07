@@ -18,8 +18,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
-    "tests"
+    "test"
   ],
   "dependencies": {
     "jquery": "~3.0.0-alpha",

@@ -65,7 +65,7 @@ The JSON schema represents a map/associative array (without nesting), where the 
 - **default**: Default value
 - **values**: An array of strings comprising the `enum`
 
-See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/tests/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
+See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/test/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
 
 Often it is hard to specify some hyperparameters in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing hyperparameters and versioning manually e.g. `cnn.v2`.
 
