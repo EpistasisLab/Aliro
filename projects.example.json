@@ -1,10 +1,10 @@
 {
   "560a6553e9b1973d39d06e43": {
-    "cwd": "./tests",
+    "cwd": "./test",
     "command": "node",
     "args": ["rand.js", "-optParameter"],
     "options": "plain",
     "capacity": 0.9,
-    "results": "./tests"
+    "results": "./test"
   }
 }
