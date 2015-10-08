@@ -110,16 +110,3 @@ e.g. curl -X POST -H "Content-Type: application/json" -d '[{project hyperparamet
 ```
 
 The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the hyperparameters are invalid, returns `400 {"error": "<validation message>"}` for the first set of hyperparameters that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
-
-## Future Work
-
-- **Make experiments have events to implement webhooks - can be notified once finished**.
-- Implement grid search optimiser.
-- Add query params to collection GET to expand API.
-- Create a separate optimisation object that can be used to check status etc.
-- Merge client-side and server-side form validation?
-- Using WebSockets to enable live querying of experiment logs.
-- Creating adapters i.e. a model adapter that can parse a JSON object specifying details of a neural network.
-- Specifying what other data machines store, and how to access this via FGLab.
-- Implement Bayesian optimiser.
-- Create a test suite.
