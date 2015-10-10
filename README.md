@@ -44,13 +44,14 @@ After a project has been created on FGLab, if this machine is available to run e
 }
 ```
 
-`options` processes the options in 3 different ways. For hyperparameter settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
+`options` processes the options in 4 different ways. For hyperparameter settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
 
-| `options`   | Program | Command Line                                     |
-|-------------|---------|--------------------------------------------------|
-| plain       | node    | node [args] seed 123 model cnn.v2 L2 true        |
-| single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true       |
-| double-dash | caffe   | caffe [args] --seed=123 --model=cnn.v2 --L2=true |
+| `options`   | Program | Command Line                                                                   |
+|-------------|---------|--------------------------------------------------------------------------------|
+| plain       | node    | node [args] seed 123 model cnn.v2 L2 true                                      |
+| single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true                                     |
+| double-dash | caffe   | caffe [args] --seed=123 --model=cnn.v2 --L2=true                               |
+| function    | matlab  | matlab [args w/o final arg] [final arg]('seed',123,'model','cnn.v2','L2',true) |
 
 ### Experiments
 

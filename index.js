@@ -122,6 +122,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   }
   var hyperparams = req.body;
   // Command-line parsing
+  var functionParams = [];
   for (var prop in hyperparams) {
     if (project.options === "plain") {
       args.push(prop);
@@ -131,7 +132,14 @@ app.post("/projects/:id", jsonParser, function(req, res) {
       args.push(hyperparams[prop]);
     } else if (project.options === "double-dash") {
       args.push("--" + prop + "=" + hyperparams[prop]);
+    } else if (project.options === "function") {
+      functionParams.push(JSON.stringify(prop));
+      functionParams.push(JSON.stringify(hyperparams[prop]));
     }
+  }
+  if (project.options === "function") {
+    functionParams = functionParams.toString().replace(/\"/g, "'"); // Replace " with '
+    args[args.length - 1] = args[args.length - 1] + "(" + functionParams  + ");";
   }
 
   // Spawn experiment
