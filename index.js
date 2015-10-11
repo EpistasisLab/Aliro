@@ -120,21 +120,21 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   for (var i = 0; i < project.args.length; i++) {
     args.push(project.args[i]);
   }
-  var hyperparams = req.body;
+  var options = req.body;
   // Command-line parsing
   var functionParams = [];
-  for (var prop in hyperparams) {
+  for (var prop in options) {
     if (project.options === "plain") {
       args.push(prop);
-      args.push(hyperparams[prop]);
+      args.push(options[prop]);
     } else if (project.options === "single-dash") {
       args.push("-" + prop);
-      args.push(hyperparams[prop]);
+      args.push(options[prop]);
     } else if (project.options === "double-dash") {
-      args.push("--" + prop + "=" + hyperparams[prop]);
+      args.push("--" + prop + "=" + options[prop]);
     } else if (project.options === "function") {
       functionParams.push(JSON.stringify(prop));
-      functionParams.push(JSON.stringify(hyperparams[prop]));
+      functionParams.push(JSON.stringify(options[prop]));
     }
   }
   if (project.options === "function") {
