@@ -8,7 +8,7 @@ console.log("Optional parameter: " + process.argv[2]);
 for (var i = 3; i < process.argv.length; i += 2) {
   opts[process.argv[i]] = process.argv[i + 1];
 }
-console.log("Options: ")
+console.log("Options: ");
 console.log(opts);
 
 // Make results directory
@@ -58,4 +58,5 @@ console.log("Testing finished");
 
 fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({"Custom Field": "This is a custom field"}));
 fs.writeFileSync(opts._id + "/note.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
+fs.writeFileSync(opts._id + "/file.js", "var id = " + opts._id + ";");
 console.log("Program finished");

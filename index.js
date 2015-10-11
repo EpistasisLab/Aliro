@@ -164,20 +164,40 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   experiment.on("exit", function(exitCode) {
     maxCapacity += project.capacity; // Add back capacity
 
-    // Results-sending function
-    var sendResults = function(results) {
-      rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+    // Results-sending function for JSON
+    var sendJSONResults = function(results) {
+      return rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+    };
+
+    // Results-sending function for other files
+    var sendFileResults = function(filenames) {
+      // Create form data
+      var formData = {
+        _files: []
+      };
+      // Add files
+      for (var i = 0; i < filenames.length; i++) {
+        formData._files.push(fs.createReadStream(filenames[i]));
+      }
+      return rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
     };
 
     // Send all result files
     var resultsDir = project.results + "/" + experimentId;
     fs.readdir(resultsDir)
     .then(function(files) {
+      var nonJSONFiles = [];
       for (var i = 0; i < files.length; i++) {
-        if (files[i].match(/\.json$/)) { // Only pass JSON files
-          fs.readFile(resultsDir + "/" + files[i], "utf-8").then(sendResults);
+        if (files[i].match(/\.json$/)) {
+          // Process JSON files
+          fs.readFile(resultsDir + "/" + files[i], "utf-8").then(sendJSONResults);
+        } else {
+          // Store filenames for other files
+          nonJSONFiles.push(resultsDir + "/" + files[i]);
         }
       }
+      // Process other files
+      sendFileResults(nonJSONFiles);
     });
 
     // Send status
