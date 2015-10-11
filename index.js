@@ -7,6 +7,7 @@ var multer = require("multer");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
+var streamifier = require("streamifier");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 //var WebSocketServer = require("ws").Server;
@@ -111,6 +112,28 @@ app.delete("/api/projects/:id/experiments", function(req, res, next) {
   });
 });
 
+// Processess files for an experiment
+app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res) {
+  delete req.body._id; // Delete ID (will not update otherwise)
+  for (var i = 0; i < req.files.length; i++) {
+    var file = req.files[i];
+    var writeStream = db.gfs.createWriteStream({filename: file.originalname, contentType: file.mimetype});
+    streamifier.createReadStream(file.buffer).pipe(writeStream);
+    // TODO Better integrated feedback
+    writeStream.on("close", function(file) {
+      // Save file reference
+      db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: file._id, filename: file.filename}}})
+      .catch(function(err) {
+        console.log(err);
+      });
+    });
+    writeStream.on("error", function(err) {
+      console.log(err);
+    });
+  }
+  res.send({message: "Attempting to save files"});
+});
+
 // Constructs a project from an uploaded .json file
 app.post("/api/projects/schema", upload.single("schema"), function(req, res, next) {
   // Extract file name
@@ -180,7 +203,7 @@ var submitJob = function(projId, options) {
         availableMac = JSON.parse(availableMac);
 
         // Create experiment
-        db.experiments.insertAsync({_options: options, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
+        db.experiments.insertAsync({_options: options, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _files: [], _status: "running"}, {})
         .then(function(exp) {
           options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
           // Send project
@@ -301,8 +324,6 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
   });
 });
 
-
-
 // Adds started time to experiment
 app.put("/api/experiments/:id/started", function(req, res, next) {
   db.experiments.updateByIdAsync(req.params.id, {$set: {_started: new Date()}})
@@ -323,6 +344,16 @@ app.put("/api/experiments/:id/finished", function(req, res, next) {
     res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
   .catch(function(err) {
+    next(err);
+  });
+});
+
+// Downloads file
+app.get("/files/:id", function(req, res, next) {
+  var readStream = db.gfs.createReadStream({_id: req.params.id});
+  readStream.pipe(res);
+  // Error handling
+  readStream.on("error", function(err) {
     next(err);
   });
 });

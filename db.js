@@ -1,12 +1,14 @@
 var Promise = require("bluebird");
 var mongoskin = require("mongoskin");
+var Grid = require("gridfs-stream");
 var db;
 if (!process.env.MONGODB_URI) {
   console.log("Error: No MongoDB instance specified");
   process.exit(1);
 } else {
-  // Connect to db
+  // Connect to MongoDB
   db = mongoskin.db(process.env.MONGODB_URI, {native_parser: true});
+  db.gfs = Grid(db, mongoskin);
 }
 
 // Bind collections

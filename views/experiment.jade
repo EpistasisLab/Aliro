@@ -41,6 +41,11 @@ block content
       dd.col-sm-9 #{experiment._finished}
     dt.col-sm-3 Options
     dd.col-sm-9= JSON.stringify(experiment._options)
+    dt.col-sm-3 Files
+    dd.col-sm-9
+      ul.list-unstyled
+      - each file in experiment._files
+        li #[a(href="/files/#{file._id}") #{file.filename}]
     if experiment._val
       dt.col-sm-3 Val Score
       dd.col-sm-9 #{experiment._val.score}
