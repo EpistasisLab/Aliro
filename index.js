@@ -127,7 +127,7 @@ app.post("/api/projects/schema", upload.single("schema"), function(req, res, nex
   });
 });
 
-var hyperparamChecker = function(schema, obj) {
+var optionChecker = function(schema, obj) {
   for (var prop in schema) {
     var schemaField = schema[prop];
     var val = obj[prop];
@@ -160,10 +160,10 @@ var hyperparamChecker = function(schema, obj) {
       }
     }
   }
-  return {success: "Hyperparameters validated"};
+  return {success: "Options validated"};
 };
 
-var submitJob = function(projId, hyperparams) {
+var submitJob = function(projId, options) {
   return new Promise(function(resolve, reject) {
     db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
     .then(function(machines) {
@@ -180,11 +180,11 @@ var submitJob = function(projId, hyperparams) {
         availableMac = JSON.parse(availableMac);
 
         // Create experiment
-        db.experiments.insertAsync({_hyperparams: hyperparams, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
+        db.experiments.insertAsync({_options: options, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _status: "running"}, {})
         .then(function(exp) {
-          hyperparams._id = exp.ops[0]._id.toString(); // Add experiment ID to sent hyperparameters
+          options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
           // Send project
-          rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: hyperparams, gzip: true})
+          rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: options, gzip: true})
           .then(function(body) {
             resolve(body);
           })
@@ -221,7 +221,7 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
       var obj = req.body;
 
       // Validate
-      var validation = hyperparamChecker(project.schema, obj);
+      var validation = optionChecker(project.schema, obj);
       if (validation.error) {
         res.status(400);
         res.send(validation);
@@ -251,20 +251,20 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
 });
 
 // Submit job with retry
-var submitJobRetry = function(projId, hyperparams, retryT) {
-  submitJob(projId, hyperparams)
+var submitJobRetry = function(projId, options, retryT) {
+  submitJob(projId, options)
   .then(function() {
     // TODO Keep track of batch jobs
   })
   .catch(function() {
     // Retry in a random 1s interval
     setTimeout(function() {
-      submitJobRetry(projId, hyperparams, retryT);
+      submitJobRetry(projId, options, retryT);
     }, 1000*retryT*Math.random());
   });
 };
 
-// Constructs an optimiser from a list of hyperparams
+// Constructs an optimiser from a list of options
 app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
   var projId = req.query.project;
   var retryTimeout = parseInt(req.query.retry) || 60*60; // Default is an hour
@@ -279,7 +279,7 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
       // Validate
       var validationList = [];
       for (var i = 0; i < expList.length; i++) {
-       var validation = hyperparamChecker(project.schema, expList[i]);
+       var validation = optionChecker(project.schema, expList[i]);
         if (validation.error) {
           validationList.push(validation);
         }
@@ -367,7 +367,7 @@ app.get("/projects/:id/optimisation", function(req, res, next) {
 // Project page (experiments)
 app.get("/projects/:id/experiments", function(req, res, next) {
   var projP = db.projects.findByIdAsync(req.params.id);
-  var expP = db.experiments.find({_project_id: db.toObjectID(req.params.id)}, {"_val.score": 1, "_test.score": 1, _status: 1, _hyperparams: 1, _started: 1, _finished: 1}).toArrayAsync(); // Sort experiment scores for this project
+  var expP = db.experiments.find({_project_id: db.toObjectID(req.params.id)}, {"_val.score": 1, "_test.score": 1, _status: 1, _options: 1, _started: 1, _finished: 1}).toArrayAsync(); // Sort experiment scores for this project
   Promise.all([projP, expP])
   .then(function(results) {
     res.render("experiments", {project: results[0], experiments: results[1]});

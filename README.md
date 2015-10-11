@@ -50,7 +50,7 @@ The deploy button provisions a free dyno running FGLab on [Heroku](https://www.h
 
 ## Objects
 
-FGLab is based on several classes of object. One begins with a *project*, which involves adjusting variables to achieve the desired results. In machine learning, these variables are *hyperparameters*, which are set for the project. A project will then comprise of a set of *experiments* derived from adjusting hyperparameters.
+FGLab is based on several classes of object. One begins with a *project*, which involves adjusting variables to achieve the desired results. In machine learning, these variables are *hyperparameters*, which are set for the project. In a more general setting, the variables are simply options, which may therefore include implementation-dependent details. A project will then comprise of a set of *experiments* derived from adjusting options.
 
 ### Projects
 
@@ -69,9 +69,9 @@ The JSON schema represents a map/associative array (without nesting), where the 
 
 See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/test/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
 
-Often it is hard to specify some hyperparameters in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing hyperparameters and versioning manually e.g. `cnn.v2`.
+Often it is hard to specify some options in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing options and versioning manually e.g. `cnn.v2`.
 
-This is stored by FGLab, and is used to construct a form which lets one choose hyperparameters and submit an experiment to an available machine. The hyperparameters are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the hyperparameters from a JSON string. **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
+This is stored by FGLab, and is used to construct a form which lets one choose options and submit an experiment to an available machine. The options are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the options from a JSON string. **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
 
 The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
@@ -79,7 +79,7 @@ A random search optimiser has also been implemented, to allow searching over a r
 
 ### Experiments
 
-An experiment is one complete training and testing run with a specific set of hyperparameters. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of hyperparameters will still be assigned unique IDs. Experiments contain an ID, a project ID, a machine ID, the chosen hyperparameters, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
+An experiment is one complete training and testing run with a specific set of options. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of options will still be assigned unique IDs. Experiments contain an ID, a project ID, a machine ID, the chosen options, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
 
 The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
 
@@ -93,20 +93,20 @@ Note that machines are implementation-independent, and may well store their own 
 
 The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
 
-**Submit a new experiment with a set of hyperparameters**
+**Submit a new experiment with a set of options**
 ```
 POST /api/experiments/submit?project={project ID}
 
-e.g. curl -X POST -H "Content-Type: application/json" -d '{project hyperparameters}' http://{FGLab address}/api/experiments/submit?project={project ID}
+e.g. curl -X POST -H "Content-Type: application/json" -d '{project options}' http://{FGLab address}/api/experiments/submit?project={project ID}
 ```
 
-If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If the hyperparameters are invalid, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `501 {"error": "Experiment failed to run"}`. If successful, returns `200 {"_id": "<experiment ID>"}`.
+If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If the options are invalid, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `501 {"error": "Experiment failed to run"}`. If successful, returns `200 {"_id": "<experiment ID>"}`.
 
-**Start a batch job with a list of hyperparameter sets**
+**Start a batch job with a list of option sets**
 ```
 POST /api/projects/optimisation?project={project ID}&retry={(optional) retry timeout}
 
-e.g. curl -X POST -H "Content-Type: application/json" -d '[{project hyperparameters}]' http://{FGLab address}/api/projects/optimisation?project={project ID}
+e.g. curl -X POST -H "Content-Type: application/json" -d '[{project options}]' http://{FGLab address}/api/projects/optimisation?project={project ID}
 ```
 
-The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the hyperparameters are invalid, returns `400 {"error": "<validation message>"}` for the first set of hyperparameters that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
+The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the options are invalid, returns `400 {"error": "<validation message>"}` for the first set of options that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).

@@ -39,8 +39,8 @@ block content
     if experiment._finished
       dt.col-sm-3 Finished
       dd.col-sm-9 #{experiment._finished}
-    dt.col-sm-3 Hyperparams
-    dd.col-sm-9= JSON.stringify(experiment._hyperparams)
+    dt.col-sm-3 Options
+    dd.col-sm-9= JSON.stringify(experiment._options)
     if experiment._val
       dt.col-sm-3 Val Score
       dd.col-sm-9 #{experiment._val.score}

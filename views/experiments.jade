@@ -48,7 +48,7 @@ block scripts
     var schema = !{JSON.stringify(project.schema)};
     var experiments = !{JSON.stringify(experiments)};
 
-    // Create columns from hyperparams
+    // Create columns from options
     var columns = [
       {field: "_id", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
       {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
@@ -73,7 +73,7 @@ block scripts
     ];
     // Utilises 2 functions to solve loop scope problem
     for (var key in schema) {
-      columns.push({field: "_hyperparams." + key, title: key, sortable: true, formatter: function(k) {return function(val) {
+      columns.push({field: "_options." + key, title: key, sortable: true, formatter: function(k) {return function(val) {
         var textClass = "";
         // Mute default options
         if (val === schema[k].default) {
