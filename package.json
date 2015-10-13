@@ -1,6 +1,6 @@
 {
   "name": "FGLab",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Future Gadget Laboratory",
   "main": "index.js",
   "scripts": {
@@ -28,15 +28,13 @@
     "compression": "^1.6.0",
     "dotenv": "^1.2.0",
     "express": "^4.13.3",
-    "gridfs-stream": "^1.1.1",
     "jade": "^1.11.0",
     "mongodb": "^2.0.45",
-    "mongoskin": "^2.0.0",
+    "mongoskin": "^2.0.3",
     "morgan": "^1.6.1",
     "multer": "^1.0.6",
-    "request-promise": "^0.4.3",
+    "request-promise": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "streamifier": "^0.1.1",
     "ws": "^0.8.0"
   },
   "engines": {

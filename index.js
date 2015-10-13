@@ -1,13 +1,14 @@
 /* Modules */
 require("./env"); // Load configuration variables
 var http = require("http");
+var EventEmitter = require("events").EventEmitter;
+var mediator = new EventEmitter();
 var express = require("express");
 var bodyParser = require("body-parser");
 var multer = require("multer");
 var compression = require("compression");
 var favicon = require("serve-favicon");
 var morgan = require("morgan");
-var streamifier = require("streamifier");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 //var WebSocketServer = require("ws").Server;
@@ -110,28 +111,6 @@ app.delete("/api/projects/:id/experiments", function(req, res, next) {
   .catch(function(err) {
     next(err);
   });
-});
-
-// Processess files for an experiment
-app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res) {
-  delete req.body._id; // Delete ID (will not update otherwise)
-  for (var i = 0; i < req.files.length; i++) {
-    var file = req.files[i];
-    var writeStream = db.gfs.createWriteStream({filename: file.originalname, contentType: file.mimetype});
-    streamifier.createReadStream(file.buffer).pipe(writeStream);
-    // TODO Better integrated feedback
-    writeStream.on("close", function(file) {
-      // Save file reference
-      db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: file._id, filename: file.filename}}})
-      .catch(function(err) {
-        console.log(err);
-      });
-    });
-    writeStream.on("error", function(err) {
-      console.log(err);
-    });
-  }
-  res.send({message: "Attempting to save files"});
 });
 
 // Constructs a project from an uploaded .json file
@@ -326,6 +305,8 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
 
 // Adds started time to experiment
 app.put("/api/experiments/:id/started", function(req, res, next) {
+  mediator.emit("experiments:" + req.params.id + ":started"); // Emit event
+
   db.experiments.updateByIdAsync(req.params.id, {$set: {_started: new Date()}})
   .then(function(result) {
     // Update returns the count of affected objects
@@ -338,6 +319,8 @@ app.put("/api/experiments/:id/started", function(req, res, next) {
 
 // Adds finished time to experiment
 app.put("/api/experiments/:id/finished", function(req, res, next) {
+  mediator.emit("experiments:" + req.params.id + ":finished"); // Emit event
+
   db.experiments.updateByIdAsync(req.params.id, {$set: {_finished: new Date()}})
   .then(function(result) {
     // Update returns the count of affected objects
@@ -348,13 +331,81 @@ app.put("/api/experiments/:id/finished", function(req, res, next) {
   });
 });
 
+// Processess files for an experiment
+app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res) {
+  delete req.body._id; // Delete ID (will not update otherwise)
+  for (var i = 0; i < req.files.length; i++) {
+    var file = req.files[i];
+    var fileId = new db.ObjectID(); // Create file ID
+    // Open new file
+    var gfs = new db.GridStore(db, fileId, file.originalname, "w", {content_type: file.mimetype});
+    gfs.open(function(err, gfs) {
+      // Write from buffer and flush to db
+      gfs.write(file.buffer, true, function(err, gfs) {
+        if (err) {
+          console.log(err);
+        }
+        // Save file reference
+        db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}})
+        .catch(function(err) {
+          console.log(err);
+        });
+      });
+    });
+  }
+  res.send({message: "Attempting to save files"});
+});
+
+// Registers webhooks
+app.post("/api/webhooks/register", jsonParser, function(req, res, next) {
+  // Parse webhook request
+  var webhook = req.body;
+  var url = webhook.url;
+  var objects = webhook.objects;
+  var event = webhook.event;
+  var objId = webhook.id;
+
+  // Validate
+  var urlRegExp = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+    console.log(url);
+    res.status(400);
+    return res.send({error: "Invalid or empty URL"});
+  } else if (objects !== "experiments") {
+    res.status(400);
+    return res.send({error: "Object is not 'experiments'"});
+  } else if (event !== "started" && event !== "finished") {
+    res.status(400);
+    return res.send({error: "Event is not 'started' or 'finished'"});
+  } else if (!objId) {
+    // TODO Check object exists
+    res.status(400);
+    return res.send({error: "No object ID provided"});
+  }
+
+  // Register with mediator
+  mediator.once(objects + ":" + objId + ":" + event, function() {
+    // Send webhook response
+    rp({uri: webhook.url, method: "POST", json: webhook, gzip: true})
+    .catch(function() {}); // Ignore failures from missing webhooks
+  });
+  res.status(201);
+  return res.send({status: "Webhook registered: " + JSON.stringify(webhook)});
+});
+
 // Downloads file
 app.get("/files/:id", function(req, res, next) {
-  var readStream = db.gfs.createReadStream({_id: req.params.id});
-  readStream.pipe(res);
-  // Error handling
-  readStream.on("error", function(err) {
-    next(err);
+  // Open file
+  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r");
+  gfs.open(function(err, gfs) {
+    // Set read head pointer to beginning of file
+    gfs.seek(0, function() {
+      // Read entire file
+      gfs.read(function(err, file) {
+        res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
+        res.setHeader("Content-Type", gfs.contentType); // MIME Type
+        res.send(file.toString()); // Send file
+      });
+    });
   });
 });
 

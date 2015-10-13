@@ -30,7 +30,7 @@ block content
     dt.col-sm-3 Status
     dd#status.col-sm-9 #{experiment._status} #[span.octicon]
     dt.col-sm-3 Project
-    dd.col-sm-9 #[a(href="/projects/#{project._id}") #{project.name}]
+    dd.col-sm-9 #[a(href="/projects/#{project._id}/experiments") #{project.name}]
     dt.col-sm-3 Machine
     dd.col-sm-9 #[a(href="/machines/#{machine._id}") #{machine.hostname}]
     if experiment._started
@@ -41,11 +41,12 @@ block content
       dd.col-sm-9 #{experiment._finished}
     dt.col-sm-3 Options
     dd.col-sm-9= JSON.stringify(experiment._options)
-    dt.col-sm-3 Files
-    dd.col-sm-9
-      ul.list-unstyled
-      - each file in experiment._files
-        li #[a(href="/files/#{file._id}") #{file.filename}]
+    - if (experiment._files.length > 0)
+      dt.col-sm-3 Files
+      dd.col-sm-9
+        ul.list-unstyled
+        - each file in experiment._files
+          li #[a(href="/files/#{file._id}") #{file.filename}]
     if experiment._val
       dt.col-sm-3 Val Score
       dd.col-sm-9 #{experiment._val.score}

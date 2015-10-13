@@ -110,3 +110,23 @@ e.g. curl -X POST -H "Content-Type: application/json" -d '[{project options}]' h
 ```
 
 The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the options are invalid, returns `400 {"error": "<validation message>"}` for the first set of options that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
+
+**Register a webhook for an event**
+```
+POST /api/webhooks/register
+
+e.g. curl -X POST -H "Content-Type: application/json" -d '{webhook options}' http://{FGLab address}/api/webhooks/register
+```
+
+The webhook options expects the following options
+
+```json
+{
+  "url": "<URL to POST to>",
+  "objects": "<object collection to listen to (currently only "experiments")>",
+  "id": "<object ID>",
+  "event": "<event to listen to (currently only "started" or "finished")>"
+}
+```
+
+If a valid URL is not provided, returns `400 {"error": "Invalid or empty URL"}`. If a valid object collection is not provided, returns `400 {"error": "Object is not 'experiments'"}`. If a valid event is not provided, returns `400 {"error": "Event is not 'started' or 'finished'"}`. If an object ID is not provided, returns `400 {"error": "No object ID provided"}`. If successful, returns `201 {"status": "Webhook registered: <webhook options>"}`. When the event occurs, the JSON data used to register the webhook is returned.

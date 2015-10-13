@@ -1,6 +1,5 @@
 var Promise = require("bluebird");
 var mongoskin = require("mongoskin");
-var Grid = require("gridfs-stream");
 var db;
 if (!process.env.MONGODB_URI) {
   console.log("Error: No MongoDB instance specified");
@@ -8,7 +7,6 @@ if (!process.env.MONGODB_URI) {
 } else {
   // Connect to MongoDB
   db = mongoskin.db(process.env.MONGODB_URI, {native_parser: true});
-  db.gfs = Grid(db, mongoskin);
 }
 
 // Bind collections
@@ -26,7 +24,11 @@ Object.keys(mongoskin).forEach(function(key) {
 });
 Promise.promisifyAll(mongoskin);
 
-// Add helper method to db
+// Add helper methods to db
+db.ObjectID = mongoskin.ObjectID;
 db.toObjectID = mongoskin.helper.toObjectID;
+db.GridStore = mongoskin.GridStore;
+
+// TODO Make helper functions to contain GridFS in this file
 
 module.exports.db = db;
