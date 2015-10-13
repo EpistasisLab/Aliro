@@ -75,7 +75,7 @@ This is stored by FGLab, and is used to construct a form which lets one choose o
 
 The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
-A random search optimiser has also been implemented, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
+Grid and random search optimisers have also been implemented, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
 
 ### Experiments
 

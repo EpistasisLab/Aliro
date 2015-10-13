@@ -5,7 +5,7 @@ block title
 
 block content 
   h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
-  h2 Random Search
+  h2 Grid / Random Search
   form#new-optimisation
     each val, key in project.schema
       if (val.type === "int" || val.type === "float")
@@ -46,6 +46,7 @@ block content
       label.form-control-label.control-label.col-sm-2(for="#{key}") # Evaluations
       .col-sm-10
         input.form-control.form-control-success(type="number", value="1", min="1", name="_evaluations", id="#_evaluations", required)
+        small.text-muted Number of evaluations for random search
     .form-group.row.has-success(data-type="_retry")
       label.form-control-label.control-label.col-sm-2(for="#{key}") Retry Timeout (s)
       .col-sm-10
@@ -53,12 +54,15 @@ block content
  
  
     .form-group.row
-      .col-sm-10.col-sm-offset-2
-        button.btn.btn-primary(type="submit") Submit
+      .col-sm-2.col-sm-offset-2
+        button#grid-search.btn.btn-primary(type="submit") Grid Search
+      .col-sm-2
+        button#random-search.btn.btn-primary(type="submit") Random Search
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
   script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
+  script(src="/bower_components/lodash/lodash.min.js")
   script.
     // Parse from string instead prior to accessing internal objects via Jade
     var schema = !{JSON.stringify(project.schema)};
@@ -110,14 +114,12 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
-      // TODO Check
-      /*$("[data-type='string']").on("change", function() {
+      $("input[data-type='string']").on("change", function() {
         var $el = $(this);
         var $formGroup = $el.closest(".form-group");
 
         $el.removeClass("form-control-success form-control-error");
         $formGroup.removeClass("has-success has-error");
-        console.log($el.val());
         if ($el.val().length === 0) {
           $el.addClass("form-control-error");
           $formGroup.addClass("has-error");
@@ -126,7 +128,7 @@ block scripts
 
         $el.addClass("form-control-success");
         $formGroup.addClass("has-success");
-      });*/
+      });
 
       $("[name='_evaluations'], [name='_retry']").on("change", function() {
         var $el = $(this);
@@ -146,30 +148,46 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
-      // TODO Modify for objects to create grid search
-      var recurseGrid = function(arr) {
-        if (arr.length === 0) {
+      var recurseGrid = function(obj) {
+        if (_.keys(obj).length === 0) {
           return [];
-        } else if (arr.length === 1) {
-          return arr[0];
+        } else if (_.keys(obj).length === 1) {
+          return obj[_.keys(obj)[0]];
         } else {
           var result = [];
-          var tail = recurseGrid(arr.slice(1)); // Recurse with rest of array
+          // Deep clone and get "tail" of object
+          var clone = _.clone(obj);
+          delete clone[_.keys(clone)[0]]
+          var tail = recurseGrid(clone); // Recurse with tail
           for (var c in tail) {
-            for (var i = 0; i < arr[0].length; i++) {
-              result.push(arr[0][i] + tail[c]);
+            for (var i = 0; i < obj[_.keys(obj)[0]].length; i++) {
+              var listObj = {};
+              listObj[_.keys(obj)[0]] = obj[_.keys(obj)[0]][i];
+              if (_.isObject(tail[c])) {
+                _.assign(listObj, tail[c]);
+              } else {
+                listObj[_.keys(obj)[1]] = tail[c];
+              }
+              result.push(listObj);
             }
           }
           return result;
         }
-      }
+      };
+
+      // Prevent submission
+      $("#new-optimisation").on("submit", function() {
+        return false;
+      });
 
       // Submits experiment
-      $("#new-optimisation").on("submit", function() {
+      $("#new-optimisation button").on("click", function() {
+        var optimisationType = $(this).attr("id");
+        
         // Process form
         var formObj = {};
         // Loop over form simply (does not work on nested data)
-        $(this).find("[id]:input").not(":submit").each(function(ind, el) {
+        $("#new-optimisation").find("[id]:input").not(":submit").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
           var name = $el.attr("name");
@@ -189,58 +207,64 @@ block scripts
           formObj[name] = vals; // Set key and value
         });
 
-        // Process range for random search
-        var rangeObj = {};
-        $(this).find("[data-opt]").each(function(ind, el) {
-          var $el = $(el);
-          var key = $el.data("key");
-          var opt = $el.data("opt");
-          var val = $el.val();
-          if (opt !== "scale") {
-            val = parseFloat(val);
-          }
-          // Create key if it doesn't exist 
-          if (!rangeObj[key]) {
-            rangeObj[key] = {};
-          }
-          rangeObj[key][opt] = val;
-        });
-        for (var prop in rangeObj) {
-          rangeObj[prop].type = $("#" + prop).closest(".form-group").data("type");
-        }
-
-        // Extract evaluations for random search
-        var evaluations = parseInt(formObj._evaluations[0]);
-        delete formObj._evaluations;
-
         // Extract retry timeout
         var retryTimeout = parseInt(formObj._retry[0]);
         delete formObj._retry;
 
-        // Create experiment list
-        var expList = Array(evaluations);
-        for (var i = 0; i < evaluations; i++) {
-          var expObj = {};
-          for (var prop in formObj) {
-            if (rangeObj[prop]) {
-              // Continuous uniform
-              rObj = rangeObj[prop];
-              var rand = Math.random()*(rObj.max - rObj.min) + rObj.min;
-              if (rObj.scale === "log") {
-                rand = Math.pow(rObj.pow, rand);
-              }
-              if (rObj.type === "int") {
-                rand = Math.round(rand);
-              }
-              expObj[prop] = rand;
-            } else {
-              // Discrete uniform
-              var list = formObj[prop];
-              var ind = Math.floor(Math.random() * list.length);
-              expObj[prop] = list[ind];
+        var expList;
+        if (optimisationType === "random-search") {
+          // Process range for random search
+          var rangeObj = {};
+          $(this).find("[data-opt]").each(function(ind, el) {
+            var $el = $(el);
+            var key = $el.data("key");
+            var opt = $el.data("opt");
+            var val = $el.val();
+            if (opt !== "scale") {
+              val = parseFloat(val);
             }
+            // Create key if it doesn't exist 
+            if (!rangeObj[key]) {
+              rangeObj[key] = {};
+            }
+            rangeObj[key][opt] = val;
+          });
+          for (var prop in rangeObj) {
+            rangeObj[prop].type = $("#" + prop).closest(".form-group").data("type");
           }
-          expList[i] = expObj;
+
+          // Extract evaluations for random search
+          var evaluations = parseInt(formObj._evaluations[0]);
+          delete formObj._evaluations;
+
+          // Create experiment list
+          expList = Array(evaluations);
+          for (var i = 0; i < evaluations; i++) {
+            var expObj = {};
+            for (var prop in formObj) {
+              if (rangeObj[prop]) {
+                // Continuous uniform
+                rObj = rangeObj[prop];
+                var rand = Math.random()*(rObj.max - rObj.min) + rObj.min;
+                if (rObj.scale === "log") {
+                  rand = Math.pow(rObj.pow, rand);
+                }
+                if (rObj.type === "int") {
+                  rand = Math.round(rand);
+                }
+                expObj[prop] = rand;
+              } else {
+                // Discrete uniform
+                var list = formObj[prop];
+                var ind = Math.floor(Math.random() * list.length);
+                expObj[prop] = list[ind];
+              }
+            }
+            expList[i] = expObj;
+          }
+        } else if (optimisationType === "grid-search") {
+          // Create experiment list
+          expList = recurseGrid(formObj);
         }
 
         $.ajax({
