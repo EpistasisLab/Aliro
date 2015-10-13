@@ -11,8 +11,8 @@ FGMachine currently only reads GPU information on Linux.
 ## Installation
 
 1. Install [Node.js](https://nodejs.org/).
-1. Clone this repository.
-1. Move inside and run `npm install`.
+1. Clone this repository (or download a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master)) and move inside.
+1. Run `npm install`.
 1. Create `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
 1. Set the following environment variables:
   - FGLAB_URL (FGLab URL)
