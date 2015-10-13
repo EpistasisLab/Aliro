@@ -19,7 +19,7 @@ Some screenshots can be found on the [project website](http://kaixhin.github.io/
 1. Install Node.js from the [website](https://nodejs.org/) or your package manager.
 1. Install MongoDB from the [website](https://www.mongodb.org/) or your package manager.
 1. Make sure that the MongoDB daemon is running (`mongod`).
-1. Clone this repository and move inside.
+1. Clone this repository (or download a [zip](https://github.com/Kaixhin/FGLab/zipball/master)/[tar](https://github.com/Kaixhin/FGLab/tarball/master)) and move inside.
 1. Run `npm install`.
 1. Set the following environment variables:
   - MONGODB_URI (MongoDB database URI)
