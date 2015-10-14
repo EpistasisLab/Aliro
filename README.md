@@ -77,10 +77,3 @@ Results and custom data must be saved as JSON files into a subfolder in the spec
 ```
 
 Each field should be updated separately on FGLab by writing a new file e.g. creating a new file `val.json` with `{"_val": {"indices": [1, 2, 3], "losses": [0.962, 0.629, 0.488], "score": 8}}` will update the `_val` field for the experiment. Nested fields cannot be updated separately e.g. `_test.score`. FGLab expects `_train`, `_val` and `_test` - other JSON files can be used to upload custom data. Non-JSON files are also uploaded so that they can be downloaded in their native format from FGLab. For a simple example, see [rand.js](https://github.com/Kaixhin/FGMachine/blob/master/tests/rand.js). **Note that fields preceded with `_` are reserved for processing by FGLab**.
-
-## Future Work
-
-- Sort out capacity properly.
-- Live logging from stdout.
-- Enable Mac OS X GPU support via `system_profiler`.
-- Find a way to enable Windows GPU support.
