@@ -15,6 +15,7 @@ block scripts
   script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
   script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
+  script(src="/bower_components/lodash/lodash.min.js")
   script(src="/bower_components/moment/min/moment.min.js")
   script.
     // Flattens JSON objects
@@ -65,9 +66,20 @@ block scripts
         }
         return "<span class='" + iconClass + "'></span>";
       }},
-      {field: "_val.score", title: "Val Score", sortable: "true"},
-      {field: "_test.score", title: "Test Score", sortable: "true"}
     ];
+    // Loop over scores
+    var scoreLength = 0;
+    var scoreProps = {};
+    // TODO Remove "maximum props" assumption and add props as found
+    for (var i = 0; i < experiments.length; i++) {
+      if (experiments[i]._scores && _.keys(experiments[i]._scores).length > scoreLength) {
+        scoreLength = _.keys(experiments[i]._scores).length;
+        scoreProps = experiments[i]._scores;
+      }
+    }
+    for (var prop in scoreProps) {
+      columns.push({field: "_scores." + prop, title: prop, sortable: true});
+    }
     // Utilises 2 functions to solve loop scope problem
     for (var key in schema) {
       columns.push({field: "_options." + key, title: key, sortable: true, formatter: function(k) {return function(val) {
@@ -79,8 +91,9 @@ block scripts
         return "<span class='" + textClass + "'>" + val + "</span>";
       }}(key)});
     }
-    columns.push({field: "_started", title: "Started", sortable: "true", formatter: function(val) {return moment().format(val);}});
-    columns.push({field: "_finished", title: "Finished", sortable: "true", formatter: function(val) {return moment().format(val);}});
+    columns.push({field: "_started", title: "Started", sortable: "true", formatter: function(val) {return val ? moment().format(val) : "";}});
+    columns.push({field: "_finished", title: "Finished", sortable: "true", formatter: function(val) {return val ? moment().format(val) : "";}});
+    // TODO Loop over custom properties
 
     // Flatten each experiment
     for (var i = 0; i < experiments.length; i++) {
@@ -93,7 +106,7 @@ block scripts
         classes: "table",
         undefinedText: "",
         striped: true,
-        sortName: "_test.score",
+        sortName: "_started",
         sortOrder: "desc",
         iconsPrefix: "octicon",
         search: true,

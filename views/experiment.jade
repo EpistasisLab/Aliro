@@ -26,6 +26,10 @@ block content
       dd#experiment-finished.col-sm-9
     dt.col-sm-3 Options
     dd.col-sm-9= JSON.stringify(experiment._options)
+    if experiment._scores
+      each val, prop in experiment._scores
+        dt.col-sm-3 #{prop}
+        dd.col-sm-9 #{val}
     - if (experiment._files.length > 0)
       dt.col-sm-3 Files
       dd.col-sm-9
@@ -33,8 +37,7 @@ block content
         - each file in experiment._files
           li #[a(href="/files/#{file._id}") #{file.filename}]
     if experiment._val
-      dt.col-sm-3 Val Score
-      dd.col-sm-9 #{experiment._val.score}
+
     if experiment._test
       dt.col-sm-3 Test Loss
       dd.col-sm-9 #{experiment._test.loss}
