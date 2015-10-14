@@ -9,11 +9,11 @@ var git = require("gulp-git");
 var bump = require("gulp-bump");
 var conventionalChangelog = require("gulp-conventional-changelog");
 var conventionalGithubReleaser = require("conventional-github-releaser");
+var conventionalRecommendedBump = require("conventional-recommended-bump");
 
 // Load CONVENTIONAL_GITHUB_RELEASER_TOKEN from .env
 require("dotenv").config({silent: true});
-// Use --bump=<type> for a major/minor release
-var options = parseArgs(process.argv.slice(2), {string: ["bump", "github_token"], default: {bump: "patch", github_token: process.env.CONVENTIONAL_GITHUB_RELEASER_TOKEN}});
+var options = parseArgs(process.argv.slice(2), {string: ["github_token"], default: {github_token: process.env.CONVENTIONAL_GITHUB_RELEASER_TOKEN}});
 
 // Changelogs use AngularJS convention (https://github.com/ajoslin/conventional-changelog/blob/master/conventions/angular.md)
 gulp.task("changelog", function() {
@@ -22,16 +22,18 @@ gulp.task("changelog", function() {
   .pipe(gulp.dest("./"));
 });
 
-gulp.task("github-release", function(done) {
-  conventionalGithubReleaser({type: "oauth", token: options.github_token}, {preset: "angular"}, done);
+gulp.task("github-release", function(cb) {
+  conventionalGithubReleaser({type: "oauth", token: options.github_token}, {preset: "angular"}, cb);
 });
 
 // Abides by semantic versioning rules (http://semver.org/)
 gulp.task("bump-version", function() {
   // Valid bump types are major|minor|patch|prerelease
-  return gulp.src(["./bower.json", "./package.json"])
-  .pipe(bump({type: options.bump}).on("error", gutil.log))
-  .pipe(gulp.dest("./"));
+  conventionalRecommendedBump({preset: "angular"}, function(err, releaseAs) {
+    return gulp.src(["./bower.json", "./package.json"])
+    .pipe(bump({type: releaseAs}).on("error", gutil.log))
+    .pipe(gulp.dest("./"));   
+  });
 });
 
 gulp.task("commit-changes", function() {
