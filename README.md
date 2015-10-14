@@ -123,9 +123,9 @@ The webhook options expects the following options
 ```json
 {
   "url": "<URL to POST to>",
-  "objects": "<object collection to listen to (currently only "experiments")>",
+  "objects": "<object collection to listen to (currently only 'experiments')>",
   "id": "<object ID>",
-  "event": "<event to listen to (currently only "started" or "finished")>"
+  "event": "<event to listen to (currently only 'started' or 'finished')>"
 }
 ```
 

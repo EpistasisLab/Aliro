@@ -43,5 +43,15 @@
   "cacheDirectories": [
     "node_modules",
     "bower_components"
-  ]
+  ],
+  "devDependencies": {
+    "conventional-changelog": "^0.5.0",
+    "conventional-github-releaser": "^0.5.0",
+    "gulp": "^3.9.0",
+    "gulp-bump": "^1.0.0",
+    "gulp-git": "^1.5.0",
+    "gulp-util": "^3.0.6",
+    "minimist": "^1.2.0",
+    "run-sequence": "^1.1.4"
+  }
 }
