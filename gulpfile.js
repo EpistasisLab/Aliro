@@ -7,7 +7,7 @@ var runSequence = require("run-sequence");
 var gutil = require("gulp-util");
 var git = require("gulp-git");
 var bump = require("gulp-bump");
-var conventionalChangelog = require("conventional-changelog");
+var conventionalChangelog = require("gulp-conventional-changelog");
 var conventionalGithubReleaser = require("conventional-github-releaser");
 
 // Load CONVENTIONAL_GITHUB_RELEASER_TOKEN from .env
@@ -27,7 +27,7 @@ gulp.task("github-release", function(done) {
 // Abides by semantic versioning rules (http://semver.org/)
 gulp.task("bump-version", function() {
   // Valid bump types are major|minor|patch|prerelease
-  var options = parseArgs(process.argc.slice(2), {string: "bump", default: {bump: "patch"}});
+  var options = parseArgs(process.argv.slice(2), {string: "bump", default: {bump: "patch"}});
 
   return gulp.src(["./bower.json", "./package.json"])
   .pipe(bump({type: options.bump}).on("error", gutil.log))

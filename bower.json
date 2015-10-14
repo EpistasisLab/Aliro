@@ -1,7 +1,7 @@
 {
   "name": "FGLab",
   "main": "index.js",
-  "version": "0.2.0",
+  "version": "0.2.6",
   "homepage": "https://github.com/Kaixhin/FGLab",
   "description": "Future Gadget Laboratory",
   "moduleType": [

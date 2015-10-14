@@ -1,6 +1,6 @@
 {
   "name": "FGLab",
-  "version": "0.2.0",
+  "version": "0.2.6",
   "description": "Future Gadget Laboratory",
   "main": "index.js",
   "scripts": {
@@ -45,10 +45,10 @@
     "bower_components"
   ],
   "devDependencies": {
-    "conventional-changelog": "^0.5.0",
     "conventional-github-releaser": "^0.5.0",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
+    "gulp-conventional-changelog": "^0.7.0",
     "gulp-git": "^1.5.0",
     "gulp-util": "^3.0.6",
     "minimist": "^1.2.0",
