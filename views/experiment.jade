@@ -5,21 +5,6 @@ block title
 
 block styles
   link(href="/bower_components/c3/c3.min.css", rel="stylesheet")
-  style(type="text/css").
-    path {
-      stroke: green;
-      stroke-width: 1;
-      fill: none;
-    }
-    path.valLoss {
-      stroke: blue;
-    }
-    line {
-      stroke: black;
-    }
-    text {
-      font-size: 9pt;
-    }
 
 block content
   h1 #[span.mega-octicon.octicon-graph] Experiment: #{experiment._id}
@@ -35,16 +20,16 @@ block content
     dd.col-sm-9 #[a(href="/machines/#{machine._id}") #{machine.hostname}]
     if experiment._started
       dt.col-sm-3 Started
-      dd.col-sm-9 #{experiment._started}
+      dd#experiment-started.col-sm-9
     if experiment._finished
       dt.col-sm-3 Finished
-      dd.col-sm-9 #{experiment._finished}
+      dd#experiment-finished.col-sm-9
     dt.col-sm-3 Options
     dd.col-sm-9= JSON.stringify(experiment._options)
     - if (experiment._files.length > 0)
       dt.col-sm-3 Files
       dd.col-sm-9
-        ul.list-unstyled
+        ul.list-unstyled(style="margin-bottom: 0;")
         - each file in experiment._files
           li #[a(href="/files/#{file._id}") #{file.filename}]
     if experiment._val
@@ -73,13 +58,14 @@ block scripts
   script(src="/bower_components/c3/c3.min.js")
   script(src="/bower_components/lodash/lodash.min.js")
   script(src="/bower_components/largest-triangle-three-buckets/dist/largest-triangle-three-buckets.v0.1.0.min.js")
+  script(src="/bower_components/moment/min/moment.min.js")
   script.
     // Parse from string instead prior to accessing internal objects via Jade
     var experiment = !{JSON.stringify(experiment)};
 
     $(function() {
       // Adjust status
-      var status = "#{experiment._status}";
+      var status = experiment._status;
       var textClass;
       var iconClass;
       if (status === "success") {
@@ -94,6 +80,14 @@ block scripts
       }
       $("#status").addClass(textClass);
       $("#status .octicon").addClass(iconClass);
+
+      // Add times
+      if (experiment._started) {
+        $("#experiment-started").html(moment().format(experiment._started));
+      }
+      if (experiment._finished) {
+        $("#experiment-finished").html(moment().format(experiment._finished));
+      }
 
       // Create chart for training
       var chart;

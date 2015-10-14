@@ -15,6 +15,7 @@ block scripts
   script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
   script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
+  script(src="/bower_components/moment/min/moment.min.js")
   script.
     // Flattens JSON objects
     JSON.flatten = function(data) {
@@ -54,19 +55,15 @@ block scripts
       {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
       {field: "_status", title: "Status", sortable: "true", formatter: function(val) {
         // Colour-code status
-        var textClass;
         var iconClass;
         if (val === "success") {
-          textClass = "text-success";
           iconClass = "octicon octicon-check text-success";
         } else if (val === "fail") {
-          textClass = "text-danger";
           iconClass = "octicon octicon-circle-slash text-danger";
         } else if (val == "running") {
-          textClass = "text-info";
           iconClass = "octicon octicon-clock text-info";
         }
-        return "<span class='" + textClass + "'>" + val + "</span> <span class='" + iconClass + "'></span>";
+        return "<span class='" + iconClass + "'></span>";
       }},
       {field: "_val.score", title: "Val Score", sortable: "true"},
       {field: "_test.score", title: "Test Score", sortable: "true"}
@@ -82,8 +79,8 @@ block scripts
         return "<span class='" + textClass + "'>" + val + "</span>";
       }}(key)});
     }
-    columns.push({field: "_started", title: "Started", sortable: "true"});
-    columns.push({field: "_finished", title: "Finished", sortable: "true"});
+    columns.push({field: "_started", title: "Started", sortable: "true", formatter: function(val) {return moment().format(val);}});
+    columns.push({field: "_finished", title: "Finished", sortable: "true", formatter: function(val) {return moment().format(val);}});
 
     // Flatten each experiment
     for (var i = 0; i < experiments.length; i++) {
