@@ -152,7 +152,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
 
   // Log stdout
   experiment.stdout.on("data", function(data) {
-    console.log(data.toString());
+    //console.log(data.toString());
   });
 
   // Log errors
