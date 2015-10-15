@@ -48,6 +48,7 @@ app.get("/api/:collection", function(req, res, next) {
 app.post("/api/:collection", jsonParser, function(req, res, next) {
   req.collection.insertAsync(req.body, {})
   .then(function(result) {
+    res.status(201);
     res.send(result.ops[0]);
   })
   .catch(function(err) {
@@ -347,6 +348,7 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res)
         }
         // Save file reference
         db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}})
+        // TODO Collect with promises to send success message back here
         .catch(function(err) {
           console.log(err);
         });

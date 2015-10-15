@@ -36,23 +36,13 @@ block content
         ul.list-unstyled(style="margin-bottom: 0;")
         - each file in experiment._files
           li #[a(href="/files/#{file._id}") #{file.filename}]
-    if experiment._val
-
-    if experiment._test
-      dt.col-sm-3 Test Loss
-      dd.col-sm-9 #{experiment._test.loss}
-      dt.col-sm-3 Test Score
-      dd.col-sm-9 #{experiment._test.score}
-    if experiment._train
-      dt.col-sm-3 Loss Graph #[br] #[small.text-muted (downsampled for visualisation, zoom enabled)]
-      dd.col-sm-9#chart-buttons Toggle
-  if experiment._train
-    #chart
-  dl.dl-horizontal
     - for (var key in experiment)
       if (key[0] !== "_")
         dt.col-sm-3 #{key}
         dd.col-sm-9= experiment[key]
+    if experiment._charts
+      each val, ind in experiment._charts
+        div(id= "chart_" + ind)
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
@@ -62,9 +52,12 @@ block scripts
   script(src="/bower_components/lodash/lodash.min.js")
   script(src="/bower_components/largest-triangle-three-buckets/dist/largest-triangle-three-buckets.v0.1.0.min.js")
   script(src="/bower_components/moment/min/moment.min.js")
+  script(src="/javascripts/chart.js")
   script.
     // Parse from string instead prior to accessing internal objects via Jade
     var experiment = !{JSON.stringify(experiment)};
+    // C3 charts
+    var c3Charts = [];
 
     $(function() {
       // Adjust status
@@ -92,69 +85,87 @@ block scripts
         $("#experiment-finished").html(moment().format(experiment._finished));
       }
 
-      // Create chart for training
-      var chart;
-      // Use Largest-Triangle-Three-Buckets downsampling
-      var downsampleFactor = 500;
-      if (experiment._train) {
-        // Chart variables
-        var zippedTraining = _.zip(experiment._train.indices, experiment._train.losses);
-        var downsampledTraining = _.unzip(largestTriangleThreeBuckets(zippedTraining, downsampleFactor, 0, 1));
-        var trainIndices = downsampledTraining[0];
-        trainIndices.unshift("trainIndices");
-        var trainLosses = downsampledTraining[1];
-        trainLosses.unshift("Train");
+      if (experiment._charts) {
+        // Use Largest-Triangle-Three-Buckets downsampling
+        var downsampleFactor = 500;
 
-        // C3 chart
-        chart = c3.generate({
-          bindTo: "#chart",
-          data: {
-            xs: {Train: "trainIndices", Val: "valIndices"},
-            columns: [trainIndices, trainLosses]
-          },
-          axis: {
-            x: {label: {text: "Iterations", position: "outer-center"}, padding: {left: 0}},
-            y: {label: {text: "Loss", position: "outer-middle"}, padding: 0}
-          },
-          point: {show: false},
-          zoom: {enabled: true}
-        });
+        // Create charts
+        for (var i = 0; i < experiment._charts.length; i++) {
+          var chartData = experiment._charts[i];
+          // Default chart options
+          var chartDefaults = {
+            bindto: "#chart_" + i,
+            axis: {
+              x: {label: {position: "outer-center"}, padding: {left: 0}},
+              y: {label: {position: "outer-middle"}, padding: 0}
+            },
+            point: {show: false},
+            zoom: {enabled: true}
+          };
+          // Add default options
+          _.defaultsDeep(chartData, chartDefaults);
 
-        // Add toggle button
-        $("#chart-buttons").append("&nbsp;<button data-plot='Train' class='btn btn-primary active' data-toggle='button' aria-pressed='true'>Train</button>");
-      }
-      // Add validation to chart if it exists
-      if (experiment._val) {
-        // Chart variables
-        var zippedValidation = _.zip(experiment._val.indices, experiment._val.losses);
-        var downsampledValidation = _.unzip(largestTriangleThreeBuckets(zippedValidation, downsampleFactor, 0, 1));
-        var valIndices = downsampledValidation[0];
-        valIndices.unshift("valIndices");
-        var valLosses = downsampledValidation[1];
-        valLosses.unshift("Val");
+          // Loop over data to downsample
+          for (var j = 0; j < chartData.data.columns.length; j++) {
+            // TODO Deal with different chart types
+            if (chartData.data.columns[j].length > downsampleFactor) {
+              // Get values
+              var vals = chartData.data.columns[j];
+              var valsKey = chartData._columnNames[j];
+              if (valsKey) {
+                // Get indices
+                var indicesKey = chartData.data.xs[valsKey];
+                var indicesIndex = chartData._columnNames.indexOf(indicesKey);
+                var indices = chartData.data.columns[indicesIndex];
+                // Downsample
+                var zippedValues = _.zip(indices, vals);
+                var downsampledValues = _.unzip(largestTriangleThreeBuckets(zippedValues, downsampleFactor, 0, 1));
+                // Replace values and indices
+                chartData.data.columns[indicesIndex] = downsampledValues[0];
+                chartData.data.columns[j] = downsampledValues[1];
+              } else {
+                // TODO Create linear range and downsample
+              }
+            }
+          }
+          // Loop over data to add column names
+          for (var j = 0; j < chartData.data.columns.length; j++) {
+            chartData.data.columns[j].unshift(chartData._columnNames[j]);
+          }
 
-        // Load validation data
-        chart.load({
-          columns: [valIndices, valLosses]
-        });
+          // Render
+          c3Charts.push(c3.generate(chartData));
 
-        // Add toggle button
-        $("#chart-buttons").append("&nbsp;<button data-plot='Val' class='btn btn-primary active' data-toggle='button' aria-pressed='true'>Val</button>");
-      }
+          // Render chart in Web Worker
+          // TODO Add Web Worker support with jsdom and benv?
+          /*
+          var worker = new Worker("/javascripts/chart.js");
+          // Push rendered chart
+          worker.addEventListener("message", function(e) {
+            c3Charts.push(e.data);
+          }, false);
+          // Send chart
+          worker.postMessage({chart: chart}); // Start worker
+          */
 
-      // Toggles plots on chart
-      $("#chart-buttons").on("click", "button", function() {
-        var $el = $(this);
-        var plot = $el.data("plot");
-        var isShown = $el.attr("aria-pressed") === "true";
-        if (isShown) {
-          chart.hide([plot]);
-        } else {
-          chart.show([plot]);
+          // TODO Add toggle buttons
+          //$("#chart-buttons").append("&nbsp;<button data-plot='Train' class='btn btn-primary active' data-toggle='button' aria-pressed='true'>Train</button>");
         }
-        $el.button("toggle");
-        return false; // Stop event and propagation
-      });
+
+        // Toggles plots on chart
+        /*$("#chart-buttons").on("click", "button", function() {
+          var $el = $(this);
+          var plot = $el.data("plot");
+          var isShown = $el.attr("aria-pressed") === "true";
+          if (isShown) {
+            chart.hide([plot]);
+          } else {
+            chart.show([plot]);
+          }
+          $el.button("toggle");
+          return false; // Stop event and propagation
+        });*/
+      }
 
       // Kills experiment
       $("button.kill").on("click", function() {
