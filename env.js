@@ -5,7 +5,7 @@ require("dotenv").config({silent: true});
 
 // Docker environment
 if (process.env.MONGO_PORT_27017_TCP_ADDR) {
-  process.env.MONGODB_URI = "mongodb://" + process.env.MONGO_PORT_27017_TCP_ADDR + ":" + process.env.MONGO_PORT_27017_TCP_PORT + "/experiments";
+  process.env.MONGODB_URI = "mongodb://" + process.env.MONGO_PORT_27017_TCP_ADDR + ":" + process.env.MONGO_PORT_27017_TCP_PORT + "/FGLab";
 }
 
 // Heroku environment
