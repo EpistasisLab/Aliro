@@ -74,7 +74,7 @@ Often it is hard to specify some options in advance e.g. the type or structure o
 
 This is stored by FGLab, and is used to construct a form which lets one choose options and submit an experiment to an available machine. The options are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the options from a JSON string. **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
 
-The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Non-JSON files will be uploaded as they are. Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
+The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Non-JSON files will be uploaded as they are to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/). Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
 
 Grid and random search optimisers have also been implemented, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
 
