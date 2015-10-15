@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "conventional-github-releaser": "^0.5.0",
+    "conventional-recommended-bump": "0.0.3",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-conventional-changelog": "^0.7.0",

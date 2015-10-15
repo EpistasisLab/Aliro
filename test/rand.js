@@ -2,6 +2,7 @@ var fs = require("mz/fs");
 var _ = require("lodash");
 
 console.log("Program started");
+
 // Read and log out options
 var opts = {};
 console.log("Optional parameter: " + process.argv[2]);
@@ -30,33 +31,43 @@ var randFill = function(numEls) {
   return _.map(Array(numEls), noisyExp);
 };
 
-// Save random results
+// Calculate random training losses
 console.log("Training started");
 var train = {
   indices: linScale(100000, 1, 1),
   losses: randFill(100000)
 };
-fs.writeFileSync(opts._id + "/train.json", JSON.stringify({_train: train}));
 console.log("Training finished");
 
+// Calculate random validation losses
 console.log("Validation started");
 var val = {
   indices: linScale(1000, 100, 1),
   losses: randFill(1000),
   score: Math.random()
 };
-fs.writeFileSync(opts._id + "/val.json", JSON.stringify({_val: val}));
 console.log("Validation finished");
 
+// Calculate random training loss
 console.log("Testing started");
 var test = {
   loss: Math.random(),
   score: Math.random()
 };
-fs.writeFileSync(opts._id + "/test.json", JSON.stringify({_test: test}));
 console.log("Testing finished");
 
-fs.writeFileSync(opts._id + "/custom.json", JSON.stringify({"Custom Field": "This is a custom field"}));
-fs.writeFileSync(opts._id + "/note.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
-fs.writeFileSync(opts._id + "/file.js", "var id = " + opts._id + ";");
+// Store scores
+fs.writeFileSync(opts._id + "/scores.json", JSON.stringify({_scores: {"Test Score": test.score, "Val Score": val.score}}));
+// Store losses as a chart
+var columnNames = ["train", "val", "x1", "x2"];
+var chartData = {
+  xs: {"train": "x1", "val": "x2"},
+  columns: [train.losses, val.losses, train.indices, val.indices]
+};
+fs.writeFileSync(opts._id + "/chart.json", JSON.stringify({_charts: [{_columnNames: columnNames, data: chartData, axis: {x: {label: {text: "Iteration"}}, y: {label: {text: "Loss"}}}}]}));
+// Store custom fields
+fs.writeFileSync(opts._id + "/notes.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
+// Store source code
+fs.writeFileSync(opts._id + "/source_code.js", fs.readFileSync("./rand.js"));
+
 console.log("Program finished");
