@@ -39,7 +39,7 @@ gulp.task("bump-version", function() {
 gulp.task("commit-changes", function() {
   return gulp.src(".")
   .pipe(git.add())
-  .pipe(git.commit("chore: bump version number"));
+  .pipe(git.commit("chore: bump version number [ci skip]"));
 });
 
 gulp.task("push-changes", function(cb) {
