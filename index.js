@@ -76,11 +76,22 @@ fs.readFile("specs.json", "utf-8")
 // Attempt to read existing projects
 fs.readFile("projects.json", "utf-8")
 .then(function(proj) {
+  console.log("Loaded projects");
   projects = JSON.parse(proj || "{}");
 })
 .catch(function() {
   projects = {};
 });
+
+// Reload file on change
+fs.watch("projects.json", function() {
+  fs.readFile("projects.json", "utf-8")
+  .then(function(proj) {
+    console.log("Reloaded projects");
+    projects = JSON.parse(proj || "{}");
+  })
+});
+
 
 /* Global max capacity */
 var maxCapacity = 1;
