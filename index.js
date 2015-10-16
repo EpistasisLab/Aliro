@@ -341,18 +341,23 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res)
     // Open new file
     var gfs = new db.GridStore(db, fileId, file.originalname, "w", {content_type: file.mimetype});
     gfs.open(function(err, gfs) {
-      // Write from buffer and flush to db
-      gfs.write(file.buffer, true, function(err, gfs) {
-        if (err) {
-          console.log(err);
-        }
-        // Save file reference
-        db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}})
-        // TODO Collect with promises to send success message back here
+      if (err) {
+        console.log(err);
+      } else {
+        // Write from buffer and flush to db
+        gfs.write(file.buffer, true)
+        .then(function(gfs) {
+          // Save file reference
+          db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}})
+          // TODO Collect with promises to send success message back here
+          .catch(function(err) {
+            console.log(err);
+          });
+        })
         .catch(function(err) {
           console.log(err);
         });
-      });
+      }
     });
   }
   res.send({message: "Attempting to save files"});
@@ -403,10 +408,14 @@ app.get("/files/:id", function(req, res, next) {
     // Set read head pointer to beginning of file
     gfs.seek(0, function() {
       // Read entire file
-      gfs.read(function(err, file) {
+      gfs.read()
+      .then(function(file) {
         res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
         res.setHeader("Content-Type", gfs.contentType); // MIME Type
         res.send(file.toString()); // Send file
+      })
+      .catch(function(err) {
+        next(err); 
       });
     });
   });

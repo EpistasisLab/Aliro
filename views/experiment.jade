@@ -180,6 +180,8 @@ block scripts
 
           // Render
           c3Charts.push(c3.generate(chartData));
+          // Remove position: relative property that blocks the top of the page
+          $("#chart" + c).css("position", "static");
 
           // Render chart in Web Worker
           // TODO Add Web Worker support with jsdom and benv?
