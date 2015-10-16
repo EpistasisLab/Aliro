@@ -11,6 +11,8 @@ FGMachine currently only reads GPU information on Linux.
 
 ## Installation
 
+FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGMachine/releases).
+
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
