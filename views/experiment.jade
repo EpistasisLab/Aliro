@@ -42,7 +42,7 @@ block content
         dd.col-sm-9= experiment[key]
     if experiment._charts
       each val, ind in experiment._charts
-        div(id= "chart_" + ind)
+        div(id= "chart" + ind)
 
 block scripts
   script(src="/bower_components/jquery/dist/jquery.min.js")
@@ -86,15 +86,22 @@ block scripts
       }
 
       if (experiment._charts) {
+        // Creates a linear scale
+        var linScale = function(numEls, step, start) {
+          return _.map(Array(numEls), function(val, ind) {
+            return start + step*ind;
+          });
+        };
+
         // Use Largest-Triangle-Three-Buckets downsampling
         var downsampleFactor = 500;
 
         // Create charts
-        for (var i = 0; i < experiment._charts.length; i++) {
-          var chartData = experiment._charts[i];
+        for (var c = 0; c < experiment._charts.length; c++) {
+          var chartData = experiment._charts[c];
           // Default chart options
           var chartDefaults = {
-            bindto: "#chart_" + i,
+            bindto: "#chart" + c,
             axis: {
               x: {label: {position: "outer-center"}, padding: {left: 0}},
               y: {label: {position: "outer-middle"}, padding: 0}
@@ -105,16 +112,16 @@ block scripts
           // Add default options
           _.defaultsDeep(chartData, chartDefaults);
 
-          // Loop over data to downsample
-          for (var j = 0; j < chartData.data.columns.length; j++) {
-            // TODO Deal with different chart types
-            if (chartData.data.columns[j].length > downsampleFactor) {
+          // Downsample dependent on x axis types
+          if (chartData.data.xs) { // Multiple custom x axes
+            // Loop over columns
+            for (var i = 0; i < chartData.data.columns.length; i++) {
               // Get values
-              var vals = chartData.data.columns[j];
-              var valsKey = chartData._columnNames[j];
-              if (valsKey) {
-                // Get indices
-                var indicesKey = chartData.data.xs[valsKey];
+              var vals = chartData.data.columns[i];
+              var valsKey = chartData._columnNames[i];
+              // Get indices
+              var indicesKey = chartData.data.xs[valsKey];
+              if (indicesKey) {
                 var indicesIndex = chartData._columnNames.indexOf(indicesKey);
                 var indices = chartData.data.columns[indicesIndex];
                 // Downsample
@@ -122,15 +129,53 @@ block scripts
                 var downsampledValues = _.unzip(largestTriangleThreeBuckets(zippedValues, downsampleFactor, 0, 1));
                 // Replace values and indices
                 chartData.data.columns[indicesIndex] = downsampledValues[0];
-                chartData.data.columns[j] = downsampledValues[1];
-              } else {
-                // TODO Create linear range and downsample
+                chartData.data.columns[i] = downsampledValues[1];
               }
             }
+          } else {
+            var indices;
+            if (chartData.data.x) { // Single custom x axis
+              // Extract and remove custom x axis
+              var indicesKey = chartData.data.x;
+              delete chartData.data.x;
+              var indicesIndex = chartData._columnNames.indexOf(indicesKey);
+              indices = chartData.data.columns[indicesIndex];
+              chartData._columnNames.splice(indicesIndex, 1);
+              chartData.data.columns.splice(indicesIndex, 1);
+            } else { // Linear x axis
+              // Create linear scale
+              indices = linScale(chartData.data.columns[0].length, 1, 1);
+            }
+            // Create a custom x axis for each column
+            var xs = {};
+            var xsColumns = [];
+            for (var i = 0; i < chartData.data.columns.length; i++) {
+              // Get values
+              var vals = chartData.data.columns[i];
+              var valsKey = chartData._columnNames[i];
+              // Downsample
+              var zippedValues = _.zip(indices, vals);
+              var downsampledValues = _.unzip(largestTriangleThreeBuckets(zippedValues, downsampleFactor, 0, 1));
+              // Replace values
+              chartData.data.columns[i] = downsampledValues[1];
+              // Add axis key
+              xs[valsKey] = "_x" + i;
+              // Add new axis to column names
+              chartData._columnNames.push("_x" + i);
+              // Push new axis to temporary collection
+              xsColumns.push(downsampledValues[0]);
+            }
+            // Add xs to chartData
+            chartData.data.xs = xs;
+            // Push new axes to columns
+            for (var i = 0; i < xsColumns.length; i++) {
+              chartData.data.columns.push(xsColumns[i]);
+            }
           }
+
           // Loop over data to add column names
-          for (var j = 0; j < chartData.data.columns.length; j++) {
-            chartData.data.columns[j].unshift(chartData._columnNames[j]);
+          for (var i = 0; i < chartData.data.columns.length; i++) {
+            chartData.data.columns[i].unshift(chartData._columnNames[i]);
           }
 
           // Render
