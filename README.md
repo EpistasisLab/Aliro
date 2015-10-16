@@ -15,6 +15,8 @@ Some screenshots can be found on the [project website](http://kaixhin.github.io/
 
 ## Installation
 
+FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases).
+
 ### Local
 
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
