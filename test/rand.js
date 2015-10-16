@@ -69,5 +69,7 @@ fs.writeFileSync(opts._id + "/chart.json", JSON.stringify({_charts: [{_columnNam
 fs.writeFileSync(opts._id + "/notes.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
 // Store source code
 fs.writeFileSync(opts._id + "/source_code.js", fs.readFileSync("./rand.js"));
+// Store image
+fs.writeFileSync(opts._id + "/mnist.png", fs.readFileSync("./mnist.png"));
 
 console.log("Program finished");
