@@ -84,12 +84,12 @@ fs.readFile("projects.json", "utf-8")
 });
 
 // Reload file on change
-fs.watch("projects.json", function() {
+fs.watchFile("projects.json", function() {
   fs.readFile("projects.json", "utf-8")
   .then(function(proj) {
     console.log("Reloaded projects");
     projects = JSON.parse(proj || "{}");
-  })
+  });
 });
 
 
