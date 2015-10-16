@@ -1,3 +1,18 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/Kaixhin/FGLab/compare/0.3.0...v0.3.0) (2015-10-16)
+
+
+### Bug Fixes
+
+* delete files when experiment deleted ([4312e8c](https://github.com/Kaixhin/FGLab/commit/4312e8c))
+* downsample different axis types for C3 ([864ba4b](https://github.com/Kaixhin/FGLab/commit/864ba4b))
+
+### Features
+
+* accept C3 API for charts ([cc97ff7](https://github.com/Kaixhin/FGLab/commit/cc97ff7))
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/Kaixhin/FGLab/compare/0.2.7...v0.2.7) (2015-10-14)
 
