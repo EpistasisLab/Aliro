@@ -75,24 +75,49 @@ block scripts
         var $el = $(this);
         var type = $el.data("type");
         var id = $el.data("id");
-        $.ajax({
-          url: "/api/" + type + "/" + id,
-          type: "DELETE"
-        })
-        .then(function() {
-          // Delete experiments as well if project deleted
-          if (type === "projects") {
+
+        if (type === "projects") {
+          // Delete experiment files
+          $.ajax({
+            url: "/api/projects/" + id + "/experiments/files",
+            type: "DELETE"
+          })
+          .then(function() {
+            // Then delete experiments
             $.ajax({
-              url: "/api/" + type + "/" + id + "/experiments",
+              url: "/api/projects/" + id + "/experiments",
               type: "DELETE"
             })
             .then(function() {
-              location.reload(); // Refresh page
+              // Then delete project
+              $.ajax({
+                url: "/api/projects/" + id,
+                type: "DELETE"
+              })
+              .then(function() {
+                location.reload(); // Refresh page
+              })
+              .catch(function(err) {
+                console.log(err);
+              });
             });
-          } else {
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+        } else {
+          // Delete machine
+          $.ajax({
+            url: "/api/machines/" + id,
+            type: "DELETE"
+          })
+          .then(function() {
             location.reload(); // Refresh page
-          }
-        });
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+        }
         return false; // Stop event and propagation
       });
     });

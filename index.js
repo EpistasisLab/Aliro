@@ -94,7 +94,7 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 
 // Return all experiments for a project
 app.get("/api/projects/:id/experiments", function(req, res, next) {
-  db.experiments.find({project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
+  db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
   .then(function(result) {
     res.send(result);
   })
@@ -105,7 +105,7 @@ app.get("/api/projects/:id/experiments", function(req, res, next) {
 
 // Delete all experiments for a project
 app.delete("/api/projects/:id/experiments", function(req, res, next) {
-  db.experiments.removeAsync({project_id: db.toObjectID(req.params.id)}) // Get experiments for project
+  db.experiments.removeAsync({_project_id: db.toObjectID(req.params.id)}) // Get experiments for project
   .then(function(result) {
     res.send(result);
   })
@@ -335,11 +335,13 @@ app.put("/api/experiments/:id/finished", function(req, res, next) {
 // Processess files for an experiment
 app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res) {
   delete req.body._id; // Delete ID (will not update otherwise)
+  var filesP = Array(req.files.length);
+
   for (var i = 0; i < req.files.length; i++) {
     var file = req.files[i];
     var fileId = new db.ObjectID(); // Create file ID
     // Open new file
-    var gfs = new db.GridStore(db, fileId, file.originalname, "w", {content_type: file.mimetype});
+    var gfs = new db.GridStore(db, fileId, file.originalname, "w", {content_type: file.mimetype, promiseLibrary: Promise});
     gfs.open(function(err, gfs) {
       if (err) {
         console.log(err);
@@ -348,11 +350,7 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res)
         gfs.write(file.buffer, true)
         .then(function(gfs) {
           // Save file reference
-          db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}})
-          // TODO Collect with promises to send success message back here
-          .catch(function(err) {
-            console.log(err);
-          });
+          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}});
         })
         .catch(function(err) {
           console.log(err);
@@ -360,7 +358,77 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res)
       }
     });
   }
-  res.send({message: "Attempting to save files"});
+
+  // Check file promises
+  Promise.all(filesP)
+  .then(function() {
+    res.send({message: "Files uploaded"});
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
+// Delete all files for an experiment
+app.delete("/api/experiments/:id/files", function(req, res, next) {
+  db.experiments.findByIdAsync(req.params.id, {_files: 1})
+  .then(function(experiment) {
+    var filesP = Array(experiment._files.length);
+
+    for (var i = 0; i < experiment._files.length; i++) {
+      var gfs = new db.GridStore(db, experiment._files[i]._id, "w", {promiseLibrary: Promise});
+      filesP[i] = gfs.unlinkAsync();
+    }
+
+    // Check file promises
+    Promise.all(filesP)
+    .then(function() {
+      res.send({message: "Files deleted"});
+    })
+    .catch(function(err) {
+      console.log(err);
+      next(err);
+    });
+  })
+  .catch(function(err) {
+    console.log(err);
+    next(err);
+  });
+});
+
+// Delete all files for a project
+app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
+  db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
+  .then(function(experiments) {
+    var numFiles = 0;
+    for (var i = 0; i < experiments.length; i++) {
+      numFiles += experiments[i]._files.length;
+    }
+    var filesP = Array(numFiles);
+
+    // Loop over experiments
+    var fileIndex = 0;
+    for (var i = 0; i < experiments.length; i++) {
+      var experiment = experiments[i];
+      // Loop over files
+      for (var j = 0; j < experiment._files.length; j++) {
+        var gfs = new db.GridStore(db, experiment._files[j]._id, "w", {promiseLibrary: Promise});
+        filesP[fileIndex++] = gfs.unlinkAsync();
+      }
+    }
+
+    // Check file promises
+    Promise.all(filesP)
+    .then(function() {
+      res.send({message: "Files deleted"});
+    })
+    .catch(function(err) {
+      next(err);
+    });
+  })
+  .catch(function(err) {
+    next(err);
+  });
 });
 
 // Registers webhooks
@@ -403,7 +471,7 @@ app.post("/api/webhooks/register", jsonParser, function(req, res, next) {
 // Downloads file
 app.get("/files/:id", function(req, res, next) {
   // Open file
-  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r");
+  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {promiseLibrary: Promise});
   gfs.open(function(err, gfs) {
     // Set read head pointer to beginning of file
     gfs.seek(0, function() {

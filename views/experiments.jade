@@ -122,12 +122,27 @@ block scripts
 
       // Delete experiment
       $("button.delete").on("click", function() {
+        var id = $(this).data("id");
+        // Delete files linked to by experiment
         $.ajax({
-          url: "/api/experiments/" + $(this).data("id"),
+          url: "/api/experiments/" + id + "/files",
           type: "DELETE"
         })
         .then(function() {
-          location.reload(); // Refresh page
+          // Then delete experiment itself
+          $.ajax({
+            url: "/api/experiments/" + id,
+            type: "DELETE"
+          })
+          .then(function() {
+            location.reload(); // Refresh page
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
         });
         return false; // Stop event and propagation
       });
