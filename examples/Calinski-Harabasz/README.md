@@ -35,9 +35,9 @@ The following are the results of running the code on MATLAB R2015b - your result
 | gmdistribution | 4 | 380.0446615 |
 | gmdistribution | 6 | 344.9350911 |
 | gmdistribution | 5 | 315.5050093 |
-| linkage        | 1 | _NaN_       |
-| gmdistribution | 1 | _NaN_       |
-| kmeans         | 1 | _NaN_       |
+| linkage        | 1 | \_NaN\_     |
+| gmdistribution | 1 | \_NaN\_     |
+| kmeans         | 1 | \_NaN\_     |
 
 ## Citations
 
