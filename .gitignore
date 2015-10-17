@@ -27,12 +27,12 @@ build/Release
 node_modules
 
 # Environment configuration variables
-.env
+/.env
 # Machine specs
-specs.json
+/specs.json
 # Project specs
-projects.json
+/projects.json
 # Results generated in test
-test/*/**
+/test/*/**
 # Results generated in examples
-examples/*/*/**
+/examples/*/*/**
