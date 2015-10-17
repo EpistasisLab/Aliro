@@ -106,7 +106,7 @@ An example [Multiple XY Line Chart](http://c3js.org/samples/simple_xy_multiple.h
 
 ```json
 {
-  "_charts":
+  "_charts": {
     "columnNames": [
       "train",
       "val",

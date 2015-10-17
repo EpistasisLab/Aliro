@@ -1,5 +1,7 @@
 % Requies JSONlab: http://iso2mesh.sourceforge.net/cgi-bin/index.cgi?jsonlab
 function clustering(~, algorithm, ~, k, ~, id)
+  %%% Code for running experiment
+
   % Set random seed
   rng('default');
 
@@ -16,6 +18,16 @@ function clustering(~, algorithm, ~, k, ~, id)
   % Run Calinski-Harabasz criterion
   eva = evalclusters(meas, clust, 'CalinskiHarabasz');
 
+  %%% Code for saving criterion score
+
+  % Create results folder based on experiment ID
+  mkdir(id);
+  % Save score
+  CH = struct('CH', eva.CriterionValues);
+  savejson('_scores', CH, fullfile(id, 'scores.json'));
+
+  %%% Code for creating scatter plots
+
   % Create structures for scatter plot
   columnNames = {};
   
@@ -26,6 +38,7 @@ function clustering(~, algorithm, ~, k, ~, id)
   axis1 = struct('x', struct('label', 'Sepal length'), 'y', struct('label', 'Sepal width'));
   axis2 = struct('x', struct('label', 'Petal length'), 'y', struct('label', 'Petal width'));
 
+  % Fill structures
   for i = 1:k
     % Link x and y axes for different clusters
     xs.(strcat('cluster', num2str(i))) = strcat('y', num2str(i));
@@ -49,16 +62,12 @@ function clustering(~, algorithm, ~, k, ~, id)
     columnNames{end+1} = strcat('y', num2str(i));
   end
   
-  % Save score
-  mkdir(id);
-  CH = struct('CH', eva.CriterionValues);
-  savejson('_scores', CH, fullfile(id, 'scores.json'));
-  
-  % Save scatter plot
+  % Save scatter plots
   data1 = struct('xs', xs, 'columns', {columns1}, 'type', 'scatter');
   data2 = struct('xs', xs, 'columns', {columns2}, 'type', 'scatter');
   savejson('_charts', [struct('columnNames', {columnNames}, 'data', data1, 'axis', axis1), struct('columnNames', {columnNames}, 'data', data2, 'axis', axis2)], fullfile(id, 'charts.json'));
   
-  % Exit normally
+  %%%% Exit
+  
   exit;
 end
