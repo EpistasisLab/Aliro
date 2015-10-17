@@ -1,6 +1,7 @@
 /* Modules */
 require("./env"); // Load configuration variables
 var http = require("http");
+var path = require("path");
 var EventEmitter = require("events").EventEmitter;
 var mediator = new EventEmitter();
 var express = require("express");
@@ -19,9 +20,9 @@ var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
-app.use(favicon(__dirname + "/public/favicon.ico")); // Deal with favicon requests
-app.use(express.static(__dirname + "/public", {index: false, maxAge: '1d'})); // Static directory
-app.use("/bower_components", express.static(__dirname + "/bower_components", {index: false, maxAge: '1d'})); // Bower components
+app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
+app.use(express.static(path.join(__dirname, "public"), {index: false, maxAge: '1d'})); // Static directory
+app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {index: false, maxAge: '1d'})); // Bower components
 app.set("view engine", "jade"); // Jade template engine
 app.use(morgan("tiny")); // Log requests
 
@@ -333,7 +334,7 @@ app.put("/api/experiments/:id/finished", function(req, res, next) {
 });
 
 // Processess files for an experiment
-app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res) {
+app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res, next) {
   delete req.body._id; // Delete ID (will not update otherwise)
   var filesP = Array(req.files.length);
 
@@ -408,11 +409,11 @@ app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
 
     // Loop over experiments
     var fileIndex = 0;
-    for (var i = 0; i < experiments.length; i++) {
-      var experiment = experiments[i];
+    for (var j = 0; j < experiments.length; j++) {
+      var experiment = experiments[j];
       // Loop over files
-      for (var j = 0; j < experiment._files.length; j++) {
-        var gfs = new db.GridStore(db, experiment._files[j]._id, "w", {promiseLibrary: Promise});
+      for (var k = 0; k < experiment._files.length; k++) {
+        var gfs = new db.GridStore(db, experiment._files[k]._id, "w", {promiseLibrary: Promise});
         filesP[fileIndex++] = gfs.unlinkAsync();
       }
     }
@@ -432,7 +433,7 @@ app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
 });
 
 // Registers webhooks
-app.post("/api/webhooks/register", jsonParser, function(req, res, next) {
+app.post("/api/webhooks/register", jsonParser, function(req, res) {
   // Parse webhook request
   var webhook = req.body;
   var url = webhook.url;
