@@ -64,7 +64,7 @@ var chartData = {
   xs: {"train": "x1", "val": "x2"},
   columns: [train.losses, val.losses, train.indices, val.indices]
 };
-fs.writeFileSync(opts._id + "/chart.json", JSON.stringify({_charts: [{_columnNames: columnNames, data: chartData, axis: {x: {label: {text: "Iteration"}}, y: {label: {text: "Loss"}}}}]}));
+fs.writeFileSync(opts._id + "/chart.json", JSON.stringify({_charts: [{columnNames: columnNames, data: chartData, axis: {x: {label: {text: "Iteration"}}, y: {label: {text: "Loss"}}}}]}));
 // Store custom fields
 fs.writeFileSync(opts._id + "/notes.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
 // Store source code
