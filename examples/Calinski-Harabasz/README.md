@@ -6,7 +6,7 @@ The Calinski-Harabasz criterion is a heuristic for comparing clustering solution
 
 ## Instructions
 
-This example requires [MATLAB](http://uk.mathworks.com/products/matlab/), and has been adapted from [Evaluate clustering solutions - MATLAB evalclusters](https://uk.mathworks.com/help/stats/evalclusters.html). The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PATH_(variable\)).The [JSONlab](http://iso2mesh.sourceforge.net/cgi-bin/index.cgi?jsonlab) library should be available on [startup](https://uk.mathworks.com/help/matlab/ref/startup.html).
+This example requires [MATLAB](http://uk.mathworks.com/products/matlab/), and has been adapted from [Evaluate clustering solutions - MATLAB evalclusters](https://uk.mathworks.com/help/stats/evalclusters.html). The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PATH_(variable)).The [JSONlab](http://iso2mesh.sourceforge.net/cgi-bin/index.cgi?jsonlab) library should be available on [startup](https://uk.mathworks.com/help/matlab/ref/startup.html).
 
 1. Create a new project from [calinski-harabasz.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz/calinski-harabasz.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz).
@@ -38,9 +38,9 @@ The following are the results of running the code on MATLAB R2015b - your result
 | gmdistribution | 4 | 380.0446615 |
 | gmdistribution | 6 | 344.9350911 |
 | gmdistribution | 5 | 315.5050093 |
-| linkage        | 1 | _NaN_       |
-| gmdistribution | 1 | _NaN_       |
-| kmeans         | 1 | _NaN_       |
+| linkage        | 1 | \_NaN\_     |
+| gmdistribution | 1 | \_NaN\_     |
+| kmeans         | 1 | \_NaN\_     |
 
 ## Citations
 
