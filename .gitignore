@@ -34,3 +34,5 @@ specs.json
 projects.json
 # Results generated in test
 test/*/**
+# Results generated in examples
+examples/*/*/**

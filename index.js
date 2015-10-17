@@ -1,6 +1,7 @@
 /* Modules */
 require("dotenv").config({silent: true}); // Load configuration variables
 var os = require("os");
+var path = require("path");
 var fs = require("mz/fs");
 var spawn= require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
@@ -194,21 +195,24 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     };
 
     // Send all result files
-    var resultsDir = project.results + "/" + experimentId;
+    var resultsDir = path.join(project.results, experimentId);
     fs.readdir(resultsDir)
     .then(function(files) {
       var nonJSONFiles = [];
       for (var i = 0; i < files.length; i++) {
         if (files[i].match(/\.json$/)) {
           // Process JSON files
-          fs.readFile(resultsDir + "/" + files[i], "utf-8").then(sendJSONResults);
+          fs.readFile(path.join(resultsDir, files[i]), "utf-8").then(sendJSONResults);
         } else {
           // Store filenames for other files
-          nonJSONFiles.push(resultsDir + "/" + files[i]);
+          nonJSONFiles.push(path.join(resultsDir, files[i]));
         }
       }
       // Process other files
       sendFileResults(nonJSONFiles);
+    })
+    .catch(function(err) {
+      console.log(err);
     });
 
     // Send status
