@@ -15,7 +15,32 @@ This example requires [MATLAB](http://uk.mathworks.com/products/matlab/), and ha
   - max: 7
   - #: 6
 1. This example is simple, so reduce the Retry Timeout to 60s.
-1. Start Grid Search.
+1. Start grid search.
+
+## Results
+
+The following are the results of running the code on MATLAB R2015b - your results may vary, but the trends should remain: The ideal number of clusters is 3, and Gaussian mixture models perform poorly on this dataset.
+
+| algorithm      | k | CH          |
+|----------------|---|-------------|
+| kmeans         | 3 | 561.6277566 |
+| linkage        | 3 | 558.0580408 |
+| kmeans         | 4 | 530.4920531 |
+| linkage        | 4 | 515.0789062 |
+| kmeans         | 2 | 513.924546  |
+| linkage        | 2 | 502.8215635 |
+| gmdistribution | 2 | 502.8215635 |
+| kmeans         | 5 | 495.5414877 |
+| linkage        | 5 | 488.484904  |
+| gmdistribution | 3 | 483.0771101 |
+| kmeans         | 6 | 473.6576725 |
+| linkage        | 6 | 464.9493915 |
+| gmdistribution | 4 | 380.0446615 |
+| gmdistribution | 6 | 344.9350911 |
+| gmdistribution | 5 | 315.5050093 |
+| linkage        | 1 | _NaN_       |
+| gmdistribution | 1 | _NaN_       |
+| kmeans         | 1 | _NaN_       |
 
 ## Citations
 
