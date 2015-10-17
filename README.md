@@ -91,9 +91,9 @@ The `_scores` field is a map that can be used to store multiple floats that repr
 
 #### _charts
 
-The `_charts` field is an array that can be used to store data that will be charted on FGLab using [C3.js](http://c3js.org/), and hence mimics its [API](http://c3js.org/examples.html). This means that it is possible to create different chart types and adjust plotting options, with a minor change in the API so that numeric arrays can be directly exported. Rather than prepending arrays in the `columns` array with the column names, the `_columnNames` array is used to perform this on FGLab.
+The `_charts` field is a either an object or array of objects that can be used to store data that will be charted on FGLab using [C3.js](http://c3js.org/), and hence mimics its [API](http://c3js.org/examples.html). This means that it is possible to create different chart types and adjust plotting options, with a minor change in the API so that numeric arrays can be directly exported. Rather than prepending arrays in the `columns` array with the column names, the `columnNames` array is used to perform this on FGLab.
 
-Charts with lots of values are downsampled for performance reasons, using the [Largest-Triangle-Three-Buckets algorithm](http://hdl.handle.net/1946/15343) for visualisation purposes. By default, some sensible defaults for XY Line Charts are provided, and the following options are added to disable points and enable zoom, but these can be overriden:
+Charts with lots of values are downsampled for performance reasons, using the [Largest-Triangle-Three-Buckets algorithm](http://hdl.handle.net/1946/15343) for visualisation purposes. By default the following options are added to disable points and enable zoom, but these can be overriden:
 
 ```json
 {
@@ -106,40 +106,38 @@ An example [Multiple XY Line Chart](http://c3js.org/samples/simple_xy_multiple.h
 
 ```json
 {
-  "_charts": [
-    {
-      "_columnNames": [
-        "train",
-        "val",
-        "x1",
-        "x2"
-      ],
-      "data": {
-        "xs": {
-          "train": "x1",
-          "val": "x2"
-        },
-        "columns": [
-          [1.0, 0.8, 0.6, 0.4, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1, 0.0],
-          [1.0, 0.9, 0.6, 0.4, 0.3],
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-          [2, 6, 8, 9, 11]
-        ]
+  "_charts":
+    "columnNames": [
+      "train",
+      "val",
+      "x1",
+      "x2"
+    ],
+    "data": {
+      "xs": {
+        "train": "x1",
+        "val": "x2"
       },
-      "axis": {
-        "x": {
-          "label": {
-            "text": "Iterations"
-          }
-        },
-        "y": {
-          "label": {
-            "text": "Losses"
-          }
+      "columns": [
+        [1.0, 0.8, 0.6, 0.4, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1, 0.0],
+        [1.0, 0.9, 0.6, 0.4, 0.3],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        [2, 6, 8, 9, 11]
+      ]
+    },
+    "axis": {
+      "x": {
+        "label": {
+          "text": "Iterations"
+        }
+      },
+      "y": {
+        "label": {
+          "text": "Losses"
         }
       }
     }
-  ]
+  }
 }
 ```
 
