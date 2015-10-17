@@ -41,6 +41,10 @@ block content
         dt.col-sm-3 #{key}
         dd.col-sm-9= experiment[key]
     if experiment._charts
+      dt.col-sm-3 Charts
+      dd.col-sm-9
+  if experiment._charts
+    #charts
       each val, ind in experiment._charts
         div(id= "chart" + ind)
 
@@ -96,16 +100,19 @@ block scripts
         // Use Largest-Triangle-Three-Buckets downsampling
         var downsampleFactor = 500;
 
+        // If a single chart, turn into an array
+        if (_.isPlainObject(experiment._charts)) {
+          var tempChart = experiment._charts;
+          experiment._charts = [tempChart];
+          $("#charts").html("<div id='chart0'></div>"); // Add chart0 div
+        }
+
         // Create charts
         for (var c = 0; c < experiment._charts.length; c++) {
           var chartData = experiment._charts[c];
           // Default chart options
           var chartDefaults = {
             bindto: "#chart" + c,
-            axis: {
-              x: {label: {position: "outer-center"}, padding: {left: 0}},
-              y: {label: {position: "outer-middle"}, padding: 0}
-            },
             point: {show: false},
             zoom: {enabled: true}
           };
@@ -118,11 +125,11 @@ block scripts
             for (var i = 0; i < chartData.data.columns.length; i++) {
               // Get values
               var vals = chartData.data.columns[i];
-              var valsKey = chartData._columnNames[i];
+              var valsKey = chartData.columnNames[i];
               // Get indices
               var indicesKey = chartData.data.xs[valsKey];
               if (indicesKey) {
-                var indicesIndex = chartData._columnNames.indexOf(indicesKey);
+                var indicesIndex = chartData.columnNames.indexOf(indicesKey);
                 var indices = chartData.data.columns[indicesIndex];
                 // Downsample
                 var zippedValues = _.zip(indices, vals);
@@ -138,9 +145,9 @@ block scripts
               // Extract and remove custom x axis
               var indicesKey = chartData.data.x;
               delete chartData.data.x;
-              var indicesIndex = chartData._columnNames.indexOf(indicesKey);
+              var indicesIndex = chartData.columnNames.indexOf(indicesKey);
               indices = chartData.data.columns[indicesIndex];
-              chartData._columnNames.splice(indicesIndex, 1);
+              chartData.columnNames.splice(indicesIndex, 1);
               chartData.data.columns.splice(indicesIndex, 1);
             } else { // Linear x axis
               // Create linear scale
@@ -152,7 +159,7 @@ block scripts
             for (var i = 0; i < chartData.data.columns.length; i++) {
               // Get values
               var vals = chartData.data.columns[i];
-              var valsKey = chartData._columnNames[i];
+              var valsKey = chartData.columnNames[i];
               // Downsample
               var zippedValues = _.zip(indices, vals);
               var downsampledValues = _.unzip(largestTriangleThreeBuckets(zippedValues, downsampleFactor, 0, 1));
@@ -161,7 +168,7 @@ block scripts
               // Add axis key
               xs[valsKey] = "_x" + i;
               // Add new axis to column names
-              chartData._columnNames.push("_x" + i);
+              chartData.columnNames.push("_x" + i);
               // Push new axis to temporary collection
               xsColumns.push(downsampledValues[0]);
             }
@@ -175,7 +182,7 @@ block scripts
 
           // Loop over data to add column names
           for (var i = 0; i < chartData.data.columns.length; i++) {
-            chartData.data.columns[i].unshift(chartData._columnNames[i]);
+            chartData.data.columns[i].unshift(chartData.columnNames[i]);
           }
 
           // Render

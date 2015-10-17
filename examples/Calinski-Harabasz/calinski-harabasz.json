@@ -2,7 +2,7 @@
   "algorithm": {
     "type": "enum",
     "default": "kmeans",
-    "values": ["kmeans", "linkage", "gmdistribution"]
+    "values": ["kmeans", "linkage"]
   },
   "k": {
     "type": "int",
