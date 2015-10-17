@@ -1,0 +1,11 @@
+{
+  "algorithm": {
+    "type": "enum",
+    "default": "kmeans",
+    "values": ["kmeans", "linkage", "gmdistribution"]
+  },
+  "k": {
+    "type": "int",
+    "default": 3
+  }
+}
