@@ -1,7 +1,7 @@
 [![Build Status](https://img.shields.io/travis/Kaixhin/FGMachine.svg)](https://travis-ci.org/Kaixhin/FGMachine)
 [![Dependency Status](https://img.shields.io/david/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine)
 [![devDependency Status](https://img.shields.io/david/dev/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine#info=devDependencies)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGMachine/blob/master/LICENSE)
 
 # FGMachine
 
