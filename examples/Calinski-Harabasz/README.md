@@ -9,7 +9,7 @@ The Calinski-Harabasz criterion is a heuristic for comparing clustering solution
 This example requires [MATLAB](http://uk.mathworks.com/products/matlab/).
 
 1. Create a new project from [calinski-harabasz.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz/calinski-harabasz.json).
-1. Set up [FGMachine](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz).
+1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz).
 1. Open the optimisation page and change the following values for *k*:
   - min: 1
   - max: 7
