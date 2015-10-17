@@ -6,7 +6,7 @@ The Calinski-Harabasz criterion is a heuristic for comparing clustering solution
 
 ## Instructions
 
-This example requires [MATLAB](http://uk.mathworks.com/products/matlab/).
+This example requires [MATLAB](http://uk.mathworks.com/products/matlab/), and has been adapted from [Evaluate clustering solutions - MATLAB evalclusters](https://uk.mathworks.com/help/stats/evalclusters.html). The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PATH_(variable\)).The [JSONlab](http://iso2mesh.sourceforge.net/cgi-bin/index.cgi?jsonlab) library should be available on [startup](https://uk.mathworks.com/help/matlab/ref/startup.html).
 
 1. Create a new project from [calinski-harabasz.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz/calinski-harabasz.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz).
