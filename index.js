@@ -1,5 +1,5 @@
 /* Modules */
-require("dotenv").config({silent: true}); // Load configuration variables
+require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
