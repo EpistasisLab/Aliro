@@ -13,6 +13,8 @@ FGMachine currently only reads GPU information on Linux.
 
 FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGMachine/releases).
 
+### Local
+
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
@@ -29,6 +31,16 @@ Run `node index.js` to start FGMachine. On the first run it will create `specs.j
 To re-register, delete `specs.json` before running FGMachine again.
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
+
+### Docker
+
+Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it to the [FGMachine container](https://hub.docker.com/r/kaixhin/fglab/):
+
+```sh
+sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
+sudo docker run --name fglab --link mongodb:mongo -dP kaixhin/fglab
+sudo docker run --name fgmachine --link fglab:fglab -d kaixhin/fgmachine
+```
 
 ## Objects
 
