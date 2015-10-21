@@ -40,11 +40,11 @@ To update, use `git pull` to update the repository and run `npm install` to upda
 Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
 
 ```sh
-sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
-sudo docker run --name fglab --link mongodb:mongo --net=host -dP kaixhin/fglab
+sudo docker run -d --name mongodb mongo --storageEngine wiredTiger
+sudo docker run -d --name fglab --link mongodb:mongo -p <port>:5080 kaixhin/fglab
 ```
 
-The FGLab container port is 5080 by default.
+A free port on the the host must be specified. The default, 5080, is usually available.
 
 ### Heroku
 
