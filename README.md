@@ -80,8 +80,8 @@ Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/c
 ```json
 {
   "Framework": {
-    "Name": "Lasagne",
-    "Version Number": 0.1
+    "Name": "Theano",
+    "Version Number": 0.7
   },
   "Notes": "Best parameters saved at epoch 55"
 }
