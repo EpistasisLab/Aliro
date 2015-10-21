@@ -44,7 +44,7 @@ sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
 sudo docker run --name fglab --link mongodb:mongo --net=host -dP kaixhin/fglab
 ```
 
-The FGLab client port can be retrieved by running `sudo docker port fglab`.
+The FGLab container port is 5080 by default.
 
 ### Heroku
 
