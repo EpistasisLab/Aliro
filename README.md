@@ -42,7 +42,7 @@ Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it t
 sudo docker run -d --name fgmachine -e FGLAB_URL=<FGLab URL> -e FGMACHINE_URL=<FGMachine URL> -p 5081:5081 kaixhin/fgmachine
 ```
 
-The `FGLab URL` will be the address of the host running FGLab, including port 5080. The `FGMachine URL` will be the address of the current host (as accessible by FGLab), including port 5081.
+The `FGLab URL` will be the address of the host running FGLab, including port 5080. The `FGMachine URL` will be the address of the current host (as accessible by FGLab), including port 5081. These will often be public IPs rather than "localhost".
 
 ## Objects
 
@@ -80,8 +80,8 @@ Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/c
 ```json
 {
   "Framework": {
-    "Name": "Lasagne",
-    "Version Number": 0.1
+    "Name": "Theano",
+    "Version Number": 0.7
   },
   "Notes": "Best parameters saved at epoch 55"
 }
