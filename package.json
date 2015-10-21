@@ -35,8 +35,8 @@
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-conventional-changelog": "^0.7.0",
-    "gulp-git": "^1.5.0",
-    "gulp-util": "^3.0.6",
+    "gulp-git": "^1.6.0",
+    "gulp-util": "^3.0.7",
     "lodash": "^3.10.1",
     "minimist": "^1.2.0",
     "run-sequence": "^1.1.4"

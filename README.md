@@ -39,10 +39,10 @@ To update, use `git pull` to update the repository and run `npm install` to upda
 Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it to the [FGMachine container](https://hub.docker.com/r/kaixhin/fgmachine/):
 
 ```sh
-sudo docker run -d --name fgmachine -e FGLAB_URL=<FGLab URL> -e FGMACHINE_URL=<FGMachine URL> -p 5081:5081 kaixhin/fgmachine
+sudo docker run -d --name fgmachine -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):$(which docker) -e FGLAB_URL=<FGLab URL> -e FGMACHINE_URL=<FGMachine URL> -p 5081:5081 kaixhin/fgmachine
 ```
 
-The `FGLab URL` will be the address of the host running FGLab, including port 5080. The `FGMachine URL` will be the address of the current host (as accessible by FGLab), including port 5081.
+The `FGLab URL` will be the address of the host running FGLab, including port 5080. The `FGMachine URL` will be the address of the current host (as accessible by FGLab), including port 5081. Docker and its socket are passed to allow FGMachine to launch Docker containers itself.
 
 ## Objects
 
