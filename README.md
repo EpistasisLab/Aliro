@@ -41,7 +41,7 @@ Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the 
 
 ```sh
 sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
-sudo docker run --name fglab --link mongodb:mongo -dP kaixhin/fglab
+sudo docker run --name fglab --link mongodb:mongo --net=host -dP kaixhin/fglab
 ```
 
 The FGLab client port can be retrieved by running `sudo docker port fglab`.
