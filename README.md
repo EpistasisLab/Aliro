@@ -2,6 +2,8 @@
 [![Dependency Status](https://img.shields.io/david/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine)
 [![devDependency Status](https://img.shields.io/david/dev/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine#info=devDependencies)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGMachine/blob/master/LICENSE)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
+[![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 
 # FGMachine
 
@@ -21,7 +23,7 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
 1. Run `npm install`.
 1. Create `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
 1. Set the following environment variables:
-  - FGLAB_URL (FGLab URL)
+  - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
 The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) can be used as a starting point).
@@ -34,13 +36,13 @@ To update, use `git pull` to update the repository and run `npm install` to upda
 
 ### Docker
 
-Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it to the [FGMachine container](https://hub.docker.com/r/kaixhin/fglab/):
+Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it to the [FGMachine container](https://hub.docker.com/r/kaixhin/fgmachine/):
 
 ```sh
-sudo docker run --name mongodb -d mongo --storageEngine wiredTiger
-sudo docker run --name fglab --link mongodb:mongo -dP kaixhin/fglab
-sudo docker run --name fgmachine --link fglab:fglab -d kaixhin/fgmachine
+sudo docker run -d --name fgmachine -e FGLAB_URL=<FGLab URL> -e FGMACHINE_URL=<FGLab URL> -p 5081:5081 kaixhin/fgmachine
 ```
+
+The `FGLab URL` will be the address of the host running FGLab, including port 5080. The `FGMachine URL` will be the address of the current host (as accessible by FGLab), including port 5081.
 
 ## Objects
 
