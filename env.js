@@ -7,6 +7,9 @@ require("dotenv").config({silent: true});
 if (process.env.MONGO_PORT_27017_TCP_ADDR) {
   process.env.MONGODB_URI = "mongodb://" + process.env.MONGO_PORT_27017_TCP_ADDR + ":" + process.env.MONGO_PORT_27017_TCP_PORT + "/FGLab";
 }
+if (process.env.PORT) {
+  process.env.FGLAB_PORT = process.env.PORT;
+}
 
 // Heroku environment
 if (process.env.MONGOLAB_URI) {
