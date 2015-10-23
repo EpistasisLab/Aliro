@@ -36,3 +36,5 @@ node_modules
 /test/*/**
 # Results generated in examples
 /examples/*/*/**
+# Compiled Python example
+/examples/Bayesian-Optimisation/fglab.pyc
