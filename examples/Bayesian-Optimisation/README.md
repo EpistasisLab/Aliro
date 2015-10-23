@@ -6,6 +6,7 @@ Bayesian optimisation is a global optimisation technique, which treats the funct
 
 ## Requirements
 
+- [Python](https://www.python.org/)
 - [MongoDB](https://www.mongodb.org/)
 - [Spearmint](https://github.com/HIPS/Spearmint)
 - [Flask](http://flask.pocoo.org/)
