@@ -1,5 +1,5 @@
 import json
-from time import sleep
+from multiprocessing import Queue
 from flask import Flask
 from flask import request
 import requests
@@ -9,16 +9,8 @@ project_id = '<Project ID>' # e.g. '56297e87d1a19b9c0e21c70a'
 fglab_url = '<FGLab URL>' # e.g. 'http://localhost:5080'
 spearmint_helper_url = '<Spearmint helper URL>' # e.g. 'http://localhost:5000'
 
-# Global for experiment result
-exp_result = None
-
-# Yields global experiment result when available
-def yield_result():
-    global exp_result
-    # Wait for global experiment result
-    while exp_result is None:
-        sleep(1) # Sleep for 1s
-    yield exp_result
+# Global queue
+q = Queue()
 
 # Shuts down server
 def shutdown_server():
@@ -30,13 +22,12 @@ def shutdown_server():
 # Receives experiment completion information
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    global exp_result
     # Receive experiment finished notification
     finished = request.get_json()
     # Send a request for experiment results
     experiment = requests.get(fglab_url + "/api/experiments/" + finished['id'])
-    # Set global experiment value
-    exp_result = experiment.json()['_scores']['value']
+    # Put global experiment value on queue
+    q.put(experiment.json()['_scores']['value'])
     # Stop server 
     shutdown_server()
 
@@ -51,5 +42,7 @@ def main(job_id, params):
     r = requests.post(fglab_url + "/api/webhooks/register", json = webhook_payload)
     # Start server
     app.run(host="0.0.0.0")
-    # Yield experiment result (when available)
-    return yield_result().next()
+    # Retrieve experiment result from queue (when available)
+    result = q.get()
+    print 'Result: %f' % result
+    return result

@@ -9,7 +9,7 @@ import numpy as np
 def branin(x, y):
     result = float(np.square(y - (5.1/(4*np.square(math.pi)))*np.square(x) + (5/math.pi)*x - 6) + 10*(1-(1./(8*math.pi)))*np.cos(x) + 10)
     noise = np.random.normal() * 50.
-    sleep(np.random.randint(60)) # Sleep for maximum 1 minute
+    sleep(np.random.randint(30)) # Sleep for maximum 1/2 minute
     return result + noise
 
 if __name__ == "__main__":
