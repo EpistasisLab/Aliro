@@ -338,17 +338,16 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res,
   delete req.body._id; // Delete ID (will not update otherwise)
   var filesP = Array(req.files.length);
 
-  for (var i = 0; i < req.files.length; i++) {
-    var file = req.files[i];
+  var saveGFSFile = function(fileObj) {
     var fileId = new db.ObjectID(); // Create file ID
     // Open new file
-    var gfs = new db.GridStore(db, fileId, file.originalname, "w", {content_type: file.mimetype, promiseLibrary: Promise});
+    var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {content_type: fileObj.mimetype, promiseLibrary: Promise});
     gfs.open(function(err, gfs) {
       if (err) {
         console.log(err);
       } else {
         // Write from buffer and flush to db
-        gfs.write(file.buffer, true)
+        gfs.write(fileObj.buffer, true)
         .then(function(gfs) {
           // Save file reference
           filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}});
@@ -358,6 +357,10 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res,
         });
       }
     });
+  };
+
+  for (var i = 0; i < req.files.length; i++) {
+    saveGFSFile(req.files[i]); // Save file in function closure
   }
 
   // Check file promises
@@ -481,7 +484,7 @@ app.get("/files/:id", function(req, res, next) {
       .then(function(file) {
         res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
         res.setHeader("Content-Type", gfs.contentType); // MIME Type
-        res.send(file.toString()); // Send file
+        res.send(file); // Send file
       })
       .catch(function(err) {
         next(err); 
