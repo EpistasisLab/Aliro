@@ -24,7 +24,7 @@
   "dependencies": {
     "bluebird": "^2.10.2",
     "body-parser": "^1.14.0",
-    "bower": "^1.6.3",
+    "bower": "^1.6.5",
     "compression": "^1.6.0",
     "continuation-local-storage": "^3.1.4",
     "dotenv": "^1.2.0",
@@ -33,8 +33,8 @@
     "mongodb": "^2.0.46",
     "mongoskin": "^2.0.3",
     "morgan": "^1.6.1",
-    "multer": "^1.0.6",
-    "request-promise": "^1.0.1",
+    "multer": "^1.1.0",
+    "request-promise": "^1.0.2",
     "serve-favicon": "^2.3.0",
     "ws": "^0.8.0"
   },
@@ -44,8 +44,8 @@
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-conventional-changelog": "^0.7.0",
-    "gulp-git": "^1.5.0",
-    "gulp-util": "^3.0.6",
+    "gulp-git": "^1.6.0",
+    "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
     "run-sequence": "^1.1.4"
   },
