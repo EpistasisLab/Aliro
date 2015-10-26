@@ -18,7 +18,7 @@ The Recurrent Attention Model (RAM) [1] is a recurrent neural network that uses 
 This example has been adapted from [Recurrent Model of Visual Attention](http://torch.ch/blog/2015/09/21/rmva.html). 
 
 1. Set up [FGLab](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
-1. Insert the [project](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model/projects.json) into FGMachine's `project.json` file, using the project ID from FGLab.
+1. Insert the [project](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model/project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
 1. [Submit an experiment](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
 
 ## Results
@@ -27,7 +27,7 @@ The code produces a plot of the training losses, and calculates the accuracy of 
 
 ![glimpse1](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/examples/Recurrent-Attention-Model/glimpse1.png)
 
-For each glimpse, the extracted patches are also extracted:
+For each glimpse, the extracted patches, `patch<x>.png`, are also extracted:
 
 ![patch1](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/examples/Recurrent-Attention-Model/patch1.png)
 
