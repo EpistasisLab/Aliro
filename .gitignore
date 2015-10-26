@@ -32,9 +32,5 @@ node_modules
 /specs.json
 # Project specs
 /projects.json
-# Results generated in test
-/test/*/**
-# Results generated in examples
-/examples/*/*/**
 # Compiled Python example
 /examples/Bayesian-Optimisation/fglab.pyc

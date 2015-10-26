@@ -11,7 +11,9 @@ var bytes = require("bytes");
 var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
+var Promise = require("bluebird");
 var rp = require("request-promise");
+var rimraf = require("rimraf");
 
 /* App instantiation */
 var app = express();
@@ -198,18 +200,30 @@ app.post("/projects/:id", jsonParser, function(req, res) {
     var resultsDir = path.join(project.results, experimentId);
     fs.readdir(resultsDir)
     .then(function(files) {
+      var filesP = [];
       var nonJSONFiles = [];
       for (var i = 0; i < files.length; i++) {
         if (files[i].match(/\.json$/)) {
           // Process JSON files
-          fs.readFile(path.join(resultsDir, files[i]), "utf-8").then(sendJSONResults);
+          filesP.push(fs.readFile(path.join(resultsDir, files[i]), "utf-8").then(sendJSONResults));
         } else {
           // Store filenames for other files
           nonJSONFiles.push(path.join(resultsDir, files[i]));
         }
       }
       // Process other files
-      sendFileResults(nonJSONFiles);
+      filesP.push(sendFileResults(nonJSONFiles));
+      // Confirm upload and delete results folder to save space
+      Promise.all(filesP).then(function() {
+        rimraf(resultsDir, function(err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
     })
     .catch(function(err) {
       console.log(err);
