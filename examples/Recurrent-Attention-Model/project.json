@@ -1,0 +1,10 @@
+{
+  "<Project ID>": {
+    "cwd": "./examples/Recurrent-Attention-Model",
+    "command": "th",
+    "args": ["recurrent-visual-attention.lua"],
+    "options": "single-dash",
+    "capacity": "1",
+    "results": "./examples/Recurrent-Attention-Model"
+  }
+}
