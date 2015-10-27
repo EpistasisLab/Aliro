@@ -4,6 +4,8 @@
 
 The Calinski-Harabasz criterion is a heuristic for comparing clustering solutions on the same data [1]. Without delving into the details or assumptions of either the clustering algorithms or the Calinkski-Harabasz criterion itself, this example will simply calculate the best solution found for the Iris flower dataset [2] by using grid search. The algorithms that will be compared are *k*-means clustering and agglomerative hierarchical clustering. The number of clusters, *k*, will vary from 1-6.
 
+This example has been adapted from [Evaluate clustering solutions - MATLAB evalclusters](https://uk.mathworks.com/help/stats/evalclusters.html). 
+
 ## Requirements
 
 - [MATLAB](http://uk.mathworks.com/products/matlab/)
@@ -12,8 +14,6 @@ The Calinski-Harabasz criterion is a heuristic for comparing clustering solution
 The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PATH_(variable)). The JSONlab library should be available on [startup](https://uk.mathworks.com/help/matlab/ref/startup.html).
 
 ## Instructions
-
-This example has been adapted from [Evaluate clustering solutions - MATLAB evalclusters](https://uk.mathworks.com/help/stats/evalclusters.html). 
 
 1. Create a new project from [calinski-harabasz.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz/calinski-harabasz.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz).

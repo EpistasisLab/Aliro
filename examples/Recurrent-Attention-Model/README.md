@@ -2,20 +2,27 @@
 
 ## Introduction
 
-The Recurrent Attention Model (RAM) [1] is a recurrent neural network that uses the REINFORCE algorithm [2] to take multiple *glimpses* of its 2D spatial input. At every time step, the RAM produces both the location for its next glimpse, and potentially an action, such as a classification of its input data.
+The Recurrent Attention Model (RAM) [1] is a recurrent neural network that uses the REINFORCE algorithm [2] to take multiple *glimpses* of its 2D spatial input. At every time step, the RAM produces both the location for its next glimpse, and potentially an action, such as a classification of its input data. This example comes in both a standard version (requiring Torch7) and a Docker version (requiring Docker but not Torch7).
 
-## Requirements
+This example has been adapted from [Recurrent Model of Visual Attention](http://torch.ch/blog/2015/09/21/rmva.html).
+
+## Requirements (Torch7)
 
 - [Torch7](http://torch.ch/)
+- [torchx](https://github.com/nicholas-leonard/torchx)
 - [dpnn](https://github.com/nicholas-leonard/dpnn)
 - [rnn](https://github.com/Element-Research/rnn)
 - [mnist](https://github.com/andresy/mnist)
 
-`luarocks install <package>` can be used to install the `dpnn`, `rnn` and `mnist` libraries once Torch7 is installed.
+`luarocks install <package>` can be used to install the `torchx`, `dpnn`, `rnn` and `mnist` libraries once Torch7 is installed.
+
+## Requirements (Docker)
+
+- [Docker](https://www.docker.com/)
+
+For more information on Docker usage, including CUDA capabilities, please see the [source repo](https://github.com/Kaixhin/dockerfiles).
 
 ## Instructions
-
-This example has been adapted from [Recurrent Model of Visual Attention](http://torch.ch/blog/2015/09/21/rmva.html). 
 
 1. Create a new project from [recurrent-attention-model.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model/recurrent-attention-model.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model).
