@@ -34,7 +34,8 @@ This example has been adapted from [Recurrent Model of Visual Attention](http://
 
 1. Create a Docker image for this example by running `sudo docker build -t ram .` in this folder.
 1. Set up [FGLab](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
-1. Insert the second [project](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model/project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
+1. Run FGLab with superuser privileges (to allow spawning Docker containers).
+1. Insert the second [project](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model/project.json) into FGMachine's `projects.json` file, using the project ID from FGLab, and adding the absolute path for this folder.
 1. [Submit an experiment](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
 
 Note that since the Docker container is ephemeral, the arguments to Docker mounts this directory as `/data` inside the container, and `main.lua` writes the results to this directory. The code to check whether the script is running within a Docker container is only used so that the same file can be used in both normal and Docker environments.
