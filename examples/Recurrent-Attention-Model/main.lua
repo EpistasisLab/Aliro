@@ -6,7 +6,7 @@ local cjson = require 'cjson'
 -- Command line arguments
 local cmd = torch.CmdLine()
 cmd:option('-_id', '123456789', 'Experiment ID')
-cmd:option('-cuda', 'true', 'Use CUDA') -- Torch CmdLine does not parse booleans properly
+cmd:option('-cuda', 'false', 'Use CUDA') -- Torch CmdLine does not parse booleans properly
 cmd:option('-seed', 123, 'Random seed')
 cmd:option('-locationHiddenSize', 128, 'Output size of location "sensor"')
 cmd:option('-glimpsePatchSize', 8, 'Glimpse patch size')
@@ -30,6 +30,12 @@ if opt.cuda == 'true' then
   opt.cuda = true
 else
   opt.cuda = false
+end
+
+-- Check if running in container
+if paths.filep('/.dockerinit') then
+  -- Use Docker volume mount
+  opt._id = paths.concat('/data', opt._id)
 end
 
 -- Make experiment folder
