@@ -44,6 +44,8 @@ paths.mkdir(opt._id)
 -- Set seeds
 math.randomseed(opt.seed)
 torch.manualSeed(opt.seed)
+-- Set default tensor type
+torch.setdefaulttensortype('torch.FloatTensor')
 
 -- Create dataset
 print('Loading dataset')
