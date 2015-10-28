@@ -38,6 +38,8 @@ For each glimpse, the extracted patches, `patch<x>.png`, are also extracted:
 
 ![patch1](https://raw.githubusercontent.com/Kaixhin/FGLab/master/examples/Recurrent-Attention-Model/patch1.png)
 
+These images are displayed along with the normal download link for uploaded files.
+
 ## Citations
 
 [1] Mnih, V., Heess, N., & Graves, A. (2014). Recurrent models of visual attention. In *Advances in Neural Information Processing Systems* (pp. 2204-2212).

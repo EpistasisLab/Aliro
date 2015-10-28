@@ -350,7 +350,7 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res,
         gfs.write(fileObj.buffer, true)
         .then(function(gfs) {
           // Save file reference
-          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename}}});
+          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.contentType}}});
         })
         .catch(function(err) {
           console.log(err);

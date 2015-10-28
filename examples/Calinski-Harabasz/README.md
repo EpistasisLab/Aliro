@@ -43,7 +43,7 @@ The following are the results of running the code on MATLAB R2015b - your result
 | linkage        | 1 | \_NaN\_     |
 | kmeans         | 1 | \_NaN\_     |
 
-Each experiment also produces two scatter plots to show the clustering - one based on sepal length vs. sepal width, and the other based on petal length vs. petal width.
+Each experiment also produces two scatter plots to show the clustering - one based on sepal length vs. sepal width, and the other based on petal length vs. petal width. Note that FGLab automatically displays uploaded images, so it is possible to create the plots within MATLAB and have them displayed on the experiment page.
 
 ## Citations
 

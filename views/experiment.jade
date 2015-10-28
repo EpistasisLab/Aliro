@@ -95,7 +95,11 @@ block scripts
       // Add files
       var $files = $("#files");
       for (var i = 0; i < experiment._files.length; i++) {
-        $files.append("<li><a href='/files/'" + experiment._files[i]._id + "'>" + experiment._files[i].filename + "</a></li>");
+        var file = experiment._files[i];
+        if (file.mimetype.indexOf("image/") === 0) {
+          $files.append("<li><img src='/files/" + file._id + "' class='img-responsive'></li>");
+        }
+        $files.append("<li><a href='/files/" + file._id + "'>" + file.filename + "</a></li>");
       }
 
       if (experiment._charts) {
