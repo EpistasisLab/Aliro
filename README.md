@@ -75,7 +75,7 @@ After a project has been created on FGLab, if this machine is available to run e
 
 Results and custom data must be saved as files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. For an example that uses all of the following features, see [rand.js](https://github.com/Kaixhin/FGMachine/blob/master/test/rand.js). 
 
-Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/) via FGLab, which allows them to be downloaded later in their native format. Images are automatically displayed on the experiment page, allowing plots to be created by the machine learning code. JSON files are automatically parsed, with fields being added to the experiment object. An example, `notes.json`, may look like this:
+Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/) via FGLab, which allows them to be downloaded later in their native format. Images and videos are automatically displayed on the experiment page, allowing plots to be created by the machine learning code. JSON files are automatically parsed, with fields being added to the experiment object. An example, `notes.json`, may look like this:
 
 ```json
 {
