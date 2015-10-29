@@ -15,23 +15,21 @@ Some screenshots can be found on the [project website](http://kaixhin.github.io/
 
 ## Installation
 
-FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases).
+FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](https://github.com/Kaixhin/FGLab#local), via [Docker](https://github.com/Kaixhin/FGLab#docker), or hosted on [Heroku](https://github.com/Kaixhin/FGLab#heroku).
 
 ### Local
 
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Install [MongoDB](https://www.mongodb.org/) from the website or your package manager.
-1. Make sure that the MongoDB daemon is running (`mongod`).
+1. Make sure that the MongoDB daemon is running (`mongod`). For example, run `mongod --dbpath <database path>`, where `<database path>` must exist.
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGLab/zipball/master)/[tar](https://github.com/Kaixhin/FGLab/tarball/master).
 1. Move inside the FGLab folder.
-1. Run `npm install`.
-1. Set the following environment variables:
+1. Run `npm install`. `npm install` also runs `bower install` to install additional required packages.
+1. FGLab requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](https://github.com/Kaixhin/FGLab/blob/master/example.env) to `.env`, but it may require customisation for non-standard MongoDB ports, or setting a different port for FGLab. An alternative is to set the following environment variables:
   - MONGODB_URI (MongoDB database URI)
   - FGLAB_PORT (port)
 
-The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGLab/blob/master/example.env) can be used as a starting point).
-
-Run `node index.js` to start FGLab.
+Run `node index.js` to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the rest of the documentation to get an overview of FGLab and FGMachine - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
 
@@ -73,25 +71,25 @@ See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/test/mnist.json) a
 
 Often it is hard to specify some options in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing options and versioning manually e.g. `cnn.v2`.
 
-This is stored by FGLab, and is used to construct a form which lets one choose options and submit an experiment to an available machine. The options are sent to your machine learning program via the FGMachine client. Your machine learning program then uses its native JSON library to deserialize the options from a JSON string. **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
+This is stored by FGLab, and is used to construct a form which lets one choose options and submit an experiment to an available machine. The options are sent to your machine learning program via the FGMachine client. Your machine learning program then accepts the different fields via command-line options, the details of which are in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine#projects). **Note that the `_id` field is reserved, as this will store the experiment ID as a `string`**.
 
-The machine learning program may log to stdout, so results must be stored as JSON files in a folder that is watched by FGLab and sent to FGMachine as JSON data is added. Non-JSON files will be uploaded as they are to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/). Details can be found in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine).
+FGMachine will spawn your machine learning program, which should produce output files to be sent from FGMachine to FGLab. The details of this is available in the [FGMachine documentation](https://github.com/Kaixhin/FGMachine#projects).
 
-Grid and random search optimisers have also been implemented, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
+Grid and random search optimisers have also been implemented in FGLab, to allow searching over a range of hyperparameter space. Multiple string values are delimited by commas (`,`).
 
 ### Experiments
 
-An experiment is one complete training and testing run with a specific set of options. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of options will still be assigned unique IDs. Experiments contain an ID, a project ID, a machine ID, the chosen options, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
+An experiment is one complete training and testing run with a specific set of options. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of options will still be assigned unique IDs. Experiments have a unique ID, in addition to a project ID, a machine ID, the chosen options, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
 
 The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 ### Machines
 
-A [machine](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine stores its own details, as well as a list of supported projects. Before a new experiment is chosen to be run, FGLab queries all machines in order to determine a machine with the capacity to run the experiment.
+A [FGMachine client](https://github.com/Kaixhin/FGMachine) registers itself with FGLab, providing hardware details as well as an address for interaction between FGLab and the machine. A machine (FGMachine) stores its own details, as well as a list of supported projects. Before a new experiment is chosen to be run, FGLab queries all machines in order to determine a machine with the capacity to run the experiment.
 
-Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs.
+Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs. As mentioned before, these can be uploaded to FGLab's database.
 
-## API
+## FGLab API
 
 The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
 
