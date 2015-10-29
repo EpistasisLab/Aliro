@@ -46,7 +46,7 @@ The `FGLab URL` will be the address of the host running FGLab, including port 50
 
 ### Projects
 
-After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`. Note that `<project_id>` links the created project on FGLab and FGMachine's project specifications in `projects.json`.
+After a project has been created on FGLab, a corresponding *project implementation* must be specified in `projects.json`. If this machine is available to run experiments for the project created on FGLab, then add the following field to `projects.json`. Note that `<project_id>` links the created project on FGLab and FGMachine's project implemetations in `projects.json`.
 
 ```json
 "<project_id>": {
@@ -67,6 +67,8 @@ After a project has been created on FGLab, if this machine is available to run e
 | single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true                                      |
 | double-dash | caffe   | caffe [args] --seed=123 --model=cnn.v2 --L2=true                                |
 | function    | matlab  | matlab [args w/o final arg] [final arg]\('seed',123,'model','cnn.v2','L2',true) |
+
+FGMachine automatically reloads the `projects.json` file when it is changed.
 
 ### Experiments
 
