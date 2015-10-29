@@ -2,8 +2,9 @@
   "name": "FGMachine",
   "version": "0.3.0",
   "description": "Future Gadget Machine",
-  "main": "index.js",
+  "main": "machine.js",
   "scripts": {
+    "start": "node machine.js",
     "test": "echo \"No test specified\" && exit 0"
   },
   "repository": {
