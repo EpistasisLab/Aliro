@@ -17,7 +17,7 @@ Some screenshots can be found on the [project website](http://kaixhin.github.io/
 
 FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](https://github.com/Kaixhin/FGLab#local), via [Docker](https://github.com/Kaixhin/FGLab#docker), or hosted on [Heroku](https://github.com/Kaixhin/FGLab#heroku).
 
-### Local
+### Option 1: Local
 
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Install [MongoDB](https://www.mongodb.org/) from the website or your package manager.
@@ -33,7 +33,7 @@ Run `node index.js` to start FGLab. You can now access the user interface from a
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
 
-### Docker
+### Option 2: Docker
 
 Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
 
@@ -42,7 +42,7 @@ sudo docker run -d --name mongodb mongo --storageEngine wiredTiger
 sudo docker run -d --name fglab --link mongodb:mongo -p 5080:5080 kaixhin/fglab
 ```
 
-### Heroku
+### Option 3: Heroku
 
 The deploy button provisions a free dyno running FGLab on [Heroku](https://www.heroku.com), with a free 500MB MongoDB database from [MongoLab](https://mongolab.com/).
 
