@@ -25,7 +25,7 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
 1. Run `npm install`.
-1. Create `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
+1. Create `projects.json` ([example.projects.json](https://github.com/Kaixhin/FGMachine/blob/master/example.projects.json) can be used as a starting point).
 1. FGMachine requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) to `.env`, but it may require customisation for non-standard FGLab or FGMachine ports. An alternative is to set the following environment variables:
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
