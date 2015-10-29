@@ -15,7 +15,7 @@ Some screenshots can be found on the [project website](http://kaixhin.github.io/
 
 ## Installation
 
-FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](https://github.com/Kaixhin/FGLab#local), via [Docker](https://github.com/Kaixhin/FGLab#docker), or hosted on [Heroku](https://github.com/Kaixhin/FGLab#heroku).
+FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](https://github.com/Kaixhin/FGLab#option-1-local), via [Docker](https://github.com/Kaixhin/FGLab#option-2-docker), or hosted on [Heroku](https://github.com/Kaixhin/FGLab#option-3-heroku).
 
 ### Option 1: Local
 
