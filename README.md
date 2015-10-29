@@ -30,7 +30,7 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-Run `node machine.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](https://github.com/Kaixhin/FGMachine#overview) to understand how FGMachine can interface with your machine learning code.
+Run `node machine.js` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](https://github.com/Kaixhin/FGMachine#overview) to understand how FGMachine can interface with your machine learning code.
 
 To re-register, delete `specs.json` before running FGMachine again.
 

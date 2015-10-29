@@ -5,7 +5,7 @@
     "args": ["rand.js", "-optParameter"],
     "options": "plain",
     "capacity": 0.9,
-    "results": "./test"
+    "results": "./test/experiments"
   },
   "561399b04be005d2d0cd1466": {
     "cwd": "./test",

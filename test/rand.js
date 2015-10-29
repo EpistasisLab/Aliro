@@ -1,4 +1,5 @@
 var fs = require("mz/fs");
+var path = require("path");
 var _ = require("lodash");
 
 console.log("Program started");
@@ -13,7 +14,8 @@ console.log("Options: ");
 console.log(opts);
 
 // Make results directory
-fs.mkdirSync(opts._id);
+fs.mkdirSync("experiments");
+fs.mkdirSync(path.join("experiments", opts._id));
 
 // Creates a linear scale
 var linScale = function(numEls, step, start) {
@@ -57,19 +59,19 @@ var test = {
 console.log("Testing finished");
 
 // Store scores
-fs.writeFileSync(opts._id + "/scores.json", JSON.stringify({_scores: {"Test Score": test.score, "Val Score": val.score}}));
+fs.writeFileSync(path.join("experiments", opts._id, "scores.json"), JSON.stringify({_scores: {"Test Score": test.score, "Val Score": val.score}}));
 // Store losses as a chart
 var columnNames = ["train", "val", "x1", "x2"];
 var chartData = {
   xs: {"train": "x1", "val": "x2"},
   columns: [train.losses, val.losses, train.indices, val.indices]
 };
-fs.writeFileSync(opts._id + "/chart.json", JSON.stringify({_charts: [{columnNames: columnNames, data: chartData, axis: {x: {label: {text: "Iteration"}}, y: {label: {text: "Loss"}}}}]}));
+fs.writeFileSync(path.join("experiments", opts._id, "chart.json"), JSON.stringify({_charts: [{columnNames: columnNames, data: chartData, axis: {x: {label: {text: "Iteration"}}, y: {label: {text: "Loss"}}}}]}));
 // Store custom fields
-fs.writeFileSync(opts._id + "/notes.json", JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
+fs.writeFileSync(path.join("experiments", opts._id, "notes.json"), JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version}));
 // Store source code
-fs.writeFileSync(opts._id + "/source_code.js", fs.readFileSync("./rand.js"));
+fs.writeFileSync(path.join("experiments", opts._id, "source_code.js"), fs.readFileSync("./rand.js"));
 // Store image
-fs.writeFileSync(opts._id + "/mnist.png", fs.readFileSync("./mnist.png"));
+fs.writeFileSync(path.join("experiments", opts._id, "mnist.png"), fs.readFileSync("./mnist.png"));
 
 console.log("Program finished");
