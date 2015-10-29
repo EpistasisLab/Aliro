@@ -2,7 +2,7 @@
   "name": "FGLab",
   "version": "0.4.0",
   "description": "Future Gadget Laboratory",
-  "main": "index.js",
+  "main": "lab.js",
   "scripts": {
     "start": "node lab.js",
     "test": "echo \"No test specified\" && exit 0",
@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/Kaixhin/FGLab#readme",
   "dependencies": {
-    "bluebird": "^3.0.1",
-    "body-parser": "^1.14.0",
+    "bluebird": "^3.0.2",
+    "body-parser": "^1.14.1",
     "bower": "^1.6.5",
     "compression": "^1.6.0",
     "continuation-local-storage": "^3.1.4",
