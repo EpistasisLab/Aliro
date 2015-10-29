@@ -15,26 +15,24 @@ FGMachine currently only reads GPU information on Linux.
 
 FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGMachine/releases).
 
-### Local
+### Option 1: Local
 
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
 1. Run `npm install`.
 1. Create `projects.json` ([projects.example.json](https://github.com/Kaixhin/FGMachine/blob/master/projects.example.json) can be used as a starting point).
-1. Set the following environment variables:
+1. FGMachine requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) to `.env`, but it may require customisation for non-standard FGLab or FGMachine ports. An alternative is to set the following environment variables:
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-The final instruction can be performed by either exporting the variables to the environment or creating a `.env` file ([example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) can be used as a starting point).
-
-Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab.
+Run `node index.js` to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the rest of the documentation to understand how FGMachine can interface with your machine learning code.
 
 To re-register, delete `specs.json` before running FGMachine again.
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
 
-### Docker
+### Option 2: Docker
 
 Start a [FGLab container](https://hub.docker.com/r/kaixhin/fglab/) and link it to the [FGMachine container](https://hub.docker.com/r/kaixhin/fgmachine/):
 
@@ -48,13 +46,12 @@ The `FGLab URL` will be the address of the host running FGLab, including port 50
 
 ### Projects
 
-After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`.
-
+After a project has been created on FGLab, if this machine is available to run experiments for the project then add the following field to `projects.json`. Note that `<project_id>` links the created project on FGLab and FGMachine's project specifications in `projects.json`.
 
 ```json
 "<project_id>": {
   "cwd": "<working directory>",
-  "command": "<binary>",
+  "command": "<program>",
   "args": "<first command line options (e.g. for a file)>",
   "options": "<command line options style for options>",
   "capacity": "<machine capacity needed (as a fraction)>",
