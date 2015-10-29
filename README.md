@@ -5,13 +5,16 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 
-# FGLab
+# [FGLab](http://kaixhin.github.io/FGLab/)
 
-FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion.
+FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is FGLab, and the clients are [FGMachines](https://github.com/Kaixhin/FGMachine).
 
-The machine client is [FGMachine](https://github.com/Kaixhin/FGMachine).
+## Contents
 
-Some screenshots can be found on the [project website](http://kaixhin.github.io/FGLab/).
+- [Installation](https://github.com/Kaixhin/FGLab#installation)
+- [Overview](https://github.com/Kaixhin/FGLab#overview)
+- [Examples](https://github.com/Kaixhin/FGLab#examples)
+- [API](https://github.com/Kaixhin/FGLab#api)
 
 ## Installation
 
@@ -29,7 +32,7 @@ FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possibl
   - MONGODB_URI (MongoDB database URI)
   - FGLAB_PORT (port)
 
-Run `node index.js` to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the rest of the documentation to get an overview of FGLab and FGMachine - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
+Run `node index.js` to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](https://github.com/Kaixhin/FGLab#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
 
@@ -48,7 +51,7 @@ The deploy button provisions a free dyno running FGLab on [Heroku](https://www.h
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-## Objects
+## Overview
 
 FGLab is based on several classes of object. One begins with a *project*, which involves adjusting variables to achieve the desired results. In machine learning, these variables are *hyperparameters*, which are set for the project. In a more general setting, the variables are simply options, which may therefore include implementation-dependent details. A project will then comprise of a set of *experiments* derived from adjusting options.
 
@@ -81,7 +84,7 @@ Grid and random search optimisers have also been implemented in FGLab, to allow 
 
 An experiment is one complete training and testing run with a specific set of options. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of options will still be assigned unique IDs. Experiments have a unique ID, in addition to a project ID, a machine ID, the chosen options, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
 
-The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine).
+The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine#experiments).
 
 ### Machines
 
@@ -89,7 +92,11 @@ A [FGMachine client](https://github.com/Kaixhin/FGMachine) registers itself with
 
 Note that machines are implementation-independent, and may well store their own (large) data on experiments, for example learnt parameters and logs. As mentioned before, these can be uploaded to FGLab's database.
 
-## FGLab API
+## Examples
+
+Examples utilising the range of abilities of FGLab/FGMachine can be found in the [examples folder](https://github.com/Kaixhin/FGLab/tree/master/examples).
+
+## API
 
 The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
 
