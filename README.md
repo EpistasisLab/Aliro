@@ -36,7 +36,7 @@ Run `node machine` (or `npm start`) to start FGMachine. On the first run it will
 
 To re-register, delete `specs.json` before running FGMachine again.
 
-To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
+To update, run `npm run update`.
 
 ### Option 2: Docker
 

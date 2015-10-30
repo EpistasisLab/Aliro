@@ -5,7 +5,8 @@
   "main": "machine.js",
   "scripts": {
     "start": "node machine.js",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "update": "git pull && npm install"
   },
   "repository": {
     "type": "git",
