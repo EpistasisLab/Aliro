@@ -13,7 +13,7 @@ var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
-//var WebSocketServer = require("ws").Server;
+var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 
 /* App instantiation */
@@ -636,15 +636,14 @@ if (!process.env.FGLAB_PORT) {
 
 /* WebSocket server */
 // Add websocket server
-/*
 var wss = new WebSocketServer({server: server});
 
 // Call on connection from new client
 wss.on("connection", function(ws) {
-  console.log("Client opened connection");
+  //console.log("Client opened connection");
 
   // Send one message
-  ws.send("Connected to server");
+  //ws.send("Connected to server");
 
   // Print received messages
   ws.on("message", function(message) {
@@ -653,7 +652,6 @@ wss.on("connection", function(ws) {
 
   // Perform clean up if necessary
   ws.on("close", function() {
-    console.log("Client closed connection");
+    //console.log("Client closed connection");
   });
 });
-*/
