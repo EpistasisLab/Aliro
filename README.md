@@ -5,7 +5,9 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 
-# [FGMachine](http://kaixhin.github.io/FGLab/)
+# FGMachine
+
+**[Project Website](http://kaixhin.github.io/FGLab/)**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is [FGLab](https://github.com/Kaixhin/FGLab), and the clients are FGMachines.
 
@@ -30,7 +32,7 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-Run `node machine.js` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](https://github.com/Kaixhin/FGMachine#overview) to understand how FGMachine can interface with your machine learning code.
+Run `node machine` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](https://github.com/Kaixhin/FGMachine#overview) to understand how FGMachine can interface with your machine learning code.
 
 To re-register, delete `specs.json` before running FGMachine again.
 
@@ -63,7 +65,7 @@ After a project has been created on FGLab, a corresponding *project implementati
 }
 ```
 
-`options` processes the options in 4 different ways. For option settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
+`cwd` is the working directory for the machine learning code. `command` is the program/executable to be run. `args` is the first set of command line options to be sent to the program, prior to the experiment options. `options` processes the options in 4 different ways. For option settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
 
 | `options`   | Program | Command Line                                                                    |
 |-------------|---------|---------------------------------------------------------------------------------|
@@ -71,6 +73,8 @@ After a project has been created on FGLab, a corresponding *project implementati
 | single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true                                      |
 | double-dash | caffe   | caffe [args] --seed=123 --model=cnn.v2 --L2=true                                |
 | function    | matlab  | matlab [args w/o final arg] [final arg]\('seed',123,'model','cnn.v2','L2',true) |
+
+`capacity` is a number between in the range 0-1 (inclusive) that represents (the inverse of) the amount of instances of the program the FGMachine host system can run in parallel (as a heuristic); for example a `capacity` of 0.5 indicates that the host is only capable of running 2 instances of the program at once. `results` is the directory in which the experiment results must be written into (see below for more details). `results` can either be an absolute path, or a relative path, in which case it it relative to the FGMachine directory.
 
 FGMachine automatically reloads the `projects.json` file when it is changed.
 
