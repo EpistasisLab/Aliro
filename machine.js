@@ -14,6 +14,7 @@ var morgan = require("morgan");
 var Promise = require("bluebird");
 var rp = require("request-promise");
 var rimraf = require("rimraf");
+var WebSocketServer = require("ws").Server;
 
 /* App instantiation */
 var app = express();
@@ -278,3 +279,24 @@ if (!process.env.FGMACHINE_URL) {
     console.log("Server listening on port " + port);
   });
 }
+/* WebSocket server */
+// Add websocket server
+var wss = new WebSocketServer({server: server});
+
+// Call on connection from new client
+wss.on("connection", function(ws) {
+  //console.log("Client opened connection");
+
+  // Send one message
+  //ws.send("Connected to server");
+
+  // Print received messages
+  ws.on("message", function(message) {
+    console.log(message);
+  });
+
+  // Perform clean up if necessary
+  ws.on("close", function() {
+    //console.log("Client closed connection");
+  });
+});
