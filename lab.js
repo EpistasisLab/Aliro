@@ -523,7 +523,7 @@ app.get("/files/:id", function(req, res, next) {
 // List projects and machines on homepage
 app.get("/", function(req, res, next) {
   var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
-  var macP = db.machines.find({}, {hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine hostnames
+  var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then(function(results) {
     return res.render("index", {projects: results[0], machines: results[1]});

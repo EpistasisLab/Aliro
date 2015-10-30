@@ -23,41 +23,43 @@ html(lang="en")
           a.nav-link(href="javascript:history.forward()") #[span.octicon.octicon-chevron-right]
       ul.nav.navbar-nav.pull-right
         li.nav-item
-          a.nav-link #[span#server-status.octicon.octicon-server.text-success]
+          a.nav-link #[span#server-status.octicon.octicon-server]
     .container
       block content
     script(src="/bower_components/jquery/dist/jquery.min.js")
     script.
-      var host = location.origin.replace(/^http/, 'ws'); // WebSocket server address
-      var ws = null; // WebSocket
-      var $status = $("#server-status"); // Server status icon
+      $(function() {
+        var host = location.origin.replace(/^http/, 'ws'); // WebSocket server address
+        var ws = null; // WebSocket
+        var $status = $("#server-status"); // Server status icon
 
-      // Connects to WebSocket server
-      var wsConnect = function() {
-        ws = new WebSocket(host); // Attempt to connect
+        // Connects to WebSocket server
+        var wsConnect = function() {
+          ws = new WebSocket(host); // Attempt to connect
 
-        // Set server status as on
-        ws.onopen = function(event) {
-          $status.removeClass("text-danger");
-          $status.addClass("text-success");
+          // Set server status as on
+          ws.onopen = function(event) {
+            $status.removeClass("text-danger");
+            $status.addClass("text-success");
+          };
+          // Set server status as off
+          ws.onclose = function(event) {
+            // Set status
+            $status.removeClass("text-success");
+            $status.addClass("text-danger");
+          };
         };
-        // Set server status as off
-        ws.onclose = function(event) {
-          // Set status
-          $status.removeClass("text-success");
-          $status.addClass("text-danger");
+
+        // Reconnects to WebSocket server if needed
+        var wsReconnect = function() {
+          if (!ws || ws.readyState === WebSocket.CLOSED) {
+            wsConnect();
+          }
         };
-      };
 
-      // Reconnects to WebSocket server if needed
-      var wsReconnect = function() {
-        if (!ws || ws.readyState === WebSocket.CLOSED) {
-          wsConnect();
-        }
-      };
-
-      // Connect 
-      wsConnect();
-      // Attempt to reconnect every 5s if necessary
-      setInterval(wsReconnect, 5000);
+        // Connect 
+        wsConnect();
+        // Attempt to reconnect every 5s if necessary
+        setInterval(wsReconnect, 5000);
+      });
     block scripts
