@@ -4,6 +4,7 @@ var http = require("http");
 var path = require("path");
 var EventEmitter = require("events").EventEmitter;
 var mediator = new EventEmitter();
+var _ = require("lodash");
 var express = require("express");
 var bodyParser = require("body-parser");
 var multer = require("multer");
@@ -435,6 +436,30 @@ app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
   });
 });
 
+// Registers machine projects
+app.post("/api/machines/:id/projects", jsonParser, function(req, res) {
+  db.machines.findByIdAsync(req.params.id)
+  .then(function(result) {
+    // Fail if machine does not exist
+    if (result === null) {
+      res.status(404);
+      return res.send({error: "Machine ID " + req.params.id + " does not exist"});
+    }
+    // Register projects otherwise
+    db.machines.updateByIdAsync(req.params.id, {$set: req.body})
+    .then(function(result) {
+      // Update returns the count of affected objects
+      res.send((result === 1) ? {msg: "success"} : {msg: "error"});
+    })
+    .catch(function(err) {
+      next(err);
+    });
+  })
+  .catch(function(err) {
+    next(err);
+  });
+});
+
 // Registers webhooks
 app.post("/api/webhooks/register", jsonParser, function(req, res) {
   // Parse webhook request
@@ -543,14 +568,15 @@ app.get("/projects/:id/experiments", function(req, res, next) {
   });
 });
 
-
 // Machine page
 app.get("/machines/:id", function(req, res, next) {
   db.machines.findByIdAsync(req.params.id)
   .then(function(mac) {
-    // TODO Retrieve supported projects
-    db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync()
+    var projKeys = _.keys(mac.projects); // Extract project IDs
+    projKeys = _.map(projKeys, db.toObjectID); // Map to MongoDB IDs
+    db.projects.find({_id: {$in: projKeys}}, {name: 1}).sort({name: 1}).toArrayAsync()
     .then(function(projects) {
+      // Return only projects existing in FGLab
       res.render("machine", {machine: mac, projects: projects});
     })
     .catch(function(err) {
