@@ -67,8 +67,13 @@ fs.readFile("specs.json", "utf-8")
     console.log("Registered with FGLab successfully");
     // Save ID and specs
     fs.writeFile("specs.json", JSON.stringify(body));
-    // Reload specs with _id
+    // Reload specs with _id (prior to adding projects)
     specs = body;
+    // Register projects
+    rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+    .then(function() {
+      console.log("Projects registered with FGLab successfully");
+    });
   })
   .catch(function(err) {
     console.log(err);
@@ -81,6 +86,12 @@ fs.readFile("projects.json", "utf-8")
 .then(function(proj) {
   console.log("Loaded projects");
   projects = JSON.parse(proj || "{}");
+  // Register projects
+  rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+  .then(function() {
+    console.log("Projects registered with FGLab successfully");
+  })
+  .catch(function(err) {}); // Ignore failure in case machine is not registered
 })
 .catch(function() {
   projects = {};
@@ -92,6 +103,12 @@ fs.watchFile("projects.json", function() {
   .then(function(proj) {
     console.log("Reloaded projects");
     projects = JSON.parse(proj || "{}");
+    // Register projects
+    rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+    .then(function() {
+      console.log("Projects registered with FGLab successfully");
+    })
+    .catch(function(err) {}); // Ignore failure in case machine is not registered
   });
 });
 
