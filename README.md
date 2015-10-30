@@ -36,7 +36,7 @@ FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possibl
 
 Run `node lab` (or `npm start`) to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](https://github.com/Kaixhin/FGLab#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
 
-To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
+To update, run `npm run update`.
 
 ### Option 2: Docker
 

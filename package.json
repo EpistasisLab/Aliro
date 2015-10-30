@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node lab.js",
     "test": "echo \"No test specified\" && exit 0",
-    "postinstall": "bower install --allow-root"
+    "postinstall": "bower install --allow-root",
+    "update": "git pull && npm install"
   },
   "repository": {
     "type": "git",
