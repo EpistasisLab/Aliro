@@ -5,7 +5,9 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 
-# [FGLab](http://kaixhin.github.io/FGLab/)
+# FGLab
+
+**[Project Website](http://kaixhin.github.io/FGLab/)**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is FGLab, and the clients are [FGMachines](https://github.com/Kaixhin/FGMachine).
 
@@ -32,7 +34,7 @@ FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possibl
   - MONGODB_URI (MongoDB database URI)
   - FGLAB_PORT (port)
 
-Run `node lab.js` (or `npm start`) to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](https://github.com/Kaixhin/FGLab#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
+Run `node lab` (or `npm start`) to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](https://github.com/Kaixhin/FGLab#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 To update, use `git pull` to update the repository and run `npm install` to update any changed dependencies.
 
