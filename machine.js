@@ -92,7 +92,7 @@ fs.readFile("projects.json", "utf-8")
   .then(function() {
     console.log("Projects registered with FGLab successfully");
   })
-  .catch(function(err) {}); // Ignore failure in case machine is not registered
+  .catch(function() {}); // Ignore failure in case machine is not registered
 })
 .catch(function() {
   projects = {};
@@ -109,7 +109,7 @@ fs.watchFile("projects.json", function() {
     .then(function() {
       console.log("Projects registered with FGLab successfully");
     })
-    .catch(function(err) {}); // Ignore failure in case machine is not registered
+    .catch(function() {}); // Ignore failure in case machine is not registered
   });
 });
 
@@ -243,8 +243,8 @@ app.post("/projects/:id", jsonParser, function(req, res) {
         console.log(err);
       });
     })
-    .catch(function(err) {
-      console.log(err);
+    .catch(function() {
+      console.log("Error: Experiment " + experimentId + " results folder does not exist");
     });
 
     // Send status

@@ -14,7 +14,9 @@ console.log("Options: ");
 console.log(opts);
 
 // Make results directory
-fs.mkdirSync("experiments");
+if (!fs.existsSync("experiments")) {
+  fs.mkdirSync("experiments");
+}
 fs.mkdirSync(path.join("experiments", opts._id));
 
 // Creates a linear scale
