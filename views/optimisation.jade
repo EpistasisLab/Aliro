@@ -1,10 +1,10 @@
 extends ./layout.jade
 
 block title
-  title FGLab: Project #{project.name} Optimisation
+  title FGLab: Project #{project.name}
 
 block content 
-  h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} Optimisation #[small.text-muted (#{project._id})]
+  h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} #[small.text-muted (#{project._id})]
   h2 Grid / Random Search
   form#new-optimisation
     each val, key in project.schema

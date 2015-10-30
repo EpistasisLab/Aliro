@@ -1,13 +1,13 @@
 extends ./layout.jade
 
 block title
-  title FGLab: Project #{project.name} Experiments
+  title FGLab: Project #{project.name}
 
 block styles
   link(href="/bower_components/bootstrap-table/dist/bootstrap-table.min.css", rel="stylesheet")
 
 block content 
-  h1 #[span.mega-octicon.octicon-clippy] Project: #{project.name} Experiments #[small.text-muted (#{project._id})]
+  h1 #[span.mega-octicon.octicon-list-ordered] Project: #{project.name} #[small.text-muted (#{project._id})]
   table#experiments
 
 block scripts

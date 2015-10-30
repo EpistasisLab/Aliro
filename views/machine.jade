@@ -1,10 +1,11 @@
 extends ./layout.jade
 
 block title
-  title FGLab
+  title FGLab: Machine #{machine.hostname}
 
 block content
-  h1 #[span.mega-octicon.octicon-server] Machine: #{machine.hostname} #[small.text-muted (#{machine._id})]
+  h1 #[span.mega-octicon.octicon-device-desktop] Machine: #{machine.hostname} #[small.text-muted (#{machine._id})]
+  h2 Specifications
   dl.dl-horizontal
     dt.col-sm-3 Hostname
     dd.col-sm-9 #{machine.hostname}
@@ -24,3 +25,5 @@ block content
       ul.list-unstyled
         - each gpu in machine.gpus
           li= gpu
+  h2 Projects
+  ul.list-unstyled
