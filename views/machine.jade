@@ -27,3 +27,5 @@ block content
           li= gpu
   h2 Projects
   ul.list-unstyled
+    - each project in projects
+      li #[a(href="/projects/" + project._id) #{project.name}]

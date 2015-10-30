@@ -547,8 +547,15 @@ app.get("/projects/:id/experiments", function(req, res, next) {
 // Machine page
 app.get("/machines/:id", function(req, res, next) {
   db.machines.findByIdAsync(req.params.id)
-  .then(function(result) {
-    res.render("machine", {machine: result});
+  .then(function(mac) {
+    // TODO Retrieve supported projects
+    db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync()
+    .then(function(projects) {
+      res.render("machine", {machine: mac, projects: projects});
+    })
+    .catch(function(err) {
+      next(err);
+    });
   })
   .catch(function(err) {
     next(err);
