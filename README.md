@@ -5,7 +5,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 
-# FGMachine
+# ![FGMachine](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/public/images/fgmachine-logo.png)
 
 **[Project Website](http://kaixhin.github.io/FGLab/)**
 
