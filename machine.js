@@ -63,7 +63,7 @@ fs.readFile("specs.json", "utf-8")
   }
 
   // Register details
-  rp({uri: process.env.FGLAB_URL + "/api/machines", method: "POST", json: specs, gzip: true})
+  rp({uri: process.env.FGLAB_URL + "/api/v1/machines", method: "POST", json: specs, gzip: true})
   .then(function(body) {
     console.log("Registered with FGLab successfully");
     // Save ID and specs
@@ -71,7 +71,7 @@ fs.readFile("specs.json", "utf-8")
     // Reload specs with _id (prior to adding projects)
     specs = body;
     // Register projects
-    rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+    rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
     .then(function() {
       console.log("Projects registered with FGLab successfully");
     });
@@ -88,7 +88,7 @@ fs.readFile("projects.json", "utf-8")
   console.log("Loaded projects");
   projects = JSON.parse(proj || "{}");
   // Register projects
-  rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+  rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
   .then(function() {
     console.log("Projects registered with FGLab successfully");
   })
@@ -105,7 +105,7 @@ fs.watchFile("projects.json", function() {
     console.log("Reloaded projects");
     projects = JSON.parse(proj || "{}");
     // Register projects
-    rp({uri: process.env.FGLAB_URL + "/api/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
+    rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
     .then(function() {
       console.log("Projects registered with FGLab successfully");
     })
@@ -177,7 +177,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
-  rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId + "/started", method: "PUT", data: null}); // Set started
+  rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/started", method: "PUT", data: null}); // Set started
 
   // Save experiment
   experiments[experimentId] = experiment;
@@ -198,7 +198,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
 
     // Results-sending function for JSON
     var sendJSONResults = function(results) {
-      return rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+      return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
     };
 
     // Results-sending function for other files
@@ -211,7 +211,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
       for (var i = 0; i < filenames.length; i++) {
         formData._files.push(fs.createReadStream(filenames[i]));
       }
-      return rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
+      return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
     };
 
     // Send all result files
@@ -249,8 +249,8 @@ app.post("/projects/:id", jsonParser, function(req, res) {
 
     // Send status
     var status = (exitCode === 0) ? "success" : "fail";
-    rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId, method: "PUT", json: {_status: status}, gzip: true});
-    rp({uri: process.env.FGLAB_URL + "/api/experiments/" + experimentId + "/finished", method: "PUT", data: null}); // Set finished
+    rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: status}, gzip: true});
+    rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/finished", method: "PUT", data: null}); // Set finished
 
     // Delete experiment
     delete experiments[experimentId];
