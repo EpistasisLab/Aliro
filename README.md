@@ -65,7 +65,7 @@ After a project has been created on FGLab, a corresponding *project implementati
 }
 ```
 
-`cwd` is the working directory for the machine learning code. `command` is the program/executable to be run. `args` is the first set of command line options to be sent to the program, prior to the experiment options. `options` processes the options in 4 different ways. For option settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
+`cwd` is the working directory for the machine learning code. `cwd` can either be an absolute path, or a relative path, in which case it it relative to the FGMachine directory. `command` is the program/executable to be run. `args` is the first set of command line options to be sent to the program, prior to the experiment options. `options` processes the options in 4 different ways. For option settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
 
 | `options`   | Program | Command Line                                                                    |
 |-------------|---------|---------------------------------------------------------------------------------|
