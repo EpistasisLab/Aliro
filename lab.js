@@ -29,14 +29,72 @@ app.use(morgan("tiny")); // Log requests
 
 /* API */
 
-// Get collection for all API endpoints
+// Registers webhooks
+app.post("/api/v1/webhooks", jsonParser, function(req, res) {
+  // Parse webhook request
+  var webhook = req.body;
+  var url = webhook.url;
+  var objects = webhook.objects;
+  var event = webhook.event;
+  var objId = webhook.object_id;
+
+  // Use John Gruber's URL regex
+  var urlRegEx = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)\S+(?:[^\s`!\[\]{};:'".,?«»“”‘’]))/ig;
+  // Validate
+  if (!url || !urlRegEx.test(url)) {
+    res.status(400);
+    return res.send({error: "Invalid or empty URL"});
+  } else if (objects !== "experiments") {
+    res.status(400);
+    return res.send({error: "Object is not 'experiments'"});
+  } else if (event !== "started" && event !== "finished") {
+    res.status(400);
+    return res.send({error: "Event is not 'started' or 'finished'"});
+  } else if (!objId) {
+    // TODO Check object exists
+    res.status(400);
+    return res.send({error: "No object ID provided"});
+  }
+
+  // Register with mediator
+  mediator.once(objects + ":" + objId + ":" + event, function() {
+    // Send webhook response
+    rp({uri: webhook.url, method: "POST", json: webhook, gzip: true})
+    .catch(function() {}); // Ignore failures from missing webhooks
+  });
+  res.status(201);
+  return res.send({status: "Registered", options: webhook});
+});
+
+// Downloads file
+app.get("/api/v1/files/:id", function(req, res, next) {
+  // Open file
+  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {promiseLibrary: Promise});
+  gfs.open(function(err, gfs) {
+    // Set read head pointer to beginning of file
+    gfs.seek(0, function() {
+      // Read entire file
+      gfs.read()
+      .then(function(file) {
+        res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
+        res.setHeader("Content-Type", gfs.contentType); // MIME Type
+        res.send(file); // Send file
+      })
+      .catch(function(err) {
+        next(err); 
+      });
+    });
+  });
+});
+
+// Get collection for all API db-based endpoints
 app.param("collection", function(req, res, next, collection) {
   req.collection = db.collection(collection);
   return next();
 });
 
 // Return all entries
-app.get("/api/:collection", function(req, res, next) {
+app.get("/api/v1/:collection", function(req, res, next) {
   req.collection.find({}).toArrayAsync()
   .then(function(results) {
     res.send(results);
@@ -47,7 +105,7 @@ app.get("/api/:collection", function(req, res, next) {
 });
 
 // Create new entry
-app.post("/api/:collection", jsonParser, function(req, res, next) {
+app.post("/api/v1/:collection", jsonParser, function(req, res, next) {
   req.collection.insertAsync(req.body, {})
   .then(function(result) {
     res.status(201);
@@ -59,7 +117,7 @@ app.post("/api/:collection", jsonParser, function(req, res, next) {
 });
 
 // Return single entry
-app.get("/api/:collection/:id", function(req, res, next) {
+app.get("/api/v1/:collection/:id", function(req, res, next) {
   req.collection.findByIdAsync(req.params.id)
   .then(function(result) {
     res.send(result);
@@ -70,7 +128,7 @@ app.get("/api/:collection/:id", function(req, res, next) {
 });
 
 // Update existing entry
-app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
+app.put("/api/v1/:collection/:id", jsonParser, function(req, res, next) {
   delete req.body._id; // Delete ID (will not update otherwise)
   req.collection.updateByIdAsync(req.params.id, {$set: req.body})
   .then(function(result) {
@@ -83,7 +141,7 @@ app.put("/api/:collection/:id", jsonParser, function(req, res, next) {
 });
 
 // Delete existing entry
-app.delete("/api/:collection/:id", function(req, res, next) {
+app.delete("/api/v1/:collection/:id", function(req, res, next) {
   req.collection.removeByIdAsync(req.params.id)
   .then(function(result) {
     // Remove returns the count of affected objects
@@ -95,7 +153,7 @@ app.delete("/api/:collection/:id", function(req, res, next) {
 });
 
 // Return all experiments for a project
-app.get("/api/projects/:id/experiments", function(req, res, next) {
+app.get("/api/v1/projects/:id/experiments", function(req, res, next) {
   db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
   .then(function(result) {
     res.send(result);
@@ -106,7 +164,7 @@ app.get("/api/projects/:id/experiments", function(req, res, next) {
 });
 
 // Delete all experiments for a project
-app.delete("/api/projects/:id/experiments", function(req, res, next) {
+app.delete("/api/v1/projects/:id/experiments", function(req, res, next) {
   db.experiments.removeAsync({_project_id: db.toObjectID(req.params.id)}) // Get experiments for project
   .then(function(result) {
     res.send(result);
@@ -116,8 +174,9 @@ app.delete("/api/projects/:id/experiments", function(req, res, next) {
   });
 });
 
+// TODO Consider renaming API endpoint
 // Constructs a project from an uploaded .json file
-app.post("/api/projects/schema", upload.single("schema"), function(req, res, next) {
+app.post("/api/v1/projects/schema", upload.single("schema"), function(req, res, next) {
   // Extract file name
   var name = req.file.originalname.replace(".json", "");
   // Extract .json as object
@@ -213,9 +272,9 @@ var submitJob = function(projId, options) {
   });
 };
 
-// Constructs an experiment from the form
-app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
-  var projId = req.query.project;
+// Constructs an experiment
+app.post("/api/v1/projects/:id/experiment", jsonParser, function(req, res, next) {
+  var projId = req.params.id;
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
   .then(function(project) {
@@ -233,6 +292,7 @@ app.post("/api/experiments/submit", jsonParser, function(req, res, next) {
       } else {
         submitJob(projId, obj)
         .then(function(resp) {
+          res.status(201);
           res.send(resp);
         })
         .catch(function(err) {
@@ -269,9 +329,9 @@ var submitJobRetry = function(projId, options, retryT) {
   });
 };
 
-// Constructs an optimiser from a list of options
-app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
-  var projId = req.query.project;
+// Constructs a batch job from a list of options
+app.post("/api/v1/projects/:id/batch", jsonParser, function(req, res, next) {
+  var projId = req.params.id;
   var retryTimeout = parseInt(req.query.retry) || 60*60; // Default is an hour
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
@@ -307,7 +367,7 @@ app.post("/api/projects/optimisation", jsonParser, function(req, res, next) {
 });
 
 // Adds started time to experiment
-app.put("/api/experiments/:id/started", function(req, res, next) {
+app.put("/api/v1/experiments/:id/started", function(req, res, next) {
   mediator.emit("experiments:" + req.params.id + ":started"); // Emit event
 
   db.experiments.updateByIdAsync(req.params.id, {$set: {_started: new Date()}})
@@ -321,7 +381,7 @@ app.put("/api/experiments/:id/started", function(req, res, next) {
 });
 
 // Adds finished time to experiment
-app.put("/api/experiments/:id/finished", function(req, res, next) {
+app.put("/api/v1/experiments/:id/finished", function(req, res, next) {
   mediator.emit("experiments:" + req.params.id + ":finished"); // Emit event
 
   db.experiments.updateByIdAsync(req.params.id, {$set: {_finished: new Date()}})
@@ -335,7 +395,7 @@ app.put("/api/experiments/:id/finished", function(req, res, next) {
 });
 
 // Processess files for an experiment
-app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res, next) {
+app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, res, next) {
   delete req.body._id; // Delete ID (will not update otherwise)
   var filesP = Array(req.files.length);
 
@@ -375,7 +435,7 @@ app.put("/api/experiments/:id/files", upload.array("_files"), function(req, res,
 });
 
 // Delete all files for an experiment
-app.delete("/api/experiments/:id/files", function(req, res, next) {
+app.delete("/api/v1/experiments/:id/files", function(req, res, next) {
   db.experiments.findByIdAsync(req.params.id, {_files: 1})
   .then(function(experiment) {
     var filesP = Array(experiment._files.length);
@@ -402,7 +462,7 @@ app.delete("/api/experiments/:id/files", function(req, res, next) {
 });
 
 // Delete all files for a project
-app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
+app.delete("/api/v1/projects/:id/experiments/files", function(req, res, next) {
   db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
   .then(function(experiments) {
     var numFiles = 0;
@@ -437,7 +497,7 @@ app.delete("/api/projects/:id/experiments/files", function(req, res, next) {
 });
 
 // Registers machine projects
-app.post("/api/machines/:id/projects", jsonParser, function(req, res) {
+app.post("/api/v1/machines/:id/projects", jsonParser, function(req, res, next) {
   db.machines.findByIdAsync(req.params.id)
   .then(function(result) {
     // Fail if machine does not exist
@@ -457,64 +517,6 @@ app.post("/api/machines/:id/projects", jsonParser, function(req, res) {
   })
   .catch(function(err) {
     next(err);
-  });
-});
-
-// Registers webhooks
-app.post("/api/webhooks/register", jsonParser, function(req, res) {
-  // Parse webhook request
-  var webhook = req.body;
-  var url = webhook.url;
-  var objects = webhook.objects;
-  var event = webhook.event;
-  var objId = webhook.id;
-
-  // Use John Gruber's URL regex
-  var urlRegEx = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)\S+(?:[^\s`!\[\]{};:'".,?«»“”‘’]))/ig;
-  // Validate
-  if (!url || !urlRegEx.test(url)) {
-    res.status(400);
-    return res.send({error: "Invalid or empty URL"});
-  } else if (objects !== "experiments") {
-    res.status(400);
-    return res.send({error: "Object is not 'experiments'"});
-  } else if (event !== "started" && event !== "finished") {
-    res.status(400);
-    return res.send({error: "Event is not 'started' or 'finished'"});
-  } else if (!objId) {
-    // TODO Check object exists
-    res.status(400);
-    return res.send({error: "No object ID provided"});
-  }
-
-  // Register with mediator
-  mediator.once(objects + ":" + objId + ":" + event, function() {
-    // Send webhook response
-    rp({uri: webhook.url, method: "POST", json: webhook, gzip: true})
-    .catch(function() {}); // Ignore failures from missing webhooks
-  });
-  res.status(201);
-  return res.send({status: "Webhook registered: " + JSON.stringify(webhook)});
-});
-
-// Downloads file
-app.get("/files/:id", function(req, res, next) {
-  // Open file
-  var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {promiseLibrary: Promise});
-  gfs.open(function(err, gfs) {
-    // Set read head pointer to beginning of file
-    gfs.seek(0, function() {
-      // Read entire file
-      gfs.read()
-      .then(function(file) {
-        res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
-        res.setHeader("Content-Type", gfs.contentType); // MIME Type
-        res.send(file); // Send file
-      })
-      .catch(function(err) {
-        next(err); 
-      });
-    });
   });
 });
 

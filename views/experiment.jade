@@ -96,11 +96,11 @@ block scripts
       for (var i = 0; i < experiment._files.length; i++) {
         var file = experiment._files[i];
         if (file.mimetype.indexOf("image/") === 0) {
-          $files.append("<li><img src='/files/" + file._id + "' class='img-responsive'></li>");
+          $files.append("<li><img src='/api/v1/files/" + file._id + "' class='img-responsive'></li>");
         } else if (file.mimetype.indexOf("video/") === 0) {
-          $files.append("<li><video controls><source src='/files/" + file._id + "' type='" + file.mimetype + "'></video></li>");
+          $files.append("<li><video controls><source src='/api/v1/files/" + file._id + "' type='" + file.mimetype + "'></video></li>");
         }
-        $files.append("<li><a href='/files/" + file._id + "'>" + file.filename + "</a></li>");
+        $files.append("<li><a href='/api/v1/files/" + file._id + "'>" + file.filename + "</a></li>");
       }
 
       if (experiment._charts) {

@@ -100,42 +100,42 @@ Examples utilising the range of abilities of FGLab/FGMachine can be found in the
 
 ## API
 
-The API is largely undocumented due to ongoing development introducing breaking changes. The following are noted for convenience:
+The API is largely undocumented due to ongoing development introducing breaking changes. Ongoing documentation is available in [RAML](http://raml.org/): [api.raml](https://github.com/Kaixhin/FGLab/blob/master/api.raml). The following are noted for convenience:
 
 **Submit a new experiment with a set of options**
 ```
-POST /api/experiments/submit?project={project ID}
+POST /api/v1/projects/{projectId}/experiment
 
-e.g. curl -X POST -H "Content-Type: application/json" -d '{project options}' http://{FGLab address}/api/experiments/submit?project={project ID}
+e.g. curl -X POST -H "Content-Type: application/json" -d '{projectOptions}' http://{FGLab address}/api/v1/projects/{projectId}/experiment
 ```
 
-If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If the options are invalid, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `501 {"error": "Experiment failed to run"}`. If successful, returns `200 {"_id": "<experiment ID>"}`.
+If the project does not exist, returns `400 {"error": "Project ID <projectId> does not exist"}`. If the `projectOptions` are invalid, returns `400 {"error": "<validation message>"}`. If no machines are available to run the job, returns `501 {"error": "No machine capacity available"}`. If the machine fails to run the experiment for some reason, returns `500 {"error": "Experiment failed to run"}`. If successful, returns `201 {"_id": "<experimentId>"}`.
 
 **Start a batch job with a list of option sets**
 ```
-POST /api/projects/optimisation?project={project ID}&retry={(optional) retry timeout}
+POST /api/v1/projects/{projectId}/batch?retry={retryTimeout (optional)}
 
-e.g. curl -X POST -H "Content-Type: application/json" -d '[{project options}]' http://{FGLab address}/api/projects/optimisation?project={project ID}
+e.g. curl -X POST -H "Content-Type: application/json" -d '[{projectOptions}]' http://{FGLab address}/api/v1/projects/{projectId}/batch?retry={retryTimeout (optional)}
 ```
 
-The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <project ID> does not exist"}`. If any of the options are invalid, returns `400 {"error": "<validation message>"}` for the first set of options that are wrong. If successful, returns `200 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
+The optional `retry` parameter specifies the maximum time in seconds to wait before trying to run a queued job again after capacity has been reached (the interval is randomly picked from a uniform distribution). If the project does not exist, returns `400 {"error": "Project ID <projectId> does not exist"}`. If any of the `projectOptions` are invalid, returns `400 {"error": "<validation message>"}` for the first set of options that are wrong. If successful, returns `201 {"status": "Started"}`. Future work aims to create a proper "optimiser" object that can be queried and have its work queue adjusted appropriately (hence differentiating it from a simple batch job queue).
 
 **Register a webhook for an event**
 ```
-POST /api/webhooks/register
+POST /api/v1/webhooks
 
-e.g. curl -X POST -H "Content-Type: application/json" -d '{webhook options}' http://{FGLab address}/api/webhooks/register
+e.g. curl -X POST -H "Content-Type: application/json" -d '{webhookOptions}' http://{FGLab address}/api/v1/webhooks
 ```
 
-The webhook options expects the following options
+`webhookOptions` expects the following options
 
 ```json
 {
   "url": "<URL to POST to>",
   "objects": "<object collection to listen to (currently only 'experiments')>",
-  "id": "<object ID>",
+  "object_id": "<object ID>",
   "event": "<event to listen to (currently only 'started' or 'finished')>"
 }
 ```
 
-If a valid URL is not provided, returns `400 {"error": "Invalid or empty URL"}`. If a valid object collection is not provided, returns `400 {"error": "Object is not 'experiments'"}`. If a valid event is not provided, returns `400 {"error": "Event is not 'started' or 'finished'"}`. If an object ID is not provided, returns `400 {"error": "No object ID provided"}`. If successful, returns `201 {"status": "Webhook registered: <webhook options>"}`. When the event occurs, the JSON data used to register the webhook is returned.
+If a valid URL is not provided, returns `400 {"error": "Invalid or empty URL"}`. If a valid object collection is not provided, returns `400 {"error": "Object is not 'experiments'"}`. If a valid event is not provided, returns `400 {"error": "Event is not 'started' or 'finished'"}`. If an object ID is not provided, returns `400 {"error": "No object ID provided"}`. If successful, returns `201 {"status": "Registered", "options": <webhookOptions>"}`. When the event occurs, the JSON data used to register the webhook is returned.

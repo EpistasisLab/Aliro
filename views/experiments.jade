@@ -124,13 +124,13 @@ block scripts
         var id = $(this).data("id");
         // Delete files linked to by experiment
         $.ajax({
-          url: "/api/experiments/" + id + "/files",
+          url: "/api/v1/experiments/" + id + "/files",
           type: "DELETE"
         })
         .then(function() {
           // Then delete experiment itself
           $.ajax({
-            url: "/api/experiments/" + id,
+            url: "/api/v1/experiments/" + id,
             type: "DELETE"
           })
           .then(function() {

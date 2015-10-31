@@ -66,7 +66,7 @@ block scripts
         var fd = new FormData($(this)[0]);
         // Send
         $.ajax({
-          url: "/api/projects/schema",
+          url: "/api/v1/projects/schema",
           type: "POST",
           data: fd,
           processData: false,
@@ -87,19 +87,19 @@ block scripts
         if (type === "projects") {
           // Delete experiment files
           $.ajax({
-            url: "/api/projects/" + id + "/experiments/files",
+            url: "/api/v1/projects/" + id + "/experiments/files",
             type: "DELETE"
           })
           .then(function() {
             // Then delete experiments
             $.ajax({
-              url: "/api/projects/" + id + "/experiments",
+              url: "/api/v1/projects/" + id + "/experiments",
               type: "DELETE"
             })
             .then(function() {
               // Then delete project
               $.ajax({
-                url: "/api/projects/" + id,
+                url: "/api/v1/projects/" + id,
                 type: "DELETE"
               })
               .then(function() {
@@ -116,7 +116,7 @@ block scripts
         } else {
           // Delete machine
           $.ajax({
-            url: "/api/machines/" + id,
+            url: "/api/v1/machines/" + id,
             type: "DELETE"
           })
           .then(function() {
