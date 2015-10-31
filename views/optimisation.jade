@@ -5,8 +5,8 @@ block title
 
 block content 
   h1 #[span.mega-octicon.octicon-circuit-board] Project: #{project.name} #[small.text-muted (#{project._id})]
-  h2 Grid / Random Search
   form#new-optimisation
+    p #[strong Experiment Options] #[sup.help #[a(href="#optimisation-help") ?]]
     each val, key in project.schema
       if (val.type === "int" || val.type === "float")
         .form-group.row.has-success(data-type="#{val.type}")
@@ -42,22 +42,27 @@ block content
           .col-sm-10
             input.form-control.form-control-success(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
     hr
+    p #[strong Random / Grid Search Options]
     .form-group.row.has-success(data-type="_evaluations")
       label.form-control-label.control-label.col-sm-2(for="#{key}") # Evaluations
       .col-sm-10
         input.form-control.form-control-success(type="number", value="1", min="1", name="_evaluations", id="#_evaluations", required)
-        small.text-muted Number of evaluations for random search
+        small.text-muted Number of evaluations for random search.
     .form-group.row.has-success(data-type="_retry")
       label.form-control-label.control-label.col-sm-2(for="#{key}") Retry Timeout (s)
       .col-sm-10
         input.form-control.form-control-success(type="number", value="3600", min="1", name="_retry", id="#_retry", required)
- 
- 
+        small.text-muted Time between retries after single failed experiment submission.
     .form-group.row
       .col-sm-2.col-sm-offset-2
         button#grid-search.btn.btn-primary(type="submit") Grid Search
       .col-sm-2
         button#random-search.btn.btn-primary(type="submit") Random Search
+  hr#optimisation-help
+  p.text-muted Numeric values can have a linear or log range specified by using the min (inclusive) and max (exclusive) modifiers; base is used for the log scale.
+  p.text-muted Random search samples values uniformly from this range. # controls the number of steps, and determines the values sampled by grid search.
+  p.text-muted String values can be separated by a comma. Enums and booleans automatically have all values selected.
+  p.text-muted Random search samples values uniformly from these ranges. Grid search evaluates all values.
 
 block scripts
   script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
