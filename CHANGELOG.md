@@ -1,3 +1,9 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/Kaixhin/FGMachine/compare/0.4.0...v0.4.0) (2015-11-01)
+
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/Kaixhin/FGMachine/compare/0.3.0...v0.3.0) (2015-10-30)
 
