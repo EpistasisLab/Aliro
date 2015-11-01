@@ -1,3 +1,30 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/Kaixhin/FGLab/compare/0.4.0...v0.4.0) (2015-11-01)
+
+
+### Bug Fixes
+
+* allow bower to install with root ([974c99e](https://github.com/Kaixhin/FGLab/commit/974c99e))
+* delete _evaluations hidden property on grid search ([4731605](https://github.com/Kaixhin/FGLab/commit/4731605))
+* save multiple objects in GridFS and download binaries ([1186de5](https://github.com/Kaixhin/FGLab/commit/1186de5))
+
+### Features
+
+* add machine live indicator ([39be32a](https://github.com/Kaixhin/FGLab/commit/39be32a))
+* add machine liveness indicator to home ([825897a](https://github.com/Kaixhin/FGLab/commit/825897a))
+* add server status indicator ([e46c09f](https://github.com/Kaixhin/FGLab/commit/e46c09f))
+* add update script ([92e953a](https://github.com/Kaixhin/FGLab/commit/92e953a))
+* display uploaded images ([a706419](https://github.com/Kaixhin/FGLab/commit/a706419))
+* display videos ([45363de](https://github.com/Kaixhin/FGLab/commit/45363de))
+* list machines' supported projects ([9a02ce1](https://github.com/Kaixhin/FGLab/commit/9a02ce1))
+
+### Performance Improvements
+
+* add project ID to homepage ([2b46119](https://github.com/Kaixhin/FGLab/commit/2b46119))
+* list options and sort filenames ([adfae66](https://github.com/Kaixhin/FGLab/commit/adfae66))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/Kaixhin/FGLab/compare/0.3.0...v0.3.0) (2015-10-16)
 
