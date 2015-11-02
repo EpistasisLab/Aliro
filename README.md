@@ -7,7 +7,7 @@
 
 # ![FGLab](https://raw.githubusercontent.com/Kaixhin/FGLab/master/public/images/fglab-logo.png)
 
-**[Project Website](http://kaixhin.github.io/FGLab/)**
+**[Project Website](https://kaixhin.github.io/FGLab/)**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is FGLab, and the clients are [FGMachines](https://github.com/Kaixhin/FGMachine).
 
