@@ -5,6 +5,8 @@ var path = require("path");
 var fs = require("mz/fs");
 var spawn= require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
+var EventEmitter = require("events").EventEmitter;
+var mediator = new EventEmitter();
 var http = require("http");
 var url = require("url");
 var bytes = require("bytes");
@@ -184,11 +186,12 @@ app.post("/projects/:id", jsonParser, function(req, res) {
 
   // Log stdout
   experiment.stdout.on("data", function(data) {
-    //console.log(data.toString());
+    mediator.emit("experiments:" + experimentId + ":stdout", data.toString()); // Emit event
   });
 
   // Log errors
   experiment.stderr.on("data", function(data) {
+    mediator.emit("experiments:" + experimentId + ":stderr", data.toString()); // Emit event
     console.log("Error: " + data.toString());
   });
 
@@ -285,18 +288,28 @@ var wss = new WebSocketServer({server: server});
 
 // Call on connection from new client
 wss.on("connection", function(ws) {
-  //console.log("Client opened connection");
+  // Listeners
+  var sendStdout = function(data) {
+    ws.send(JSON.stringify({stdout: data}));
+  };
+  var sendStderr = function(data) {
+    ws.send(JSON.stringify({stderr: data}));
+  };
 
-  // Send one message
-  //ws.send("Connected to server");
-
-  // Print received messages
+  // Check subscription for logs
+  var expId;
   ws.on("message", function(message) {
-    console.log(message);
+    if (message.indexOf("experiments") === 0) {
+      expId = message.split(":")[1];
+      // Send stdout and stderr
+      mediator.on("experiments:" + expId + ":stdout", sendStdout);
+      mediator.on("experiments:" + expId + ":stderr", sendStderr);
+    }
   });
 
-  // Perform clean up if necessary
+  // Remove listeners
   ws.on("close", function() {
-    //console.log("Client closed connection");
+    mediator.removeListener("experiments:" + expId + ":stdout", sendStdout);
+    mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
   });
 });

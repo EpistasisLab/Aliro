@@ -1,6 +1,7 @@
 var fs = require("mz/fs");
 var path = require("path");
 var _ = require("lodash");
+var sleep = require("sleep");
 
 console.log("Program started");
 
@@ -12,6 +13,9 @@ for (var i = 3; i < process.argv.length; i += 2) {
 }
 console.log("Options: ");
 console.log(opts);
+
+// Artificial sleep for 5s
+sleep.sleep(5);
 
 // Make results directory
 if (!fs.existsSync("experiments")) {
