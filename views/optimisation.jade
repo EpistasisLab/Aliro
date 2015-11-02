@@ -41,6 +41,8 @@ block content
           label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
           .col-sm-10
             input.form-control.form-control-success(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
+            each value in val.values
+              label.checkbox-inline #[input(type="checkbox", value="#{value}", name="#{key}", data-type="enum", checked)] #{value}
     hr
     p #[strong Random / Grid Search Options]
     .form-group.row.has-success(data-type="_evaluations")
