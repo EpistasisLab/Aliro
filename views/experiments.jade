@@ -67,14 +67,10 @@ block scripts
       }},
     ];
     // Loop over scores
-    var scoreLength = 0;
     var scoreProps = {};
-    // TODO Remove "maximum props" assumption and add props as found
     for (var i = 0; i < experiments.length; i++) {
-      if (experiments[i]._scores && _.keys(experiments[i]._scores).length > scoreLength) {
-        scoreLength = _.keys(experiments[i]._scores).length;
-        scoreProps = experiments[i]._scores;
-      }
+      // Extend properties
+      _.assign(scoreProps, experiments[i]._scores);
     }
     for (var prop in scoreProps) {
       columns.push({field: "_scores." + prop, title: prop, sortable: true});
