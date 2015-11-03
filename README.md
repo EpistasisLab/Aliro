@@ -1,7 +1,7 @@
 [![Build Status](https://img.shields.io/travis/Kaixhin/FGLab.svg)](https://travis-ci.org/Kaixhin/FGLab)
 [![Dependency Status](https://img.shields.io/david/kaixhin/fglab.svg)](https://david-dm.org/Kaixhin/FGLab)
 [![devDependency Status](https://img.shields.io/david/dev/kaixhin/fglab.svg)](https://david-dm.org/Kaixhin/FGLab#info=devDependencies)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGLab/blob/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGLab/blob/master/LICENSE.md)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 
