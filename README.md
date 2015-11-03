@@ -43,7 +43,7 @@ To update, run `npm run update`.
 Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
 
 ```sh
-sudo docker run -d --name mongodb mongo --storageEngine wiredTiger
+sudo docker run -d --name mongodb mongo
 sudo docker run -d --name fglab --link mongodb:mongo -p 5080:5080 kaixhin/fglab
 ```
 
