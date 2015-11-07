@@ -5,7 +5,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 
-# ![FGLab](https://raw.githubusercontent.com/Kaixhin/FGLab/master/public/images/fglab-logo.png)
+# ![FGLab](public/images/fglab-logo.png)
 
 **[Project Website](https://kaixhin.github.io/FGLab/)**
 
