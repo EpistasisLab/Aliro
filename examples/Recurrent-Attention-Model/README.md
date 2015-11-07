@@ -24,7 +24,7 @@ For more information on Docker usage, including CUDA capabilities, please see th
 
 ## Instructions
 
-1. Create a new project from [recurrent-attention-model.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model/recurrent-attention-model.json).
+1. Create a new project from [recurrent-attention-model.json](recurrent-attention-model.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model).
 1. Submit an experiment.
 

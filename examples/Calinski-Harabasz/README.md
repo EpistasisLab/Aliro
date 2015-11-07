@@ -15,7 +15,7 @@ The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PA
 
 ## Instructions
 
-1. Create a new project from [calinski-harabasz.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz/calinski-harabasz.json).
+1. Create a new project from [calinski-harabasz.json](calinski-harabasz.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz).
 1. Open the optimisation page and change the following values for *k*:
   - min: 1
