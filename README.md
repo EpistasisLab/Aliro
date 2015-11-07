@@ -1,11 +1,11 @@
 [![Build Status](https://img.shields.io/travis/Kaixhin/FGMachine.svg)](https://travis-ci.org/Kaixhin/FGMachine)
 [![Dependency Status](https://img.shields.io/david/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine)
 [![devDependency Status](https://img.shields.io/david/dev/kaixhin/fgmachine.svg)](https://david-dm.org/Kaixhin/FGMachine#info=devDependencies)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGMachine/blob/master/LICENSE.md)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 
-# ![FGMachine](https://raw.githubusercontent.com/Kaixhin/FGMachine/master/public/images/fgmachine-logo.png)
+# ![FGMachine](public/images/fgmachine-logo.png)
 
 **[Project Website](https://kaixhin.github.io/FGLab/)**
 
@@ -13,9 +13,9 @@ FGLab is a machine learning dashboard, designed to facilitate performing experim
 
 ## Contents
 
-- [Installation](https://github.com/Kaixhin/FGMachine#installation)
-- [Overview](https://github.com/Kaixhin/FGMachine#overview)
-- [Examples](https://github.com/Kaixhin/FGMachine#examples)
+- [Installation](#installation)
+- [Overview](#overview)
+- [Examples](#examples)
 
 ## Installation
 
@@ -27,12 +27,12 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
 1. Run `npm install`.
-1. Create `projects.json` ([example.projects.json](https://github.com/Kaixhin/FGMachine/blob/master/example.projects.json) can be used as a starting point).
-1. FGMachine requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](https://github.com/Kaixhin/FGMachine/blob/master/example.env) to `.env`, but it may require customisation for non-standard FGLab or FGMachine ports. An alternative is to set the following environment variables:
+1. Create `projects.json` ([example.projects.json](example.projects.json) can be used as a starting point).
+1. FGMachine requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](example.env) to `.env`, but it may require customisation for non-standard FGLab or FGMachine ports. An alternative is to set the following environment variables:
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-Run `node machine` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](https://github.com/Kaixhin/FGMachine#overview) to understand how FGMachine can interface with your machine learning code.
+Run `node machine` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](#overview) to understand how FGMachine can interface with your machine learning code.
 
 To re-register, delete `specs.json` before running FGMachine again.
 
@@ -80,7 +80,7 @@ FGMachine automatically reloads the `projects.json` file when it is changed.
 
 ### Experiments
 
-Results and custom data must be saved as files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. For an example that uses the following features, see [rand.js](https://github.com/Kaixhin/FGMachine/blob/master/test/rand.js). 
+Results and custom data must be saved as files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. For an example that uses the following features, see [rand.js](test/rand.js). 
 
 Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/) via FGLab, which allows them to be downloaded later in their native format. Images and videos are automatically displayed on the experiment page, allowing plots to be created by the machine learning code. JSON files are automatically parsed, with fields being added to the experiment object. An example, `notes.json`, may look like this:
 
@@ -166,4 +166,4 @@ The usage of `_charts` has an inherent tradeoff between storing numerical result
 
 ## Examples
 
-Examples utilising the range of abilities of FGLab/FGMachine can be found in the [examples folder](https://github.com/Kaixhin/FGMachine/tree/master/examples).
+Examples utilising the range of abilities of FGLab/FGMachine can be found in the [examples folder](examples).

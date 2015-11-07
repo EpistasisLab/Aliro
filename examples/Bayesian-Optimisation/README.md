@@ -17,7 +17,7 @@ This example has been adapted from the [noisy Branin-Hoo example](https://github
 ## Instructions
 
 1. Set up [FGLab](https://github.com/Kaixhin/FGLab/blob/master/examples/Bayesian-Optimisation).
-1. Insert the [project](https://github.com/Kaixhin/FGMachine/blob/master/examples/Bayesian-Optimisation/project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
+1. Insert the [project](project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
 1. Within `fglab.py`, replace `<Project ID>` with the same project ID, `<FGLab URL>` with the address of FGLab, and `<Spearmint helper URL>` with the address of `fglab.py`'s Flask server. By default, Flask uses port 5000.
 1. Change into the Spearmint directory and start a MongoDB daemon, e.g. `mongod --fork --logpath mongodb.log --dbpath db`. The database folder (in this case `db`) must exist.
 1. Run Spearmint with `python main.py <Path to Bayesian-Optimisation folder>`. Spearmint will continue to submit jobs to get results to fit to a Gaussian Process, which it uses to find the optimal solution.

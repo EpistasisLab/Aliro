@@ -16,7 +16,7 @@ The `matlab` binary must be available on [PATH](https://en.wikipedia.org/wiki/PA
 ## Instructions
 
 1. Set up [FGLab](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz).
-1. Insert the [project](https://github.com/Kaixhin/FGMachine/blob/master/examples/Calinski-Harabasz/project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
+1. Insert the [project](project.json) into FGMachine's `projects.json` file, using the project ID from FGLab.
 1. Start [grid search](https://github.com/Kaixhin/FGLab/blob/master/examples/Calinski-Harabasz).
 
 Notice that since the `capacity` has been sent to 0.1, only 10 experiments will run at one time.
