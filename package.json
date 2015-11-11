@@ -32,7 +32,7 @@
     "express": "^4.13.3",
     "jade": "^1.11.0",
     "lodash": "^3.10.1",
-    "mongodb": "^2.1.0-alpha",
+    "mongodb": "^2.0.48",
     "mongoskin": "^2.0.3",
     "morgan": "^1.6.1",
     "multer": "^1.1.0",
