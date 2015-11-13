@@ -1,26 +1,26 @@
 [![Build Status](https://img.shields.io/travis/Kaixhin/FGLab.svg)](https://travis-ci.org/Kaixhin/FGLab)
 [![Dependency Status](https://img.shields.io/david/kaixhin/fglab.svg)](https://david-dm.org/Kaixhin/FGLab)
 [![devDependency Status](https://img.shields.io/david/dev/kaixhin/fglab.svg)](https://david-dm.org/Kaixhin/FGLab#info=devDependencies)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaixhin/FGLab/blob/master/LICENSE.md)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fglab.svg)](https://hub.docker.com/r/kaixhin/fglab/)
 
-# ![FGLab](https://raw.githubusercontent.com/Kaixhin/FGLab/master/public/images/fglab-logo.png)
+# ![FGLab](public/images/fglab-logo.png)
 
-**[Project Website](http://kaixhin.github.io/FGLab/)**
+**[Project Website](https://kaixhin.github.io/FGLab/)**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is FGLab, and the clients are [FGMachines](https://github.com/Kaixhin/FGMachine).
 
 ## Contents
 
-- [Installation](https://github.com/Kaixhin/FGLab#installation)
-- [Overview](https://github.com/Kaixhin/FGLab#overview)
-- [Examples](https://github.com/Kaixhin/FGLab#examples)
-- [API](https://github.com/Kaixhin/FGLab#api)
+- [Installation](#installation)
+- [Overview](#overview)
+- [Examples](#examples)
+- [API](#api)
 
 ## Installation
 
-FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](https://github.com/Kaixhin/FGLab#option-1-local), via [Docker](https://github.com/Kaixhin/FGLab#option-2-docker), or hosted on [Heroku](https://github.com/Kaixhin/FGLab#option-3-heroku).
+FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possible. Releases can be found [here](https://github.com/Kaixhin/FGLab/releases). There are 3 ways to run FGLab: Installing [locally](#option-1-local), via [Docker](#option-2-docker), or hosted on [Heroku](#option-3-heroku).
 
 ### Option 1: Local
 
@@ -30,11 +30,11 @@ FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possibl
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGLab/zipball/master)/[tar](https://github.com/Kaixhin/FGLab/tarball/master).
 1. Move inside the FGLab folder.
 1. Run `npm install`. `npm install` also runs `bower install` to install additional required packages.
-1. FGLab requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](https://github.com/Kaixhin/FGLab/blob/master/example.env) to `.env`, but it may require customisation for non-standard MongoDB ports, or setting a different port for FGLab. An alternative is to set the following environment variables:
+1. FGLab requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](example.env) to `.env`, but it may require customisation for non-standard MongoDB ports, or setting a different port for FGLab. An alternative is to set the following environment variables:
   - MONGODB_URI (MongoDB database URI)
   - FGLAB_PORT (port)
 
-Run `node lab` (or `npm start`) to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](https://github.com/Kaixhin/FGLab#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
+Run `node lab` (or `npm start`) to start FGLab. You can now access the user interface from a browser on the current machine at `http://localhost:<FGLAB_PORT>`, where `<FGLAB_PORT>` is 5080 by default. Please read the [overview](#overview) to understand how FGLab and FGMachine cooperate - both are needed in order to run experiments. Afterwards, you should set up instances of [FGMachine](https://github.com/Kaixhin/FGMachine).
 
 To update, run `npm run update`.
 
@@ -43,7 +43,7 @@ To update, run `npm run update`.
 Start a [MongoDB container](https://hub.docker.com/_/mongo/) and link it to the [FGLab container](https://hub.docker.com/r/kaixhin/fglab/):
 
 ```sh
-sudo docker run -d --name mongodb mongo --storageEngine wiredTiger
+sudo docker run -d --name mongodb mongo
 sudo docker run -d --name fglab --link mongodb:mongo -p 5080:5080 kaixhin/fglab
 ```
 
@@ -72,7 +72,7 @@ The JSON schema represents a map/associative array (without nesting), where the 
 - **default**: Default value
 - **values**: An array of strings comprising the `enum`
 
-See [mnist.json](https://github.com/Kaixhin/FGLab/blob/master/test/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
+See [mnist.json](test/mnist.json) as an example schema for a project. Each schema should be uploaded with the filename corresponding to the desired name for the project e.g. `mnist.json`.
 
 Often it is hard to specify some options in advance e.g. the type or structure of the machine learning model. Sometimes code may change, which would influence the results. The `string` type can be used to address changing options and versioning manually e.g. `cnn.v2`.
 
@@ -96,11 +96,11 @@ Note that machines are implementation-independent, and may well store their own 
 
 ## Examples
 
-Examples utilising the range of abilities of FGLab/FGMachine can be found in the [examples folder](https://github.com/Kaixhin/FGLab/tree/master/examples).
+Examples utilising the range of abilities of FGLab/FGMachine can be found in the [examples folder](examples).
 
 ## API
 
-The API is largely undocumented due to ongoing development introducing breaking changes. Ongoing documentation is available in [RAML](http://raml.org/): [api.raml](https://github.com/Kaixhin/FGLab/blob/master/api.raml). The following are noted for convenience:
+The API is largely undocumented due to ongoing development introducing breaking changes. Ongoing documentation is available in [RAML](http://raml.org/): [api.raml](api.raml). The following are noted for convenience:
 
 **Submit a new experiment with a set of options**
 ```

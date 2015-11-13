@@ -13,36 +13,41 @@ block content
           label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
           .col-sm-10(style="margin-bottom: 5px")
             input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", readonly)
-          label.form-control-label.control-label.col-sm-2.text-muted [min, max) # scale base
-          .col-sm-2
+          .col-sm-2.col-sm-offset-2
             input.form-control.form-control-success(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="min", required)
+            small.text-muted min (inclusive)
           .col-sm-2
             input.form-control.form-control-success(type="number", value="#{val.default}", step="any", data-key="#{key}", data-opt="max", required)
+            small.text-muted max (non-inclusive)
           .col-sm-2
             input.form-control.form-control-success(type="number", value="1", data-key="#{key}", data-opt="num", required)
+            small.text-muted # steps
           .col-sm-2
             select.form-control.c-select.form-control-success(data-key="#{key}", data-opt="scale")
               option(value="linear", selected) Linear
               option(value="log") Log
+            small.text-muted scale
           .col-sm-2
             input.form-control.form-control-success(type="number", value="10", step="any", data-key="#{key}", data-opt="pow", required)
+            small.text-muted base (log scale)
       else if (val.type === "bool")
         .form-group.row.has-success(data-type="#{val.type}")
-          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          label.form-control-label.control-label.col-sm-2 #{key}
           .col-sm-10
-            input.form-control.form-control-success(type="text", value="true,false", name="#{key}", id="#{key}", readonly)
+            label.checkbox-inline #[input(type="checkbox", value="true", name="#{key}", data-type="#{val.type}", checked)] true
+            label.checkbox-inline #[input(type="checkbox", value="false", name="#{key}", data-type="#{val.type}", checked)] false
       else if (val.type === "string")
         .form-group.row.has-success(data-type="#{val.type}")
           label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
           .col-sm-10
             input.form-control.form-control-success(type="text", value="#{val.default}", name="#{key}", id="#{key}", data-type="string", required)
+            small.text-muted comma-delimited
       else if (val.type === "enum")
         .form-group.row.has-success(data-type="#{val.type}")
-          label.form-control-label.control-label.col-sm-2(for="#{key}") #{key}
+          label.form-control-label.control-label.col-sm-2 #{key}
           .col-sm-10
-            input.form-control.form-control-success(type="text", value="#{val.values}", name="#{key}", id="#{key}", readonly)
             each value in val.values
-              label.checkbox-inline #[input(type="checkbox", value="#{value}", name="#{key}", data-type="enum", checked)] #{value}
+              label.checkbox-inline #[input(type="checkbox", value="#{value}", name="#{key}", data-type="#{val.type}", checked)] #{value}
     hr
     p #[strong Random / Grid Search Options]
     .form-group.row.has-success(data-type="_evaluations")
@@ -63,7 +68,7 @@ block content
   hr#optimisation-help
   p.text-muted Numeric values can have a linear or log range specified by using the min (inclusive) and max (exclusive) modifiers; base is used for the log scale.
   p.text-muted Random search samples values uniformly from this range. # controls the number of steps, and determines the values sampled by grid search.
-  p.text-muted String values can be separated by a comma. Enums and booleans automatically have all values selected.
+  p.text-muted String values can be separated by a comma. Enums and booleans must have at least one value selected.
   p.text-muted Random search samples values uniformly from these ranges. Grid search evaluates all values.
 
 block scripts
@@ -74,6 +79,7 @@ block scripts
     var schema = !{JSON.stringify(project.schema)};
 
     $(function() {
+      // Check numeric options
       $("[data-opt]").on("change", function() {
         // Elements
         var $el = $(this);
@@ -120,6 +126,33 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
+      // Check enum
+      $("input[data-type='bool'], input[data-type='enum']").on("change", function() {
+        var $el = $(this);
+        var $formGroup = $el.closest(".form-group");
+        // Get other options
+        var $options = $formGroup.find(":checkbox");
+
+        $el.removeClass("form-control-success form-control-error");
+        $formGroup.removeClass("has-success has-error");
+        // Check at least one option checked
+        var numChecked = 0;
+        for (var i = 0; i < $options.length; i++) {
+          if ($($options[i]).prop("checked")) {
+            numChecked++;
+          }
+        }
+        if (numChecked === 0) {
+          $el.addClass("form-control-error");
+          $formGroup.addClass("has-error");
+          return;
+        }
+
+        $el.addClass("form-control-success");
+        $formGroup.addClass("has-success");
+      });
+
+      // Check string
       $("input[data-type='string']").on("change", function() {
         var $el = $(this);
         var $formGroup = $el.closest(".form-group");
@@ -136,6 +169,7 @@ block scripts
         $formGroup.addClass("has-success");
       });
 
+      // Check optimiser options
       $("[name='_evaluations'], [name='_retry']").on("change", function() {
         var $el = $(this);
         var $formGroup = $el.closest(".form-group");
@@ -193,22 +227,29 @@ block scripts
         // Process form
         var formObj = {};
         // Loop over form simply (does not work on nested data)
-        $("#new-optimisation").find("[id]:input").not(":submit").each(function(ind, el) {
+        $("#new-optimisation").find("[id]:input, :checkbox").not(":submit").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
           var name = $el.attr("name");
           var val = $el.val();
           var type = $formGroup.data("type");
 
-          // Get all elements
           var vals = [];
+          // Get existing vals for enums
+          if (formObj[name]) {
+            vals = formObj[name];
+          }
+          // Get all elements
           val.split(",").forEach(function(a) {
             if (type === "int" || type === "float") {
               a = parseFloat(a);
             } else if (type === "bool") {
               a = (a === "true");
             }
-            vals.push(a);
+            // Push checkbox if checked
+            if (!((type === "bool" || type === "enum") && !$el.prop("checked"))) {
+              vals.push(a);
+            }
           });
           formObj[name] = vals; // Set key and value
         });

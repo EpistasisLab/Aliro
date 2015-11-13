@@ -77,7 +77,7 @@ app.get("/api/v1/files/:id", function(req, res, next) {
       gfs.read()
       .then(function(file) {
         res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
-        res.setHeader("Content-Type", gfs.contentType); // MIME Type
+        res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
         res.send(file); // Send file
       })
       .catch(function(err) {
@@ -402,7 +402,7 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, r
   var saveGFSFile = function(fileObj) {
     var fileId = new db.ObjectID(); // Create file ID
     // Open new file
-    var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {content_type: fileObj.mimetype, promiseLibrary: Promise});
+    var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {metadata: {contentType: fileObj.mimetype}, promiseLibrary: Promise});
     gfs.open(function(err, gfs) {
       if (err) {
         console.log(err);
@@ -411,7 +411,7 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, r
         gfs.write(fileObj.buffer, true)
         .then(function(gfs) {
           // Save file reference
-          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.contentType}}});
+          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
         })
         .catch(function(err) {
           console.log(err);

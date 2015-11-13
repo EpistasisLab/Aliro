@@ -24,7 +24,7 @@ For more information on Docker usage, including CUDA capabilities, please see th
 
 ## Instructions
 
-1. Create a new project from [recurrent-attention-model.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model/recurrent-attention-model.json).
+1. Create a new project from [recurrent-attention-model.json](recurrent-attention-model.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Recurrent-Attention-Model).
 1. Submit an experiment.
 
@@ -32,11 +32,11 @@ For more information on Docker usage, including CUDA capabilities, please see th
 
 The code produces a plot of the training losses, and calculates the accuracy of the RAM on the test set after training. In addition the policy for taking glimpses is visualised, providing `glimpse<x>.png` for the first 5 test images, where `<x>` is the time step, as shown below:
 
-![glimpse1](https://raw.githubusercontent.com/Kaixhin/FGLab/master/examples/Recurrent-Attention-Model/glimpse1.png)
+![glimpse1](glimpse1.png)
 
 For each glimpse, the extracted patches, `patch<x>.png`, are also extracted:
 
-![patch1](https://raw.githubusercontent.com/Kaixhin/FGLab/master/examples/Recurrent-Attention-Model/patch1.png)
+![patch1](patch1.png)
 
 These images are displayed along with the normal download link for uploaded files.
 

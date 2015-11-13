@@ -5,6 +5,11 @@ block title
 
 block styles
   link(href="/bower_components/c3/c3.min.css", rel="stylesheet")
+  style.
+    #logs {
+      max-height: 25rem;
+      overflow: scroll;
+    }
 
 block content
   h1 #[span.mega-octicon.octicon-graph] Experiment: #{experiment._id}
@@ -48,6 +53,9 @@ block content
     #charts
       each val, ind in experiment._charts
         div(id= "chart" + ind)
+  dl.dl-horizontal
+    dt.col-sm-3 Logs
+    dd.col-sm-9 #[#logs]
 
 block scripts
   script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
@@ -234,6 +242,43 @@ block scripts
           return false; // Stop event and propagation
         });*/
       }
+
+      // Connect to experiment stdout
+      var host = "#{machine.address}".replace(/^http/, 'ws'); // WebSocket server address
+      var ws = null; // WebSocket
+      var $logs = $("#logs"); // Live logs
+
+      // Connects to WebSocket server
+      var wsConnect = function() {
+        ws = new WebSocket(host); // Attempt to connect
+        
+        // Register interest for logs
+        ws.onopen = function() {
+          ws.send("experiments:#{experiment._id}");
+        };
+
+        // Print messages
+        ws.onmessage = function(event) {
+          var data = JSON.parse(event.data);
+          if (data.stdout) {
+            $logs.append("<p class='text-muted'>" + data.stdout + "</p>");
+          } else if (data.stderr) {
+            $logs.append("<p class='text-danger'>" + data.stderr + "</p>");
+          }
+        };
+      };
+
+      // Reconnects to WebSocket server if needed
+      var wsReconnect = function() {
+        if (!ws || ws.readyState === WebSocket.CLOSED) {
+          wsConnect();
+        }
+      };
+
+      // Connect 
+      wsConnect();
+      // Attempt to reconnect every 5s if necessary
+      setInterval(wsReconnect, 5000);
 
       // Kills experiment
       $("button.kill").on("click", function() {

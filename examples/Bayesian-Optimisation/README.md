@@ -16,7 +16,7 @@ This example has been adapted from the [noisy Branin-Hoo example](https://github
 
 ## Instructions
 
-1. Create a new project from [bayesian-optimisation.json](https://github.com/Kaixhin/FGLab/blob/master/examples/Bayesian-Optimisation/bayesian-optimisation.json).
+1. Create a new project from [bayesian-optimisation.json](bayesian-optimisation.json).
 1. Set up [FGMachine](https://github.com/Kaixhin/FGMachine/blob/master/examples/Bayesian-Optimisation) and run Spearmint.
 
 ## Citations
