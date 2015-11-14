@@ -53,12 +53,12 @@ block content
     .form-group.row.has-success(data-type="_evaluations")
       label.form-control-label.control-label.col-sm-2(for="#{key}") # Evaluations
       .col-sm-10
-        input.form-control.form-control-success(type="number", value="1", min="1", name="_evaluations", id="#_evaluations", required)
+        input.form-control.form-control-success(type="number", value="1", min="1", name="_evaluations", id="_evaluations", required)
         small.text-muted Number of evaluations for random search.
     .form-group.row.has-success(data-type="_retry")
       label.form-control-label.control-label.col-sm-2(for="#{key}") Retry Timeout
       .col-sm-10
-        input.form-control.form-control-success(type="number", value="3600", min="1", name="_retry", id="#_retry", required)
+        input.form-control.form-control-success(type="number", value="3600", min="1", name="_retry", id="_retry", required)
         small.text-muted Time (s) between retries after single failed experiment submission.
     .form-group.row
       .col-sm-2.col-sm-offset-2
