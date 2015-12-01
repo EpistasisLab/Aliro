@@ -332,7 +332,11 @@ var submitJobRetry = function(projId, options, retryT) {
 // Constructs a batch job from a list of options
 app.post("/api/v1/projects/:id/batch", jsonParser, function(req, res, next) {
   var projId = req.params.id;
-  var retryTimeout = parseInt(req.query.retry) || 60*60; // Default is an hour
+  var retryTimeout = parseInt(req.query.retry);
+  // Set default as an hour
+  if (isNaN(retryTimeout) || retryTimeout <= 0) {
+    retryTimeout = 60*60;
+  }
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
   .then(function(project) {
