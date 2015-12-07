@@ -74,6 +74,9 @@ block scripts
         })
         .then(function() {
           location.reload(); // Refresh page
+        })
+        .catch(function(err) {
+          alert(err.responseText); // Display server error
         });
         return false; // Stop event and propagation
       });
