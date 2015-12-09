@@ -23,16 +23,16 @@
   "dependencies": {
     "jquery": "~3.0.0-alpha",
     "lodash": "~3.10.1",
-    "bootstrap": "~4.0.0-alpha",
+    "bootstrap": "~4.0.0-alpha.2",
     "bootstrap-table": "~1.8.0",
-    "octicons": "~3.2.0",
-    "d3": "~3.5.8",
+    "octicons": "~3.3.0",
+    "d3": "~3.5.10",
     "c3": "~0.4.11",
     "largest-triangle-three-buckets": "git://github.com/joshcarr/largest-triangle-three-buckets.js.git",
     "moment": "~2.10.6"
   },
   "resolutions": {
     "jquery": "~3.0.0-alpha",
-    "d3": "~3.5.8"
+    "d3": "~3.5.10"
   }
 }
