@@ -223,24 +223,7 @@ block scripts
           // Send chart
           worker.postMessage({chart: chart}); // Start worker
           */
-
-          // TODO Add toggle buttons
-          //$("#chart-buttons").append("&nbsp;<button data-plot='Train' class='btn btn-primary active' data-toggle='button' aria-pressed='true'>Train</button>");
         }
-
-        // Toggles plots on chart
-        /*$("#chart-buttons").on("click", "button", function() {
-          var $el = $(this);
-          var plot = $el.data("plot");
-          var isShown = $el.attr("aria-pressed") === "true";
-          if (isShown) {
-            chart.hide([plot]);
-          } else {
-            chart.show([plot]);
-          }
-          $el.button("toggle");
-          return false; // Stop event and propagation
-        });*/
       }
 
       // Connect to experiment stdout
