@@ -6,6 +6,7 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     meta(http-equiv="x-ua-compatible", content="ie=edge")
 
+    link(href="/bower_components/tether/dist/css/tether.min.css", rel="stylesheet")
     link(href="/bower_components/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
     link(href="/bower_components/octicons/octicons/octicons.css", rel="stylesheet")
     link(href="/stylesheets/main.css", rel="stylesheet")
@@ -21,12 +22,14 @@ html(lang="en")
           a.nav-link(href="javascript:history.back()") #[span.octicon.octicon-chevron-left]
         li.nav-item
           a.nav-link(href="javascript:history.forward()") #[span.octicon.octicon-chevron-right]
-      ul.nav.navbar-nav.pull-right
+      ul.nav.navbar-nav.pull-xs-right
         li.nav-item
           a.nav-link #[span#server-status.octicon.octicon-server]
     .container
       block content
     script(src="/bower_components/jquery/dist/jquery.min.js")
+    script(src="/bower_components/tether/dist/js/tether.min.js")
+    script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
     script.
       $(function() {
         var host = location.origin.replace(/^http/, 'ws'); // WebSocket server address

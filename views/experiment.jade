@@ -58,7 +58,6 @@ block content
     dd.col-sm-9 #[#logs]
 
 block scripts
-  script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
   script(src="/bower_components/d3/d3.min.js")
   script(src="/bower_components/c3/c3.min.js")
   script(src="/bower_components/lodash/lodash.min.js")
@@ -104,7 +103,7 @@ block scripts
       for (var i = 0; i < experiment._files.length; i++) {
         var file = experiment._files[i];
         if (file.mimetype.indexOf("image/") === 0) {
-          $files.append("<li><img src='/api/v1/files/" + file._id + "' class='img-responsive'></li>");
+          $files.append("<li><img src='/api/v1/files/" + file._id + "' class='img-fluid'></li>");
         } else if (file.mimetype.indexOf("video/") === 0) {
           $files.append("<li><video controls><source src='/api/v1/files/" + file._id + "' type='" + file.mimetype + "'></video></li>");
         }
