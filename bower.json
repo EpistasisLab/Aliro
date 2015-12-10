@@ -21,9 +21,9 @@
     "test"
   ],
   "dependencies": {
-    "jquery": "~2.1.4",
+    "jquery": "~3.0.0-alpha",
     "lodash": "~3.10.1",
-    "bootstrap": "~4.0.0-alpha.2",
+    "bootstrap": "4.0.0-alpha",
     "bootstrap-table": "~1.8.0",
     "octicons": "~3.3.0",
     "d3": "~3.5.10",
@@ -33,7 +33,7 @@
     "tether": "~1.1.1"
   },
   "resolutions": {
-    "jquery": "~2.1.4",
+    "jquery": "~3.0.0-alpha",
     "d3": "~3.5.10"
   }
 }
