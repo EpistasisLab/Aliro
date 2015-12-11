@@ -285,15 +285,17 @@ if (!process.env.FGMACHINE_URL) {
 /* WebSocket server */
 // Add websocket server
 var wss = new WebSocketServer({server: server});
+// Catches errors to prevent FGMachine crashing if browser disconnect undetected
+var wsErrHandler = function() {};
 
 // Call on connection from new client
 wss.on("connection", function(ws) {
   // Listeners
   var sendStdout = function(data) {
-    ws.send(JSON.stringify({stdout: data}));
+    ws.send(JSON.stringify({stdout: data}), wsErrHandler);
   };
   var sendStderr = function(data) {
-    ws.send(JSON.stringify({stderr: data}));
+    ws.send(JSON.stringify({stderr: data}), wsErrHandler);
   };
 
   // Check subscription for logs
