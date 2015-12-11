@@ -6,6 +6,9 @@ block title
 block styles
   link(href="/bower_components/c3/c3.min.css", rel="stylesheet")
   style.
+    #notes {
+      border: solid;
+    }
     #logs {
       max-height: 25rem;
       overflow: scroll;
@@ -38,6 +41,8 @@ block content
       each val, prop in experiment._scores
         dt.col-sm-3 #{prop}
         dd.col-sm-9 #{val}
+    dt.col-sm-3 Notes 
+    dd.col-sm-9 #[textarea#notes.form-control(rows="3") #{experiment._notes}]
     - if (experiment._files.length > 0)
       dt.col-sm-3 Files
       dd.col-sm-9
@@ -95,6 +100,26 @@ block scripts
       if (experiment._finished) {
         $("#experiment-finished").html(moment().format(experiment._finished));
       }
+
+      // Monitor notes
+      var $notes = $("#notes");
+      var oldNotes = $notes.val().trim();
+      // Trigger every 0.5s
+      $("#notes").on("change keyup paste", _.debounce(function() {
+        // Ignore lack of changes
+        var newNotes = $notes.val().trim();
+        if (newNotes === "oldNotes") {
+          return false;
+        }
+
+        $.ajax({
+          url: "/api/v1/experiments/#{experiment._id}",
+          type: "PUT",
+          contentType: "application/json",
+          data: JSON.stringify({_notes: newNotes})
+        }).catch(function(err) {console.log(err);});
+        return false; // Stop event and propagation
+      }, 500));
 
       // Sort files by filename
       experiment._files = _.sortBy(experiment._files, "filename");
