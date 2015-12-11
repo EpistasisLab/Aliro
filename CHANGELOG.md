@@ -1,3 +1,29 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/Kaixhin/FGLab/compare/0.5.0...v0.5.0) (2015-12-11)
+
+
+### Bug Fixes
+
+* add all score properties across experiments ([30cc3be](https://github.com/Kaixhin/FGLab/commit/30cc3be))
+* add ws disconnect err handler ([3acd9ba](https://github.com/Kaixhin/FGLab/commit/3acd9ba))
+* correct metaparam IDs for hyperparam form ([e827471](https://github.com/Kaixhin/FGLab/commit/e827471)), closes [#13](https://github.com/Kaixhin/FGLab/issues/13)
+* fix status indicators for multiple machines ([2631cfa](https://github.com/Kaixhin/FGLab/commit/2631cfa))
+* revert to jQuery 3 (for then) with Bootstrap 4 alpha 1 ([38d843f](https://github.com/Kaixhin/FGLab/commit/38d843f))
+* satisfy mongoskin-mongodb peer dependency ([9c9e7d0](https://github.com/Kaixhin/FGLab/commit/9c9e7d0))
+
+### Features
+
+* add autosaving notes field per experiment ([8e156e1](https://github.com/Kaixhin/FGLab/commit/8e156e1))
+* add live logging ([4c1084c](https://github.com/Kaixhin/FGLab/commit/4c1084c)), closes [#9](https://github.com/Kaixhin/FGLab/issues/9)
+* option selection for enums/bools in optimisation ([e8c63ef](https://github.com/Kaixhin/FGLab/commit/e8c63ef))
+
+### Performance Improvements
+
+* display server error for uploading project schema ([a17676c](https://github.com/Kaixhin/FGLab/commit/a17676c))
+* upgrade to Bootstrap v4 alpha 2 ([c120525](https://github.com/Kaixhin/FGLab/commit/c120525))
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/Kaixhin/FGLab/compare/0.4.0...v0.4.0) (2015-11-01)
 
