@@ -1,3 +1,18 @@
+<a name="0.4.1"></a>
+## [0.4.1](https://github.com/Kaixhin/FGMachine/compare/0.4.1...v0.4.1) (2015-12-11)
+
+
+### Bug Fixes
+
+* prevent crash with browser ws ([8f63147](https://github.com/Kaixhin/FGMachine/commit/8f63147))
+* remove sleep to solve compilation issues ([dc27cdd](https://github.com/Kaixhin/FGMachine/commit/dc27cdd))
+
+### Features
+
+* add live logging ([9647531](https://github.com/Kaixhin/FGMachine/commit/9647531)), closes [#5](https://github.com/Kaixhin/FGMachine/issues/5)
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/Kaixhin/FGMachine/compare/0.4.0...v0.4.0) (2015-11-01)
 
