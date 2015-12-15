@@ -272,6 +272,8 @@ block scripts
           } else if (data.stderr) {
             $logs.append("<p class='text-danger'>" + data.stderr + "</p>");
           }
+          // Automatically scroll
+          $logs.prop("scrollTop", $logs.prop("scrollHeight"));
         };
       };
 
