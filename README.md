@@ -110,6 +110,10 @@ The `_scores` field is a map that can be used to store multiple floats that repr
 }
 ```
 
+#### _notes
+
+The `_notes` field is a free-form text field. Its primary use is via the experiment page on FGLab, where text written in the "Notes" text box is automatically saved (at an interval of 0.5s), displaying on both the experiment page itself and the table of experiment results.
+
 #### _charts
 
 The `_charts` field is a either an object or array of objects that can be used to store data that will be charted on FGLab using [C3.js](http://c3js.org/), and hence mimics its [API](http://c3js.org/examples.html). Given that FGLab renders uploaded images, this is to allow the interactivity afforded by C3.js. This means that it is possible to create different chart types and adjust plotting options, with a minor change in the API so that numeric arrays can be directly exported. Rather than prepending arrays in the `columns` array with the column names, the `columnNames` array is used to perform this on FGLab.
