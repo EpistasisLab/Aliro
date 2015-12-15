@@ -17,7 +17,7 @@ block styles
 block content
   h1 #[span.mega-octicon.octicon-graph] Experiment: #{experiment._id}
   - if (experiment._status === "running")
-    button.btn.btn-danger.kill Kill Experiment
+    button#kill.btn.btn-danger Kill Experiment
 
   dl.dl-horizontal
     dt.col-sm-3 Status
@@ -288,7 +288,7 @@ block scripts
       setInterval(wsReconnect, 5000);
 
       // Kills experiment
-      $("button.kill").on("click", function() {
+      $("#kill").on("click", function() {
         $.ajax({
           url: "#{machine.address}/experiments/#{experiment._id}/kill",
           type: "POST"

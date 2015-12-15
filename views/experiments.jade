@@ -87,6 +87,7 @@ block scripts
     }
     columns.push({field: "_started", title: "Started", sortable: "true", formatter: function(val) {return val ? moment().format(val) : "";}});
     columns.push({field: "_finished", title: "Finished", sortable: "true", formatter: function(val) {return val ? moment().format(val) : "";}});
+    columns.push({field: "_notes", title: "Notes"});
     // TODO Loop over custom properties
 
     // Flatten each experiment
