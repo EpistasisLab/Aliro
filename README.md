@@ -86,6 +86,8 @@ Grid and random search optimisers have also been implemented in FGLab, to allow 
 
 An experiment is one complete training and testing run with a specific set of options. Depending on the experiment it may be impossible to control for every source of randomness, so experiments with the same set of options will still be assigned unique IDs. Experiments have a unique ID, in addition to a project ID, a machine ID, the chosen options, the current status (running/success/fail), timestamps, results, and custom data; this provides a comprehensive record of the experiment as a whole.
 
+The experiment page contains a "Logs" window, which uses WebSockets to display the experiment's `stdout` and `stderr` live. There is also an editable "Notes" text box that is automatically saved (at an interval of 0.5s), displaying on both the experiment page itself and the table of experiment results.
+
 The current format for results is documented with [FGMachine](https://github.com/Kaixhin/FGMachine#experiments).
 
 ### Machines
