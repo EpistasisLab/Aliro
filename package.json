@@ -32,7 +32,7 @@
     "mz": "^2.1.0",
     "request-promise": "^1.0.2",
     "rimraf": "^2.5.0",
-    "ws": "^1.0.0"
+    "ws": "^1.0.1"
   },
   "devDependencies": {
     "conventional-github-releaser": "^0.5.1",
