@@ -15,6 +15,7 @@ var bodyParser = require("body-parser");
 var morgan = require("morgan");
 var Promise = require("bluebird");
 var rp = require("request-promise");
+var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
 
@@ -37,10 +38,11 @@ if (!process.env.FGLAB_URL) {
 /* Machine specifications */
 // Attempt to read existing specs
 fs.readFile("specs.json", "utf-8")
-.then(function(sp) {
+.then((sp) => {
   specs = JSON.parse(sp);
 })
-.catch(function() {
+.catch(() => {
+  // Otherwise create specs
   specs = {
     address: process.env.FGMACHINE_URL,
     hostname: os.hostname(),
@@ -50,7 +52,7 @@ fs.readFile("specs.json", "utf-8")
       arch: os.arch(),
       release: os.release()
     },
-    cpus: os.cpus().map(function(cpu) {return cpu.model;}),
+    cpus: os.cpus().map((cpu) => cpu.model), // Fat arrow has implicit return
     mem: bytes(os.totalmem()),
     gpus: []
   };
@@ -66,7 +68,7 @@ fs.readFile("specs.json", "utf-8")
 
   // Register details
   rp({uri: process.env.FGLAB_URL + "/api/v1/machines", method: "POST", json: specs, gzip: true})
-  .then(function(body) {
+  .then((body) => {
     console.log("Registered with FGLab successfully");
     // Save ID and specs
     fs.writeFile("specs.json", JSON.stringify(body));
@@ -74,11 +76,11 @@ fs.readFile("specs.json", "utf-8")
     specs = body;
     // Register projects
     rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
-    .then(function() {
+    .then(() => {
       console.log("Projects registered with FGLab successfully");
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.log(err);
   });
 });
@@ -86,32 +88,32 @@ fs.readFile("specs.json", "utf-8")
 /* Project specifications */
 // Attempt to read existing projects
 fs.readFile("projects.json", "utf-8")
-.then(function(proj) {
+.then((proj) => {
   console.log("Loaded projects");
   projects = JSON.parse(proj || "{}");
   // Register projects
   rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
-  .then(function() {
+  .then(() => {
     console.log("Projects registered with FGLab successfully");
   })
-  .catch(function() {}); // Ignore failure in case machine is not registered
+  .catch(() => {}); // Ignore failure in case machine is not registered
 })
-.catch(function() {
+.catch(() => {
   projects = {};
 });
 
-// Reload file on change
-fs.watchFile("projects.json", function() {
+// Reload projects on change
+chokidar.watch("projects.json").on("change", () => {
   fs.readFile("projects.json", "utf-8")
-  .then(function(proj) {
+  .then((proj) => {
     console.log("Reloaded projects");
     projects = JSON.parse(proj || "{}");
     // Register projects
     rp({uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects", method: "POST", json: {projects: projects}, gzip: true})
-    .then(function() {
+    .then(() => {
       console.log("Projects registered with FGLab successfully");
     })
-    .catch(function() {}); // Ignore failure in case machine is not registered
+    .catch(() => {}); // Ignore failure in case machine is not registered
   });
 });
 
@@ -129,7 +131,7 @@ var getCapacity = function(projId) {
 
 /* Routes */
 // Checks capacity
-app.get("/projects/:id/capacity", function(req, res) {
+app.get("/projects/:id/capacity", (req, res) => {
   var capacity = getCapacity(req.params.id);
   if (capacity === 0) {
     res.status(501);
@@ -140,7 +142,7 @@ app.get("/projects/:id/capacity", function(req, res) {
 });
 
 // Starts experiment
-app.post("/projects/:id", jsonParser, function(req, res) {
+app.post("/projects/:id", jsonParser, (req, res) => {
   // Check if capacity still available
   if (getCapacity(req.params.id) === 0) {
     res.status(501);
@@ -180,80 +182,72 @@ app.post("/projects/:id", jsonParser, function(req, res) {
   var experiment = spawn(project.command, args, {cwd: project.cwd});
   maxCapacity -= project.capacity; // Reduce capacity of machine
   rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/started", method: "PUT", data: null}); // Set started
-
   // Save experiment
   experiments[experimentId] = experiment;
 
   // Log stdout
-  experiment.stdout.on("data", function(data) {
+  experiment.stdout.on("data", (data) => {
     mediator.emit("experiments:" + experimentId + ":stdout", data.toString()); // Emit event
   });
-
   // Log errors
-  experiment.stderr.on("data", function(data) {
+  experiment.stderr.on("data", (data) => {
     mediator.emit("experiments:" + experimentId + ":stderr", data.toString()); // Emit event
     console.log("Error: " + data.toString());
   });
 
+  // List of file promises (to make sure all files are uploaded before removing results folder)
+  var filesP = [];
+  // Results-sending function for JSON
+  var sendJSONResults = function(results) {
+    return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
+  };
+  // Results-sending function for other files
+  var sendFileResults = function(filename) {
+    // Create form data
+    var formData = {_files: []};
+    // Add file
+    formData._files.push(fs.createReadStream(filename));
+    return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
+  };
+  // Watch for experiment folder
+  var resultsDir = path.join(project.results, experimentId);
+  var watcher = chokidar.watch(resultsDir, {awaitWriteFinish: true}).on("all", (event, path) => {
+    if (event === "add" || event === "change") {
+       if (path.match(/\.json$/)) {
+        // Process JSON files
+        filesP.push(fs.readFile(path, "utf-8").then(sendJSONResults));
+      } else {
+        // Store filenames for other files
+        filesP.push(sendFileResults(path));
+      }     
+    }
+  });
+
   // Processes results
-  experiment.on("exit", function(exitCode) {
+  experiment.on("exit", (exitCode) => {
     maxCapacity += project.capacity; // Add back capacity
-
-    // Results-sending function for JSON
-    var sendJSONResults = function(results) {
-      return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: JSON.parse(results), gzip: true});
-    };
-
-    // Results-sending function for other files
-    var sendFileResults = function(filenames) {
-      // Create form data
-      var formData = {
-        _files: []
-      };
-      // Add files
-      for (var i = 0; i < filenames.length; i++) {
-        formData._files.push(fs.createReadStream(filenames[i]));
-      }
-      return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
-    };
-
-    // Send all result files
-    var resultsDir = path.join(project.results, experimentId);
-    fs.readdir(resultsDir)
-    .then(function(files) {
-      var filesP = [];
-      var nonJSONFiles = [];
-      for (var i = 0; i < files.length; i++) {
-        if (files[i].match(/\.json$/)) {
-          // Process JSON files
-          filesP.push(fs.readFile(path.join(resultsDir, files[i]), "utf-8").then(sendJSONResults));
-        } else {
-          // Store filenames for other files
-          nonJSONFiles.push(path.join(resultsDir, files[i]));
-        }
-      }
-      // Process other files
-      filesP.push(sendFileResults(nonJSONFiles));
-      // Confirm upload and delete results folder to save space
-      Promise.all(filesP).then(function() {
-        rimraf(resultsDir, function(err) {
-          if (err) {
-            console.log(err);
-          }
-        });
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-    })
-    .catch(function() {
-      console.log("Error: Experiment " + experimentId + " results folder does not exist");
-    });
 
     // Send status
     var status = (exitCode === 0) ? "success" : "fail";
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: status}, gzip: true});
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/finished", method: "PUT", data: null}); // Set finished
+
+    // Finish watching for files after 10s
+    setTimeout(() => {
+      // Close experiment folder watcher
+      watcher.close();
+     // Confirm upload and delete results folder to save space
+      Promise.all(filesP).then(function() {
+        rimraf(resultsDir, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }, 10000);
 
     // Delete experiment
     delete experiments[experimentId];
@@ -262,7 +256,7 @@ app.post("/projects/:id", jsonParser, function(req, res) {
 });
 
 // Kills experiment
-app.post("/experiments/:id/kill", function(req, res) {
+app.post("/experiments/:id/kill", (req, res) => {
   if (experiments[req.params.id]) {
     experiments[req.params.id].kill();
   }
@@ -278,10 +272,12 @@ if (!process.env.FGMACHINE_URL) {
 } else {
   // Listen for connections
   var port = url.parse(process.env.FGMACHINE_URL).port;
-  server.listen(port, function() {
+  server.listen(port, () => {
     console.log("Server listening on port " + port);
   });
 }
+
+
 /* WebSocket server */
 // Add websocket server
 var wss = new WebSocketServer({server: server});
@@ -289,7 +285,7 @@ var wss = new WebSocketServer({server: server});
 var wsErrHandler = function() {};
 
 // Call on connection from new client
-wss.on("connection", function(ws) {
+wss.on("connection", (ws) => {
   // Listeners
   var sendStdout = function(data) {
     ws.send(JSON.stringify({stdout: data}), wsErrHandler);
@@ -300,7 +296,7 @@ wss.on("connection", function(ws) {
 
   // Check subscription for logs
   var expId;
-  ws.on("message", function(message) {
+  ws.on("message", (message) => {
     if (message.indexOf("experiments") === 0) {
       expId = message.split(":")[1];
       // Send stdout and stderr
@@ -310,7 +306,7 @@ wss.on("connection", function(ws) {
   });
 
   // Remove listeners
-  ws.on("close", function() {
+  ws.on("close", () => {
     mediator.removeListener("experiments:" + expId + ":stdout", sendStdout);
     mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
   });

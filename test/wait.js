@@ -1,4 +1,4 @@
 // Fails after 10 minutes
-setTimeout(function() {
+setTimeout(() => {
   process.exit(1);
 }, 600000);
