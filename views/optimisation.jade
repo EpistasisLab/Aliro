@@ -257,9 +257,6 @@ block scripts
         var retryTimeout = parseInt(formObj._retry[0]);
         delete formObj._retry;
 
-        // Delete evaluations
-        delete formObj._evaluations;
-
         var expList;
         if (optimisationType === "random-search") {
           // Process range for random search
@@ -312,6 +309,8 @@ block scripts
             expList[i] = expObj;
           }
         } else if (optimisationType === "grid-search") {
+          // Delete evaluations
+          delete formObj._evaluations;
           // Create experiment list
           expList = recurseGrid(formObj);
         }
