@@ -1,3 +1,14 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/Kaixhin/FGMachine/compare/0.5.0...v0.5.0) (2016-01-11)
+
+
+### Features
+
+* read GPUs on OS X ([7c3b87a](https://github.com/Kaixhin/FGMachine/commit/7c3b87a)), closes [#6](https://github.com/Kaixhin/FGMachine/issues/6)
+* upload results on creation ([a788d27](https://github.com/Kaixhin/FGMachine/commit/a788d27)), closes [#8](https://github.com/Kaixhin/FGMachine/issues/8)
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/Kaixhin/FGMachine/compare/0.4.1...v0.4.1) (2015-12-11)
 
