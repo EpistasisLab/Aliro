@@ -30,7 +30,7 @@ app.use(morgan("tiny")); // Log requests
 /* API */
 
 // Registers webhooks
-app.post("/api/v1/webhooks", jsonParser, function(req, res) {
+app.post("/api/v1/webhooks", jsonParser, (req, res) => {
   // Parse webhook request
   var webhook = req.body;
   var url = webhook.url;
@@ -57,30 +57,30 @@ app.post("/api/v1/webhooks", jsonParser, function(req, res) {
   }
 
   // Register with mediator
-  mediator.once(objects + ":" + objId + ":" + event, function() {
+  mediator.once(objects + ":" + objId + ":" + event, () => {
     // Send webhook response
     rp({uri: webhook.url, method: "POST", json: webhook, gzip: true})
-    .catch(function() {}); // Ignore failures from missing webhooks
+    .catch(() => {}); // Ignore failures from missing webhooks
   });
   res.status(201);
   return res.send({status: "Registered", options: webhook});
 });
 
 // Downloads file
-app.get("/api/v1/files/:id", function(req, res, next) {
+app.get("/api/v1/files/:id", (req, res, next) => {
   // Open file
   var gfs = new db.GridStore(db, db.toObjectID(req.params.id), "r", {promiseLibrary: Promise});
-  gfs.open(function(err, gfs) {
+  gfs.open((err, gfs) => {
     // Set read head pointer to beginning of file
-    gfs.seek(0, function() {
+    gfs.seek(0, () => {
       // Read entire file
       gfs.read()
-      .then(function(file) {
+      .then((file) => {
         res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
         res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
         res.send(file); // Send file
       })
-      .catch(function(err) {
+      .catch((err) => {
         next(err); 
       });
     });
@@ -88,110 +88,110 @@ app.get("/api/v1/files/:id", function(req, res, next) {
 });
 
 // Get collection for all API db-based endpoints
-app.param("collection", function(req, res, next, collection) {
+app.param("collection", (req, res, next, collection) => {
   req.collection = db.collection(collection);
   return next();
 });
 
 // Return all entries
-app.get("/api/v1/:collection", function(req, res, next) {
+app.get("/api/v1/:collection", (req, res, next) => {
   req.collection.find({}).toArrayAsync()
-  .then(function(results) {
+  .then((results) => {
     res.send(results);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Create new entry
-app.post("/api/v1/:collection", jsonParser, function(req, res, next) {
+app.post("/api/v1/:collection", jsonParser, (req, res, next) => {
   req.collection.insertAsync(req.body, {})
-  .then(function(result) {
+  .then((result) => {
     res.status(201);
     res.send(result.ops[0]);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Return single entry
-app.get("/api/v1/:collection/:id", function(req, res, next) {
+app.get("/api/v1/:collection/:id", (req, res, next) => {
   req.collection.findByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     res.send(result);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Update existing entry
-app.put("/api/v1/:collection/:id", jsonParser, function(req, res, next) {
+app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
   delete req.body._id; // Delete ID (will not update otherwise)
   req.collection.updateByIdAsync(req.params.id, {$set: req.body})
-  .then(function(result) {
+  .then((result) => {
     // Update returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Delete existing entry
-app.delete("/api/v1/:collection/:id", function(req, res, next) {
+app.delete("/api/v1/:collection/:id", (req, res, next) => {
   req.collection.removeByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     // Remove returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Return all experiments for a project
-app.get("/api/v1/projects/:id/experiments", function(req, res, next) {
+app.get("/api/v1/projects/:id/experiments", (req, res, next) => {
   db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
-  .then(function(result) {
+  .then((result) => {
     res.send(result);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Delete all experiments for a project
-app.delete("/api/v1/projects/:id/experiments", function(req, res, next) {
+app.delete("/api/v1/projects/:id/experiments", (req, res, next) => {
   db.experiments.removeAsync({_project_id: db.toObjectID(req.params.id)}) // Get experiments for project
-  .then(function(result) {
+  .then((result) => {
     res.send(result);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // TODO Consider renaming API endpoint
 // Constructs a project from an uploaded .json file
-app.post("/api/v1/projects/schema", upload.single("schema"), function(req, res, next) {
+app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) => {
   // Extract file name
   var name = req.file.originalname.replace(".json", "");
   // Extract .json as object
   var schema = JSON.parse(req.file.buffer.toString());
   // Store
   db.projects.insertAsync({name: name, schema: schema}, {})
-  .then(function(result) {
+  .then((result) => {
     res.send(result);
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
-var optionChecker = function(schema, obj) {
+var optionChecker = (schema, obj) => {
   for (var prop in schema) {
     var schemaField = schema[prop];
     var val = obj[prop];
@@ -227,10 +227,10 @@ var optionChecker = function(schema, obj) {
   return {success: "Options validated"};
 };
 
-var submitJob = function(projId, options) {
-  return new Promise(function(resolve, reject) {
+var submitJob = (projId, options) => {
+  return new Promise((resolve, reject) => {
     db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
-    .then(function(machines) {
+    .then((machines) => {
       var macsP = Array(machines.length);
       // Check machine capacities
       for (var i = 0; i < machines.length; i++) {
@@ -240,44 +240,44 @@ var submitJob = function(projId, options) {
       // Loop over reponses
       Promise.any(macsP)
       // First machine with capacity, so use
-      .then(function(availableMac) {
+      .then((availableMac) => {
         availableMac = JSON.parse(availableMac);
 
         // Create experiment
         db.experiments.insertAsync({_options: options, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _files: [], _status: "running"}, {})
-        .then(function(exp) {
+        .then((exp) => {
           options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
           // Send project
           rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: options, gzip: true})
-          .then(function(body) {
+          .then((body) => {
             resolve(body);
           })
-          .catch(function() {
+          .catch(() => {
             db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
             reject({error: "Experiment failed to run"});
           });
         })
-        .catch(function(err) {
+        .catch((err) => {
           reject(err);
         });
       })
       // No machines responded, therefore fail
-      .catch(function() {
+      .catch(() => {
         reject({error: "No machine capacity available"});
       });
     })
-    .catch(function(err) {
+    .catch((err) => {
       reject(err);
     });
   });
 };
 
 // Constructs an experiment
-app.post("/api/v1/projects/:id/experiment", jsonParser, function(req, res, next) {
+app.post("/api/v1/projects/:id/experiment", jsonParser, (req, res, next) => {
   var projId = req.params.id;
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
-  .then(function(project) {
+  .then((project) => {
     if (project === null) {
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
@@ -291,11 +291,11 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, function(req, res, next)
         res.send(validation);
       } else {
         submitJob(projId, obj)
-        .then(function(resp) {
+        .then((resp) => {
           res.status(201);
           res.send(resp);
         })
-        .catch(function(err) {
+        .catch((err) => {
           // TODO Check comprehensiveness of error catching
           if (err.error === "No machine capacity available") {
             res.status(501);
@@ -310,7 +310,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, function(req, res, next)
       }
     }
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
@@ -318,19 +318,19 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, function(req, res, next)
 // Submit job with retry
 var submitJobRetry = function(projId, options, retryT) {
   submitJob(projId, options)
-  .then(function() {
+  .then(() => {
     // TODO Keep track of batch jobs
   })
-  .catch(function() {
+  .catch(() => {
     // Retry in a random 1s interval
-    setTimeout(function() {
+    setTimeout(() => {
       submitJobRetry(projId, options, retryT);
     }, 1000*retryT*Math.random());
   });
 };
 
 // Constructs a batch job from a list of options
-app.post("/api/v1/projects/:id/batch", jsonParser, function(req, res, next) {
+app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
   var projId = req.params.id;
   var retryTimeout = parseInt(req.query.retry);
   // Set default as an hour
@@ -339,7 +339,7 @@ app.post("/api/v1/projects/:id/batch", jsonParser, function(req, res, next) {
   }
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
-  .then(function(project) {
+  .then((project) => {
     if (project === null) {
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
@@ -365,41 +365,41 @@ app.post("/api/v1/projects/:id/batch", jsonParser, function(req, res, next) {
       }
     }
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Adds started time to experiment
-app.put("/api/v1/experiments/:id/started", function(req, res, next) {
+app.put("/api/v1/experiments/:id/started", (req, res, next) => {
   mediator.emit("experiments:" + req.params.id + ":started"); // Emit event
 
   db.experiments.updateByIdAsync(req.params.id, {$set: {_started: new Date()}})
-  .then(function(result) {
+  .then((result) => {
     // Update returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Adds finished time to experiment
-app.put("/api/v1/experiments/:id/finished", function(req, res, next) {
+app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
   mediator.emit("experiments:" + req.params.id + ":finished"); // Emit event
 
   db.experiments.updateByIdAsync(req.params.id, {$set: {_finished: new Date()}})
-  .then(function(result) {
+  .then((result) => {
     // Update returns the count of affected objects
     res.send((result === 1) ? {msg: "success"} : {msg: "error"});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Processess files for an experiment
-app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, res, next) {
+app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
   delete req.body._id; // Delete ID (will not update otherwise)
   var filesP = Array(req.files.length);
 
@@ -407,17 +407,17 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, r
     var fileId = new db.ObjectID(); // Create file ID
     // Open new file
     var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {metadata: {contentType: fileObj.mimetype}, promiseLibrary: Promise});
-    gfs.open(function(err, gfs) {
+    gfs.open((err, gfs) => {
       if (err) {
         console.log(err);
       } else {
         // Write from buffer and flush to db
         gfs.write(fileObj.buffer, true)
-        .then(function(gfs) {
+        .then((gfs) => {
           // Save file reference
           filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
         })
-        .catch(function(err) {
+        .catch((err) => {
           console.log(err);
         });
       }
@@ -430,18 +430,18 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), function(req, r
 
   // Check file promises
   Promise.all(filesP)
-  .then(function() {
+  .then(() => {
     res.send({message: "Files uploaded"});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Delete all files for an experiment
-app.delete("/api/v1/experiments/:id/files", function(req, res, next) {
+app.delete("/api/v1/experiments/:id/files", (req, res, next) => {
   db.experiments.findByIdAsync(req.params.id, {_files: 1})
-  .then(function(experiment) {
+  .then((experiment) => {
     var filesP = Array(experiment._files.length);
 
     for (var i = 0; i < experiment._files.length; i++) {
@@ -451,24 +451,24 @@ app.delete("/api/v1/experiments/:id/files", function(req, res, next) {
 
     // Check file promises
     Promise.all(filesP)
-    .then(function() {
+    .then(() => {
       res.send({message: "Files deleted"});
     })
-    .catch(function(err) {
+    .catch((err) => {
       console.log(err);
       next(err);
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.log(err);
     next(err);
   });
 });
 
 // Delete all files for a project
-app.delete("/api/v1/projects/:id/experiments/files", function(req, res, next) {
+app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
   db.experiments.find({_project_id: db.toObjectID(req.params.id)}).toArrayAsync() // Get experiments for project
-  .then(function(experiments) {
+  .then((experiments) => {
     var numFiles = 0;
     for (var i = 0; i < experiments.length; i++) {
       numFiles += experiments[i]._files.length;
@@ -488,22 +488,22 @@ app.delete("/api/v1/projects/:id/experiments/files", function(req, res, next) {
 
     // Check file promises
     Promise.all(filesP)
-    .then(function() {
+    .then(() => {
       res.send({message: "Files deleted"});
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Registers machine projects
-app.post("/api/v1/machines/:id/projects", jsonParser, function(req, res, next) {
+app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
   db.machines.findByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     // Fail if machine does not exist
     if (result === null) {
       res.status(404);
@@ -511,15 +511,15 @@ app.post("/api/v1/machines/:id/projects", jsonParser, function(req, res, next) {
     }
     // Register projects otherwise
     db.machines.updateByIdAsync(req.params.id, {$set: req.body})
-    .then(function(result) {
+    .then((result) => {
       // Update returns the count of affected objects
       res.send((result === 1) ? {msg: "success"} : {msg: "error"});
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
@@ -527,100 +527,96 @@ app.post("/api/v1/machines/:id/projects", jsonParser, function(req, res, next) {
 /* Rendering Routes */
 
 // List projects and machines on homepage
-app.get("/", function(req, res, next) {
+app.get("/", (req, res, next) => {
   var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
-  .then(function(results) {
+  .then((results) => {
     return res.render("index", {projects: results[0], machines: results[1]});
   })
-  .catch(function(err) {
+  .catch((err) => {
     return next(err);
   });
 });
 
 // Project page (new experiment)
-app.get("/projects/:id", function(req, res, next) {
+app.get("/projects/:id", (req, res, next) => {
   db.projects.findByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     res.render("project", {project: result});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Project page (optimisation)
-app.get("/projects/:id/optimisation", function(req, res, next) {
+app.get("/projects/:id/optimisation", (req, res, next) => {
   db.projects.findByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     res.render("optimisation", {project: result});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Project page (experiments)
-app.get("/projects/:id/experiments", function(req, res, next) {
+app.get("/projects/:id/experiments", (req, res, next) => {
   var projP = db.projects.findByIdAsync(req.params.id);
   var expP = db.experiments.find({_project_id: db.toObjectID(req.params.id)}, {_scores: 1, _status: 1, _options: 1, _started: 1, _finished: 1, _notes: 1}).toArrayAsync();
   Promise.all([projP, expP])
-  .then(function(results) {
+  .then((results) => {
     res.render("experiments", {project: results[0], experiments: results[1]});
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Machine page
-app.get("/machines/:id", function(req, res, next) {
+app.get("/machines/:id", (req, res, next) => {
   db.machines.findByIdAsync(req.params.id)
-  .then(function(mac) {
+  .then((mac) => {
     var projKeys = _.keys(mac.projects); // Extract project IDs
     projKeys = _.map(projKeys, db.toObjectID); // Map to MongoDB IDs
     db.projects.find({_id: {$in: projKeys}}, {name: 1}).sort({name: 1}).toArrayAsync()
-    .then(function(projects) {
+    .then((projects) => {
       // Return only projects existing in FGLab
       res.render("machine", {machine: mac, projects: projects});
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
 // Experiment page
-app.get("/experiments/:id", function(req, res, next) {
+app.get("/experiments/:id", (req, res, next) => {
   db.experiments.findByIdAsync(req.params.id)
-  .then(function(result) {
+  .then((result) => {
     var projP = db.projects.findByIdAsync(result._project_id, {name: 1}); // Find project name
     var macP = db.machines.findByIdAsync(result._machine_id, {hostname: 1, address: 1}); // Find machine hostname and address
     Promise.all([projP, macP]) 
-    .then(function(results) {
+    .then((results) => {
       res.render("experiment", {experiment: result, project: results[0], machine: results[1]});
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
   })
-  .catch(function(err) {
+  .catch((err) => {
     next(err);
   });
 });
 
-// Show live logs
-app.get("/logs", function(req, res) {
-  res.render("logs", {title: "FGLab"});
-});
 
 /* Errors */
 // Error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err); // Delegate to Express' default error handling
   }
@@ -635,7 +631,7 @@ if (!process.env.FGLAB_PORT) {
   process.exit(1);
 } else {
   // Listen for connections
-  server.listen(process.env.FGLAB_PORT, function() {
+  server.listen(process.env.FGLAB_PORT, () => {
     console.log("Server listening on port " + process.env.FGLAB_PORT);
   });
 }
@@ -647,14 +643,14 @@ var wss = new WebSocketServer({server: server});
 var wsErrHandler = function() {};
 
 // Call on connection from new client
-wss.on("connection", function(ws) {
+wss.on("connection", (ws) => {
   // Print received messages
-  ws.on("message", function(message) {
+  ws.on("message", (message) => {
     console.log(message);
   });
 
   // Perform clean up if necessary
-  ws.on("close", function() {
+  ws.on("close", () => {
     //console.log("Client closed connection");
   });
 });

@@ -15,7 +15,7 @@ db.bind("machines");
 db.bind("experiments");
 
 // Promisify all methods
-Object.keys(mongoskin).forEach(function(key) {
+Object.keys(mongoskin).forEach((key) => {
   var value = mongoskin[key];
   if (typeof value === "function") {
     Promise.promisifyAll(value);

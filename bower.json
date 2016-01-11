@@ -29,7 +29,7 @@
     "d3": "~3.5.12",
     "c3": "~0.4.11",
     "largest-triangle-three-buckets": "git://github.com/joshcarr/largest-triangle-three-buckets.js.git",
-    "moment": "~2.10.6",
+    "moment": "~2.11.1",
     "tether": "~1.1.1"
   },
   "resolutions": {

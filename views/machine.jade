@@ -13,14 +13,14 @@ block content
     dd.col-sm-9 #{machine.address}
     dt.col-sm-3 OS
     dd.col-sm-9 #{machine.os.type} #{machine.os.arch} #{machine.os.release}
-    dt.col-sm-3 CPUS
+    dt.col-sm-3 CPUs
     dd.col-sm-9
       ul.list-unstyled
         - each cpu in machine.cpus
           li= cpu
     dt.col-sm-3 RAM
     dd.col-sm-9 #{machine.mem}
-    dt.col-sm-3 GPUS
+    dt.col-sm-3 GPUs
     dd.col-sm-9
       ul.list-unstyled
         - each gpu in machine.gpus
