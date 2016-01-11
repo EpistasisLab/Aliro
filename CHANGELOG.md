@@ -1,3 +1,13 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/Kaixhin/FGLab/compare/0.6.0...v0.6.0) (2016-01-11)
+
+
+### Bug Fixes
+
+* fix random search evaluations number ([8208e36](https://github.com/Kaixhin/FGLab/commit/8208e36))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/Kaixhin/FGLab/compare/0.5.0...v0.5.0) (2015-12-11)
 
