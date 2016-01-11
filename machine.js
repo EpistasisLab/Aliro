@@ -57,12 +57,20 @@ fs.readFile("specs.json", "utf-8")
     gpus: []
   };
   // GPU models
-  if (os.platform() === 'linux') {
+  if (os.platform() === "linux") {
     var lspci = spawnSync("lspci", []);
     var grep = spawnSync("grep", ["-i", "vga"], {input: lspci.stdout});
     var gpuStrings = grep.stdout.toString().split("\n");
     for (var i = 0; i < gpuStrings.length - 1; i++) {
       specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
+    }
+  } else if (os.platform() === "darwin") {
+    var system_profiler = spawnSync("system_profiler", ["SPDisplaysDataType"]);
+    var profilerStrings = system_profiler.stdout.toString().split("\n");
+    for (var i = 0; i < profilerStrings.length - 1; i++) {
+      if (profilerStrings[i].indexOf("Chipset Model:") > -1) {
+        specs.gpus.push(profilerStrings[i].replace(/Chipset Model: /g, ""));
+      }
     }
   }
 
