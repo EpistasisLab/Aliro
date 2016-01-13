@@ -13,6 +13,7 @@ var bytes = require("bytes");
 var express = require("express");
 var bodyParser = require("body-parser");
 var morgan = require("morgan");
+var cors = require("cors");
 var Promise = require("bluebird");
 var rp = require("request-promise");
 var chokidar = require("chokidar");
@@ -79,7 +80,7 @@ fs.readFile("specs.json", "utf-8")
   .then((body) => {
     console.log("Registered with FGLab successfully");
     // Save ID and specs
-    fs.writeFile("specs.json", JSON.stringify(body));
+    fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
     // Reload specs with _id (prior to adding projects)
     specs = body;
     // Register projects
@@ -138,6 +139,27 @@ var getCapacity = function(projId) {
 };
 
 /* Routes */
+// Updates projects.json with new project ID
+app.options("/projects", cors({origin: process.env.FGLAB_URL})); // Enable pre-flight request for PUT
+app.put("/projects", jsonParser, cors({origin: process.env.FGLAB_URL}), (req, res) => {
+  var id = req.body.project_id;
+  // Insert project implementation template if new
+  if (!projects[id]) {
+    projects[id] = {
+      cwd: ".",
+      command: "<command>",
+      args: ["<arg>"],
+      options: "<options>",
+      capacity: 1,
+      results: "."
+    };
+    fs.writeFile("projects.json", JSON.stringify(projects, null, "\t"));
+    res.send({msg: "Project ID " + id + " template added"});
+  } else {
+    res.send({msg: "Project ID " + id + " already exists"});
+  }
+});
+
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
   var capacity = getCapacity(req.params.id);
