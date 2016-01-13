@@ -7,7 +7,7 @@
 
 # ![FGLab](public/images/fglab-logo.png)
 
-**[Project Website](https://kaixhin.github.io/FGLab/)**
+### **Quickstart: https://kaixhin.github.io/FGLab/**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is FGLab, and the clients are [FGMachines](https://github.com/Kaixhin/FGMachine).
 
@@ -26,7 +26,8 @@ FGLab tries to follow the [SemVer](http://semver.org/) standard whenever possibl
 
 1. Install [Node.js](https://nodejs.org/) from the website or your package manager.
 1. Install [MongoDB](https://www.mongodb.org/) from the website or your package manager.
-1. Make sure that the MongoDB daemon is running (`mongod`). For example, run `mongod --dbpath <database path>`, where `<database path>` must exist.
+1. Make a database directory for MongoDB. For example, `mkdir -p <working directory>/db`.
+1. Run the MongoDB daemon. From the previous example, run `mongod --dbpath <working directory>/db`.
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGLab/zipball/master)/[tar](https://github.com/Kaixhin/FGLab/tarball/master).
 1. Move inside the FGLab folder.
 1. Run `npm install`. `npm install` also runs `bower install` to install additional required packages.
