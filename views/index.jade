@@ -26,6 +26,7 @@ block content
             th New Experiment
             th Hyperparameter Optimisation
             th Experiment Results
+            th Add to Machine
         tbody
           - each project in projects
             tr
@@ -42,6 +43,9 @@ block content
               td 
                 a(href="/projects/" + project._id + "/experiments")
                   button.btn.btn-primary-outline.btn-sm(type="button") #[span.octicon.octicon-list-ordered]
+              td
+                select.form-control.c-select.add-to-machine
+                button.btn.btn-primary-outline.btn-sm.add-to-machine(type="button", data-id="#{project._id}") #[span.octicon.octicon-plus]
 
     .col-sm-6
       h1 #[span.mega-octicon.octicon-device-desktop] Machines
@@ -55,8 +59,11 @@ block content
             a(href="/machines/" + machine._id) #{machine.hostname}
 
 block scripts
+  script(src="/bower_components/lodash/lodash.min.js")
   script.
     $(function() {
+      var onlineMachines = [];
+
       // Make home button active
       $("#nav .nav-item:first-child").addClass("active");
 
@@ -78,6 +85,31 @@ block scripts
         .catch(function(err) {
           alert(err.responseText); // Display server error
         });
+        return false; // Stop event and propagation
+      });
+
+      // Add project template to machine
+      $("button.add-to-machine").on("click", function() {
+        var $el = $(this);
+        var id = $el.data("id");
+        var $select = $el.prev();
+        var address = $select.val();
+
+        if (address) {
+          // Send
+          $.ajax({
+            url: address + "/projects",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({project_id: id})
+          })
+          .then(function(resp) {
+            alert(resp.msg);
+          })
+          .catch(function(err) {
+            alert(err.responseText); // Display server error
+          });
+        }
         return false; // Stop event and propagation
       });
 
@@ -135,12 +167,15 @@ block scripts
 
       // Parse from string instead prior to accessing internal objects via Jade
       var machines = !{JSON.stringify(machines)};
+      var $macDropdowns = $("select.add-to-machine");
       for (var i = 0; i < machines.length; i++) {
         (function(i) {
           // Indicate status of machines
           var host = machines[i].address.replace(/^http/, 'ws'); // WebSocket server address
           var ws = null; // WebSocket
           var $status = $("#machine-status-" + machines[i]._id); // Machine status icon
+          var hostname = machines[i].hostname;
+          var address = machines[i].address;
 
           // Connects to WebSocket server
           var wsConnect = function() {
@@ -148,14 +183,27 @@ block scripts
 
             // Set server status as on
             ws.onopen = function(event) {
+              // Set status
               $status.removeClass("text-danger");
               $status.addClass("text-success");
+              // Adjust machine dropdowns
+              onlineMachines = _.union(onlineMachines, [hostname]);
+              $macDropdowns.empty();
+              for (var i = 0; i < onlineMachines.length; i++) {
+                $macDropdowns.append("<option value='" + address + "'>" + hostname + "</option>");
+              }
             };
             // Set server status as off
             ws.onclose = function(event) {
               // Set status
               $status.removeClass("text-success");
               $status.addClass("text-danger");
+              // Adjust machine dropdowns
+              _.pull(onlineMachines, hostname);
+              $macDropdowns.empty();
+              for (var i = 0; i < onlineMachines.length; i++) {
+                $macDropdowns.append("<option value='" + address + "'>" + hostname + "</option>");
+              }
             };
           };
 
