@@ -58,18 +58,18 @@ After a project has been created on FGLab, a corresponding *project implementati
 
 ```json
 "<project_id>": {
-  "cwd": "<working directory>",
-  "command": "<program>",
-  "args": "<first command line options (e.g. for a file)>",
-  "options": "<command line options style for options>",
-  "capacity": "<machine capacity needed (as a fraction)>",
-  "results": "<results directory (without experiment ID)>"
+  "cwd": "<working directory (e.g. .)>",
+  "command": "<program (e.g. caffe)>",
+  "args": "<first command line options (e.g. train)>",
+  "options": "<command line options style for options (e.g. double-dash)>",
+  "capacity": "<machine capacity needed (as a fraction) (e.g. 0.5)>",
+  "results": "<results directory (without experiment ID) (e.g. results)>"
 }
 ```
 
 `cwd` is the working directory for the machine learning code. `cwd` can either be an absolute path, or a relative path, in which case it it relative to the FGMachine directory. `command` is the program/executable to be run. `args` is the first set of command line options to be sent to the program, prior to the experiment options. `options` processes the options in 4 different ways. For option settings: `{seed: 123, model: "cnn.v2", L2: true}`, exemplar methods would be as such:
 
-| `options`   | Program | Command Line                                                                    |
+| `options`   | Program | Command Line [command] [args] [options]                                         |
 |-------------|---------|---------------------------------------------------------------------------------|
 | plain       | node    | node [args] seed 123 model cnn.v2 L2 true                                       |
 | single-dash | th      | th [args] -seed 123 -model cnn.v2 -L2 true                                      |
