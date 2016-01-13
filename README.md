@@ -7,7 +7,7 @@
 
 # ![FGMachine](public/images/fgmachine-logo.png)
 
-**[Project Website](https://kaixhin.github.io/FGLab/)**
+### **Quickstart: https://kaixhin.github.io/FGLab/**
 
 FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is [FGLab](https://github.com/Kaixhin/FGLab), and the clients are FGMachines.
 
@@ -32,7 +32,7 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
 
-Run `node machine` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](#overview) to understand how FGMachine can interface with your machine learning code.
+Run `node machine` (or `npm start`) to start FGMachine. On the first run it will create `specs.json` and register itself with FGLab. Please read the [overview](#overview) to understand how FGMachine can interface with your machine learning code. 
 
 To re-register, delete `specs.json` before running FGMachine again.
 
