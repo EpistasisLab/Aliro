@@ -209,7 +209,15 @@ app.post("/projects/:id", jsonParser, (req, res) => {
   }
 
   // Spawn experiment
-  var experiment = spawn(project.command, args, {cwd: project.cwd});
+  var experiment = spawn(project.command, args, {cwd: project.cwd})
+  // Catch spawning errors
+  .on("error", () => {
+    // Notify of failure
+    rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: "fail"}, gzip: true});
+    // Log error
+    console.log("Error: Experiment could not start - please check projects.json");
+  });
+  
   maxCapacity -= project.capacity; // Reduce capacity of machine
   rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/started", method: "PUT", data: null}); // Set started
   // Save experiment
