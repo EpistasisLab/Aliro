@@ -154,7 +154,7 @@ app.put("/projects", jsonParser, cors({origin: process.env.FGLAB_URL}), (req, re
       results: "."
     };
     fs.writeFile("projects.json", JSON.stringify(projects, null, "\t"));
-    res.send({msg: "Project ID " + id + " template added"});
+    res.send({msg: "Project ID " + id + " template added - please adjust on " + specs.hostname});
   } else {
     res.send({msg: "Project ID " + id + " already exists"});
   }
