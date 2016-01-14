@@ -9,7 +9,7 @@
 
 ### **Quickstart: https://kaixhin.github.io/FGLab/**
 
-FGLab is a machine learning dashboard, designed to facilitate performing experiments. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is [FGLab](https://github.com/Kaixhin/FGLab), and the clients are FGMachines.
+FGLab is a machine learning dashboard, designed to make performing experiments easier. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is [FGLab](https://github.com/Kaixhin/FGLab), and the clients are FGMachines.
 
 ## Contents
 
@@ -27,7 +27,6 @@ FGMachine tries to follow the [SemVer](http://semver.org/) standard whenever pos
 1. Either clone this repository or download and extract a [zip](https://github.com/Kaixhin/FGMachine/zipball/master)/[tar](https://github.com/Kaixhin/FGMachine/tarball/master).
 1. Move inside the FGMachine folder.
 1. Run `npm install`.
-1. Create `projects.json` ([example.projects.json](example.projects.json) can be used as a starting point).
 1. FGMachine requires a `.env` file in this directory. For most installations, it should be possible to copy [example.env](example.env) to `.env`, but it may require customisation for non-standard FGLab or FGMachine ports. An alternative is to set the following environment variables:
   - FGLAB_URL (FGLab URL, including port if necessary)
   - FGMACHINE_URL (FGMachine URL, including port)
@@ -54,7 +53,7 @@ The `FGLab URL` will be the address of the host running FGLab, including port 50
 
 ### Projects
 
-After a project has been created on FGLab, a corresponding *project implementation* must be specified in `projects.json`. If this machine is available to run experiments for the project created on FGLab, then add the following field to `projects.json`. Note that `<project_id>` links the created project on FGLab and FGMachine's project implemetations in `projects.json`.
+After a project has been created on FGLab, a corresponding *project implementation* must be specified in `projects.json`. If this machine is available to run experiments for the project created on FGLab, then add the following field to `projects.json` (an example is available at [example.projects.json](example.projects.json)). FGLab has an "Add to Machine" button which can automatically set up a template in `projects.json` for you (creating `projects.json` if it doesn't exist already).  Note that `<project_id>` links the created project on FGLab and FGMachine's project implemetations in `projects.json`.
 
 ```json
 "<project_id>": {
