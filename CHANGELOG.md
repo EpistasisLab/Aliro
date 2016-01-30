@@ -1,3 +1,21 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/Kaixhin/FGMachine/compare/0.6.0...v0.6.0) (2016-01-30)
+
+
+### Bug Fixes
+
+* catch experiment spawn errors ([eed8add](https://github.com/Kaixhin/FGMachine/commit/eed8add))
+
+### Features
+
+* add project templating to projects.json ([f4f8782](https://github.com/Kaixhin/FGMachine/commit/f4f8782))
+
+### Performance Improvements
+
+* add note that template must be adjusted ([afdde8c](https://github.com/Kaixhin/FGMachine/commit/afdde8c))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/Kaixhin/FGMachine/compare/0.5.0...v0.5.0) (2016-01-11)
 
