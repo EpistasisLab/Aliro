@@ -22,9 +22,9 @@
   ],
   "dependencies": {
     "jquery": "~3.0.0-beta1",
-    "lodash": "~3.10.1",
+    "lodash": "~4.2.0",
     "bootstrap": "4.0.0-alpha",
-    "bootstrap-table": "~1.8.0",
+    "bootstrap-table": "~1.8.1",
     "octicons": "~3.4.1",
     "d3": "~3.5.14",
     "c3": "~0.4.11",
@@ -34,6 +34,6 @@
   },
   "resolutions": {
     "jquery": "~3.0.0-beta1",
-    "d3": "~3.5.13"
+    "d3": "~3.5.14"
   }
 }
