@@ -41,7 +41,9 @@ public class tiny_gp {
 
   double run() { /* Interpreter */
     char primitive = program[PC++];
-      System.out.println(primitive);
+    /*  
+    System.out.println(primitive);
+    */
     if ( primitive < FSET_START )
       return(x[primitive]);
     switch ( primitive ) {
