@@ -27,7 +27,7 @@ public class TinyGP {
 	    MAX_LEN = 10000,  
 	    POPSIZE = 100000,
 	    DEPTH   = 5,
-	    GENERATIONS = 100,
+	    GENERATIONS = 10000,
 	    TSIZE = 2;
 	  public static final double  
 	    PMUT_PER_NODE  = 0.05,
