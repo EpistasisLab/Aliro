@@ -23,8 +23,8 @@ public class tiny_gp {
     }
     fname="sin-data.txt"; 
     TinyGP gp = new TinyGP(fname, s);
-    get("/gp", (req, res) -> gp.return_params());
-    get("/hello", (req, res) -> "Hello World");
+    get("/emergent/gp", (req, res) -> gp.return_params());
+    get("/emergent/hello", (req, res) -> "Hello World");
     gp.evolve();
   }
 };
