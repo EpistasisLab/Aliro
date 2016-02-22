@@ -2,3 +2,4 @@ build
 dist
 *.class
 /bin/
+/target/

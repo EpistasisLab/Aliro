@@ -7,10 +7,9 @@
 
 
 import org.epistasis.emergent.*;
+import static spark.Spark.*;
 
 public class tiny_gp {
-
-
   public static void main(String[] args) {
     String fname = "problem.dat";
     long s = -1;
@@ -22,8 +21,10 @@ public class tiny_gp {
     if ( args.length == 1 ) {
       fname = args[0];
     }
-    
+    fname="sin-data.txt"; 
     TinyGP gp = new TinyGP(fname, s);
+    get("/gp", (req, res) -> gp.return_params());
+    get("/hello", (req, res) -> "Hello World");
     gp.evolve();
   }
 };

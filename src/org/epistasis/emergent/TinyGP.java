@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 public class TinyGP {
 	  double [] fitness;
 	  char [][] pop;
+	public Object return_params;
 	  static Random rd = new Random();
 	  static final int 
 	    ADD = 110, 
@@ -334,7 +335,7 @@ public class TinyGP {
 	     	    "\nTSIZE="+TSIZE+
 	     	    "\n----------------------------------\n");
 	  }
-
+	  
 	  public TinyGP( String fname, long s ) {
 	    fitness =  new double[POPSIZE];
 	    seed = s;
@@ -378,20 +379,22 @@ public class TinyGP {
 	    System.exit( 1 );
 	  }
 
-	  public static void main(String[] args) {
-	    String fname = "problem.dat";
-	    long s = -1;
-	    
-	    if ( args.length == 2 ) {
-	      s = Integer.valueOf(args[0]).intValue();
-	      fname = args[1];
-	    }
-	    if ( args.length == 1 ) {
-	      fname = args[0];
-	    }
-	    
-	    TinyGP gp = new TinyGP(fname, s);
-	    gp.evolve();
-	  }
+	public Object return_params() {
+		   return("SEED="+seed+"\nMAX_LEN="+MAX_LEN+
+			   	    "\nPOPSIZE="+POPSIZE+"\nDEPTH="+DEPTH+
+			     	    "\nCROSSOVER_PROB="+CROSSOVER_PROB+
+			     	    "\nPMUT_PER_NODE="+PMUT_PER_NODE+
+			     	    "\nMIN_RANDOM="+minrandom+
+			     	    "\nMAX_RANDOM="+maxrandom+
+			     	    "\nGENERATIONS="+GENERATIONS+
+			     	    			     	    "\nbest="+fbestpop+
+			     	    "\nTSIZE="+TSIZE+
+			     	    
+			     	    
+			     	    
+			     	    
+			     	    "\n----------------------------------\n");
+	}
+
 
 }
