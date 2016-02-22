@@ -346,7 +346,7 @@ public class TinyGP {
 	    pop = create_random_pop(POPSIZE, DEPTH, fitness );
 	  }
 
-	  void evolve() {
+	  public void evolve() {
 	    int gen = 0, indivs, offspring, parent1, parent2, parent;
 	    double newfit;
 	    char []newind;
