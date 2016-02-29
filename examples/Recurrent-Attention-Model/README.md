@@ -32,7 +32,7 @@ For more information on Docker usage, including CUDA capabilities, please see th
 
 1. Create a Docker image for this example by running `sudo docker build -t ram .` in this folder.
 1. Set up [FGLab](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
-1. Run FGLab with superuser privileges (to allow spawning Docker containers).
+1. Run FGMachine with superuser privileges (to allow spawning Docker containers).
 1. Insert the second [project](project.json) into FGMachine's `projects.json` file, using the project ID from FGLab, and adding the absolute path for this folder.
 1. [Submit an experiment](https://github.com/Kaixhin/FGLab/blob/master/examples/Recurrent-Attention-Model).
 

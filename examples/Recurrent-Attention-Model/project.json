@@ -10,7 +10,7 @@
   "<Project ID>": {
     "cwd": ".",
     "command": "docker",
-    "args": ["run", "--rm", "-t", "-v", "<Absolute path to Recurrent-Attention-Model>:/data", "ram", "th", "main.lua"],
+    "args": ["run", "--rm", "-t", "-v", "<Absolute path to Recurrent-Attention-Model>:/data", "-w", "/data", "ram", "th", "main.lua"],
     "options": "single-dash",
     "capacity": "1",
     "results": "/data"

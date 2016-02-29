@@ -10,6 +10,3 @@ RUN luarocks install torchx && \
 
 # Clone FGMachine repo for RAM example
 RUN cd /root && git clone https://github.com/Kaixhin/FGMachine.git
-
-# Set RAM example as working directory
-WORKDIR /root/FGMachine/examples/Recurrent-Attention-Model
