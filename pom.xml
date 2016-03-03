@@ -24,6 +24,12 @@
         <artifactId>spark-core</artifactId>
         <version>2.2</version>
     </dependency>
+<dependency>
+    <groupId>org.jocl</groupId>
+    <artifactId>jocl</artifactId>
+    <version>0.1.9</version>
+</dependency>
+
 </dependencies>
 
 </project>

@@ -38,7 +38,6 @@ import org.epistasis.symod.tree.TreeFactory.FunctionGroup;
 import static spark.Spark.*;
 
 
-
 public class tiny_gp {
   public static void main(String[] args) {
 	  
@@ -55,9 +54,12 @@ public class tiny_gp {
     }
     fname="sin-data.txt"; 
     TinyGP gp = new TinyGP(fname, s);
-    get("/emergent/gp", (req, res) -> gp.return_params());
-    get("/emergent/hello", (req, res) -> "Hello World");	
-    gp.evolve();
+    jocl jocl = new jocl();
+    jocl.evolve();
+    System.out.println("Result");
+  //  get("/emergent/gp", (req, res) -> gp.return_params());
+   // get("/emergent/hello", (req, res) -> "Hello World");	
+    //gp.evolve();
     
     
     
@@ -78,9 +80,9 @@ public class tiny_gp {
 		}
 	}
 	if (args.length > 0) {
-		consoleMain(args);
+		//consoleMain(args);
 	} else {
-		consoleMain(args);
+		//consoleMain(args);
 	}
 	
 }
