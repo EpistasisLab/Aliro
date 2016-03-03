@@ -53,13 +53,13 @@ public class tiny_gp {
       fname = args[0];
     }
     fname="sin-data.txt"; 
-    TinyGP gp = new TinyGP(fname, s);
-    jocl jocl = new jocl();
-    jocl.evolve();
-    System.out.println("Result");
-  //  get("/emergent/gp", (req, res) -> gp.return_params());
-   // get("/emergent/hello", (req, res) -> "Hello World");	
-    //gp.evolve();
+    //TinyGP gp = new TinyGP(fname, s);
+    MainGP jocl = new MainGP(fname, s);
+    //jocl.evolve();
+    //System.out.println("Result");
+   get("/emergent/gp", (req, res) -> jocl.return_params());
+   get("/emergent/hello", (req, res) -> "Hello World");	
+   jocl.evolve();
     
     
     

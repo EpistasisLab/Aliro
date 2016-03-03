@@ -3,6 +3,7 @@ import static org.jocl.CL.*;
 
 import org.jocl.*;
 
+
 public class HardwareAdapter {
 
 	  /**
@@ -70,6 +71,7 @@ public class HardwareAdapter {
 		        cl_device_id devices[] = new cl_device_id[numDevices];
 		        clGetDeviceIDs(platform, deviceType, numDevices, devices, null);
 		        cl_device_id device = devices[deviceIndex];
+		        System.out.println("Result: "+java.util.Arrays.toString(platforms));
 
 		        // Create a context for the selected device
 		        cl_context context = clCreateContext(

@@ -413,8 +413,7 @@ public class MainGP {
 	    fname="sin-data.txt"; 
 	    MainGP gp = new MainGP(fname, s);
 	    HardwareAdapter jocl = new HardwareAdapter();
-	  jocl.evolve();
-	    System.out.println("Result");
+	    jocl.evolve();
 
 	 }
 }
