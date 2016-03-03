@@ -10,7 +10,7 @@ import org.epistasis.Utility;
 import org.epistasis.evolutionary.Score;
 
 public class MainBase {
-	protected static void writeResultsTable(final Writer w, final Collection<AbstractModel> landscape, final AbstractFitnessFunction ff,
+	public static void writeResultsTable(final Writer w, final Collection<AbstractModel> landscape, final AbstractFitnessFunction ff,
 			final AbstractDataset validation, final long seed) {
 		final PrintWriter p = new PrintWriter(new BufferedWriter(w));
 		p.println("Training             Testing              Validation           Tree");
@@ -30,7 +30,7 @@ public class MainBase {
 		p.flush();
 	}
 
-	protected static void writeResultsXML(final Writer w, final SortedSet<AbstractModel> landscape, final AbstractFitnessFunction ff,
+	public static void writeResultsXML(final Writer w, final SortedSet<AbstractModel> landscape, final AbstractFitnessFunction ff,
 			final AbstractDataset validation, final long seed) {
 		final PrintWriter p = new PrintWriter(new BufferedWriter(w));
 		System.out.println("<SDA_GP_Models size=" + landscape.size() + " firstTestingScore=" + landscape.first().getTestingScore().getScore()

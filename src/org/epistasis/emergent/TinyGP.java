@@ -106,7 +106,7 @@ public class TinyGP {
 	    catch(Exception e ) {
 	      System.out.println("ERROR: Incorrect data format");
 	      System.exit(0);
-	    }
+	    }         
 	  }
 
 	  double fitness_function( char [] Prog ) {
