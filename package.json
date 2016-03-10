@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Kaixhin/FGLab#readme",
   "dependencies": {
-    "bluebird": "^3.3.3",
+    "bluebird": "^3.3.4",
     "body-parser": "^1.15.0",
     "bower": "^1.7.7",
     "compression": "^1.6.1",
@@ -31,7 +31,7 @@
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "jade": "^1.11.0",
-    "kerberos": "0.0.18",
+    "kerberos": "0.0.19",
     "lodash": "^4.5.1",
     "mongodb": "~2.0.55",
     "mongoskin": "^2.0.3",
