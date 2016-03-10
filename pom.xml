@@ -28,9 +28,11 @@
     </execution>
   </executions>
   <configuration>
-    <mainClass>org.epistasis.emergent.JOCLDeviceQuery</mainClass>
+    <mainClass>tiny_gp</mainClass>
   </configuration>
 </plugin>
+
+
     </plugins>
   </build>
   <dependencies>
@@ -44,6 +46,27 @@
     <artifactId>jocl</artifactId>
     <version>0.1.9</version>
 </dependency>
+<dependency>
+  <groupId>org.jgrapht</groupId>
+  <artifactId>jgrapht-core</artifactId>
+  <version>0.9.1</version>
+</dependency>
+<dependency>
+  <groupId>org.jgrapht</groupId>
+  <artifactId>jgrapht-ext</artifactId>
+  <version>0.9.1</version>
+</dependency>
+<dependency>
+	<groupId>jgraph</groupId>
+	<artifactId>jgraph</artifactId>
+	<version>5.13.0.0</version>
+</dependency>
+<dependency>
+	<groupId>org.mongodb</groupId>
+	<artifactId>mongo-java-driver</artifactId>
+	<version>3.2.2</version>
+</dependency>
+
 
 </dependencies>
 
