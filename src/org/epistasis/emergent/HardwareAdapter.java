@@ -1,30 +1,54 @@
 package org.epistasis.emergent;
 import static org.jocl.CL.*;
 
+import java.io.*;
+import java.util.*;
+
 import org.jocl.*;
 
 
 public class HardwareAdapter {
 
-	  /**
-     * The source code of the OpenCL program to execute
-     */
-    private static String programSource =
-        "__kernel void "+
-        "sampleKernel(__global const float *a,"+
-        "             __global const float *b,"+
-        "             __global float *c)"+
-        "{"+
-        "    int gid = get_global_id(0);"+
-        "    c[gid] = a[gid] * b[gid];"+
-        "}";
-    
-    
 
-		 public static void main(String args[])
-		    {
-			 System.out.println("foo");
+	  /**
+   * The source code of the OpenCL program to execute
+   */
+	
+    	private static String gpcode(String operation)
+    			throws Exception
+    		 	
+    			{
+    		String filename = "opencl/kernels/"+operation+".c";
+    			    String line = null;
+    			    String code = "";
+    			    List<String> records = new ArrayList<String>();
+    			 
+    			    // wrap a BufferedReader around FileReader
+    			    BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
+    			 
+    			    // use the readLine method of the BufferedReader to read one line at a time.
+    			    // the readLine method returns null when there is nothing else to read.
+    			    while ((line = bufferedReader.readLine()) != null)
+    			    {
+    			    	code = code + line;
+    			        records.add(line);
+    			    }
+    			    // close the BufferedReader when we're done
+    			    bufferedReader.close();
+    			    return code;
+    			
+	  }
+
+		 public static void main(String args[]){
+			 
 		        // Create input- and output data 
+			    String programSource = null;
+			    try {
+					 programSource = gpcode("add");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		        int n = 10;
 		        float srcArrayA[] = new float[n];
 		        float srcArrayB[] = new float[n];
@@ -226,7 +250,8 @@ public class HardwareAdapter {
 		        
 		        // Create the program from the source code
 		        cl_program program = clCreateProgramWithSource(context,
-		            1, new String[]{ programSource }, null, null);
+		            1, new String[]{ 
+ }, null, null);
 		        
 		        // Build the program
 		        clBuildProgram(program, 0, null, null, null, null);
