@@ -414,6 +414,7 @@ public class MainGP {
 	    MainGP gp = new MainGP(fname, s);
 	    HardwareAdapter jocl = new HardwareAdapter();
 	    jocl.evolve();
+	    gp.evolve();
 
 	 }
 }
