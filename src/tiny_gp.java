@@ -9,11 +9,11 @@
 import org.epistasis.emergent.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import org.epistasis.evolutionary.Evolution;
 import org.epistasis.evolutionary.Evolver;
@@ -25,7 +25,6 @@ import org.epistasis.symod.Configuration;
 import org.epistasis.symod.GPMain;
 import org.epistasis.symod.GPSearch;
 import org.epistasis.symod.MainBase;
-import org.epistasis.symod.SyModProperties;
 import org.epistasis.symod.continuous.SSEFitness;
 import org.epistasis.symod.discrete.Discriminator;
 import org.epistasis.symod.discrete.FitnessFunction;
@@ -42,7 +41,9 @@ public class tiny_gp {
   public static void main(String[] args) {
 	  
     //String fname = "problem.dat";
-    String fname = "dataset.txt";
+   
+    String fname="sin-data.txt";  
+    String f2name="dataset.txt";
 	  long s = -1;
     
     if ( args.length == 2 ) {
@@ -53,13 +54,26 @@ public class tiny_gp {
       fname = args[0];
     }
     fname="sin-data.txt"; 
-    //TinyGP gp = new TinyGP(fname, s);
     MainGP jocl = new MainGP(fname, s);
-    //jocl.evolve();
-    //System.out.println("Result");
-   get("/emergent/gp", (req, res) -> jocl.return_params());
-   get("/emergent/hello", (req, res) -> "Hello World");	
-   jocl.evolve();
+
+    try {
+		final AbstractDataset data = AbstractDataset.create(new File(f2name), Configuration.dftMaxdiscreteattributelevels);
+
+    
+    if (data instanceof org.epistasis.symod.discrete.Dataset) {
+		final Discriminator disc = new MedianDiscriminator(((org.epistasis.symod.discrete.Dataset) data).getStatuses());
+	System.out.print("foo");
+    }
+    
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    
+    //* web interface *//
+   //get("/emergent/gp", (req, res) -> jocl.return_params());
+   //get("/emergent/hello", (req, res) -> "Hello World");	
+   //jocl.evolve();
     
     
     
