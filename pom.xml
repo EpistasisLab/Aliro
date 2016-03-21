@@ -28,7 +28,7 @@
     </execution>
   </executions>
   <configuration>
-    <mainClass>tiny_gp</mainClass>
+    <mainClass>Gp</mainClass>
   </configuration>
 </plugin>
 

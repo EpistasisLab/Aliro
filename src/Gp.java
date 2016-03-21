@@ -42,27 +42,24 @@ public class Gp {
 	  
     //String fname = "problem.dat";
    
-    String fname="sin-data.txt";  
-    String f2name="dataset.txt";
-	  long s = -1;
-    
-    if ( args.length == 2 ) {
-      s = Integer.valueOf(args[0]).intValue();
-      fname = args[1];
-    }
-    if ( args.length == 1 ) {
-      fname = args[0];
-    }
-    fname="sin-data.txt"; 
-    MainGP jocl = new MainGP(fname, s);
+	
+		    String oneDfname = "tests/oneD.txt";
+		    String twoDfname="tests/twoD.txt";
+			long s = -1;
+		     HardwareAdapter jocl = new HardwareAdapter();
+		     TinyGP gp = new TinyGP(oneDfname,s);
+		    jocl.evolve();
+		    // gp.evolve();
+
+	
+
 
     try {
-		final AbstractDataset data = AbstractDataset.create(new File(f2name), Configuration.dftMaxdiscreteattributelevels);
+		final AbstractDataset data = AbstractDataset.create(new File(twoDfname), Configuration.dftMaxdiscreteattributelevels);
 
     
     if (data instanceof org.epistasis.symod.discrete.Dataset) {
 		final Discriminator disc = new MedianDiscriminator(((org.epistasis.symod.discrete.Dataset) data).getStatuses());
-	System.out.print("foo");
     }
     
 	} catch (IOException e) {
@@ -73,7 +70,7 @@ public class Gp {
     //* web interface *//
    //get("/emergent/gp", (req, res) -> jocl.return_params());
    //get("/emergent/hello", (req, res) -> "Hello World");	
-   jocl.evolve();
+   //jocl.evolve();
     
     
     
