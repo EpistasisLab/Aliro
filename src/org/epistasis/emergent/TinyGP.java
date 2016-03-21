@@ -3,7 +3,7 @@ import java.util.*;
 import java.io.*; 
 import java.text.DecimalFormat; 
 
-public class MainGP {
+public class TinyGP {
 	  double [] fitness;
 	  char [][] pop;
 	public Object return_params;
@@ -336,7 +336,7 @@ public class MainGP {
 	     	    "\n----------------------------------\n");
 	  }
 	  
-	  public MainGP( String fname, long s ) {
+	  public TinyGP( String fname, long s ) {
 	    fitness =  new double[POPSIZE];
 	    seed = s;
 	    if ( seed >= 0 )
@@ -397,15 +397,5 @@ public class MainGP {
 	}
 	 
 	
-	
-	public static void main(String[] args) { 
-	    String oneDfname = "tests/oneD.txt";
-	    String twoDfname="tests/twoD.txt";
-		long s = -1;
-	    MainGP gp = new MainGP(oneDfname, s);
-	    HardwareAdapter jocl = new HardwareAdapter();
-	    jocl.evolve();
-	    gp.evolve();
 
-	 }
 }
