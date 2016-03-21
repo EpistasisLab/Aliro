@@ -395,23 +395,14 @@ public class MainGP {
 			     	    
 			     	    "\n----------------------------------\n");
 	}
-	 public static void main(String[] args) {
-
+	 
 	
-	  
-	    //String fname = "problem.dat";
-	    String fname = "dataset.txt";
-		  long s = -1;
-	    
-	    if ( args.length == 2 ) {
-	      s = Integer.valueOf(args[0]).intValue();
-	      fname = args[1];
-	    }
-	    if ( args.length == 1 ) {
-	      fname = args[0];
-	    }
-	    fname="sin-data.txt"; 
-	    MainGP gp = new MainGP(fname, s);
+	
+	public static void main(String[] args) { 
+	    String oneDfname = "tests/oneD.txt";
+	    String twoDfname="tests/twoD.txt";
+		long s = -1;
+	    MainGP gp = new MainGP(oneDfname, s);
 	    HardwareAdapter jocl = new HardwareAdapter();
 	    jocl.evolve();
 	    gp.evolve();

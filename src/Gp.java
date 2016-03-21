@@ -37,7 +37,7 @@ import org.epistasis.symod.tree.TreeFactory.FunctionGroup;
 import static spark.Spark.*;
 
 
-public class tiny_gp {
+public class Gp {
   public static void main(String[] args) {
 	  
     //String fname = "problem.dat";
@@ -73,7 +73,7 @@ public class tiny_gp {
     //* web interface *//
    //get("/emergent/gp", (req, res) -> jocl.return_params());
    //get("/emergent/hello", (req, res) -> "Hello World");	
-   //jocl.evolve();
+   jocl.evolve();
     
     
     
