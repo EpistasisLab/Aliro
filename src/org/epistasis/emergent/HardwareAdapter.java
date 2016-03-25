@@ -180,6 +180,13 @@ public class HardwareAdapter {
 
 
 		public void evolve() {
+			String programSource = null;
+		    try {
+				 programSource = gpcode("add");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		        // Create input- and output data 
 		        int n = 10;
 		        float srcArrayA[] = new float[n];
@@ -247,11 +254,11 @@ public class HardwareAdapter {
 		        memObjects[2] = clCreateBuffer(context, 
 		            CL_MEM_READ_WRITE, 
 		            Sizeof.cl_float * n, null, null);
-		        
 		        // Create the program from the source code
 		        cl_program program = clCreateProgramWithSource(context,
-		            1, new String[]{ 
- }, null, null);
+		        1, new String[]{ programSource }, null, null);
+		        
+		        
 		        
 		        // Build the program
 		        clBuildProgram(program, 0, null, null, null, null);

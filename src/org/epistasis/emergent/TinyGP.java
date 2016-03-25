@@ -2,6 +2,7 @@ package org.epistasis.emergent;
 import java.util.*;
 import java.io.*; 
 import java.text.DecimalFormat; 
+import org.epistasis.emergent.HardwareAdapter;
 
 public class TinyGP {
 	  double [] fitness;
@@ -348,6 +349,8 @@ public class TinyGP {
 	  }
 
 	  public void evolve() {
+		  HardwareAdapter hardy = new HardwareAdapter();
+		  hardy.evolve();
 	    int gen = 0, indivs, offspring, parent1, parent2, parent;
 	    double newfit;
 	    char []newind;
