@@ -12,7 +12,7 @@ import org.jocl.*;
  * A JOCL program that queries and prints information about all
  * available devices.
  */
-public class JOCLDeviceQuery {
+public class JOCLDeviceAdapter {
 
 	    /**
 	     * The entry point of this program

@@ -28,6 +28,7 @@ public class Gp {
 			long s = -1;
 		     TinyGP gp = new TinyGP(oneDfname,s);
 		    //jocl.evolve();
+		     /*
 		     GraphAdapter applet = new GraphAdapter();
 		        applet.init();
 		        JFrame frame = new JFrame();
@@ -35,10 +36,14 @@ public class Gp {
 		        frame.setTitle("JGraphT Adapter to JGraph Demo");
 		        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		        frame.pack();
+		 
 		        frame.setVisible(true);
-		    gp.evolve();
+		        
+		        
+		//    gp.evolve();
+		    get("/emergent/gp", (req, res) -> gp.return_params());
 
-	
+	*/
 
 
     try {
@@ -55,7 +60,7 @@ public class Gp {
 	}
     
     //* web interface *//
-   //get("/emergent/gp", (req, res) -> jocl.return_params());
+   get("/Gp/data", (req, res) -> gp.return_params());
    //get("/emergent/hello", (req, res) -> "Hello World");	
    //jocl.evolve();
     
