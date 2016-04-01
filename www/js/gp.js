@@ -3,12 +3,12 @@ define(['angular', 'datatables'], function(angular, datatables) {
     angular.module('myApp.gp', ['datatables']).controller('jobController', WithJobController);
     function WithJobController($scope, DTOptionsBuilder, DTColumnBuilder) {
         var vm = this;
-        vm.dtOptions = DTOptionsBuilder.fromSource('/bobber/data/chems')
+        vm.dtOptions = DTOptionsBuilder.fromSource('/Gp/data/jobs')
             .withOption('rowCallback', rowCallback)
             .withPaginationType('full_numbers');
 
         vm.dtColumns = [ 
-            DTColumnBuilder.newColumn('cas_id').withTitle('CAS Number'),
+            DTColumnBuilder.newColumn('job_id').withTitle('CAS Number'),
             DTColumnBuilder.newColumn('name').withTitle('description'),
             DTColumnBuilder.newColumn('num').withTitle('count')
         ];  
