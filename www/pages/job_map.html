@@ -1,0 +1,28 @@
+<h1>GP Job Summary</h1>
+<p>
+	{{ welcomeMessage }}
+</p>
+<p>
+	{{ 'Current version is v%VERSION%' | interpolate }}
+</p>
+    <div id="map"></div>
+    <section class="showcase" ng-controller="versionController as showCase">
+  <form novalidate class="simple-form">
+    Name: <input type="text" ng-model="chem.name"/><br />
+    CAS ID: <input type="text" ng-model="chem.cas" /><br />
+    <input type="button" ng-click="reset()" value="Reset" />
+    <input type="submit" ng-click="update(user)" value="Save" />
+  </form>
+  <pre>Chemical = {{chem | json}}</pre>
+
+    <section class="showcase" ng-controller="jobController as showCase">
+        <tabset>
+            <tab heading="Preview">
+                <article class="preview">
+                    <div>
+                        <table datatable dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="row-border hover"></table>
+                    </div>
+                </article>
+            </tab>
+        </tabset>
+    </section>
