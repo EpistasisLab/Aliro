@@ -7,73 +7,33 @@
 
 
 import org.epistasis.emergent.*;
+
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.JFrame;
-
 import org.epistasis.symod.AbstractDataset;
 import org.epistasis.symod.Configuration;
 import org.epistasis.symod.discrete.Discriminator;
 import org.epistasis.symod.discrete.MedianDiscriminator;
-import static spark.Spark.*;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+@Path("/")
+
 public class Gp {
-  public static void main(String[] args) {
-	  
-    //String fname = "problem.dat";
-   
-	
-		    String oneDfname = "tests/oneD.txt";
-		    String twoDfname="tests/twoD.txt";
-			long s = -1;
-		     TinyGP gp = new TinyGP(oneDfname,s);
-		    //jocl.evolve();
-		     /*
-		     GraphAdapter applet = new GraphAdapter();
-		        applet.init();
-		        JFrame frame = new JFrame();
-		        frame.getContentPane().add(applet);
-		        frame.setTitle("JGraphT Adapter to JGraph Demo");
-		        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		        frame.pack();
-		 
-		        frame.setVisible(true);
-		        
-		        
-		//    gp.evolve();
-		    get("/emergent/gp", (req, res) -> gp.return_params());
 
-	*/
-
-
-    try {
-		final AbstractDataset data = AbstractDataset.create(new File(twoDfname), Configuration.dftMaxdiscreteattributelevels);
-
-    
-    if (data instanceof org.epistasis.symod.discrete.Dataset) {
-		final Discriminator disc = new MedianDiscriminator(((org.epistasis.symod.discrete.Dataset) data).getStatuses());
-    }
-    
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	@GET
+	@Produces("text/html")
+	public Response getStartingPage()
+	{
+		String output = "<h1>Hello World!<h1>" +
+				"<p>RESTful Service is running ... <br>Ping @ </p<br>";
+		return Response.status(200).entity(output).build();
 	}
-    
-    //* web interface *//
-   get("/Gp/data", (req, res) -> gp.return_params());
-   //get("/emergent/hello", (req, res) -> "Hello World");	
-   //jocl.evolve();
-    
-    
-  
+
 	
 }
-    
-    
-    
-  
-    
-
-
-	
-};
