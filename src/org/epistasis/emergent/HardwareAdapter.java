@@ -8,24 +8,18 @@ import org.jocl.*;
 
 
 public class HardwareAdapter {
-
-
-	  /**
+   /*
    * The source code of the OpenCL program to execute
    */
-	
     	private static String gpcode(String operation)
     			throws Exception
-    		 	
     			{
     		String filename = "opencl/kernels/"+operation+".c";
     			    String line = null;
     			    String code = "";
     			    List<String> records = new ArrayList<String>();
-    			 
     			    // wrap a BufferedReader around FileReader
     			    BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
-    			 
     			    // use the readLine method of the BufferedReader to read one line at a time.
     			    // the readLine method returns null when there is nothing else to read.
     			    while ((line = bufferedReader.readLine()) != null)
@@ -36,7 +30,6 @@ public class HardwareAdapter {
     			    // close the BufferedReader when we're done
     			    bufferedReader.close();
     			    return code;
-    			
 	  }
 
 		 public static void main(String args[]){
