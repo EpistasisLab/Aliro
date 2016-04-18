@@ -34,6 +34,26 @@ public class Gp {
 				"<p>RESTful Service is running ... <br>Ping @ </p<br>";
 		return Response.status(200).entity(output).build();
 	}
-
 	
+	
+	public static void main(String[] args) {
+			String oneDfname = "tests/oneD.txt";
+			String twoDfname="tests/twoD.txt";
+			long s = -1;
+			TinyGP gp = new TinyGP(oneDfname,s);
+			//gp.evolve();
+		                    /*
+		                    GraphAdapter applet = new GraphAdapter();
+		                       applet.init();
+		                       JFrame frame = new JFrame();
+		                       frame.getContentPane().add(applet);
+		                       frame.setTitle("JGraphT Adapter to JGraph Demo");
+		                       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		                       frame.pack()
+		                       frame.setVisible(true);
+		                   */
+		 
+
+
+	}
 }
