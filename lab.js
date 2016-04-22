@@ -400,40 +400,68 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
 
 // Processess files for an experiment
 app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
-  delete req.body._id; // Delete ID (will not update otherwise)
-  var filesP = Array(req.files.length);
+  // Retrieve list of files for experiment
+  db.experiments.findByIdAsync(req.params.id, {_files: 1})
+  .then((experiment) => {
 
-  var saveGFSFile = function(fileObj) {
-    var fileId = new db.ObjectID(); // Create file ID
-    // Open new file
-    var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {metadata: {contentType: fileObj.mimetype}, promiseLibrary: Promise});
-    gfs.open((err, gfs) => {
-      if (err) {
-        console.log(err);
-      } else {
-        // Write from buffer and flush to db
-        gfs.write(fileObj.buffer, true)
-        .then((gfs) => {
-          // Save file reference
-          filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
+    var filesP = Array(req.files.length);
+
+    var _saveGFSFile = function(fileId, fileObj, replace) {
+      // Open new file
+      var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {metadata: {contentType: fileObj.mimetype}, promiseLibrary: Promise});
+      gfs.open((err, gfs) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // Write from buffer and flush to db
+          gfs.write(fileObj.buffer, true)
+          .then((gfs) => {
+            if (!replace) {
+              // Save file reference
+              filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        }
+      });
+    };
+
+    var saveGFSFile = function(fileObj) {
+      // Check if file needs to be replaced
+      var oldFile = _.find(experiment._files, {filename: fileObj.originalname});
+      if (oldFile) {
+        // Delete old file
+        var gfs = new db.GridStore(db, oldFile._id, "w", {promiseLibrary: Promise});
+        gfs.unlinkAsync()
+        .then(() => {
+          _saveGFSFile(oldFile._id, fileObj, true);
         })
         .catch((err) => {
           console.log(err);
         });
+      } else {
+        // Save new file with new ID
+        _saveGFSFile(new db.ObjectID(), fileObj, false);
       }
+    };
+
+    for (var i = 0; i < req.files.length; i++) {
+      saveGFSFile(req.files[i]); // Save file in function closure
+    }
+
+    // Check file promises
+    Promise.all(filesP)
+    .then(() => {
+      res.send({message: "Files uploaded"});
+    })
+    .catch((err) => {
+      next(err);
     });
-  };
-
-  for (var i = 0; i < req.files.length; i++) {
-    saveGFSFile(req.files[i]); // Save file in function closure
-  }
-
-  // Check file promises
-  Promise.all(filesP)
-  .then(() => {
-    res.send({message: "Files uploaded"});
   })
   .catch((err) => {
+    console.log(err);
     next(err);
   });
 });
