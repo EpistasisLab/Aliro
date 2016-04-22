@@ -52,7 +52,7 @@ block scripts
 
     // Create columns from options
     var columns = [
-      {field: "_delete", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
+      {field: "_id", title: "", formatter: function(val) {return "<button data-id='" + val + "' class='btn btn-danger-outline btn-sm delete'><span class='octicon octicon-trashcan'></span></button>";}},
       {field: "_id", title: "ID", sortable: "true", formatter: function(val) {return "<a href='/experiments/" + val + "'>" + val + "</a>";}},
       {field: "_status", title: "Status", sortable: "true", formatter: function(val) {
         // Colour-code status
