@@ -85,6 +85,8 @@ var t1 = process.hrtime(t0); // Finish timer
 // Overwrite custom fields with timing
 setTimeout(() => {
   fs.writeFileSync(path.join("experiments", opts._id, "notes.json"), JSON.stringify({"Notes": "This field is being used to store notes about the experiment.", "Version": "Node.js " + process.version, "Time Taken": t1[0] * 1e9 + t1[1] + "ns"}));
+  // Send source code again to test overwriting
+  fs.writeFileSync(path.join("experiments", opts._id, "source_code.js"), fs.readFileSync("./rand.js"));
 }, 5000);
 
 console.log("Program finished");
