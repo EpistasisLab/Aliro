@@ -11,8 +11,10 @@ block content
   table#experiments
 
 block scripts
+  script(src="/bower_components/tableExport.jquery.plugin/tableExport.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
   script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
+  script(src="/bower_components/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js")
   script(src="/bower_components/lodash/dist/lodash.min.js")
   script(src="/bower_components/moment/min/moment.min.js")
   script.
@@ -108,6 +110,7 @@ block scripts
         columns: columns,
         data: experiments,
         showMultiSort: true,
+        showExport: true,
         icons: {
           sort: "octicon-list-ordered",
           plus: "octicon-plus",
