@@ -1,6 +1,6 @@
 {
   "name": "FGMachine",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Future Gadget Machine",
   "main": "machine.js",
   "scripts": {
