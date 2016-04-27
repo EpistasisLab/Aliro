@@ -5,6 +5,7 @@ block title
 
 block styles
   link(href="/bower_components/bootstrap-table/dist/bootstrap-table.min.css", rel="stylesheet")
+  //link(href="/bower_components/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.css", rel="stylesheet")
 
 block content 
   h1 #[span.mega-octicon.octicon-list-ordered] Project: #{project.name} #[small.text-muted (#{project._id})]
@@ -13,7 +14,8 @@ block content
 block scripts
   script(src="/bower_components/tableExport.jquery.plugin/tableExport.min.js")
   script(src="/bower_components/bootstrap-table/dist/bootstrap-table.min.js")
-  script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js")
+  //script(src="/bower_components/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js")
+  script(src="/bower_components/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js")
   script(src="/bower_components/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js")
   script(src="/bower_components/lodash/dist/lodash.min.js")
   script(src="/bower_components/moment/min/moment.min.js")
@@ -108,7 +110,9 @@ block scripts
         iconsPrefix: "octicon",
         search: true,
         columns: columns,
+        showColumns: true,
         data: experiments,
+        //stickyHeader: true,
         showMultiSort: true,
         showExport: true,
         exportOptions: {
