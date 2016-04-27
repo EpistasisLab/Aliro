@@ -33,7 +33,7 @@
     "jade": "^1.11.0",
     "kerberos": "0.0.19",
     "lodash": "^4.11.1",
-    "mongodb": "^2.1.16",
+    "mongodb": "^2.1.18",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
