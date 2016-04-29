@@ -53,7 +53,7 @@
     "run-sequence": "^1.1.5"
   },
   "engines": {
-    "node": "5.x"
+    "node": "6.x"
   },
   "cacheDirectories": [
     "node_modules",
