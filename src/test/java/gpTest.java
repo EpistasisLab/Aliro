@@ -1,6 +1,5 @@
 package test.java;
 import org.epistasis.emergent.*;
-
 import org.junit.Test;
 import org.junit.Assert;
 
