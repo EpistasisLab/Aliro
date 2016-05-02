@@ -13,14 +13,12 @@ public class gpTest {
 	}
 
 	public static String getTinyGP() {
-String oneDfname = "tests/oneD.txt";
-			String twoDfname="tests/twoD.txt";
-			long s = -1;
-TinyGP gp = new TinyGP(oneDfname,s);
-//gp.evolve();
-
+		String oneDfname = "tests/oneD.txt";
+		String twoDfname="tests/twoD.txt";
+		long s = -1;
+		TinyGP gp = new TinyGP(oneDfname,s);
+		//gp.evolve();
 		return "Hello World";
-
 	}
 
 }
