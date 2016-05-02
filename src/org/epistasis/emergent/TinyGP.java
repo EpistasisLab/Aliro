@@ -350,7 +350,7 @@ public class TinyGP {
 
 	  public void evolve() {
 		  HardwareAdapter hardy = new HardwareAdapter();
-		  hardy.evolve();
+		  hardy.add();
 	    int gen = 0, indivs, offspring, parent1, parent2, parent;
 	    double newfit;
 	    char []newind;
