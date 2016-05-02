@@ -172,7 +172,7 @@ public class HardwareAdapter {
 		    }
 
 
-		public void evolve() {
+		public Integer add() {
 			String programSource = null;
 		    try {
 				 programSource = gpcode("add");
@@ -309,6 +309,7 @@ public class HardwareAdapter {
 		        }
 			// TODO Auto-generated method stub
 			
+return n;
 		}
 		
 
