@@ -78,6 +78,7 @@ public class gpTest {
 	tf.setVariables(data.getLabels(), null, TreeFactory.DEFAULT_VAR_FREQ, data.getAttributeDiscreteValues());
 
 System.out.println("wait for it:");
+/*
 long startTime = System.currentTimeMillis();
 	final GPSearch gps = new GPSearch(rnd, part[0], part[1], ff, tf, selector, term, new Evolver(), populationSize, probabilityCrossover,
 			probabilityMutation, landscapeSize, 1, serial_or_parallel != 0, null, null, Configuration.dftPercentagenoise);
@@ -85,14 +86,16 @@ gps.run();
 	MainBase.writeResultsTable(new OutputStreamWriter(System.out), gps.getLandscape(), ff, part[2], seed);
 long endTime = System.currentTimeMillis();
 System.out.println("That took " + (endTime - startTime) + " milliseconds");
-	
+*/
+
+    HardwareAdapter hardwary = new  HardwareAdapter();
+    
+    		hardwary.hwadd(data);
 	
         } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
         }
-    HardwareAdapter hardwary = new  HardwareAdapter();
-    		hardwary.add();
     		
     		
     		
