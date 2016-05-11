@@ -1,5 +1,9 @@
 package org.epistasis.emergent;
 import org.epistasis.symod.AbstractDataset;
+import java.awt.image.*;
+import javax.imageio.ImageIO;
+
+
 import static org.jocl.CL.*;
 import java.util.ArrayList;
 import java.io.*;
@@ -33,6 +37,53 @@ public class HardwareAdapter {
     			    return code;
 	  }
 
+    	
+    	
+    	 /**
+         * The input image
+         */
+        private BufferedImage inputImage;
+
+        /**
+         * The output image
+         */
+        private BufferedImage outputImage;
+
+        /**
+         * The OpenCL context
+         */
+        private cl_context context;
+
+        /**
+         * The OpenCL command queue
+         */
+        private cl_command_queue commandQueue;
+
+        /**
+         * The OpenCL kernel
+         */
+        private cl_kernel kernel;
+
+        /**
+         * The memory object for the input image
+         */
+        private cl_mem inputImageMem;
+
+        /**
+         * The memory object for the output image
+         */
+        private cl_mem outputImageMem;
+
+        /**
+         * The width of the image
+         */
+        private int imageSizeX;
+
+        /**
+         * The height of the image
+         */
+        private int imageSizeY;
+
 		 public static void main(String args[]){			 
 		    add();
 		    }
@@ -51,6 +102,21 @@ public class HardwareAdapter {
 			        List<String> labels = data.getLabels();
 			        int nrows = data.size();
 			        int ncols = labels.size() - 1;
+			        
+			        int nColors = 4;
+			        byte[] reds   = new byte[]{0,(byte)255};
+			byte[] greens = new byte[]{0,(byte)255};
+			    byte[] blues  = new byte[]{0,(byte)255};
+
+		 
+		 IndexColorModel cm = new IndexColorModel(2,2,reds,greens,blues);
+			        
+			        
+			   
+			        BufferedImage inputImage = new BufferedImage(ncols,nrows, BufferedImage.TYPE_BYTE_BINARY,cm);
+			        BufferedImage outputImage = new BufferedImage( ncols,nrows, BufferedImage.TYPE_BYTE_BINARY,cm);
+			        
+			        
 			        float srcArrayA[] = new float[nrows];
 			        float srcArrayB[] = new float[nrows];
 			        float dstArray[] = new float[nrows];
@@ -65,15 +131,31 @@ public class HardwareAdapter {
 
 			           
 			        	for(int j = 0; j < ncols; j++) {
+	
 			        		double value = row[j];
 			        		int v = (int) value;
+			        		inputImage.setRGB(j, i, v);
+
 			        	//System.out.println(v);
 			        	}
 	
 			        } 
+			        /*
+			        try {
+			            // retrieve image
+			            File outputfile = new File("saved.png");
+				        ImageIO.write(inputImage, "png", outputfile);
+			        } catch (IOException e) {
+			          
+			        }
+			        */
+			        
 			        Pointer srcA = Pointer.to(srcArrayA);
 			        Pointer srcB = Pointer.to(srcArrayB);
 			        Pointer dst = Pointer.to(dstArray);
+			        
+			        
+			        
 			        // The platform, device type and device number
 			        // that will be used
 			        final int platformIndex = 0;
@@ -316,6 +398,108 @@ public class HardwareAdapter {
 			
 return n;
 		}
+		
+		
+		
+		/**
+	     * Initialize the OpenCL context, command queue and kernel
+	     */
+	    void initCL()
+	    {
+	        final int platformIndex = 0;
+	        final long deviceType = CL_DEVICE_TYPE_ALL;
+	        final int deviceIndex = 0;
+
+	        // Enable exceptions and subsequently omit error checks in this sample
+	        CL.setExceptionsEnabled(true);
+
+	        // Obtain the number of platforms
+	        int numPlatformsArray[] = new int[1];
+	        clGetPlatformIDs(0, null, numPlatformsArray);
+	        int numPlatforms = numPlatformsArray[0];
+
+	        // Obtain a platform ID
+	        cl_platform_id platforms[] = new cl_platform_id[numPlatforms];
+	        clGetPlatformIDs(platforms.length, platforms, null);
+	        cl_platform_id platform = platforms[platformIndex];
+
+	        // Initialize the context properties
+	        cl_context_properties contextProperties = new cl_context_properties();
+	        contextProperties.addProperty(CL_CONTEXT_PLATFORM, platform);
+	        
+	        // Obtain the number of devices for the platform
+	        int numDevicesArray[] = new int[1];
+	        clGetDeviceIDs(platform, deviceType, 0, null, numDevicesArray);
+	        int numDevices = numDevicesArray[0];
+	        
+	        // Obtain a device ID 
+	        cl_device_id devices[] = new cl_device_id[numDevices];
+	        clGetDeviceIDs(platform, deviceType, numDevices, devices, null);
+	        cl_device_id device = devices[deviceIndex];
+
+	        // Create a context for the selected device
+	        context = clCreateContext(
+	            contextProperties, 1, new cl_device_id[]{device}, 
+	            null, null, null);
+	        
+	        // Check if images are supported
+	        int imageSupport[] = new int[1];
+	        clGetDeviceInfo (device, CL.CL_DEVICE_IMAGE_SUPPORT,
+	            Sizeof.cl_int, Pointer.to(imageSupport), null);
+	        System.out.println("Images supported: "+(imageSupport[0]==1));
+	        if (imageSupport[0]==0)
+	        {
+	            System.out.println("Images are not supported");
+	            System.exit(1);
+	            return;
+	        }
+
+	        // Create a command-queue
+	        System.out.println("Creating command queue...");
+	        long properties = 0;
+	        properties |= CL_QUEUE_PROFILING_ENABLE;
+	        properties |= CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
+	        commandQueue = clCreateCommandQueue(context, device, properties, null);
+
+	        // Create the program
+	        System.out.println("Creating program...");
+	        cl_program program = clCreateProgramWithSource(context,
+	            1, new String[]{ programSource }, null, null);
+
+	        // Build the program
+	        System.out.println("Building program...");
+	        clBuildProgram(program, 0, null, null, null, null);
+
+	        // Create the kernel
+	        System.out.println("Creating kernel...");
+	        kernel = clCreateKernel(program, "rotateImage", null);
+
+	    }
+		/**
+	     * Initialize the memory objects for the input and output images
+	     */
+	    private void initImageMem()
+	    {
+	        // Create the memory object for the input- and output image
+	        DataBufferInt dataBufferSrc =
+	            (DataBufferInt)inputImage.getRaster().getDataBuffer();
+	        int dataSrc[] = dataBufferSrc.getData();
+
+	        cl_image_format imageFormat = new cl_image_format();
+	        imageFormat.image_channel_order = CL_RGBA;
+	        imageFormat.image_channel_data_type = CL_UNSIGNED_INT8;
+
+	        inputImageMem = clCreateImage2D(
+	            context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+	            new cl_image_format[]{imageFormat}, imageSizeX, imageSizeY,
+	            imageSizeX * Sizeof.cl_uint, Pointer.to(dataSrc), null);
+
+	        outputImageMem = clCreateImage2D(
+	            context, CL_MEM_WRITE_ONLY,
+	            new cl_image_format[]{imageFormat}, imageSizeX, imageSizeY,
+	            0, null, null);
+	    }
+
 		
 
 	}
