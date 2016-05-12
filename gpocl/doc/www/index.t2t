@@ -1,0 +1,96 @@
+GPOCL
+Genetic Programming in OpenCL
+
+%!target: xhtml
+%!style: site.css
+%!encoding: iso-8859-1
+%!options: --toc --toc-level=2 --mask-email --css-suggar -o index.html
+
+%!postproc: @(.*?)@		<\1>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+""" @div class="left"@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%!include(xhtml): menu.t2t
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+""" @/div@ @div class="content"@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+== About ==
+
+Genetic Programming in OpenCL is a parallel implementation of genetic
+programming targeted at heterogeneous devices, such as CPU and GPU. It is
+written in OpenCL, an open standard for portable parallel programming across
+many computing platforms.
+
+
+== Running GPOCL ==
+
+=== Prerequisites ===
+
+In order to compile **gpocl** you must have installed the following tools:
+ - [make http://www.gnu.org/software/make] and [cmake http://www.cmake.org]
+ - a standard-compliant C++ compiler ([GCC http://gcc.gnu.org] is highly recommended)
+ -
+
+=== Compiling ===
+
+Building using an out-of-source approach is recommended. To do so, within the
+root //gpocl// directory:
+
+```
+ cd build
+ cmake ..
+ make
+```
+
+This should leave in the ``build`` directory an executable file called ``gpocl``.
+
+
+== Usage ==
+
+%!include(xhtml): options.t2t
+
+== Example ==
+
+After having compiled gpocl, to run it do:
+
+```
+   ./gpocl -v ../datasets/fibonacci.csv
+```
+
+This will run gpocl using all cpu cores. To use a specific number of cores do
+
+```
+   ./gpocl -v ../datasets/fibonacci.csv -cpu 2
+```
+
+if you want, for instance, to use only two cores.
+
+To run on the GPU, do:
+
+```
+   ./gpocl -v ../datasets/fibonacci.csv -gpu ppcu
+```
+
+
+== License ==
+
+//gpocl// is licensed under the //GNU General Public License// (GPL)
+Version 3 (or later), June 2007
+
+
+- http://www.gnu.org/licenses/gpl.txt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+""" @/div@ @div class="right"@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%!include: footer.t2t
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+""" @/div@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

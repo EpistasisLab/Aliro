@@ -108,8 +108,8 @@ public class HardwareAdapter {
 
 		IndexColorModel cm = new IndexColorModel(2, 2, reds, greens, blues);
 
-		inputImage = new BufferedImage(ncols, nrows, BufferedImage.TYPE_BYTE_GRAY);
-		outputImage = new BufferedImage(ncols, nrows, BufferedImage.TYPE_BYTE_GRAY);
+		inputImage = new BufferedImage(ncols, nrows, BufferedImage.TYPE_INT_RGB);
+		outputImage = new BufferedImage(ncols, nrows, BufferedImage.TYPE_INT_RGB);
 
 		for (int i = 0; i < nrows; i++) {
 			double[] row = data.get(i).getValues();
@@ -135,7 +135,9 @@ public class HardwareAdapter {
 		initCL();
 		initImageMem();
 		rotateImage(40);
+rotateImage(40);
 
+/*
 		try {
 			// retrieve image
 			File infile = new File("in.png");
@@ -153,6 +155,7 @@ public class HardwareAdapter {
 			e.printStackTrace();
 
 		}
+*/
 
 		return nrows;
 
@@ -359,8 +362,8 @@ public class HardwareAdapter {
 	 */
 	private void initImageMem() {
 		// Create the memory object for the input- and output image
-		DataBufferByte dataBufferSrc = (DataBufferByte) inputImage.getRaster().getDataBuffer();
-		byte[] dataSrc = dataBufferSrc.getData();
+		DataBufferInt dataBufferSrc = (DataBufferInt) inputImage.getRaster().getDataBuffer();
+		int dataSrc[] = dataBufferSrc.getData();
 
 		cl_image_format imageFormat = new cl_image_format();
 		imageFormat.image_channel_order = CL_RGBA;
@@ -416,8 +419,8 @@ public class HardwareAdapter {
 		clEnqueueNDRangeKernel(commandQueue, kernel, 2, null, globalWorkSize, null, 0, null, null);
 
 		// Read the pixel data into the output image
-		DataBufferByte dataBufferDst = (DataBufferByte) outputImage.getRaster().getDataBuffer();
-		byte dataDst[] = dataBufferDst.getData();
+		DataBufferInt dataBufferDst = (DataBufferInt) outputImage.getRaster().getDataBuffer();
+		int dataDst[] = dataBufferDst.getData();
 		clEnqueueReadImage(commandQueue, outputImageMem, true, new long[3], new long[] { imageSizeX, imageSizeY, 1 },
 				imageSizeX * Sizeof.cl_uint, 0, Pointer.to(dataDst), 0, null, null);
 	}
