@@ -1,0 +1,43 @@
+```
+Genetic Programming in OpenCL (GPOCL)
+```
+```
+Usage: gpocl [-cpu [n] | -gpu <fpi|ppcu|pppe>] [OPTION] <data points>
+
+General options:
+  -v, --verbose
+     verbose
+  --version
+     print gpocl version and exit
+  -h, --help
+     print this help and exit
+
+Genetic Programming options:
+  -p <p1,...,pn>, --primitives <p1,...,pn>
+     GP primitives (operators/operands) [default = +,-,*,/,neg,ephemeral]
+  -pp, --print-primitives
+     Print all available GP primitives
+  -g <n>, --generations <n>
+     number of generations, n>0 [default = 1000]
+  -s <n>, --seed <n>
+     GP initialization seed, n>=0 [default = 0, random]
+  -ps <n>, --population-size <n>
+     number of individuals [default = 1024]
+  -cp <f>, --crossover-probability <f>
+     crossover probability, 0.0<=f<=1.0 [default = 0.95]
+  -mp <f>, --mutation-probability <f>
+     mutation probability, 0.0<=f<=1.0 [default = 0.10]
+  -sp <n>, --seletion-pressure <n>
+     selection pressure (tournament size), n>=1 [default = 3]
+  -es <n>, --elitism-size <n>
+     elitism size, 0<=n<=1 [default = 1]
+  -max <n>, --maximum-size <n>
+     maximum program size [default = 20]
+  -min <n>, --minimum-size <n>
+     minimum program size [default = 1]
+  -et <n>, --error-tolerance <f>
+     tolerance of error (stop criterion) [default = none]
+
+OpenCL options:
+  -cl-mls <n>, --cl-maximum-local-size <n>
+```
