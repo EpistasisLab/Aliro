@@ -1,0 +1,218 @@
+<?xml version="1.0"
+      encoding="iso-8859-1"
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GPOCL</title>
+<meta name="generator" content="http://txt2tags.org" />
+<link rel="stylesheet" type="text/css" href="site.css" />
+</head>
+<body>
+
+<div class="header" id="header">
+<h1>GPOCL</h1>
+<h2>Genetic Programming in OpenCL</h2>
+</div>
+
+<div class="toc">
+
+    <ul>
+    <li><a href="#toc1">About</a>
+    </li>
+    <li><a href="#toc2">Running GPOCL</a>
+    </li>
+    <li><a href="#toc3">Usage</a>
+    </li>
+    <li><a href="#toc4">Example</a>
+    </li>
+    <li><a href="#toc5">License</a>
+    </li>
+    </ul>
+
+</div>
+<div class="body" id="body">
+<div class="left">
+<p>
+<b>Menu</b>
+</p>
+
+<dl>
+<dt><a href="index.html">Home Page</a></dt><dd>
+<p></p>
+</dd>
+<dt><a href="http://sourceforge.net/projects/gpocl/">Project Page (SF.net)</a></dt><dd>
+<p></p>
+<i><b>Download</b></i>
+<p></p>
+</dd>
+<dt><a href="https://sourceforge.net/projects/gpocl/files">Latest version</a></dt><dd>
+<p></p>
+</dd>
+<dt><a href="https://sourceforge.net/scm/?type=svn&amp;group_id=375630">SVN Repository</a></dt><dd>
+<p></p>
+<i><b>Authors</b></i>
+</dd>
+</dl>
+
+<p>
+ <b>Douglas A. Augusto</b> 
+daaugusto at gmail.com
+</p>
+
+<hr class="heavy" />
+
+<p>
+<a href="http://validator.w3.org/check?uri=referer"><img align="middle" src="img/valid-xhtml10.png" border="0" alt=""/></a>
+</p>
+<p>
+<a href="http://jigsaw.w3.org/css-validator/check/referer"><img align="middle" src="img/valid-css.png" border="0" alt=""/></a>
+</p>
+
+<hr class="light" />
+
+<a href="http://sourceforge.net/projects/selesup"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=514675&amp;type=11" width="120" height="30" alt="Get Immune-inspired Instance Selection at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+<div id="updated">
+<p>
+Last updated on <i>Tue Dec 26 15:44:26 2011</i>.
+</p>
+</div>
+</div> <div class="content">
+
+<a id="toc1" name="toc1"></a>
+<h2>About</h2>
+
+<p>
+Genetic Programming in OpenCL is a parallel implementation of genetic
+programming targeted at heterogeneous devices, such as CPU and GPU. It is
+written in OpenCL, an open standard for portable parallel programming across
+many computing platforms.
+</p>
+
+<a id="toc2" name="toc2"></a>
+<h2>Running GPOCL</h2>
+
+<h3>Prerequisites</h3>
+
+<p>
+In order to compile <b>gpocl</b> you must have installed the following tools:
+</p>
+
+ <ul>
+ <li><a href="http://www.gnu.org/software/make">make</a> and <a href="http://www.cmake.org">cmake</a>
+ </li>
+ <li>a standard-compliant C++ compiler (<a href="http://gcc.gnu.org">GCC</a> is highly recommended)
+ </li>
+ </ul>
+
+<h3>Compiling</h3>
+
+<p>
+Building using an out-of-source approach is recommended. To do so, within the
+root <i>gpocl</i> directory:
+</p>
+
+<pre>
+ cd build
+ cmake ..
+ make
+</pre>
+
+<p>
+This should leave in the <code>build</code> directory an executable file called <code>gpocl</code>.
+</p>
+
+<a id="toc3" name="toc3"></a>
+<h2>Usage</h2>
+
+<pre>
+Usage: gpocl [-cpu [n] | -gpu &lt;fpi|ppcu|pppe&gt;] [OPTION] &lt;data points&gt;
+
+General options:
+  -v, --verbose
+     verbose
+  --version
+     print gpocl version and exit
+  -h, --help
+     print this help and exit
+
+Genetic Programming options:
+  -p &lt;p1,...,pn&gt;, --primitives &lt;p1,...,pn&gt;
+     GP primitives (operators/operands) [default = +,-,*,/,neg,ephemeral]
+  -pp, --print-primitives
+     Print all available GP primitives
+  -g &lt;n&gt;, --generations &lt;n&gt;
+     number of generations, n&gt;0 [default = 1000]
+  -s &lt;n&gt;, --seed &lt;n&gt;
+     GP initialization seed, n&gt;=0 [default = 0, random]
+  -ps &lt;n&gt;, --population-size &lt;n&gt;
+     number of individuals [default = 1024]
+  -cp &lt;f&gt;, --crossover-probability &lt;f&gt;
+     crossover probability, 0.0&lt;=f&lt;=1.0 [default = 0.95]
+  -mp &lt;f&gt;, --mutation-probability &lt;f&gt;
+     mutation probability, 0.0&lt;=f&lt;=1.0 [default = 0.10]
+  -sp &lt;n&gt;, --seletion-pressure &lt;n&gt;
+     selection pressure (tournament size), n&gt;=1 [default = 3]
+  -es &lt;n&gt;, --elitism-size &lt;n&gt;
+     elitism size, 0&lt;=n&lt;=1 [default = 1]
+  -max &lt;n&gt;, --maximum-size &lt;n&gt;
+     maximum program size [default = 20]
+  -min &lt;n&gt;, --minimum-size &lt;n&gt;
+     minimum program size [default = 1]
+  -et &lt;n&gt;, --error-tolerance &lt;f&gt;
+     tolerance of error (stop criterion) [default = none]
+
+OpenCL options:
+  -cl-mls &lt;n&gt;, --cl-maximum-local-size &lt;n&gt;
+</pre>
+
+<a id="toc4" name="toc4"></a>
+<h2>Example</h2>
+
+<p>
+After having compiled gpocl, to run it do:
+</p>
+
+<pre>
+   ./gpocl -v ../datasets/fibonacci.csv
+</pre>
+
+<p>
+This will run gpocl using all cpu cores. To use a specific number of cores do
+</p>
+
+<pre>
+   ./gpocl -v ../datasets/fibonacci.csv -cpu 2
+</pre>
+
+<p>
+if you want, for instance, to use only two cores.
+</p>
+<p>
+To run on the GPU, do:
+</p>
+
+<pre>
+   ./gpocl -v ../datasets/fibonacci.csv -gpu ppcu
+</pre>
+
+<a id="toc5" name="toc5"></a>
+<h2>License</h2>
+
+<p>
+<i>gpocl</i> is licensed under the <i>GNU General Public License</i> (GPL)
+Version 3 (or later), June 2007
+</p>
+
+<ul>
+<li><a href="http://www.gnu.org/licenses/gpl.txt">http://www.gnu.org/licenses/gpl.txt</a>
+</li>
+</ul>
+
+</div> <div class="right">
+</div>
+</div>
+
+<!-- xhtml code generated by txt2tags 2.6 (http://txt2tags.org) -->
+<!-- cmdline: txt2tags index.t2t -->
+</body></html>
