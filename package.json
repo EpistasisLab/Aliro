@@ -22,15 +22,15 @@
   },
   "homepage": "https://github.com/Kaixhin/FGMachine",
   "dependencies": {
-    "bluebird": "^3.3.5",
+    "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "bytes": "^2.3.0",
-    "chokidar": "^1.4.3",
+    "chokidar": "^1.5.1",
     "continuation-local-storage": "^3.1.7",
     "cors": "^2.7.1",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
-    "lodash": "^4.11.2",
+    "lodash": "^4.13.0",
     "morgan": "^1.7.0",
     "mz": "^2.4.0",
     "request-promise": "^3.0.0",
@@ -46,7 +46,7 @@
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.2.0"
   },
   "engines": {
     "node": "6.x"
