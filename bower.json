@@ -21,8 +21,8 @@
     "test"
   ],
   "dependencies": {
-    "jquery": "~3.0.0-beta1",
-    "lodash": "~4.12.0",
+    "jquery": "~3.0.0-rc1",
+    "lodash": "~4.13.0",
     "bootstrap": "4.0.0-alpha",
     "bootstrap-table": "~1.8.1",
     "octicons": "~3.5.0",
@@ -34,7 +34,7 @@
     "tableExport.jquery.plugin": "~1.5.1"
   },
   "resolutions": {
-    "jquery": "~3.0.0-beta1",
+    "jquery": "~3.0.0-rc1",
     "d3": "~3.5.16"
   }
 }

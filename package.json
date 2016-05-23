@@ -23,17 +23,17 @@
   },
   "homepage": "https://github.com/Kaixhin/FGLab#readme",
   "dependencies": {
-    "bluebird": "^3.3.5",
+    "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "bower": "^1.7.9",
-    "compression": "^1.6.1",
+    "compression": "^1.6.2",
     "continuation-local-storage": "^3.1.7",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "jade": "^1.11.0",
     "kerberos": "0.0.21",
-    "lodash": "^4.11.2",
-    "mongodb": "^2.1.18",
+    "lodash": "^4.13.0",
+    "mongodb": "^2.1.19",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
@@ -50,7 +50,7 @@
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.2.0"
   },
   "engines": {
     "node": "6.x"
