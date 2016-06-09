@@ -38,6 +38,7 @@ block content
                   option(value="#{value}", selected) #{value}
                 else
                   option(value="#{value}") #{value}
+    input#files.form-control-file(name="files", type="file", multiple)
     .form-group.row
       .col-sm-9.col-sm-offset-3
         button.btn.btn-primary(type="submit") Submit
@@ -52,9 +53,15 @@ block scripts
       $("#new-experiment").on("submit", function() {
         // Process form
         var formObj = {};
+        var files = $(this).find(":file")[0].files;
+        var fd = new FormData();
+        $.each(files, function(index, value) {
+            fd.append('_files', value);
+        });
         // Loop over form simply (does not work on nested data)
         var hasErrors = false;
-        $(this).find(":input").not(":submit").each(function(ind, el) {
+        // Do not process files as options
+        $(this).find(":input").not(":file").not(":submit").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
           // Remove previous validation
@@ -117,10 +124,11 @@ block scripts
         }
 
         $.ajax({
-          url: "/api/v1/projects/#{project._id}/experiment",
+          url: "/api/v1/projects/#{project._id}/experiment?" + $.param(formObj),
           type: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(formObj)
+          data: fd,
+          processData: false,
+          contentType: false
         })
         .then(function(resp) {
           location.assign("/experiments/" + resp._id); // Move to new experiment page
