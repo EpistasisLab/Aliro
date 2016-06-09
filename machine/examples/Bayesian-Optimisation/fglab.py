@@ -5,9 +5,9 @@ from flask import request
 import requests
 app = Flask(__name__)
 
-project_id = '<Project ID>' # e.g. '56297e87d1a19b9c0e21c70a'
-fglab_url = '<FGLab URL>' # e.g. 'http://localhost:5080'
-spearmint_helper_url = '<Spearmint helper URL>' # e.g. 'http://localhost:5000'
+project_id = '5748665dd68b08df26c70f19' # e.g. '56297e87d1a19b9c0e21c70a'
+fglab_url = 'http://localhost:5080' # e.g. 'http://localhost:5080'
+spearmint_helper_url = 'http://localhost:5000' # e.g. 'http://localhost:5000'
 
 # Global queue
 q = Queue()
