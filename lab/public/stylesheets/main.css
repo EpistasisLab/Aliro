@@ -1,0 +1,16 @@
+div.container, h1, h2, h3 {
+  margin-top: 1rem;
+}
+
+.dl-horizontal {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.mega-octicon {
+  font-size: 2.5rem;
+}
+
+#nav {
+  border-radius: 0;
+}
