@@ -207,6 +207,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     functionParams = functionParams.toString().replace(/\"/g, "'"); // Replace " with '
     args[args.length - 1] = args[args.length - 1] + "(" + functionParams  + ");";
   }
+console.log(args);
 
   // Spawn experiment
   var experiment = spawn(project.command, args, {cwd: project.cwd})
