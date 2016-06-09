@@ -1,5 +1,5 @@
 {
-  "<Project ID>": {
+  "57488b0be12dd29b71c16a65": {
     "cwd": "./examples/Bayesian-Optimisation",
     "command": "python",
     "args": ["branin_noisy.py"],
