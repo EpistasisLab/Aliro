@@ -1,6 +1,8 @@
 #/bin/sh
-fswatch src/  --exclude=.* --include=.java$ | while read FILE; 
-	do
+while true; do
+    inotifywait -q -e close_write,moved_to  -r src/ --exclude=".*sw[px]" --format "%f" | while read FILE
+    do
       [[ $FILE == *.java ]] &&  mvn test
 
+    done
 done
