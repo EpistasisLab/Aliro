@@ -227,7 +227,7 @@ var optionChecker = (schema, obj) => {
   return {success: "Options validated"};
 };
 
-var submitJob = (projId, options) => {
+var submitJob = (projId, options, files) => {
   return new Promise((resolve, reject) => {
     db.machines.find({}, {address: 1}).toArrayAsync() // Get machine hostnames
     .then((machines) => {
@@ -247,15 +247,24 @@ var submitJob = (projId, options) => {
         db.experiments.insertAsync({_options: options, _project_id: db.toObjectID(projId), _machine_id: db.toObjectID(availableMac._id), _files: [], _status: "running"}, {})
         .then((exp) => {
           options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-          // Send project
-          rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: options, gzip: true})
-          .then((body) => {
-            resolve(body);
-          })
-          .catch(() => {
-            db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-            reject({error: "Experiment failed to run"});
-          });
+		  
+		  var filesP = processFiles(exp.ops[0], files); // Add files to project
+		  // Wait for file upload to complete
+		  Promise.all(filesP)
+			.then(() => {
+			  // Send project
+			  rp({uri: availableMac.address + "/projects/" + projId, method: "POST", json: options, gzip: true})
+			  .then((body) => {
+				resolve(body);
+			  })
+			  .catch(() => {
+				db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+				reject({error: "Experiment failed to run"});
+			  }); 
+			})
+			.catch((err) => {
+			  reject(err);
+			});
         })
         .catch((err) => {
           reject(err);
@@ -273,7 +282,7 @@ var submitJob = (projId, options) => {
 };
 
 // Constructs an experiment
-app.post("/api/v1/projects/:id/experiment", jsonParser, (req, res, next) => {
+app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files"), (req, res, next) => {
   var projId = req.params.id;
   // Check project actually exists
   db.projects.findByIdAsync(projId, {schema: 1})
@@ -282,7 +291,9 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, (req, res, next) => {
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      var obj = req.body;
+      //var obj = req.body;
+	  var obj = req.query;
+	  var files = req.files;
 
       // Validate
       var validation = optionChecker(project.schema, obj);
@@ -290,7 +301,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, (req, res, next) => {
         res.status(400);
         res.send(validation);
       } else {
-        submitJob(projId, obj)
+        submitJob(projId, obj, files)
         .then((resp) => {
           res.status(201);
           res.send(resp);
@@ -398,13 +409,8 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
   });
 });
 
-// Processess files for an experiment
-app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
-  // Retrieve list of files for experiment
-  db.experiments.findByIdAsync(req.params.id, {_files: 1})
-  .then((experiment) => {
-
-    var filesP = Array(req.files.length);
+var processFiles = function(experiment, files) {
+	var filesP = Array(files.length);
 
     var _saveGFSFile = function(fileId, fileObj, replace) {
       // Open new file
@@ -418,7 +424,7 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next
           .then((gfs) => {
             if (!replace) {
               // Save file reference
-              filesP[i] = db.experiments.updateByIdAsync(req.params.id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
+              filesP[i] = db.experiments.updateByIdAsync(experiment._id, {$push: {_files: {_id: gfs.fileId, filename: gfs.filename, mimetype: gfs.metadata.contentType}}});
             }
           })
           .catch((err) => {
@@ -447,9 +453,21 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next
       }
     };
 
-    for (var i = 0; i < req.files.length; i++) {
-      saveGFSFile(req.files[i]); // Save file in function closure
+    for (var i = 0; i < files.length; i++) {
+      saveGFSFile(files[i]); // Save file in function closure
     }
+
+	return filesP;
+};
+
+// Processess files for an experiment
+app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
+  // Retrieve list of files for experiment
+  db.experiments.findByIdAsync(req.params.id, {_files: 1})
+  .then((experiment) => {
+
+    // Process files
+	var filesP = processFiles(experiment, req.files);
 
     // Check file promises
     Promise.all(filesP)
