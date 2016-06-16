@@ -196,6 +196,8 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     } else if (project.options === "single-dash") {
       args.push("-" + prop);
       args.push(options[prop]);
+    } else if (project.options === "double-dash-noequals") {
+      args.push("--" + prop + " " + options[prop]);
     } else if (project.options === "double-dash") {
       args.push("--" + prop + "=" + options[prop]);
     } else if (project.options === "function") {
