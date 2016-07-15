@@ -10,6 +10,13 @@ block styles
     }
 
 block content
+
+ .col-sm-6
+      form#new-project
+        fieldset.form-group
+          input#schema.form-control-file(name="schema", type="file")
+        button.btn.btn-primary.btn-sm(type="submit") Create Project
+
   .row
     .col-sm-12.col-md-9
       .card
