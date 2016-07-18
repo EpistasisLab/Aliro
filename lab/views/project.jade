@@ -3,6 +3,15 @@ extends ./layout.jade
 block title
   title FGLab: Project #{project.name}
 
+block styles
+  style.
+    .slider-selection {
+      background: #BABABA;
+    }
+    .slider.slider-horizontal {
+      width: 100%;
+    }
+  
 block content
   .card
     .card-header
@@ -42,7 +51,7 @@ block content
                     else
                       option(value="#{value}") #{value}
           else if(val.type === "enum-checkbox")
-           .form-group.row
+            .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 .btn-group(data-toggle="buttons")
@@ -50,7 +59,11 @@ block content
                     label.btn.btn-primary-outline
                       input(type="checkbox", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
                       span #{value}
-        input(type="range", value="90")              
+          else if(val.type === "slider")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                input(type="text", class="slider", name="#{key}", id="#{key}", data-slider-min="#{val.min}", data-slider-max="#{val.max}", data-slider-step="#{val.step}", data-slider-value="#{val.default}")
         input#files.form-control-file(name="files", type="file", multiple)
         .form-group.row
           .col-sm-9.col-sm-offset-3
@@ -156,4 +169,9 @@ block scripts
     // Activate tooltips
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
+    })
+    
+    // Activate sliders
+    $(function () {
+      $('.slider').slider();
     })
