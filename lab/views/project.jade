@@ -40,7 +40,7 @@ block content
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
-          else if (val.type === "enum")
+          else if (val.type === "enum-select")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
@@ -58,6 +58,15 @@ block content
                    each value in val.values
                     label.btn.btn-primary-outline
                       input(type="checkbox", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
+                      span #{value}
+          else if(val.type === "enum-radio")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9      
+                .btn-group(data-toggle="buttons")
+                  each value in val.values
+                    label.btn.btn-primary-outline
+                      input(type="radio", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
                       span #{value}
           else if(val.type === "slider")
             .form-group.row
