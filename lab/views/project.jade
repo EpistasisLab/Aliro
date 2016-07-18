@@ -3,45 +3,58 @@ extends ./layout.jade
 block title
   title FGLab: Project #{project.name}
 
-block content 
-  h1 #[span.mega-octicon.octicon-beaker] Project: #{project.name} #[small.text-muted (#{project._id})]
-  form#new-experiment
-    each val, key in project.schema
-      if (val.type === "int")
+block content
+  .card
+    .card-header
+      h5 #[span.mega-octicon.octicon-beaker] New Experiment: #{project.name} #[small.text-muted (#{project._id})]
+    .card-block
+      form#new-experiment
+        each val, key in project.schema
+          if (val.type === "int")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", required)
+          else if (val.type === "float")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", required)
+          else if (val.type === "bool")
+            // TODO Consider replacing with two radio buttons
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                input.form-control(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", id="#{key}", required)
+          else if (val.type === "string")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
+          else if (val.type === "enum")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                select.form-control.c-select(name="#{key}", id="#{key}")
+                  each value in val.values
+                    if (value === val.default)
+                      option(value="#{value}", selected) #{value}
+                    else
+                      option(value="#{value}") #{value}
+          else if(val.type === "enum-checkbox")
+           .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                .btn-group(data-toggle="buttons")
+                   each value in val.values
+                    label.btn.btn-primary-outline
+                      input(type="checkbox", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
+                      span #{value}
+        input(type="range", value="90")              
+        input#files.form-control-file(name="files", type="file", multiple)
         .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="number", value="#{val.default}", name="#{key}", id="#{key}", required)
-      else if (val.type === "float")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="number", value="#{val.default}", step="any", name="#{key}", id="#{key}", required)
-      else if (val.type === "bool")
-        // TODO Consider replacing with two radio buttons
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="text", value="#{val.default}", pattern="(true|false)", title="Enter true or false", name="#{key}", id="#{key}", required)
-      else if (val.type === "string")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
-      else if (val.type === "enum")
-        .form-group.row
-          label.form-control-label.control-label.col-sm-3(for="#{key}") #{key}
-          .col-sm-9
-            select.form-control.c-select(name="#{key}", id="#{key}")
-              each value in val.values
-                if (value === val.default)
-                  option(value="#{value}", selected) #{value}
-                else
-                  option(value="#{value}") #{value}
-    input#files.form-control-file(name="files", type="file", multiple)
-    .form-group.row
-      .col-sm-9.col-sm-offset-3
-        button.btn.btn-primary(type="submit") Submit
+          .col-sm-9.col-sm-offset-3
+            button.btn.btn-primary(type="submit") Submit
 
 block scripts
   script.
@@ -139,3 +152,8 @@ block scripts
         return false; // Stop event and propagation
       });
     });
+    
+    // Activate tooltips
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
