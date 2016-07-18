@@ -33,7 +33,8 @@ block content
             tbody
               - each project in projects
                 tr
-                  td #{project.name}
+                  td #{project.name} 
+                    button.btn.btn-danger-outline.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
                   td 
                     a(href="/projects/" + project._id)
                       button.btn.btn-primary-outline.btn-sm(type="button") #[span.octicon.octicon-beaker]
