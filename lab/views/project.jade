@@ -55,29 +55,37 @@ block content
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 .btn-group(data-toggle="buttons")
-                   each value in val.values
+                   each value, index in val.values
                      if (val.default.indexOf(value) > -1)
                       label.btn.btn-primary-outline.active
                         input(type="checkbox", name="#{key}", value="#{value}", checked)
                         span #{value}
+                        if (val.labels) 
+                          span (#{val.labels[index]})
                      else
                       label.btn.btn-primary-outline
                         input(type="checkbox", name="#{key}", value="#{value}")
                         span #{value}
+                        if (val.labels) 
+                          span (#{val.labels[index]})
           else if(val.type === "enum-radio")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9      
                 .btn-group(data-toggle="buttons")
-                  each value in val.values
+                  each value, index in val.values
                     if (value === val.default)
                       label.btn.btn-primary-outline.active
                         input(type="radio", name="#{key}", value="#{value}", checked)
-                        span #{value}
+                        span #{value} 
+                        if (val.labels) 
+                          span (#{val.labels[index]})
                     else
                       label.btn.btn-primary-outline
                         input(type="radio", name="#{key}", value="#{value}")
                         span #{value} 
+                        if (val.labels) 
+                          span (#{val.labels[index]})
           else if(val.type === "slider")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
