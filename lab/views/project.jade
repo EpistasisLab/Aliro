@@ -65,9 +65,14 @@ block content
               .col-sm-9      
                 .btn-group(data-toggle="buttons")
                   each value in val.values
-                    label.btn.btn-primary-outline
-                      input(type="radio", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
-                      span #{value}
+                    if (value === val.default)
+                      label.btn.btn-primary-outline.active
+                        input(type="radio", name="#{key}", value="#{value}", checked)
+                        span #{value}
+                    else
+                      label.btn.btn-primary-outline
+                        input(type="radio", name="#{key}", value="#{value}")
+                        span #{value} 
           else if(val.type === "slider")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
@@ -96,7 +101,7 @@ block scripts
         // Loop over form simply (does not work on nested data)
         var hasErrors = false;
         // Do not process files as options
-        $(this).find(":input").not(":file").not(":submit").each(function(ind, el) {
+        $(this).find(":input").not(":file").not(":submit").not(":radio:not(:checked)").not(":checkbox:not(:checked)").each(function(ind, el) {
           var $el = $(el);
           var $formGroup = $el.closest(".form-group");
           // Remove previous validation
@@ -104,6 +109,7 @@ block scripts
           $formGroup.removeClass("has-success has-error");
           var name = $el.attr("name");
           var val = $el.val();
+          console.log(val);
           // Validate
           if ($el.attr("type") === "number") {
             val = parseFloat(val);
@@ -151,7 +157,11 @@ block scripts
               $formGroup.addClass("has-success");
             }
           }
-          formObj[name] = val; // Set key and value
+          if(formObj.hasOwnProperty(name)) {
+            formObj[name] =formObj[name].concat("," + val); // Append to value
+          } else {
+            formObj[name] = val; // Set key and value
+          }
         });
         // Stop if form has errors
         if (hasErrors) {
