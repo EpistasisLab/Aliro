@@ -56,9 +56,14 @@ block content
               .col-sm-9
                 .btn-group(data-toggle="buttons")
                    each value in val.values
-                    label.btn.btn-primary-outline
-                      input(type="checkbox", name="#{key}", id="#{key}", value="#{value}", autocomplete="off")
-                      span #{value}
+                     if (val.default.indexOf(value) > -1)
+                      label.btn.btn-primary-outline.active
+                        input(type="checkbox", name="#{key}", value="#{value}", checked)
+                        span #{value}
+                     else
+                      label.btn.btn-primary-outline
+                        input(type="checkbox", name="#{key}", value="#{value}")
+                        span #{value}
           else if(val.type === "enum-radio")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
