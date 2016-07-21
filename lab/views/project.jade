@@ -11,21 +11,6 @@ block styles
     .slider.slider-horizontal {
       width: 100%;
     }
-    .btn-group-justified {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: separate;
-    }
-    .btn-group-justified .btn {
-      float: none;
-      display: table-cell;
-      width: 1%;
-    }
-    label.btn {
-      margin-right: 5px;
-      border-radius: .25rem !important;
-    }
   
 block content
   .card
@@ -69,7 +54,7 @@ block content
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
-                .btn-group(data-toggle="buttons")
+                .btn-group.btn-group-justified(data-toggle="buttons")
                    each value, index in val.values
                      if (val.default.indexOf(value) > -1)
                       label.btn.btn-primary-outline.active
@@ -87,7 +72,7 @@ block content
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9      
-                .btn-group(data-toggle="buttons")
+                .btn-group.btn-group-justified(data-toggle="buttons")
                   each value, index in val.values
                     if (value === val.default)
                       label.btn.btn-primary-outline.active
