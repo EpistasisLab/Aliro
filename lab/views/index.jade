@@ -1,61 +1,38 @@
 extends ./layout.jade
 
 block title
-  title FGLab
-
-block styles
-  style.
-    select.add-to-machine {
-      width: auto;
-    }
+  title Idea Factory
 
 block content
-
- .col-sm-6
-      form#new-project
-        fieldset.form-group
-          input#schema.form-control-file(name="schema", type="file")
-        button.btn.btn-primary.btn-sm(type="submit") Create Project
-
   .row
-    .col-sm-12.col-md-9
+  
+    .col-sm-12.col-md-8
       .card
         .card-header
-          h5 Machine Learning Methods
-        .table-responsive  
-          table#projects.table
-            thead
-              tr
-                th Name
-                th New Experiment
-                th Hyperparameter Optimisation
-                th Experiment Results
-            tbody
-              - each project in projects
-                tr
-                  td #{project.name} 
-                    button.btn.btn-danger-outline.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
-                  td 
-                    a(href="/projects/" + project._id)
-                      button.btn.btn-primary-outline.btn-sm(type="button") #[span.octicon.octicon-beaker]
-                  td 
-                    a(href="/projects/" + project._id + "/optimisation")
-                      button.btn.btn-primary-outline.btn-sm(type="button") #[span.octicon.octicon-circuit-board]
-                  td 
-                    a(href="/projects/" + project._id + "/experiments")
-                      button.btn.btn-primary-outline.btn-sm(type="button") #[span.octicon.octicon-list-ordered]
-
-    .col-sm-12.col-md-3
-      .card
-        .card-header
-          h5 Machines
-        table#machines.table
+          h4 Machine Learning Methods
+        table#projects.table
           tbody
-            - each machine in machines
+            - each project in projects
               tr
-                td 
-                  span(id="machine-status-#{machine._id}") #[span.octicon.octicon-primitive-dot]
-                  a(href="/machines/" + machine._id) #{machine.hostname}
+                td.title #{project.name}
+                td
+                  .btn-group.btn-group-justified
+                    a(href="/projects/" + project._id).btn.btn-primary-outline.btn(type="button") #[span.octicon.octicon-beaker] 
+                      span.hidden-xs-down Build
+                    a(href="/projects/" + project._id + "/optimisation").btn.btn-primary-outline.btn(type="button") #[span.octicon.octicon-circuit-board] 
+                       span.hidden-xs-down Optimize
+                    a(href="/projects/" + project._id + "/experiments").btn.btn-primary-outline.btn(type="button") #[span.octicon.octicon-list-ordered] 
+                       span.hidden-xs-down Results
+                 
+    .col-sm-12.col-md-4
+      .card
+        .card-header
+          h4 Machines
+        ul#machines.list-group
+          - each machine in machines
+             a(href="/machines/" + machine._id).list-group-item
+              span(id="machine-status-#{machine._id}") #[span.octicon.octicon-primitive-dot]
+              span #{machine.hostname}
 
 block scripts
   script(src="/bower_components/lodash/dist/lodash.min.js")
