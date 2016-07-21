@@ -14,7 +14,8 @@ block content
           tbody
             - each project in projects
               tr
-                td.title #{project.name}
+                td 
+                  h5.title #{project.name}
                 td
                   .btn-group.btn-group-justified
                     a(href="/projects/" + project._id).btn.btn-primary-outline.btn(type="button") #[span.octicon.octicon-beaker] 
