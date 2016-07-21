@@ -1,34 +1,43 @@
 extends ./layout.jade
 
 block title
-  title FGLab: Machine #{machine.hostname}
+  title Idea Factory: Machine #{machine.hostname}
 
 block content
   h1 #[span#machine-status.mega-octicon.octicon-device-desktop] Machine: #{machine.hostname} #[small.text-muted (#{machine._id})]
-  h2 Specifications
-  dl.dl-horizontal
-    dt.col-sm-3 Hostname
-    dd.col-sm-9 #{machine.hostname}
-    dt.col-sm-3 Address
-    dd.col-sm-9 #{machine.address}
-    dt.col-sm-3 OS
-    dd.col-sm-9 #{machine.os.type} #{machine.os.arch} #{machine.os.release}
-    dt.col-sm-3 CPUs
-    dd.col-sm-9
-      ul.list-unstyled
-        - each cpu in machine.cpus
-          li= cpu
-    dt.col-sm-3 RAM
-    dd.col-sm-9 #{machine.mem}
-    dt.col-sm-3 GPUs
-    dd.col-sm-9
-      ul.list-unstyled
-        - each gpu in machine.gpus
-          li= gpu
-  h2 Projects
-  ul.list-unstyled
-    - each project in projects
-      li #[a(href="/projects/" + project._id) #{project.name}]
+  
+  .col-sm-12.col-md-8
+    .card
+      .card-header
+        h4 Specifications  
+      .card-block  
+        dl.dl-horizontal
+          dt.col-sm-2 Hostname
+          dd.col-sm-10 #{machine.hostname}
+          dt.col-sm-2 Address
+          dd.col-sm-10 #{machine.address}
+          dt.col-sm-2 OS
+          dd.col-sm-10 #{machine.os.type} #{machine.os.arch} #{machine.os.release}
+          dt.col-sm-2 CPUs
+          dd.col-sm-10
+            ul.list-unstyled
+              - each cpu in machine.cpus
+                li= cpu
+          dt.col-sm-2 RAM
+          dd.col-sm-10 #{machine.mem}
+          dt.col-sm-2 GPUs
+          dd.col-sm-10
+            ul.list-unstyled
+              - each gpu in machine.gpus
+                li= gpu
+                
+  .col-sm-12.col-md-4
+    .card
+      .card-header
+        h4 Projects              
+      ul#projects.list-group
+        - each project in projects
+          #[a(href="/projects/" + project._id).list-group-item #{project.name}]
 
 block scripts
   script.
