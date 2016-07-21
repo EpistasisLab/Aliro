@@ -17,6 +17,7 @@ body.dark .card {
   background-color: rgba(0, 0, 0, 0.3);
   border: .0625rem solid rgba(255, 255, 255, 0.3);
   border-radius: 0;
+  box-shadow: 0 1px rgba(0, 0, 0, 0.2);
 }
 
 body.dark .card .card-header {
@@ -50,8 +51,8 @@ body.dark .card .table tr:first-child td {
   border: none;
 }
 
-body.dark .card .table td.title {
-  vertical-align: middle;
+body.dark .card .table td .title {
+  padding-top: 0.5rem;
 }
 
 body.dark .card .list-group-item {
