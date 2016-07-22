@@ -1,7 +1,7 @@
 body.dark {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  background-color: #272838;
+  background-color: #454851;
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -45,6 +45,7 @@ body.dark .card .table tr td {
   padding: .75rem 1.25rem;
   border: none;
   border-top: .0625rem solid rgba(255, 255, 255, 0.2);
+  vertical-align: middle;
 }
 
 body.dark .card .table tr:first-child td {
