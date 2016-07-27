@@ -6,3 +6,4 @@ dist
 .bash_history
 .ssh
 .viminfo
+.nv
