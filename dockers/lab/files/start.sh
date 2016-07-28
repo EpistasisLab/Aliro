@@ -1,3 +1,4 @@
 mongod -f /etc/mongod.conf &
-nodejs  /share/devel/Gp/lab/lab.js &
+cd /share/devel/Gp/lab
+nodejs lab.js &
 bash
