@@ -1,6 +1,6 @@
 #working off of an ubuntu wily rootfs
 FROM scratch
-ADD files/rootfsxenial.tgz /
+ADD files/xenial.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
 #some sample data for mongo
@@ -22,11 +22,11 @@ COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
 #COPY files/ca.crt /share/devel/bobber/config/ca.crt
 COPY files/start.sh /root/
+COPY files/env /share/devel/Gp/lab/.env
 # apache configs
 #RUN ln -s /usr/bin/nodejs /usr/bin/node
 #VOLUME /share
 EXPOSE 5080
-EXPOSE 5081
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 #CMD ["/bin/bash"]
 CMD ["/bin/bash", "/root/start.sh"]
