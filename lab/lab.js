@@ -585,6 +585,19 @@ app.get("/", (req, res, next) => {
   });
 });
 
+// List projects and machines on admin page
+app.get("/admin", (req, res, next) => {
+  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
+  Promise.all([projP, macP])
+  .then((results) => {
+    return res.render("admin", {projects: results[0], machines: results[1]});
+  })
+  .catch((err) => {
+    return next(err);
+  });
+});
+
 // Project page (new experiment)
 app.get("/projects/:id", (req, res, next) => {
   db.projects.findByIdAsync(req.params.id)
@@ -658,7 +671,6 @@ app.get("/experiments/:id", (req, res, next) => {
     next(err);
   });
 });
-
 
 /* Errors */
 // Error handler
