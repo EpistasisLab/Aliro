@@ -1,39 +1,68 @@
 extends ./layout.jade
 
 block title
-  title Idea Factory
+  title Idea Factory: Admin
+
+block styles
+  style.
+    select.add-to-machine {
+      width: auto;
+    }
 
 block content
   .row
-  
-    .col-sm-12.col-md-8
-      .card
-        .card-header
-          h4 Machine Learning Methods
-        table#projects.table
-          tbody
-            - each project in projects
-              tr
-                td
-                  h5.title #{project.name}
-                td
-                  .btn-group.btn-group-justified
-                    a(href="/projects/" + project._id).btn.btn-primary-outline.btn #[span.octicon.octicon-beaker] 
-                      span.hidden-xs-down Build
-                    a(href="/projects/" + project._id + "/optimisation").btn.btn-primary-outline.btn #[span.octicon.octicon-circuit-board] 
-                       span.hidden-xs-down Optimize
-                    a(href="/projects/" + project._id + "/experiments").btn.btn-primary-outline.btn #[span.octicon.octicon-list-ordered] 
-                       span.hidden-xs-down Results
-                 
-    .col-sm-12.col-md-4
-      .card
-        .card-header
-          h4 Machines
-        ul#machines.list-group
-          - each machine in machines
-             a(href="/machines/" + machine._id).list-group-item
-              span(id="machine-status-#{machine._id}") #[span.octicon.octicon-primitive-dot]
-              span #{machine.hostname}
+    .col-sm-6
+      h1 #[span.mega-octicon.octicon-clippy] Admin
+      h2 New Project
+      form#new-project
+        fieldset.form-group
+          label(for="schema") Project schema
+          input#schema.form-control-file(name="schema", type="file")
+          small.text-muted Upload a valid project schema. The name of the JSON file will be used to name the project.
+        button.btn.btn-primary(type="submit") Create Project
+    
+    .col-sm-6
+      h1 #[span.mega-octicon.octicon-device-desktop] Machines
+      ul#machines.list-unstyled
+        - each machine in machines
+          li
+            button.btn.btn-danger.btn-sm.delete(data-type="machines", data-id="#{machine._id}", type="button") #[span.octicon.octicon-trashcan]
+            | &nbsp;
+            span(id="machine-status-#{machine._id}") ●
+            | &nbsp;
+            a(href="/machines/" + machine._id) #{machine.hostname}
+
+    .col-sm-12
+      h2 Existing Projects
+      table#projects.table
+        thead
+          tr
+            th
+            th Project ID
+            th Name
+            th New Experiment
+            th Hyperparameter Optimisation
+            th Experiment Results
+            th Add to Machine
+        tbody
+          - each project in projects
+            tr
+              td
+                button.btn.btn-danger.btn-sm.delete(data-type="projects", data-id="#{project._id}", type="button") #[span.octicon.octicon-trashcan]
+              td #{project._id}
+              td #{project.name}
+              td 
+                a(href="/projects/" + project._id)
+                  button.btn.btn-primary.btn-sm(type="button") #[span.octicon.octicon-beaker]
+              td 
+                a(href="/projects/" + project._id + "/optimisation")
+                  button.btn.btn-primary.btn-sm(type="button") #[span.octicon.octicon-circuit-board]
+              td 
+                a(href="/projects/" + project._id + "/experiments")
+                  button.btn.btn-primary.btn-sm(type="button") #[span.octicon.octicon-list-ordered]
+              td
+                select.form-control.c-select.add-to-machine
+                button.btn.btn-primary.btn-sm.add-to-machine(type="button", data-id="#{project._id}") #[span.octicon.octicon-plus]
 
 block scripts
   script(src="/bower_components/lodash/dist/lodash.min.js")
@@ -97,46 +126,52 @@ block scripts
         var id = $el.data("id");
 
         if (type === "projects") {
-          // Delete experiment files
-          $.ajax({
-            url: "/api/v1/projects/" + id + "/experiments/files",
-            type: "DELETE"
-          })
-          .then(function() {
-            // Then delete experiments
+          var confirmDelete = confirm("Are you sure you want to delete this project and all associated experiments?");
+          if (confirmDelete) {
+            // Delete experiment files
             $.ajax({
-              url: "/api/v1/projects/" + id + "/experiments",
+              url: "/api/v1/projects/" + id + "/experiments/files",
               type: "DELETE"
             })
             .then(function() {
-              // Then delete project
+              // Then delete experiments
               $.ajax({
-                url: "/api/v1/projects/" + id,
+                url: "/api/v1/projects/" + id + "/experiments",
                 type: "DELETE"
               })
               .then(function() {
-                location.reload(); // Refresh page
-              })
-              .catch(function(err) {
-                console.log(err);
+                // Then delete project
+                $.ajax({
+                  url: "/api/v1/projects/" + id,
+                  type: "DELETE"
+                })
+                .then(function() {
+                  location.reload(); // Refresh page
+                })
+                .catch(function(err) {
+                  console.log(err);
+                });
               });
+            })
+            .catch(function(err) {
+              console.log(err);
             });
-          })
-          .catch(function(err) {
-            console.log(err);
-          });
+          }
         } else {
-          // Delete machine
-          $.ajax({
-            url: "/api/v1/machines/" + id,
-            type: "DELETE"
-          })
-          .then(function() {
-            location.reload(); // Refresh page
-          })
-          .catch(function(err) {
-            console.log(err);
-          });
+          var confirmDelete = confirm("Are you sure you want to delete this machine?\nTo re-register, you will need to delete 'specs.json' before running FGMachine again.");
+          if (confirmDelete) {
+            // Delete machine
+            $.ajax({
+              url: "/api/v1/machines/" + id,
+              type: "DELETE"
+            })
+            .then(function() {
+              location.reload(); // Refresh page
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+          }
         }
         return false; // Stop event and propagation
       });
