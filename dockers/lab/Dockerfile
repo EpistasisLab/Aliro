@@ -15,11 +15,13 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 #RUN /etc/init.d/mongod start && mongorestore  /dump
 #add Gp sourcecode || not needed if mounting /share
 RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@devel.ceet.upenn.edu:IBI/Gp.git
-RUN cd /share/devel/Gp/lab && npm install
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+RUN npm install -g bower
+RUN cd /share/devel/Gp/lab && npm install  &&bower --allow-root install
 # global install forever utility
 # mongo configs
-COPY files/.mongo* /root/
-COPY files/mongod.conf /etc/
+#COPY files/.mongo* /root/
+#COPY files/mongod.conf /etc/
 #COPY files/ca.crt /share/devel/bobber/config/ca.crt
 COPY files/start.sh /root/
 COPY files/env /share/devel/Gp/lab/.env
