@@ -20,6 +20,7 @@ RUN cd /share/devel/Gp/lab && npm install
 # mongo configs
 COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
+#RUN mongod -f /etc/mongod.conf  & mongorestore  /dump
 #COPY files/ca.crt /share/devel/bobber/config/ca.crt
 COPY files/start.sh /root/
 COPY files/env /share/devel/Gp/lab/.env
