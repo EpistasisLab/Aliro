@@ -132,6 +132,8 @@ var maxCapacity = 1;
 
 var getCapacity = function(projId) {
   var capacity = 0;
+console.log('fioi');
+console.log(projects);
   if (projects[projId]) {
     capacity = Math.floor(maxCapacity / projects[projId].capacity);
   }
