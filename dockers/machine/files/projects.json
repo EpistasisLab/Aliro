@@ -1,0 +1,18 @@
+{
+  "57bf24e1548cd20008bc71df": {
+    "cwd": "/share/devel/Gp/gpocl/build",
+    "command": "./gpocl",
+    "args": ["../datasets/gei.csv"],
+    "capacity": "0.1",
+    "options": "double-dash-noequals",
+    "results": "./examples/GP"
+  },
+  "57c5a83f4b09d40023ee4f6e": {
+    "cwd": "/share/devel/Gp/mdr/bin",
+    "command": "python3",
+    "args": ["fit.py"],
+    "capacity": "0.1",
+    "options": "double-dash-noequals",
+    "results": "./examples/MDR"
+  }
+}

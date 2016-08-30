@@ -4,7 +4,6 @@ ADD files/xenial.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
 #some sample data for mongo
-ADD files/mongodump.tgz /
 #update the default apt repo to include universe 
 #RUN echo "deb http://archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list
 #add repo for mongodb
@@ -22,6 +21,7 @@ RUN cd /share/devel/Gp/lab && npm install -g bower
 RUN cd /share/devel/Gp/lab &&  bower install --allow-root
 # global install forever utility
 # mongo configs
+ADD files/mongodump.tgz /
 COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
 #RUN mongod -f /etc/mongod.conf  & mongorestore  /dump
