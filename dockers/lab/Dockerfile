@@ -8,7 +8,7 @@ ADD files/ssh.tgz /
 #RUN echo "deb http://archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list
 #add repo for mongodb
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
-RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/stable multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org npm git openssh-client net-tools iputils-ping --no-install-recommends
 #load sample data into mongo database
 #RUN /etc/init.d/mongod start && mongorestore  /dump
