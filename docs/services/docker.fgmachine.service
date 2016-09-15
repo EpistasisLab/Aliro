@@ -1,0 +1,12 @@
+[Unit]
+Description=FGMachine container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a machine
+ExecStop=/usr/bin/docker stop -t 2 machine
+
+[Install]
+WantedBy=default.target
