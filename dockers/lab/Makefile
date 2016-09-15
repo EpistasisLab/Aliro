@@ -7,11 +7,15 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5080:5080 --name lab\
+	docker run -i -t --rm -p 5080:5080 --network dockernet --name lab\
 		${DOCKER_REPO}
 
 shared:
-	docker run -i -v /share:/share  -t --rm -p 5080:5080 --name lab\
+	docker run -i -v /share:/share  -t --rm -p 5080:5080 --network dockernet --name lab\
+		${DOCKER_REPO}
+
+create:
+	docker create -i -v /share:/share -t -p 5080:5080 --network dockernet --name lab\
 		${DOCKER_REPO}
 
 push:
