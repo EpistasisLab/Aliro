@@ -7,16 +7,21 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5081:5081 --network dockernet --name machine\
+	docker run -i -t --rm -p 5081:5081 --network dockernet -h machine -name machine\
 		${DOCKER_REPO}
 
 shared:
-	docker run -i -v /share:/share  -t --rm -p 5081:5081 --network dockernet --name machine\
+	docker run -i -v /share:/share  -t --rm -p 5081:5081 --network dockernet -h machine --name machine\
 		${DOCKER_REPO}
 
 create:
-	docker create -i -v /share:/share -t -p 5081:5081 --network dockernet --name machine\
+	docker create -i -t -p 5081:5081 --network dockernet -h machine --name machine\
 		${DOCKER_REPO}
+
+createshared:
+	docker create -i -v /share:/share -t -p 5081:5081 --network dockernet -h machine --name machine\
+		${DOCKER_REPO}
+
 push:
 	docker push ${DOCKER_REPO}:${TAG}
 
