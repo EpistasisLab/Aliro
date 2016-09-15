@@ -1,2 +1,2 @@
-FGLAB_URL=http://172.17.0.1:5080
-FGMACHINE_URL=http://172.17.0.1:5081
+FGLAB_URL=http://lab:5080
+FGMACHINE_URL=http://machine:5081
