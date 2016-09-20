@@ -132,7 +132,6 @@ var maxCapacity = 1;
 
 var getCapacity = function(projId) {
   var capacity = 0;
-console.log('fioi');
 console.log(projects);
   if (projects[projId]) {
     capacity = Math.floor(maxCapacity / projects[projId].capacity);
@@ -185,8 +184,10 @@ app.post("/projects/:id", jsonParser, (req, res) => {
   var experimentId = req.body._id;
   var project = projects[req.params.id];
   var args = [];
-  for (var i = 0; i < project.args.length; i++) {
-    args.push(project.args[i]);
+  if(project.args !== undefined) {
+    for (var i = 0; i < project.args.length; i++) {
+      args.push(project.args[i]);
+    }
   }
   var options = req.body;
   // Command-line parsing
@@ -250,6 +251,7 @@ console.log(args);
     var formData = {_files: []};
     // Add file
     formData._files.push(fs.createReadStream(filename));
+console.log('foo')
     return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
   };
   // Watch for experiment folder
