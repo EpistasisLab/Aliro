@@ -1,5 +1,4 @@
 {
-
   "57bf24e1548cd20008bc71df": {
     "cwd": "/share/devel/Gp/gpocl/build",
     "command": "./gpocl",
@@ -16,5 +15,21 @@
     "options": "double-dash",
     "capacity": "0.2",
     "results": "./examples/MDR"
+  },
+  "57ebce9c73ed7800219e122b": {
+    "cwd": "/share/devel/Gp/learn/dt",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/dt"
+  },
+  "57ebce9c73ed7800219e122b": {
+    "cwd": "/share/devel/Gp/learn/lr",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/lr"
   }
 }
