@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git ope
     python3-mysqldb \
     ipython3 \
     python3-pydot \
+    python3-tk \ 
 --no-install-recommends
 
 RUN pip3 install scikit-mdr
