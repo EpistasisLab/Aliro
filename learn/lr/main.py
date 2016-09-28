@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 import numpy as np
+import matplotlib as mpl
+#run without X
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn import linear_model, datasets
 import pandas as pd
