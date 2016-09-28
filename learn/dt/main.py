@@ -9,7 +9,7 @@ from IPython.display import Image
 import pydot 
 
 # Open database connection
-mysql_cn = MySQLdb.connect("127.0.0.1","root","XXXX","gei" )
+mysql_cn = MySQLdb.connect("172.18.0.1","root","otgbh!","gei" )
 # Prepare SQL query to INSERT a record into the database.
 df_mysql = pd.read_sql("SELECT * FROM biomarkers",con=mysql_cn)  
 print('loaded dataframe from MySQL. records:', len(df_mysql))
