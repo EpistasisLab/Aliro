@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git ope
     lsb-core \
     cpio \ 
     mesa-common-dev \
+    python3-matplotlib \
+    python3-mysqldb \
+    ipython3 \
+    python3-pydot \
 --no-install-recommends
 
 RUN pip3 install scikit-mdr

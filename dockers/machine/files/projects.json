@@ -16,7 +16,7 @@
     "capacity": "0.2",
     "results": "./examples/MDR"
   },
-  "57ebce9c73ed7800219e122b": {
+  "57ebce9873ed7800219e122a": {
     "cwd": "/share/devel/Gp/learn/dt",
     "command": "python3",
     "args": ["main.py"],
