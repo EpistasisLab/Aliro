@@ -132,7 +132,6 @@ var maxCapacity = 1;
 
 var getCapacity = function(projId) {
   var capacity = 0;
-console.log(projects);
   if (projects[projId]) {
     capacity = Math.floor(maxCapacity / projects[projId].capacity);
   }
@@ -212,12 +211,16 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     functionParams = functionParams.toString().replace(/\"/g, "'"); // Replace " with '
     args[args.length - 1] = args[args.length - 1] + "(" + functionParams  + ");";
   }
-console.log(args);
 
   // Spawn experiment
+//  project.command = 'set'
+//  args = []
+  console.log("args")
+  console.log(args)
   var experiment = spawn(project.command, args, {cwd: project.cwd})
   // Catch spawning errors
-  .on("error", () => {
+  .on("error", (er) => {
+console.log(er);
     // Notify of failure
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: "fail"}, gzip: true});
     // Log error
@@ -251,7 +254,6 @@ console.log(args);
     var formData = {_files: []};
     // Add file
     formData._files.push(fs.createReadStream(filename));
-console.log('foo')
     return rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files", method: "PUT", formData: formData, gzip: true});
   };
   // Watch for experiment folder
