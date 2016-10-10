@@ -9,21 +9,28 @@ import pandas as pd
 import argparse
 import os
 import json
+import urllib3
+import pycurl
+import time
+http = urllib3.PoolManager()
+
+basedir='/share/devel/Gp/learn/lr/'
+tmpdir=basedir+'tmp/'
 
 
-def lr(penalty,_id):
+def lr(penalty,_id,file_name):
     # import reduced GEI phenotype data
-    df=pd.read_csv('pheno_reduced.csv')
+    print(tmpdir + file_name)
+    df=pd.read_csv(tmpdir + file_name) 
     df=df.set_index(df['id_subject'])
+
     del df['id_subject']
     X = df;
     Y=X['srcase']
     del X['srcase']
 
-
     X=X.as_matrix()
     Y=Y.as_matrix()
-
 
     h = .02  # step size in the mesh
 
@@ -53,7 +60,7 @@ def lr(penalty,_id):
     plt.xticks(())
     plt.yticks(())
 
-    plt.savefig(_id + '/out.png')
+    plt.savefig(tmpdir + _id + '/out.png')
     return(12)
 
 if __name__ == "__main__":
@@ -63,15 +70,40 @@ if __name__ == "__main__":
     parser.add_argument('--penalty', dest='penalty', default=None)
     params = vars(parser.parse_args())
 
-    # Save result
+    # Save all attached files
     _id = params['_id']
-    if not os.path.exists(_id):
-        os.makedirs(_id)
+    if not os.path.exists(tmpdir + _id):
+        os.makedirs(tmpdir + _id)
+
+    response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
+    jsondata=json.loads(response.data.decode('utf-8'))
+    files = jsondata['_files']
+    numfiles = 0;
+    file_name = ''
+
+    for x in files:
+        time.sleep(5) #
+        print(x)
+        file_id = x['_id']
+        file_name = x['filename']
+        c = pycurl.Curl()
+        c.setopt(c.URL, 'http://lab:5080/api/v1/experiments/'+file_id)
+        c.setopt(c.VERBOSE, True)
+        with open(tmpdir + file_name, 'w') as f:
+            c.setopt(c.WRITEFUNCTION, f.write)
+            c.perform()
+            c.close()
+            numfiles += 1
+    if numfiles == 1:
+        result = lr(params['penalty'],_id,file_name)
+    else:
+        result = 0;
 
 
-    result = lr(params['penalty'],_id)
+    if not os.path.exists(tmpdir + _id):
+        os.makedirs(tmpdir + _id)
+
     print('Result = %f' % result)
-    with open(os.path.join(_id, 'value.json'), 'w') as outfile:
+    with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
         json.dump({'_scores': {'value': result}}, outfile)
-
 
