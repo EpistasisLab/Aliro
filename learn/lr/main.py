@@ -20,7 +20,6 @@ tmpdir=basedir+'tmp/'
 
 def lr(penalty,_id,file_name):
     # import reduced GEI phenotype data
-    print(tmpdir + file_name)
     df=pd.read_csv(tmpdir + file_name) 
     df=df.set_index(df['id_subject'])
 
@@ -83,13 +82,11 @@ if __name__ == "__main__":
 
     for x in files:
         time.sleep(5) #
-        print(x)
         file_id = x['_id']
         file_name = x['filename']
         c = pycurl.Curl()
-        c.setopt(c.URL, 'http://lab:5080/api/v1/experiments/'+file_id)
-        c.setopt(c.VERBOSE, True)
-        with open(tmpdir + file_name, 'w') as f:
+        c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
+        with open(tmpdir + file_name, 'wb') as f:
             c.setopt(c.WRITEFUNCTION, f.write)
             c.perform()
             c.close()
