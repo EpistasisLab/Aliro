@@ -30,6 +30,14 @@
     "args": ["main.py"],
     "options": "double-dash",
     "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/lr"
+    "results": "/share/devel/Gp/learn/lr/tmp/"
+  },
+  "57f675b74644a10022f05c01": {
+    "cwd": "/share/devel/Gp/learn/deapgp",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/deapgp/tmp/"
   }
 }
