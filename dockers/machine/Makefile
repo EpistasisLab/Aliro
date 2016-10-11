@@ -7,7 +7,7 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5081:5081 --network dockernet -h machine -name machine\
+	docker run -i -t --rm -p 5081:5081 --network dockernet -h machine --name machine\
 		${DOCKER_REPO}
 
 shared:
