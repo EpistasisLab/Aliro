@@ -29,7 +29,7 @@
     "values": [0.001, 0.01, 0.1],
     "default": 0.1
  },
- "seletion-pressure": { 
+ "selection-pressure": { 
     "description": "selection pressure (tournament size), n>=1",
     "type": "enum-radio",
     "values": [1, 2, 3],
