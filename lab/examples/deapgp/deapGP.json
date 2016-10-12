@@ -1,0 +1,32 @@
+{
+ "population-size": {
+    "description": "number of individuals (default = 100)",
+    "type": "int",
+    "default": 100
+  },
+   "generations": {
+    "description": "number of generations, n>0 [default = 20]" ,
+    "type": "int",
+    "default": 20
+ },
+ "crossover_rate": {
+    "description": "crossover rate, 0.0<=f<=1.0, [default = 0.1]",
+    "type": "float",
+    "default": 0.1
+ },
+ "mutation_rate": {
+    "description": " mutation rate, 0.0<=f<=1.0, [default = 0.05]",
+    "type": "float",
+    "default": 0.05
+ },
+ "tournsize": {
+    "description": "selection pressure (tournament size), n>=1 [default = 3]",
+    "type": "int",
+    "default": 3
+ },
+ "random_state": {
+    "description": "random seed [default = 42]",
+    "type": "int",
+    "default": 42
+}
+}
