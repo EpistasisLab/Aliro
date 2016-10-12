@@ -16,9 +16,6 @@
 import operator
 import math
 import random
-import json
-import argparse
-import pycurl
 
 import numpy
 
@@ -35,6 +32,42 @@ def protectedDiv(left, right):
     except ZeroDivisionError:
         return 1
 
+"""pset = gp.PrimitiveSet("MAIN", 1)
+pset.addPrimitive(operator.add, 2)
+pset.addPrimitive(operator.sub, 2)
+pset.addPrimitive(operator.mul, 2)
+pset.addPrimitive(protectedDiv, 2)
+pset.addPrimitive(operator.neg, 1)
+pset.addPrimitive(math.cos, 1)
+pset.addPrimitive(math.sin, 1)
+pset.addEphemeralConstant("rand101", lambda: random.randint(-1,1))
+pset.renameArguments(ARG0='x')
+
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
+
+toolbox = base.Toolbox()
+toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
+toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+toolbox.register("compile", gp.compile, pset=pset)"""
+
+"""def evalSymbReg(individual, points):
+    # Transform the tree expression in a callable function
+    func = toolbox.compile(expr=individual)
+    # Evaluate the mean squared error between the expression
+    # and the real function : x**4 + x**3 + x**2 + x
+    sqerrors = ((func(x) - x**4 - x**3 - x**2 - x)**2 for x in points)
+    return math.fsum(sqerrors) / len(points),"""
+
+"""toolbox.register("evaluate", evalSymbReg, points=[x/10. for x in range(-10,10)])
+toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("mate", gp.cxOnePoint)
+toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
+toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
+
+toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))
+toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))"""
 
 def main(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state):
     random.seed(random_state)
@@ -93,50 +126,9 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
     return pop, log, hof
 
 if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform deapGP")
-    parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--pop_size', dest='population_size', default=100)
-    parser.add_argument('--gen_num', dest='generations', default=20)
-    parser.add_argument('--co_rate', dest='crossover_rate', default=0.1)
-    parser.add_argument('--mut_rate', dest='mutation_rate', default=0.05)
-    parser.add_argument('--tour_size', dest='tournsize', default=3)
-    parser.add_argument('--rand', dest='random_state', default=3)
-
-
-    params = vars(parser.parse_args())
-    # Save all attached files
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-    response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    jsondata=json.loads(response.data.decode('utf-8'))
-    files = jsondata['_files']
-    numfiles = 0;
-    file_name = ''
-    for x in files:
-        time.sleep(5) #
-        file_id = x['_id']
-        file_name = x['filename']
-        c = pycurl.Curl()
-        c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
-        with open(tmpdir + file_name, 'wb') as f:
-            c.setopt(c.WRITEFUNCTION, f.write)
-            c.perform()
-            c.close()
-            numfiles += 1
-    #if numfiles == 1:
-    pop_size = params['population_size']
-    gen_num = params['generations']
-    co_rate = params['crossover_rate']
-    mut_rate = params['mutation_rate']
-    tour_size = params['tournsize']
-    random = params['random_state']
-    main(population_size=pop_size,
-    generations=gen_num,
-    crossover_rate=co_rate,
-    mutation_rate=mut_rate,
-    tournsize=tour_size,
-    random_state=random)
-    #else:
-        #result = 0;
+    main(population_size=100,
+    generations=5,
+    crossover_rate=0.1,
+    mutation_rate=0.05,
+    tournsize=3,
+    random_state=42)
