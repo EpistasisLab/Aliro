@@ -1,109 +1,92 @@
-#!/usr/bin/python3
-import numpy as np
-import matplotlib as mpl
-#run without X
-mpl.use('Agg')
-import matplotlib.pyplot as plt
-from sklearn import linear_model, datasets
-import pandas as pd
-import argparse
-import os
-import json
-import urllib3
-import pycurl
-import time
-http = urllib3.PoolManager()
+#    This file is part of EAP.
+#
+#    EAP is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    EAP is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public
+#    License along with EAP. If not, see <http://www.gnu.org/licenses/>.
 
-basedir='/share/devel/Gp/learn/deapgp/'
-tmpdir=basedir+'tmp/'
+import operator
+import math
+import random
 
+import numpy
 
-def lr(penalty,_id,file_name):
-    # import reduced GEI phenotype data
-    print(tmpdir + file_name)
-    df=pd.read_csv(tmpdir + file_name) 
-    df=df.set_index(df['id_subject'])
+from deap import algorithms
+from deap import base
+from deap import creator
+from deap import tools
+from deap import gp
 
-    del df['id_subject']
-    X = df;
-    Y=X['srcase']
-    del X['srcase']
+# Define new functions
+def protectedDiv(left, right):
+    try:
+        return left / right
+    except ZeroDivisionError:
+        return 1
 
-    X=X.as_matrix()
-    Y=Y.as_matrix()
+pset = gp.PrimitiveSet("MAIN", 1)
+pset.addPrimitive(operator.add, 2)
+pset.addPrimitive(operator.sub, 2)
+pset.addPrimitive(operator.mul, 2)
+pset.addPrimitive(protectedDiv, 2)
+pset.addPrimitive(operator.neg, 1)
+pset.addPrimitive(math.cos, 1)
+pset.addPrimitive(math.sin, 1)
+pset.addEphemeralConstant("rand101", lambda: random.randint(-1,1))
+pset.renameArguments(ARG0='x')
 
-    h = .02  # step size in the mesh
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
 
-    logreg = linear_model.LogisticRegression(C=1e5)
-    # we create an instance of Neighbours Classifier and fit the data.
-    logreg.fit(X, Y)
+toolbox = base.Toolbox()
+toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
+toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+toolbox.register("compile", gp.compile, pset=pset)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, m_max]x[y_min, y_max].
-    x_min, x_max = X[:, 0].min(), X[:, 0].max()
-    y_min, y_max = X[:, 1].min(), X[:, 1].max()
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
-    Z = logreg.predict(np.c_[xx.ravel(), yy.ravel()])
+def evalSymbReg(individual, points):
+    # Transform the tree expression in a callable function
+    func = toolbox.compile(expr=individual)
+    # Evaluate the mean squared error between the expression
+    # and the real function : x**4 + x**3 + x**2 + x
+    sqerrors = ((func(x) - x**4 - x**3 - x**2 - x)**2 for x in points)
+    return math.fsum(sqerrors) / len(points),
 
-    # Put the result into a color plot
-    Z = Z.reshape(xx.shape)
-    plt.figure(1, figsize=(4, 3))
-    plt.pcolormesh(xx, yy, Z, cmap=plt.cm.Paired)
+toolbox.register("evaluate", evalSymbReg, points=[x/10. for x in range(-10,10)])
+toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("mate", gp.cxOnePoint)
+toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
+toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
-    # Plot also the training points
-    plt.scatter(X[:, 0], X[:, 1], c=Y, edgecolors='k', cmap=plt.cm.Paired)
-    plt.xlabel(df.keys()[0])
-    plt.ylabel(df.keys()[1])
+toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))
+toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))
 
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
-    plt.xticks(())
-    plt.yticks(())
+def main():
+    random.seed(318)
 
-    plt.savefig(tmpdir + _id + '/out.png')
-    return(12)
+    pop = toolbox.population(n=300)
+    hof = tools.HallOfFame(1)
+    
+    stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
+    stats_size = tools.Statistics(len)
+    mstats = tools.MultiStatistics(fitness=stats_fit, size=stats_size)
+    mstats.register("avg", numpy.mean)
+    mstats.register("std", numpy.std)
+    mstats.register("min", numpy.min)
+    mstats.register("max", numpy.max)
+
+    pop, log = algorithms.eaSimple(pop, toolbox, 0.5, 0.1, 40, stats=mstats,
+                                   halloffame=hof, verbose=True)
+    # print log
+    return pop, log, hof
 
 if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform Logistic Regression")
-    parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--penalty', dest='penalty', default=None)
-    params = vars(parser.parse_args())
-
-    # Save all attached files
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-
-    response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    jsondata=json.loads(response.data.decode('utf-8'))
-    files = jsondata['_files']
-    numfiles = 0;
-    file_name = ''
-
-    for x in files:
-        time.sleep(5) #
-        print(x)
-        file_id = x['_id']
-        file_name = x['filename']
-        c = pycurl.Curl()
-        c.setopt(c.URL, 'http://lab:5080/api/v1/experiments/'+file_id)
-        c.setopt(c.VERBOSE, True)
-        with open(tmpdir + file_name, 'w') as f:
-            c.setopt(c.WRITEFUNCTION, f.write)
-            c.perform()
-            c.close()
-            numfiles += 1
-    if numfiles == 1:
-        result = lr(params['penalty'],_id,file_name)
-    else:
-        result = 0;
-
-
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-
-    print('Result = %f' % result)
-    with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
-        json.dump({'_scores': {'value': result}}, outfile)
-
+    main()

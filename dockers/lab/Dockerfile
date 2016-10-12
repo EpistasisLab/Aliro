@@ -12,6 +12,7 @@ RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiver
 RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org npm git openssh-client net-tools iputils-ping --no-install-recommends
 #load sample data into mongo database
 #RUN /etc/init.d/mongod start && mongorestore  /dump
+ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@devel.ceet.upenn.edu:IBI/Gp.git
 RUN cd /share/devel/Gp/lab && npm install 
