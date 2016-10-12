@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git ope
 --no-install-recommends
 
 RUN pip3 install scikit-mdr
+RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
+ADD files/version /tmp
 RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@devel.ceet.upenn.edu:IBI/Gp.git
 RUN cd /share/devel/Gp/machine && npm install 
 #install bower globally, needs "node" available as "node"
@@ -29,7 +31,6 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node
 COPY files/start.sh /root/
 COPY files/env /share/devel/Gp/machine/.env
 COPY files/projects.json /share/devel/Gp/machine/
-RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 # apache configs
 RUN cd /share/devel/Gp/gpocl && mkdir build && cd build && cmake ../ && make
 #VOLUME /share
