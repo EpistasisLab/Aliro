@@ -22,6 +22,7 @@ import pycurl
 import os
 import numpy
 import urllib3
+import pandas as pd
 http = urllib3.PoolManager()
 from deap import algorithms
 from deap import base
@@ -29,7 +30,7 @@ from deap import creator
 from deap import tools
 from deap import gp
 
-basedir='/share/devel/Gp/learn/lr/'
+basedir='/share/devel/Gp/learn/deapgp/'
 tmpdir=basedir+'tmp/'
 
 
@@ -114,34 +115,43 @@ if __name__ == "__main__":
     _id = params['_id']
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
-    response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    jsondata=json.loads(response.data.decode('utf-8'))
-    files = jsondata['_files']
-    numfiles = 0;
-    file_name = ''
-    for x in files:
-        time.sleep(5) #
-        file_id = x['_id']
-        file_name = x['filename']
-        c = pycurl.Curl()
-        c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
-        with open(tmpdir + file_name, 'wb') as f:
-            c.setopt(c.WRITEFUNCTION, f.write)
-            c.perform()
-            c.close()
-            numfiles += 1
+    #response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
+    #jsondata=json.loads(response.data.decode('utf-8'))
+    #files = jsondata['_files']
+    #numfiles = 0;
+    #file_name = ''
+    #for x in files:
+    #    time.sleep(5) #
+    #    file_id = x['_id']
+    #    file_name = x['filename']
+    #    c = pycurl.Curl()
+    #    c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
+    #    with open(tmpdir + file_name, 'wb') as f:
+    #        c.setopt(c.WRITEFUNCTION, f.write)
+    #        c.perform()
+    #        c.close()
+    #        numfiles += 1
     #if numfiles == 1:
-    pop_size = params['population_size']
-    gen_num = params['generations']
-    co_rate = params['crossover_rate']
-    mut_rate = params['mutation_rate']
-    tour_size = params['tournsize']
-    randomnum = params['random_state']
-    main(population_size=pop_size,
+
+    pop_size = int(params['population_size'])
+    gen_num = int(params['generations'])
+    co_rate = float(params['crossover_rate'])
+    mut_rate = float(params['mutation_rate'])
+    tour_size = int(params['tournsize'])
+    randomnum = int(params['random_state'])
+    m=main(population_size=pop_size,
     generations=gen_num,
     crossover_rate=co_rate,
     mutation_rate=mut_rate,
     tournsize=tour_size,
     random_state=randomnum)
+
+    #print(pd.DataFrame(m[2]))
+    result = 12
+
+    print('Result = %f' % result)
+    with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
+        json.dump({'_scores': {'value': result}}, outfile)
+
     #else:
         #result = 0;
