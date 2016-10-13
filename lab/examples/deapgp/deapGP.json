@@ -1,5 +1,5 @@
 {
- "population-size": {
+ "population_size": {
     "description": "number of individuals (default = 100)",
     "type": "int",
     "default": 100
