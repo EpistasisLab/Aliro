@@ -1,5 +1,6 @@
 #working off of an ubuntu wily rootfs
 FROM scratch
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ADD files/xenial.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
@@ -8,6 +9,9 @@ ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git openssh-client net-tools iputils-ping python3-pip python3-setuptools python3-wheel python3-pandas \
     wget \
+    bzip2 ca-certificates \
+    libglib2.0-0 libxext6 libsm6 libxrender1 \
+    git mercurial subversion \
     build-essential \
     cmake \
     vim \
@@ -20,6 +24,11 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git ope
     python3-pydot \
     python3-tk \ 
 --no-install-recommends
+
+RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
+    wget --quiet https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh -O ~/anaconda.sh && \
+    /bin/bash ~/anaconda.sh -b -p /opt/conda && \
+    rm ~/anaconda.sh
 
 RUN pip3 install scikit-mdr
 RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
@@ -37,4 +46,5 @@ RUN cd /share/devel/Gp/gpocl && mkdir build && cd build && cmake ../ && make
 EXPOSE 5081
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 #CMD ["/bin/bash"]
+ENV PATH /opt/conda/bin:$PATH
 CMD ["/bin/bash", "/root/start.sh"]
