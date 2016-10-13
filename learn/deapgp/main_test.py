@@ -25,6 +25,8 @@ from deap import creator
 from deap import tools
 from deap import gp
 
+import pandas as pd
+
 # Define new functions
 def protectedDiv(left, right):
     try:
@@ -122,7 +124,24 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb=crossover_rate,
     mutpb=mutation_rate, ngen=generations, stats=mstats, halloffame=hof, verbose=True) # crossover_rate, mutation_rate, generations
-    # print log
+    stats_table = []
+    statslist = ["avg", "max", "min", "std"]
+    statsterm = ["fitness","size"]
+    # make header
+    stats_table_header = []
+    stats_table_header.append('gen')
+    stats_table_header.append('nevals')
+    for j in range(len(statsterm)):
+        for p in range(len(statslist)):
+            stats_table_header.append(statsterm[j]+'_'+statslist[p])
+    for i in range(generations+1):
+        stats_table.append([log[i]['gen'],log[i]['nevals']])
+        for j in range(len(statsterm)):
+            for p in range(len(statslist)):
+                stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
+    df = pd.DataFrame(stats_table)
+    print(df.to_csv(index=False ,header=stats_table_header))
+    #df.to_json()???
     return pop, log, hof
 
 if __name__ == "__main__":
