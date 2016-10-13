@@ -19,14 +19,19 @@ import random
 import json
 import argparse
 import pycurl
-
+import os
 import numpy
-
+import urllib3
+http = urllib3.PoolManager()
 from deap import algorithms
 from deap import base
 from deap import creator
 from deap import tools
 from deap import gp
+
+basedir='/share/devel/Gp/learn/lr/'
+tmpdir=basedir+'tmp/'
+
 
 # Define new functions
 def protectedDiv(left, right):
@@ -131,12 +136,12 @@ if __name__ == "__main__":
     co_rate = params['crossover_rate']
     mut_rate = params['mutation_rate']
     tour_size = params['tournsize']
-    random = params['random_state']
+    randomnum = params['random_state']
     main(population_size=pop_size,
     generations=gen_num,
     crossover_rate=co_rate,
     mutation_rate=mut_rate,
     tournsize=tour_size,
-    random_state=random)
+    random_state=randomnum)
     #else:
         #result = 0;

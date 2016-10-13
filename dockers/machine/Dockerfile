@@ -7,7 +7,8 @@ ADD files/ssh.tgz /
 ADD files/intel_opencl.tgz /
 ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
-RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git openssh-client net-tools iputils-ping python3-pip python3-setuptools python3-wheel python3-pandas \
+RUN apt-get update && apt-get install -y --allow-unauthenticated \
+    vim npm git openssh-client net-tools iputils-ping \
     wget \
     bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
@@ -18,11 +19,12 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim npm git ope
     lsb-core \
     cpio \ 
     mesa-common-dev \
-    python3-matplotlib \
-    python3-mysqldb \
-    ipython3 \
-    python3-pydot \
-    python3-tk \ 
+#    python3-pip python3-setuptools python3-wheel python3-pandas \
+#    python3-matplotlib \
+#    python3-mysqldb \
+#    ipython3 \
+#    python3-pydot \
+#    python3-tk \ 
 --no-install-recommends
 
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -30,10 +32,13 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
     rm ~/anaconda.sh
 
-RUN pip3 install scikit-mdr
+ENV PATH /opt/conda/bin:$PATH
+RUN pip install scikit-mdr
+RUN pip install deap
+RUN pip install urllib3
 RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 ADD files/version /tmp
-RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@devel.ceet.upenn.edu:IBI/Gp.git
+RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlacc.pmacs.upenn.edu:svitale/Gp.git
 RUN cd /share/devel/Gp/machine && npm install 
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
@@ -46,5 +51,4 @@ RUN cd /share/devel/Gp/gpocl && mkdir build && cd build && cmake ../ && make
 EXPOSE 5081
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 #CMD ["/bin/bash"]
-ENV PATH /opt/conda/bin:$PATH
 CMD ["/bin/bash", "/root/start.sh"]
