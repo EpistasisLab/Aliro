@@ -101,12 +101,12 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser("Perform deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--pop_size', dest='population_size', default=100)
-    parser.add_argument('--gen_num', dest='generations', default=20)
-    parser.add_argument('--co_rate', dest='crossover_rate', default=0.1)
-    parser.add_argument('--mut_rate', dest='mutation_rate', default=0.05)
-    parser.add_argument('--tour_size', dest='tournsize', default=3)
-    parser.add_argument('--rand', dest='random_state', default=3)
+    parser.add_argument('--population_size', dest='population_size', default=100)
+    parser.add_argument('--generations', dest='generations', default=20)
+    parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
+    parser.add_argument('--mutation_rate', dest='mutation_rate', default=0.05)
+    parser.add_argument('--tournsize', dest='tournsize', default=3)
+    parser.add_argument('--random_state', dest='random_state', default=3)
 
 
     params = vars(parser.parse_args())
