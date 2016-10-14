@@ -112,9 +112,9 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
             for p in range(len(statslist)):
                 stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
-    print(df.to_csv(index=False ,header=stats_table_header))
     #df.to_json()???
-    return pop, log, hof
+    #return pop, log, hof
+    return df
 
 if __name__ == "__main__":
     # Parse arguments
@@ -164,12 +164,8 @@ if __name__ == "__main__":
     tournsize=tour_size,
     random_state=randomnum)
 
-    #print(pd.DataFrame(m[2]))
-    result = 12
-
-    print('Result = %f' % result)
+    json_result = m.reset_index().to_json(orient='index')
     with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
-        json.dump({'_scores': {'value': result}}, outfile)
+        outfile.write(json_result)
 
-    #else:
-        #result = 0;
+exit(0)
