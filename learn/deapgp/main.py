@@ -113,7 +113,7 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
                 stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
     #df.to_json()???
-    return pop, log, hof, df
+    return pop, log, hof, df, stats_table_header
 
 if __name__ == "__main__":
     # Parse arguments
@@ -156,18 +156,17 @@ if __name__ == "__main__":
     mut_rate = float(params['mutation_rate'])
     tour_size = int(params['tournsize'])
     randomnum = int(params['random_state'])
-    s=main(population_size=pop_size,
+    pop, log, hof, df, dfh=main(population_size=pop_size,
     generations=gen_num,
     crossover_rate=co_rate,
     mutation_rate=mut_rate,
     tournsize=tour_size,
     random_state=randomnum)
-    m = s[3]
 
-    json_result = m.reset_index().to_json(orient='index')
+    json_result = df.reset_index().to_json(orient='index')
     with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
         outfile.write(json_result)
-    pic_result = m.to_pickle(tmpdir + _id +  '/value.pickle')
-    m.to_csv(tmpdir + _id +  '/value.csv')
+    pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
+    df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
 
 exit(0)
