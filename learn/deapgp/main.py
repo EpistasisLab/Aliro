@@ -1,21 +1,13 @@
-#    This file is part of EAP.
+#    This file is based on a example of DEAP.
 #
-#    EAP is free software: you can redistribute it and/or modify
+#    DEAP is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as
 #    published by the Free Software Foundation, either version 3 of
 #    the License, or (at your option) any later version.
-#
-#    EAP is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser General Public
-#    License along with EAP. If not, see <http://www.gnu.org/licenses/>.
 
 import operator
 import math
-import random
+#import random
 import json
 import argparse
 import pycurl
@@ -23,7 +15,6 @@ import os
 import numpy
 import urllib3
 import pandas as pd
-http = urllib3.PoolManager()
 from deap import algorithms
 from deap import base
 from deap import creator
@@ -33,7 +24,7 @@ import pandas as pd
 
 basedir='/share/devel/Gp/learn/deapgp/'
 tmpdir=basedir+'tmp/'
-
+http = urllib3.PoolManager()
 
 # Define new functions
 def protectedDiv(left, right):
@@ -44,7 +35,7 @@ def protectedDiv(left, right):
 
 
 def main(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state):
-    random.seed(random_state)
+    np.random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
     pset.addPrimitive(operator.sub, 2)
@@ -53,7 +44,7 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
     pset.addPrimitive(operator.neg, 1)
     pset.addPrimitive(math.cos, 1)
     pset.addPrimitive(math.sin, 1)
-    pset.addEphemeralConstant("rand101", lambda: random.randint(-1,1))
+    pset.addEphemeralConstant("rand101", lambda: np.random.randint(-1,1))
     pset.renameArguments(ARG0='x')
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -112,7 +103,6 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
             for p in range(len(statslist)):
                 stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
-    #df.to_json()???
     return pop, log, hof, df, stats_table_header
 
 if __name__ == "__main__":
@@ -120,7 +110,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Perform deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
     parser.add_argument('--population_size', dest='population_size', default=100)
-    parser.add_argument('--generations', dest='generations', default=20)
+    parser.add_argument('--generations', dest='generations', default=10)
     parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
     parser.add_argument('--mutation_rate', dest='mutation_rate', default=0.05)
     parser.add_argument('--tournsize', dest='tournsize', default=3)
@@ -132,6 +122,7 @@ if __name__ == "__main__":
     _id = params['_id']
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
+    #can input points default points [x/10. for x in range(-10,10)]
     #response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
     #jsondata=json.loads(response.data.decode('utf-8'))
     #files = jsondata['_files']
