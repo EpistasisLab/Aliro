@@ -1,0 +1,24 @@
+{
+	"alpha": {
+		"description": "additive (Laplace/Lidstone) smoothing parameter",
+		"type": "enum",
+		"values": ["0.001", "0.01", "0.1", "1.0", "10.0", "100.0"],
+		"default": "1.0",
+		"style": "radio"
+	},
+	"binarize": {
+		"description": "threshold for binarizing (mapping to booleans) of sample features",
+		"type": "enum",
+		"values": ["0", "0.25", "0.5", "0.75", "1.0"],
+		"default": "0",
+		"style": "radio"
+
+	},
+	"fit_prior": {
+		"description": "whether to learn class prior probabilities or not",
+		"type": "enum",
+		"values": ["true", "false"],
+		"default": "true",
+		"style": "radio"
+	}
+}
