@@ -40,17 +40,7 @@ block content
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
-          else if (val.type === "enum-select")
-            .form-group.row
-              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
-              .col-sm-9
-                select.form-control.c-select(name="#{key}", id="#{key}")
-                  each value in val.values
-                    if (value === val.default)
-                      option(value="#{value}", selected) #{value}
-                    else
-                      option(value="#{value}") #{value}
-          else if(val.type === "enum-checkbox")
+          else if(val.type === "enum" && val.style === "checkbox")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
@@ -68,7 +58,7 @@ block content
                         span #{value}
                         if (val.labels) 
                           span (#{val.labels[index]})
-          else if(val.type === "enum-radio")
+          else if(val.type === "enum" && val.style === "radio")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9      
@@ -86,6 +76,16 @@ block content
                         span #{value} 
                         if (val.labels) 
                           span (#{val.labels[index]})
+          else if(val.type === "enum")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                select.form-control.c-select(name="#{key}", id="#{key}")
+                  each value in val.values
+                    if (value === val.default)
+                      option(value="#{value}", selected) #{value}
+                    else
+                      option(value="#{value}") #{value}
           else if(val.type === "slider")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
