@@ -34,8 +34,8 @@ def protectedDiv(left, right):
         return 1
 
 
-def main(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state):
-    numpy.random.seed(random_state)
+def main(population_size,generations,crossover_rate,mutation_rate,tournsize):
+    #np.random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
     pset.addPrimitive(operator.sub, 2)
@@ -44,7 +44,7 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
     pset.addPrimitive(operator.neg, 1)
     pset.addPrimitive(math.cos, 1)
     pset.addPrimitive(math.sin, 1)
-    pset.addEphemeralConstant("rand101", lambda: numpy.random.randint(-1,1))
+    pset.addEphemeralConstant("rand101", lambda: np.random.randint(-1,1))
     pset.renameArguments(ARG0='x')
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
