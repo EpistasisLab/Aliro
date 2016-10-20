@@ -15,44 +15,63 @@ http = urllib3.PoolManager()
 class FGBernoulliNB:
 
 	def __init__(self):
-		self.params = parse_args(self.get_args())
+		# should be called args
+		self.params = parse_args(self.get_params())
 
-	def get_args(self):
-		return [
-			{ 'name': 'alpha', 'type': float },
-			{ 'name': 'binarize', 'type': float },
-			{ 'name': 'fit_prior', 'type': bool },
-		]
+	def get_params(self):
+		return {
+			'alpha': { 
+				'type': float, 
+				'default': 1.0 
+			},
+			'binarize': { 
+				'type': float, 
+				'default': 0.0 
+			},
+			'fit_prior': { 
+				'type': bool, 
+				'default': True 
+			}
+		}
 
+	#explicity accept the parameters?
 	def run(self):
 		# generate data
 		X = np.random.randint(2, size=(6, 100))
 		Y = np.array([1, 2, 3, 4, 4, 5])
-		# this isn't accepting all the params correctly --> look into this
-		clf = BernoulliNB(**self.params)
-		print clf.get_params()
+
+		for p in self.params.values():
+			print p
+			print type(p)
+
+		clf = BernoulliNB()
+		#print clf.get_params
 		clf.fit(X, Y)
-
-		# get accepted parameters (in get_args function) so we don't have to manually set them, then call this in the get_args function instead of manually defining
-		print clf.__init__.__code__.co_varnames
-
-		# set correct value types!
-		#BernoulliNB(self.params)
 
 		return clf.predict(X[2:3])
 
-
-def parse_args(args):
+def parse_args(params):
 	parser = argparse.ArgumentParser(description="parse command line arguments")
 
-	# do i need to set the type or will it work without the proper type?
-	for arg in args:
-		parser.add_argument('--' + arg['name'], dest=arg['name'], type=arg['type'], default=None)
+	# parse args for each parameter
+	for key, val in params.items():
+		if(val['type'] == bool):
+			parser.add_argument('--' + key, dest=key, type=setBool, default=val['default'])
+		else:	
+			parser.add_argument('--' + key, dest=key, type=val['type'], default=val['default']) # shouldn't need set default?
 
-	params = vars(parser.parse_args())
+	args = vars(parser.parse_args())
 
-	return params
+	return args
 
+def setBool(val):
+	# set validation for float bool values?
+	if(val.lower() == 'true'):
+		return True
+	elif(val.lower() == 'false'):
+		return False
+	else:	
+		raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 if __name__ == "__main__":
 	FGBernoulliNB().run()
