@@ -8,90 +8,100 @@
 
 #    example which maximizes the sum of a list of integers
 #    each of which can be 0 or 1
-from numpy import random
-
+import numpy as np
+from sr_deapgp import SymbReg
 from deap import base
 from deap import creator
 from deap import tools
+from deap import algorithms
+
+def metaga(func, args_type, args_range, meta_gen, meta_pop_size):
+
+    def argu_gen(args_type, args_range):
+        """
+        random arguments genrator
+        population_size,generations,crossover_rate,mutation_rate,tournsize
+        return *args
+        """
+        args_list = []
+        for atype, arange in zip(args_type, args_range):
+            if atype == "int":
+                args_list.append(np.random.randint(arange[0], arange[1]))
+            elif atype == 'float':
+                args_list.append(arange[0]+ np.random.random() * (arange[1]-arange[0]))
+        return tuple(args_list)
 
 
-creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-creator.create("Individual", list, fitness=creator.FitnessMin)
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+    creator.create("Individual", list, fitness=creator.FitnessMin)
 
-toolbox = base.Toolbox()
+    toolbox = base.Toolbox()
 
-# Attribute generator
-#                      define 'attr_bool' to be an attribute ('gene')
-#                      which corresponds to integers sampled uniformly
-#                      from the range [0,1] (i.e. 0 or 1 with equal
-#                      probability)
+    # need submit this to differnt machines
+    # LowerGpIndividual is for generate one individual
+    def LowerGpIndividual( args_type, args_range):
+        """
+        Lower level GP
+        As one individual in metaga
+        """
+        argu = argu_gen(args_type, args_range)
+        pop, log, hof, df, dfh = func(*argu)
+        print(hof.keys[0].values[0])
+        return hof.keys[0].values[0]
 
-## need get ranges from FGlab here
+    toolbox.register("args_gen", argu_gen, args_type, args_range)
+    #toolbox.register("lower_gp", random.randint, 0, 1)
 
-def LowerGpIndividual(func,*argu)
-    return func(*argu)
+    # Structure initializers
+    #                         define 'individual' to be an individual
+    #                         consisting of 100 'attr_bool' elements ('genes')
 
-def LowerGpPopultion()
+    toolbox.register("individual", tools.initIterate, creator.Individual,
+        toolbox.args_gen)
 
-def rand_agru():
-    # e.g generation size
-    gen_size = random.randint(10,100) # generation size for one deapGP
-    return argu*
+    # define the population to be a list of individuals
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-### random arguments genrator here
-#population_size,generations,crossover_rate,mutation_rate,tournsize,random_state
+    # the goal ('fitness') function to return the best run's fitness
 
-# also need get from json
-argu_type = [int, int, float, float, int, int]
-argu_range = [[10, 500], [5,100], [0.0, 1.0], [0.0, 1.0], [1, 4]
+    def Best_GP_Individual(individual):
+        """
+        Lower level GP
+        As one individual in metaga
+        """
+        fitness_list = []
+        for arg in individual:
+            pop, log, hof, df, dfh = func(*arg)
+            print(arg,hof.keys[0].values[0])
+            fitness_list.append(hof.keys[0].values[0])
+        return min(fitness_list),
 
+    #----------
+    # Operator registration
+    #----------
+    # register the goal / fitness function
+    toolbox.register("evaluate", Best_GP_Individual)
 
-def argu_gen(*argu):
+    # register the crossover operator
+    toolbox.register("mate", tools.cxTwoPoint)
 
-toolbox.register("argu_gen", rand_argu)
+    # register a mutation operator with a probability to
+    # flip each attribute/gene of 0.05
+    toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
 
-# Structure initializers
-#                         define 'individual' to be an individual
-#                         consisting of 100 'attr_bool' elements ('genes')
+    # operator for selecting individuals for breeding the next
+    # generation: each individual of the current generation
+    # is replaced by the 'fittest' (best) of three individuals
+    # drawn randomly from the current generation.
+    toolbox.register("select", tools.selTournament, tournsize=3)
 
-# LowerGpIndividual is for generate one individual
-toolbox.register("individual", LowerGpIndividual, creator.Individual,
-    toolbox.argu_gen)
+    #----------
 
-# define the population to be a list of individuals
-toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
-# the goal ('fitness') function to return the best run's fitness
-def evalOneMin(individual):
-    return min(individual),
-
-#----------
-# Operator registration
-#----------
-# register the goal / fitness function
-toolbox.register("evaluate", evalOneMin)
-
-# register the crossover operator
-toolbox.register("mate", tools.cxTwoPoint)
-
-# register a mutation operator with a probability to
-# flip each attribute/gene of 0.05
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
-
-# operator for selecting individuals for breeding the next
-# generation: each individual of the current generation
-# is replaced by the 'fittest' (best) of three individuals
-# drawn randomly from the current generation.
-toolbox.register("select", tools.selTournament, tournsize=3)
-
-#----------
-
-def main():
-    random.seed(64)  # random seed in magaGP
+    np.random.seed(64)  # random seed in magaga
 
     # create an initial population of 300 individuals (where
     # each individual is a list of integers)
-    pop = toolbox.population(n=300)
+    pop = toolbox.population(n=meta_pop_size)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
@@ -100,13 +110,26 @@ def main():
     #
     # NGEN  is the number of generations for which the
     #       evolution runs
-    CXPB, MUTPB, NGEN = 0.5, 0.2, 40
+    CXPB, MUTPB = 0.5, 0.2
+    NGEN = meta_gen
 
     print("Start of evolution")
+    hof = tools.HallOfFame(1)
+    stats = tools.Statistics(lambda ind: ind.fitness.values)
+    stats.register("avg", np.mean)
+    stats.register("std", np.std)
+    stats.register("min", np.min)
+    stats.register("max", np.max)
 
-    # Evaluate the entire population
+    pop, log = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=NGEN,
+                                   stats=stats, halloffame=hof, verbose=True)
+    best_ind = tools.selBest(pop, 1)[0]
+    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+
+    """# Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
+        print(fit)
         ind.fitness.values = fit
 
     print("  Evaluated %i individuals" % len(pop))
@@ -166,7 +189,13 @@ def main():
     print("-- End of (successful) evolution --")
 
     best_ind = tools.selBest(pop, 1)[0]
-    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))"""
 
 if __name__ == "__main__":
-    main()
+
+    # need get from FGlab optimization page
+    #argu_list = [population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
+    args_type = ["int", "int", "float", "float", "int"]
+    args_range = [[10, 500], [5,100], [0.0, 1.0], [0.0, 1.0], [1, 4]]
+
+    metaga(SymbReg, args_type, args_range, 10, 10)
