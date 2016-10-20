@@ -34,7 +34,7 @@ def protectedDiv(left, right):
         return 1
 
 
-def main(population_size,generations,crossover_rate,mutation_rate,tournsize):
+def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize):
     #np.random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
@@ -44,7 +44,8 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize):
     pset.addPrimitive(operator.neg, 1)
     pset.addPrimitive(math.cos, 1)
     pset.addPrimitive(math.sin, 1)
-    pset.addEphemeralConstant("rand101", lambda: numpy.random.randint(-1,1))
+    # generations of different Ephemeral construction name
+    pset.addEphemeralConstant("rand"+str(10000*numpy.random.random()), lambda: numpy.random.randint(-1,1))
     pset.renameArguments(ARG0='x')
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -86,7 +87,7 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize):
     mstats.register("max", numpy.max)
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb=crossover_rate,
-    mutpb=mutation_rate, ngen=generations, stats=mstats, halloffame=hof, verbose=True) # crossover_rate, mutation_rate, generations
+    mutpb=mutation_rate, ngen=generations, stats=mstats, halloffame=hof, verbose=False) # crossover_rate, mutation_rate, generations
     stats_table = []
     statslist = ["avg", "max", "min", "std"]
     statsterm = ["fitness","size"]
@@ -104,60 +105,3 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize):
                 stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
     return pop, log, hof, df, stats_table_header
-
-if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform deapGP")
-    parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--population_size', dest='population_size', default=100)
-    parser.add_argument('--generations', dest='generations', default=10)
-    parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
-    parser.add_argument('--mutation_rate', dest='mutation_rate', default=0.05)
-    parser.add_argument('--tournsize', dest='tournsize', default=3)
-    parser.add_argument('--random_state', dest='random_state', default=3)
-
-
-    params = vars(parser.parse_args())
-    # Save all attached files
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-    #can input points default points [x/10. for x in range(-10,10)]
-    #response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    #jsondata=json.loads(response.data.decode('utf-8'))
-    #files = jsondata['_files']
-    #numfiles = 0;
-    #file_name = ''
-    #for x in files:
-    #    time.sleep(5) #
-    #    file_id = x['_id']
-    #    file_name = x['filename']
-    #    c = pycurl.Curl()
-    #    c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
-    #    with open(tmpdir + file_name, 'wb') as f:
-    #        c.setopt(c.WRITEFUNCTION, f.write)
-    #        c.perform()
-    #        c.close()
-    #        numfiles += 1
-    #if numfiles == 1:
-
-    pop_size = int(params['population_size'])
-    gen_num = int(params['generations'])
-    co_rate = float(params['crossover_rate'])
-    mut_rate = float(params['mutation_rate'])
-    tour_size = int(params['tournsize'])
-    randomnum = int(params['random_state'])
-    pop, log, hof, df, dfh=main(population_size=pop_size,
-    generations=gen_num,
-    crossover_rate=co_rate,
-    mutation_rate=mut_rate,
-    tournsize=tour_size,
-    random_state=randomnum)
-
-    json_result = df.reset_index().to_json(orient='index')
-    with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
-        outfile.write(json_result)
-    pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
-    df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
-
-exit(0)
