@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.naive_bayes import BernoulliNB
+from sklearn.cross_validation import train_test_split
+from sklearn import datasets # just for testing
 import pandas as pd #for file parsing?
 import argparse
 import os
@@ -15,57 +17,58 @@ http = urllib3.PoolManager()
 class FGBernoulliNB:
 
 	def __init__(self):
-		# should be called args
-		self.params = parse_args(self.get_params())
+		self.args = parse_args(self.get_params())
+		self.file = grab_file()
+		self.result = self.run()
 
 	def get_params(self):
 		return {
-			'alpha': { 
-				'type': float, 
-				'default': 1.0 
-			},
-			'binarize': { 
-				'type': float, 
-				'default': 0.0 
-			},
-			'fit_prior': { 
-				'type': bool, 
-				'default': True 
-			}
+			'alpha': 
+				{ 'type': float, 'default': 1.0 },
+			'binarize': 
+				{ 'type': float, 'default': 0.0 },
+			'fit_prior': 
+				{ 'type': bool, 'default': True }
 		}
 
-	#explicity accept the parameters?
 	def run(self):
 		# generate data
-		X = np.random.randint(2, size=(6, 100))
-		Y = np.array([1, 2, 3, 4, 4, 5])
+		dataset = np.genfromtxt('fold_2_testFeatVec.csv', delimiter=',')
+		print dataset
 
-		for p in self.params.values():
-			print p
-			print type(p)
+		X, y = dataset.data, dataset.target
+		# determine constant test_size value, or if it will vary
+		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=5)
 
-		clf = BernoulliNB()
-		#print clf.get_params
-		clf.fit(X, Y)
+		model = BernoulliNB(**self.args)
+		model.fit(X_train, y_train)
+		print model.score(X_test, y_test)
 
-		return clf.predict(X[2:3])
+		return model.predict(X_test)
+
+def grab_file():
+	print ''
+	#parser = argparse.ArgumentParser()
+	#parser.add_argument('--_id', dest='_id', default=None)
+
+
+	#_id = vars(parser.parse_args())['--_id']
 
 def parse_args(params):
-	parser = argparse.ArgumentParser(description="parse command line arguments")
+	parser = argparse.ArgumentParser()
 
 	# parse args for each parameter
 	for key, val in params.items():
 		if(val['type'] == bool):
-			parser.add_argument('--' + key, dest=key, type=setBool, default=val['default'])
+			parser.add_argument('--' + key, dest=key, type=bool_type, default=val['default'])
 		else:	
-			parser.add_argument('--' + key, dest=key, type=val['type'], default=val['default']) # shouldn't need set default?
+			parser.add_argument('--' + key, dest=key, type=val['type'], default=val['default'])
 
 	args = vars(parser.parse_args())
 
 	return args
 
-def setBool(val):
-	# set validation for float bool values?
+def bool_type(val):
 	if(val.lower() == 'true'):
 		return True
 	elif(val.lower() == 'false'):
@@ -74,6 +77,6 @@ def setBool(val):
 		raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 if __name__ == "__main__":
-	FGBernoulliNB().run()
+	print FGBernoulliNB().result
 
 
