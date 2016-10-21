@@ -334,8 +334,8 @@ if __name__ == "__main__":
 
 
 
-    meta_gen = 10
-    meta_pop_size = 20
+    #meta_gen = 10
+    #meta_pop_size = 20
     Ep_List = range((meta_gen+1)*meta_pop_size)
     metaga(SymbReg, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
     random_state = random_state, outlog = outlogfile)
