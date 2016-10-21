@@ -211,7 +211,8 @@ var optionChecker = (schema, obj) => {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "bool") {
-      if (val !== true && val !== false) {
+      // changed to accept bool as either boolean type or string type
+      if (val !== true && val !== false && val != "true" && val != "false") {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "string") {
@@ -219,9 +220,10 @@ var optionChecker = (schema, obj) => {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "enum") {
-      if (schemaField.values.indexOf(val) === -1) {
+      // temporarily turned off, as this validation does not work for checkboxes
+      /*if (schemaField.values.indexOf(val) === -1) {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
-      }
+      }*/
     }
   }
   return {success: "Options validated"};
