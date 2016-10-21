@@ -34,7 +34,7 @@ def protectedDiv(left, right):
         return 1
 
 
-def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize):
+def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize, Ephe_Cont_Name = 'rand101'):
     #np.random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
@@ -45,7 +45,7 @@ def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize):
     pset.addPrimitive(math.cos, 1)
     pset.addPrimitive(math.sin, 1)
     # generations of different Ephemeral construction name
-    pset.addEphemeralConstant("rand"+str(10000*numpy.random.random()), lambda: numpy.random.randint(-1,1))
+    pset.addEphemeralConstant(Ephe_Cont_Name, lambda: numpy.random.randint(-1,2))
     pset.renameArguments(ARG0='x')
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
