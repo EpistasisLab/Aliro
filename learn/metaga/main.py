@@ -2,6 +2,7 @@
 #
 import numpy as np
 import time
+import argparse
 from sr_deapgp import SymbReg
 #from decorator import Mut_Ranges
 from deap import base
@@ -9,8 +10,12 @@ from deap import creator
 from deap import tools
 from deap import algorithms
 
-def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100, random_state = 99, outlog = None):
 
+
+def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
+    """
+    need add some details about arguments
+    """
     def argu_gen(args_type, args_range, spec = False, args_mut_type = None, old_arg = None):
         """
         This is a random arguments genrator
@@ -31,6 +36,8 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
             return *args is spec = False
             return one argument is spec > 0
         """
+
+
         if not spec:
             # return a tuple
             args_list = []
@@ -66,6 +73,10 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
             elif atype == "bool":
                 arg = bool(np.random.randint(0, 2))
             return arg
+    # Ephe_Cont_Name generater
+    # to avoid repeat name
+
+
 
 
     ### This step need to FGlab to submit to differnt machines
@@ -79,9 +90,10 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
             A list of arguments
 
         """
-
+        global Ep_List
         arg = tuple(individual)
-        pop, log, hof2, df, dfh = func(*arg)
+        pop, log, hof2, df, dfh = func(*arg, Ephe_Cont_Name='rand_' + str(Ep_List[0]))
+        Ep_List = Ep_List[1:] # removed used names
         return (hof2.keys[0].values[0]),
 
     def mut_args(individual, indpb, args_type, args_range, args_mut_type):
@@ -111,6 +123,13 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
             if if_mut(indpb):
                 tmp_ind[arg_idx] = argu_gen(args_type, args_range, spec = arg_idx + 1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_idx])
         return tmp_ind,
+
+    Ep_List = []
+    def uniq_name_test(name_list, arg):
+        if name_list.count(Ep_list):
+            return False
+        else:
+            return True
 
 
 
@@ -149,7 +168,7 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
     # register a mutation operator with a probability to
 
 
-    toolbox.register("mutate", mut_args, indpb = 0.05, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args, indpb = 0.5, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
@@ -262,7 +281,7 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-
+    return best_ind
     """
     # short version0
     # hard to get detail from log
@@ -286,8 +305,40 @@ if __name__ == "__main__":
     ## meta_pop_size
     # need get arguments type and arguments ranges from FGlab optimization page
     #args_list = [population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
+
+    # Parse arguments
+    parser = argparse.ArgumentParser("Perform MetaGA")
+    parser.add_argument('--meta_pop', dest='meta_pop', default=50)
+    parser.add_argument('--meta_gen', dest='meta_gen', default=10)
+    parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
+    parser.add_argument('--max_ll_pop', dest='max_ll_pop', default=20)
+    parser.add_argument('--random_state', dest='random_state', default=99)
+    parser.add_argument('--log', dest='log', default = None)
+
+
+    params = vars(parser.parse_args())
+    # Save all attached files
+
+    meta_pop_size = int(params['meta_pop'])
+    meta_gen = int(params['meta_gen'])
+    max_ll_gen = int(params['max_ll_gen'])
+    max_ll_pop = int(params['max_ll_pop'])
+    random_state = int(params['random_state'])
+    outlogfile = params['log']
+    if outlogfile:
+        outlogfile = str(outlogfile)
+
     args_type = ["int", "int", "float", "float", "int"]
-    args_range = [[5, 20], [5,20], [0.0, 1.0], [0.0, 1.0], [2, 5]]
+    args_range = [[5, max_ll_pop], [5,max_ll_pop], [0.0, 1.0], [0.0, 1.0], [2, 5]]
     args_mut_type = ['increase', 'increase', 'random', 'random', 'random']
 
-    metaga(SymbReg, args_type, args_range, args_mut_type, 10, 150, random_state = 64)
+
+
+    meta_gen = 10
+    meta_pop_size = 20
+    Ep_List = range((meta_gen+1)*meta_pop_size)
+    metaga(SymbReg, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
+    random_state = random_state, outlog = outlogfile)
+
+    #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]
+    #metaga(SymbReg, args_type, args_range, args_mut_type, 10, 150, random_state = 64, outlog = 'log_gen10_ind150_deapgp_maxpop&gen50.tsv')
