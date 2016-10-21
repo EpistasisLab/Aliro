@@ -4,7 +4,7 @@
 from functools import wraps
 
 def Mut_Ranges(func):
-    """Decorator that wraps functions that indicate the beginning of a new GP generation.
+    """Decorator that wraps functions for mutFlipBit
 
     Parameters
     ----------
@@ -36,16 +36,14 @@ def Mut_Ranges(func):
         Need_Mutation = True
         while Need_Mutation:
             print(individual)
-            individual_old = list(individual)
             individual_new = func(individual, indpb = indpb)
-            ind_new_list = list(individual_new)[0]
+            ind_new_list = list(individual_new)
             Need_Mutation = False
             for arg, arg_rg in zip(ind_new_list, args_range):
                 if arg > arg_rg[1] or arg < arg_rg[0]:
                     print('Someting Wrong')
-                    print(individual,individual_old,individual_new)
-                    Need_Mutation = False
-                    break
+                    print(individual,individual_new)
+                    Need_Mutation = True
         print(individual_new)
         return individual_new
     return wrapped_func
