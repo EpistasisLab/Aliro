@@ -220,10 +220,13 @@ var optionChecker = (schema, obj) => {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "enum") {
-      // temporarily turned off, as this validation does not work for checkboxes
-      /*if (schemaField.values.indexOf(val) === -1) {
-        return {error: "Field " + prop + " of type " + type + " is invalid"};
-      }*/
+        // changed to allow check for both single and multiple val(s)
+        var selected = val.split(',');
+        for(var i = 0; i < selected.length; i++) {
+          if (schemaField.values.indexOf(selected[i]) === -1) {
+            return {error: "Field " + prop + " of type " + type + " is invalid"};
+          }
+        }
     }
   }
   return {success: "Options validated"};
