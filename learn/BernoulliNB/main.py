@@ -74,6 +74,7 @@ def get_input(_id):
 	else:
 		return 0
 
+# should everything up to the run of the algorithm be automated in a utilities function?
 def run_algorithm(args, input_file):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 
