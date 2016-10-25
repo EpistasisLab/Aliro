@@ -58,7 +58,7 @@ def get_input(_id):
 	files = jsondata['_files']
 	input_file = ''
 
-	# do we need the loop if upon submission, there will only be one file?
+	# do we need the loop if upon submission, there should only be one file?
 	numfiles = 0;
 	for file in files:
 		#time.sleep(5) # do we need this?
@@ -99,6 +99,11 @@ def run_algorithm(args, input_file):
 	return { 'score': score, 'predict': predict.tolist() }
 
 if __name__ == "__main__":
+	# maybe get input file function first, because here we also get information about the parameters (just for the experiment though)
+	# or maybe not...
+	# FOR PARAMS, do an http request on the project itself to retrieve all the parameter information!!
+	# this will make it easier to support additions to algorithms, if both the input page in the ui and the function itself is based on the json representation
+
 	args = parse_args()
 	input_file = get_input(args['_id'])
 	result = run_algorithm(args, input_file)
