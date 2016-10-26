@@ -1,6 +1,6 @@
 {
 	"alpha": {
-		"description": "additive (Laplace/Lidstone) smoothing parameter",
+		"description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
 		"type": "float",
 		"default": 1.0,
 		"ui": {
@@ -9,7 +9,7 @@
 		}
 	},
 	"binarize": {
-		"description": "threshold for binarizing (mapping to booleans) of sample features",
+		"description": "Threshold for binarizing (mapping to booleans) of sample features. If None, input is presumed to already consist of binary vectors.",
 		"type": "float",
 		"default": 0.0,
 		"ui": {
@@ -18,8 +18,8 @@
 		}
 	},
 	"fit_prior": {
-		"description": "whether to learn class prior probabilities or not",
-		"type": "string",
+		"description": "Whether to learn class prior probabilities or not. If false, a uniform prior will be used.",
+		"type": "bool",
 		"default": true,
 		"ui": {
 			"style": "radio",
