@@ -25,13 +25,15 @@ class Experiment:
 
 		# parse arguments
 		args = parse_args(params)
-		print args
 
 		# set exp id
 		self._id = args['_id']
 
 		# get input file
 		input_file = get_input_file(self._id, self.tmpdir)
+
+		# temp print statement
+		print('parsed args:', args)
 
 		return (args, input_file)
 
