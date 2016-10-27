@@ -1,6 +1,12 @@
 import numpy as np
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.cross_validation import train_test_split
+# will eventually do this in the correct way -- install a library/package
+import os, sys
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
+
 from utils import Experiment
 
 def run_algorithm(args, input_file):
