@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.cross_validation import train_test_split
-from learn_utilities import Experiment
+from utils import Experiment
 
 def run_algorithm(args, input_file):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
