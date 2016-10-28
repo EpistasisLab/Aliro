@@ -211,7 +211,8 @@ var optionChecker = (schema, obj) => {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "bool") {
-      if (val !== true && val !== false) {
+      // changed to accept bool as either boolean type or string type
+      if (val !== true && val !== false && val != "true" && val != "false") {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "string") {
@@ -219,9 +220,13 @@ var optionChecker = (schema, obj) => {
         return {error: "Field " + prop + " of type " + type + " is invalid"};
       }
     } else if (type === "enum") {
-      if (schemaField.values.indexOf(val) === -1) {
-        return {error: "Field " + prop + " of type " + type + " is invalid"};
-      }
+        // changed to allow check for both single and multiple val(s)
+        var selected = val.split(',');
+        for(var i = 0; i < selected.length; i++) {
+          if (schemaField.values.indexOf(selected[i]) === -1) {
+            return {error: "Field " + prop + " of type " + type + " is invalid"};
+          }
+        }
     }
   }
   return {success: "Options validated"};
