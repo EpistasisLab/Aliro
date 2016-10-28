@@ -3,7 +3,7 @@
 import numpy as np
 import time
 import argparse
-from sr_deapgp import SymbReg
+from func_dict import func_dict, fitness_dict
 #from decorator import Mut_Ranges
 from deap import base
 from deap import creator
@@ -12,7 +12,7 @@ from deap import algorithms
 
 
 
-def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
+def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
     """
     need add some details about arguments
     """
@@ -79,23 +79,6 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
 
 
 
-    ### This step need to FGlab to submit to differnt machines
-    def Best_GP_Individual(individual):
-        """
-        Lower level GP
-        As one individual in metaga
-        Parameters
-        ----------
-        individual: DEAP individual
-            A list of arguments
-
-        """
-        global Ep_List
-        arg = tuple(individual)
-        pop, log, hof2, df, dfh = func(*arg, Ephe_Cont_Name='rand_' + str(Ep_List[0]))
-        Ep_List = Ep_List[1:] # removed used names
-        return (hof2.keys[0].values[0]),
-
     def mut_args(individual, indpb, args_type, args_range, args_mut_type):
         """
         Perform a replacement mutation on Argumnet in an individual
@@ -132,9 +115,13 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
             return True
 
 
-
-    creator.create("FitnessMin", base.Fitness, weights=(-1.0, ))
-    creator.create("Individual", list, fitness=creator.FitnessMin)
+    if fitness_rule == 'FitnessMin':
+        creator.create("GoodFitness", base.Fitness, weights=(-1.0, ))
+    elif fitness_rule == 'FitnessMax':
+        creator.create("GoodFitness", base.Fitness, weights=(1.0, ))
+    else:
+        raise ValueError('invalid input in fitness_rule')
+    creator.create("Individual", list, fitness=creator.GoodFitness)
 
     toolbox = base.Toolbox()
 
@@ -160,7 +147,7 @@ def metaga(func, args_type, args_range, args_mut_type= None, meta_gen = 10 , met
     # Operator registration
     #----------
     # register the goal / fitness function
-    toolbox.register("evaluate", Best_GP_Individual)
+    toolbox.register("evaluate", fitness_func)
 
     # register the crossover operator in order
     toolbox.register("mate", tools.cxTwoPoint)
@@ -308,6 +295,8 @@ if __name__ == "__main__":
 
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
+    parser.add_argument('--method', dest='method', default='SymbReg')
+    parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=50)
     parser.add_argument('--meta_gen', dest='meta_gen', default=10)
     parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
@@ -318,7 +307,8 @@ if __name__ == "__main__":
 
     params = vars(parser.parse_args())
     # Save all attached files
-
+    method = str(params['method'])
+    fns_rule = str(params['fitness_rule'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
     max_ll_gen = int(params['max_ll_gen'])
@@ -329,15 +319,20 @@ if __name__ == "__main__":
         outlogfile = str(outlogfile)
 
     args_type = ["int", "int", "float", "float", "int"]
-    args_range = [[5, max_ll_pop], [5,max_ll_pop], [0.0, 1.0], [0.0, 1.0], [2, 5]]
-    args_mut_type = ['increase', 'increase', 'random', 'random', 'random']
-
-
+    args_range = [[5, max_ll_pop], [5, max_ll_gen], [0.0, 1.0], [0.0, 1.0], [2, 5]]
+    args_mut_type = ['random', 'random', 'random', 'random', 'random']
+    # get function for metaGA
+    try:
+        func = func_dict[method]
+        fitness_func = fitness_dict[method]
+    except KeyError:
+        raise ValueError('invalid input in method')
 
     #meta_gen = 10
     #meta_pop_size = 20
-    Ep_List = range((meta_gen+1)*meta_pop_size)
-    metaga(SymbReg, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
+
+    print(args_range)
+    metaga(func, fitness_func, fns_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
     random_state = random_state, outlog = outlogfile)
 
     #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]

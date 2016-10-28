@@ -32,7 +32,8 @@ def protectedDiv(left, right):
         return left / right
     except ZeroDivisionError:
         return 1
-
+# max 1000 generations and 10000 individual
+Ep_List = range((1000+1)*10000)
 
 def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize, Ephe_Cont_Name = 'rand101'):
     #np.random.seed(random_state)
@@ -105,3 +106,21 @@ def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize, 
                 stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
     return pop, log, hof, df, stats_table_header
+
+### This step need to FGlab to submit to differnt machines
+def SymbReg_Best_GP_Individual(individual):
+    """
+    Lower level GP
+    As one individual in metaga
+    Parameters
+    ----------
+    individual: DEAP individual
+        A list of arguments
+
+    """
+    global Ep_List
+    arg = tuple(individual)
+    pop, log, hof2, df, dfh = SymbReg(*arg, Ephe_Cont_Name='rand_' + str(Ep_List[0]))
+    Ep_List = Ep_List[1:] # removed used names
+    best_ind = tools.selBest(pop, 1)[0]
+    return (best_ind.fitness.values[0]),
