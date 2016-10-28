@@ -13,10 +13,10 @@ class Experiment:
 	def __init__(self, name):
 		self.name = name
 		self._id = ''
-		# schema = '/share/devel/Gp/lab/examples/BernoulliNB/BernoulliNB.json'
-		self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + name + '/' + name + '.json'
-		# self.basedir = '/share/devel/Gp/learn/BernoulliNB/'
-		self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + name + '/'
+		self.schema = '/share/devel/Gp/lab/examples/' + name + '/' + name + '.json'
+		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + name + '/' + name + '.json'
+		self.basedir = '/share/devel/Gp/learn/' + name + '/'
+		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + name + '/'
 		self.tmpdir = self.basedir + 'tmp/'	
 
 	def get_input(self):
