@@ -45,7 +45,7 @@ class Experiment:
 def get_params(schema):
 	params = {}
 	with open(schema, 'rb') as f:
-		params = json.loads(f.read())
+		params = json.loads(f.read().decode('utf-8'))
 
 	return params
 
@@ -87,7 +87,7 @@ def get_input_file(_id, tmpdir):
 		response = http.request('GET', 'http://localhost:5080/api/v1/files/' + file['_id'])
 		input_file = expdir + file['filename']
 		with open(input_file, 'w') as f:
-			f.write(response.data)
+			f.write(response.data.decode('utf-8'))
 			numfiles += 1
 
 	if numfiles == 1:
