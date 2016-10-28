@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 # will eventually do this in the correct way -- install a library/package
 import os, sys
 parentPath = os.path.abspath("..")
