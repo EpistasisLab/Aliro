@@ -32,7 +32,7 @@ for i in range(PARITY_SIZE_M):
     outputs[i] = parity
 
 
-def EvenParty(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state):
+def EvenParty(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state = 99):
     pset = gp.PrimitiveSet("MAIN", PARITY_FANIN_M, "IN")
     pset.addPrimitive(operator.and_, 2)
     pset.addPrimitive(operator.or_, 2)
@@ -73,10 +73,24 @@ def EvenParty(population_size,generations,crossover_rate,mutation_rate,tournsize
     stats.register("max", numpy.max)
 
     algorithms.eaSimple(pop, toolbox, cxpb=crossover_rate,
-    mutpb=mutation_rate, ngen=generations, stats=stats, halloffame=hof, verbose=True)
+    mutpb=mutation_rate, ngen=generations, stats=stats, halloffame=hof, verbose=False)
 
     return pop, stats, hof
 
+def EvenParty_Best_GP_Individual(individual):
+    """
+    Lower level GP
+    As one individual in metaga
+    Parameters
+    ----------
+    individual: DEAP individual
+        A list of arguments
+
+    """
+    arg = tuple(individual)
+    pop, stats, hof2 = EvenParty(*arg)
+    best_ind = tools.selBest(pop, 1)[0]
+    return (best_ind.fitness.values[0]),
+
 if __name__ == "__main__":
     EvenParty(population_size = 100,generations=100,crossover_rate = 0.5,mutation_rate = 0.2,tournsize = 3,random_state = 42)
-
