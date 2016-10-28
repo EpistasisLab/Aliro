@@ -19,7 +19,35 @@ block content
     .card-block
       form#new-experiment
         each val, key in project.schema
-          if (val.type === "int")
+          if (val.ui && val.ui.style === "radio")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9      
+                .btn-group.btn-group-justified(data-toggle="buttons")
+                  each choice in val.ui.choices
+                    if (choice === val.default)
+                      label.btn.btn-primary-outline.active
+                        input(type="radio", name="#{key}", value="#{choice}", checked)
+                        span #{choice}
+                    else
+                      label.btn.btn-primary-outline
+                        input(type="radio", name="#{key}", value="#{choice}")
+                        span #{choice}
+          else if (val.ui && val.ui.style === "checkbox")
+            .form-group.row
+              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
+              .col-sm-9
+                .btn-group.btn-group-justified(data-toggle="buttons")
+                   each choice in val.values
+                     if (val.default.indexOf(choice) > -1)
+                      label.btn.btn-primary-outline.active
+                        input(type="checkbox", name="#{key}", value="#{choice}", checked)
+                        span #{choice}
+                     else
+                      label.btn.btn-primary-outline
+                        input(type="checkbox", name="#{key}", value="#{choice}")
+                        span #{choice}      
+          else if (val.type === "int")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
@@ -40,7 +68,7 @@ block content
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 input.form-control(type="text", value="#{val.default}", name="#{key}", id="#{key}", required)
-          else if (val.type === "enum-select")
+          else if(val.type === "enum")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
@@ -50,42 +78,6 @@ block content
                       option(value="#{value}", selected) #{value}
                     else
                       option(value="#{value}") #{value}
-          else if(val.type === "enum-checkbox")
-            .form-group.row
-              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
-              .col-sm-9
-                .btn-group.btn-group-justified(data-toggle="buttons")
-                   each value, index in val.values
-                     if (val.default.indexOf(value) > -1)
-                      label.btn.btn-primary-outline.active
-                        input(type="checkbox", name="#{key}", value="#{value}", checked)
-                        span #{value}
-                        if (val.labels) 
-                          span (#{val.labels[index]})
-                     else
-                      label.btn.btn-primary-outline
-                        input(type="checkbox", name="#{key}", value="#{value}")
-                        span #{value}
-                        if (val.labels) 
-                          span (#{val.labels[index]})
-          else if(val.type === "enum-radio")
-            .form-group.row
-              label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
-              .col-sm-9      
-                .btn-group.btn-group-justified(data-toggle="buttons")
-                  each value, index in val.values
-                    if (value === val.default)
-                      label.btn.btn-primary-outline.active
-                        input(type="radio", name="#{key}", value="#{value}", checked)
-                        span #{value} 
-                        if (val.labels) 
-                          span (#{val.labels[index]})
-                    else
-                      label.btn.btn-primary-outline
-                        input(type="radio", name="#{key}", value="#{value}")
-                        span #{value} 
-                        if (val.labels) 
-                          span (#{val.labels[index]})
           else if(val.type === "slider")
             .form-group.row
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
