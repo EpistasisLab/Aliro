@@ -196,6 +196,12 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
         outf.write('\tbest_ind_mutation_rate')
         outf.write('\tbest_ind_tournsize')
         outf.write('\n')
+    # Evaluate the entire population
+    fitnesses = list(map(toolbox.evaluate, pop))
+    for ind, fit in zip(pop, fitnesses):
+        ind.fitness.values = fit
+    
+    print("  Evaluated %i individuals" % len(pop))
 
     for gen in range(NGEN):
         time_start = time.time()
