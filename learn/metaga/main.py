@@ -214,7 +214,8 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
-
+            if child1 == child2:
+                continue # skip the twins
             # cross two individuals with probability CXPB
             if np.random.random() < CXPB:
                 toolbox.mate(child1, child2)
