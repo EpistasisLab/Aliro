@@ -39,5 +39,29 @@
     "options": "double-dash",
     "capacity": "0.2",
     "results": "/share/devel/Gp/learn/deapgp/tmp/"
+  },
+  "581754c754e35c0027c64b14": {
+    "cwd": "/share/devel/Gp/learn/BernoulliNB",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/BernoulliNB/tmp/"
+  },
+  "581754d854e35c0027c64b16": {
+    "cwd": "/share/devel/Gp/learn/GaussianNB",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/GaussianNB/tmp/"
+  },
+  "581754cd54e35c0027c64b15": {
+    "cwd": "/share/devel/Gp/learn/MultinomialNB",
+    "command": "python3",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/MultinomialNB/tmp/"
   }
 }
