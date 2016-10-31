@@ -103,14 +103,41 @@ def bool_type(val):
 	else:	
 		raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
-def get_type(str):
+# this shouldn't be for all int types --> change later
+def int_or_none(val):
+	if(val.lower() == 'none'):
+		return None
+	try:
+		int(val)
+	except Exception:
+		raise argparse.ArgumentTypeError(val + ' is not a valid int value')
+
+	return int(val)
+
+# this shouldn't be for all str types --> change later
+def str_or_none(val):
+	if(val.lower() == 'none'):
+		return None
+	try:
+		str(val)
+	except Exception:
+		raise argparse.ArgumentTypeError(val + ' is not a valid str value')
+
+	return str(val)
+
+# how should this check what kind of enum type? right now, just returns a string.
+def enum_type(val):
+	return str(val)
+
+def get_type(type):
 	known_types = {
-		'int': int,
+		'int': int_or_none, # change this later
 		'float': float,
-		'string': str,
-		'bool': bool_type
+		'string': str_or_none, # change this later
+		'bool': bool_type,
+		'enum': enum_type # change this later
 		# float between 1 and 0
 		# enum type
 	}
 
-	return known_types[str]
+	return known_types[type]
