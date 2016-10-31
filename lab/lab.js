@@ -192,7 +192,7 @@ app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) =>
 });
 
 var optionChecker = (schema, obj) => {
-  for (var prop in schema) {
+  /*for (var prop in schema) {
     var schemaField = schema[prop];
     var val = obj[prop];
     // Check field exists
@@ -228,7 +228,7 @@ var optionChecker = (schema, obj) => {
           }
         }
     }
-  }
+  }*/
   return {success: "Options validated"};
 };
 
