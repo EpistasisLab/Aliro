@@ -108,6 +108,7 @@ def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize, 
     return pop, log, hof, df, stats_table_header
 
 ### This step need to FGlab to submit to differnt machines
+### submit jobs via FGlab and restore results in db???
 def SymbReg_Best_GP_Individual(individual):
     """
     Lower level GP

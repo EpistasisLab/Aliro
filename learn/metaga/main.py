@@ -147,6 +147,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     # Operator registration
     #----------
     # register the goal / fitness function
+    # Need distribute to FGlab machine
     toolbox.register("evaluate", fitness_func)
 
     # register the crossover operator in order
