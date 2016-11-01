@@ -32,7 +32,7 @@ for i in range(PARITY_SIZE_M):
     outputs[i] = parity
 
 
-def EvenParty(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state = 99):
+def EvenParity(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state = 99):
     pset = gp.PrimitiveSet("MAIN", PARITY_FANIN_M, "IN")
     pset.addPrimitive(operator.and_, 2)
     pset.addPrimitive(operator.or_, 2)
@@ -77,7 +77,7 @@ def EvenParty(population_size,generations,crossover_rate,mutation_rate,tournsize
 
     return pop, stats, hof
 
-def EvenParty_Best_GP_Individual(individual):
+def EvenParity_Best_GP_Individual(individual):
     """
     Lower level GP
     As one individual in metaga
