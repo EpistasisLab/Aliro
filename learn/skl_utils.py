@@ -54,7 +54,12 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	roc_auc_score = 'not supported for multiclass'
 	if(average == 'binary'):
-		proba_estimates = model.predict_proba(testing_features)[:, 1];
+		# choose correct scoring function based on model
+		try:
+			proba_estimates = model.predict_proba(testing_features)[:, 1];
+		except AttributeError:
+			proba_estimates = model.decision_function(testing_features);
+
 		roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
 		roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
 		plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
@@ -70,7 +75,7 @@ def generate_results(model, input_file, tmpdir, _id):
 		'roc_auc_score': roc_auc_score
 	})
 
-	# save predicted values, what format should this be in? pickle?
+	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
 	save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
 
