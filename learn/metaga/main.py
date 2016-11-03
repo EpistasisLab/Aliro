@@ -9,6 +9,7 @@ from deap import base
 from deap import creator
 from deap import tools
 from deap import algorithms
+from multiprocessing import Pool
 
 
 
@@ -164,10 +165,17 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     # drawn randomly from the current generation.
     toolbox.register("select", tools.selTournament, tournsize=3)
 
+
     #----------
 
     np.random.seed(random_state)  # random seed in magaga
+    # Process Pool of 4 workers
 
+    # magical multiprocessing function in python
+    # can be used in deap
+
+    pool = Pool(processes=4)
+    toolbox.register("map", pool.map)
     # create an initial population of 300 individuals (where
     # each individual is a list of integers)
     pop = toolbox.population(n=meta_pop_size)
@@ -185,6 +193,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     print("Start of MetaGA")
         # Begin the evolution
     # Need to more curemazie
+    """
     if outlog:
         outf = open(outlog, 'w')
         # header of log table
@@ -201,7 +210,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
-    
+
     print("  Evaluated %i individuals" % len(pop))
 
     for gen in range(NGEN):
@@ -278,6 +287,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
     return best_ind
     """
+
     # short version0
     # hard to get detail from log
     meta_hof = tools.HallOfFame(1)
@@ -290,7 +300,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
                                stats=stats, halloffame=meta_hof, verbose=True)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-    """
+
 
 
 
