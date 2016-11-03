@@ -6,41 +6,16 @@ import time
 
 http = urllib3.PoolManager()
 
-# utilities
+def get_input(schema, tmpdir):
+	args = parse_args(get_params(schema))
+	input_file = get_input_file(args['_id'], tmpdir)
 
-class Experiment:
+	return (args, input_file)
 
-	def __init__(self, name):
-		self.name = name
-		self._id = ''
-		self.schema = '/share/devel/Gp/lab/examples/' + name + '/' + name + '.json'
-		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + name + '/' + name + '.json'
-		self.basedir = '/share/devel/Gp/learn/' + name + '/'
-		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + name + '/'
-		self.tmpdir = self.basedir + 'tmp/'	
-
-	def get_input(self):
-		# get schema parameters
-		params = get_params(self.schema)	
-
-		# parse arguments
-		args = parse_args(params)
-
-		# set exp id
-		self._id = args['_id']
-
-		# get input file
-		input_file = get_input_file(self._id, self.tmpdir)
-
-		# temp print statement
-		print('parsed args:', args)
-
-		return (args, input_file)
-
-	def save_output(self, output):
-		expdir = self.tmpdir + self._id + '/'
-		with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
-			json.dump({ '_scores': output }, outfile)
+def save_output(tmpdir, _id, output):
+	expdir = tmpdir + _id + '/'
+	with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
+		json.dump({ '_scores': output }, outfile)
 
 def get_params(schema):
 	params = {}
@@ -65,6 +40,8 @@ def parse_args(params):
 	parser.add_argument('--_id', action='store', dest='_id', default=None, type=str, help="Experiment id in database")
 
 	args = vars(parser.parse_args())
+
+	print('parsed args:', args)
 
 	return args	
 
