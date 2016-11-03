@@ -7,6 +7,7 @@ import argparse
 import requests
 import time
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+import multiprocessing
 
 project_id = '57ffd3c1fa76cb0022258722'
 baseuri='http://lab:5080/api/v1/projects/'+project_id+'/experiment'
@@ -20,8 +21,8 @@ def launch(population_size,generations):
     params = vars(parser.parse_args())
     multipart_data = MultipartEncoder(
         fields={
-                'population_size': population_size,
-                'generations': generations,
+                'population_size': str(population_size),
+                'generations': str(generations),
                 'crossover_rate': '0.1',
                 'mutation_rate': '0.05',
                 'tournsize': '3',
@@ -50,4 +51,9 @@ def launch(population_size,generations):
 
 
 if __name__ == "__main__":
-    launch('10','20')
+    jobs = []
+    for i in range(5):
+        p = multiprocessing.Process(target=launch, args=(i*100, i*200))
+        jobs.append(p)
+        p.start()
+
