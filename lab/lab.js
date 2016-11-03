@@ -296,9 +296,8 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      //var obj = req.body;
-	  var obj = req.query;
-	  var files = req.files;
+      var obj = Object.assign(req.query, req.body);
+      var files = req.files;
 
       // Validate
       var validation = optionChecker(project.schema, obj);
