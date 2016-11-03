@@ -8,3 +8,4 @@ dist
 .viminfo
 .nv
 .swp
+*.pyc
