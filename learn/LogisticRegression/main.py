@@ -6,16 +6,11 @@ parentPath = os.path.abspath("..")
 if parentPath not in sys.path:
     sys.path.insert(0, parentPath)
 
-from io_utils import get_input
+from io_utils import Experiment
 from skl_utils import generate_results
 
-schema = '/share/devel/Gp/lab/examples/LogisticRegression/LogisticRegression.json'
-#schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/LogisticRegression/LogisticRegression.json'
-basedir = '/share/devel/Gp/learn/LogisticRegression/'
-#basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/LogisticRegression/'
-tmpdir = basedir + 'tmp/'
-
 if __name__ == "__main__":
-	args, input_file = get_input(schema, tmpdir)
+	exp = Experiment('LogisticRegression')
+	args, input_file = exp.get_input()
 	model = LogisticRegression(penalty=args['penalty'], C=args['C'], dual=args['dual'])
-	generate_results(model, input_file, tmpdir, args['_id'])
+	generate_results(model, input_file, exp.tmpdir, args['_id'])
