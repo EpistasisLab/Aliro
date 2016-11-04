@@ -2,6 +2,7 @@
 #
 import numpy as np
 import time
+import os
 import argparse
 from func_dict import func_dict, fitness_dict
 #from decorator import Mut_Ranges

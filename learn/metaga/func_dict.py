@@ -14,5 +14,5 @@ fitness_dict={'SymbReg':SymbReg_Best_GP_Individual,
             'EvenParty': EvenParity_Best_GP_Individual}
 """
 
-fitness_dict={'SymbReg': launch_lowerGP
+fitness_dict={'SymbReg': launch_lowerGP,
             'EvenParty': EvenParity_Best_GP_Individual}
