@@ -5,6 +5,7 @@ import pycurl
 import time
 import argparse
 import requests
+import multiprocessing
 import time
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 # no need multiprocessing in submit functions
@@ -21,7 +22,7 @@ def launch_lowerGP(individual):
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
-    params = vars(parser.parse_args())
+#    params = vars(parser.parse_args())
     multipart_data = MultipartEncoder(
         fields={
                 'population_size': str(individual[0]),
@@ -54,7 +55,6 @@ def launch_lowerGP(individual):
             break
     #return exp_data
 
-"""
 if __name__ == "__main__":
     jobs = []
     # launch multiprocessing jobs
@@ -62,4 +62,3 @@ if __name__ == "__main__":
         p = multiprocessing.Process(target=launch_lowerGP, args=(i*100, i*200))
         jobs.append(p)
         p.start()
-"""

@@ -12,7 +12,7 @@
  "method": {
     "description": "crossover rate, 0.0<=f<=1.0, [default = 0.1]",
     "type": "string",
-    "default": ''
+    "default": "SymbReg"
  },
  "meta_pop": {
     "description": "number of individuals in meta populations, n>=1 [default = 20]",
