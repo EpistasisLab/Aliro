@@ -10,7 +10,12 @@ from deap import creator
 from deap import tools
 from deap import algorithms
 from multiprocessing import Pool
+import urllib3
+import pycurl
 
+basedir='/share/devel/Gp/learn/metaga/'
+tmpdir=basedir+'tmp/'
+http = urllib3.PoolManager()
 
 
 def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
@@ -313,6 +318,7 @@ if __name__ == "__main__":
 
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
+    parser.add_argument('--_id', dest='_id', default=None)
     parser.add_argument('--method', dest='method', default='SymbReg')
     parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=50)
@@ -324,6 +330,9 @@ if __name__ == "__main__":
 
 
     params = vars(parser.parse_args())
+    _id = params['_id']
+    if not os.path.exists(tmpdir + _id):
+        os.makedirs(tmpdir + _id)
     # Save all attached files
     method = str(params['method'])
     fns_rule = str(params['fitness_rule'])
