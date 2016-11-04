@@ -12,10 +12,10 @@ class Experiment:
 		self.build_paths(method_name)
 
 	def build_paths(self, method_name):
-		#self.schema = '/share/devel/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
-		self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
-		#self.basedir = '/share/devel/Gp/learn/' + method_name + '/'
-		self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + method_name + '/'
+		self.schema = '/share/devel/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
+		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
+		self.basedir = '/share/devel/Gp/learn/' + method_name + '/'
+		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
 
 	def get_input(self):
