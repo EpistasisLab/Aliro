@@ -52,6 +52,8 @@ def launch_lowerGP(individual):
         #print(exp_status)
         if exp_status == 'running':
             time.sleep(2) # check every 2 seconds
+        if exp_status == 'success':
+            time.sleep(2) # check every 2 seconds
         if exp_status == 'fail':
             break
     print(exp_data['best_fitness_score'])
