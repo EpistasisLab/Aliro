@@ -39,7 +39,7 @@ def protectedDiv(left, right):
 Ep_List = range((1000+1)*10000)
 
 def SymbReg(population_size,generations,crossover_rate,mutation_rate,tournsize, random_state= 42, Ephe_Cont_Name = 'rand101'):
-    np.random.seed(random_state)
+    numpy.random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
     pset.addPrimitive(operator.sub, 2)
@@ -180,15 +180,15 @@ if __name__ == "__main__":
     tournsize=tour_size,
     random_state=randomnum)
 
-    if gpeval:
-        best_ind = tools.selBest(pop, 1)[0]
-        json_result = (best_ind.fitness.values[0]),
-        # output json_result!!!!!!
-    else:
-        json_result = df.reset_index().to_json(orient='index')
-        with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
-            outfile.write(json_result)
-        pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
-        df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
+    best_ind = tools.selBest(pop, 1)[0]
+    result = {'best_fitness_score':best_ind.fitness.values[0]}
+    # output json_result!!!!!!
+
+    print(best_ind.fitness.values[0])
+    json_result = json.dumps(result)
+    with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
+        outfile.write(json_result)
+    pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
+    df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
 
 exit(0)

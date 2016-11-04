@@ -1,5 +1,5 @@
 {
-  "57bf24e1548cd20008bc71df": {
+  "58136d9206cef92d18408855": {
     "cwd": "/share/devel/Gp/gpocl/build",
     "command": "./gpocl",
     "args": ["../datasets/gei.csv"],
@@ -7,6 +7,31 @@
     "options": "double-dash-noequals",
     "results": "./examples/GP"
   },
+  "581365398cf4f62bca7c4a21": {
+    "cwd": "/share/devel/Gp/learn/BernoulliNB",
+    "command": "python",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/BernoulliNB/tmp/"
+  },
+  "5813683906cef92d18408730": {
+    "cwd": "/share/devel/Gp/learn/GaussianNB",
+    "command": "python",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/GaussianNB/tmp/"
+  },
+  "5813682c06cef92d1840872f": {
+    "cwd": "/share/devel/Gp/learn/MultinomialNB",
+    "command": "python",
+    "args": ["main.py"],
+    "options": "double-dash",
+    "capacity": "0.2",
+    "results": "/share/devel/Gp/learn/MultinomialNB/tmp/"
+  },
+
   "57c5a83f4b09d40023ee4f6e": {
     "cwd": "/share/devel/Gp/mdr/bin",
     "command": "python3",
@@ -40,28 +65,12 @@
     "capacity": "0.2",
     "results": "/share/devel/Gp/learn/deapgp/tmp/"
   },
-  "581754c754e35c0027c64b14": {
-    "cwd": "/share/devel/Gp/learn/BernoulliNB",
+  "581bf1dead150d002327b898": {
+    "cwd": "/share/devel/Gp/learn/metaga",
     "command": "python3",
     "args": ["main.py"],
     "options": "double-dash",
     "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/BernoulliNB/tmp/"
-  },
-  "581754d854e35c0027c64b16": {
-    "cwd": "/share/devel/Gp/learn/GaussianNB",
-    "command": "python3",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/GaussianNB/tmp/"
-  },
-  "581754cd54e35c0027c64b15": {
-    "cwd": "/share/devel/Gp/learn/MultinomialNB",
-    "command": "python3",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/MultinomialNB/tmp/"
+    "results": "/share/devel/Gp/learn/metaga/tmp/"
   }
 }
