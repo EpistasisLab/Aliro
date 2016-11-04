@@ -46,14 +46,14 @@ def launch_lowerGP(individual):
         exp_response = requests.get(experimenturi)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
-        if exp_status == 'success':
+        if exp_status == 'success' and 'best_fitness_score' in exp_data::
             print(exp_data)
         print(exp_status)
         if exp_status == 'running':
             time.sleep(2) # check every 2 seconds
         if exp_status == 'fail':
             break
-    #return exp_data
+    return exp_data['best_fitness_score'],
 
 if __name__ == "__main__":
     jobs = []
