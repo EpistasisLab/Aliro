@@ -20,7 +20,6 @@ from deap import base
 from deap import creator
 from deap import tools
 from deap import gp
-import pandas as pd
 
 basedir='/share/devel/Gp/learn/deapgp/'
 tmpdir=basedir+'tmp/'
