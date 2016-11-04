@@ -6,41 +6,31 @@ import time
 
 http = urllib3.PoolManager()
 
-# utilities
-
 class Experiment:
 
-	def __init__(self, name):
-		self.name = name
-		self._id = ''
-		self.schema = '/share/devel/Gp/lab/examples/' + name + '/' + name + '.json'
-		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + name + '/' + name + '.json'
-		self.basedir = '/share/devel/Gp/learn/' + name + '/'
-		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + name + '/'
-		self.tmpdir = self.basedir + 'tmp/'	
+	def __init__(self, method_name):
+		self.build_paths(method_name)
+
+	def build_paths(self, method_name):
+		self.schema = '/share/devel/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
+		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
+		self.basedir = '/share/devel/Gp/learn/' + method_name + '/'
+		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + method_name + '/'
+		self.tmpdir = self.basedir + 'tmp/'
 
 	def get_input(self):
-		# get schema parameters
-		params = get_params(self.schema)	
+		return get_input(self.schema, self.tmpdir)
 
-		# parse arguments
-		args = parse_args(params)
+def get_input(schema, tmpdir):
+	args = parse_args(get_params(schema))
+	input_file = get_input_file(args['_id'], tmpdir)
 
-		# set exp id
-		self._id = args['_id']
+	return (args, input_file)
 
-		# get input file
-		input_file = get_input_file(self._id, self.tmpdir)
-
-		# temp print statement
-		print('parsed args:', args)
-
-		return (args, input_file)
-
-	def save_output(self, output):
-		expdir = self.tmpdir + self._id + '/'
-		with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
-			json.dump({ '_scores': output }, outfile)
+def save_output(tmpdir, _id, output):
+	expdir = tmpdir + _id + '/'
+	with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
+		json.dump({ '_scores': output }, outfile)
 
 def get_params(schema):
 	params = {}
@@ -65,6 +55,8 @@ def parse_args(params):
 	parser.add_argument('--_id', action='store', dest='_id', default=None, type=str, help="Experiment id in database")
 
 	args = vars(parser.parse_args())
+
+	print('parsed args:', args)
 
 	return args	
 
