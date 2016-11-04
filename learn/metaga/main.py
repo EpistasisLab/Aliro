@@ -32,15 +32,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
         ----------
             args_type: a list of arguments' types
             args_range: a list of arguments' ranges
-            spec: return control
-            args_mut_type: mutation control (need work with 'spec') string type
-                random: randomly generate a new argument (default)
-                increase: randomly generate a new larger than old one (need work with old_arg)
-                decrease: randomly generate a new lower than old one (need work with old_arg)
-            old_arg: old argument
-        Return
-        ----------
-            return *args is spec = False
+            spec: return control args_mut_type: mutation control (need work with 'spec') string type random: randomly generate a new argument (default) increase: randomly generate a new larger than old one (need work with old_arg) decrease: randomly generate a new lower than old one (need work with old_arg) old_arg: old argument Return ---------- return *args is spec = False
             return one argument is spec > 0
         """
 
@@ -322,8 +314,8 @@ if __name__ == "__main__":
     parser.add_argument('--_id', dest='_id', default=None)
     parser.add_argument('--method', dest='method', default='SymbReg')
     parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
-    parser.add_argument('--meta_pop', dest='meta_pop', default=50)
-    parser.add_argument('--meta_gen', dest='meta_gen', default=10)
+    parser.add_argument('--meta_pop', dest='meta_pop', default=10)
+    parser.add_argument('--meta_gen', dest='meta_gen', default=5)
     parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
     parser.add_argument('--max_ll_pop', dest='max_ll_pop', default=20)
     parser.add_argument('--random_state', dest='random_state', default=99)
