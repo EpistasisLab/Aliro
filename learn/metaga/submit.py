@@ -39,20 +39,22 @@ def launch_lowerGP(individual):
         headers={'Content-Type': multipart_data.content_type})
     json_data = response.json()
     _id = json_data['_id']
-    print(_id)
+    #print(_id)
     exp_status = 'init'
     experimenturi =  expbase + _id
-    while (exp_status != 'success') :  # This constructs an infinite loop
+    while (exp_status != 'success' or 'best_fitness_score' not in exp_data):  # This constructs an infinite loop
         exp_response = requests.get(experimenturi)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
-        if exp_status == 'success' and 'best_fitness_score' in exp_data::
-            print(exp_data)
-        print(exp_status)
+        if exp_status == 'success' and 'best_fitness_score' in exp_data:
+            #print(exp_data)
+            break
+        #print(exp_status)
         if exp_status == 'running':
             time.sleep(2) # check every 2 seconds
         if exp_status == 'fail':
             break
+    print(exp_data['best_fitness_score'])
     return exp_data['best_fitness_score'],
 
 if __name__ == "__main__":
