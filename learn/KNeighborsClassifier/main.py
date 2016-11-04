@@ -6,16 +6,11 @@ parentPath = os.path.abspath("..")
 if parentPath not in sys.path:
     sys.path.insert(0, parentPath)
 
-from io_utils import get_input
+from io_utils import Experiment
 from skl_utils import generate_results
 
-schema = '/share/devel/Gp/lab/examples/KNeighborsClassifier/KNeighborsClassifier.json'
-#schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/KNeighborsClassifier/KNeighborsClassifier.json'
-basedir = '/share/devel/Gp/learn/KNeighborsClassifier/'
-#basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/KNeighborsClassifier/'
-tmpdir = basedir + 'tmp/'
-
 if __name__ == "__main__":
-	args, input_file = get_input(schema, tmpdir)
+	exp = Experiment('KNeighborsClassifier')
+	args, input_file = exp.get_input()
 	model = KNeighborsClassifier(n_neighbors=args['n_neighbors'], weights=args['weights'], p=args['p'])
-	generate_results(model, input_file, tmpdir, args['_id'])
+	generate_results(model, input_file, exp.tmpdir, args['_id'])
