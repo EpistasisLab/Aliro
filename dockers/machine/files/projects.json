@@ -7,31 +7,6 @@
     "options": "double-dash-noequals",
     "results": "./examples/GP"
   },
-  "581365398cf4f62bca7c4a21": {
-    "cwd": "/share/devel/Gp/learn/BernoulliNB",
-    "command": "python",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/BernoulliNB/tmp/"
-  },
-  "5813683906cef92d18408730": {
-    "cwd": "/share/devel/Gp/learn/GaussianNB",
-    "command": "python",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/GaussianNB/tmp/"
-  },
-  "5813682c06cef92d1840872f": {
-    "cwd": "/share/devel/Gp/learn/MultinomialNB",
-    "command": "python",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/MultinomialNB/tmp/"
-  },
-
   "57c5a83f4b09d40023ee4f6e": {
     "cwd": "/share/devel/Gp/mdr/bin",
     "command": "python3",
@@ -40,22 +15,6 @@
     "options": "double-dash",
     "capacity": "0.2",
     "results": "./examples/MDR"
-  },
-  "57ebce9873ed7800219e122a": {
-    "cwd": "/share/devel/Gp/learn/dt",
-    "command": "python3",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/dt"
-  },
-  "57ebce9c73ed7800219e122b": {
-    "cwd": "/share/devel/Gp/learn/lr",
-    "command": "python3",
-    "args": ["main.py"],
-    "options": "double-dash",
-    "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/lr/tmp/"
   },
   "57ffd3c1fa76cb0022258722": {
     "cwd": "/share/devel/Gp/learn/deapgp",
@@ -72,5 +31,105 @@
     "options": "double-dash",
     "capacity": "0.2",
     "results": "/share/devel/Gp/learn/metaga/tmp/"
-  }
+  },
+	"5813bdaec1321420f8bbcc7f": {
+		"cwd": "/share/devel/Gp/learn/BernoulliNB",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/BernoulliNB/tmp"
+	},
+	"5813bdb8c1321420f8bbcc80": {
+		"cwd": "/share/devel/Gp/learn/GaussianNB",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/GaussianNB/tmp"
+	},
+	"5813bdc4c1321420f8bbcc81": {
+		"cwd": "/share/devel/Gp/learn/MultinomialNB",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/MultinomialNB/tmp"
+	},
+	"5817660338215335404347c7": {
+		"cwd": "/share/devel/Gp/learn/DecisionTreeClassifier",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/DecisionTreeClassifier/tmp"
+	},
+	"581791063821533540434826": {
+		"cwd": "/share/devel/Gp/learn/ExtraTreesClassifier",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/ExtraTreesClassifier/tmp"
+	},
+	"581796a43821533540434890": {
+		"cwd": "/share/devel/Gp/learn/GradientBoostingClassifier",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/GradientBoostingClassifier/tmp"
+	},
+	"5817a21138215335404348cd": {
+		"cwd": "/share/devel/Gp/learn/KNeighborsClassifier",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/KNeighborsClassifier/tmp"
+	},
+	"5817a73538215335404348ee": {
+		"cwd": "/share/devel/Gp/learn/LinearSVC",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/LinearSVC/tmp"
+	},
+	"5817ad7f3821533540434948": {
+		"cwd": "/share/devel/Gp/learn/LogisticRegression",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/LogisticRegression/tmp"
+	},
+	"5817af52382153354043496e": {
+		"cwd": "/share/devel/Gp/learn/RandomForestClassifier",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/RandomForestClassifier/tmp"
+	}
 }

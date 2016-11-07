@@ -1,4 +1,7 @@
 from sklearn.neighbors import KNeighborsClassifier
+#run without X
+import matplotlib as mpl
+mpl.use('Agg')
 
 # will eventually do this in the correct way -- install a library/package
 import os, sys
