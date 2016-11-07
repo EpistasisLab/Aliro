@@ -1,12 +1,13 @@
+note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install may be simplest if you are on a mac or windows.
+
 1. **Check out the project**
 	- install Node.js
 	- create the directory - /share/devel/Gp
 	- request an account on sarlacc if you don't already have one
  	- clone the repository from  git@sarlacc.pmacs.upenn.edu:svitale/Gp.git 
-
 	- You may choose to run FGLab within a docker container (easiest to get up and running) or locally (easiest for Windows users) or mixed (easiest for development)
 
-2. Local Install:
+2. **Perform Local Install**
 	- Install Node.js
 	- Install MongoDB
 	- change directories to /share/devel/Gp/dockers/lab/files
@@ -23,32 +24,28 @@
 	- FGLAB_URL=http://localhost:5080
 	- FGMACHINE_URL=http://localhost:5081
 
-3. Docker Install:
+3. **Perform Docker Install**
 	- Install Docker:
-	- [Step One](https://docs.docker.com/engine/getstarted/step_one/)
+	- [Follow step one of the official Docker docs](https://docs.docker.com/engine/getstarted/step_one/)
 	- Create a network for the lab and machine to use to communicate:
 	- docker network create dockernet
+	- Install the lab**
+    	- change directories to /share/devel/Gp/dockers/lab
+    	- On a system with 'make' installed:
+    	- make && make run
+    	- Alternatively, you can manually run these steps with the following commands:
+    	- docker build -t devel/lab
+    	- docker run -i -t --rm -p 5080:5080 --network dockernet -h lab --name lab devel/lab
+    - Install the machine: 
+	    - change directories to /share/devel/Gp/dockers/machine
+      	- On a system with 'make' installed:
+    	- run 'make', then 'make run' to start FGLab
+    	- Alternatively, you can manually run these steps with the following commands:
+    	- docker build -t devel/machine
+    	- docker run -i -t --rm -p 5081:5081 --network dockernet -h machine --name machine devel/machine`
 
 
-3. Install the lab:
-	- change directories to /share/devel/Gp/dockers/lab
-	- On a system with 'make' installed:
-	- make
-	- make run
-	- Alternatively, you can manually run these steps with the following commands:
-	- docker build -t devel/lab`
-	- docker run -i -t --rm -p 5080:5080 --network dockernet -h lab --name lab devel/lab`
-        
-4. Install the machine: 
-	- change directories to /share/devel/Gp/dockers/machine
-	- On a system with 'make' installed:
-	- run 'make', then 'make run' to start FGLab
-	- Alternatively, you can manually run these steps with the following commands:
-	- docker build -t devel/machine
-	- docker run -i -t --rm -p 5081:5081 --network dockernet -h machine --name machine devel/machine`
-
-
-5. Test the lab:
+3. **Test the lab**
 	- connect to:
 	- http://localhost:5080/
 
