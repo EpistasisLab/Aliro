@@ -4,8 +4,7 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
 	- Create the directory <b>/share/devel/Gp</b>
 	- Request an account on sarlacc if you don't already have one
  	- Clone the repository from  <b>git@sarlacc.pmacs.upenn.edu:svitale/Gp.git</b>
-	- You may choose to run FGLab within a docker container (easiest to get up and running) or locally (easiest for Windows users) or both (easiest for development)
-
+ 
 2. **Perform Local Install**
 	- Install MongoDB
 	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
