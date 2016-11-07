@@ -5,7 +5,7 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
 	- Request an account on sarlacc if you don't already have one
  	- Clone the repository from  <b>git@sarlacc.pmacs.upenn.edu:svitale/Gp.git</b>
  
-2. **Perform Local Install**
+2. **Perform local based installation**
 	- Install MongoDB
 	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
 	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
@@ -21,7 +21,7 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
     	- <b>FGLAB_URL=http://localhost:5080</b>
     	- <b>FGMACHINE_URL=http://localhost:5081</b>
 
-3. **Perform Docker Install**
+3. **Perform Docker based installation**
 	- Follow [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/) to install Docker
 	- Create a network for the lab and machine to use to communicate:
 	    - <i>docker network create dockernet</i>
