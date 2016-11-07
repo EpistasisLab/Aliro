@@ -1,7 +1,6 @@
 note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install may be simplest if you are on a mac or windows.
 
 1. **Check out the project**
-	- Install Node.js
 	- Create the directory <b>/share/devel/Gp</b>
 	- Request an account on sarlacc if you don't already have one
  	- Clone the repository from  <b>git@sarlacc.pmacs.upenn.edu:svitale/Gp.git</b>
