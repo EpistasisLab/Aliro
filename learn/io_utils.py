@@ -67,7 +67,7 @@ def get_input_file(_id, tmpdir):
 		os.makedirs(expdir)
 
 	# response = http.request('GET', 'http://lab:5080/api/v1/experiments/' + _id)
-	response = http.request('GET', 'http://localhost:5080/api/v1/experiments/' + _id)
+	response = http.request('GET', 'http://lab:5080/api/v1/experiments/' + _id)
 	jsondata = json.loads(response.data.decode('utf-8'))
 	files = jsondata['_files']
 	input_file = ''
@@ -76,7 +76,7 @@ def get_input_file(_id, tmpdir):
 	for file in files:
 		# time.sleep(5) # do we need this?
 		# response = http.request('GET', 'http://lab:5080/api/v1/files/' + file['_id'])
-		response = http.request('GET', 'http://localhost:5080/api/v1/files/' + file['_id'])
+		response = http.request('GET', 'http://lab:5080/api/v1/files/' + file['_id'])
 		input_file = expdir + file['filename']
 		with open(input_file, 'w') as f:
 			f.write(response.data.decode('utf-8'))
