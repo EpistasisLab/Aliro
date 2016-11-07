@@ -29,7 +29,7 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
 	- [Follow step one of the official Docker docs](https://docs.docker.com/engine/getstarted/step_one/)
 	- Create a network for the lab and machine to use to communicate:
 	- docker network create dockernet
-	- Install the lab**
+	- Install the lab
     	- change directories to /share/devel/Gp/dockers/lab
     	- On a system with 'make' installed:
     	- make && make run
