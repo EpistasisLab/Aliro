@@ -1,5 +1,5 @@
 #getting up and running:
-+install Node.js
+*install Node.js
 +create the directory - /share/devel/Gp
 +request an account on sarlacc if you don't already have one
 +clone the repository from  git@sarlacc.pmacs.upenn.edu:svitale/Gp.git 
