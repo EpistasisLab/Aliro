@@ -1,5 +1,6 @@
 DOCKER_REPO=devel/lab
 TAG=latest
+HOSTNAME=$(shell hostname)
 
 
 build:
@@ -7,19 +8,19 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5080:5080 --network dockernet -h lab --name lab\
+	docker run -i -t --rm -p 5080:5080 -h ${HOSTNAME} --name lab\
 		${DOCKER_REPO}
 
 shared:
-	docker run -i -v /share:/share  -t --rm -p 5080:5080 --network dockernet -h lab --name lab\
+	docker run -i -v /share:/share  -t --rm -p 5080:5080 -h  ${HOSTNAME}  --name lab --net=host\
 		${DOCKER_REPO}
 
 create:
-	docker create -i -t -p 5080:5080 --network dockernet -h lab --name lab\
+	docker create -i -t -p 5080:5080 -h ${HOSTNAME} --name lab\
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v /share:/share -t -p 5080:5080 --network dockernet -h lab --name lab\
+	docker create -i -v /share:/share -t -p 5080:5080 -h  ${HOSTNAME} --name lab\
 		${DOCKER_REPO}
 
 push:
