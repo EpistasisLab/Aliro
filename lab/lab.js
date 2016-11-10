@@ -578,7 +578,18 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 // List projects and machines on homepage
 app.get("/", (req, res, next) => {
-  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  if(!req.query.type) {
+     return res.render("base-index");
+  }
+
+  // we will need to actually encode the type of algorithm in the JSON, but hardcoded for now
+  var projP;
+  var aiMethods = 'metaGA';
+  if(req.query.type === 'ml') {
+    projP = db.projects.find({name:{$nin:[aiMethods]}}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  } else if(req.query.type === 'ai') {
+    projP = db.projects.find({name:aiMethods}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  }
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {

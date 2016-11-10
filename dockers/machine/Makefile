@@ -1,10 +1,13 @@
+#DOCKER_REPO=localhost:5000/machine
 DOCKER_REPO=devel/machine
+
 TAG=latest
 HOSTNAME=$(shell hostname)
 LAB_HOST=${HOSTNAME}
 FGLAB_URL=http://${LAB_HOST}:5080
 FGMACHINE_URL=http://${HOSTNAME}:5081
 IFROOT='/share/devel/Gp'
+PS1="machine"
 
 
 
@@ -13,7 +16,7 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
+	docker run -i -t --rm -p 5081:5081 -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -h ${HOSTNAME} --name machine --net=host\
 		${DOCKER_REPO}
 
 
@@ -22,11 +25,11 @@ shared:
 		${DOCKER_REPO}
 
 create:
-	docker create -i -t -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
+	docker create -i -t -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} -h machine --name machine --net=host\
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v /share:/share -t -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
+	docker create -i -v /share:/share -t -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} -h machine --name machine --net=host\
 		${DOCKER_REPO}
 
 push:
