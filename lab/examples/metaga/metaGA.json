@@ -1,0 +1,32 @@
+{
+ "max_ll_pop": {
+    "description": "max_lower_number of individuals (default = 100)",
+    "type": "int",
+    "default": 100
+  },
+   "max_ll_gen": {
+    "description": "number of generations, n>0 [default = 20]" ,
+    "type": "int",
+    "default": 20
+ },
+ "method": {
+    "description": "crossover rate, 0.0<=f<=1.0, [default = 0.1]",
+    "type": "string",
+    "default": "SymbReg"
+ },
+ "meta_pop": {
+    "description": "number of individuals in meta populations, n>=1 [default = 20]",
+    "type": "int",
+    "default": 20
+ },
+ "meta_gen": {
+    "description": "number of meta generations, n>=1 [default = 5]",
+    "type": "int",
+    "default": 5
+ },
+ "random_state": {
+    "description": "random seed [default = 42]",
+    "type": "int",
+    "default": 42
+}
+}

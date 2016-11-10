@@ -35,7 +35,9 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 ENV PATH /opt/conda/bin:$PATH
 RUN pip install scikit-mdr
 RUN pip install deap
+RUN pip install requests_toolbelt
 RUN pip install urllib3
+RUN conda install scikit-learn
 RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 ADD files/version /tmp
 RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlacc.pmacs.upenn.edu:svitale/Gp.git

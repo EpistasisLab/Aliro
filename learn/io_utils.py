@@ -4,6 +4,8 @@ import json
 import os
 import time
 
+lab_host = os.environ['LAB_HOST']
+basedir = os.environ['IFROOT']
 http = urllib3.PoolManager()
 
 class Experiment:
@@ -12,9 +14,9 @@ class Experiment:
 		self.build_paths(method_name)
 
 	def build_paths(self, method_name):
-		self.schema = '/share/devel/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
+		self.schema = basedir+'/lab/examples/' + method_name + '/' + method_name + '.json'
 		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
-		self.basedir = '/share/devel/Gp/learn/' + method_name + '/'
+		self.basedir = basedir+'/learn/' + method_name + '/'
 		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
 
@@ -67,7 +69,7 @@ def get_input_file(_id, tmpdir):
 		os.makedirs(expdir)
 
 	# response = http.request('GET', 'http://lab:5080/api/v1/experiments/' + _id)
-	response = http.request('GET', 'http://localhost:5080/api/v1/experiments/' + _id)
+	response = http.request('GET', 'http://'+lab_host+':5080/api/v1/experiments/' + _id)
 	jsondata = json.loads(response.data.decode('utf-8'))
 	files = jsondata['_files']
 	input_file = ''
@@ -76,7 +78,7 @@ def get_input_file(_id, tmpdir):
 	for file in files:
 		# time.sleep(5) # do we need this?
 		# response = http.request('GET', 'http://lab:5080/api/v1/files/' + file['_id'])
-		response = http.request('GET', 'http://localhost:5080/api/v1/files/' + file['_id'])
+		response = http.request('GET', 'http://'+lab_host+':5080/api/v1/files/' + file['_id'])
 		input_file = expdir + file['filename']
 		with open(input_file, 'w') as f:
 			f.write(response.data.decode('utf-8'))
