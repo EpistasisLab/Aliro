@@ -594,7 +594,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 // List projects and machines on homepage
 app.get("/", (req, res, next) => {
   var category = req.query.cat;
-  
+
   if(!category) { return res.render("base-index"); }
 
   var projP = db.projects.find({category:category.toUpperCase()}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
@@ -614,7 +614,7 @@ app.get("/admin", (req, res, next) => {
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {
-    return res.render("admin2", {projects: results[0], machines: results[1]});
+    return res.render("admin", {projects: results[0], machines: results[1]});
   })
   .catch((err) => {
     return next(err);
