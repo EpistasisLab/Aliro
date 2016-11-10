@@ -181,10 +181,24 @@ app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) =>
   var name = req.file.originalname.replace(".json", "");
   // Extract .json as object
   var schema = JSON.parse(req.file.buffer.toString());
+  // Set category as empty
+  var category = '';
+
   // Store
-  db.projects.insertAsync({name: name, schema: schema}, {})
+  db.projects.insertAsync({name: name, schema: schema, category: category}, {})
   .then((result) => {
     res.send(result);
+  })
+  .catch((err) => {
+    next(err);
+  });
+});
+
+// Adds a category for an existing project
+app.put("/api/v1/projects/:id/category", jsonParser, (req, res, next) => {
+  db.projects.updateByIdAsync(req.params.id, {$set: {category: req.body.category}})
+  .then((result) => {
+    res.send((result.ok === 1) ? {msg: "success"} : {msg: "error"});
   })
   .catch((err) => {
     next(err);
@@ -578,18 +592,11 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 // List projects and machines on homepage
 app.get("/", (req, res, next) => {
-  if(!req.query.type) {
-     return res.render("base-index");
-  }
+  var category = req.query.cat;
 
-  // we will need to actually encode the type of algorithm in the JSON, but hardcoded for now
-  var projP;
-  var aiMethods = 'metaGA';
-  if(req.query.type === 'ml') {
-    projP = db.projects.find({name:{$nin:[aiMethods]}}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
-  } else if(req.query.type === 'ai') {
-    projP = db.projects.find({name:aiMethods}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
-  }
+  if(!category) { return res.render("base-index"); }
+
+  var projP = db.projects.find({category:category.toUpperCase()}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {
@@ -602,7 +609,7 @@ app.get("/", (req, res, next) => {
 
 // List projects and machines on admin page
 app.get("/admin", (req, res, next) => {
-  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  var projP = db.projects.find({}, {name: 1, category: 1}).sort({name: 1}).toArrayAsync(); // Get project names
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {
