@@ -1,3 +1,4 @@
+#DOCKER_REPO=localhost:5000/lab
 DOCKER_REPO=devel/lab
 TAG=latest
 HOSTNAME=$(shell hostname)
