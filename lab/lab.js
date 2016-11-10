@@ -181,10 +181,24 @@ app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) =>
   var name = req.file.originalname.replace(".json", "");
   // Extract .json as object
   var schema = JSON.parse(req.file.buffer.toString());
+  // Set category as empty
+  var category = '';
+
   // Store
-  db.projects.insertAsync({name: name, schema: schema}, {})
+  db.projects.insertAsync({name: name, schema: schema, category: category}, {})
   .then((result) => {
     res.send(result);
+  })
+  .catch((err) => {
+    next(err);
+  });
+});
+
+// Adds a category for an existing project
+app.put("/api/v1/projects/:id/category", jsonParser, (req, res, next) => {
+  db.projects.updateByIdAsync(req.params.id, {$set: {category: req.body.category}})
+  .then((result) => {
+    res.send((result.ok === 1) ? {msg: "success"} : {msg: "error"});
   })
   .catch((err) => {
     next(err);
@@ -296,9 +310,8 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
       res.status(400);
       res.send({error: "Project ID " + projId + " does not exist"});
     } else {
-      //var obj = req.body;
-	  var obj = req.query;
-	  var files = req.files;
+      var obj = Object.assign(req.query, req.body);
+      var files = req.files;
 
       // Validate
       var validation = optionChecker(project.schema, obj);
@@ -579,7 +592,11 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 // List projects and machines on homepage
 app.get("/", (req, res, next) => {
-  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  var category = req.query.cat;
+
+  if(!category) { return res.render("base-index"); }
+
+  var projP = db.projects.find({category:category.toUpperCase()}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {
@@ -592,7 +609,7 @@ app.get("/", (req, res, next) => {
 
 // List projects and machines on admin page
 app.get("/admin", (req, res, next) => {
-  var projP = db.projects.find({}, {name: 1}).sort({name: 1}).toArrayAsync(); // Get project names
+  var projP = db.projects.find({}, {name: 1, category: 1}).sort({name: 1}).toArrayAsync(); // Get project names
   var macP = db.machines.find({}, {address: 1, hostname: 1}).sort({hostname: 1}).toArrayAsync(); // Get machine addresses and hostnames
   Promise.all([projP, macP])
   .then((results) => {

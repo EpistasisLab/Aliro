@@ -1,4 +1,7 @@
 from sklearn.naive_bayes import GaussianNB
+#run without X
+import matplotlib as mpl
+mpl.use('Agg')
 
 # will eventually do this in the correct way -- install a library/package
 import os, sys
