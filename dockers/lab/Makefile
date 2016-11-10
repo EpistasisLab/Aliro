@@ -8,7 +8,7 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5080:5080 -h ${HOSTNAME} --name lab\
+	docker run -i -t --rm -p 5080:5080 -h ${HOSTNAME} --name lab --net=host\
 		${DOCKER_REPO}
 
 shared:
@@ -16,11 +16,11 @@ shared:
 		${DOCKER_REPO}
 
 create:
-	docker create -i -t -p 5080:5080 -h ${HOSTNAME} --name lab\
+	docker create -i -t -p 5080:5080 -h ${HOSTNAME} --name lab --net=host\
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v /share:/share -t -p 5080:5080 -h  ${HOSTNAME} --name lab\
+	docker create -i -v /share:/share -t -p 5080:5080 -h  ${HOSTNAME} --name lab --net=host\
 		${DOCKER_REPO}
 
 push:
