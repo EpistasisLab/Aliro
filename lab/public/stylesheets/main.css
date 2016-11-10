@@ -27,9 +27,11 @@ body.dark .card {
   box-shadow: 0 1px rgba(0, 0, 0, 0.2);
 }
 
-body.dark .card .card-header {
+body.dark .card .card-header,
+body.dark .card .card-footer {
   background-color: transparent;
   border-bottom: .0625rem solid rgba(255, 255, 255, 0.3);
+  border-top: .0625rem solid rgba(255, 255, 255, 0.3);
 }
 
 body.dark .card .card-header.orange {
