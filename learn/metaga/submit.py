@@ -7,13 +7,15 @@ import argparse
 import requests
 import multiprocessing
 import time
+import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+lab_host = os.environ['LAB_HOST']
 # no need multiprocessing in submit functions
 #import multiprocessing
 
 project_id = '57ffd3c1fa76cb0022258722'
-baseuri='http://lab:5080/api/v1/projects/'+project_id+'/experiment'
-expbase='http://lab:5080/api/v1/experiments/'
+baseuri='http://'+lab_host+':5080/api/v1/projects/'+project_id+'/experiment'
+expbase='http://'+lab_host+':5080/api/v1/experiments/'
 
 
 #def launch_lowerGP(population_size, generations, crossover_rate, mutation_rate, tournsize):
