@@ -386,6 +386,14 @@ app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
         res.status(400);
         res.send(validationList[0]); // Send first validation error       
       } else {
+// Create batch
+  db.batches.insertAsync({_project_id: db.toObjectID(projId)}, {})
+  .then((result) => {
+    res.send(result);
+  })
+  .catch((err) => {
+    next(err);
+  });
         // Loop over jobs
         for (var j = 0; j < expList.length; j++) {
           submitJobRetry(projId, expList[j], retryTimeout);
