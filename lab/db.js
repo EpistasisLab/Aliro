@@ -13,6 +13,7 @@ if (!process.env.MONGODB_URI) {
 db.bind("projects");
 db.bind("machines");
 db.bind("experiments");
+db.bind("batches");
 
 // Promisify all methods
 Object.keys(mongoskin).forEach((key) => {
