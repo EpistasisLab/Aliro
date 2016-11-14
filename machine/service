@@ -1,12 +1,12 @@
 #!/bin/bash
 ### BEGIN INIT INFO
-# Provides:          /share/devel/Gp/lab/
+# Provides:          /share/devel/Gp/machine/
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: forever running /share/devel/Gp/lab/
-# Description:       /share/devel/Gp/lab/
+# Short-Description: forever running /share/devel/Gp/machine/
+# Description:       /share/devel/Gp/machine/
 ### END INIT INFO
 #
 # initd a node app
@@ -16,12 +16,12 @@
 # Source function library.
 #. /lib/lsb/init-functions
 
-pidFile="/share/devel/Gp/lab/log/server.pid"
-logFile="/share/devel/Gp/lab/log/server.log"
+pidFile="/share/devel/Gp/machine/log/server.pid"
+logFile="/share/devel/Gp/machine/log/server.log"
 
 command="node"
-scriptName="lab.js"
-baseDir="/share/devel/Gp/lab"
+scriptName="machine.js"
+baseDir="/share/devel/Gp/machine"
 nodeApp=$baseDir/$scriptName
 foreverApp="forever"
 
