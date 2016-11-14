@@ -1,3 +1,3 @@
 cd /share/devel/Gp/machine
-nodejs machine.js &
+./service start
 bash
