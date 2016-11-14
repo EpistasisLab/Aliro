@@ -18,7 +18,7 @@ RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlac
 RUN cd /share/devel/Gp/lab && npm install 
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
-RUN cd /share/devel/Gp/lab && npm install -g bower forever
+RUN cd /share/devel/Gp/lab && npm install -g bower pm2
 RUN cd /share/devel/Gp/lab &&  bower install --allow-root
 # global install forever utility
 # mongo configs
@@ -28,7 +28,7 @@ COPY files/mongod.conf /etc/
 #RUN mongod -f /etc/mongod.conf  & mongorestore  /dump
 #COPY files/ca.crt /share/devel/bobber/config/ca.crt
 COPY files/start.sh /root/
-COPY files/env /share/devel/Gp/lab/.env
+#COPY files/env /share/devel/Gp/lab/.env
 # apache configs
 #VOLUME /share
 EXPOSE 5080

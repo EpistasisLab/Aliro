@@ -14,6 +14,7 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
+
 var db = require("./db").db;
 
 /* App instantiation */
