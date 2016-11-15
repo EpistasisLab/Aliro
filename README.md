@@ -7,6 +7,7 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
  
 2. **Perform local based installation**
 	- Install [MongoDB] (https://www.mongodb.com/download-center#community)
+	- Install [NodeJS] (https://nodejs.org/en/download/)
 	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
 	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
 	- Run <i>mongorestore</i> to populate the mongo database
