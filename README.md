@@ -14,6 +14,10 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
 	- Change directories to <b>/share/devel/Gp/lab</b>
 	- Run <i>npm install<i>
 	- Change directories to <b>/share/devel/Gp/machine</b>
+	- Create a .env file with the following contents:
+	- <b>FGLAB_URL=http://localhost:5080</b>
+	- <b>FGMACHINE_URL=http://localhost:5081</b>
+
 	- Run <i>npm install<i>
 
 3. **Perform Docker based installation**
