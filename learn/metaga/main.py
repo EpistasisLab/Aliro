@@ -317,7 +317,7 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
     parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--method', dest='method', default='SymbReg')
+    parser.add_argument('--problem', dest='problem', default='SymbReg')
     parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=10)
     parser.add_argument('--meta_gen', dest='meta_gen', default=5)
@@ -332,7 +332,7 @@ if __name__ == "__main__":
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
     # Save all attached files
-    method = str(params['method'])
+    method = str(params['problem'])
     fns_rule = str(params['fitness_rule'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
