@@ -134,7 +134,6 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser("Perform deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--GPeval', dest='GPeval', default=False)
     parser.add_argument('--population_size', dest='population_size', default=100)
     parser.add_argument('--generations', dest='generations', default=10)
     parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
@@ -166,7 +165,6 @@ if __name__ == "__main__":
     #        c.close()
     #        numfiles += 1
     #if numfiles == 1:
-    gpeval = bool(params['GPeval'])
     pop_size = int(params['population_size'])
     gen_num = int(params['generations'])
     co_rate = float(params['crossover_rate'])
