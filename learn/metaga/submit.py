@@ -9,24 +9,20 @@ import multiprocessing
 import time
 import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-lab_host = os.environ['LAB_HOST']
-# no need multiprocessing in submit functions
-#import multiprocessing
-
-project_id = '57ffd3c1fa76cb0022258722'
-baseuri='http://'+lab_host+':5080/api/v1/projects/'+project_id+'/experiment'
-expbase='http://'+lab_host+':5080/api/v1/experiments/'
-
-url = 'http://lab:5080/api/v1/projects/'+project_id+'/batch'
-headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
-
-
 
 
 #def launch_lowerGP(population_size, generations, crossover_rate, mutation_rate, tournsize):
 # launch_individual
 def launch_lowerGP(individual):
+    """
+    A deap individual
+    """
     # Parse arguments
+    lab_host = os.environ['LAB_HOST']
+    project_id = '57ffd3c1fa76cb0022258722'
+    baseuri='http://'+lab_host+':5080/api/v1/projects/'+project_id+'/experiment'
+    expbase='http://'+lab_host+':5080/api/v1/experiments/'
+
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
 #    params = vars(parser.parse_args())
@@ -45,10 +41,9 @@ def launch_lowerGP(individual):
         headers={'Content-Type': multipart_data.content_type})
     json_data = response.json()
     _id = json_data['_id']
-    #print(_id)
     exp_status = 'init'
     experimenturi =  expbase + _id
-    while (exp_status != 'success' or 'best_fitness_score' not in exp_data):  # This constructs an infinite loop
+    while (exp_status != 'success' or 'best_fitness_score' not in exp_data):
         exp_response = requests.get(experimenturi)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
@@ -70,6 +65,9 @@ def SymbReg_FGlab_submit(population):
     """
     Population: A list of individual
     """
+    project_id = '57ffd3c1fa76cb0022258722'
+    url = 'http://lab:5080/api/v1/projects/'+project_id+'/batch'
+    headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
@@ -90,14 +88,12 @@ def SymbReg_FGlab_submit(population):
     json_data = response.json()
     exp_status = 'init'
     experimenturi =  expbase + _id
-    while (exp_status != 'success'): #or 'best_fitness_score' not in exp_data):  # This constructs an infinite loop
+    while (exp_status != 'success'):
         exp_response = requests.get(experimenturi)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
-        if exp_status == 'success': #and 'best_fitness_score' in exp_data:
-            #print(exp_data)
+        if exp_status == 'success':
             break
-        #print(exp_status)
         if exp_status == 'running':
             time.sleep(2) # check every 2 seconds
         if exp_status == 'success':
