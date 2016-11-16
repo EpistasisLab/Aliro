@@ -1,0 +1,4 @@
+[{"population_size":"100","generations":"20","crossover_rate":"0.1","mutation_rate":"0.05","tournsize":"3","random_state":"42"},
+{"population_size":"10","generations":"200","crossover_rate":"0.1","mutation_rate":"0.05","tournsize":"3","random_state":"42"},
+{"population_size":"20","generations":"20","crossover_rate":"0.1","mutation_rate":"0.05","tournsize":"3","random_state":"42"}]
+
