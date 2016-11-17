@@ -1,5 +1,5 @@
 {
-  "58136d9206cef92d18408855": {
+  "57bf24e1548cd20008bc71df": {
     "cwd": "/share/devel/Gp/gpocl/build",
     "command": "./gpocl",
     "args": ["../datasets/gei.csv"],

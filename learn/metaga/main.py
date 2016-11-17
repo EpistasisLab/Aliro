@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 import argparse
-from func_dict import func_dict, fitness_dict
+from func_dict import fitness_dict_FGlab
 #from decorator import Mut_Ranges
 from deap import base
 from deap import creator
@@ -19,7 +19,7 @@ tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
 
-def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
+def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
     """
     need add some details about arguments
     """
@@ -155,7 +155,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     # register a mutation operator with a probability to
 
 
-    toolbox.register("mutate", mut_args, indpb = 0.5, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
@@ -172,8 +172,8 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     # magical multiprocessing function in python
     # can be used in deap
 
-    pool = Pool(processes=4)
-    toolbox.register("map", pool.map)
+    """pool = Pool(processes=4)
+    toolbox.register("map", pool.map)"""
     # create an initial population of 300 individuals (where
     # each individual is a list of integers)
     pop = toolbox.population(n=meta_pop_size)
@@ -191,7 +191,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
     print("Start of MetaGA")
         # Begin the evolution
     # Need to more curemazie
-    """
+
     if outlog:
         outf = open(outlog, 'w')
         # header of log table
@@ -205,7 +205,9 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
         outf.write('\tbest_ind_tournsize')
         outf.write('\n')
     # Evaluate the entire population
-    fitnesses = list(map(toolbox.evaluate, pop))
+
+    ## sumbit a list of ind
+    pop, fitnesses = list(toolbox.evaluate, pop)
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
@@ -242,7 +244,9 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
+        ## sumbit a list of ind
+        pop, fitnesses = list(toolbox.evaluate, invalid_ind)
+
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
         neval = len(invalid_ind)
@@ -298,6 +302,7 @@ def metaga(func, fitness_func, fitness_rule, args_type, args_range, args_mut_typ
                                stats=stats, halloffame=meta_hof, verbose=True)
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    """
 
 
 
@@ -312,7 +317,7 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
     parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--method', dest='method', default='SymbReg')
+    parser.add_argument('--problem', dest='problem', default='SymbReg')
     parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=10)
     parser.add_argument('--meta_gen', dest='meta_gen', default=5)
@@ -327,7 +332,7 @@ if __name__ == "__main__":
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
     # Save all attached files
-    method = str(params['method'])
+    method = str(params['problem'])
     fns_rule = str(params['fitness_rule'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
@@ -338,21 +343,19 @@ if __name__ == "__main__":
     if outlogfile:
         outlogfile = str(outlogfile)
 
+    # hard codes need change for FGlab later
     args_type = ["int", "int", "float", "float", "int"]
     args_range = [[5, max_ll_pop], [5, max_ll_gen], [0.0, 1.0], [0.0, 1.0], [2, 5]]
     args_mut_type = ['random', 'random', 'random', 'random', 'random']
     # get function for metaGA
     try:
-        func = func_dict[method]
-        fitness_func = fitness_dict[method]
+        fitness_func = fitness_dict_FGlab[method]
     except KeyError:
         raise ValueError('invalid input in method')
 
-    #meta_gen = 10
-    #meta_pop_size = 20
 
     print(args_range)
-    metaga(func, fitness_func, fns_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
+    metaga(fitness_func, fns_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
     random_state = random_state, outlog = outlogfile)
 
     #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]
