@@ -16,6 +16,10 @@ note: you don't need to run both step #2 <i>AND</i> step #3.  A local Install ma
     	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
     	- <b>FGLAB_PORT=5080</b>
 	- Change directories to <b>/share/devel/Gp/machine</b>
+	- Create a file called '.env' with the following contents:
+	- <b>FGLAB_URL=http://localhost:5080</b>
+	- <b>FGMACHINE_URL=http://localhost:5081</b>
+    - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
 	- Run <i>npm install<i>
 	- Create a .env file with the following contents:
     	- <b>FGLAB_URL=http://localhost:5080</b>
