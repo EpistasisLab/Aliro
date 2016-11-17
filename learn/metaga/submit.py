@@ -123,7 +123,7 @@ def SymbReg_FGlab_submit(population):
     #print(exp_data['best_fitness_score'])
     #return exp_data['best_fitness_score'],
     fitnesses = []
-    for experiment,individual in zip(response['_experiments'],population):
+    for experiment,individual in zip(exp_data['_experiments'],population):
         tmpdict = experiment['_options']
         for key in range(len(keylist)):
             individual[key] = tmpdict[keylist[key]]
