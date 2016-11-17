@@ -207,7 +207,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     # Evaluate the entire population
 
     ## sumbit a list of ind
-    fitnesses = list(toolbox.evaluate, pop)
+    pop, fitnesses = list(toolbox.evaluate, pop)
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
@@ -245,7 +245,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         ## sumbit a list of ind
-        fitnesses = list(toolbox.evaluate, invalid_ind)
+        pop, fitnesses = list(toolbox.evaluate, invalid_ind)
 
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit

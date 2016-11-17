@@ -72,16 +72,13 @@ def SymbReg_FGlab_submit(population):
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
     param_list = []
+    keylist = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
 #    params = vars(parser.parse_args())
     for individual in population:
-        param_set = {
-                'population_size': str(individual[0]),
-                'generations': str(individual[1]),
-                'crossover_rate': str(individual[2]),
-                'mutation_rate': str(individual[3]),
-                'tournsize': str(individual[4]),
-                'random_state': '42'
-                }
+        param_set = {}
+        for key in range(len(keylist)):
+            param_set[keylist[key]] = str(individual[key])
+        param_set["random_state"] = '42'
         param_list.append(param_set)
 
     response = requests.post(url, data=param_list, headers=headers)
@@ -100,8 +97,17 @@ def SymbReg_FGlab_submit(population):
             time.sleep(2) # check every 2 seconds
         if exp_status == 'fail':
             break
-    print(exp_data['best_fitness_score'])
-    return exp_data['best_fitness_score'],
+    #print(exp_data['best_fitness_score'])
+    #return exp_data['best_fitness_score'],
+    fitnesses = []
+    for experiment,individual in zip(response['_experiments'],population):
+        tmpdict = experiment['_options']
+        for key in range(len(keylist)):
+            individual[key] = tmpdict[keylist[key]]
+        fitnesses.append(experiment['best_fitness_score'])
+    return population, fitnesses
+
+
 
 if __name__ == "__main__":
     jobs = []
