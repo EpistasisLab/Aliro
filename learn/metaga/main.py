@@ -207,11 +207,11 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     # Evaluate the entire population
 
     ## sumbit a list of ind
-    pop, fitnesses = list(toolbox.evaluate, pop)
+    pop, fitnesses = toolbox.evaluate(pop)
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
-    print("  Evaluated %i individuals" % len(pop))
+    #print("  Evaluated %i individuals" % len(pop))
 
     for gen in range(NGEN):
         time_start = time.time()
@@ -245,7 +245,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         ## sumbit a list of ind
-        pop, fitnesses = list(toolbox.evaluate, invalid_ind)
+        pop, fitnesses = toolbox.evaluate(invalid_ind)
 
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
@@ -329,8 +329,8 @@ if __name__ == "__main__":
 
     params = vars(parser.parse_args())
     _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
+    #if not os.path.exists(tmpdir + _id):
+        #os.makedirs(tmpdir + _id)
     # Save all attached files
     method = str(params['problem'])
     fns_rule = str(params['fitness_rule'])
