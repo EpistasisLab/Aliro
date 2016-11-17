@@ -84,7 +84,7 @@ def SymbReg_FGlab_submit(population):
                 }
         param_list.append(param_set)
 
-    response = requests.post(url, data=, headers=headers)
+    response = requests.post(url, data=param_list, headers=headers)
     json_data = response.json()
     exp_status = 'init'
     experimenturi =  expbase + _id
