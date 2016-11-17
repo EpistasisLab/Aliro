@@ -13,6 +13,9 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
 
+if not os.path.exists(tmpdir):
+    os.makedirs(tmpdir)
+
 
 #def launch_lowerGP(population_size, generations, crossover_rate, mutation_rate, tournsize):
 # launch_individual
@@ -68,9 +71,10 @@ def SymbReg_FGlab_submit(population):
     """
     Population: A list of individual
     """
+    lab_host = os.environ['LAB_HOST']
     project_id = '57ffd3c1fa76cb0022258722'
-    url = 'http://lab:5080/api/v1/projects/'+project_id+'/batch'
-    headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
+    baseuri='http://'+lab_host+':5080/api/v1/projects/'+project_id+'/experiment'
+    expbase='http://'+lab_host+':5080/api/v1/experiments/'
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
@@ -90,8 +94,13 @@ def SymbReg_FGlab_submit(population):
     param_list_file.write(']\n')
     param_list_file.close()
 
-    response = requests.post(url, data=open(param_batch_json, 'rb'), headers=headers)
+    response = requests.post(baseuri, data=open(param_batch_json, 'rb'), headers=headers)
+    # check after 5 seconds
+    time.sleep(5)
+
     json_data = response.json()
+    _id = json_data['_id']
+    # initial status
     exp_status = 'init'
     experimenturi =  expbase + _id
     while (exp_status != 'success'):
