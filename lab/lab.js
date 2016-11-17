@@ -160,12 +160,10 @@ app.get("/api/v1/batches/:id", (req, res, next) => {
                             if (exp[i]._status == 'success') {
                                 num_finished += 1
                             }
-                            var expstatus = exp[i]._status;
-                            result._progress = ((i + 1) / num_finished) * 100 + '%'
-                            if (result._progress == '100%') {
-                                result._status = 'success';
-                            }
-
+                        }
+                        result._progress = ((i + 1) / num_finished) * 100 + '%'
+                        if (result._progress == '100%') {
+                            result._status = 'success';
                         }
                         result._experiments = exp;
                         res.send(result);
