@@ -83,14 +83,19 @@ def SymbReg_FGlab_submit(population):
     param_list_file = open(param_batch_json, 'w')
     param_list_file.write('[')
     keylist = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
+    noind = len(population)
 #    params = vars(parser.parse_args())
+    inpos = 1
     for individual in population:
-        param_set = {}
+        param_list_file.write('{')
         for key in range(len(keylist)):
-            param_set[keylist[key]] = str(individual[key])
-        param_set["random_state"] = '42'
-        param_list_file.write(str(param_set))
-        param_list_file.write(',\n')
+            param_list_file.write("\"{}\" : \"{}\" ".format(keylist[key], str(individual[key])))
+        param_list_file.write("\"{}\" : \"{}\" ".format('random_state', '42'))
+        if inpos < noind:
+            param_list_file.write('},\n')
+            inpos += 1
+        else:
+            param_list_file.write('}')
     param_list_file.write(']\n')
     param_list_file.close()
 
