@@ -10,6 +10,9 @@ import time
 import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
+basedir='/share/devel/Gp/learn/metaga/'
+tmpdir=basedir+'tmp/'
+
 
 #def launch_lowerGP(population_size, generations, crossover_rate, mutation_rate, tournsize):
 # launch_individual
@@ -71,7 +74,10 @@ def SymbReg_FGlab_submit(population):
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
-    param_list = []
+    # a file has all the individual (params_set)
+    param_batch_json = tmpdir + 'batch.json'
+    param_list_file = open(param_batch_json, 'w')
+    param_list_file.write('[')
     keylist = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
 #    params = vars(parser.parse_args())
     for individual in population:
@@ -79,9 +85,12 @@ def SymbReg_FGlab_submit(population):
         for key in range(len(keylist)):
             param_set[keylist[key]] = str(individual[key])
         param_set["random_state"] = '42'
-        param_list.append(param_set)
+        param_list_file.write(str(param_set))
+        param_list_file.write(',\n')
+    param_list_file.write(']\n')
+    param_list_file.close()
 
-    response = requests.post(url, data=param_list, headers=headers)
+    response = requests.post(url, data=open(param_batch_json, 'rb'), headers=headers)
     json_data = response.json()
     exp_status = 'init'
     experimenturi =  expbase + _id
