@@ -71,10 +71,10 @@ def SymbReg_FGlab_submit(population):
     """
     Population: A list of individual
     """
-    lab_host = os.environ['LAB_HOST']
+    #lab_host = os.environ['LAB_HOST']
     project_id = '57ffd3c1fa76cb0022258722'
-    baseuri='http://'+lab_host+':5080/api/v1/projects/'+project_id+'/experiment'
-    expbase='http://'+lab_host+':5080/api/v1/experiments/'
+    baseuri='http://lab:5080/api/v1/projects/'+project_id+'/experiment'
+    expbase='http://lab:5080/api/v1/experiments/'
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
@@ -89,7 +89,7 @@ def SymbReg_FGlab_submit(population):
     for individual in population:
         param_list_file.write('{')
         for key in range(len(keylist)):
-            param_list_file.write("\"{}\" : \"{}\" ".format(keylist[key], str(individual[key])))
+            param_list_file.write("\"{}\" : \"{}\", ".format(keylist[key], str(individual[key])))
         param_list_file.write("\"{}\" : \"{}\" ".format('random_state', '42'))
         if inpos < noind:
             param_list_file.write('},\n')
@@ -98,7 +98,7 @@ def SymbReg_FGlab_submit(population):
             param_list_file.write('}')
     param_list_file.write(']\n')
     param_list_file.close()
-
+    headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
     response = requests.post(baseuri, data=open(param_batch_json, 'rb'), headers=headers)
     # check after 5 seconds
     time.sleep(5)
