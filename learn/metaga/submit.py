@@ -119,6 +119,9 @@ def SymbReg_FGlab_submit(population):
         for exp_ind in exps:
             if 'best_fitness_score' in exp_ind:
                 nofinished += 1
+            else:
+                print(exp_ind)
+        print('Jobs# without results',nofinished)
         if exp_status == 'success' or noind == nofinished:
             break
         if exp_status == 'running':
