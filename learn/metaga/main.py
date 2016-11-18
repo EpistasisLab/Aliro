@@ -186,7 +186,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     # NGEN  is the number of generations for which the
     #       evolution runs
     CXPB, MUTPB = 0.5, 0.2
-    NGEN = meta_gen + 1
+    NGEN = meta_gen
 
     print("Start of MetaGA")
         # Begin the evolution
@@ -319,10 +319,10 @@ if __name__ == "__main__":
     parser.add_argument('--_id', dest='_id', default=None)
     parser.add_argument('--problem', dest='problem', default='SymbReg')
     parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
-    parser.add_argument('--meta_pop', dest='meta_pop', default=10)
-    parser.add_argument('--meta_gen', dest='meta_gen', default=5)
+    parser.add_argument('--meta_pop', dest='meta_pop', default=20)
+    parser.add_argument('--meta_gen', dest='meta_gen', default=10)
     parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
-    parser.add_argument('--max_ll_pop', dest='max_ll_pop', default=20)
+    parser.add_argument('--max_ll_pop', dest='max_ll_pop', default=30)
     parser.add_argument('--random_state', dest='random_state', default=99)
     parser.add_argument('--log', dest='log', default = None)
 
