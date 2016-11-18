@@ -213,7 +213,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
 
     #print("  Evaluated %i individuals" % len(pop))
 
-    for gen in range(NGEN):
+    for gen in range(1, NGEN+1):
         time_start = time.time()
         print("-- Generation %i --" % gen)
 
