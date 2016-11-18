@@ -161,7 +161,7 @@ app.get("/api/v1/batches/:id", (req, res, next) => {
                                 num_finished += 1
                             }
                         }
-                        result._progress = ((i + 1) / num_finished) * 100 + '%'
+                        result._progress = (1 / num_finished) * 100 + '%'
                         if (result._progress == '100%') {
                             result._status = 'success';
                         }
