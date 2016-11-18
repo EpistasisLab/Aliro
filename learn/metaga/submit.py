@@ -110,17 +110,21 @@ def SymbReg_FGlab_submit(population):
     exp_status = 'init'
     # batchuri
     batchuri =  expbase + batch_id
-    while (exp_status != 'success'):
+    nofinished =  0
+    while (exp_status != 'success' and noind != nofinished):
         exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
         print(exp_status)
         print(exp_data)
-        if exp_status == 'success':
+        exps = exp_data['_experiments']
+        nofinished =  0
+        for exp_ind in exps:
+            if 'best_fitness_score' in exp_ind:
+                nofinished += 1
+        if exp_status == 'success' or noind == nofinished:
             break
         if exp_status == 'running':
-            time.sleep(2) # check every 2 seconds
-        if exp_status == 'success':
             time.sleep(2) # check every 2 seconds
         if exp_status == 'fail':
             break
