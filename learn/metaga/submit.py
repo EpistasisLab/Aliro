@@ -115,8 +115,6 @@ def SymbReg_FGlab_submit(population):
         exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
-        print(exp_status)
-        print(exp_data)
         exps = exp_data['_experiments']
         nofinished =  0
         for exp_ind in exps:
