@@ -13,9 +13,6 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
 
-if not os.path.exists(tmpdir):
-    os.makedirs(tmpdir)
-
 
 #def launch_lowerGP(population_size, generations, crossover_rate, mutation_rate, tournsize):
 # launch_individual
@@ -75,6 +72,8 @@ def SymbReg_FGlab_submit(population):
     project_id = '57ffd3c1fa76cb0022258722'
     baseuri='http://lab:5080/api/v1/projects/'+project_id+'/batch'
     expbase='http://lab:5080/api/v1/batches/'
+    if not os.path.exists(tmpdir):
+        os.makedirs(tmpdir)
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
@@ -134,6 +133,7 @@ def SymbReg_FGlab_submit(population):
         for key in range(len(keylist)):
             individual[key] = tmpdict[keylist[key]]
         fitnesses.append(experiment['best_fitness_score'])
+    os.system('rm -rf '+tmpdir)
     return population, fitnesses
 
 
