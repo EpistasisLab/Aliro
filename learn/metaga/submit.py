@@ -112,6 +112,8 @@ def SymbReg_FGlab_submit(population):
         exp_response = requests.get(experimenturi)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
+        print(exp_status)
+        print(exp_data)
         if exp_status == 'success':
             break
         if exp_status == 'running':
