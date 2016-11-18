@@ -73,8 +73,8 @@ def SymbReg_FGlab_submit(population):
     """
     #lab_host = os.environ['LAB_HOST']
     project_id = '57ffd3c1fa76cb0022258722'
-    baseuri='http://lab:5080/api/v1/projects/'+project_id+'/experiment'
-    expbase='http://lab:5080/api/v1/experiments/'
+    baseuri='http://lab:5080/api/v1/projects/'+project_id+'/batch'
+    expbase='http://lab:5080/api/v1/batches/'
     # Parse arguments
     parser = argparse.ArgumentParser("Perform lower level deapGP")
     parser.add_argument('--_id', dest='_id', default=None)
@@ -104,14 +104,18 @@ def SymbReg_FGlab_submit(population):
     time.sleep(5)
 
     json_data = response.json()
-    _id = json_data['_id']
+    # get batch ID
+    batch_id = json_data['_id']
     # initial status
     exp_status = 'init'
-    experimenturi =  expbase + _id
+    # batchuri
+    batchuri =  expbase + batch_id
     while (exp_status != 'success'):
-        exp_response = requests.get(experimenturi)
+        exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
+        print(exp_status)
+        print(exp_data)
         if exp_status == 'success':
             break
         if exp_status == 'running':
