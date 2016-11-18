@@ -209,7 +209,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     ## sumbit a list of ind
     pop, fitnesses = toolbox.evaluate(pop)
     for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = fit
+        ind.fitness.values = tuple([fit,])
 
     #print("  Evaluated %i individuals" % len(pop))
 
@@ -248,7 +248,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         pop, fitnesses = toolbox.evaluate(invalid_ind)
 
         for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
+            ind.fitness.values = tuple([fit,])
         neval = len(invalid_ind)
         print("  Evaluated %i individuals" % neval)
 
