@@ -121,7 +121,7 @@ def SymbReg_FGlab_submit(population):
                 nofinished += 1
             else:
                 print(exp_ind)
-        print('Jobs# without results',nofinished)
+        print('Jobs# with results',nofinished)
         if exp_status == 'success' or noind == nofinished:
             break
         if exp_status == 'running':
