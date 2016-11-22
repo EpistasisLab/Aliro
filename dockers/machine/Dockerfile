@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     vim \
     lsb-core \
     cpio \ 
+    htop \ 
     mesa-common-dev \
 #    python3-pip python3-setuptools python3-wheel python3-pandas \
 #    python3-matplotlib \
