@@ -14,9 +14,7 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
-
 var db = require("./db").db;
-
 /* App instantiation */
 var app = express();
 var jsonParser = bodyParser.json({
@@ -155,16 +153,28 @@ app.get("/api/v1/batches/:id", (req, res, next) => {
                         }
                     }).toArrayAsync()
                     .then((exp) => {
-                        num_finished = 0
+                        var num_finished = 0
                         for (var i = 0; i < exp.length; i++) {
-                            if (exp[i]._status == 'success') {
+                            if (exp[i]._status == 'success' && exp[i].best_fitness_score !== undefined) {
+
                                 num_finished += 1
                             }
                         }
-                        result._progress = (1 / num_finished) * 100 + '%'
+                        //write progress to the database
+                        result._progress = ((num_finished) / (result._num_experiments)) * 100 + '%';
                         if (result._progress == '100%') {
-                            result._status = 'success';
+                            var finished_date = new Date();
+                            db.batches.updateByIdAsync(req.params.id, {
+                                    $set: {
+                                        _finished: finished_date,
+                                        _status: 'success',
+                                    }
+                                })
+                                .catch((err) => {
+                                    next(err);
+                                });
                         }
+
                         result._experiments = exp;
                         res.send(result);
                     })
@@ -185,7 +195,7 @@ app.get("/api/v1/batches/:id", (req, res, next) => {
 app.get("/api/v1/:collection/:id", (req, res, next) => {
     req.collection.findByIdAsync(req.params.id)
         .then((result) => {
-                res.send(result);
+            res.send(result);
         })
         .catch((err) => {
             next(err);
@@ -375,8 +385,7 @@ var submitJob = (projId, options, files) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
                                 var filesP = processFiles(exp.ops[0], files); // Add files to project
-                                console.log(filesP)
-                                    // Wait for file upload to complete
+                                // Wait for file upload to complete
                                 Promise.all(filesP)
                                     .then(() => {
                                         // Send project
@@ -498,6 +507,7 @@ var submitJobRetry = function(projId, options, batch_id, retryT) {
 
 // Constructs a batch job from a list of options
 app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
+    var num_experiments = req.body.length;
     var projId = req.params.id;
     var retryTimeout = parseInt(req.query.retry);
     // Set default as an hour
@@ -531,10 +541,11 @@ app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
                     // Create batch
                     db.batches.insertAsync({
                             _project_id: db.toObjectID(projId),
-                            _status: "running"
+                            _status: "running",
+                            _num_experiments: num_experiments,
+                            _started: new Date()
                         }, {})
                         .then((result) => {
-                            console.log(result);
                             batch_id = result.ops[0]._id.toString();
                             for (var j = 0; j < expList.length; j++) {
                                 submitJobRetry(projId, expList[j], batch_id, retryTimeout);
