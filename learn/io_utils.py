@@ -15,9 +15,7 @@ class Experiment:
 
 	def build_paths(self, method_name):
 		self.schema = basedir+'/lab/examples/' + method_name + '/' + method_name + '.json'
-		#self.schema = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/lab/examples/' + method_name + '/' + method_name + '.json'
 		self.basedir = basedir+'/learn/' + method_name + '/'
-		#self.basedir = 'C:/Users/Sharon Tartarone/Box Sync/gp-project/Gp/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
 
 	def get_input(self):
@@ -68,7 +66,6 @@ def get_input_file(_id, tmpdir):
 	if not os.path.exists(expdir):
 		os.makedirs(expdir)
 
-	# response = http.request('GET', 'http://lab:5080/api/v1/experiments/' + _id)
 	response = http.request('GET', 'http://'+lab_host+':5080/api/v1/experiments/' + _id)
 	jsondata = json.loads(response.data.decode('utf-8'))
 	files = jsondata['_files']
@@ -76,8 +73,6 @@ def get_input_file(_id, tmpdir):
 
 	numfiles = 0;
 	for file in files:
-		# time.sleep(5) # do we need this?
-		# response = http.request('GET', 'http://lab:5080/api/v1/files/' + file['_id'])
 		response = http.request('GET', 'http://'+lab_host+':5080/api/v1/files/' + file['_id'])
 		input_file = expdir + file['filename']
 		with open(input_file, 'w') as f:

@@ -1,3 +1,3 @@
 cd /share/devel/Gp/machine
-nodejs machine.js &
+pm2 start machine.config.js --watch
 bash
