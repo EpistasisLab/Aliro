@@ -9,8 +9,8 @@
     "type": "int",
     "default": 20
  },
- "method": {
-    "description": "crossover rate, 0.0<=f<=1.0, [default = 0.1]",
+ "problem": {
+    "description": "crossover rate, 0.0<=f<=1.0, [default = 'SymbReg']",
     "type": "string",
     "default": "SymbReg"
  },
@@ -28,5 +28,10 @@
     "description": "random seed [default = 42]",
     "type": "int",
     "default": 42
+},
+"log": {
+   "description": "result report [default = FG_Lab_MetaGA_log.txt]",
+   "type": "string",
+   "default": "FG_Lab_MetaGA_log.txt"
 }
 }

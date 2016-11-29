@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     vim \
     lsb-core \
     cpio \ 
+    htop \ 
     mesa-common-dev \
 #    python3-pip python3-setuptools python3-wheel python3-pandas \
 #    python3-matplotlib \
@@ -45,10 +46,12 @@ RUN cd /share/devel/Gp/machine && npm install
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 COPY files/start.sh /root/
-COPY files/env /share/devel/Gp/machine/.env
+#COPY files/env /share/devel/Gp/machine/.env
 COPY files/projects.json /share/devel/Gp/machine/
 # apache configs
 RUN cd /share/devel/Gp/gpocl && mkdir build && cd build && cmake ../ && make
+#install the service
+RUN npm -g install pm2
 #VOLUME /share
 EXPOSE 5081
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
