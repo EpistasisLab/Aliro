@@ -135,6 +135,7 @@ var getCapacity = function(projId) {
   if (projects[projId]) {
     capacity = Math.floor(maxCapacity / projects[projId].capacity);
   }
+console.log(capacity);
   return capacity;
 };
 
@@ -227,7 +228,7 @@ console.log(er);
     console.log("Error: Experiment could not start - please check projects.json");
   });
   
-  maxCapacity -= project.capacity; // Reduce capacity of machine
+  maxCapacity -= Number(project.capacity); // Reduce capacity of machine
   rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/started", method: "PUT", data: null}); // Set started
   // Save experiment
   experiments[experimentId] = experiment;
@@ -272,7 +273,7 @@ console.log(er);
 
   // Processes results
   experiment.on("exit", (exitCode) => {
-    maxCapacity += project.capacity; // Add back capacity
+    maxCapacity += Number(project.capacity); // Add back capacity
 
     // Send status
     var status = (exitCode === 0) ? "success" : "fail";
