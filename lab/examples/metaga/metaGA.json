@@ -1,11 +1,11 @@
 {
  "max_ll_pop": {
-    "description": "max_lower_number of individuals (default = 100)",
+    "description": "max number of individuals in lower level GP (default = 100)",
     "type": "int",
     "default": 100
   },
    "max_ll_gen": {
-    "description": "number of generations, n>0 [default = 20]" ,
+    "description": "max number of generations in lower level GP, n>0 [default = 20]" ,
     "type": "int",
     "default": 20
  },
