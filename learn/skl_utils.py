@@ -1,14 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
 import os
 import json
 import itertools
-import numpy as np
-import matplotlib.pyplot as plt
-
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import label_binarize
-from sklearn.multiclass import OneVsRestClassifier
-from scipy import interp
 
 def generate_results(model, input_file, tmpdir, _id):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
