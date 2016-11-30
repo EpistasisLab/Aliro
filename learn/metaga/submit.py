@@ -11,7 +11,7 @@ import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 basedir='/share/devel/Gp/learn/metaga/'
-tmpdir=basedir+'tmp/'
+tmpdir=basedir+'batch_tmp/'
 
 
 def SymbReg_FGlab_submit(population):
