@@ -4,8 +4,8 @@ import numpy as np
 import time
 import os
 import argparse
-from func_dict import fitness_dict_FGlab
-#from decorator import Mut_Ranges
+from func_dict import fitness_dict_FGlab, fitness_rule_dict_FGlab
+
 from deap import base
 from deap import creator
 from deap import tools
@@ -318,7 +318,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Perform MetaGA")
     parser.add_argument('--_id', dest='_id', default=None)
     parser.add_argument('--problem', dest='problem', default='SymbReg')
-    parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=20)
     parser.add_argument('--meta_gen', dest='meta_gen', default=10)
     parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
@@ -332,8 +331,7 @@ if __name__ == "__main__":
     #if not os.path.exists(tmpdir + _id):
         #os.makedirs(tmpdir + _id)
     # Save all attached files
-    method = str(params['problem'])
-    fns_rule = str(params['fitness_rule'])
+    problem = str(params['problem'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
     max_ll_gen = int(params['max_ll_gen'])
@@ -349,13 +347,14 @@ if __name__ == "__main__":
     args_mut_type = ['random', 'random', 'random', 'random', 'random']
     # get function for metaGA
     try:
-        fitness_func = fitness_dict_FGlab[method]
+        fitness_func = fitness_dict_FGlab[problem]
+        fitness_rule = fitness_rule_dict_FGlab[problem]
     except KeyError:
-        raise ValueError('invalid input in method')
+        raise ValueError('invalid input in problem')
 
 
     print(args_range)
-    metaga(fitness_func, fns_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
+    metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
     random_state = random_state, outlog = outlogfile)
 
     #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]
