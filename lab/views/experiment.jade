@@ -92,6 +92,26 @@ block scripts
       }
       $("#status").addClass(textClass);
       $("#status .octicon").addClass(iconClass);
+      
+      var interval;
+      if(status == "running") {
+        interval = setInterval(getStatus, 3000);
+      }
+     
+     function getStatus() {
+       $.ajax({
+            url: "/api/v1/experiments/#{experiment._id}/status",
+            type: "GET",
+            contentType: "application/json",
+            success: function(data) {
+              if(data._status !== 'running') {
+                clearInterval(interval);
+                location.reload();
+              }
+            },
+            error: function(err) {console.log(err);}
+          });
+     }
 
       // Add times
       if (experiment._started) {
