@@ -178,7 +178,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
 
 
     #toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
-    toolbox.register("mutate", mut_args, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args_one_point, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
