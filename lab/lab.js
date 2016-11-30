@@ -265,6 +265,17 @@ app.delete("/api/v1/projects/:id/experiments", (req, res, next) => {
         });
 });
 
+// Gets the status of an experiment
+app.get("/api/v1/experiments/:id/status", (req, res, next) => {
+    db.experiments.findByIdAsync(req.params.id, { _status: 1 })
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
 // TODO Consider renaming API endpoint
 // Constructs a project from an uploaded .json file
 app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) => {
