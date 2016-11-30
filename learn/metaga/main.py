@@ -107,6 +107,27 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
                 tmp_ind[arg_idx] = argu_gen(args_type, args_range, spec = arg_idx + 1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_idx])
         return tmp_ind,
 
+    def mut_args_one_point(individual, args_type, args_range, args_mut_type):
+        """
+        Perform a replacement mutation on Argumnet in an individual
+        Make sure the mutated in the ranges of arguments
+        Only one argument can  mutate
+        ----------
+        individual: DEAP individual
+            A list of arguments
+        args_range:
+            A list of arguments' ranges
+        indpb:
+            Independent probability for each attribute to be flipped.
+        Returns
+        ----------
+            Returns the individual with one of the mutations applied to it
+        """
+        tmp_ind = individual
+        arg_mut_idx = np.random.randint(0, len(tmp_ind))
+        tmp_ind[arg_mut_idx] = argu_gen(args_type, args_range, spec = arg_mut_idx+1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_mut_idx])
+        return tmp_ind,
+
     Ep_List = []
     def uniq_name_test(name_list, arg):
         if name_list.count(Ep_list):
@@ -156,7 +177,8 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     # register a mutation operator with a probability to
 
 
-    toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    #toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
@@ -168,15 +190,9 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     #----------
 
     np.random.seed(random_state)  # random seed in magaga
-    # Process Pool of 4 workers
 
-    # magical multiprocessing function in python
-    # can be used in deap
-
-    """pool = Pool(processes=4)
-    toolbox.register("map", pool.map)"""
-    # create an initial population of 300 individuals (where
-    # each individual is a list of integers)
+    # create an initial population of meta_pop_size individuals (where
+    # each individual is a list of parameters)
     pop = toolbox.population(n=meta_pop_size)
 
     # CXPB  is the probability with which two individuals
