@@ -304,6 +304,10 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
                 else:
                     outf.write('\t{}'.format(best_arg))
             outf.write('\n')
+            # output every meta generation
+            outf.close()
+            outf = open(outlog, 'a')
+
 
 
     print("-- End of MetaGA")
