@@ -14,6 +14,7 @@ from multiprocessing import Pool
 import urllib3
 import pycurl
 
+## folder for tmp file and intermediate file
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
@@ -316,7 +317,7 @@ if __name__ == "__main__":
 
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
-    parser.add_argument('--_id', dest='_id', default=None)
+    parser.add_argument('--_id', dest='_id', default='test_log')
     parser.add_argument('--problem', dest='problem', default='SymbReg')
     parser.add_argument('--meta_pop', dest='meta_pop', default=20)
     parser.add_argument('--meta_gen', dest='meta_gen', default=10)
@@ -328,8 +329,8 @@ if __name__ == "__main__":
 
     params = vars(parser.parse_args())
     _id = params['_id']
-    #if not os.path.exists(tmpdir + _id):
-        #os.makedirs(tmpdir + _id)
+    if not os.path.exists(tmpdir + _id):
+        os.makedirs(tmpdir + _id)
     # Save all attached files
     problem = str(params['problem'])
     meta_pop_size = int(params['meta_pop'])
@@ -339,7 +340,7 @@ if __name__ == "__main__":
     random_state = int(params['random_state'])
     outlogfile = params['log']
     if outlogfile:
-        outlogfile = str(outlogfile)
+        outlogfile = tmpdir + _id + str(outlogfile)
 
     # hard codes need change for FGlab later
     args_type = ["int", "int", "float", "float", "int"]
