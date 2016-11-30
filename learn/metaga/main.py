@@ -292,12 +292,17 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         print("Time_usage: %s " % time_used)
 
         if outlog:
-            outf.write('{}\t{}\t'.format(gen, neval))
-            outf.write('{}\t{}\t{}\t{}'.format(fits_arg, fits_std, fits_max, fits_min))
-            outf.write('\t{}'.format(time_used))
+            outf.write('{:d}\t{:d}\t'.format(gen, neval))
+            outf.write('{:f}\t{:f}\t{:f}\t{:f}'.format(fits_arg, fits_std, fits_max, fits_min))
+            outf.write('\t{:f}'.format(time_used))
             #population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
             for best_arg in best_ind:
-                outf.write('\t{}'.format(best_arg))
+                if isinstance(best_arg, int):
+                    outf.write('\t{:d}'.format(best_arg))
+                elif isinstance(best_arg, float):
+                    outf.write('\t{:f}'.format(best_arg))
+                else:
+                    outf.write('\t{}'.format(best_arg))
             outf.write('\n')
 
 
@@ -357,7 +362,7 @@ if __name__ == "__main__":
     random_state = int(params['random_state'])
     outlogfile = params['log']
     if outlogfile:
-        outlogfile = tmpdir + _id + str(outlogfile)
+        outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
     # hard codes need change for FGlab later
     args_type = ["int", "int", "float", "float", "int"]
