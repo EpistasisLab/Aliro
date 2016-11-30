@@ -498,10 +498,10 @@ var submitJobRetry = function(projId, options, batch_id, retryT) {
                 });
         })
         .catch(() => {
-            // Retry in a random 1s interval
+            // Retry in a random interval
             setTimeout(() => {
                 submitJobRetry(projId, options, batch_id, retryT);
-            }, 1000 * retryT * Math.random());
+            }, retryT * Math.random());
         });
 };
 
@@ -510,9 +510,9 @@ app.post("/api/v1/projects/:id/batch", jsonParser, (req, res, next) => {
     var num_experiments = req.body.length;
     var projId = req.params.id;
     var retryTimeout = parseInt(req.query.retry);
-    // Set default as an hour
+    // Set default as 5 seconds
     if (isNaN(retryTimeout) || retryTimeout <= 0) {
-        retryTimeout = 60 * 60;
+        retryTimeout = 5;
     }
     // Check project actually exists
     db.projects.findByIdAsync(projId, {
