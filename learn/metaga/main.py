@@ -205,43 +205,42 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         outf.write('\tbest_ind_mutation_rate')
         outf.write('\tbest_ind_tournsize')
         outf.write('\n')
-    # Evaluate the entire population
 
-    ## sumbit a list of ind
-    pop, fitnesses = toolbox.evaluate(pop)
-    for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = tuple([fit,])
 
-    #print("  Evaluated %i individuals" % len(pop))
-
-    for gen in range(1, NGEN+1):
+    for gen in range(0, NGEN+1):
         time_start = time.time()
         print("-- Generation %i --" % gen)
-
+        if gen == 0:
+            # Evaluate the entire population
+            pop, fitnesses = toolbox.evaluate(pop)
+            for ind, fit in zip(pop, fitnesses):
+                ind.fitness.values = tuple([fit,])
+            offspring = pop
+        else:
         # Select the next generation individuals
-        offspring = toolbox.select(pop, len(pop))
-        # Clone the selected individuals
-        offspring = list(map(toolbox.clone, offspring))
+            offspring = toolbox.select(pop, len(pop))
+            # Clone the selected individuals
+            offspring = list(map(toolbox.clone, offspring))
 
-        # Apply crossover and mutation on the offspring
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if child1 == child2:
-                continue # skip the twins
-            # cross two individuals with probability CXPB
-            if np.random.random() < CXPB:
-                toolbox.mate(child1, child2)
+            # Apply crossover and mutation on the offspring
+            for child1, child2 in zip(offspring[::2], offspring[1::2]):
+                if child1 == child2:
+                    continue # skip the twins
+                # cross two individuals with probability CXPB
+                if np.random.random() < CXPB:
+                    toolbox.mate(child1, child2)
 
-                # fitness values of the children
-                # must be recalculated later
-                del child1.fitness.values
-                del child2.fitness.values
+                    # fitness values of the children
+                    # must be recalculated later
+                    del child1.fitness.values
+                    del child2.fitness.values
 
-        for mutant in offspring:
+            for mutant in offspring:
 
-            # mutate an individual with probability MUTPB
-            if np.random.random() < MUTPB:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
+                # mutate an individual with probability MUTPB
+                if np.random.random() < MUTPB:
+                    toolbox.mutate(mutant)
+                    del mutant.fitness.values
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
