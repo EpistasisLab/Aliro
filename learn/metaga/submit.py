@@ -11,7 +11,7 @@ import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 basedir='/share/devel/Gp/learn/metaga/'
-tmpdir=basedir+'batch_tmp/'
+tmpdir=basedir+'tmp/'
 
 
 def SymbReg_FGlab_submit(population):
@@ -86,7 +86,7 @@ def SymbReg_FGlab_submit(population):
         for key in range(len(keylist)):
             individual[key] = tmpdict[keylist[key]]
         fitnesses.append(experiment['best_fitness_score'])
-    os.system('rm -rf '+tmpdir)
+    os.system('rm -f {}/batch.json'.format(tmpdir))
     return population, fitnesses
 
 
