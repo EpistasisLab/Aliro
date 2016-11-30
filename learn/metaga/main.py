@@ -297,9 +297,9 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
             outf.write('\t{:f}'.format(time_used))
             #population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
             for best_arg, atype in zip(best_ind, args_type):
-                if atype = "int":
+                if atype == "int":
                     outf.write('\t{:d}'.format(int(best_arg)))
-                elif atype = "float":
+                elif atype =="float":
                     outf.write('\t{:f}'.format(float(best_arg)))
                 else:
                     outf.write('\t{}'.format(best_arg))
