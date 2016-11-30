@@ -232,6 +232,8 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
             for ind, fit in zip(pop, fitnesses):
                 ind.fitness.values = tuple([fit,])
             offspring = pop
+            neval = len(offspring)
+            print("  Evaluated %i individuals" % neval)
         else:
         # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
@@ -258,15 +260,15 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
                     toolbox.mutate(mutant)
                     del mutant.fitness.values
 
-        # Evaluate the individuals with an invalid fitness
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        ## sumbit a list of ind
-        pop, fitnesses = toolbox.evaluate(invalid_ind)
+            # Evaluate the individuals with an invalid fitness
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            ## sumbit a list of ind
+            pop, fitnesses = toolbox.evaluate(invalid_ind)
 
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = tuple([fit,])
-        neval = len(invalid_ind)
-        print("  Evaluated %i individuals" % neval)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = tuple([fit,])
+            neval = len(invalid_ind)
+            print("  Evaluated %i individuals" % neval)
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring
