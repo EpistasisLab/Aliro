@@ -16,7 +16,7 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5081:5081 -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT}-h ${HOSTNAME} --name machine --net=host\
+	docker run -i -t --rm -p 5081:5081 -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
 		${DOCKER_REPO}
 
 
