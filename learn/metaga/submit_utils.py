@@ -5,37 +5,30 @@ import pycurl
 import time
 import argparse
 import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
-
+import os
+#from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 #http = urllib3.PoolManager()
 
-# will eventually do this in the correct way -- install a library/package
-import os, sys
-parentPath = os.path.abspath("..")
-if parentPath not in sys.path:
-    sys.path.insert(0, parentPath)
-
-from io_utils import Experiment
-from skl_utils import generate_results
+from utils_lib.io_utils import Experiment
 
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
 # a tmp json file for a meta-population
 param_batch_json = tmpdir + 'batch.json'
-
 if not os.path.exists(tmpdir):
     os.makedirs(tmpdir)
 
-lab_host = os.environ['LAB_HOST']
-lab_port = os.environ['FGLAB_PORT']
 
-
-#args_list = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
-
-project_id = '57ffd3c1fa76cb0022258722'
-baseuri='http://{}:{}/api/v1/projects/{}/batch'.format(lab_host, lab_port, project_id)
-expbase='http://{}:{}/api/v1/batches/'.format(lab_host, lab_port)
+def make_exp(Chosen_ML_algorithms):
+    exp = Experiment(Chosen_ML)
+    args, input_file = exp.get_input()
+    fglab_url = os.environ['FGLAB_URL']
+    #args_list = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
+    # get project id
+    project_id = exp.get_project_id()
+    baseuri='{}/api/v1/projects/{}/batch'.format(fglab_url, project_id)
+    expbase='{}/api/v1/batches/'.format(fglab_url)
 
 def json_submit(population, param_batch_json, args_list):
     # Parse arguments
