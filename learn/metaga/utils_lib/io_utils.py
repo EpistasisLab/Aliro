@@ -32,12 +32,9 @@ class Experiment:
 	# get argument list
 	def get_args_list(self):
 		return list(get_params(self.schema).keys())
-	# get argument type
-	def get_args_type(self):
-		params = get_params(self.schema)
-		args_list = self.get_args_list()
-		args_type = [params[arg]['type'] for arg in args_list]
-		return args_type
+	def get_args_profile(self):
+		return get_args_profile(self.schema)
+
 
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
@@ -54,6 +51,10 @@ def get_project_id(proj_info, basedir):
 		print('Warning: Multiple projects with same id. Check project.json file!')
 	return proj_ids[0]
 
+
+
+
+
 def save_output(tmpdir, _id, output):
 	expdir = tmpdir + _id + '/'
 	with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
@@ -65,6 +66,15 @@ def get_params(schema):
 		params = json.loads(f.read().decode('utf-8'))
 
 	return params
+
+
+# get argument type and choice and range
+def get_args_profile(schema):
+	params = get_params(schema)
+	args_list = list(get_params(schema).keys())
+	args_type = [params[arg]['type'] for arg in args_list]
+	args_range = [params[arg]['ui']['choices'] for arg in args_list] # may change based on min and max in the furture
+	return args_type, args_range
 
 def parse_args(params):
 	parser = argparse.ArgumentParser()

@@ -4,7 +4,10 @@ import numpy as np
 import time
 import os
 import argparse
-from func_dict import fitness_dict_FGlab, fitness_rule_dict_FGlab
+from func_dict import fitness_rule_dict_FGlab
+from utils_lib.io_utils import Experiment
+from .submit_utils import
+
 
 from deap import base
 from deap import creator
@@ -20,7 +23,10 @@ tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
 
-def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,random_state = 99,  outlog = None):
+def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
+            args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,
+            cross_rt = 0.5, mut_rt = 0.4, tourn_size = 3,
+            random_state = 99,  outlog = None):
     """
     need add some details about arguments
     """
@@ -40,44 +46,33 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
 
         if not spec:
             # return a tuple
-            args_list = []
+            args_set = []
             for atype, arange in zip(args_type, args_range):
-                if atype == "int":
-                    args_list.append(np.random.randint(arange[0], arange[1]+1))
-                elif atype == 'float':
-                    args_list.append(arange[0]+ np.random.random() * (arange[1]-arange[0]))
-                elif atype == "bool":
-                    args_list.append(bool(np.random.randint(0, 2)))
-            return tuple(args_list)
+                tmp_arg = np.random.choice(arange)
+                try:
+                    tmp_arg = eval('{}({})'.format(atype, tmp_arg))
+                except:
+                    tmp_arg = str(tmp_arg)
+                args_set.append(tmp_arg)
+            return tuple(args_set)
         else:
             # return one arg
-            arg = None
-            atype = args_type[spec - 1]
-            arange = args_range[spec - 1]
-            amuttype = args_mut_type[spec - 1]
-            range_min = arange[0]
-            range_max = arange[1]
+            tmpidx = spec - 1
+            atype = args_type[tmpidx]
+            arange = args_range[tmpidx]
+            amuttype = args_mut_type[tmpidx]
             if amuttype == "increase":
-                if old_arg == None:
-                    print('Warning: Missing old_arg argument!')
-                range_min = old_arg
+                arange = [i for i in arange if i < eval('{}({})'.format(atype, old_arg))]
             elif amuttype == 'decrease':
-                if old_arg == None:
-                    print('Warning: Missing old_arg argument!')
-                range_max = old_arg
-
-            if atype == "int":
-                arg = np.random.randint(range_min, range_max + 1)
-            elif atype == 'float':
-                arg = range_min + np.random.random() * (range_max-range_min)
-            elif atype == "bool":
-                arg = bool(np.random.randint(0, 2))
-            return arg
+                arange = [i for i in arange if i > eval('{}({})'.format(atype, old_arg))]
+            tmp_arg = np.random.choice(arange)
+            try:
+                tmp_arg = eval('{}({})'.format(atype, tmp_arg))
+            except:
+                tmp_arg = str(tmp_arg)
+            return tmp_arg
     # Ephe_Cont_Name generater
     # to avoid repeat name
-
-
-
 
     def mut_args(individual, indpb, args_type, args_range, args_mut_type):
         """
@@ -104,7 +99,10 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         tmp_ind = individual
         for arg_idx in range(len(tmp_ind)):
             if if_mut(indpb):
-                tmp_ind[arg_idx] = argu_gen(args_type, args_range, spec = arg_idx + 1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_idx])
+                tmp_ind[arg_idx] = argu_gen(args_type, args_range,
+                                            spec = arg_idx + 1,
+                                            args_mut_type = args_mut_type,
+                                            old_arg=tmp_ind[arg_idx])
         return tmp_ind,
 
     def mut_args_one_point(individual, args_type, args_range, args_mut_type):
@@ -125,15 +123,11 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         """
         tmp_ind = individual
         arg_mut_idx = np.random.randint(0, len(tmp_ind))
-        tmp_ind[arg_mut_idx] = argu_gen(args_type, args_range, spec = arg_mut_idx+1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_mut_idx])
+        tmp_ind[arg_mut_idx] = argu_gen(args_type, args_range,
+                                        spec = arg_mut_idx+1,
+                                        args_mut_type = args_mut_type,
+                                        old_arg=tmp_ind[arg_mut_idx])
         return tmp_ind,
-
-    Ep_List = []
-    def uniq_name_test(name_list, arg):
-        if name_list.count(Ep_list):
-            return False
-        else:
-            return True
 
 
     if fitness_rule == 'FitnessMin':
@@ -169,7 +163,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     #----------
     # register the goal / fitness function
     # Need distribute to FGlab machine
-    toolbox.register("evaluate", fitness_func)
+    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = algorithms)
 
     # register the crossover operator in order
     toolbox.register("mate", tools.cxTwoPoint)
@@ -178,13 +172,14 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
 
 
     #toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
-    toolbox.register("mutate", mut_args_one_point, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args_one_point, args_type = args_type,
+                        args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
     # is replaced by the 'fittest' (best) of three individuals
     # drawn randomly from the current generation.
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    toolbox.register("select", tools.selTournament, tournsize=tourn_size)
 
 
     #----------
@@ -202,7 +197,7 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     #
     # NGEN  is the number of generations for which the
     #       evolution runs
-    CXPB, MUTPB = 0.5, 0.2
+    CXPB, MUTPB = cross_rt, mut_rt
     NGEN = meta_gen
 
     print("Start of MetaGA")
@@ -214,12 +209,8 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         # header of log table
         outf.write('#gen\tneval\tfitness_avg\tfitness_std\tfitness_max\tfitness_min')
         outf.write('\ttime_usage')
-        #population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
-        outf.write('\tbest_ind_population_size')
-        outf.write('\tbest_ind_generations')
-        outf.write('\tbest_ind_crossover_rate')
-        outf.write('\tbest_ind_mutation_rate')
-        outf.write('\tbest_ind_tournsize')
+        for arg in args_list:
+            outf.write('\tbest_ind_{}'.format(args_list))
         outf.write('\n')
 
 
@@ -314,23 +305,6 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-    return best_ind
-    """
-
-    # short version0
-    # hard to get detail from log
-    meta_hof = tools.HallOfFame(1)
-    stats = tools.Statistics(lambda ind: ind.fitness.values)
-    stats.register("avg", np.mean)
-    stats.register("std", np.std)
-    stats.register("min", np.min)
-    stats.register("max", np.max)
-    pop, log = algorithms.eaSimple(pop, toolbox, cxpb=CXPB, mutpb=MUTPB, ngen=NGEN,
-                               stats=stats, halloffame=meta_hof, verbose=True)
-    best_ind = tools.selBest(pop, 1)[0]
-    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-    """
-
 
 
 
@@ -344,45 +318,52 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
     parser.add_argument('--_id', dest='_id', default='test_log')
-    parser.add_argument('--problem', dest='problem', default='SymbReg')
+    parser.add_argument('--algorithms', dest='algorithms', default='BernoulliNB')
     parser.add_argument('--meta_pop', dest='meta_pop', default=20)
     parser.add_argument('--meta_gen', dest='meta_gen', default=10)
-    parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
-    parser.add_argument('--max_ll_pop', dest='max_ll_pop', default=30)
-    parser.add_argument('--random_state', dest='random_state', default=99)
-    parser.add_argument('--log', dest='log', default = None)
+    parser.add_argument('--meta_cross_rt', dest='meta_cross_rt', default=0.5)
+    parser.add_argument('--meta_mut_rt', dest='meta_mut_rt', default=0.4)
+    parser.add_argument('--meta_tourn_size', dest='meta_tourn_size', default=3)
+    parser.add_argument('--random_state', dest='random_state', default=42)
+    parser.add_argument('--log', dest='log', default = 'FGlab_metaga_log.tsv')
 
 
     params = vars(parser.parse_args())
     _id = params['_id']
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
-    # Save all attached files
-    problem = str(params['problem'])
+
+
+    algorithms = str(params['algorithms'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
-    max_ll_gen = int(params['max_ll_gen'])
-    max_ll_pop = int(params['max_ll_pop'])
+    meta_cross_rt = float(params['meta_cross_rt'])
+    meta_mut_rt = float(params['meta_mut_rt'])
+    meta_tourn_size = int(params['meta_tourn_size'])
+
     random_state = int(params['random_state'])
     outlogfile = params['log']
     if outlogfile:
         outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
     # hard codes need change for FGlab later
-    args_type = ["int", "int", "float", "float", "int"]
+    """args_type = ["int", "int", "float", "float", "int"]
     args_range = [[5, max_ll_pop], [5, max_ll_gen], [0.0, 1.0], [0.0, 1.0], [2, 5]]
-    args_mut_type = ['random', 'random', 'random', 'random', 'random']
-    # get function for metaGA
+    args_mut_type = ['random', 'random', 'random', 'random', 'random']"""
+    exp = Experiment(Chosen_ML)
+    args_list = exp.get_args_list()
+    args_type, args_range = exp.get_args_profile()
+    num_args = len(args_list) # beta version is all random mutation
+    args_mut_type = ['random'] * num_args
+    # get function for metaga
+
     try:
-        fitness_func = fitness_dict_FGlab[problem]
-        fitness_rule = fitness_rule_dict_FGlab[problem]
+        fitness_rule = fitness_rule_dict_FGlab[Chosen_ML]
     except KeyError:
         raise ValueError('invalid input in problem')
 
-
     print(args_range)
-    metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
-    random_state = random_state, outlog = outlogfile)
-
-    #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]
-    #metaga(SymbReg, args_type, args_range, args_mut_type, 10, 150, random_state = 64, outlog = 'log_gen10_ind150_deapgp_maxpop&gen50.tsv')
+    metaga(fitness_func, fitness_rule, args_list, args_type,
+            args_range, args_mut_type, meta_gen = meta_gen, meta_pop_size = meta_pop_size,
+            meta_cross_rt = meta_cross_rt, meta_mut_rt = meta_mut_rt,
+            meta_tourn_size = meta_tourn_size, random_state = random_state, outlog = outlogfile)
