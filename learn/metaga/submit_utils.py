@@ -24,7 +24,7 @@ expbase='{}/api/v1/batches/'.format(fglab_url)
 
 def config_exp(Chosen_ML_algorithms):
     exp = Experiment(Chosen_ML)
-    args, input_file = exp.get_input()
+    #args, input_file = exp.get_input()
     # get project id and args_list
     project_id = exp.get_project_id()
     args_list = exp.get_args_list()
