@@ -30,6 +30,9 @@ class Experiment:
 	def get_project_id(self):
 		return get_project_id(self.proj_info, self.basedir)
 
+	def get_args_list(self):
+		return list(parse_args(get_params(self.schema)).keys())
+
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
 	input_file = get_input_file(args['_id'], tmpdir)
