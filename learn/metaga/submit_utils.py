@@ -19,16 +19,18 @@ param_batch_json = tmpdir + 'batch.json'
 if not os.path.exists(tmpdir):
     os.makedirs(tmpdir)
 
+fglab_url = os.environ['FGLAB_URL']
+expbase='{}/api/v1/batches/'.format(fglab_url)
 
-def make_exp(Chosen_ML_algorithms):
+def config_exp(Chosen_ML_algorithms):
     exp = Experiment(Chosen_ML)
     args, input_file = exp.get_input()
-    fglab_url = os.environ['FGLAB_URL']
-    #args_list = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
-    # get project id
+    # get project id and args_list
     project_id = exp.get_project_id()
+    args_list = exp.get_args_list()
     baseuri='{}/api/v1/projects/{}/batch'.format(fglab_url, project_id)
-    expbase='{}/api/v1/batches/'.format(fglab_url)
+    return baseuri, args_list
+
 
 def json_submit(population, param_batch_json, args_list):
     # Parse arguments
@@ -55,15 +57,13 @@ def json_submit(population, param_batch_json, args_list):
     param_list_file.write(']\n')
     param_list_file.close()
 
-def FGlab_submit(population, method):
+def FGlab_submit(population, Chosen_ML_algorithms):
     """
     Population: A list of individual
     method: method name (string type)
     """
 
-    exp = Experiment('MultinomialNB')
-	args, input_file = exp.get_input()
-    args_list = args.keys()
+    baseuri, args_list = config_exp(Chosen_ML_algorithms)
 
     json_submit(population, param_batch_json, args_list)
     # change the problem id to different problem
