@@ -7,6 +7,11 @@ import time
 lab_host = os.environ['LAB_HOST']
 basedir = os.environ['IFROOT']
 http = urllib3.PoolManager()
+# build info for all project/Experiment
+proj_json = '{}/dockers/machine/files/projects.json'.format(basedir)
+proj_info = {}
+with open(proj_json, 'rb') as f:
+	proj_info = json.loads(f.read().decode('utf-8'))
 
 class Experiment:
 
@@ -17,15 +22,28 @@ class Experiment:
 		self.schema = basedir+'/lab/examples/' + method_name + '/' + method_name + '.json'
 		self.basedir = basedir+'/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
+		self.proj_info = proj_info
 
 	def get_input(self):
 		return get_input(self.schema, self.tmpdir)
+
+	def get_project_id(self):
+		return get_project_id(self.proj_info, self.basedir)
 
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
 	input_file = get_input_file(args['_id'], tmpdir)
 
 	return (args, input_file)
+
+def get_project_id(proj_info, basedir):
+	proj_ids = [key for key in proj_info.keys() if proj_info[key]['cwd'] ==  basedir[:-1]]
+	num_proj_found = len(proj_ids)
+	if num_proj_found == 0:
+		raise KeyError('Error: No project found!')
+	elif num_proj_found > 1:  #debug use
+		print('Warning: Multiple projects with same id. Check project.json file!')
+	return proj_ids[0]
 
 def save_output(tmpdir, _id, output):
 	expdir = tmpdir + _id + '/'
@@ -58,7 +76,7 @@ def parse_args(params):
 
 	print('parsed args:', args)
 
-	return args	
+	return args
 
 def get_input_file(_id, tmpdir):
 	expdir = tmpdir + _id + '/'
@@ -89,7 +107,7 @@ def bool_type(val):
 		return True
 	elif(val.lower() == 'false'):
 		return False
-	else:	
+	else:
 		raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 # this shouldn't be for all int types --> change later
