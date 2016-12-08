@@ -26,12 +26,18 @@ class Experiment:
 
 	def get_input(self):
 		return get_input(self.schema, self.tmpdir)
-
+	# get project id
 	def get_project_id(self):
 		return get_project_id(self.proj_info, self.basedir)
-
+	# get argument list
 	def get_args_list(self):
-		return list(parse_args(get_params(self.schema)).keys())
+		return list(get_params(self.schema).keys())
+	# get argument type
+	def get_args_type(self):
+		params = get_params(self.schema)
+		args_list = self.get_args_list()
+		args_type = [params[arg]['type'] for arg in args_list]
+		return args_type
 
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
