@@ -210,8 +210,9 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
         outf.write('#gen\tneval\tfitness_avg\tfitness_std\tfitness_max\tfitness_min')
         outf.write('\ttime_usage')
         for arg in args_list:
-            outf.write('\tbest_ind_{}'.format(args_list))
+            outf.write('\tbest_ind_{}'.format(arg))
         outf.write('\n')
+    param_dict = {}
 
 
     for gen in range(0, NGEN+1):
@@ -222,6 +223,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             pop, fitnesses = toolbox.evaluate(pop)
             for ind, fit in zip(pop, fitnesses):
                 ind.fitness.values = tuple([fit,])
+                param_dict[str(ind)] = tuple([fit,])
             offspring = pop
             neval = len(offspring)
             print("  Evaluated %i individuals" % neval)
@@ -241,15 +243,17 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
                     # fitness values of the children
                     # must be recalculated later
-                    del child1.fitness.values
-                    del child2.fitness.values
+                    for child in (child1,child2):
+                        if child not in param_dict:
+                            del child.fitness.values
 
             for mutant in offspring:
 
                 # mutate an individual with probability MUTPB
                 if np.random.random() < MUTPB:
                     toolbox.mutate(mutant)
-                    del mutant.fitness.values
+                    if mutant not in param_dict:
+                        del mutant.fitness.values
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -258,6 +262,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = tuple([fit,])
+                param_dict[str(ind)] = tuple([fit,])
             neval = len(invalid_ind)
             print("  Evaluated %i individuals" % neval)
 
