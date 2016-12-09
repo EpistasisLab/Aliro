@@ -24,7 +24,8 @@ class Experiment:
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
 	input_file = get_input_file(args['_id'], tmpdir)
-
+	if 'input_file' in args:
+        input_file = args['input_file']
 	return (args, input_file)
 
 def save_output(tmpdir, _id, output):
@@ -58,7 +59,7 @@ def parse_args(params):
 
 	print('parsed args:', args)
 
-	return args	
+	return args
 
 def get_input_file(_id, tmpdir):
 	expdir = tmpdir + _id + '/'
@@ -89,7 +90,7 @@ def bool_type(val):
 		return True
 	elif(val.lower() == 'false'):
 		return False
-	else:	
+	else:
 		raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 # this shouldn't be for all int types --> change later
