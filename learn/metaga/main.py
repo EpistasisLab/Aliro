@@ -23,7 +23,7 @@ tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
 
-def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_file = None
+def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_file = None, 
             args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,
             cross_rt = 0.5, mut_rt = 0.4, tourn_size = 3,
             random_state = 99, outlog = None):
@@ -309,7 +309,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_f
 
 
 if __name__ == "__main__":
-    
+
     exp_metaga = Experiment('Meta-GA')
 	args, input_file = exp_metaga.get_input()
 
