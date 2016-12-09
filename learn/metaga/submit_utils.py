@@ -108,7 +108,7 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
             break
     # rebuild population based on experiments
     fitnesses = []
-    print(exp_data['_experiments'])
+    #print(exp_data['_experiments'])
     for experiment,individual in zip(exp_data['_experiments'],population):
         tmpdict = experiment['_options']
         for key in range(len(args_list)):
