@@ -243,7 +243,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
                     # fitness values of the children
                     # must be recalculated later
-                    for child in (child1,child2):
+                    for str(child) in (child1,child2):
                         if child not in param_dict:
                             del child.fitness.values
 
@@ -252,7 +252,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
                 # mutate an individual with probability MUTPB
                 if np.random.random() < MUTPB:
                     toolbox.mutate(mutant)
-                    if mutant not in param_dict:
+                    if str(mutant) not in param_dict:
                         del mutant.fitness.values
 
             # Evaluate the individuals with an invalid fitness

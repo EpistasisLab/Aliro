@@ -89,23 +89,25 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
     batchuri =  expbase + batch_id
     nofinished =  0
 
-    while (exp_status != 'success' and num_ind != nofinished):
+    while num_ind != nofinished:
         exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
         exps = exp_data['_experiments']
         # reset nofinished
         nofinished =  0
-        nofail = 0
+        nofail = 0 # Experiment fail maybe due to unsupprot combination
         for exp_ind in exps:
             if '_scores' in exp_ind:
                 nofinished += 1
+            elif exp_ind['_status'] == 'fail':
+                nofail += 1
         if exp_status == 'success' or num_ind == nofinished:
+            break
+        if nofail + nofinished == num_ind:
             break
         if exp_status == 'running':
             time.sleep(2) # check every 2 seconds
-        if exp_status == 'fail':
-            break
     # rebuild population based on experiments
     fitnesses = []
     #print(exp_data['_experiments'])
@@ -113,6 +115,9 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
         tmpdict = experiment['_options']
         for key in range(len(args_list)):
             individual[key] = tmpdict[args_list[key]]
-        fitnesses.append(experiment['_scores']['accuracy_score'])
+        try:
+            fitnesses.append(experiment['_scores']['accuracy_score'])
+        else:
+            fitnesses.append(0.0) # fail experiment may change value later 
     os.system('rm -f {}/batch.json'.format(tmpdir))
     return population, fitnesses
