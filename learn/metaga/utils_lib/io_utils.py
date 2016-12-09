@@ -119,7 +119,7 @@ def get_input_file(_id, tmpdir):
 	if numfiles == 1:
 		return input_file
 	else:
-		return 0
+		return None
 
 def bool_type(val):
 	if(val.lower() == 'true'):
