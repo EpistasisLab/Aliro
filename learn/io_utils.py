@@ -53,6 +53,7 @@ def parse_args(params):
 
 		parser.add_argument(arg, action='store', dest=arg_dest, default=arg_default, type=arg_type, help=arg_help)
 
+	parser.add_argument('--input_file', action='store', dest='input_file', default=None, type=str, help="input file from command line")
 	parser.add_argument('--_id', action='store', dest='_id', default=None, type=str, help="Experiment id in database")
 
 	args = vars(parser.parse_args())
