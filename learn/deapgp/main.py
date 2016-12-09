@@ -147,24 +147,6 @@ if __name__ == "__main__":
     _id = params['_id']
     if not os.path.exists(tmpdir + _id):
         os.makedirs(tmpdir + _id)
-    #can input points default points [x/10. for x in range(-10,10)]
-    #response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    #jsondata=json.loads(response.data.decode('utf-8'))
-    #files = jsondata['_files']
-    #numfiles = 0;
-    #file_name = ''
-    #for x in files:
-    #    time.sleep(5) #
-    #    file_id = x['_id']
-    #    file_name = x['filename']
-    #    c = pycurl.Curl()
-    #    c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
-    #    with open(tmpdir + file_name, 'wb') as f:
-    #        c.setopt(c.WRITEFUNCTION, f.write)
-    #        c.perform()
-    #        c.close()
-    #        numfiles += 1
-    #if numfiles == 1:
     pop_size = int(params['population_size'])
     gen_num = int(params['generations'])
     co_rate = float(params['crossover_rate'])

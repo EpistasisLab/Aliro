@@ -5,8 +5,8 @@ import time
 import os
 import argparse
 from func_dict import fitness_rule_dict_FGlab
-from utils_lib.io_utils import Experiment
-from .submit_utils import
+from utils_lib.io_utils import Experiment, get_input_file
+from .submit_utils import FGlab_submit
 
 
 from deap import base
@@ -23,10 +23,10 @@ tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
 
-def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
+def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_file = None
             args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,
             cross_rt = 0.5, mut_rt = 0.4, tourn_size = 3,
-            random_state = 99,  outlog = None):
+            random_state = 99, outlog = None):
     """
     need add some details about arguments
     """
@@ -163,7 +163,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
     #----------
     # register the goal / fitness function
     # Need distribute to FGlab machine
-    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = algorithms)
+    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = algorithms, input_file = input_file)
 
     # register the crossover operator in order
     toolbox.register("mate", tools.cxTwoPoint)
@@ -200,7 +200,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
     CXPB, MUTPB = cross_rt, mut_rt
     NGEN = meta_gen
 
-    print("Start of MetaGA")
+    print("Start of Meta-GA")
         # Begin the evolution
     # Need to more curemazie
 
@@ -301,7 +301,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
 
 
 
-    print("-- End of MetaGA")
+    print("-- End of Meta-GA")
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
@@ -309,61 +309,30 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range,
 
 
 if __name__ == "__main__":
-    ## need meta_agument here
-    ## meta_gen
-    ## meta_pop_size
-    # need get arguments type and arguments ranges from FGlab optimization page
-    #args_list = [population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
+    
+    exp_metaga = Experiment('Meta-GA')
+	args, input_file = exp_metaga.get_input()
 
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform MetaGA")
-    parser.add_argument('--_id', dest='_id', default='test_log')
-    parser.add_argument('--algorithms', dest='algorithms', default='BernoulliNB')
-    parser.add_argument('--meta_pop', dest='meta_pop', default=20)
-    parser.add_argument('--meta_gen', dest='meta_gen', default=10)
-    parser.add_argument('--meta_cross_rt', dest='meta_cross_rt', default=0.5)
-    parser.add_argument('--meta_mut_rt', dest='meta_mut_rt', default=0.4)
-    parser.add_argument('--meta_tourn_size', dest='meta_tourn_size', default=3)
-    parser.add_argument('--random_state', dest='random_state', default=42)
-    parser.add_argument('--log', dest='log', default = 'FGlab_metaga_log.tsv')
-
-
-    params = vars(parser.parse_args())
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-
-
-    algorithms = str(params['algorithms'])
-    meta_pop_size = int(params['meta_pop'])
-    meta_gen = int(params['meta_gen'])
-    meta_cross_rt = float(params['meta_cross_rt'])
-    meta_mut_rt = float(params['meta_mut_rt'])
-    meta_tourn_size = int(params['meta_tourn_size'])
-
-    random_state = int(params['random_state'])
+    # output log
     outlogfile = params['log']
     if outlogfile:
         outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
-    # hard codes need change for FGlab later
-    """args_type = ["int", "int", "float", "float", "int"]
-    args_range = [[5, max_ll_pop], [5, max_ll_gen], [0.0, 1.0], [0.0, 1.0], [2, 5]]
-    args_mut_type = ['random', 'random', 'random', 'random', 'random']"""
-    exp = Experiment(Chosen_ML)
+
+    exp = Experiment(args['algorithms'])
     args_list = exp.get_args_list()
     args_type, args_range = exp.get_args_profile()
     num_args = len(args_list) # beta version is all random mutation
     args_mut_type = ['random'] * num_args
     # get function for metaga
-
+    fitness_func = FGlab_submit
     try:
         fitness_rule = fitness_rule_dict_FGlab[Chosen_ML]
     except KeyError:
         raise ValueError('invalid input in problem')
 
     print(args_range)
-    metaga(fitness_func, fitness_rule, args_list, args_type,
+    metaga(fitness_func, fitness_rule, args_list, args_type, input_file = input_file,
             args_range, args_mut_type, meta_gen = meta_gen, meta_pop_size = meta_pop_size,
             meta_cross_rt = meta_cross_rt, meta_mut_rt = meta_mut_rt,
             meta_tourn_size = meta_tourn_size, random_state = random_state, outlog = outlogfile)
