@@ -334,6 +334,6 @@ if __name__ == "__main__":
     print(args_range)
     metaga(fitness_func, fitness_rule, args_list, args_type, input_file = input_file,
             args_range = args_range, args_mut_type = args_mut_type,
-            meta_gen = meta_gen, meta_pop_size = meta_pop_size,
-            meta_cross_rt = meta_cross_rt, meta_mut_rt = meta_mut_rt,
-            meta_tourn_size = meta_tourn_size, random_state = random_state, outlog = outlogfile)
+            meta_gen = args['meta_gen'], meta_pop_size = args['meta_pop'],
+            cross_rt = args['meta_cross_rt'], mut_rt = args['meta_mut_rt'],
+            tourn_size = args['meta_tourn_size'], random_state = args['random_state'], outlog = outlogfile)
