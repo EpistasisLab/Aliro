@@ -23,7 +23,7 @@ tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
 
-def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_file = None,
+def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algorithms= 'MultinomialNB', input_file = None,
             args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,
             cross_rt = 0.5, mut_rt = 0.4, tourn_size = 3,
             random_state = 99, outlog = None):
@@ -163,7 +163,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, input_f
     #----------
     # register the goal / fitness function
     # Need distribute to FGlab machine
-    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = algorithms, input_file = input_file)
+    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = ML_algorithms, input_file = input_file)
 
     # register the crossover operator in order
     toolbox.register("mate", tools.cxTwoPoint)
@@ -335,8 +335,8 @@ if __name__ == "__main__":
         raise ValueError('invalid input in problem')
 
     print(args_range)
-    metaga(fitness_func, fitness_rule, args_list, args_type, input_file = input_file,
-            args_range = args_range, args_mut_type = args_mut_type,
+    metaga(fitness_func, fitness_rule, args_list, args_type, ML_algorithms = args['algorithms'],
+            input_file = input_file, args_range = args_range, args_mut_type = args_mut_type,
             meta_gen = args['meta_gen'], meta_pop_size = args['meta_pop'],
             cross_rt = args['meta_cross_rt'], mut_rt = args['meta_mut_rt'],
             tourn_size = args['meta_tourn_size'], random_state = args['random_state'], outlog = outlogfile)
