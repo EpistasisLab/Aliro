@@ -314,6 +314,8 @@ if __name__ == "__main__":
 
     # output log
     outlogfile = args['log']
+    _id = args['_id']
+    print(args)
     if outlogfile:
         outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
