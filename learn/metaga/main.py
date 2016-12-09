@@ -6,7 +6,7 @@ import os
 import argparse
 from func_dict import fitness_rule_dict_FGlab
 from utils_lib.io_utils import Experiment, get_input_file
-from .submit_utils import FGlab_submit
+from submit_utils import FGlab_submit
 
 
 from deap import base
@@ -313,7 +313,7 @@ if __name__ == "__main__":
     args, input_file = exp_metaga.get_input()
 
     # output log
-    outlogfile = params['log']
+    outlogfile = args['log']
     if outlogfile:
         outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
