@@ -257,13 +257,14 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
             # Evaluate the individuals with an invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            ## sumbit a list of ind
-            pop, fitnesses = toolbox.evaluate(invalid_ind)
-
-            for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = tuple([fit,])
-                param_dict[str(ind)] = tuple([fit,])
             neval = len(invalid_ind)
+            ## sumbit a list of ind
+            if neval:
+                pop, fitnesses = toolbox.evaluate(invalid_ind)
+                for ind, fit in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = tuple([fit,])
+                    param_dict[str(ind)] = tuple([fit,])
+
             print("  Evaluated %i individuals" % neval)
 
         # The population is entirely replaced by the offspring
