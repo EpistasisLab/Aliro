@@ -25,7 +25,7 @@ def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
 	input_file = get_input_file(args['_id'], tmpdir)
 	if 'input_file' in args:
-        input_file = args['input_file']
+		input_file = args['input_file']
 	return (args, input_file)
 
 def save_output(tmpdir, _id, output):
