@@ -62,7 +62,7 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	# save metrics
 	save_metrics(tmpdir, _id, {
-		'train_score': train_score, 
+		'train_score': train_score,
 		'test_score': test_score,
 		'accuracy_score': accuracy_score,
 		'precision_score': precision_score,
@@ -105,7 +105,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 
 	plt.subplots_adjust(bottom=0.15)
 	plt.ylabel('True label')
-	plt.xlabel('Predicted label')	
+	plt.xlabel('Predicted label')
 	plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
 
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
@@ -123,4 +123,4 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	plt.title('ROC Curve')
 	plt.legend(loc="lower right")
 	
-	plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')	
+	plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
