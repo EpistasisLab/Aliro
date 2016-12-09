@@ -243,8 +243,8 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
                     # fitness values of the children
                     # must be recalculated later
-                    for str(child) in (child1,child2):
-                        if child not in param_dict:
+                    for child in (child1,child2):
+                        if str(child) not in param_dict:
                             del child.fitness.values
 
             for mutant in offspring:
