@@ -327,7 +327,7 @@ if __name__ == "__main__":
     # get function for metaga
     fitness_func = FGlab_submit
     try:
-        fitness_rule = fitness_rule_dict_FGlab[Chosen_ML]
+        fitness_rule = fitness_rule_dict_FGlab[args['algorithms']]
     except KeyError:
         raise ValueError('invalid input in problem')
 
