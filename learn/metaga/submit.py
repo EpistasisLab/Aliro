@@ -88,13 +88,3 @@ def SymbReg_FGlab_submit(population):
         fitnesses.append(experiment['best_fitness_score'])
     os.system('rm -f {}/batch.json'.format(tmpdir))
     return population, fitnesses
-
-
-
-"""if __name__ == "__main__":
-    jobs = []
-    # launch multiprocessing jobs
-    for i in range(5):
-        p = multiprocessing.Process(target=launch_lowerGP, args=(i*100, i*200))
-        jobs.append(p)
-        p.start()"""
