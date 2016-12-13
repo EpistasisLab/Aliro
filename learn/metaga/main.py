@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 import argparse
-from func_dict import fitness_rule_dict_FGlab
+#from func_dict import fitness_rule_dict_FGlab
 from utils_lib.io_utils import Experiment, get_input_file
 from submit_utils import FGlab_submit
 
@@ -73,6 +73,45 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             return tmp_arg
     # Ephe_Cont_Name generater
     # to avoid repeat name
+
+    def newselBest(individuals, k_best = 1, fitness_weight = None):
+        """Select the *k* best individuals among the input *individuals*. The
+        list returned contains references to the input *individuals*.
+
+        :param individuals: A list of individuals to select from.
+        :param k_best: The number of individuals to select.
+        :returns: A list containing the k best individuals.
+        """
+        for ind in individuals:
+            if isinstance(fitness_weight, np.ndarray):
+                mean_fit = np.mean(ind.fitness.values * fitness_weight)
+            else:
+                mean_fit = np.mean(ind.fitness.values)
+            setattr(ind, 'mean_fit', mean_fit)
+        return sorted(individuals, key=attrgetter("mean_fit"), reverse=True)[:k_best]
+
+    # for multiple fitness values
+    def NEW_selTournament(individuals, k, tournsize, fitness_weight = None, elitism = 0):
+        """Select *k* individuals from the input *individuals* using *k*
+        tournaments of *tournsize* individuals. The list returned contains
+        references to the input *individuals*.
+
+        :param individuals: A list of individuals to select from.
+        :param k: The number of individuals to select.
+        :param tournsize: The number of individuals participating in each tournament.
+        :returns: A list of selected individuals.
+
+        This function uses the :func:`~random.choice` function from the python base
+        :mod:`random` module.
+        """
+        if elitism:
+            chosen = newselBest(individuals, k_best = elitism, fitness_weight = fitness_weight)
+        else:
+            chosen = []
+        for i in range(k-elitism):
+            aspirants = tools.selRandom(individuals, tournsize)
+            chosen.append(newselBest(aspirants, fitness_weight = fitness_weight)[0])
+        return chosen
 
     def mut_args(individual, indpb, args_type, args_range, args_mut_type):
         """
@@ -179,16 +218,15 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
     # generation: each individual of the current generation
     # is replaced by the 'fittest' (best) of three individuals
     # drawn randomly from the current generation.
-    toolbox.register("select", tools.selTournament, tournsize=tourn_size)
+    elite_num = max(1, int(0.02*meta_pop_size))
+    toolbox.register("select", NEW_selTournament, tournsize=tourn_size, fitness_weight = None, elitism = elite_num)
+    #toolbox.register("select", tools.selTournament, tournsize=tourn_size)
 
 
     #----------
 
     np.random.seed(random_state)  # random seed in magaga
 
-    # create an initial population of meta_pop_size individuals (where
-    # each individual is a list of parameters)
-    pop = toolbox.population(n=meta_pop_size)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
@@ -213,25 +251,25 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             outf.write('\tbest_ind_{}'.format(arg))
         outf.write('\n')
     param_dict = {}
-
-
+    #
+    best_ind_over_run = None
+    best_fitness_score_over_run = None
     for gen in range(0, NGEN+1):
         time_start = time.time()
         print("-- Generation %i --" % gen)
         if gen == 0:
-            # Evaluate the entire population
-            pop, fitnesses = toolbox.evaluate(pop)
-            for ind, fit in zip(pop, fitnesses):
-                ind.fitness.values = tuple([fit,])
-                param_dict[str(ind)] = tuple([fit,])
+            # create an initial population of meta_pop_size individuals (where
+            # each individual is a list of parameters)
+            pop = toolbox.population(n=meta_pop_size)
             offspring = pop
-            neval = len(offspring)
-            print("  Evaluated %i individuals" % neval)
+            elite_ind = []
         else:
         # Select the next generation individuals
             offspring = toolbox.select(pop, len(pop))
+            # put elite individual(s) out of crossover and mutation
+            elite_ind = offspring[:elite_num]
             # Clone the selected individuals
-            offspring = list(map(toolbox.clone, offspring))
+            offspring = list(map(toolbox.clone, offspring[elite_num:]))
 
             # Apply crossover and mutation on the offspring
             for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -248,33 +286,34 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
                             del child.fitness.values
 
             for mutant in offspring:
-
                 # mutate an individual with probability MUTPB
                 if np.random.random() < MUTPB:
                     toolbox.mutate(mutant)
                     if str(mutant) not in param_dict:
                         del mutant.fitness.values
 
-            # Evaluate the individuals with an invalid fitness
-            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            neval = len(invalid_ind)
-            ## sumbit a list of ind
-            if neval:
-                pop, fitnesses = toolbox.evaluate(invalid_ind)
-                for ind, fit in zip(invalid_ind, fitnesses):
-                    ind.fitness.values = tuple([fit,])
-                    param_dict[str(ind)] = tuple([fit,])
+        # Evaluate the individuals with an invalid fitness
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        neval = len(invalid_ind)
+        ## sumbit a list of ind
+        if neval:
+            pop, fitnesses = toolbox.evaluate(invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = tuple([fit,])
+                param_dict[str(ind)] = tuple([fit,])
 
-            print("  Evaluated %i individuals" % neval)
+        print("  Evaluated %i individuals" % neval)
 
         # The population is entirely replaced by the offspring
-        pop[:] = offspring
-
+        #pop[:] = offspring
+        pop[:] = elite_ind + offspring
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
         time_used = time.time() - time_start
         # best_ind in each genelation
         best_ind = tools.selBest(pop, 1)[0]
+
+
         print("Best individual is %s, %s " % (best_ind, best_ind.fitness.values))
         print("Fitness:")
         fits_arg = np.mean(fits)
@@ -335,11 +374,11 @@ if __name__ == "__main__":
     args_mut_type = ['random'] * num_args
     # get function for metaga
     fitness_func = FGlab_submit
-    try:
+    """try:
         fitness_rule = fitness_rule_dict_FGlab[args['algorithms']]
     except KeyError:
-        raise ValueError('invalid input in problem')
-
+        raise ValueError('invalid input in problem')"""
+    fitness_rule = "FitnessMax" # may have other fitness rule later
     print(args_range)
     metaga(fitness_func, fitness_rule, args_list, args_type, ML_algorithms = args['algorithms'],
             input_file = input_file, args_range = args_range, args_mut_type = args_mut_type,
