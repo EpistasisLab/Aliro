@@ -1,4 +1,4 @@
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.linear_model import ElasticNetCV
 #run without X
 import matplotlib as mpl
 mpl.use('Agg')
@@ -13,8 +13,7 @@ from io_utils import Experiment
 from skl_utils import generate_results_regressor
 
 if __name__ == "__main__":
-	exp = Experiment('DecisionTreeRegressor')
+	exp = Experiment('ElasticNetCV')
 	args, input_file = exp.get_input()
-	model = DecisionTreeRegressor(max_depth=args['max_depth'], min_samples_split=args['min_samples_split'], 
-		min_samples_leaf=args['min_samples_leaf'])
+	model = ElasticNetCV(l1_ratio=args['l1_ratio'], tol=args['tol'])
 	generate_results_regressor(model, input_file, exp.tmpdir, args['_id'])
