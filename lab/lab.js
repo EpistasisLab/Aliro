@@ -284,7 +284,7 @@ app.post("/api/v1/projects/schema", upload.single("schema"), (req, res, next) =>
     // Extract .json as object
     var schema = JSON.parse(req.file.buffer.toString());
     // Set category as empty
-    var category = '';
+    var category = 'ML';
 
     // Store
     db.projects.insertAsync({
