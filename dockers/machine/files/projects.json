@@ -24,7 +24,7 @@
     "capacity": "0.2",
     "results": "/share/devel/Gp/learn/deapgp/tmp/"
   },
-  "581bf1dead150d002327b898": {
+  "583f01f152e3c6002eb3935c": {
     "cwd": "/share/devel/Gp/learn/metaga",
     "command": "python3",
     "args": ["main.py"],
