@@ -135,7 +135,6 @@ var getCapacity = function(projId) {
   if (projects[projId]) {
     capacity = Math.floor(maxCapacity / projects[projId].capacity);
   }
-console.log(capacity);
   return capacity;
 };
 
@@ -216,12 +215,11 @@ app.post("/projects/:id", jsonParser, (req, res) => {
   // Spawn experiment
 //  project.command = 'set'
 //  args = []
-  console.log("args")
-  console.log(args)
+  //console.log("args")
+  //console.log(args)
   var experiment = spawn(project.command, args, {cwd: project.cwd})
   // Catch spawning errors
   .on("error", (er) => {
-console.log(er);
     // Notify of failure
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: "fail"}, gzip: true});
     // Log error
@@ -280,7 +278,7 @@ console.log(er);
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId, method: "PUT", json: {_status: status}, gzip: true});
     rp({uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/finished", method: "PUT", data: null}); // Set finished
 
-    // Finish watching for files after 10s
+    // Finish watching for files after 100s
     setTimeout(() => {
       // Close experiment folder watcher
       watcher.close();
@@ -295,7 +293,7 @@ console.log(er);
       .catch((err) => {
         console.log(err);
       });
-    }, 10000);
+    }, 100000);
 
     // Delete experiment
     delete experiments[experimentId];

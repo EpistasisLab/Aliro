@@ -16,3 +16,6 @@ fitness_dict={'SymbReg':SymbReg_Best_GP_Individual,
 
 fitness_dict_FGlab={'SymbReg': SymbReg_FGlab_submit,
             'EvenParty': EvenParity_Best_GP_Individual}
+
+fitness_rule_dict_FGlab={'SymbReg': 'FitnessMin',
+            'EvenParty': 'FitnessMax'}
