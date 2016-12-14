@@ -4,8 +4,8 @@ import numpy as np
 import time
 import os
 import argparse
-from func_dict import fitness_dict_FGlab
-#from decorator import Mut_Ranges
+from func_dict import fitness_dict_FGlab, fitness_rule_dict_FGlab
+
 from deap import base
 from deap import creator
 from deap import tools
@@ -14,6 +14,7 @@ from multiprocessing import Pool
 import urllib3
 import pycurl
 
+## folder for tmp file and intermediate file
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
@@ -106,6 +107,27 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
                 tmp_ind[arg_idx] = argu_gen(args_type, args_range, spec = arg_idx + 1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_idx])
         return tmp_ind,
 
+    def mut_args_one_point(individual, args_type, args_range, args_mut_type):
+        """
+        Perform a replacement mutation on Argumnet in an individual
+        Make sure the mutated in the ranges of arguments
+        Only one argument can  mutate
+        ----------
+        individual: DEAP individual
+            A list of arguments
+        args_range:
+            A list of arguments' ranges
+        indpb:
+            Independent probability for each attribute to be flipped.
+        Returns
+        ----------
+            Returns the individual with one of the mutations applied to it
+        """
+        tmp_ind = individual
+        arg_mut_idx = np.random.randint(0, len(tmp_ind))
+        tmp_ind[arg_mut_idx] = argu_gen(args_type, args_range, spec = arg_mut_idx+1, args_mut_type = args_mut_type, old_arg=tmp_ind[arg_mut_idx])
+        return tmp_ind,
+
     Ep_List = []
     def uniq_name_test(name_list, arg):
         if name_list.count(Ep_list):
@@ -155,7 +177,8 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     # register a mutation operator with a probability to
 
 
-    toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    #toolbox.register("mutate", mut_args, indpb = 0.8, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
+    toolbox.register("mutate", mut_args_one_point, args_type = args_type,  args_range= args_range, args_mut_type= args_mut_type)
 
     # operator for selecting individuals for breeding the next
     # generation: each individual of the current generation
@@ -167,15 +190,9 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
     #----------
 
     np.random.seed(random_state)  # random seed in magaga
-    # Process Pool of 4 workers
 
-    # magical multiprocessing function in python
-    # can be used in deap
-
-    """pool = Pool(processes=4)
-    toolbox.register("map", pool.map)"""
-    # create an initial population of 300 individuals (where
-    # each individual is a list of integers)
+    # create an initial population of meta_pop_size individuals (where
+    # each individual is a list of parameters)
     pop = toolbox.population(n=meta_pop_size)
 
     # CXPB  is the probability with which two individuals
@@ -204,53 +221,54 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         outf.write('\tbest_ind_mutation_rate')
         outf.write('\tbest_ind_tournsize')
         outf.write('\n')
-    # Evaluate the entire population
 
-    ## sumbit a list of ind
-    pop, fitnesses = toolbox.evaluate(pop)
-    for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = tuple([fit,])
 
-    #print("  Evaluated %i individuals" % len(pop))
-
-    for gen in range(1, NGEN+1):
+    for gen in range(0, NGEN+1):
         time_start = time.time()
         print("-- Generation %i --" % gen)
-
+        if gen == 0:
+            # Evaluate the entire population
+            pop, fitnesses = toolbox.evaluate(pop)
+            for ind, fit in zip(pop, fitnesses):
+                ind.fitness.values = tuple([fit,])
+            offspring = pop
+            neval = len(offspring)
+            print("  Evaluated %i individuals" % neval)
+        else:
         # Select the next generation individuals
-        offspring = toolbox.select(pop, len(pop))
-        # Clone the selected individuals
-        offspring = list(map(toolbox.clone, offspring))
+            offspring = toolbox.select(pop, len(pop))
+            # Clone the selected individuals
+            offspring = list(map(toolbox.clone, offspring))
 
-        # Apply crossover and mutation on the offspring
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if child1 == child2:
-                continue # skip the twins
-            # cross two individuals with probability CXPB
-            if np.random.random() < CXPB:
-                toolbox.mate(child1, child2)
+            # Apply crossover and mutation on the offspring
+            for child1, child2 in zip(offspring[::2], offspring[1::2]):
+                if child1 == child2:
+                    continue # skip the twins
+                # cross two individuals with probability CXPB
+                if np.random.random() < CXPB:
+                    toolbox.mate(child1, child2)
 
-                # fitness values of the children
-                # must be recalculated later
-                del child1.fitness.values
-                del child2.fitness.values
+                    # fitness values of the children
+                    # must be recalculated later
+                    del child1.fitness.values
+                    del child2.fitness.values
 
-        for mutant in offspring:
+            for mutant in offspring:
 
-            # mutate an individual with probability MUTPB
-            if np.random.random() < MUTPB:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
+                # mutate an individual with probability MUTPB
+                if np.random.random() < MUTPB:
+                    toolbox.mutate(mutant)
+                    del mutant.fitness.values
 
-        # Evaluate the individuals with an invalid fitness
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        ## sumbit a list of ind
-        pop, fitnesses = toolbox.evaluate(invalid_ind)
+            # Evaluate the individuals with an invalid fitness
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            ## sumbit a list of ind
+            pop, fitnesses = toolbox.evaluate(invalid_ind)
 
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = tuple([fit,])
-        neval = len(invalid_ind)
-        print("  Evaluated %i individuals" % neval)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = tuple([fit,])
+            neval = len(invalid_ind)
+            print("  Evaluated %i individuals" % neval)
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring
@@ -274,13 +292,22 @@ def metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type= Non
         print("Time_usage: %s " % time_used)
 
         if outlog:
-            outf.write('{}\t{}\t'.format(gen, neval))
-            outf.write('{}\t{}\t{}\t{}'.format(fits_arg, fits_std, fits_max, fits_min))
-            outf.write('\t{}'.format(time_used))
+            outf.write('{:d}\t{:d}\t'.format(gen, neval))
+            outf.write('{:f}\t{:f}\t{:f}\t{:f}'.format(fits_arg, fits_std, fits_max, fits_min))
+            outf.write('\t{:f}'.format(time_used))
             #population_size,generations,crossover_rate,mutation_rate,tournsize,random_state]
-            for best_arg in best_ind:
-                outf.write('\t{}'.format(best_arg))
+            for best_arg, atype in zip(best_ind, args_type):
+                if atype == "int":
+                    outf.write('\t{:d}'.format(int(best_arg)))
+                elif atype =="float":
+                    outf.write('\t{:f}'.format(float(best_arg)))
+                else:
+                    outf.write('\t{}'.format(best_arg))
             outf.write('\n')
+            # output every meta generation
+            outf.close()
+            outf = open(outlog, 'a')
+
 
 
     print("-- End of MetaGA")
@@ -316,9 +343,8 @@ if __name__ == "__main__":
 
     # Parse arguments
     parser = argparse.ArgumentParser("Perform MetaGA")
-    parser.add_argument('--_id', dest='_id', default=None)
+    parser.add_argument('--_id', dest='_id', default='test_log')
     parser.add_argument('--problem', dest='problem', default='SymbReg')
-    parser.add_argument('--fitness_rule', dest='fitness_rule', default='FitnessMin')
     parser.add_argument('--meta_pop', dest='meta_pop', default=20)
     parser.add_argument('--meta_gen', dest='meta_gen', default=10)
     parser.add_argument('--max_ll_gen', dest='max_ll_gen', default=20)
@@ -329,11 +355,10 @@ if __name__ == "__main__":
 
     params = vars(parser.parse_args())
     _id = params['_id']
-    #if not os.path.exists(tmpdir + _id):
-        #os.makedirs(tmpdir + _id)
+    if not os.path.exists(tmpdir + _id):
+        os.makedirs(tmpdir + _id)
     # Save all attached files
-    method = str(params['problem'])
-    fns_rule = str(params['fitness_rule'])
+    problem = str(params['problem'])
     meta_pop_size = int(params['meta_pop'])
     meta_gen = int(params['meta_gen'])
     max_ll_gen = int(params['max_ll_gen'])
@@ -341,7 +366,7 @@ if __name__ == "__main__":
     random_state = int(params['random_state'])
     outlogfile = params['log']
     if outlogfile:
-        outlogfile = str(outlogfile)
+        outlogfile = tmpdir + _id + '/'+ str(outlogfile)
 
     # hard codes need change for FGlab later
     args_type = ["int", "int", "float", "float", "int"]
@@ -349,13 +374,14 @@ if __name__ == "__main__":
     args_mut_type = ['random', 'random', 'random', 'random', 'random']
     # get function for metaGA
     try:
-        fitness_func = fitness_dict_FGlab[method]
+        fitness_func = fitness_dict_FGlab[problem]
+        fitness_rule = fitness_rule_dict_FGlab[problem]
     except KeyError:
-        raise ValueError('invalid input in method')
+        raise ValueError('invalid input in problem')
 
 
     print(args_range)
-    metaga(fitness_func, fns_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
+    metaga(fitness_func, fitness_rule, args_type, args_range, args_mut_type, meta_gen, meta_pop_size,
     random_state = random_state, outlog = outlogfile)
 
     #args_range = [[5, 50], [5,50], [0.0, 1.0], [0.0, 1.0], [2, 5]]
