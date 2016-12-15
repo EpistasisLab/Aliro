@@ -79,7 +79,7 @@ def get_args_profile(schema):
 			number_list = [x for x in achoice if isinstance(x, int) or isinstance(x, float)]
 			# None type or other options in int or float type
 			args_range = [x for x in achoice if not (isinstance(x, int) or isinstance(x, float))]
-			args_range.append([min(number_list), max(numberlist)])
+			args_range.append([min(number_list), max(number_list)])
 			# may change based on min and max in the future
 	return args_type, args_range
 
