@@ -365,6 +365,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    return best_ind
 
 
 
@@ -383,7 +384,7 @@ if __name__ == "__main__":
         os.makedirs(expdir)
     print(args)
     if outlogfile:
-        outlogfile = tmpdir + _id + '/'+ str(outlogfile)
+        outlogfile = expdir + str(outlogfile)
 
     exp = Experiment(args['algorithms'])
     args_list = exp.get_args_list()
@@ -398,8 +399,26 @@ if __name__ == "__main__":
         raise ValueError('invalid input in problem')"""  # need add more fitness_rule in the future
     fitness_rule = "FitnessMax" # may have other fitness rule later
     print(args_range)
-    metaga(fitness_func, fitness_rule, args_list, args_type, ML_algorithms = args['algorithms'],
+    best_ind = metaga(fitness_func, fitness_rule, args_list, args_type, ML_algorithms = args['algorithms'],
             input_file = input_file, args_range = args_range, args_mut_type = args_mut_type,
             meta_gen = args['meta_gen'], meta_pop_size = args['meta_pop'],
             cross_rt = args['meta_cross_rt'], mut_rt = args['meta_mut_rt'],
             tourn_size = args['meta_tourn_size'], random_state = 42, pid=_id, outlog = outlogfile)
+
+    best_exp_id = str(best_ind.exp_id)
+    response = http.request('GET', '{}/api/v1/experiments/{}'.format(fglab_url, best_exp_id))
+    jsondata = json.loads(response.data.decode('utf-8'))
+    best_params = {}
+    for key in jsondata['_options'].keys():
+        if args_list.count(key):
+            best_params[key] = jsondata['_options'][key]
+    best_scores = jsondata['_scores']
+    with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
+		json.dump(best_params, outfile)
+        json.dump(best_scores, outfile)
+    files = jsondata['_files']
+    for filedict in files:
+		response = http.request('GET', '{}}/api/v1/files/{}'.format(fglab_url, filedict['_id']))
+		output_file = expdir + filedict['filename']
+		with open(output_file, 'w') as f:
+			f.write(response.data.decode('utf-8'))
