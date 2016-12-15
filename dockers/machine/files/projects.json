@@ -16,21 +16,21 @@
     "capacity": "0.2",
     "results": "./examples/MDR"
   },
-  "57ffd3c1fa76cb0022258722": {
-    "cwd": "/share/devel/Gp/learn/deapgp",
+  "58531ab93e7f7e002fb0a1c2": {
+    "cwd": "/share/devel/Gp/learn/deap-GP-SymbReg",
     "command": "python3",
     "args": ["main.py"],
     "options": "double-dash",
     "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/deapgp/tmp/"
+    "results": "/share/devel/Gp/learn/deap-GP-SymbReg/tmp/"
   },
-  "584ae312da01b7002f0307ee": {
-    "cwd": "/share/devel/Gp/learn/metaga",
+  "585326d967e6ca22499b8d5e": {
+    "cwd": "/share/devel/Gp/learn/Meta-GA",
     "command": "python3",
     "args": ["main.py"],
     "options": "double-dash",
     "capacity": "0.2",
-    "results": "/share/devel/Gp/learn/metaga/tmp/"
+    "results": "/share/devel/Gp/learn/Meta-GA/tmp/"
   },
 	"5813bdaec1321420f8bbcc7f": {
 		"cwd": "/share/devel/Gp/learn/BernoulliNB",
