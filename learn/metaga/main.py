@@ -39,7 +39,10 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
         """
         Generate a random parameter based on its ranges and type
         """
-        tmp_arg = np.random.choice(arange)
+        try:
+            tmp_arg = np.random.choice(arange)
+        except:
+            tmp_arg = arange[0]
         if isinstance(tmp_arg, list):
             if atype == 'float':
                 tmp_arg = random.uniform(tmp_arg[0], tmp_arg[1]) # include high
