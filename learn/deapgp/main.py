@@ -137,10 +137,9 @@ def SymbReg_Best_GP_Individual(individual):
     return (best_ind.fitness.values[0]),
 
 if __name__ == "__main__":
-
     exp = Experiment('DecisionTreeClassifier')
-	args, input_file = exp.get_input()
-
+    args, input_file = exp.get_input()
+    
     pop, log, hof, df, dfh=SymbReg(population_size=args['population_size'],
     generations=args['generations'],
     crossover_rate=args['crossover_rate'],
