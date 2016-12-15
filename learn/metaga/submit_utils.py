@@ -126,5 +126,5 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None, pid = 9999
                 # need change for different methodes
         except:
             fitnesses.append(0.0) # fail experiment may change value later
-    os.system('rm -f {}{}'.format(tmpdir, param_batch_json))
+    os.system('rm -f {}'.format(param_batch_json))
     return population, fitnesses
