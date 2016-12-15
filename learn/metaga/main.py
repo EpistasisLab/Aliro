@@ -5,21 +5,24 @@ import time
 import os
 import argparse
 import random
+import json
+import urllib3
+import pycurl
+
 
 from utils_lib.io_utils import Experiment, get_input_file
 from submit_utils import FGlab_submit
 
 from operator import attrgetter
 from datetime import datetime
-
+from shutil import copyfileobj
 
 from deap import base
 from deap import creator
 from deap import tools
 from deap import algorithms
-from multiprocessing import Pool
-import urllib3
-import pycurl
+
+
 
 ## folder for tmp file and intermediate file
 basedir='/share/devel/Gp/learn/metaga/'
@@ -419,7 +422,7 @@ if __name__ == "__main__":
         json.dump(best_scores, outfile)
     files = jsondata['_files']
     for filedict in files:
-        response = http.request('GET', '{}}/api/v1/files/{}'.format(fglab_url, filedict['_id']))
+        response = http.request('GET', '{}/api/v1/files/{}'.format(fglab_url, filedict['_id']))
         output_file = expdir + filedict['filename']
         with open(output_file, 'w') as f:
-            f.write(response.data.decode('utf-8'))
+            copyfileobj(response, f)
