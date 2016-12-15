@@ -1,11 +1,14 @@
 {
 	"algorithms": {
 		"description": "ML algorithms",
-		"type": "string",
-		"default": "MultinomialNB",
+		"type": "enum",
+		"values":["LogisticRegression", "RandomForestClassifier", "DecisionTreeClassifier", "ExtraTreesClassifier",
+			"KNeighborsClassifier", "GradientBoostingClassifier","LinearSVC", "GaussianNB", "MultinomialNB", "deap-GP-SymbReg"],
+		"default": "LogisticRegression",
 		"ui": {
-			"style": "radio",
-			"choices": ["MultinomialNB", "LinearSVC"]
+			"style": "ratio",
+			"choices": ["LogisticRegression", "RandomForestClassifier", "DecisionTreeClassifier", "ExtraTreesClassifier",
+				"KNeighborsClassifier", "GradientBoostingClassifier","LinearSVC", "GaussianNB", "MultinomialNB", "deap-GP-SymbReg"]
 		}
 	},
 	"meta_pop": {

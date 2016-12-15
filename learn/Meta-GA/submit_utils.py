@@ -13,9 +13,9 @@ from datetime import datetime
 
 from utils_lib.io_utils import Experiment
 
-basedir='/share/devel/Gp/learn/metaga/'
-tmpdir=basedir+'tmp/'
 
+exp_metaga = Experiment('Meta-GA')
+tmpdir=exp_metaga.tmpdir
 # a tmp json file for a meta-population
 
 if not os.path.exists(tmpdir):
