@@ -116,8 +116,12 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
         for key in range(len(args_list)):
             individual[key] = tmpdict[args_list[key]]
         try:
-            fitnesses.append(experiment['_scores']['accuracy_score']) # need change for different method (classfication or regression or GP)
+            if 'accuracy_score' in experiment['_scores']:
+                fitnesses.append(experiment['_scores']['accuracy_score'])
+            else:
+                fitnesses.append(1-experiment['_scores']['mean_squared_error'])
+                # need change for different methodes
         except:
             fitnesses.append(0.0) # fail experiment may change value later
-    os.system('rm -f {}/batch.json'.format(tmpdir))
+    os.system('rm -f {}{}'.format(tmpdir, param_batch_json))
     return population, fitnesses
