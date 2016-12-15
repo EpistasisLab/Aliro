@@ -417,7 +417,7 @@ if __name__ == "__main__":
         if args_list.count(key):
             best_params[key] = jsondata['_options'][key]
     best_scores = jsondata['_scores']
-    out_json = {'best_params': best_params, 'best_scores': best_scores}
+    out_json = {'_options': best_params, '_scores': best_scores}
     with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
         json.dump(out_json, outfile)
     files = jsondata['_files']
