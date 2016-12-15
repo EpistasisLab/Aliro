@@ -65,8 +65,6 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             spec: return control args_mut_type: mutation control (need work with 'spec') string type random: randomly generate a new argument (default) increase: randomly generate a new larger than old one (need work with old_arg) decrease: randomly generate a new lower than old one (need work with old_arg) old_arg: old argument Return ---------- return *args is spec = False
             return one argument is spec > 0
         """
-
-
         if not spec:
             # return a tuple
             args_set = []

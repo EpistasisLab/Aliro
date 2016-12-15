@@ -74,13 +74,17 @@ def get_args_profile(schema):
 	args_list = list(get_params(schema).keys())
 	args_type = [params[arg]['type'] for arg in args_list]
 	args_choice = [params[arg]['ui']['choices'] for arg in args_list]
+	args_range = []
 	for achoice, atype in zip(args_choice, args_type):
 		if atype == 'int' or atype == 'float':
 			number_list = [x for x in achoice if isinstance(x, int) or isinstance(x, float)]
 			# None type or other options in int or float type
-			args_range = [x for x in achoice if not (isinstance(x, int) or isinstance(x, float))]
-			args_range.append([min(number_list), max(number_list)])
+			arange = [x for x in achoice if not (isinstance(x, int) or isinstance(x, float))]
+			arange.append([min(number_list), max(number_list)])
 			# may change based on min and max in the future
+			args_range.append(arange)
+		else:
+			args_range.append(achoice)
 	return args_type, args_range
 
 def parse_args(params):
