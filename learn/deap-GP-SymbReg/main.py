@@ -22,8 +22,7 @@ from deap import creator
 from deap import tools
 from deap import gp
 
-basedir='/share/devel/Gp/learn/deapgp/'
-tmpdir=basedir+'tmp/'
+
 http = urllib3.PoolManager()
 
 # will eventually do this in the correct way -- install a library/package
@@ -139,6 +138,7 @@ def SymbReg_Best_GP_Individual(individual):
 if __name__ == "__main__":
     exp = Experiment('deap-GP-SymbReg')
     args, input_file = exp.get_input()
+    tmpdir=exp.tmpdir
 
     pop, log, hof, df, dfh=SymbReg(population_size=args['population_size'],
     generations=args['generations'],

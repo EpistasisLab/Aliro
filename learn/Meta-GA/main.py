@@ -24,11 +24,6 @@ from deap import algorithms
 
 
 
-## folder for tmp file and intermediate file
-basedir='/share/devel/Gp/learn/metaga/'
-tmpdir=basedir+'tmp/'
-fglab_url = os.environ['FGLAB_URL']
-http = urllib3.PoolManager()
 
 
 def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algorithms= 'MultinomialNB', input_file = None,
@@ -377,6 +372,9 @@ if __name__ == "__main__":
 
     exp_metaga = Experiment('Meta-GA')
     args, input_file = exp_metaga.get_input()
+    tmpdir=exp_metaga.tmpdir
+    fglab_url = os.environ['FGLAB_URL']
+    http = urllib3.PoolManager()
 
     # output log
     #outlogfile = args['log']
