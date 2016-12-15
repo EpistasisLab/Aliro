@@ -7,7 +7,6 @@ import argparse
 import random
 import json
 import urllib3
-import urllib2
 import pycurl
 
 
