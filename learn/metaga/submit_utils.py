@@ -10,13 +10,11 @@ import os
 from datetime import datetime
 #from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-#http = urllib3.PoolManager()
 
 from utils_lib.io_utils import Experiment
 
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
-http = urllib3.PoolManager()
 
 # a tmp json file for a meta-population
 
