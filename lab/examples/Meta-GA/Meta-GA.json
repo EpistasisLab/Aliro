@@ -52,15 +52,5 @@
 			"style": "radio",
 			"choices": [3, 5, 10, 20]
 		}
-	},
-	"random_state": {
-		"description": "Random Seed",
-		"type": "int",
-		"default": 42
-	},
-	"log": {
-	   "description": "Result Report",
-	   "type": "string",
-	   "default": "FGlab_metaga_log.tsv"
 	}
 }
