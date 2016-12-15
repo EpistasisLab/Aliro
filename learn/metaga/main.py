@@ -40,7 +40,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
         """
         tmp_arg = np.random.choice(arange)
         if isinstance(tmp_arg, list):
-            if atype = 'float':
+            if atype == 'float':
                 tmp_arg = random.uniform(tmp_arg[0], tmp_arg[1]) # include high
             else:
                 tmp_arg = np.random.random_integers(tmp_arg[0], tmp_arg[1])
