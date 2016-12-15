@@ -7,6 +7,7 @@ import argparse
 import random
 import json
 import urllib3
+import urllib2
 import pycurl
 
 
@@ -417,12 +418,12 @@ if __name__ == "__main__":
         if args_list.count(key):
             best_params[key] = jsondata['_options'][key]
     best_scores = jsondata['_scores']
+    out_json = {best_params, best_params}
     with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
-        json.dump(best_params, outfile)
-        json.dump(best_scores, outfile)
+        json.dump(out_json, outfile)
     files = jsondata['_files']
     for filedict in files:
         response = http.request('GET', '{}/api/v1/files/{}'.format(fglab_url, filedict['_id']))
         output_file = expdir + filedict['filename']
-        with open(output_file, 'w') as f:
-            copyfileobj(response, f)
+        with open(output_file, 'wb') as f:
+            f.write(response.data)
