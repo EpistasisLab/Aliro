@@ -5,7 +5,6 @@ import time
 import os
 import argparse
 import random
-import urllib3
 
 from utils_lib.io_utils import Experiment, get_input_file
 from submit_utils import FGlab_submit
