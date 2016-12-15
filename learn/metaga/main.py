@@ -4,9 +4,12 @@ import numpy as np
 import time
 import os
 import argparse
+import random
 #from func_dict import fitness_rule_dict_FGlab
 from utils_lib.io_utils import Experiment, get_input_file
 from submit_utils import FGlab_submit
+
+from operator import attrgetter
 
 
 from deap import base
@@ -30,6 +33,25 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
     """
     need add some details about arguments
     """
+
+    def random_arg(arange, atype):
+        """
+        Generate a random parameter based on its ranges and type
+        """
+        tmp_arg = np.random.choice(arange)
+        if isinstance(tmp_arg, list):
+            if atype = 'float':
+                tmp_arg = random.uniform(tmp_arg[0], tmp_arg[1]) # include high
+            else:
+                tmp_arg = np.random.random_integers(tmp_arg[0], tmp_arg[1])
+        else:
+            # force to change type
+            try:
+                tmp_arg = eval('{}({})'.format(atype, tmp_arg))
+            except:
+                tmp_arg = str(tmp_arg)
+        return tmp_arg
+
     def argu_gen(args_type, args_range, spec = False, args_mut_type = None, old_arg = None):
         """
         This is a random arguments genrator
@@ -48,11 +70,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             # return a tuple
             args_set = []
             for atype, arange in zip(args_type, args_range):
-                tmp_arg = np.random.choice(arange)
-                try:
-                    tmp_arg = eval('{}({})'.format(atype, tmp_arg))
-                except:
-                    tmp_arg = str(tmp_arg)
+                tmp_arg = random_arg(arange, atype)
                 args_set.append(tmp_arg)
             return tuple(args_set)
         else:
@@ -61,15 +79,11 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
             atype = args_type[tmpidx]
             arange = args_range[tmpidx]
             amuttype = args_mut_type[tmpidx]
-            if amuttype == "increase":
+            """if amuttype == "increase": # add more mutation type later
                 arange = [i for i in arange if i < eval('{}({})'.format(atype, old_arg))]
             elif amuttype == 'decrease':
-                arange = [i for i in arange if i > eval('{}({})'.format(atype, old_arg))]
-            tmp_arg = np.random.choice(arange)
-            try:
-                tmp_arg = eval('{}({})'.format(atype, tmp_arg))
-            except:
-                tmp_arg = str(tmp_arg)
+                arange = [i for i in arange if i > eval('{}({})'.format(atype, old_arg))]"""
+            tmp_arg = random_arg(arange, atype)
             return tmp_arg
     # Ephe_Cont_Name generater
     # to avoid repeat name

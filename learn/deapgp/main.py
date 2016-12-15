@@ -161,7 +161,7 @@ if __name__ == "__main__":
     random_state=randomnum)
 
     best_ind = tools.selBest(pop, 1)[0]
-    result = {'best_fitness_score':best_ind.fitness.values[0]}
+    result = {'_scores': {'mean_squared_error':best_ind.fitness.values[0]}}
     # output json_result!!!!!!
 
     print(best_ind.fitness.values[0])
