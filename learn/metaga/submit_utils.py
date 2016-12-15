@@ -89,7 +89,7 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
     batchuri =  expbase + batch_id
     nofinished =  0
 
-    while num_ind != nofinished: 
+    while num_ind != nofinished:
         exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
@@ -116,7 +116,7 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
         for key in range(len(args_list)):
             individual[key] = tmpdict[args_list[key]]
         try:
-            fitnesses.append(experiment['_scores']['accuracy_score'])
+            fitnesses.append(experiment['_scores']['accuracy_score']) # need change for different method (classfication or regression or GP)
         except:
             fitnesses.append(0.0) # fail experiment may change value later
     os.system('rm -f {}/batch.json'.format(tmpdir))
