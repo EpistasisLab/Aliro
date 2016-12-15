@@ -75,7 +75,7 @@ def get_args_profile(schema):
 	args_type = [params[arg]['type'] for arg in args_list]
 	args_choice = [params[arg]['ui']['choices'] for arg in args_list]
 	for achoice, atype in zip(args_choice, args_type):
-		if atype = 'int' or 'float':
+		if atype == 'int' or atype == 'float':
 			number_list = [x for x in achoice if isinstance(x, int) or isinstance(x, float)]
 			# None type or other options in int or float type
 			args_range = [x for x in achoice if not (isinstance(x, int) or isinstance(x, float))]
