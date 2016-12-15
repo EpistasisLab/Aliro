@@ -9,7 +9,7 @@
 		}
   },
    "generations": {
-    "description": "number of generations, n>0 [default = 20]" ,
+    "description": "number of generations, n>0 [default = 30]" ,
     "type": "int",
     "default": 30,
     "ui": {
