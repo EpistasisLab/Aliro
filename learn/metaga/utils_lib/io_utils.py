@@ -85,6 +85,7 @@ def get_args_profile(schema):
 			args_range.append(arange)
 		else:
 			args_range.append(achoice)
+
 	return args_type, args_range
 
 def parse_args(params):
