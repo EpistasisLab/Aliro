@@ -63,7 +63,7 @@ def json_submit_file(population, param_batch_json, args_list, input_file = None)
     param_list_file.close()
     return num_ind
 
-def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
+def FGlab_submit(population, Chosen_ML_algorithms, input_file = None, pid = 9999):
     """
     Population: A list of individual
     Chosen_ML_algorithms: method name (string type)
@@ -71,7 +71,7 @@ def FGlab_submit(population, Chosen_ML_algorithms, input_file = None):
 
     baseuri, args_list = config_exp(Chosen_ML_algorithms)
     timestamp = datetime.now().strftime("%y-%m-%d-%H-%M")
-    param_batch_json = '{}batch.json'.format(tmpdir, timestamp)
+    param_batch_json = '{}batch_{}_{}.json'.format(tmpdir, pid, timestamp)
     num_ind = json_submit_file(population, param_batch_json, args_list, input_file = input_file)
     # change the problem id to different problem
 

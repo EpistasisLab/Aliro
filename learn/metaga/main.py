@@ -10,6 +10,7 @@ from utils_lib.io_utils import Experiment, get_input_file
 from submit_utils import FGlab_submit
 
 from operator import attrgetter
+from datetime import datetime
 
 
 from deap import base
@@ -29,7 +30,7 @@ http = urllib3.PoolManager()
 def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algorithms= 'MultinomialNB', input_file = None,
             args_mut_type= None, meta_gen = 10 , meta_pop_size = 100,
             cross_rt = 0.5, mut_rt = 0.4, tourn_size = 3,
-            random_state = 99, outlog = None):
+            random_state = 99, pid = 999, outlog = None):
     """
     need add some details about arguments
     """
@@ -216,7 +217,7 @@ def metaga(fitness_func, fitness_rule, args_list, args_type, args_range, ML_algo
     #----------
     # register the goal / fitness function
     # Need distribute to FGlab machine
-    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = ML_algorithms, input_file = input_file)
+    toolbox.register("evaluate", fitness_func, Chosen_ML_algorithms = ML_algorithms, input_file = input_file, pid = pid)
 
     # register the crossover operator in order
     toolbox.register("mate", tools.cxTwoPoint)
@@ -372,8 +373,10 @@ if __name__ == "__main__":
     args, input_file = exp_metaga.get_input()
 
     # output log
-    outlogfile = args['log']
+    #outlogfile = args['log']
+    timestamp = datetime.now().strftime("%y-%m-%d-%H-%M")
     _id = args['_id']
+    outlogfile = 'IF_metaGA_log_{}_{}.tsv'.format(_id, timestamp)
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
@@ -391,11 +394,11 @@ if __name__ == "__main__":
     """try:
         fitness_rule = fitness_rule_dict_FGlab[args['algorithms']]
     except KeyError:
-        raise ValueError('invalid input in problem')"""
+        raise ValueError('invalid input in problem')"""  # need add more fitness_rule in the future
     fitness_rule = "FitnessMax" # may have other fitness rule later
     print(args_range)
     metaga(fitness_func, fitness_rule, args_list, args_type, ML_algorithms = args['algorithms'],
             input_file = input_file, args_range = args_range, args_mut_type = args_mut_type,
             meta_gen = args['meta_gen'], meta_pop_size = args['meta_pop'],
             cross_rt = args['meta_cross_rt'], mut_rt = args['meta_mut_rt'],
-            tourn_size = args['meta_tourn_size'], random_state = args['random_state'], outlog = outlogfile)
+            tourn_size = args['meta_tourn_size'], random_state = 42, pid=_id, outlog = outlogfile)
