@@ -150,6 +150,7 @@ if __name__ == "__main__":
     best_ind = tools.selBest(pop, 1)[0]
     result = {'_scores': {'mean_squared_error':best_ind.fitness.values[0]}}
     # output json_result!!!!!!
+    _id = args['_id']
 
     print(best_ind.fitness.values[0])
     json_result = json.dumps(result)
