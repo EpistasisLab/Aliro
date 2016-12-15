@@ -24,6 +24,7 @@ import pycurl
 ## folder for tmp file and intermediate file
 basedir='/share/devel/Gp/learn/metaga/'
 tmpdir=basedir+'tmp/'
+fglab_url = os.environ['FGLAB_URL']
 http = urllib3.PoolManager()
 
 
