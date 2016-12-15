@@ -413,9 +413,12 @@ if __name__ == "__main__":
     response = http.request('GET', '{}/api/v1/experiments/{}'.format(fglab_url, best_exp_id))
     jsondata = json.loads(response.data.decode('utf-8'))
     best_params = {}
+    for arg in args.keys():
+        best_params[arg] = args[arg]
     for key in jsondata['_options'].keys():
         if args_list.count(key):
-            best_params[key] = jsondata['_options'][key]
+            keyname = 'Optimized_' + key
+            best_params[keyname] = jsondata['_options'][key]
     best_scores = jsondata['_scores']
     out_json = {'_options': best_params, '_scores': best_scores}
     with open(os.path.join(expdir, 'value.json'), 'w') as outfile:

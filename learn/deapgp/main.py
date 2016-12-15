@@ -12,6 +12,7 @@ import json
 import argparse
 import pycurl
 import os
+import sys
 import numpy
 import urllib3
 import pandas as pd
@@ -25,7 +26,12 @@ basedir='/share/devel/Gp/learn/deapgp/'
 tmpdir=basedir+'tmp/'
 http = urllib3.PoolManager()
 
+# will eventually do this in the correct way -- install a library/package
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
 
+from io_utils import Experiment
 
 
 # Define new functions
@@ -131,34 +137,16 @@ def SymbReg_Best_GP_Individual(individual):
     return (best_ind.fitness.values[0]),
 
 if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform deapGP")
-    parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--population_size', dest='population_size', default=100)
-    parser.add_argument('--generations', dest='generations', default=10)
-    parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
-    parser.add_argument('--mutation_rate', dest='mutation_rate', default=0.05)
-    parser.add_argument('--tournsize', dest='tournsize', default=3)
-    parser.add_argument('--random_state', dest='random_state', default=3)
 
+    exp = Experiment('DecisionTreeClassifier')
+	args, input_file = exp.get_input()
 
-    params = vars(parser.parse_args())
-    # Save all attached files
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-    pop_size = int(params['population_size'])
-    gen_num = int(params['generations'])
-    co_rate = float(params['crossover_rate'])
-    mut_rate = float(params['mutation_rate'])
-    tour_size = int(params['tournsize'])
-    randomnum = int(params['random_state'])
-    pop, log, hof, df, dfh=SymbReg(population_size=pop_size,
-    generations=gen_num,
-    crossover_rate=co_rate,
-    mutation_rate=mut_rate,
-    tournsize=tour_size,
-    random_state=randomnum)
+    pop, log, hof, df, dfh=SymbReg(population_size=args['population_size'],
+    generations=args['generations'],
+    crossover_rate=args['crossover_rate'],
+    mutation_rate=args['mutation_rate'],
+    tournsize=args['tourn_size'],
+    random_state=42)
 
     best_ind = tools.selBest(pop, 1)[0]
     result = {'_scores': {'mean_squared_error':best_ind.fitness.values[0]}}
@@ -169,6 +157,6 @@ if __name__ == "__main__":
     with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
         outfile.write(json_result)
     pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
-    df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
+    df.to_csv(tmpdir + _id +  '/fitness_value.csv', index=False ,header=dfh)
 
 exit(0)
