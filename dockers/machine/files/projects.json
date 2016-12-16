@@ -16,7 +16,7 @@
     "capacity": "0.2",
     "results": "./examples/MDR"
   },
-  "58532f3967e6ca22499b93a6": {
+  "58535d64a52513003444132a": {
     "cwd": "/share/devel/Gp/learn/deap-GP-SymbReg",
     "command": "python3",
     "args": ["main.py"],
@@ -24,7 +24,7 @@
     "capacity": "0.2",
     "results": "/share/devel/Gp/learn/deap-GP-SymbReg/tmp/"
   },
-  "585326d967e6ca22499b8d5e": {
+  "58535b8fa525130034441327": {
     "cwd": "/share/devel/Gp/learn/Meta-GA",
     "command": "python3",
     "args": ["main.py"],
@@ -72,6 +72,36 @@
 		"capacity": "0.2",
 		"results": "/share/devel/Gp/learn/DecisionTreeClassifier/tmp"
 	},
+	"5853571ca52513003444131b": {
+		"cwd": "/share/devel/Gp/learn/DecisionTreeRegressor",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/DecisionTreeRegressor/tmp"
+        },
+	"58535850a52513003444131e": {
+		"cwd": "/share/devel/Gp/learn/ElasticNetCV",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/ElasticNetCV/tmp"
+	},
+	"585358eba52513003444131f": {
+		"cwd": "/share/devel/Gp/learn/ExtraTreesRegressor",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/ExtraTreesRegressor/tmp"
+	},
 	"581791063821533540434826": {
 		"cwd": "/share/devel/Gp/learn/ExtraTreesClassifier",
 		"command": "python",
@@ -81,6 +111,16 @@
 		"options": "double-dash",
 		"capacity": "0.2",
 		"results": "/share/devel/Gp/learn/ExtraTreesClassifier/tmp"
+	},
+	"58535984a525130034441320": {
+		"cwd": "/share/devel/Gp/learn/GradientBoostingRegressor",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/GradientBoostingRegressor/tmp"
 	},
 	"581796a43821533540434890": {
 		"cwd": "/share/devel/Gp/learn/GradientBoostingClassifier",
@@ -102,6 +142,26 @@
 		"capacity": "0.2",
 		"results": "/share/devel/Gp/learn/KNeighborsClassifier/tmp"
 	},
+	"58535a05a525130034441321": {
+		"cwd": "/share/devel/Gp/learn/KNeighborsRegressor",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/KNeighborsRegressor/tmp"
+	},
+	"58535a5aa525130034441322": {
+		"cwd": "/share/devel/Gp/learn/LassoLarsCV",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/LassoLarsCV/tmp"
+	},
 	"5817a73538215335404348ee": {
 		"cwd": "/share/devel/Gp/learn/LinearSVC",
 		"command": "python",
@@ -111,6 +171,16 @@
 		"options": "double-dash",
 		"capacity": "0.2",
 		"results": "/share/devel/Gp/learn/LinearSVC/tmp"
+	},
+	"58535b31a525130034441326": {
+		"cwd": "/share/devel/Gp/learn/LinearSRV",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/LinearSRV/tmp"
 	},
 	"5817ad7f3821533540434948": {
 		"cwd": "/share/devel/Gp/learn/LogisticRegression",
@@ -131,5 +201,25 @@
 		"options": "double-dash",
 		"capacity": "0.2",
 		"results": "/share/devel/Gp/learn/RandomForestClassifier/tmp"
+	},
+	"58535c7ea525130034441328": {
+		"cwd": "/share/devel/Gp/learn/RandomForestRegressor",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/RandomForestRegressor/tmp"
+	},
+	"58535d09a525130034441329": {
+		"cwd": "/share/devel/Gp/learn/RidgeCV",
+		"command": "python",
+		"args": [
+			"main.py"
+		],
+		"options": "double-dash",
+		"capacity": "0.2",
+		"results": "/share/devel/Gp/learn/RidgeCV/tmp"
 	}
 }
