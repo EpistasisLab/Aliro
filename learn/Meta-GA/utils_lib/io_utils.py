@@ -7,6 +7,11 @@ import time
 lab_host = os.environ['LAB_HOST']
 basedir = os.environ['IFROOT']
 http = urllib3.PoolManager()
+# build info for all project/Experiment
+proj_json = '{}/dockers/machine/files/projects.json'.format(basedir)
+proj_info = {}
+with open(proj_json, 'rb') as f:
+	proj_info = json.loads(f.read().decode('utf-8'))
 
 class Experiment:
 
@@ -17,16 +22,38 @@ class Experiment:
 		self.schema = basedir+'/lab/examples/' + method_name + '/' + method_name + '.json'
 		self.basedir = basedir+'/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
+		self.proj_info = proj_info
 
 	def get_input(self):
 		return get_input(self.schema, self.tmpdir)
+	# get project id
+	def get_project_id(self):
+		return get_project_id(self.proj_info, self.basedir)
+	# get argument list
+	def get_args_list(self):
+		return list(get_params(self.schema).keys())
+	def get_args_profile(self):
+		return get_args_profile(self.schema)
+
 
 def get_input(schema, tmpdir):
 	args = parse_args(get_params(schema))
 	input_file = get_input_file(args['_id'], tmpdir)
-	if 'input_file' in args and input_file == 0:
-		input_file = args['input_file']
+
 	return (args, input_file)
+
+def get_project_id(proj_info, basedir):
+	proj_ids = [key for key in proj_info.keys() if proj_info[key]['cwd'] ==  basedir[:-1]]
+	num_proj_found = len(proj_ids)
+	if num_proj_found == 0:
+		raise KeyError('Error: No project found!')
+	elif num_proj_found > 1:  #debug use
+		print('Warning: Multiple projects with same id. Check project.json file!')
+	return proj_ids[0]
+
+
+
+
 
 def save_output(tmpdir, _id, output):
 	expdir = tmpdir + _id + '/'
@@ -39,6 +66,27 @@ def get_params(schema):
 		params = json.loads(f.read().decode('utf-8'))
 
 	return params
+
+
+# get argument type and choice and range
+def get_args_profile(schema):
+	params = get_params(schema)
+	args_list = list(get_params(schema).keys())
+	args_type = [params[arg]['type'] for arg in args_list]
+	args_choice = [params[arg]['ui']['choices'] for arg in args_list]
+	args_range = []
+	for achoice, atype in zip(args_choice, args_type):
+		if atype == 'int' or atype == 'float':
+			number_list = [x for x in achoice if isinstance(x, int) or isinstance(x, float)]
+			# None type or other options in int or float type
+			arange = [x for x in achoice if not (isinstance(x, int) or isinstance(x, float))]
+			arange.append([min(number_list), max(number_list)])
+			# may change based on min and max in the future
+			args_range.append(arange)
+		else:
+			args_range.append(achoice)
+
+	return args_type, args_range
 
 def parse_args(params):
 	parser = argparse.ArgumentParser()
@@ -53,7 +101,6 @@ def parse_args(params):
 
 		parser.add_argument(arg, action='store', dest=arg_dest, default=arg_default, type=arg_type, help=arg_help)
 
-	parser.add_argument('--input_file', action='store', dest='input_file', default=None, type=str, help="input file from command line")
 	parser.add_argument('--_id', action='store', dest='_id', default=None, type=str, help="Experiment id in database")
 
 	args = vars(parser.parse_args())
@@ -84,7 +131,7 @@ def get_input_file(_id, tmpdir):
 	if numfiles == 1:
 		return input_file
 	else:
-		return 0
+		return None
 
 def bool_type(val):
 	if(val.lower() == 'true'):

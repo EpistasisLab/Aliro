@@ -12,6 +12,7 @@ import json
 import argparse
 import pycurl
 import os
+import sys
 import numpy
 import urllib3
 import pandas as pd
@@ -21,11 +22,15 @@ from deap import creator
 from deap import tools
 from deap import gp
 
-basedir='/share/devel/Gp/learn/deapgp/'
-tmpdir=basedir+'tmp/'
+
 http = urllib3.PoolManager()
 
+# will eventually do this in the correct way -- install a library/package
+parentPath = os.path.abspath("..")
+if parentPath not in sys.path:
+    sys.path.insert(0, parentPath)
 
+from io_utils import Experiment
 
 
 # Define new functions
@@ -131,62 +136,27 @@ def SymbReg_Best_GP_Individual(individual):
     return (best_ind.fitness.values[0]),
 
 if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser("Perform deapGP")
-    parser.add_argument('--_id', dest='_id', default=None)
-    parser.add_argument('--population_size', dest='population_size', default=100)
-    parser.add_argument('--generations', dest='generations', default=10)
-    parser.add_argument('--crossover_rate', dest='crossover_rate', default=0.1)
-    parser.add_argument('--mutation_rate', dest='mutation_rate', default=0.05)
-    parser.add_argument('--tournsize', dest='tournsize', default=3)
-    parser.add_argument('--random_state', dest='random_state', default=3)
+    exp = Experiment('deap-GP-SymbReg')
+    args, input_file = exp.get_input()
+    tmpdir=exp.tmpdir
 
-
-    params = vars(parser.parse_args())
-    # Save all attached files
-    _id = params['_id']
-    if not os.path.exists(tmpdir + _id):
-        os.makedirs(tmpdir + _id)
-    #can input points default points [x/10. for x in range(-10,10)]
-    #response = http.request('GET','http://lab:5080/api/v1/experiments/'+_id)
-    #jsondata=json.loads(response.data.decode('utf-8'))
-    #files = jsondata['_files']
-    #numfiles = 0;
-    #file_name = ''
-    #for x in files:
-    #    time.sleep(5) #
-    #    file_id = x['_id']
-    #    file_name = x['filename']
-    #    c = pycurl.Curl()
-    #    c.setopt(c.URL, 'http://lab:5080/api/v1/files/'+file_id)
-    #    with open(tmpdir + file_name, 'wb') as f:
-    #        c.setopt(c.WRITEFUNCTION, f.write)
-    #        c.perform()
-    #        c.close()
-    #        numfiles += 1
-    #if numfiles == 1:
-    pop_size = int(params['population_size'])
-    gen_num = int(params['generations'])
-    co_rate = float(params['crossover_rate'])
-    mut_rate = float(params['mutation_rate'])
-    tour_size = int(params['tournsize'])
-    randomnum = int(params['random_state'])
-    pop, log, hof, df, dfh=SymbReg(population_size=pop_size,
-    generations=gen_num,
-    crossover_rate=co_rate,
-    mutation_rate=mut_rate,
-    tournsize=tour_size,
-    random_state=randomnum)
+    pop, log, hof, df, dfh=SymbReg(population_size=args['population_size'],
+    generations=args['generations'],
+    crossover_rate=args['crossover_rate'],
+    mutation_rate=args['mutation_rate'],
+    tournsize=args['tourn_size'],
+    random_state=42)
 
     best_ind = tools.selBest(pop, 1)[0]
-    result = {'best_fitness_score':best_ind.fitness.values[0]}
+    result = {'_scores': {'mean_squared_error':best_ind.fitness.values[0]}}
     # output json_result!!!!!!
+    _id = args['_id']
 
     print(best_ind.fitness.values[0])
     json_result = json.dumps(result)
     with open(os.path.join(tmpdir + _id, 'value.json'), 'w') as outfile:
         outfile.write(json_result)
     pic_result = df.to_pickle(tmpdir + _id +  '/value.pickle')
-    df.to_csv(tmpdir + _id +  '/value.csv', index=False ,header=dfh)
+    df.to_csv(tmpdir + _id +  '/fitness_value.csv', index=False ,header=dfh)
 
 exit(0)

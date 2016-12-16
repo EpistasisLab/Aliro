@@ -9,3 +9,4 @@ dist
 .nv
 .swp
 *.pyc
+.remote-sync.json
