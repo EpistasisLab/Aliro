@@ -13,7 +13,6 @@
     "args": ["process.py"],
     "capacity": "0.1",
     "options": "double-dash",
-    "capacity": "0.2",
     "results": "./examples/MDR"
   },
   "58535d64a52513003444132a": {
