@@ -8,7 +8,7 @@ lab_host = os.environ['LAB_HOST']
 basedir = os.environ['IFROOT']
 http = urllib3.PoolManager()
 # build info for all project/Experiment
-proj_json = '{}/dockers/machine/files/projects.json'.format(basedir)
+proj_json = '{}/machine/projects.json'.format(basedir)
 proj_info = {}
 with open(proj_json, 'rb') as f:
 	proj_info = json.loads(f.read().decode('utf-8'))
