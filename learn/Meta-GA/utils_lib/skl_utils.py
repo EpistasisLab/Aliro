@@ -6,51 +6,6 @@ import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
-def generate_results_regressor(model, input_file, tmpdir, _id):
-	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
-
-	# hard coded values for now (to be added as cmd line args later)
-	train_size = 0.75 		# default = 0.75
-	random_state = None 	# default = None
-	target_name = 'class'	# for testing, using 'class'
-
-	if target_name not in input_data.dtype.names:
-		raise ValueError('The provided data file does not seem to have a target column.')
-
-	features = np.delete(input_data.view(np.float64).reshape(input_data.size, -1),
-						 input_data.dtype.names.index(target_name), axis=1)
-
-	training_features, testing_features, training_classes, testing_classes = \
-		train_test_split(features, input_data[target_name], train_size=train_size, random_state=random_state)
-
-	print('args used in model:', model.get_params())
-
-	# fit model
-	model.fit(training_features, training_classes)
-
-	# get predicted classes
-	predicted_classes = model.predict(testing_features)
-
-	# get metrics and plots
-	train_score = model.score(training_features, training_classes)
-	test_score =  model.score(testing_features, testing_classes)
-	r2_score = metrics.r2_score(testing_classes, predicted_classes)
-	mean_squared_error = metrics.mean_squared_error(testing_classes, predicted_classes)
-
-	# scatter plot of predicted vs true target values
-
-	# save metrics
-	save_metrics(tmpdir, _id, {
-		'train_score': train_score, 
-		'test_score': test_score,
-		'r2_score': r2_score,
-		'mean_squared_error': mean_squared_error
-	})
-
-	# save predicted values, what format should this be in? pickle? add id here too
-	predicted_classes_list = predicted_classes.tolist()
-	save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
-
 def generate_results(model, input_file, tmpdir, _id):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 
@@ -107,7 +62,7 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	# save metrics
 	save_metrics(tmpdir, _id, {
-		'train_score': train_score,
+		'train_score': train_score, 
 		'test_score': test_score,
 		'accuracy_score': accuracy_score,
 		'precision_score': precision_score,
@@ -150,7 +105,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 
 	plt.subplots_adjust(bottom=0.15)
 	plt.ylabel('True label')
-	plt.xlabel('Predicted label')
+	plt.xlabel('Predicted label')	
 	plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
 
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
@@ -168,4 +123,4 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	plt.title('ROC Curve')
 	plt.legend(loc="lower right")
 	
-	plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+	plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')	
