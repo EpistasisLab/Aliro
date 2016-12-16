@@ -173,14 +173,14 @@
 		"results": "/share/devel/Gp/learn/LinearSVC/tmp"
 	},
 	"58535b31a525130034441326": {
-		"cwd": "/share/devel/Gp/learn/LinearSRV",
+		"cwd": "/share/devel/Gp/learn/LinearSVR",
 		"command": "python",
 		"args": [
 			"main.py"
 		],
 		"options": "double-dash",
 		"capacity": "0.2",
-		"results": "/share/devel/Gp/learn/LinearSRV/tmp"
+		"results": "/share/devel/Gp/learn/LinearSVR/tmp"
 	},
 	"5817ad7f3821533540434948": {
 		"cwd": "/share/devel/Gp/learn/LogisticRegression",
