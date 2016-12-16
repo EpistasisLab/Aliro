@@ -16,7 +16,7 @@
     "capacity": "0.2",
     "results": "./examples/MDR"
   },
-  "58531ab93e7f7e002fb0a1c2": {
+  "58532f3967e6ca22499b93a6": {
     "cwd": "/share/devel/Gp/learn/deap-GP-SymbReg",
     "command": "python3",
     "args": ["main.py"],
