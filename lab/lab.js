@@ -22,8 +22,9 @@ var jsonParser = bodyParser.json({
 }); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
-app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
-app.use(express.static(path.join(__dirname, "public"), {
+//app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
+//app.use(favicon(path.join(__dirname, "react-ui/public/favicon.ico"))); // Deal with favicon requests
+app.use(express.static(path.join(__dirname, "react-ui/public"), {
     index: false,
     maxAge: '1d'
 })); // Static directory
@@ -31,7 +32,9 @@ app.use("/bower_components", express.static(path.join(__dirname, "bower_componen
     index: false,
     maxAge: '1d'
 })); // Bower components
-app.set("view engine", "jade"); // Jade template engine
+//app.set("view engine", "jade"); // Jade template engine
+app.set('appPath', path.join(path.normalize(__dirname), '/react-ui/build'));
+app.use(express.static(app.get('appPath')));
 app.use(morgan("tiny")); // Log requests
 
 /* API */
@@ -830,8 +833,14 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 /* Rendering Routes */
 
+// React app
+// All other routes should redirect to the index.html
+app.route('/*').get(function(req, res) {
+    res.redirect('/');
+});
+
 // List projects and machines on homepage
-app.get("/", (req, res, next) => {
+/*app.get("/", (req, res, next) => {
     var category = req.query.cat;
 
     if (!category) {
@@ -1027,7 +1036,7 @@ app.get("/batches/:id", (req, res, next) => {
         .catch((err) => {
             next(err);
         });
-});
+}); */
 
 
 
