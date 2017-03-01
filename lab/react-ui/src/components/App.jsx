@@ -13,7 +13,7 @@ export class App extends React.Component {
                 <Header as='h1' inverted color='grey' content='PennAI' subheader='Your friendly machine learning assistant' />
             </Divider>
 
-            <Grid columns="equal" stretched>
+            <Grid columns="equal" stretched centered>
                 <DatasetsContainer />
                 <AlgorithmsContainer />
                 <ParametersContainer />
