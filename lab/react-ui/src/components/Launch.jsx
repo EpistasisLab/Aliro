@@ -8,9 +8,9 @@ export class Launch extends React.Component {
     render() {
         const color = 'olive';
         return <Grid.Column mobile={16} tablet={8} computer={4} widescreen={4} largeScreen={4}>
-            <Segment inverted color={color}>
-                <Header as='h1' inverted color={color} content='Launch experiment' subheader='Start your experiment' />
-                <Button inverted color={color}>Launch</Button>
+            <Segment color={color} inverted>
+                <Header as='h1' color={color} inverted content='Launch experiment' subheader='Start your experiment' />
+                <Button color={color} inverted>Launch</Button>
             </Segment>
         </Grid.Column>;
     }
