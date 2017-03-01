@@ -8,20 +8,13 @@ export class Algorithms extends React.Component {
   render() {
         const color = 'orange';
         const action = 'Select algorithm';
-        const btn = <Button inverted color={color} onClick={() => this.toggleModal()}>{action}</Button>;
-
+        const btn = <Button color={color} inverted onClick={() => this.toggleModal()}>{action}</Button>;
         return <Grid.Column mobile={16} tablet={8} computer={4} widescreen={4} largeScreen={4}>
-            <Segment inverted color={color}>
-
-                <Header as='h1' inverted color={color}>
-                    Algorithm
-                    <Header.Subheader>Select a machine learning algorithm</Header.Subheader>
-                </Header>
-
+            <Segment color={color} inverted>
+                <Header as='h1' color={color} inverted content="Algorithm" subheader="Select a machine learning algorithm" />
                 {this.props.algorithms.map(item =>
-                    <Button inverted key={item} color={color} content={item.get('name')} active={item.get('name') === this.props.currentAlgorithm.get('name')} onClick={() => this.props.setCurrentAlgorithm(item)} />
+                    <Button key={item} color={color} inverted content={item.get('name')} active={item.get('name') === this.props.currentAlgorithm.get('name')} onClick={() => this.props.setCurrentAlgorithm(item)} />
                 )}
-
             </Segment>
         </Grid.Column>;
     }
