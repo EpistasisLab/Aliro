@@ -11,10 +11,10 @@ export class Parameters extends React.Component {
             {this.props.currentAlgorithm.has('name') &&
                 this.props.currentAlgorithm.get('params').entrySeq().map(([key, value]) =>
                     <Grid.Column key={key} mobile={16} tablet={8} computer={4} widescreen={4} largeScreen={4}>
-                        <Segment inverted color={color}>
-                            <Header as='h1' inverted color={color} content={value.get('alias') || key} subheader={value.get('help')} />
+                        <Segment color={color} inverted>
+                            <Header as='h1' color={color} inverted content={value.get('alias') || key} subheader={value.get('help')} />
                             {value.getIn(['ui', 'choices']).map(choice =>
-                                <Button inverted key={choice} color={color} content={choice} active={choice === (value.get('currentValue') || value.get('default'))} onClick={() => this.props.setParameterValue(key, choice)} />
+                                <Button key={choice} color={color} inverted content={choice} active={choice === (value.get('currentValue') || value.get('default'))} onClick={() => this.props.setParameterValue(key, choice)} />
                             )}
                         </Segment>
                     </Grid.Column>
