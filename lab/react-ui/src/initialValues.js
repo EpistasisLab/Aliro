@@ -1,21 +1,21 @@
 export const initialDatasets =  [
     {
-        "name": "gametes.csv"
+        "name": "Gametes"
     },
     {
-        "name": "adults.csv"
+        "name": "Adults"
     },
     {
-        "name": "thyroid.csv"
+        "name": "Thyroid"
     },
     {
-        "name": "breast-cancer.csv"
+        "name": "Breast Cancer"
     },
     {
-        "name": "hypothyroid.csv"
+        "name": "Hypothyroid"
     },
     {
-        "name": "mushrooms.csv"
+        "name": "Mushrooms"
     }
 ];
 

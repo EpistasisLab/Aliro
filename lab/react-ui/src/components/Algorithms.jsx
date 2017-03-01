@@ -19,7 +19,7 @@ export class Algorithms extends React.Component {
                 </Header>
 
                 {this.props.algorithms.map(item =>
-                    <Button inverted key={item} color={color} content={item.get('name')} active={item === this.props.currentAlgorithm} onClick={() => this.props.setCurrentAlgorithm(item)} />
+                    <Button inverted key={item} color={color} content={item.get('name')} active={item.get('name') === this.props.currentAlgorithm.get('name')} onClick={() => this.props.setCurrentAlgorithm(item)} />
                 )}
 
             </Segment>
