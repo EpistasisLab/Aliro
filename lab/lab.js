@@ -22,18 +22,11 @@ var jsonParser = bodyParser.json({
 }); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
-//app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
-//app.use(favicon(path.join(__dirname, "react-ui/public/favicon.ico"))); // Deal with favicon requests
-app.use(express.static(path.join(__dirname, "react-ui/public"), {
-    index: false,
-    maxAge: '1d'
-})); // Static directory
-app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {
-    index: false,
-    maxAge: '1d'
-})); // Bower components
+app.use(favicon(path.join(__dirname, "react-ui/public/favicon.ico"))); // Deal with favicon requests
+app.use(express.static(path.join(__dirname, "react-ui/public"), {index: false, maxAge: '1d'})); // Static directory
+app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {index: false, maxAge: '1d'})); // Bower components
 //app.set("view engine", "jade"); // Jade template engine
-app.set('appPath', path.join(path.normalize(__dirname), '/react-ui/build'));
+app.set('appPath', path.join(path.normalize(__dirname), '/react-ui/dist'));
 app.use(express.static(app.get('appPath')));
 app.use(morgan("tiny")); // Log requests
 
