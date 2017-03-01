@@ -38,7 +38,7 @@ export class Datasets extends React.Component {
                             <Header inverted>Choose from the following:</Header>
                             <List inverted selection divided size="massive">
                                 {this.props.datasets.map(item =>
-                                    <List.Item key={item} onClick={() => this.props.setCurrentDataset(item)}>
+                                    <List.Item key={item} onClick={() => this.props.setCurrentDataset(item) && this.toggleModal()}>
                                         <List.Header>
                                             {item.get('name')} {item === this.props.currentDataset &&
                                                 <List.Icon name='check' color={color} className="right" />
