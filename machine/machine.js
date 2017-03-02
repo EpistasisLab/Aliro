@@ -234,6 +234,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
   // Log stdout
   experiment.stdout.on("data", (data) => {
     mediator.emit("experiments:" + experimentId + ":stdout", data.toString()); // Emit event
+    console.log("Stdout: " + data.toString());
   });
   // Log errors
   experiment.stderr.on("data", (data) => {
