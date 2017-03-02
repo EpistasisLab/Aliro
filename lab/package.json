@@ -1,7 +1,7 @@
 {
-  "name": "FGLab",
-  "version": "0.7.1",
-  "description": "Future Gadget Laboratory",
+"name": "pennai",
+  "version": "1.0.0",
+  "description": "your friendly machine learning assistant",
   "main": "lab.js",
   "scripts": {
     "start": "node lab.js",
@@ -39,7 +39,14 @@
     "multer": "^1.1.0",
     "request-promise": "^3.0.0",
     "serve-favicon": "^2.3.0",
-    "ws": "^1.1.0"
+    "ws": "^1.1.0",
+    "immutable": "^3.8.1",
+    "react": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.2",
+    "redux": "^3.6.0",
+    "semantic-ui-react": "^0.64.7"
   },
   "devDependencies": {
     "conventional-github-releaser": "^1.1.2",
@@ -50,10 +57,26 @@
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
-    "run-sequence": "^1.2.0"
+    "run-sequence": "^1.2.0",
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.22.0",
+    "chai": "^3.5.0",
+    "chai-immutable": "^1.6.0",
+    "jsdom": "^9.10.0",
+    "mocha": "^3.2.0",
+    "react-hot-loader": "^1.3.1",
+    "webpack": "^2.2.1"
   },
   "engines": {
     "node": "6.x"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react"
+    ]
   },
   "cacheDirectories": [
     "node_modules",
