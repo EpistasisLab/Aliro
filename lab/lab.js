@@ -234,6 +234,67 @@ app.delete("/api/v1/:collection/:id", (req, res, next) => {
             next(err);
         });
 });
+// List projects and machines on homepage
+app.get("/api/v1/projects", (req, res, next) => {
+    var category = req.query.cat;
+
+    if (!category) {
+        return res.render("base-index");
+    }
+
+    var projP = db.projects.find({
+        category: category.toUpperCase()
+    }, {
+        name: 1
+    }).sort({
+        name: 1
+    }).toArrayAsync(); // Get project names
+    var macP = db.machines.find({}, {
+        address: 1,
+        hostname: 1
+    }).sort({
+        hostname: 1
+    }).toArrayAsync(); // Get machine addresses and hostnames
+    Promise.all([projP, macP])
+        .then((results) => {
+            return res.return("index", {
+                projects: results[0],
+                machines: results[1]
+            });
+        })
+        .catch((err) => {
+            return next(err);
+        });
+});
+
+
+// Experiment page
+app.get("/api/v1/experiments/:id", (req, res, next) => {
+    db.experiments.findByIdAsync(req.params.id)
+        .then((result) => {
+            var projP = db.projects.findByIdAsync(result._project_id, {
+                name: 1
+            }); // Find project name
+            var macP = db.machines.findByIdAsync(result._machine_id, {
+                hostname: 1,
+                address: 1
+            }); // Find machine hostname and address
+            Promise.all([projP, macP])
+                .then((results) => {
+                    res.return("experiment", {
+                        experiment: result,
+                        project: results[0],
+                        machine: results[1]
+                    });
+                })
+                .catch((err) => {
+                    next(err);
+                });
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
 
 // Return all experiments for a project
 app.get("/api/v1/projects/:id/experiments", (req, res, next) => {
