@@ -234,7 +234,8 @@ app.delete("/api/v1/:collection/:id", (req, res, next) => {
             next(err);
         });
 });
-// List projects and machines on homepage
+
+// List projects and machines in api
 app.get("/api/v1/projects", (req, res, next) => {
     var category = req.query.cat;
 
