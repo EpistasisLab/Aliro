@@ -11,7 +11,7 @@ build:
 
 
 run:
-	docker run -i -t --rm -p 5080:5080 -e FGLAB_PORT=${FGLAB_PORT} -e MONGODB_URI=${MONGODB_URI} -h ${HOSTNAME} --name lab --net=host\
+	docker run -i -t --rm -p 5080:5080  -p 8080:8080 -e FGLAB_PORT=${FGLAB_PORT} -e MONGODB_URI=${MONGODB_URI} -h ${HOSTNAME} --name lab --net=host\
 		${DOCKER_REPO}
 
 shared:
