@@ -113,6 +113,39 @@ app.param("collection", (req, res, next, collection) => {
     req.collection = db.collection(collection);
     return next();
 });
+// List projects and machines in api
+app.get("/api/v1/projects", (req, res, next) => {
+
+    var projP = db.projects.find({
+    }, {
+    }).sort({
+        name: 1
+    }).toArrayAsync(); // Get project names
+    Promise.all(projP)
+        .then((results) => {
+            return res.send(results);
+        })
+        .catch((err) => {
+            return next(err);
+        });
+});
+
+
+
+// List preferences for this user
+app.get("/api/v1/preferences", (req, res, next) => {
+    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
+
+    var preferences = db.users.find({username: username}, {
+    }).toArrayAsync(); // Get machine addresses and hostnames
+    Promise.all(preferences)
+        .then((results) => {
+            return res.send(results);
+        })
+        .catch((err) => {
+            return next(err);
+        });
+});
 
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {
@@ -235,38 +268,6 @@ app.delete("/api/v1/:collection/:id", (req, res, next) => {
         });
 });
 
-// List projects and machines in api
-app.get("/api/v1/projects", (req, res, next) => {
-    var category = req.query.cat;
-
-    if (!category) {
-        return res.render("base-index");
-    }
-
-    var projP = db.projects.find({
-        category: category.toUpperCase()
-    }, {
-        name: 1
-    }).sort({
-        name: 1
-    }).toArrayAsync(); // Get project names
-    var macP = db.machines.find({}, {
-        address: 1,
-        hostname: 1
-    }).sort({
-        hostname: 1
-    }).toArrayAsync(); // Get machine addresses and hostnames
-    Promise.all([projP, macP])
-        .then((results) => {
-            return res.return("index", {
-                projects: results[0],
-                machines: results[1]
-            });
-        })
-        .catch((err) => {
-            return next(err);
-        });
-});
 
 
 // Experiment page
