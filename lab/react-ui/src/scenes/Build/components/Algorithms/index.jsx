@@ -10,7 +10,7 @@ export class Algorithms extends React.Component {
         const color = 'orange';
         return <Grid.Column mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
             <Segment inverted color={color}>
-                <Guide />
+                
                 <Header 
                     as='h1' 
                     inverted color={color} 
