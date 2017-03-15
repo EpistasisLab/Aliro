@@ -4,16 +4,16 @@ import {
     scryRenderedDOMComponentsWithTag,
     Simulate
 } from 'react-addons-test-utils';
-import { fromJS } from 'immutable';
-import { Datasets } from '../../src/components/Datasets';
+import { Map, fromJS } from 'immutable';
+import { Datasets } from '../../src/scenes/Build/components/Datasets';
 import { initialDatasets } from './testValues.js';
 import { expect } from 'chai';
 
 describe('Datasets', () => {
 
    it('renders button for each available dataset', () => {
-       let datasets = fromJS(initialDatasets);
-       let currentDataset = datasets.first();
+       let datasets = Map({ items: fromJS(initialDatasets) });
+       let currentDataset = datasets.get('items').first();
 
        const component = renderIntoDocument(
            <Datasets datasets={datasets} currentDataset={currentDataset} />
@@ -28,8 +28,8 @@ describe('Datasets', () => {
    });
 
    it('displays selected dataset as active', () => {
-       let datasets = fromJS(initialDatasets);
-       let currentDataset = datasets.first();
+       let datasets = Map({ items: fromJS(initialDatasets) });
+       let currentDataset = datasets.get('items').first();
 
        const component = renderIntoDocument(
            <Datasets datasets={datasets} currentDataset={currentDataset} />
@@ -43,8 +43,8 @@ describe('Datasets', () => {
    });
 
    it('updates selected dataset upon user click event', () => {
-       let datasets = fromJS(initialDatasets);
-       let currentDataset = datasets.first();
+       let datasets = Map({ items: fromJS(initialDatasets) });
+       let currentDataset = datasets.get('items').first();
 
        const setCurrentDataset = (item) => currentDataset = item;
 
