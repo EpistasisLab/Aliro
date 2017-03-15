@@ -15,24 +15,17 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone --branch pennai git@sarlacc.pmacs.upenn.edu:svitale/Gp.git 
+RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN cd /share/devel/Gp/lab && npm install 
 #install bower globally, needs "node" available as "node"
-RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN cd /share/devel/Gp/lab && npm install -g bower pm2 webpack webpack-dev-server
 RUN cd /share/devel/Gp/lab && bower install --allow-root
-RUN cd /share/devel/Gp/lab && webpack
 # global install forever utility
 # mongo configs
 ADD files/mongodump.tgz /
 COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
-#RUN mongod -f /etc/mongod.conf  & mongorestore  /dump
-#COPY files/ca.crt /share/devel/bobber/config/ca.crt
 COPY files/start.sh /root/
-#COPY files/env /share/devel/Gp/lab/.env
 # apache configs
-#VOLUME /share
 EXPOSE 5080
-#ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-#CMD ["/bin/bash"]
 CMD ["/bin/bash", "/root/start.sh"]
