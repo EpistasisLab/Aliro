@@ -18,9 +18,9 @@ RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone --branch p
 RUN cd /share/devel/Gp/lab && npm install 
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
-RUN cd /share/devel/Gp/lab && npm install -g bower pm2 webpack
+RUN cd /share/devel/Gp/lab && npm install -g bower pm2 webpack webpack-dev-server
 RUN cd /share/devel/Gp/lab && bower install --allow-root
-RUN cd /share/devel/Gp/lab webpack
+RUN cd /share/devel/Gp/lab && webpack
 # global install forever utility
 # mongo configs
 ADD files/mongodump.tgz /
