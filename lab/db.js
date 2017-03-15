@@ -14,6 +14,7 @@ db.bind("projects");
 db.bind("machines");
 db.bind("experiments");
 db.bind("batches");
+db.bind("users");
 
 // Promisify all methods
 Object.keys(mongoskin).forEach((key) => {
