@@ -4,16 +4,16 @@ import {
     scryRenderedDOMComponentsWithTag,
     Simulate
 } from 'react-addons-test-utils';
-import { fromJS } from 'immutable';
-import { Algorithms } from '../../src/components/Algorithms';
+import { Map, fromJS } from 'immutable';
+import { Algorithms } from '../../src/scenes/Build/components/Algorithms';
 import { initialAlgorithms } from './testValues.js';
 import { expect } from 'chai';
 
 describe('Algorithms', () => {
 
    it('renders button for each available algorithm', () => {
-       let algorithms = fromJS(initialAlgorithms);
-       let currentAlgorithm = algorithms.first();
+       let algorithms = Map({ items: fromJS(initialAlgorithms) });
+       let currentAlgorithm = algorithms.get('items').first();
 
        const component = renderIntoDocument(
            <Algorithms algorithms={algorithms} currentAlgorithm={currentAlgorithm} />
@@ -22,14 +22,14 @@ describe('Algorithms', () => {
        const buttons = scryRenderedDOMComponentsWithTag(component, 'button');
 
        expect(buttons.length).to.equal(3);
-       expect(buttons[0].textContent).to.equal('BernoulliNB');
-       expect(buttons[1].textContent).to.equal('GaussianNB');
-       expect(buttons[2].textContent).to.equal('LinearSVC');
+       expect(buttons[0].textContent.trim()).to.equal('BernoulliNB');
+       expect(buttons[1].textContent.trim()).to.equal('GaussianNB');
+       expect(buttons[2].textContent.trim()).to.equal('LinearSVC');
    });
 
    it('displays selected algorithm as active', () => {
-       let algorithms = fromJS(initialAlgorithms);
-       let currentAlgorithm = algorithms.first();
+       let algorithms = Map({ items: fromJS(initialAlgorithms) });
+       let currentAlgorithm = algorithms.get('items').first();
 
        const component = renderIntoDocument(
            <Algorithms algorithms={algorithms} currentAlgorithm={currentAlgorithm} />
@@ -43,8 +43,8 @@ describe('Algorithms', () => {
    });
 
    it('updates selected algorithm upon user click event', () => {
-       let algorithms = fromJS(initialAlgorithms);
-       let currentAlgorithm = algorithms.first();
+       let algorithms = Map({ items: fromJS(initialAlgorithms) });
+       let currentAlgorithm = algorithms.get('items').first();
 
        const setCurrentAlgorithm = (item) => currentAlgorithm = item;
 

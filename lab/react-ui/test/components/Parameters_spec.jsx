@@ -5,13 +5,13 @@ import {
     Simulate
 } from 'react-addons-test-utils';
 import { fromJS } from 'immutable';
-import { Parameters } from '../../src/components/Parameters';
+import { Parameters } from '../../src/scenes/Build/components/Parameters';
 import { initialAlgorithms } from './testValues.js';
 import { expect } from 'chai';
 
 describe('Parameters', () => {
 	it('renders segment for each of the current algorithm’s parameters', () => {
-	   let algorithms = fromJS(initialAlgorithms);
+	     let algorithms = fromJS(initialAlgorithms);
        let currentAlgorithm = algorithms.first();
 
        const component = renderIntoDocument(
