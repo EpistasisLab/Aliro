@@ -8,14 +8,15 @@ export class Parameters extends React.Component {
     render() {
         const color = 'blue';
         return <Grid.Row>
-            {this.props.currentAlgorithm.get('params').entrySeq().map(([key, value]) =>
+            {this.props.currentAlgorithm.get('schema') &&
+                this.props.currentAlgorithm.get('schema').entrySeq().map(([key, value]) =>
                 <Grid.Column key={key} mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
                     <Segment inverted color={color}>
                         <Popup 
                             size='large' 
                             on='click'
                             trigger={<Label color={color} className='inverted' corner='right' icon='question'></Label>}
-                            content={value.get('help')}
+                            content={value.get('description')}
                         />
                         <Header 
                             as='h1'

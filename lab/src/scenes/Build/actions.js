@@ -82,15 +82,18 @@ export const requestAlgorithms = () => {
 export const receiveAlgorithms = (json) => {
     return {
         type: RECEIVE_ALGORITHMS,
-        algorithms: json.data.children.map(child => child.data),
+        algorithms: json,
         receivedAt: Date.now()
     }
 };
 
 export const fetchAlgorithms = () => {
+    //const route = 'http://localhost:5080/api/v1/projects';
+    const route = 'api/v1/projects';
+
     return function(dispatch) {
         dispatch(requestAlgorithms());
-        return fetch('api/v1/projects')
+        return fetch(route)
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveAlgorithms(json))
