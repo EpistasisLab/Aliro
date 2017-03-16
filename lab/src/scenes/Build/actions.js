@@ -40,8 +40,8 @@ export const receivePreferences = (json) => {
 };
 
 export const fetchPreferences = () => {
-    const route = 'http://localhost:5080/api/v1/preferences';
-    //const route = 'api/v1/projects';
+    //const route = 'http://localhost:5080/api/v1/preferences';
+    const route = 'api/v1/preferences';
 
     return function(dispatch) {
         dispatch(requestPreferences());
@@ -68,8 +68,8 @@ export const receiveAlgorithms = (json) => {
 };
 
 export const fetchAlgorithms = () => {
-    const route = 'http://localhost:5080/api/v1/projects';
-    //const route = 'api/v1/projects';
+    //const route = 'http://localhost:5080/api/v1/projects';
+    const route = 'api/v1/projects';
 
     return function(dispatch) {
         dispatch(requestAlgorithms());
