@@ -5,71 +5,51 @@ import fetch from 'isomorphic-fetch';
  * action types
  */
 
-export const SET_DATASETS = 'SET_DATASETS';
-export const SET_CURRENT_DATASET = 'SET_CURRENT_DATASET';
-export const SET_ALGORITHMS = 'SET ALGORITHMS';
-export const SET_CURRENT_ALGORITHM = 'SET_CURRENT_ALGORITHM';
-export const SET_CURRENT_LEVEL = 'SET_CURRENT_LEVEL';
-export const SET_PARAMETER_VALUE = 'SET_PARAMETER_VALUE';
-
+export const SET_PREFERENCES = 'SET_PREFERENCES';
+export const REQUEST_PREFERENCES = 'REQUEST_PREFERENCES';
+export const RECEIVE_PREFERENCES = 'RECEIVE_PREFERENCES';
 export const REQUEST_ALGORITHMS = 'REQUEST_ALGORITHMS';
 export const RECEIVE_ALGORITHMS = 'RECEIVE_ALGORITHMS';
-
-/*
- * other constants
- */
-
-export const Levels = {
-  BASIC: 'BASIC',
-  ADVANCED: 'ADVANCED',
-  GRID: 'GRID',
-  RANDOM: 'RANDOM'
-};
+export const SET_CURRENT_DATASET = 'SET_CURRENT_DATASET';
+export const SET_CURRENT_ALGORITHM = 'SET_CURRENT_ALGORITHM';
+export const SET_PARAMETER_VALUE = 'SET_PARAMETER_VALUE';
 
 /*
  * action creators
  */
 
-export const setDatasets = (datasets) => {
+export const setPreferences = (preferences) => {
     return {
-        type: SET_DATASETS,
-        datasets
+        type: SET_PREFERENCES,
+        preferences
     }
 };
 
-export const setCurrentDataset = (currentDataset) => {
+export const requestPreferences = () => {
     return {
-        type: SET_CURRENT_DATASET,
-        currentDataset
+        type: REQUEST_PREFERENCES
     }
 };
 
-export const setAlgorithms = (algorithms) => {
+export const receivePreferences = (json) => {
     return {
-        type: SET_ALGORITHMS,
-        algorithms
+        type: RECEIVE_PREFERENCES,
+        preferences: json[0], // change this when preferences route is fixed
+        receivedAt: Date.now()
     }
 };
 
-export const setCurrentAlgorithm = (currentAlgorithm) => {
-    return {
-        type: SET_CURRENT_ALGORITHM,
-        currentAlgorithm
-    }
-};
+export const fetchPreferences = () => {
+    const route = 'http://localhost:5080/api/v1/preferences';
+    //const route = 'api/v1/projects';
 
-export const setCurrentLevel = (currentLevel) => {
-    return {
-        type: SET_CURRENT_LEVEL,
-        currentLevel
-    }
-};
-
-export const setParameterValue = (param, value) => {
-    return {
-        type: SET_PARAMETER_VALUE,
-        param,
-        value
+    return function(dispatch) {
+        dispatch(requestPreferences());
+        return fetch(route)
+            .then(response => response.json())
+            .then(json =>
+                dispatch(receivePreferences(json))
+            );
     }
 };
 
@@ -88,8 +68,8 @@ export const receiveAlgorithms = (json) => {
 };
 
 export const fetchAlgorithms = () => {
-    //const route = 'http://localhost:5080/api/v1/projects';
-    const route = 'api/v1/projects';
+    const route = 'http://localhost:5080/api/v1/projects';
+    //const route = 'api/v1/projects';
 
     return function(dispatch) {
         dispatch(requestAlgorithms());
@@ -98,5 +78,27 @@ export const fetchAlgorithms = () => {
             .then(json =>
                 dispatch(receiveAlgorithms(json))
             );
+    }
+};
+
+export const setCurrentDataset = (currentDataset) => {
+    return {
+        type: SET_CURRENT_DATASET,
+        currentDataset
+    }
+};
+
+export const setCurrentAlgorithm = (currentAlgorithm) => {
+    return {
+        type: SET_CURRENT_ALGORITHM,
+        currentAlgorithm
+    }
+};
+
+export const setParameterValue = (param, value) => {
+    return {
+        type: SET_PARAMETER_VALUE,
+        param,
+        value
     }
 };

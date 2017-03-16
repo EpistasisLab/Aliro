@@ -1,24 +1,40 @@
 import { combineReducers } from 'redux';
 import { List, Map, fromJS } from 'immutable';
-import { 
-    SET_DATASETS, SET_CURRENT_DATASET, 
-    SET_ALGORITHMS, SET_CURRENT_ALGORITHM,
+import {
+    SET_PREFERENCES, REQUEST_PREFERENCES, RECEIVE_PREFERENCES,
     REQUEST_ALGORITHMS, RECEIVE_ALGORITHMS, 
-    SET_CURRENT_LEVEL, SET_PARAMETER_VALUE, 
-    Levels 
+    SET_CURRENT_DATASET, SET_CURRENT_ALGORITHM,
+    SET_PARAMETER_VALUE
 } from './actions';
-const { BASIC } = Levels;
 
+const preferences = (state = Map({
+    isFetching: false,
+    items: Map()
+}), action) => {
+    switch(action.type) {
+        case SET_PREFERENCES:
+            return state.merge({
+                items: action.preferences
+            });
+        case REQUEST_PREFERENCES:
+            return state.merge({
+                isFetching: true
+            });
+        case RECEIVE_PREFERENCES:
+            return state.merge({
+                isFetching: false,
+                items: action.preferences
+            });
+        default:
+            return state;
+    }
+};
 
 const datasets = (state = Map({
     isFetching: false,
     items: List()
 }), action) => {
     switch (action.type) {
-        case SET_DATASETS:
-            return state.merge({
-                items: action.datasets
-            });
         default:
             return state;
     }
@@ -38,10 +54,6 @@ const algorithms = (state = Map({
     items: List()
 }), action) => {
     switch (action.type) {
-        case SET_ALGORITHMS:
-            return state.merge({
-                items: action.algorithms
-            });
         case REQUEST_ALGORITHMS:
             return state.merge({
                 isFetching: true
@@ -70,21 +82,12 @@ const currentAlgorithm = (state = Map(), action) => {
     }
 };
 
-const currentLevel = (state = BASIC, action) => {
-    switch (action.type) {
-        case SET_CURRENT_LEVEL:
-            return action.currentLevel;
-        default:
-            return state;
-    }
-};
-
 const app = combineReducers({
+   preferences,
    datasets,
    algorithms,
    currentDataset,
-   currentAlgorithm,
-   currentLevel
+   currentAlgorithm
 });
 
 export default app;
