@@ -9,8 +9,8 @@ import { Build } from './scenes/Build';
 import { Status } from './scenes/Status';
 import { Router, Route, hashHistory } from 'react-router';
 
-import { initialPreferences } from './scenes/Build/initialValues.js';
-import { fetchPreferences, setCurrentDataset, setCurrentAlgorithm } from './scenes/Build/actions';
+// import { initialPreferences } from './scenes/Build/initialValues.js';
+import { fetchPreferences, setCurrentDataset, setCurrentAlgorithm, setPreferences } from './scenes/Build/actions';
 
 const store = createStore(
 	reducer,
