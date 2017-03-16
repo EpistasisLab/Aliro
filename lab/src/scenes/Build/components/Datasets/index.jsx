@@ -10,7 +10,8 @@ export class Datasets extends React.Component {
 		return <Grid.Column mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
 			<Segment inverted color={color}>
 				<Header as='h1' inverted color={color} content="Dataset" />
-				{this.props.datasets.get('items').map(item =>
+				{this.props.datasets.get('Datasets') &&
+					this.props.datasets.get('Datasets').map(item =>
                     <Button
                     	inverted color={color} 
                     	key={item}
@@ -26,7 +27,7 @@ export class Datasets extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		datasets: state.datasets,
+		datasets: state.preferences.get('items'),
 		currentDataset: state.currentDataset
 	};
 }

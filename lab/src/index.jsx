@@ -9,8 +9,8 @@ import { Build } from './scenes/Build';
 import { Status } from './scenes/Status';
 import { Router, Route, hashHistory } from 'react-router';
 
-import { setDatasets, setAlgorithms, setCurrentAlgorithm, setCurrentDataset, fetchAlgorithms } from './scenes/Build/actions';
-import { initialDatasets, initialAlgorithms } from './scenes/Build/initialValues.js';
+import { initialPreferences } from './scenes/Build/initialValues.js';
+import { fetchPreferences, setCurrentDataset, setCurrentAlgorithm } from './scenes/Build/actions';
 
 const store = createStore(
 	reducer,
@@ -18,13 +18,12 @@ const store = createStore(
 		thunkMiddleware // lets us dispatch() functions
 	)
 );
-store.dispatch(setDatasets(initialDatasets));
-store.dispatch(setAlgorithms(initialAlgorithms));
-store.dispatch(setCurrentAlgorithm(store.getState().algorithms.get('items').first()));
-store.dispatch(setCurrentDataset(store.getState().datasets.get('items').first()));
-store.dispatch(fetchAlgorithms()).then(() =>
-  console.log(store.getState())
-);
+
+// store.dispatch(setPreferences(initialPreferences));
+store.dispatch(fetchPreferences()).then(function() {
+	store.dispatch(setCurrentDataset(store.getState().preferences.get('items').get('Datasets').first()));
+	store.dispatch(setCurrentAlgorithm(store.getState().preferences.get('items').get('Algorithms').first()));
+});
 
 const routes = <Route component={App}>
 	<Route path='/' component={Build} />

@@ -16,7 +16,8 @@ export class Algorithms extends React.Component {
                     inverted color={color} 
                     content="Algorithm" 
                 />
-                {this.props.algorithms.get('items').map(item =>
+                {this.props.algorithms.get('Algorithms') &&
+                    this.props.algorithms.get('Algorithms').map(item =>
                     <Button
                         key={item}
                         inverted color={color}
@@ -33,7 +34,7 @@ export class Algorithms extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        algorithms: state.algorithms,
+        algorithms: state.preferences.get('items'),
         currentAlgorithm: state.currentAlgorithm
     };
 }
