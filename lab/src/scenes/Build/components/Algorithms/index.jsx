@@ -10,7 +10,7 @@ export class Algorithms extends React.Component {
         const color = 'orange';
         return <Grid.Column mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
             <Segment inverted color={color}>
-                
+                {/* <Guide /> */}
                 <Header 
                     as='h1' 
                     inverted color={color} 
@@ -21,8 +21,7 @@ export class Algorithms extends React.Component {
                     <Button
                         key={item}
                         inverted color={color}
-                        icon={item.get('name') === 'auto' ? 'refresh' : false}
-                        content={item.get('name') === 'auto' ? false : item.get('name')} 
+                        content={item.get('name')} 
                         active={item.get('name') === this.props.currentAlgorithm.get('name')} 
                         onClick={() => this.props.setCurrentAlgorithm(item)} 
                     />
