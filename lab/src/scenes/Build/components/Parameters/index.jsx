@@ -15,8 +15,8 @@ export class Parameters extends React.Component {
                         <Popup 
                             size='large' 
                             on='click'
-                            trigger={<Label color={color} className='inverted' corner='right' icon='question'></Label>}
-                            content={value.get('description')}
+                            trigger={<Label color={color} className='inverted' corner='right' icon='info'></Label>}
+                            content={value.get('help')}
                         />
                         <Header 
                             as='h1'
@@ -27,8 +27,7 @@ export class Parameters extends React.Component {
                             <Button
                                 key={choice}
                                 inverted color={color}
-                                icon={choice === 'auto' ? 'refresh' : false}
-                                content={choice === 'auto' ? false : choice} 
+                                content={choice} 
                                 active={choice === (value.get('currentValue') || value.get('default'))} 
                                 onClick={() => this.props.setParameterValue(key, choice)} 
                             />
