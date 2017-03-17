@@ -18,6 +18,10 @@ export const SET_PARAMETER_VALUE = 'SET_PARAMETER_VALUE';
  * action creators
  */
 
+const local = true;
+const localAddr = 'http://localhost:5080/';
+const apiAddr = 'api/v1/';
+
 export const setPreferences = (preferences) => {
     return {
         type: SET_PREFERENCES,
@@ -40,8 +44,8 @@ export const receivePreferences = (json) => {
 };
 
 export const fetchPreferences = () => {
-    //const route = 'http://localhost:5080/api/v1/preferences';
-    const route = 'api/v1/preferences';
+    const route = local ? localAddr + apiAddr + 'preferences' : apiAddr + 'preferences';
+    //const route = 'api/v1/preferences';
 
     return function(dispatch) {
         dispatch(requestPreferences());
@@ -68,8 +72,8 @@ export const receiveAlgorithms = (json) => {
 };
 
 export const fetchAlgorithms = () => {
-    //const route = 'http://localhost:5080/api/v1/projects';
-    const route = 'api/v1/projects';
+    const route = local ? localAddr + apiAddr + 'projects' : apiAddr + 'projects';
+    //const route = 'api/v1/projects';
 
     return function(dispatch) {
         dispatch(requestAlgorithms());
