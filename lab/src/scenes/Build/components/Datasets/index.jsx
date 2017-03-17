@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setCurrentDataset } from '../../actions';
-import { Grid, Segment, Header, Button } from 'semantic-ui-react';
+import { Grid, Segment, Header, Button, Icon } from 'semantic-ui-react';
 
 export class Datasets extends React.Component {
 	render() {
@@ -10,8 +10,16 @@ export class Datasets extends React.Component {
 		return <Grid.Column mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
 			<Segment inverted color={color}>
 				<Header as='h1' inverted color={color} content="Dataset" />
-				{this.props.datasets.get('Datasets') &&
-					this.props.datasets.get('Datasets').map(item =>
+				{this.props.isFetching && 
+					<Header size='small'>Retrieving your datasets...<Icon loading name='refresh' /></Header>
+				}
+
+				{!this.props.isFetching && !this.props.datasets.size &&
+					<Header size='small'>You have no datasets available.</Header>
+				}
+
+				{!this.props.isFetching && this.props.datasets.size &&
+					this.props.datasets.map(item =>
                     <Button
                     	inverted color={color} 
                     	key={item}
@@ -27,7 +35,8 @@ export class Datasets extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		datasets: state.preferences.get('items'),
+		isFetching: state.preferences.get('isFetching'),
+		datasets: state.preferences.getIn(['data', 'Datasets']),
 		currentDataset: state.currentDataset
 	};
 }

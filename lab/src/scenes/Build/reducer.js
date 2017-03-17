@@ -7,14 +7,15 @@ import {
     SET_PARAMETER_VALUE
 } from './actions';
 
+// organize this + use isfetching in components.
 const preferences = (state = Map({
     isFetching: false,
-    items: Map()
+    data: Map()
 }), action) => {
     switch(action.type) {
         case SET_PREFERENCES:
             return state.merge({
-                items: action.preferences
+                data: action.preferences
             });
         case REQUEST_PREFERENCES:
             return state.merge({
@@ -23,7 +24,7 @@ const preferences = (state = Map({
         case RECEIVE_PREFERENCES:
             return state.merge({
                 isFetching: false,
-                items: action.preferences
+                data: action.preferences
             });
         default:
             return state;
