@@ -21,8 +21,8 @@ const store = createStore(
 
 // store.dispatch(setPreferences(initialPreferences));
 store.dispatch(fetchPreferences()).then(function() {
-	store.dispatch(setCurrentDataset(store.getState().preferences.get('items').get('Datasets').first()));
-	store.dispatch(setCurrentAlgorithm(store.getState().preferences.get('items').get('Algorithms').first()));
+	store.dispatch(setCurrentDataset(store.getState().preferences.get('data').get('Datasets').first()));
+	store.dispatch(setCurrentAlgorithm(store.getState().preferences.get('data').get('Algorithms').first()));
 });
 
 const routes = <Route component={App}>
