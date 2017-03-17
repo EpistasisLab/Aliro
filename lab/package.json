@@ -5,7 +5,7 @@
   "main": "lab.js",
   "scripts": {
     "start": "node lab.js",
-    "test": "echo \"No test specified\" && exit 0",
+    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\"",
     "postinstall": "bower install --allow-root",
     "update": "git pull && npm install"
   },

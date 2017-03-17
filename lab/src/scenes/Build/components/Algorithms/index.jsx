@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setCurrentAlgorithm } from '../../actions';
-import { Grid, Segment, Header, Button } from 'semantic-ui-react';
-import { Guide } from './components/Guide';
+import { Grid, Segment, Header, Button, Icon } from 'semantic-ui-react';
+//import { Guide } from './components/Guide';
 
 export class Algorithms extends React.Component {
     render() {
@@ -16,8 +16,13 @@ export class Algorithms extends React.Component {
                     inverted color={color} 
                     content="Algorithm" 
                 />
-                {this.props.algorithms.get('Algorithms') &&
-                    this.props.algorithms.get('Algorithms').map(item =>
+
+                {this.props.isFetching && 
+                    <Header size='small'>Retrieving your algorithms...<Icon loading name='refresh' /></Header>
+                }
+
+                {!this.props.isFetching &&
+                    this.props.algorithms.map(item =>
                     <Button
                         key={item}
                         inverted color={color}
@@ -33,7 +38,8 @@ export class Algorithms extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        algorithms: state.preferences.get('items'),
+        isFetching: state.preferences.get('isFetching'),
+        algorithms: state.preferences.getIn(['data', 'Algorithms']),
         currentAlgorithm: state.currentAlgorithm
     };
 }
