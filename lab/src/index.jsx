@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import reducer from './reducer';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import reducer from './scenes/Build/reducer';
 import { App } from './components/App';
 import { Build } from './scenes/Build';
 import { Status } from './scenes/Status';
 import { Router, Route, hashHistory } from 'react-router';
 
-// import { initialPreferences } from './scenes/Build/initialValues.js';
-import { fetchPreferences, setCurrentDataset, setCurrentAlgorithm, setPreferences } from './scenes/Build/actions';
+import { fetchPreferences } from './data/preferences/api';
+import { setCurrentDataset } from './data/currentDataset/actions';
+import { setCurrentAlgorithm } from './data/currentAlgorithm/actions';
 
 const store = createStore(
 	reducer,
@@ -19,10 +20,9 @@ const store = createStore(
 	)
 );
 
-// store.dispatch(setPreferences(initialPreferences));
-store.dispatch(fetchPreferences()).then(function() {
-	store.dispatch(setCurrentDataset(store.getState().preferences.get('data').get('Datasets').first()));
-	store.dispatch(setCurrentAlgorithm(store.getState().preferences.get('data').get('Algorithms').first()));
+store.dispatch(fetchPreferences()).then(function(res) {
+	store.dispatch(setCurrentDataset(res.preferences.get('Datasets').first()));
+	store.dispatch(setCurrentAlgorithm(res.preferences.get('Algorithms').first()));
 });
 
 const routes = <Route component={App}>
