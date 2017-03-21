@@ -1,16 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setCurrentAlgorithm } from '../../actions';
+import { setCurrentAlgorithm } from '../../../../data/currentAlgorithm/actions';
 import { Grid, Segment, Header, Button, Icon } from 'semantic-ui-react';
-//import { Guide } from './components/Guide';
 
 export class Algorithms extends React.Component {
     render() {
         const color = 'orange';
         return <Grid.Column mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
             <Segment inverted color={color}>
-                {/* <Guide /> */}
                 <Header 
                     as='h1' 
                     inverted color={color} 
@@ -38,9 +36,9 @@ export class Algorithms extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        isFetching: state.preferences.get('isFetching'),
-        algorithms: state.preferences.getIn(['data', 'Algorithms']),
-        currentAlgorithm: state.currentAlgorithm
+        isFetching: state.data.preferences.get('isFetching'),
+        algorithms: state.data.preferences.getIn(['preferences', 'Algorithms']),
+        currentAlgorithm: state.data.currentAlgorithm
     };
 }
 
