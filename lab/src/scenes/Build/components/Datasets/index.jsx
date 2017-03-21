@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setCurrentDataset } from '../../actions';
+import { setCurrentDataset } from '../../../../data/currentDataset/actions';
 import { Grid, Segment, Header, Button, Icon } from 'semantic-ui-react';
 
 export class Datasets extends React.Component {
@@ -35,9 +35,9 @@ export class Datasets extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		isFetching: state.preferences.get('isFetching'),
-		datasets: state.preferences.getIn(['data', 'Datasets']),
-		currentDataset: state.currentDataset
+		isFetching: state.data.preferences.get('isFetching'),
+		datasets: state.data.preferences.getIn(['preferences', 'Datasets']),
+		currentDataset: state.data.currentDataset
 	};
 }
 
