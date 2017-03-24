@@ -1,14 +1,15 @@
 import React from 'react';
-import { Container } from 'semantic-ui-react';
-import { Headline } from './Headline'
-import { Navbar } from './Navbar';
+import MediaQuery from 'react-responsive';
+import { Container, Menu } from 'semantic-ui-react';
+import { BasicNavbar } from './BasicNavbar';
 
 export class App extends React.Component {
 		render() {
 				return <Container fluid className="app">
-						<Headline />
+						<MediaQuery query='(max-width: 1824px)'>
+							<BasicNavbar />
+						</MediaQuery>
 						{this.props.children}
-						<Navbar />
 				</Container>;
 		}
 }
