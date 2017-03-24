@@ -109,6 +109,10 @@ body {
     float: right;
 }
 
+.react-draggable {
+    cursor: move;
+}
+
 @media (min-width: 140rem) {
     body {
         line-height: calc(1.5 * 2.5);
