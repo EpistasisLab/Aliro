@@ -113,6 +113,13 @@ body {
     cursor: move;
 }
 
+.navbar > .react-draggable {
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+    z-index: 100;
+}
+
 @media (min-width: 140rem) {
     body {
         line-height: calc(1.5 * 2.5);
