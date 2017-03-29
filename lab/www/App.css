@@ -1,9 +1,41 @@
 body {
     margin: 0;
     padding: 2rem;
+    padding-top: 5rem;
     background-color: #1B1C1D;
     font-size: 1rem;
     line-height: 1.5;
+}
+
+.pennai .ui.segment {
+    background-color: rgba(255,255,255,.11);
+    border: none;
+}
+
+.pennai .ui.yellow.label {
+    background-color: transparent!important;
+    border: 0.063rem solid #FFE21F!important;
+    color: #FFE21F!important;
+}
+
+.pennai .ui.green.label {
+    background-color: transparent!important;
+    border: 0.063rem solid #2ECC40!important;
+    color: #2ECC40!important;
+}
+
+.pennai .ui.red.label {
+    background-color: transparent!important;
+    border: 0.063rem solid #FF695E!important;
+    color: #FF695E!important;
+}
+
+.pennai .ui.menu .link.active > .item {
+    background-color: rgba(0,0,0,.1)!important;
+}
+
+.pennai .ui.menu .link:not(.active) > .item:hover {
+    background-color: rgba(255,255,255,.08)!important;
 }
 
 .ui.inverted.red.segment {
@@ -66,12 +98,6 @@ body {
     border: 0.063rem solid #DCDDDE;
 }
 
-.ui.segment.square {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-}
-
 .ui.grid>.row {
     padding: 0;
 }
@@ -79,26 +105,6 @@ body {
 .ui.grid > .row > .column {
     margin-top: 1em;
     margin-bottom: 1em;
-}
-
-.ui.segment.square > .filler {
-    margin-top: 75%;
-}
-
-.ui.segment.square > .content {
-    padding: 1rem;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.ui.segment.square > .content > .footer {
-    padding: 1em;
-    position: absolute;
-    bottom: 0;
-    right: 0;
 }
 
 .ui.button {

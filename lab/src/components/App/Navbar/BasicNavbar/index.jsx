@@ -2,26 +2,17 @@ import React from 'react';
 import MediaQuery from 'react-responsive';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { getMenuItems } from '../menuItems.js';
-
-String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-}
+import { Link } from 'react-router';
 
 export class BasicNavbar extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-      menu: getMenuItems({user: 'Test'}), 
-      activeItem: 'datasets',
+      menu: getMenuItems({user: 'Test'}),
       minBtnNameWidth: 560,
       minSubheaderWidth: 768
     };
-		this.handleItemClick = this.handleItemClick.bind(this);
 	}
-
-  handleItemClick(e, { name }) {
-    this.setState({ activeItem: name });
-  }
 
   render() {
     return <Menu inverted color='teal' fixed='top' size='large' borderless>
@@ -47,17 +38,16 @@ export class BasicNavbar extends React.Component {
 
   renderButton(item) {
     return (
-      <Menu.Item
-        key={item.name} 
-        name={item.name} 
-        href={item.path} 
-        active={this.state.activeItem === item.name}
-        onClick={this.handleItemClick}>
-          <Icon name={item.icon} />
-          <MediaQuery minWidth={this.state.minBtnNameWidth}>
-            {item.name.capitalize()}
-          </MediaQuery> 
-      </Menu.Item>
+      <Link to={item.path} className='link' activeClassName='active'>
+        <Menu.Item
+          key={item.name}
+          name={item.name}>
+            <Icon name={item.icon} />
+            <MediaQuery minWidth={this.state.minBtnNameWidth}>
+              {item.name}
+            </MediaQuery>
+        </Menu.Item>
+      </Link>
     );
   }
 
@@ -66,7 +56,7 @@ export class BasicNavbar extends React.Component {
       <Menu.Item>
         <Icon name={item.icon} />
         <MediaQuery minWidth={this.state.minBtnNameWidth}>
-          {item.text.capitalize()} <Icon name='caret down' />
+          {item.text} <Icon name='caret down' />
         </MediaQuery>
       </Menu.Item>
     );
@@ -87,7 +77,7 @@ export class BasicNavbar extends React.Component {
       return <Dropdown.Item
         key={item.name} 
         icon={item.icon} 
-        text={item.name.capitalize()}
+        text={item.name}
         href={item.path}
       />;
     } else if(item.type === 'divider') {
