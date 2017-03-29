@@ -5,9 +5,12 @@ import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { App } from './components/App';
+import { DatasetsContainer } from './scenes/Datasets';
+import { Dataset } from './scenes/Dataset';
 import { Build } from './scenes/Build';
 import { Status } from './scenes/Status';
-import { Router, Route, hashHistory } from 'react-router';
+import { NotFound } from './scenes/NotFound';
+import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 
 import { fetchPreferences } from './data/preferences/api';
 import { setCurrentDataset } from './data/currentDataset/actions';
@@ -25,9 +28,13 @@ store.dispatch(fetchPreferences()).then(function(res) {
 	store.dispatch(setCurrentAlgorithm(res.preferences.get('Algorithms').first()));
 });
 
-const routes = <Route component={App}>
-	<Route path='/' component={Build} />
-	<Router path='/status' component={Status} />
+const routes = <Route path='/' component={App}>
+	<IndexRedirect to="datasets" />
+	<Route path='datasets' component={DatasetsContainer} />
+	<Route path='datasets/:id' component={Dataset} />
+	<Route path='launchpad' component={Build} />
+	<Route path='status' component={Status} />
+	<Route path='*' component={NotFound} />
 </Route>;
 
 ReactDOM.render(

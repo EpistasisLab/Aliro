@@ -5,7 +5,7 @@ import { Navbar } from './Navbar';
 
 export class App extends React.Component {
 	render() {
-		return <Container fluid className="app">
+		return <Container fluid className="app pennai">
 			<Navbar />
 			{this.props.children}
 		</Container>;
