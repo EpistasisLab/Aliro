@@ -4,18 +4,18 @@ export const getMenuItems = (data) => {
 		subheader: 'Your friendly AI assistant',
 		items: [{
 			type: 'button',
-			name: 'datasets',
-			path: '/#/',
+			name: 'Datasets',
+			path: 'datasets',
 			icon: 'file text outline'
 		},{
 			type: 'button',
-			name: 'launchpad',
-			path: '/#/launchpad',
+			name: 'Launchpad',
+			path: 'launchpad',
 			icon: 'rocket'
 		},{
 			type: 'button',
-			name: 'status',
-			path: '/#/status',
+			name: 'Status',
+			path: 'status',
 			icon: 'list'
 		},{
 			type: 'dropdown',
@@ -23,19 +23,19 @@ export const getMenuItems = (data) => {
 			text: data.user,
 			items: [{
 				type: 'button',
-				name: 'notifications',
+				name: 'Notifications',
 				path: '/#/notifications',
 				icon: 'bell'
 			},{
 				type: 'button',
-				name: 'settings',
+				name: 'Settings',
 				path: '/#/settings',
 				icon: 'setting'
 			},{
 				type: 'divider'
 			},{
 				type: 'button',
-				name: 'sign out',
+				name: 'Sign Out',
 				action: {},
 				icon: 'sign out'
 			}]

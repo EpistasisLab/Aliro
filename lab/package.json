@@ -36,6 +36,7 @@
     "jade": "^1.11.0",
     "kerberos": "0.0.21",
     "lodash": "^4.13.0",
+    "moment": "^2.18.1",
     "mongodb": "^2.1.19",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
