@@ -3,16 +3,12 @@ import Draggable from 'react-draggable';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { getMenuItems } from '../menuItems.js';
 
-String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-}
-
 export class DraggableNavbar extends React.Component {
 	constructor() {
 		super();
 		this.state = {
       menu: getMenuItems({user: 'Test'}), 
-      activeItem: 'datasets'
+      activeItem: 'Datasets'
     };
 		this.handleItemClick = this.handleItemClick.bind(this);
 	}
@@ -51,7 +47,7 @@ export class DraggableNavbar extends React.Component {
         href={item.path} 
         active={this.state.activeItem === item.name}
         onClick={this.handleItemClick}>
-          <Icon name={item.icon} /> {item.name.capitalize()}
+          <Icon name={item.icon} /> {item.name}
       </Menu.Item>
     );
   }
@@ -73,7 +69,7 @@ export class DraggableNavbar extends React.Component {
       return <Dropdown.Item
         key={item.name} 
         icon={item.icon} 
-        text={item.name.capitalize()}
+        text={item.name}
         href={item.path}
       />;
     } else if(item.type === 'divider') {
