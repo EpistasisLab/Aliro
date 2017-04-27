@@ -7,7 +7,6 @@ import {
 } from './actions';
 
 export const fetchDatasets = () => {
-    //const route = 'http://localhost:5080/api/v1/datasets';
     const route = 'api/v1/datasets';
 
     return function(dispatch) {

@@ -15,7 +15,7 @@ export class BasicNavbar extends React.Component {
 	}
 
   render() {
-    return <Menu inverted color='teal' fixed='top' size='large' borderless>
+    return <Menu inverted color='grey' fixed='top' size='large' borderless>
       <Menu.Item header name={this.state.menu.header} />
       <MediaQuery minWidth={this.state.minSubheaderWidth}>
         <Menu.Item name={this.state.menu.subheader} />
