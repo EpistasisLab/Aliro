@@ -753,6 +753,52 @@ var processFiles = function(experiment, files) {
     return filesP;
 };
 
+//process files for a dataset
+var processDataset = function(files,dataset_id) {
+    metadataP = Array(files.length);
+    ready = Promise.resolve(null);
+    obj = {};
+    promises = [];
+    files.forEach(function (fileObj, i) {
+        fileId = new db.ObjectID();
+        metadata = []
+        var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+          metadata: {
+            contentType: fileObj.mimetype
+          },
+            promiseLibrary: Promise
+          });
+      // ready = ready.then(function() {
+        var file_open = gfs.open((err, res1) => {
+         if (err) {
+            console.log(err);
+          } else {
+        // Write from buffer and flush to db
+            var file_write = res1.write(fileObj.buffer, true)
+                        .then((gfs) => {
+                                // Save file reference
+                                db.datasets.updateByIdAsync(dataset_id, {
+                                    $push: {
+                                        _files: {
+                                            _id: gfs.fileId,
+                                            filename: gfs.filename,
+                                            mimetype: gfs.metadata.contentType
+                                        }
+                                    }
+                                });
+                          });
+            promises.push(file_write);
+          }
+    });
+    promises.push(file_open);
+
+    //});
+ });
+return(promises);
+};
+
+
+
 // Processess files for an experiment
 app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
     // Retrieve list of files for experiment
@@ -854,6 +900,34 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
             next(err);
         });
 });
+
+//adds datasets
+app.put("/api/v1/datasets", upload.array("_files","_metadata"), (req, res, next) => {
+    // Retrieve list of files for experiment
+            // Process files
+var metadata = JSON.parse(req.body._metadata);
+                        db.datasets.insertAsync({
+                                _dataset_name: metadata.dataset_name,
+                                _username: metadata.username,
+                                _files: []
+                            }, {})
+                            .then((exp) => {
+                                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+            var filesP = processDataset(req.files,dataset_id);
+            Promise.all(filesP)
+                .then((results) => {
+console.log(results[0].ops);
+                    res.send({
+                        message: "Files uploaded"
+                    });
+                })
+                .catch((err) => {
+                    next(err);
+                });
+                                 });
+
+});
+
 
 // Registers machine projects
 app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
