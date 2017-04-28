@@ -54,7 +54,7 @@ export class DraggableNavbar extends React.Component {
 
   renderDropdown(item) {
     return (
-      <Dropdown item text={item.text}>
+      <Dropdown item text={item.text} key={item.icon}>
         <Dropdown.Menu>
           {item.items.map(item =>
             this.renderDropdownItem(item)
@@ -73,7 +73,7 @@ export class DraggableNavbar extends React.Component {
         href={item.path}
       />;
     } else if(item.type === 'divider') {
-      return <Dropdown.Divider />;
+      //return <Dropdown.Divider />;
     }
   }
 }
