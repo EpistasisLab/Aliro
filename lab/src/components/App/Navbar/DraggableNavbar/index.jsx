@@ -1,4 +1,5 @@
 import React from 'react';
+import uniqueid from 'lodash'
 import Draggable from 'react-draggable';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { getMenuItems } from '../menuItems.js';
@@ -40,9 +41,11 @@ export class DraggableNavbar extends React.Component {
   }
 
   renderButton(item) {
+const id = _.uniqueId("prefix-");
+console.log(id);
     return (
       <Menu.Item
-        key={item.name} 
+        key={id}
         name={item.name} 
         href={item.path} 
         active={this.state.activeItem === item.name}
@@ -65,15 +68,20 @@ export class DraggableNavbar extends React.Component {
   }
 
   renderDropdownItem(item) {
+const id = _.uniqueId("prefix-");
+console.log('id');
+console.log(id);
     if(item.type === 'button') {
       return <Dropdown.Item
-        key={item.name} 
+        key={id}
         icon={item.icon} 
         text={item.name}
         href={item.path}
       />;
     } else if(item.type === 'divider') {
-      return <Dropdown.Divider />;
+      return <Dropdown.Divider
+        key={id}
+       />;
     }
   }
 }
