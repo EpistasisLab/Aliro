@@ -9,7 +9,7 @@ import { DatasetPanel } from './components/DatasetPanel';
 export class Datasets extends React.Component {
 	constructor() {
 		super();
-  	this.state = { width: '0', height: '0' };
+  	this.state = { width: 0, height: 0 };
   	this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	}
 
