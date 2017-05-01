@@ -5,7 +5,6 @@ import {
 } from './actions';
 
 import { initialDatasets } from './initialDatasets'; // for testing
-
 const initialState = Map({
     isFetching: false,
     items: /* Map() */ fromJS(initialDatasets) // for testing
