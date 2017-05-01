@@ -1,33 +1,72 @@
 import React from 'react';
+import { breakpoints } from '../../breakpoints';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-//import { setParameterValue } from '../../../../data/currentAlgorithm/actions';
-import { Grid } from 'semantic-ui-react';
-import { DatasetPreview } from './components/DatasetPreview';
+import { fetchDatasets } from './data/api';
+import { Segment, Header, Button, Grid } from 'semantic-ui-react';
+import { DatasetPanel } from './components/DatasetPanel';
 
 export class Datasets extends React.Component {
+	constructor() {
+		super();
+  	this.state = { width: '0', height: '0' };
+  	this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+	}
+
+	componentDidMount() {
+		this.updateWindowDimensions();
+ 		window.addEventListener('resize', this.updateWindowDimensions.bind(this));
+
+		const { fetchDatasets } = this.props;
+		fetchDatasets();
+	}
+
+	componentWillUnmount() {
+	  window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
+	}
+
+	updateWindowDimensions() {
+		this.setState({ width: window.innerWidth, height: window.innerHeight });
+	}
+
+	calcCols() {
+		let { width } = this.state; 
+
+		if(width < breakpoints.MIN_TABLET) 				{ return 1; } 
+		else if(width < breakpoints.MAX_TABLET) 	{ return 2; } 
+		else if(width < breakpoints.MAX_DESKTOP) 	{ return 3; } 
+		else 																			{ return 4; }
+	}
+
 	render() {
-		return <Grid columns="equal" stretched>
-			{this.props.datasets.map(dataset =>
-				<DatasetPreview
-					key={dataset.get('id')}
-					dataset={dataset}
-				/>
-			)}
-		</Grid>;
+		const { datasets } = this.props;
+		return <div>
+			<div className='page-title'>
+				<Header inverted size='huge' content='Datasets' />
+				<Button inverted color='blue' compact size='small' icon='plus' content='Add new'/>
+			</div>
+			<Grid stretched columns={this.calcCols()}>
+				{datasets.map(dataset =>
+					<DatasetPanel
+						key={dataset.get('_id')}
+						dataset={dataset}
+					/>
+				)}
+			</Grid>
+		</div>;
 	}
 }
 
 function mapStateToProps(state) {
 	return {
-		isFetching: state.data.datasets.get('isFetching'),
-		datasets: state.data.datasets.get('items')
+		isFetching: state.datasets.get('isFetching'),
+		datasets: state.datasets.get('items')
 	};
 }
 
 function mapDispatchToProps(dispatch) {
 	return {
-		//setParameterValue: bindActionCreators(setParameterValue, dispatch)
+		fetchDatasets: bindActionCreators(fetchDatasets, dispatch)
 	};
 }
 
