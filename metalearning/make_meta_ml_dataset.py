@@ -70,11 +70,14 @@ for i,p in tqdm(enumerate(data['parameters'])):
         if key is not '':
             if key not in data.columns:
                 if column_types[key] == str:
-                    data[key] = 'NaN'
+                    data[key] = ' '
                     data[key] = data[key].apply(lambda x: str(x))
                 elif column_types[key] == float:
                     data[key] = 0.0
                     data[key] = data[key].apply(lambda x: float(x))
+                elif column_types[key] == bool:
+                    data[key] = False
+                    data[key] = data[key].apply(lambda x: bool(x))
                 else:
                     data[key] = 0
                     data[key] = data[key].apply(lambda x: int(x))
@@ -105,6 +108,8 @@ data.to_csv('sklearn-benchmark5-data-ml-parameters-nan.tsv',
 #             # if type(x[key][0]) is not column_types[key]:
 #             #     x[key] = x[key].apply(lambda z: column_types[key](z))
 #             # x[key][i] = val
+#             if key == 'loss':
+#                 x[key] = x[key].apply(lambda i: str(i))
 #             try:
 #                 x.set_value(i,key,val)
 #             except ValueError:

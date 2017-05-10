@@ -33,15 +33,20 @@ def test_ml_p():
     # test updating scores
     epochs=100
     datlen = int(data.shape[0]/epochs)
-    pennai = Recommender(alpha=0.1)
+    pennai = Recommender()
+    n_recs=1
     for n in np.arange(epochs):
         new_data = data.iloc[n*datlen:(n+1)*datlen]
         # pdb.set_trace()
         pennai.update(new_data)
-        ml,p = pennai.recommend(n_recs=10)
+        ml,p = pennai.recommend(n_recs=n_recs)
         # pdb.set_trace()
         #'p:',p,
-        print(str(n),': ml:',ml,'scores=',[pennai.scores[mle+':'+pe] for mle,pe in zip(ml,p)])
+        if n_recs>1:
+            print(str(n),': ml:',ml,', p:',p,'scores=',
+                  [pennai.scores[mle+':'+pe] for mle,pe in zip(ml,p)])
+        else:
+            print(str(n),': ml:',ml,', p:',p,'scores=',pennai.scores[ml+':'+p])
 
     # pennai.update(data2)
     # ml,p = pennai.recommend()
