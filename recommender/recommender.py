@@ -65,6 +65,7 @@ class Recommender():
 
         # empty scores pandas series
         self.scores = pd.Series()
+        self.w = 0
     def update(self,data,learner=None):
         """update meta-models by incorporating new data.
 
@@ -154,10 +155,13 @@ class Recommender():
         new_ind = new_scores.index.values
         if len(self.scores.index)==0:
             self.scores = new_scores
+            self.w = new_scores.shape[0]
         else:
+            step = new_scores.shape[0]/self.w
             for n in new_ind:
                 if n in self.scores.index.values:
                     self.scores.loc[n] = (self.scores[n] +
-                                        self.alpha*(new_scores[n] - self.scores[n]))
+                                        self.alpha/step*(new_scores[n] - self.scores[n]))
                 else:
                     self.scores.loc[n] = new_scores[n]
+            self.w += new_scores.shape[0]
