@@ -29,18 +29,15 @@ class Recommender():
     metric: str, default: 'bal_accuracy'
         the metric by which to assess performance in the data
 
-    alpha: float, default: 0.1
-        learning parameter
     """
 
     def __init__(self,method='ml_p',ml=None,ml_type = 'classifier',
-                 metric='bal_accuracy', alpha = 0.1):
+                 metric='bal_accuracy'):
         """initialize recommendation system."""
         self.method = method
         self.ml = ml
         self.ml_type = ml_type
         self.metric = metric
-        self.alpha = alpha
 
         if self.ml == None:
             self.ml = DecisionTreeClassifier()
@@ -65,6 +62,7 @@ class Recommender():
 
         # empty scores pandas series
         self.scores = pd.Series()
+        # number of datasets trained on so far
         self.w = 0
     def update(self,data,learner=None):
         """update meta-models by incorporating new data.
@@ -150,7 +148,7 @@ class Recommender():
             return False
 
     def update_scores(self,new_scores):
-        """update scores according to learning parameter alpha"""
+        """update scores based on new_scores"""
         # pdb.set_trace()
         new_ind = new_scores.index.values
         if len(self.scores.index)==0:
@@ -161,7 +159,7 @@ class Recommender():
             for n in new_ind:
                 if n in self.scores.index.values:
                     self.scores.loc[n] = (self.scores[n] +
-                                        self.alpha/step*(new_scores[n] - self.scores[n]))
+                                          step*(new_scores[n]-self.scores[n]))
                 else:
                     self.scores.loc[n] = new_scores[n]
             self.w += new_scores.shape[0]
