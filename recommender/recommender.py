@@ -4,7 +4,8 @@ Recommender system for Penn AI.
 """
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
-
+import pandas as pd
+import pdb
 class Recommender():
     """Penn AI recommender.
 
@@ -27,15 +28,19 @@ class Recommender():
 
     metric: str, default: 'bal_accuracy'
         the metric by which to assess performance in the data
+
+    alpha: float, default: 0.1
+        learning parameter
     """
 
     def __init__(self,method='ml_p',ml=None,ml_type = 'classifier',
-                 metric='bal_accuracy'):
+                 metric='bal_accuracy', alpha = 0.1):
         """initialize recommendation system."""
         self.method = method
         self.ml = ml
         self.ml_type = ml_type
         self.metric = metric
+        self.alpha = alpha
 
         if self.ml == None:
             self.ml = DecisionTreeClassifier()
@@ -58,9 +63,9 @@ class Recommender():
             raise ValueError('ml_type must be ''classifier'' '
                              'or ''regressor''')
 
-        # empty scores dataframe
-        self.scores = None
-    def update_models(self,data,learner=None):
+        # empty scores pandas series
+        self.scores = pd.Series()
+    def update(self,data,learner=None):
         """update meta-models by incorporating new data.
 
         Parameters
@@ -83,14 +88,15 @@ class Recommender():
         if self.method=='ml_p':
             # return ML+P for best average y
             if n_recs==1:
+                # pdb.set_trace()
                 rec = np.argmax(self.scores)
                 ml_rec = rec.split(':')[0]
                 p_rec = rec.split(':')[1]
             else:
-                rec = self.scores.sort(self.metric, ascending=False).index[:n_recs].values
+                rec = self.scores.sort_values(ascending=False).index[:n_recs].values
                 ml_rec = [r.split(':')[0] for r in rec]
                 p_rec = [r.split(':')[1] for r in rec]
-            return ml_rec, self.dictify(p_rec)
+            return ml_rec, p_rec
         # # get metafeatures of the dataset
         # metafeatures = self.metafeatures(dataset)
         # scores = np.array()
@@ -114,12 +120,14 @@ class Recommender():
                 self.metric
         """
         # make combined data column of classifiers and parameters
-        data[self.ml_type+'-parameters'] = (data[self.ml_type].values + ':' +
+        data.loc[:,self.ml_type+'-parameters'] = (data[self.ml_type].values + ':' +
                                         data['parameters'].values)
         # get unique parameter / classifier combos in data
         ml_p = data[self.ml_type+'-parameters'].unique()
         # get average balanced accuracy by classifier-parameter combo
         new_scores = (data.groupby(self.ml_type + '-parameters')[self.metric].mean())
+        # update scores
+        self.update_scores(new_scores)
 
     def dictify(self,p):
         """convert parameter entry into dictionary."""
@@ -139,3 +147,17 @@ class Recommender():
             return True
         except ValueError:
             return False
+
+    def update_scores(self,new_scores):
+        """update scores according to learning parameter alpha"""
+        # pdb.set_trace()
+        new_ind = new_scores.index.values
+        if len(self.scores.index)==0:
+            self.scores = new_scores
+        else:
+            for n in new_ind:
+                if n in self.scores.index.values:
+                    self.scores.loc[n] = (self.scores[n] +
+                                        self.alpha*(new_scores[n] - self.scores[n]))
+                else:
+                    self.scores.loc[n] = new_scores[n]
