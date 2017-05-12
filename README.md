@@ -60,8 +60,12 @@ column_types = {
   - dataset: dataset name e.g. "iris"
   - metafeatures: list from `dataset_describe.py`
  - [ ] make method to accept job submissions 
+ - [ ] recommendation shows up in launch page
 
 ## recommender tasks
+- [ ] filter recommendations for what has already been run
+- [ ] direct acess to MongDB results for checking what has been run
+
 recommendations using:
  - [x] ml + p 
  - [ ] ml + p + mf
