@@ -2,7 +2,7 @@
 
 todo
 recommendations using:
- - [ ] ml + p 
+ - [x] ml + p 
  - [ ] ml + p + mf
  - [ ] ml + p + mf, per model basis
  - [ ] incorporating expert knowledge rules
