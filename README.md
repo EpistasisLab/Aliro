@@ -14,11 +14,15 @@ pennai.update(results_data)
 ml,p = pennai.recommend(dataset_metafeatures=None)
 ```
  - the ML+P recommendation is run on the dataset
+
 ```python
 #todo
 pennai.submit(dataset,ml,p)
 ```
- 
+ - the results are used to update the recommender
+```python
+pennai.update(new_results_data)
+```
 ## overall tasks
  - [ ] build dataframe `results_data` from MongoDB results. 
   - Dataframe cols:
