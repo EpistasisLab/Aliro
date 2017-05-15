@@ -6,9 +6,7 @@ import { DraggableNavbar } from './DraggableNavbar';
 // add tests for this and hook up with username
 // use the built-in linking with react router
 // remove hashtag
-// clean up code
 // make sure it resizes nicely/smoothly
-// think more about structure
 export class Navbar extends React.Component {
 	render() {
 		return <span>
@@ -16,7 +14,7 @@ export class Navbar extends React.Component {
 				<BasicNavbar />
 			</MediaQuery>
 			<MediaQuery minWidth={1825}>
-				<DraggableNavbar />
+				<BasicNavbar />
 			</MediaQuery>
 		</span>;
 	}
