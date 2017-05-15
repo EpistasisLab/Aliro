@@ -1,7 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { setParameterValue } from '../../../../data/currentAlgorithm/actions';
 import { Grid, Segment, Header, Button, Popup, Icon, Label } from 'semantic-ui-react';
 
 export class Parameters extends React.Component {
@@ -38,17 +35,3 @@ export class Parameters extends React.Component {
         </Grid.Row>;
     }
 }
-
-function mapStateToProps(state) {
-    return {
-        currentAlgorithm: state.data.currentAlgorithm
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        setParameterValue: bindActionCreators(setParameterValue, dispatch)
-    };
-}
-
-export const ParametersContainer = connect(mapStateToProps, mapDispatchToProps)(Parameters);

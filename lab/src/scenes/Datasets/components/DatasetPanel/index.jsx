@@ -20,7 +20,7 @@ export class DatasetPanel extends React.Component {
 					href={datasetLink}
 					className='title'
 				/>
-				<span className='right'>
+				<span className='float-right'>
 					{dataset.get('has_metadata') &&
 						<AIToggle isOn={dataset.get('ai')} />
 					}	
