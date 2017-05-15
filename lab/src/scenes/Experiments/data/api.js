@@ -2,23 +2,19 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 import { fromJS } from 'immutable';
 import { 
-    requestDatasets,
-    receiveDatasets
+    requestExperiments,
+    receiveExperiments
 } from './actions';
 
-export const fetchDatasets = () => {
-    const route = 'api/v1/datasets';
+export const fetchExperiments = () => {
+    const route = 'api/v1/experiments';
 
     return function(dispatch) {
-        dispatch(requestDatasets());
+        dispatch(requestExperiments());
         return fetch(route)
             .then(response => response.json())
             .then(json =>
-                dispatch(receiveDatasets(fromJS(json)))
+                dispatch(receiveExperiments(fromJS(json)))
             );
     }
 };
-
-export const toggleAI = () => {
-    
-}

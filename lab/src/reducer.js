@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
-import preferences from './data/preferences/reducer';
-import datasets from './scenes/Datasets/data/reducer';
-import currentDataset from './data/currentDataset/reducer';
-import currentAlgorithm from './data/currentAlgorithm/reducer';
+import preferences from './components/App/data';
+import datasets from './scenes/Datasets/data';
+import experiments from './scenes/Experiments/data';
+import builder from './scenes/Builder/data';
 
 const app = combineReducers({
    preferences,
    datasets,
-   currentDataset,
-   currentAlgorithm
+   experiments,
+   builder
 });
 
 export default app;

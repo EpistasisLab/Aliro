@@ -1,11 +1,11 @@
 export const initialDatasets = [
   {
-    _id: 293894938,
+    _id: '293894938',
     name: 'Gametes',
     has_metadata: true,
     ai: true,
     best_result: {
-      _id: 103984903,
+      _id: '103984903',
       algorithm: 'Linear Regression',
       accuracy_score: 0.72
     },
@@ -20,12 +20,12 @@ export const initialDatasets = [
     }
   },
   {
-    _id: 239201303,
+    _id: '239201303',
     name: 'Thyroid',
     has_metadata: true,
     ai: false,
     best_result: {
-      _id: 928392293,
+      _id: '928392293',
       algorithm: 'Random Forest',
       accuracy_score: 0.42
     },
@@ -40,12 +40,12 @@ export const initialDatasets = [
     }
   },
   {
-    _id: 129003021,
+    _id: '129003021',
     name: 'Adults',
     has_metadata: true,
     ai: true,
     best_result: {
-      _id: 983748834,
+      _id: '983748834',
       algorithm: 'Gradient Boosting',
       accuracy_score: 0.94
     },
@@ -60,12 +60,12 @@ export const initialDatasets = [
     }
   },
   {
-    _id: 929993098,
+    _id: '929993098',
     name: 'Heart',
     has_metadata: true,
     ai: false,
     best_result: {
-      _id: 293993203,
+      _id: '293993203',
       algorithm: 'Support Vector Machine',
       accuracy_score: 0.33
     },
@@ -80,7 +80,7 @@ export const initialDatasets = [
     }
   },
   {
-    _id: 879654098,
+    _id: '879654098',
     name: 'Breast Cancer',
     ai: false,
     has_metadata: false,
@@ -96,7 +96,7 @@ export const initialDatasets = [
     }
   },
   {
-    _id: 293203002,
+    _id: '293203002',
     name: 'Hepatitis',
     ai: true,
     has_metadata: true,

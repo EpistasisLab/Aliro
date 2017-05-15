@@ -1,12 +1,13 @@
-import { Map } from 'immutable';
+import { fromJS } from 'immutable';
 import { 
     REQUEST_PREFERENCES,
     RECEIVE_PREFERENCES
 } from './actions';
 
-const initialState = Map({
+import { initialPreferences } from './initialPreferences'; // for testing
+const initialState = fromJS({
     isFetching: false,
-    preferences: Map()
+    preferences: /* {} */ initialPreferences // for testing
 });
 
 const preferences = (state = initialState, action) => {
