@@ -3,22 +3,22 @@ import { breakpoints } from '../../breakpoints';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchDatasets } from './data/api';
-import { Segment, Header, Button, Grid } from 'semantic-ui-react';
+import { Header, Button, Grid } from 'semantic-ui-react';
 import { DatasetPanel } from './components/DatasetPanel';
 
 export class Datasets extends React.Component {
 	constructor() {
 		super();
-  	this.state = { width: 0, height: 0 };
-  	this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+		this.state = { width: 0, height: 0 };
+		this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	}
 
 	componentDidMount() {
-		this.updateWindowDimensions();
- 		window.addEventListener('resize', this.updateWindowDimensions.bind(this));
-
 		const { fetchDatasets } = this.props;
 		fetchDatasets();
+
+		this.updateWindowDimensions();
+		window.addEventListener('resize', this.updateWindowDimensions.bind(this));
 	}
 
 	componentWillUnmount() {
@@ -45,14 +45,20 @@ export class Datasets extends React.Component {
 				<Header inverted size='huge' content='Datasets' />
 				<Button inverted color='blue' compact size='small' icon='plus' content='Add new'/>
 			</div>
-			<Grid stretched columns={this.calcCols()}>
-				{datasets.map(dataset =>
-					<DatasetPanel
-						key={dataset.get('_id')}
-						dataset={dataset}
-					/>
-				)}
-			</Grid>
+			{datasets.size > 0 ? (
+				<Grid stretched columns={this.calcCols()}>
+					{datasets.map(dataset =>
+						<DatasetPanel
+							key={dataset.get('_id')}
+							dataset={dataset}
+						/>
+					)}
+				</Grid>
+			) : (
+				<Header inverted size='small'>
+					You have no datasets uploaded yet.
+				</Header>
+			)};
 		</div>;
 	}
 }
