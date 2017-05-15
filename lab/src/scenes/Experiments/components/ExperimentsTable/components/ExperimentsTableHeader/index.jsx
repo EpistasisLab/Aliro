@@ -13,7 +13,7 @@ export class ExperimentsTableHeader extends React.Component {
 		} = this.props; 
 
 		const isSorted = (column) => {
-			return sorted.get('column') === column && sorted.get('direction');
+			return (sorted.get('column') === column && sorted.get('direction')) || null;
 		};
 
 		const handleSort = (clickedColumn) => {
