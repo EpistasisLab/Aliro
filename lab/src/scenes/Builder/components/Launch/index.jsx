@@ -1,7 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-//import { launchExperiment } from '../actions';
 import { Grid, Segment, Header, Button, Modal, List, Icon, Table, Image, Progress } from 'semantic-ui-react';
 
 export class Launch extends React.Component {
@@ -18,15 +15,3 @@ export class Launch extends React.Component {
         </Grid.Column>;
     }
 }
-
-function mapStateToProps(state) {
-    return {};
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        //launchExperiment: bindActionCreators(launchExperiment, dispatch)
-    };
-}
-
-export const LaunchContainer = connect(mapStateToProps, mapDispatchToProps)(Launch);

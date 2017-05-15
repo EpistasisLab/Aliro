@@ -14,6 +14,7 @@ body {
 
 .pennai .page-title .ui.button {
     vertical-align: middle;
+    margin-bottom: 0.9rem;
 }
 
 .pennai .ui.segment {
@@ -95,25 +96,53 @@ body {
 }
 
 .pennai .dataset-panel .ui.red.label {
-    background-color: #ff5144!important;
+    background-color: #ff5144 !important;
 }
 
-/*.pennai .ui.yellow.label {
-    background-color: transparent!important;
-    border: 0.063rem solid #FFE21F!important;
-    color: #FFE21F!important;
+.pennai .experiments-scene .filters .fields {
+    margin-bottom: 0;
 }
 
-.pennai .ui.green.label {
-    background-color: transparent!important;
-    border: 0.063rem solid #2ECC40!important;
-    color: #2ECC40!important;
+.pennai .experiments-scene .filters .fields .filter {
+   margin-right: 1rem;
+   margin-top: 0.15rem;
 }
 
-.pennai .ui.red.label {
-    background-color: transparent!important;
-    border: 0.063rem solid #FF695E!important;
-    color: #FF695E!important;
+.pennai .experiments-scene .filters .item,
+.pennai .experiments-scene .filters .text {
+    text-transform: capitalize;
+}
+
+.pennai .experiments-scene .ui.table tr.new {
+    box-shadow: none;
+    background-color: rgba(46,204,64,.1) !important;
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .experiments-scene .ui.table tr.new:hover {
+    background: rgba(46,204,64,.2)!important;
+    color: #fff!important;
+}
+
+.pennai .experiments-scene .ui.table tr.error {
+    box-shadow: none;
+    background-color: rgba(255,105,94,.15) !important;
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .experiments-scene .ui.table tr.error:hover {
+    background: rgba(255,105,94,.2)!important;
+    color: #fff!important;
+}
+
+/*.table-container {
+    width: 100%;
+    overflow-y: auto;
+    margin: 0 0 1em;
+}
+
+.table-container .table {
+    min-width: 1000px;
 }*/
 
 .pennai .ui.menu .link.active > .item {
@@ -124,80 +153,11 @@ body {
     background-color: rgba(255,255,255,.08)!important;
 }
 
-.ui.inverted.red.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #FF695E;
-}
-
-.ui.inverted.orange.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #FF851B;
-}
-
-.ui.inverted.yellow.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #FFE21F;
-}
-
-.ui.inverted.olive.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #D9E778;
-}
-
-.ui.inverted.green.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #2ECC40;
-}
-
-.ui.inverted.teal.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #6DFFFF;
-}
-
-.ui.inverted.blue.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #54C8FF;
-}
-
-.ui.inverted.purple.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #DC73FF;
-}
-
-.ui.inverted.violet.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #A291FB;
-}
-
-.ui.inverted.pink.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #FF8EDF;
-}
-
-.ui.inverted.brown.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #D67C1C;
-}
-
-.ui.inverted.grey.segment {
-    background-color: #1B1C1D !important;
-    border: 0.063rem solid #DCDDDE;
-}
-
-.ui.grid>.row {
-    padding: 0;
-}
-
-.ui.grid > .row > .column {
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-
-.ui.button {
+/*.ui.button {
     margin: 0 1em 1em 0;
-}
+}*/
 
-.right {
+.float-right {
     float: right;
 }
 
