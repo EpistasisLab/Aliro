@@ -133,17 +133,15 @@ app.get("/api/v1/projects", (req, res, next) => {
 
 
 // List preferences for this user
-app.get("/api/v1/preferences", (req, res, next) => {
-var initialDatasets = [
+app.get("/api/v1/datasets", (req, res, next) => {
+var datasets = [
   {
-    _id: 293894938,
     name: 'Gametes',
     has_metadata: true,
     ai: true,
     best_result: {
-      _id: 103984903,
       algorithm: 'Linear Regression',
-      accuracy_score: 0.72
+      accuracy_score: 0.79
     },
     experiments: {
       pending: 15,
@@ -156,12 +154,10 @@ var initialDatasets = [
     }
   },
   {
-    _id: 239201303,
     name: 'Thyroid',
     has_metadata: true,
     ai: false,
     best_result: {
-      _id: 928392293,
       algorithm: 'Random Forest',
       accuracy_score: 0.42
     },
@@ -176,12 +172,10 @@ var initialDatasets = [
     }
   },
   {
-    _id: 129003021,
     name: 'Adults',
     has_metadata: true,
     ai: true,
     best_result: {
-      _id: 983748834,
       algorithm: 'Gradient Boosting',
       accuracy_score: 0.94
     },
@@ -196,12 +190,10 @@ var initialDatasets = [
     }
   },
   {
-    _id: 929993098,
     name: 'Heart',
     has_metadata: true,
     ai: false,
     best_result: {
-      _id: 293993203,
       algorithm: 'Support Vector Machine',
       accuracy_score: 0.33
     },
@@ -216,7 +208,6 @@ var initialDatasets = [
     }
   },
   {
-    _id: 879654098,
     name: 'Breast Cancer',
     ai: false,
     has_metadata: false,
@@ -232,7 +223,6 @@ var initialDatasets = [
     }
   },
   {
-    _id: 293203002,
     name: 'Hepatitis',
     ai: true,
     has_metadata: true,
@@ -249,19 +239,27 @@ var initialDatasets = [
   }
 ];
     var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
+            return res.send(datasets);
+});
+
+// Return all entries
+app.get("/api/v1/:collection", (req, res, next) => {
+    req.collection.find({}).toArrayAsync()
+        .then((results) => {
+            res.send(results);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+// List preferences for this user
+app.get("/api/v1/preferences", (req, res, next) => {
+    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
 
     var preferences = db.users.find({username: username}, {
     }).toArrayAsync(); // Get machine addresses and hostnames
     Promise.all(preferences)
         .then((results) => {
-   //         return res.send(results);
-//results.Datasets = initialDatasets;
-delete results[0]['Datasets'];
-//results[0]['Datasets'] = JSON.stringify(initialDatasets);
-//results[0]['Datasets'] = initialDatasets;
-//results[0]['Datasets'] = initialDatasets;
-console.log(results);
-//console.log(initialDatasets);
             return res.send(results);
         })
         .catch((err) => {
