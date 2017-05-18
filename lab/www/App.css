@@ -145,7 +145,7 @@ body {
      padding: 0 .78571429em;
 }
 
-.pennai .experiments-scene .ui.table tr.new {
+/*.pennai .experiments-scene .ui.table tr.new {
     box-shadow: none;
     background-color: rgba(46,204,64,.3) !important;
     color: rgba(255,255,255,.9) !important;
@@ -165,10 +165,16 @@ body {
 .pennai .experiments-scene .ui.table tr.error:hover {
     background: rgba(255,105,94,.45) !important;
     color: #fff !important;
+}*/
+
+.pennai .experiments-scene .ui.table tr.new {
+    border-left: 7px solid #2ECC40;
 }
 
-.pennai .experiments-scene .ui.table .gold {
-    color: #FFD700;
+.pennai .experiments-scene .ui.table tr.error {
+    background-color: transparent !important;
+    color: rgba(255,255,255,.9) !important;
+    border-left: 7px solid #FF695E;
 }
 
 .pennai .builder-scene .page-title {
