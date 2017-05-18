@@ -13,9 +13,9 @@ export class ExperimentsTable extends React.Component {
 			setSort
 		} = this.props;
 
-		const selectedDataset = filters.getIn(['dataset', 'selected']);
+		const selectedDataset = filters.dataset.selected;
 
-		const selectedAlgorithm = filters.getIn(['algorithm', 'selected']);
+		const selectedAlgorithm = filters.algorithm.selected;
 
 		const currentParameters = experiments.first().get('params');
 

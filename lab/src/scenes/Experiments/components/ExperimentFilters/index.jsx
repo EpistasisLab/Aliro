@@ -6,14 +6,12 @@ export class ExperimentFilters extends React.Component {
 
 		const {
 			filters,
-			setFilter,
-			resetFilters
+			updateQuery,
+			resetQuery
 		} = this.props;
 
 		const buildOptionsArray = (filter) => {
-			const options = filters.getIn([filter, 'options']);
-
-			let optionsArray = options.toArray().map((option) => {
+			let optionsArray = filters[filter].options.map((option) => {
 				return { text: option, value: option };
 			});
 
@@ -29,27 +27,27 @@ export class ExperimentFilters extends React.Component {
 						inline
 						label="Status:"
 						control={Dropdown}
-						value={filters.getIn(['status', 'selected'])}
+						value={filters.status.selected}
 						options={buildOptionsArray('status')}
-						onChange={(e, data) => setFilter('status', data.value)}
+						onChange={(e, data) => updateQuery('status', data.value)}
 						className="filter"
 					/>
 					<Form.Field 
 						inline
 						label="Dataset:"
 						control={Dropdown} 
-						value={filters.getIn(['dataset', 'selected'])}
+						value={filters.dataset.selected}
 						options={buildOptionsArray('dataset')}
-						onChange={(e, data) => setFilter('dataset', data.value) }
+						onChange={(e, data) => updateQuery('dataset', data.value) }
 						className="filter"
 					/>
 					<Form.Field 
 						inline
 						label="Algorithm:"
 						control={Dropdown} 
-						value={filters.getIn(['algorithm', 'selected'])}
+						value={filters.algorithm.selected}
 						options={buildOptionsArray('algorithm')} 
-						onChange={(e, data) => setFilter('algorithm', data.value)}
+						onChange={(e, data) => updateQuery('algorithm', data.value)}
 						className="filter"
 					/>
 					<Form.Button
@@ -59,7 +57,7 @@ export class ExperimentFilters extends React.Component {
 						size="mini" 
 						compact
 						content="Reset filters"
-						onClick={() => resetFilters()}
+						onClick={() => resetQuery()}
 					/>
 				</Form.Group>
 			</Form>
