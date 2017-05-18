@@ -2,31 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchExperiments } from './data/api';
-import { setFilter, setSort, resetFilters } from './data/actions';
+import { setSort } from './data/actions';
 import { Header, Segment } from 'semantic-ui-react';
 import { ExperimentFilters } from './components/ExperimentFilters';
 import { ExperimentsTable } from './components/ExperimentsTable';
+import { hashHistory } from 'react-router';
 
-// change location on click!
-// use alg/dataset ids instead
 // set up sorting!
 // add pagination and # of experiments
 export class Experiments extends React.Component {
 	componentDidMount() {
-		const { fetchExperiments, setFilter, filters } = this.props;
+		const { fetchExperiments, filters } = this.props;
 		const { query } = this.props.location;
 
 		fetchExperiments();
-
-		const isValid = (filter, query) => {
-			return filters.getIn([filter, 'options']).includes(query);
-		};
-
-		filters.keySeq().toArray().map((key) => {
-			if(query[key] && isValid(key, query[key])) {
-				setFilter(key, query[key]);
-			}
-		});
 	}
 
 	render() {
@@ -35,10 +24,28 @@ export class Experiments extends React.Component {
 			experiments, 
 			filters,
 			sorted,
-			setFilter,
-			setSort,
-			resetFilters
+			setSort
 		} = this.props;
+
+		const updateQuery = (filter, value) => {
+			const location = Object.assign({}, this.props.location);
+
+			if(value === 'all') {
+				delete location.query[filter];
+			} else {
+				Object.assign(location.query, {[filter]: value});
+			}
+
+			hashHistory.push(location);
+		};
+
+		const resetQuery = () => {
+			const location = Object.assign({}, this.props.location);
+			Object.keys(location.query).forEach((filter) => {
+				delete location.query[filter];
+			});
+			hashHistory.push(location);
+		};
 
 		return (
 			<div className="experiments-scene">
@@ -52,12 +59,11 @@ export class Experiments extends React.Component {
 				<Segment inverted attached="top" className="filters">
 					<ExperimentFilters
 						filters={filters}
-						setFilter={setFilter}
-						resetFilters={resetFilters}
+						updateQuery={updateQuery}
+						resetQuery={resetQuery}
 					/>
 					<Header 
 						inverted
-						color="blue"
 						size="small" 
 						content={`${experiments.size} result${experiments.size === 1 ? '' : 's'}`}
 						className="float-right experiment-count"
@@ -86,9 +92,9 @@ export class Experiments extends React.Component {
 }
 
 function getVisibleExperiments(experiments, filters, sorted) {
-	var selectedStatus = filters.getIn(['status', 'selected']);
-	var selectedDataset = filters.getIn(['dataset', 'selected']);
-	var selectedAlgorithm = filters.getIn(['algorithm', 'selected']);
+	var selectedStatus = filters.status.selected;
+	var selectedDataset = filters.dataset.selected;
+	var selectedAlgorithm = filters.algorithm.selected;
 	var column = sorted.get('column');
 	var direction = sorted.get('direction');
 
@@ -182,13 +188,38 @@ function getVisibleExperiments(experiments, filters, sorted) {
 	return experiments.filter(exp => matchesFilters(exp));
 }
 
-function mapStateToProps(state) {
+function getFilters(experiments, query) {
+	const getUniqOptions = (filter) => {
+		return [...new Set(experiments.toJS().map(item => item[filter]))];
+	};
+
+	const isValid = (filter, query) => {
+		return getUniqOptions(filter).includes(query);
+	};
+
+	return {
+		status: {
+			selected: isValid('status', query.status) ? query.status : 'all',
+			options: getUniqOptions('status')
+		},
+		dataset: {
+			selected:isValid('dataset', query.dataset) ? query.dataset : 'all',
+			options: getUniqOptions('dataset')
+		},
+		algorithm: {
+			selected: isValid('algorithm', query.algorithm) ? query.algorithm : 'all',
+			options: getUniqOptions('algorithm')
+		}
+	};
+}
+
+function mapStateToProps(state, props) {
 	const { experiments } = state;
 
 	return {
 		isFetching: experiments.get('isFetching'),
-		experiments: getVisibleExperiments(experiments.get('items'), experiments.get('filters'), experiments.get('sorted')),
-		filters: experiments.get('filters'),
+		filters: getFilters(experiments.get('items'), props.location.query),
+		experiments: getVisibleExperiments(experiments.get('items'), getFilters(experiments.get('items'), props.location.query), experiments.get('sorted')),
 		sorted: experiments.get('sorted')
 	};
 }
@@ -196,9 +227,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		fetchExperiments: bindActionCreators(fetchExperiments, dispatch),
-		setFilter: bindActionCreators(setFilter, dispatch),
-		setSort: bindActionCreators(setSort, dispatch),
-		resetFilters: bindActionCreators(resetFilters, dispatch)
+		setSort: bindActionCreators(setSort, dispatch)
 	};
 }
 
