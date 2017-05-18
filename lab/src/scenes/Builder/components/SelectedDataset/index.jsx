@@ -1,19 +1,28 @@
 import React from 'react';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
 
-export class DatasetPanel extends React.Component {
+export class SelectedDataset extends React.Component {
 	render() {
-		const { datasetName } = this.props;
+
+		const { 
+			currentDataset 
+		} = this.props;
+
+		const getCurrentDataset = () => {
+			return currentDataset && currentDataset.get('name');
+		};
+
 		const color = 'orange';
+
 		return (
 			<Grid.Column
 				mobile={16} 
 				tablet={4} 
 				computer={4} 
-				widescreen={2} 
-				largeScreen={2}
+				widescreen={4} 
+				largeScreen={4}
 			>
-				<Segment inverted attached="top">
+				<Segment inverted attached="top" className="panel-header">
 					<Header 
 						inverted
 						size="large"
@@ -24,12 +33,13 @@ export class DatasetPanel extends React.Component {
 				<Segment inverted attached="bottom">
 					<Button
 						inverted
-						size="large"
+						size="massive"
 						active
 						fluid
 						icon="file text outline"
 						color={color} 
-						content={datasetName} 
+						content={getCurrentDataset()}
+						className="dataset-btn"
 					/>
 				</Segment>
 			</Grid.Column>
