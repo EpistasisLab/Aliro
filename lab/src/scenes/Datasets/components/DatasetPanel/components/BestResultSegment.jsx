@@ -12,7 +12,7 @@ export class BestResultSegment extends React.Component {
 				inverted 
 				attached 
 				href={link}
-				className='best-result'
+				className='panel-body best-result'
 			>
 				<Header 
 					inverted
