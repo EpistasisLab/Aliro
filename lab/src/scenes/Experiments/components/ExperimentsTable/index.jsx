@@ -13,9 +13,15 @@ export class ExperimentsTable extends React.Component {
 			setSort
 		} = this.props;
 
+		const selectedDataset = filters.getIn(['dataset', 'selected']);
+
 		const selectedAlgorithm = filters.getIn(['algorithm', 'selected']);
 
 		const currentParameters = experiments.first().get('params');
+
+		const shouldDisplayAwards = (() => {
+			return selectedDataset !== 'all';
+		})();
 
 		const shouldDisplayParams = (() => {
 			return selectedAlgorithm !== 'all' && currentParameters.size > 0;
@@ -46,6 +52,7 @@ export class ExperimentsTable extends React.Component {
 					/>
 					<ExperimentsTableBody
 						experiments={experiments}
+						shouldDisplayAwards={shouldDisplayAwards}
 						shouldDisplayParams={shouldDisplayParams}
 						orderedParamKeys={orderedParamKeys}
 					/>
