@@ -1,31 +1,37 @@
 import { fromJS } from 'immutable';
 import {
-		SET_DATASET,
-		SET_ALGORITHM,
-		SET_PARAM_VALUE
+		SET_CURRENT_DATASET,
+		SET_CURRENT_ALGORITHM,
+		SET_PARAM_VALUE,
+		RESET_PARAMS
 } from './actions';
 
 const initialState = fromJS({
-		dataset: null,
-		algorithm: null,
-		params: {}
+		currentDataset: null,
+		currentAlgorithm: null,
+		currentParams: {}
 });
 
 const builder = (state = initialState, action) => {
 	switch(action.type) {
-		case SET_DATASET:
+		case SET_CURRENT_DATASET:
 			return state.merge({
-				dataset: action.dataset
+				currentDataset: action.currentDataset
 			});
-		case SET_ALGORITHM:
+		case SET_CURRENT_ALGORITHM:
 			return state.merge({
-				algorithm: action.algorithm
+				currentAlgorithm: action.currentAlgorithm,
+				params: {}
 			});
 		case SET_PARAM_VALUE:
 			return state.setIn(
-				['params', action.param], 
+				['currentParams', action.param], 
 				action.value
 			);
+		case RESET_PARAMS:
+			return state.merge({
+				params: {}
+			});
 		default:
 			return state;	
 	}
