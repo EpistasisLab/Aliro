@@ -1080,6 +1080,117 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
             next(err);
         });
 });
+// List preferences for this user
+app.post("/api/datasets", /*jsonParser,*/ upload.array("_params"), (req, res, next) => {
+app.post("/api/datasets", (req, res, next) => {
+	console.log(req);
+var datasets = [
+  {
+    name: 'Gametes',
+    has_metadata: true,
+    ai: true,
+    best_result: {
+      algorithm: 'Linear Regression',
+      accuracy_score: 0.79
+    },
+    experiments: {
+      pending: 15,
+      running: 2,
+      finished: 267
+    },
+    notifications: {
+      new: 5,
+      error: 1
+    }
+  },
+  {
+    name: 'Thyroid',
+    has_metadata: true,
+    ai: false,
+    best_result: {
+      algorithm: 'Random Forest',
+      accuracy_score: 0.42
+    },
+    experiments: {
+      pending: 2,
+      running: 5, 
+      finished: 15
+    },
+    notifications: {
+      new: 0,
+      error: 1
+    }
+  },
+  {
+    name: 'Adults',
+    has_metadata: true,
+    ai: true,
+    best_result: {
+      algorithm: 'Gradient Boosting',
+      accuracy_score: 0.94
+    },
+    experiments: {
+      pending: 27,
+      running: 20,
+      finished: 462
+    },
+    notifications: {
+      new: 11,
+      error: 0
+    }
+  },
+  {
+    name: 'Heart',
+    has_metadata: true,
+    ai: false,
+    best_result: {
+      algorithm: 'Support Vector Machine',
+      accuracy_score: 0.33
+    },
+    experiments: {
+      pending: 0,
+      running: 0,
+      finished: 26
+    },
+    notifications: {
+      new: 0,
+      error: 0
+    }
+  },
+  {
+    name: 'Breast Cancer',
+    ai: false,
+    has_metadata: false,
+    best_result: undefined,
+    experiments: {
+      pending: 0,
+      running: 0,
+      finished: 0
+    },
+    notifications: {
+      new: 0,
+      error: 0
+    }
+  },
+  {
+    name: 'Hepatitis',
+    ai: true,
+    has_metadata: true,
+    best_result: undefined,
+    experiments: {
+      pending: 0,
+      running: 0,
+      finished: 0
+    },
+    notifications: {
+      new: 0,
+      error: 0
+    }
+  }
+];
+console.log(datasets);
+            return res.send(datasets);
+});
 
 /* Rendering Routes */
 
