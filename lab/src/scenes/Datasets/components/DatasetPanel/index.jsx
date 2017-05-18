@@ -42,7 +42,7 @@ export class DatasetPanel extends React.Component {
 				</Segment>
 			}
 			<ExperimentsSegment
-				datasetId={dataset.get('_id')}
+				datasetName={dataset.get('name')}
 				experiments={dataset.get('experiments')}
 				notifications={dataset.get('notifications')}
 			/>

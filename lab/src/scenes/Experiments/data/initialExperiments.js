@@ -72,7 +72,6 @@ export const initialExperiments = [
 		 _id: 109283128,
 		 status: 'finished',
 		 notification: 'new',
-		 award: 'best_overall', // best result for dataset
 		 accuracy_score: 0.97,
 		 dataset: 'Adults',
 		 algorithm: 'k-Nearest Neighbors',
@@ -159,7 +158,6 @@ export const initialExperiments = [
 		 _id: 109283163,
 		 status: 'finished',
 		 notification: 'new',
-		 award: 'best_for_algorithm', // best result for this algorithm for dataset
 		 accuracy_score: 0.94,
 		 dataset: 'Heart',
 		 algorithm: 'Gradient Boosting',

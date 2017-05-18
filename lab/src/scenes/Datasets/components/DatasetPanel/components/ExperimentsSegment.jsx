@@ -3,8 +3,8 @@ import { Table, Header, Label } from 'semantic-ui-react';
 
 export class ExperimentsSegment extends React.Component {
 	render() {
-		const { datasetId, experiments, notifications } = this.props;
-		const link = `/#/experiments?dataset=${datasetId}&status=`;
+		const { datasetName, experiments, notifications } = this.props;
+		const link = `/#/experiments?dataset=${datasetName}&status=`;
 		return (
 			<Table 
 				inverted
