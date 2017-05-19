@@ -196,5 +196,39 @@ export const initialExperiments = [
 			 min_impurity_split: 1e-7
 		 },
 		 launched_by: 'ai'
+	 },
+	 {
+		 _id: 109283113,
+		 status: 'finished',
+		 notification: undefined,
+		 accuracy_score: 0.21,
+		 dataset: 'Heart',
+		 algorithm: 'Gradient Boosting',
+		 params: {
+			 n_estimators: 100,
+			 learning_rate: 1.0,
+			 max_depth: 5,
+			 min_impurity_split: 1e-5,
+			 subsample: 0.75,
+			 max_features: 'None'
+		 },
+		 launched_by: 'ai'
+	 },
+	  {
+		 _id: 109283114,
+		 status: 'finished',
+		 notification: undefined,
+		 accuracy_score: 0.21,
+		 dataset: 'Heart',
+		 algorithm: 'Gradient Boosting',
+		 params: {
+			 n_estimators: 100,
+			 learning_rate: 1.0,
+			 max_depth: 'Test',
+			 min_impurity_split: 1e-5,
+			 subsample: 0.75,
+			 max_features: 'None'
+		 },
+		 launched_by: 'ai'
 	 }
 ];

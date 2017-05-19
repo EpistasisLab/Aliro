@@ -8,8 +8,8 @@ export class ExperimentsTableHeader extends React.Component {
 			selectedAlgorithm,
 			shouldDisplayParams,
 			orderedParamKeys,
-			sorted,
-			setSort
+			sort,
+			updateQuery
 		} = this.props; 
 
 		let popupStatus = 'untouched';
@@ -40,17 +40,18 @@ export class ExperimentsTableHeader extends React.Component {
 				return;
 			}
 
-			if(clickedColumn === sorted.get('column')) {
-				direction = sorted.get('direction') === 'ascending' ? 'descending' : 'ascending';
+			if(clickedColumn === sort.column) {
+				direction = sort.direction === 'ascending' ? 'descending' : 'ascending';
 			} else {
 				direction = 'ascending';
 			}
 
-			setSort(clickedColumn, direction);
+			updateQuery('col', clickedColumn);
+			updateQuery('direction', direction)
 		};
 
 		const isSorted = (column) => {
-			return (sorted.get('column') === column && sorted.get('direction')) || null;
+			return (sort.column === column && sort.direction) || null;
 		};
 
 		return (
@@ -65,8 +66,8 @@ export class ExperimentsTableHeader extends React.Component {
 					</Table.HeaderCell>
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('accuracy')}
-						onClick={() => handleSort('accuracy')}
+						sorted={isSorted('accuracy_score')}
+						onClick={() => handleSort('accuracy_score')}
 					>
 						Accuracy
 						<Popup
