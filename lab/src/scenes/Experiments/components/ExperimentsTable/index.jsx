@@ -9,8 +9,8 @@ export class ExperimentsTable extends React.Component {
 		const { 
 			experiments, 
 			filters,
-			sorted,
-			setSort
+			sort,
+			updateQuery
 		} = this.props;
 
 		const selectedDataset = filters.dataset.selected;
@@ -47,8 +47,8 @@ export class ExperimentsTable extends React.Component {
 						selectedAlgorithm={selectedAlgorithm}
 						shouldDisplayParams={shouldDisplayParams}
 						orderedParamKeys={orderedParamKeys}
-						sorted={sorted}
-						setSort={setSort}
+						sort={sort}
+						updateQuery={updateQuery}
 					/>
 					<ExperimentsTableBody
 						experiments={experiments}
