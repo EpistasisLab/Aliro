@@ -53,6 +53,7 @@
     "request-promise": "^3.0.0",
     "semantic-ui-react": "^0.64.7",
     "serve-favicon": "^2.3.0",
+    "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
   "devDependencies": {

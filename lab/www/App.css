@@ -177,6 +177,14 @@ body {
     border-left: 7px solid #FF695E;
 }
 
+.pennai .results-scene .page-title {
+    margin-bottom: 1rem;
+}
+
+.pennai .results-scene .panel-header {
+    max-height: 51px;
+}
+
 .pennai .builder-scene .page-title {
     margin-bottom: 1rem;
 }
