@@ -15,7 +15,9 @@ export class BasicNavbar extends React.Component {
 			</Menu.Item>
 		);
 		return <Menu inverted color='grey' fixed='top' size='large' borderless>
-			<Menu.Item header name='PennAI' />
+			<Link to='datasets' className='link'> 
+				<Menu.Item header name='PennAI' />
+			</Link>
 			<MediaQuery minWidth={breakpoints.MAX_MOBILE}>
 				<Menu.Item name='Your friendly AI assistant' />
 			</MediaQuery>
