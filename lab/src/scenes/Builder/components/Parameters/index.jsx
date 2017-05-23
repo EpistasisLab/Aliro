@@ -1,37 +1,85 @@
 import React from 'react';
-import { Grid, Segment, Header, Button, Popup, Icon, Label } from 'semantic-ui-react';
+import { Grid, Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
 
 export class Parameters extends React.Component {
-    render() {
-        const color = 'blue';
-        return <Grid.Row>
-            {this.props.currentAlgorithm.get('params') &&
-                this.props.currentAlgorithm.get('params').entrySeq().map(([key, value]) =>
-                <Grid.Column key={key} mobile={16} tablet={8} computer={8} widescreen={8} largeScreen={8}>
-                    <Segment inverted color={color}>
-                        <Popup 
-                            size='large' 
-                            on='click'
-                            trigger={<Label color={color} className='inverted' corner='right' icon='info'></Label>}
-                            content={value.get('help')}
-                        />
-                        <Header 
-                            as='h1'
-                            inverted color={color} 
-                            content={value.get('alias') || key}
-                        />
-                        {value.getIn(['ui', 'choices']).map(choice =>
-                            <Button
-                                key={choice}
-                                inverted color={color}
-                                content={choice} 
-                                active={choice === (value.get('currentValue') || value.get('default'))} 
-                                onClick={() => this.props.setParameterValue(key, choice)} 
-                            />
-                        )}
-                    </Segment>
-                </Grid.Column>
-            )}
-        </Grid.Row>;
-    }
+	render() {
+
+		const { 
+			params,
+			currentParams,
+			setParamValue
+		} = this.props;
+
+		const getParams = () => {
+			return params && params.entrySeq();
+		};
+
+		const calcCols = (choices) => {
+			if(choices.size > 2) {
+				return 2;
+			} else {
+				return 1;
+			}
+		};
+
+		const isActive = (param, choice, defaultValue) => {
+			return choice === (currentParams.get(param) || defaultValue);
+		};
+
+		const color = 'blue';
+
+		return (
+			<Grid.Row>
+				{getParams().map(([param, info]) =>
+					<Grid.Column 
+						key={param} 
+						mobile={16} 
+						tablet={4} 
+						computer={4} 
+						widescreen={4} 
+						largeScreen={4}
+					>
+						<Segment inverted attached="top" className="panel-header">
+							<Popup 
+								size="large"
+								on="click"
+								trigger={
+									<Icon 
+										inverted
+										color={color}
+										name="info circle"
+										className="info-icon float-right"
+									/>
+								}
+								content={info.get('help')}
+							/>
+							<Header 
+								as="h1"
+								inverted 
+								color={color} 
+								content={info.get('alias') || param}
+								className="param-name"
+							/>
+						</Segment>	
+						<Segment inverted attached="bottom">
+							<Grid columns={calcCols(info.getIn(['ui', 'choices']))} className="compressed">
+								{info.getIn(['ui', 'choices']).map(value =>
+									<Grid.Column key={value}>
+										<Button
+											inverted 
+											color={color}
+											fluid
+											content={value} 
+											active={isActive(param, value, info.get('default'))} 
+											onClick={() => setParamValue(param, value)} 
+										/>
+									</Grid.Column>
+								)}
+							</Grid>	
+						</Segment>
+					</Grid.Column>
+				)}
+			</Grid.Row>
+		);
+	}
 }

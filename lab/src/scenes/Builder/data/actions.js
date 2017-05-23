@@ -1,18 +1,19 @@
-export const SET_DATASET = 'SET_DATASET';
-export const SET_ALGORITHM = 'SET_ALGORITHM';
+export const SET_CURRENT_DATASET = 'SET_CURRENT_DATASET';
+export const SET_CURRENT_ALGORITHM = 'SET_CURRENT_ALGORITHM';
 export const SET_PARAM_VALUE = 'SET_PARAM_VALUE';
+export const RESET_PARAMS = 'RESET_PARAMS';
 
-export const setDataset = (dataset) => {
+export const setCurrentDataset = (currentDataset) => {
     return {
-        type: SET_DATASET,
-        dataset
+        type: SET_CURRENT_DATASET,
+        currentDataset
     }
 };
 
-export const setAlgorithm = (algorithm) => {
+export const setCurrentAlgorithm = (currentAlgorithm) => {
     return {
-        type: SET_ALGORITHM,
-        algorithm
+        type: SET_CURRENT_ALGORITHM,
+        currentAlgorithm
     }
 };
 
@@ -21,5 +22,11 @@ export const setParamValue = (param, value) => {
         type: SET_PARAM_VALUE,
         param,
         value
+    }
+};
+
+export const resetParams = () => {
+    return {
+        type: RESET_PARAMS
     }
 };

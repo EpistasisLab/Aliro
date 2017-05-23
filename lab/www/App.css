@@ -21,6 +21,10 @@ body {
     background-color: rgba(255,255,255,.08);
 }
 
+.pennai .dataset-panel .panel-header {
+    max-height: 57px;
+}
+
 .pennai .dataset-panel .ui.header.title {
     display: inline-block;
     margin-bottom: 0;
@@ -56,6 +60,10 @@ body {
 
 .pennai .dataset-panel .ai-switch.ui.toggle.checkbox input:checked~label:after {
     left: 1.15rem;
+}
+
+.pennai .dataset-panel .panel-body {
+    min-height: 115px;
 }
 
 .pennai .dataset-panel .best-result.ui.segment:hover {
@@ -113,26 +121,108 @@ body {
     text-transform: capitalize;
 }
 
-.pennai .experiments-scene .ui.table tr.new {
+.pennai .experiments-scene .experiment-count {
+   margin-top: -1.5rem;
+}
+
+.pennai .experiments-scene .ui.table thead th {
+    padding: .3rem .78571429em;
+}
+
+.pennai .experiments-scene .ui.table th {
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .experiments-scene .ui.table th .alg-name {
+    margin-left: 0.5rem;
+}
+
+.pennai .experiments-scene .ui.inverted.table tbody tr td.selectable:hover {
+    background-color: transparent !important;
+}
+
+.pennai .experiments-scene .ui.table tbody tr td.selectable>a:not(.ui) {
+     padding: 0 .78571429em;
+}
+
+/*.pennai .experiments-scene .ui.table tr.new {
     box-shadow: none;
-    background-color: rgba(46,204,64,.1) !important;
+    background-color: rgba(46,204,64,.3) !important;
     color: rgba(255,255,255,.9) !important;
 }
 
 .pennai .experiments-scene .ui.table tr.new:hover {
-    background: rgba(46,204,64,.2)!important;
-    color: #fff!important;
+    background: rgba(46,204,64,.4) !important;
+    color: #fff !important;
 }
 
 .pennai .experiments-scene .ui.table tr.error {
     box-shadow: none;
-    background-color: rgba(255,105,94,.15) !important;
+    background-color: rgba(255,105,94,.35) !important;
     color: rgba(255,255,255,.9) !important;
 }
 
 .pennai .experiments-scene .ui.table tr.error:hover {
-    background: rgba(255,105,94,.2)!important;
-    color: #fff!important;
+    background: rgba(255,105,94,.45) !important;
+    color: #fff !important;
+}*/
+
+.pennai .experiments-scene .ui.table tr.new {
+    border-left: 7px solid #2ECC40;
+}
+
+.pennai .experiments-scene .ui.table tr.error {
+    background-color: transparent !important;
+    color: rgba(255,255,255,.9) !important;
+    border-left: 7px solid #FF695E;
+}
+
+.pennai .results-scene .page-title {
+    margin-bottom: 1rem;
+}
+
+.pennai .results-scene .panel-header {
+    max-height: 51px;
+}
+
+.pennai .builder-scene .page-title {
+    margin-bottom: 1rem;
+}
+
+.pennai .builder-scene .panel-header {
+    max-height: 57px;
+}
+
+.pennai .builder-scene .dataset-btn {
+   cursor: initial;
+}
+
+.pennai .builder-scene .dataset-btn:active {
+   background-color: #ff7701 !important;
+}
+
+.pennai .builder-scene .param-count {
+    font-size: 0.90rem;
+    margin-top: 0.5rem;
+}
+
+.pennai .builder-scene .param-name {
+   margin-top: -0.35rem;
+}
+
+.pennai .builder-scene .info-icon {
+   margin-top: 0.15rem;
+   font-size: 1.1rem;
+}
+
+.pennai .builder-scene .ui.compressed.grid>.column:not(.row) {
+    padding-bottom: 0;
+    padding-right: 0;
+}
+
+.pennai .builder-scene .ui.grid {
+    padding-bottom: 1rem;
+    padding-right: 1rem;
 }
 
 /*.table-container {
