@@ -83,6 +83,9 @@ block content
               label.form-control-label.control-label.col-sm-3(for="#{key}") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="#{val.description}")] #{key}
               .col-sm-9
                 input(type="text", class="slider", name="#{key}", id="#{key}", data-slider-min="#{val.min}", data-slider-max="#{val.max}", data-slider-step="#{val.step}", data-slider-value="#{val.default}")
+         label.form-control-label.control-label.col-sm-3(for="dataset") #[span.octicon.octicon-info(data-toggle="tooltip", data-placement="right", title="Dataset")]dataset
+        input.form-control(type="text", value="", title="dataset", name="dataset", key="dataset", required)
+
         input#files.form-control-file(name="files", type="file", multiple)
         .form-group.row
           .col-sm-9.col-sm-offset-3
