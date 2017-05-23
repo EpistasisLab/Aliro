@@ -7,9 +7,8 @@ import { Provider } from 'react-redux';
 import { AppContainer } from './components/App';
 import { DatasetsContainer } from './scenes/Datasets';
 import { ExperimentsContainer } from './scenes/Experiments';
-import { Dataset } from './scenes/Dataset';
+import { ResultsContainer } from './scenes/Results';
 import { BuilderContainer } from './scenes/Builder';
-import { Status } from './scenes/Status';
 import { NotFound } from './scenes/NotFound';
 import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 
@@ -23,10 +22,9 @@ const store = createStore(
 const routes = <Route path='/' component={AppContainer}>
 	<IndexRedirect to="datasets" />
 	<Route path='datasets' component={DatasetsContainer} />
-	<Route path='datasets/:id' component={Dataset} />
 	<Route path='experiments' component={ExperimentsContainer} />
+	<Route path='results/:id' component={ResultsContainer} />
 	<Route path='build/:id' component={BuilderContainer} />
-	<Route path='status' component={Status} />
 	<Route path='*' component={NotFound} />
 </Route>;
 

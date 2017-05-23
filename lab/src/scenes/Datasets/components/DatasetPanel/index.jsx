@@ -11,7 +11,7 @@ export class DatasetPanel extends React.Component {
 		const datasetLink = `/#/datasets/${dataset.get('_id')}`;
 		const buildLink = `/#/build/${dataset.get('_id')}`;
 		return <Grid.Column className='dataset-panel'>
-			<Segment inverted attached='top'>
+			<Segment inverted attached='top' className='panel-header'>
 				<Header 
 					as='a'
 					inverted 
@@ -31,18 +31,18 @@ export class DatasetPanel extends React.Component {
 				<BestResultSegment result={dataset.get('best_result')} />
 			}
 			{!dataset.get('best_result') && dataset.get('has_metadata') &&
-				<Segment inverted attached>
+				<Segment inverted attached className='panel-body'>
 					No results yet, build a new experiment to start.
 				</Segment>	
 			}
 			{!dataset.get('has_metadata') &&
-				<Segment inverted attached>
+				<Segment inverted attached className='panel-body'>
 					You must upload a metadata file in order to use this dataset. 
 					Please follow the instructions here.
 				</Segment>
 			}
 			<ExperimentsSegment
-				datasetId={dataset.get('_id')}
+				datasetName={dataset.get('name')}
 				experiments={dataset.get('experiments')}
 				notifications={dataset.get('notifications')}
 			/>
