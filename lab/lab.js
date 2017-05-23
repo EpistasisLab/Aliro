@@ -16,6 +16,7 @@ var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 /* App instantiation */
+var datasets = require("./datasets");
 var app = express();
 var jsonParser = bodyParser.json({
     limit: '100mb'
@@ -134,112 +135,14 @@ app.get("/api/v1/projects", (req, res, next) => {
 
 // List preferences for this user
 app.get("/api/v1/datasets", (req, res, next) => {
-var datasets = [
-  {
-    name: 'Gametes',
-    has_metadata: true,
-    ai: true,
-    best_result: {
-      algorithm: 'Linear Regression',
-      accuracy_score: 0.79
-    },
-    experiments: {
-      pending: 15,
-      running: 2,
-      finished: 267
-    },
-    notifications: {
-      new: 5,
-      error: 1
-    }
-  },
-  {
-    name: 'Thyroid',
-    has_metadata: true,
-    ai: false,
-    best_result: {
-      algorithm: 'Random Forest',
-      accuracy_score: 0.42
-    },
-    experiments: {
-      pending: 2,
-      running: 5, 
-      finished: 15
-    },
-    notifications: {
-      new: 0,
-      error: 1
-    }
-  },
-  {
-    name: 'Adults',
-    has_metadata: true,
-    ai: true,
-    best_result: {
-      algorithm: 'Gradient Boosting',
-      accuracy_score: 0.94
-    },
-    experiments: {
-      pending: 27,
-      running: 20,
-      finished: 462
-    },
-    notifications: {
-      new: 11,
-      error: 0
-    }
-  },
-  {
-    name: 'Heart',
-    has_metadata: true,
-    ai: false,
-    best_result: {
-      algorithm: 'Support Vector Machine',
-      accuracy_score: 0.33
-    },
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 26
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  },
-  {
-    name: 'Breast Cancer',
-    ai: false,
-    has_metadata: false,
-    best_result: undefined,
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 0
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  },
-  {
-    name: 'Hepatitis',
-    ai: true,
-    has_metadata: true,
-    best_result: undefined,
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 0
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  }
-];
     var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
-            return res.send(datasets);
+    datasets.returnUserDatasetsList(username)
+        .then((results) => {
+            return res.send(results);
+        })
+        .catch((err) => {
+            next(err);
+        });
 });
 
 // Return all entries
@@ -255,7 +158,6 @@ app.get("/api/v1/:collection", (req, res, next) => {
 // List preferences for this user
 app.get("/api/v1/preferences", (req, res, next) => {
     var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
-
     var preferences = db.users.find({username: username}, {
     }).toArrayAsync(); // Get machine addresses and hostnames
     Promise.all(preferences)
@@ -574,6 +476,7 @@ var submitJob = (projId, options, files) => {
                             .then((exp) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
+console.log(exp.ops[0]);
                                 var filesP = processFiles(exp.ops[0], files); // Add files to project
                                 // Wait for file upload to complete
                                 Promise.all(filesP)
@@ -1027,9 +930,9 @@ app.put("/api/v1/datasets", upload.array("_files","_metadata"), (req, res, next)
             // Process files
 var metadata = JSON.parse(req.body._metadata);
                         db.datasets.insertAsync({
-                                _dataset_name: metadata.dataset_name,
-                                _username: metadata.username,
-                                _files: []
+                                name: metadata.name,
+                                username: metadata.username,
+                                files: []
                             }, {})
                             .then((exp) => {
                                 var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
@@ -1083,113 +986,9 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 // List preferences for this user
 app.post("/api/datasets", jsonParser, (req, res, next) => {
 //app.post("/api/datasets", (req, res, next) => {
-postvars = req.body;
-console.log(postvars.con1);
-var datasets = [
-  {
-    name: 'Gametes',
-    has_metadata: true,
-    ai: true,
-    best_result: {
-      algorithm: 'Linear Regression',
-      accuracy_score: 0.79
-    },
-    experiments: {
-      pending: 15,
-      running: 2,
-      finished: 267
-    },
-    notifications: {
-      new: 5,
-      error: 1
-    }
-  },
-  {
-    name: 'Thyroid',
-    has_metadata: true,
-    ai: false,
-    best_result: {
-      algorithm: 'Random Forest',
-      accuracy_score: 0.42
-    },
-    experiments: {
-      pending: 2,
-      running: 5, 
-      finished: 15
-    },
-    notifications: {
-      new: 0,
-      error: 1
-    }
-  },
-  {
-    name: 'Adults',
-    has_metadata: true,
-    ai: true,
-    best_result: {
-      algorithm: 'Gradient Boosting',
-      accuracy_score: 0.94
-    },
-    experiments: {
-      pending: 27,
-      running: 20,
-      finished: 462
-    },
-    notifications: {
-      new: 11,
-      error: 0
-    }
-  },
-  {
-    name: 'Heart',
-    has_metadata: true,
-    ai: false,
-    best_result: {
-      algorithm: 'Support Vector Machine',
-      accuracy_score: 0.33
-    },
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 26
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  },
-  {
-    name: 'Breast Cancer',
-    ai: false,
-    has_metadata: false,
-    best_result: undefined,
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 0
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  },
-  {
-    name: 'Hepatitis',
-    ai: true,
-    has_metadata: true,
-    best_result: undefined,
-    experiments: {
-      pending: 0,
-      running: 0,
-      finished: 0
-    },
-    notifications: {
-      new: 0,
-      error: 0
-    }
-  }
-];
-            return res.send(datasets);
+  postvars = req.body;
+  var list = datasets.returnUserDatasetsList(null);
+  return res.send(list);
 });
 
 /* Rendering Routes */

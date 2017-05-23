@@ -14,7 +14,7 @@ class Experiment:
 		self.build_paths(method_name)
 
 	def build_paths(self, method_name):
-		self.schema = basedir+'/lab/examples/' + method_name + '/' + method_name + '.json'
+		self.schema = basedir+'/lab/examples/Algorithms/' + method_name + '/' + method_name + '.json'
 		self.basedir = basedir+'/learn/' + method_name + '/'
 		self.tmpdir = self.basedir + 'tmp/'
 
