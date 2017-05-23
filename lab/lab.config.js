@@ -17,7 +17,7 @@ module.exports = {
       },
       cwd : "/share/devel/Gp/lab",
 //      ignore_watch : ["node_modules","log",".+\.sw."],
-      watch: 'lab.js',
+      watch: ['lab.js','datasets.js'],
       ignore_watch : ["node_modules"],
     }
 
