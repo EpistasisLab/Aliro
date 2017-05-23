@@ -1081,9 +1081,10 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
         });
 });
 // List preferences for this user
-app.post("/api/datasets", /*jsonParser,*/ upload.array("_params"), (req, res, next) => {
-app.post("/api/datasets", (req, res, next) => {
-	console.log(req);
+app.post("/api/datasets", jsonParser, (req, res, next) => {
+//app.post("/api/datasets", (req, res, next) => {
+postvars = req.body;
+console.log(postvars.con1);
 var datasets = [
   {
     name: 'Gametes',
@@ -1188,7 +1189,6 @@ var datasets = [
     }
   }
 ];
-console.log(datasets);
             return res.send(datasets);
 });
 
