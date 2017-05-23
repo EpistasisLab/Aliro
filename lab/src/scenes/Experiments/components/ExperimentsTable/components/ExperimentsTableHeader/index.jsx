@@ -8,24 +8,50 @@ export class ExperimentsTableHeader extends React.Component {
 			selectedAlgorithm,
 			shouldDisplayParams,
 			orderedParamKeys,
-			sorted,
-			setSort
+			sort,
+			updateQuery
 		} = this.props; 
 
-		const isSorted = (column) => {
-			return sorted.get('column') === column && sorted.get('direction');
+		let popupStatus = 'untouched';
+
+		const openPopup = () => {
+			popupStatus = 'opened';
+		};
+
+		const closePopup = () => {
+			popupStatus = 'closed';
+		};
+
+		const shouldPreventSort = () => {
+			if(popupStatus === 'opened') {
+				return true;
+			} else if(popupStatus === 'closed') {
+				popupStatus = 'untouched';
+				return true;
+			}
+
+			return false;
 		};
 
 		const handleSort = (clickedColumn) => {
-				let direction;
+			let direction;
+			
+			if(shouldPreventSort()) {
+				return;
+			}
 
-				if(clickedColumn === sorted.get('column')) {
-					direction = sorted.get('direction') === 'ascending' ? 'descending' : 'ascending';
-				} else {
-					direction = 'ascending';
-				}
+			if(clickedColumn === sort.column) {
+				direction = sort.direction === 'ascending' ? 'descending' : 'ascending';
+			} else {
+				direction = 'ascending';
+			}
 
-				setSort(clickedColumn, direction);
+			updateQuery('col', clickedColumn);
+			updateQuery('direction', direction)
+		};
+
+		const isSorted = (column) => {
+			return (sort.column === column && sort.direction) || null;
 		};
 
 		return (
@@ -33,19 +59,18 @@ export class ExperimentsTableHeader extends React.Component {
 				<Table.Row>
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('id')}
-						onClick={() => handleSort('id')}
+						sorted={isSorted('_id')}
+						onClick={() => handleSort('_id')}
 					>
 						Id #
 					</Table.HeaderCell>
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('accuracy')}
-						onClick={() => handleSort('accuracy')}
+						sorted={isSorted('accuracy_score')}
+						onClick={() => handleSort('accuracy_score')}
 					>
 						Accuracy
 						<Popup
-							on="click"
 							header="What is accuracy?"
 							trigger={
 								<Icon 
@@ -56,6 +81,8 @@ export class ExperimentsTableHeader extends React.Component {
 								/>
 							}
 							content="A definition of accuracy"
+							onOpen={() => openPopup()}
+							onClose={() => closePopup()}
 						/>
 					</Table.HeaderCell>
 					<Table.HeaderCell 
@@ -67,18 +94,17 @@ export class ExperimentsTableHeader extends React.Component {
 					</Table.HeaderCell>
 					<Table.HeaderCell 
 						colSpan={shouldDisplayParams && orderedParamKeys.size}
-						sorted={isSorted('algorithm')}
-						onClick={() => handleSort('algorithm')}
+						sorted={shouldDisplayParams ? null : isSorted('algorithm')}
+						onClick={shouldDisplayParams ? null : () => handleSort('algorithm')}
 					>
 						Algorithm
 						{shouldDisplayParams &&
-							<span>({selectedAlgorithm})</span>
+							<span className="alg-name">({selectedAlgorithm})</span>
 						}
 					</Table.HeaderCell>
 					<Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
 						Who?
 						<Popup
-							on="click"
 							header="You or the AI?"
 							trigger={
 								<Icon 

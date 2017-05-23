@@ -26,6 +26,7 @@
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "bower": "^1.7.9",
+    "c3": "^0.4.11",
     "compression": "^1.6.2",
     "continuation-local-storage": "^3.1.7",
     "dotenv": "^2.0.0",
@@ -53,6 +54,7 @@
     "request-promise": "^3.0.0",
     "semantic-ui-react": "^0.64.7",
     "serve-favicon": "^2.3.0",
+    "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
   "devDependencies": {

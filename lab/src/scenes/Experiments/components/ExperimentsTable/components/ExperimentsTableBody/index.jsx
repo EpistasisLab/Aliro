@@ -1,11 +1,12 @@
 import React from 'react';
-import { Table, Icon, Dropdown } from 'semantic-ui-react';
+import { Table, Icon, Popup, Dropdown } from 'semantic-ui-react';
 
 export class ExperimentsTableBody extends React.Component {
 	render() {
 
 		const { 
 			experiments,
+			shouldDisplayAwards,
 			shouldDisplayParams,
 			orderedParamKeys
 		} = this.props;
@@ -27,15 +28,40 @@ export class ExperimentsTableBody extends React.Component {
 			}
 		};
 
+		const renderAwardPopup = (experiment) => {
+			if(!shouldDisplayAwards) { return; }
+
+			switch(experiment.get('award')) {
+				case 'best_overall':
+					return (
+						<Popup
+							trigger={<Icon inverted color="yellow" size="large" name="trophy" className="float-right" />}
+							content="Best overall result for this dataset"
+						/>
+					);
+				case 'best_for_algorithm':
+					return (
+						<Popup
+							trigger={<Icon inverted color="grey" size="large" name="trophy" className="float-right" />}
+							content={`Best result for this dataset with ${experiment.get('algorithm')}`}
+						/>
+					);
+			}
+		};
+
 		const renderWhoIcon = (who) => {
 			switch(who) {
 				case 'user':
 					return <Icon inverted color="grey" size="large" name="user" />;
 				case 'ai':
-					return <Icon inverted color="violet" size="large" name="android" />;
+					return <Icon inverted color="grey" size="large" name="android" />;
 				default:
 					return;	
 			}
+		};
+
+		const getResultsLink = (experimentId) => {
+			return `/#/results/${experimentId}`;
 		};
 
 		return (
@@ -45,28 +71,41 @@ export class ExperimentsTableBody extends React.Component {
 						key={experiment.get('_id')}
 						className={experiment.get('notification')}
 					>
-						<Table.Cell width={2}>
-							{renderStatusIcon(experiment.get('status'))} #{experiment.get('_id')}
+						<Table.Cell selectable width={2}>
+							<a href={getResultsLink(experiment.get('_id'))}>
+								{renderStatusIcon(experiment.get('status'))} #{experiment.get('_id')}
+							</a>	
 						</Table.Cell>
-						<Table.Cell width={2}>
-							{experiment.get('accuracy_score') || '-'}
+						<Table.Cell selectable width={2}>
+							<a href={getResultsLink(experiment.get('_id'))}>
+								{experiment.get('accuracy_score') || '-'}
+								{renderAwardPopup(experiment)}
+							</a>	
 						</Table.Cell>
-						<Table.Cell width={3}>
-							{experiment.get('dataset')}
+						<Table.Cell selectable width={3}>
+							<a href={getResultsLink(experiment.get('_id'))}>
+								{experiment.get('dataset')}
+							</a>	
 						</Table.Cell>
 						{shouldDisplayParams ? (
 							orderedParamKeys.map((key) => 
-								<Table.Cell key={[experiment._id, key]}>
-									{experiment.getIn(['params', key]) || '-'}
+								<Table.Cell key={[experiment._id, key]} selectable>
+									<a href={getResultsLink(experiment.get('_id'))}>
+										{experiment.getIn(['params', key]) || '-'}
+									</a>
 								</Table.Cell>
 							)
 						) : (
-							<Table.Cell width={6}>
-								{experiment.get('algorithm')}
+							<Table.Cell selectable width={6}>
+								<a href={getResultsLink(experiment.get('_id'))}>
+									{experiment.get('algorithm')}
+								</a>	
 							</Table.Cell>	
 						)}
-						<Table.Cell width={1} textAlign="center">
-							{renderWhoIcon(experiment.get('launched_by'))}
+						<Table.Cell selectable width={2} textAlign="center">
+							<a href={getResultsLink(experiment.get('_id'))}>
+								{renderWhoIcon(experiment.get('launched_by'))}
+							</a>
 						</Table.Cell>
 						<Table.Cell width={1} textAlign="center">
 							<Dropdown 
