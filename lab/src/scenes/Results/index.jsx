@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchResults } from './data/api';
 import { Header, Grid, Segment, Icon } from 'semantic-ui-react';
+import { Gauge } from './components/Gauge';
 import moment from 'moment';
 import twix from 'twix';
 
@@ -33,7 +34,7 @@ export class Results extends React.Component {
 
 		const renderWhoIcon = () => {
 			let who = details.getIn(['run', 'launched_by']);
-			
+
 			switch(who) {
 				case 'user':
 					return <Icon inverted color="grey" size="large" name="user" />;
@@ -147,7 +148,11 @@ export class Results extends React.Component {
 									/>
 								</Segment>
 								<Segment inverted attached="bottom">	
-									
+									<Gauge 
+										chartName="testing" 
+										color="#AEA8D3"
+										value={details.getIn(['scores', 'testing_accuracy'])}
+									/>
 								</Segment>
 
 								<Segment inverted attached="top" className="panel-header">
@@ -158,7 +163,11 @@ export class Results extends React.Component {
 									/>
 								</Segment>
 								<Segment inverted attached="bottom">	
-									
+									<Gauge 
+										chartName="training" 
+										color="#2ABB9B"
+										value={details.getIn(['scores', 'training_accuracy'])} 
+									/>
 								</Segment>
 
 								<Segment inverted attached="top" className="panel-header">
@@ -169,7 +178,11 @@ export class Results extends React.Component {
 									/>
 								</Segment>
 								<Segment inverted attached="bottom">	
-									
+									<Gauge 
+										chartName="auc"
+										color="#59ABE3"
+										value={details.getIn(['scores', 'AUC'])} 
+									/>
 								</Segment>
 							</Grid.Column>
 						</Grid.Row>

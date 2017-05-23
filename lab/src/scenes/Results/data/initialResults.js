@@ -19,6 +19,11 @@ export const initialResults = {
   run: {
   	started: 1495484890013,
   	finished: 1495485103872,
-  	launched_by: "ai"
+  	launched_by: 'ai'
+  },
+  scores: {
+  	testing_accuracy: 0.68,
+  	training_accuracy: 0.78,
+  	AUC: 0.96
   }
 };
