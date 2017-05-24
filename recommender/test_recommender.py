@@ -17,6 +17,7 @@ def test_ml_p():
                               'accuracy',
                               'macrof1',
                               'bal_accuracy']).fillna('')
+    # filter results to pennai classifiers
     pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
@@ -53,4 +54,9 @@ def test_ml_p():
     # print('ml2:',ml)
     # print('p2:',p)
 
-test_ml_p()
+def test_db_grab():
+    """loading database grabs right info"""
+    pennai= Recommender()
+    pennai.db_to_results_data()
+
+test_db_grab()
