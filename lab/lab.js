@@ -133,8 +133,8 @@ app.get("/api/v1/projects", (req, res, next) => {
 
 
 
-// List preferences for this user
-app.get("/api/v1/datasets", (req, res, next) => {
+// List datasets for this user
+app.get("/api/datasets", (req, res, next) => {
     var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
     datasets.returnUserDatasetsList(username)
         .then((results) => {
@@ -144,6 +144,46 @@ app.get("/api/v1/datasets", (req, res, next) => {
             next(err);
         });
 });
+// List datasets for this user, filtered
+app.post("/api/datasets", jsonParser, (req, res, next) => {
+    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
+    var postvars = req.body;
+    datasets.returnUserDatasetsList(username)
+        .then((results) => {
+            return res.send(results);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+//adds datasets
+app.put("/api/datasets", upload.array("_files","_metadata"), (req, res, next) => {
+    // Retrieve list of files for experiment
+    // Process files
+    var metadata = JSON.parse(req.body._metadata);
+        db.datasets.insertAsync({
+                                name: metadata.name,
+                                username: metadata.username,
+                                files: []
+                            }, {})
+                            .then((exp) => {
+                                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+            var filesP = processDataset(req.files,dataset_id);
+            Promise.all(filesP)
+                .then((results) => {
+console.log(results[0].ops);
+                    res.send({
+                        message: "Files uploaded"
+                    });
+                })
+                .catch((err) => {
+                    next(err);
+                });
+                                 });
+
+});
+
+
 
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {
@@ -470,7 +510,7 @@ var submitJob = (projId, options, files) => {
                                 _options: options,
                                 _project_id: db.toObjectID(projId),
                                 _machine_id: db.toObjectID(availableMac._id),
-                                _files: [],
+                                files: [],
                                 _status: "running"
                             }, {})
                             .then((exp) => {
@@ -729,7 +769,7 @@ var processFiles = function(experiment, files) {
                                 // Save file reference
                                 filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
                                     $push: {
-                                        _files: {
+                                        files: {
                                             _id: gfs.fileId,
                                             filename: gfs.filename,
                                             mimetype: gfs.metadata.contentType
@@ -747,7 +787,7 @@ var processFiles = function(experiment, files) {
 
         var saveGFSFile = function(fileObj) {
             // Check if file needs to be replaced
-            var oldFile = _.find(experiment._files, {
+            var oldFile = _.find(experiment.files, {
                 filename: fileObj.originalname
             });
             if (oldFile) {
@@ -802,7 +842,7 @@ var processDataset = function(files,dataset_id) {
                                 // Save file reference
                                 db.datasets.updateByIdAsync(dataset_id, {
                                     $push: {
-                                        _files: {
+                                        files: {
                                             _id: gfs.fileId,
                                             filename: gfs.filename,
                                             mimetype: gfs.metadata.contentType
@@ -826,7 +866,7 @@ return(promises);
 app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
     // Retrieve list of files for experiment
     db.experiments.findByIdAsync(req.params.id, {
-            _files: 1
+            files: 1
         })
         .then((experiment) => {
 
@@ -853,13 +893,13 @@ app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next
 // Delete all files for an experiment
 app.delete("/api/v1/experiments/:id/files", (req, res, next) => {
     db.experiments.findByIdAsync(req.params.id, {
-            _files: 1
+            files: 1
         })
         .then((experiment) => {
-            var filesP = Array(experiment._files.length);
+            var filesP = Array(experiment.files.length);
 
-            for (var i = 0; i < experiment._files.length; i++) {
-                var gfs = new db.GridStore(db, experiment._files[i]._id, "w", {
+            for (var i = 0; i < experiment.files.length; i++) {
+                var gfs = new db.GridStore(db, experiment.files[i]._id, "w", {
                     promiseLibrary: Promise
                 });
                 filesP[i] = gfs.unlinkAsync();
@@ -891,7 +931,7 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
         .then((experiments) => {
             var numFiles = 0;
             for (var i = 0; i < experiments.length; i++) {
-                numFiles += experiments[i]._files.length;
+                numFiles += experiments[i].files.length;
             }
             var filesP = Array(numFiles);
 
@@ -900,8 +940,8 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
             for (var j = 0; j < experiments.length; j++) {
                 var experiment = experiments[j];
                 // Loop over files
-                for (var k = 0; k < experiment._files.length; k++) {
-                    var gfs = new db.GridStore(db, experiment._files[k]._id, "w", {
+                for (var k = 0; k < experiment.files.length; k++) {
+                    var gfs = new db.GridStore(db, experiment.files[k]._id, "w", {
                         promiseLibrary: Promise
                     });
                     filesP[fileIndex++] = gfs.unlinkAsync();
@@ -923,34 +963,6 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
             next(err);
         });
 });
-
-//adds datasets
-app.put("/api/v1/datasets", upload.array("_files","_metadata"), (req, res, next) => {
-    // Retrieve list of files for experiment
-            // Process files
-var metadata = JSON.parse(req.body._metadata);
-                        db.datasets.insertAsync({
-                                name: metadata.name,
-                                username: metadata.username,
-                                files: []
-                            }, {})
-                            .then((exp) => {
-                                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-            var filesP = processDataset(req.files,dataset_id);
-            Promise.all(filesP)
-                .then((results) => {
-console.log(results[0].ops);
-                    res.send({
-                        message: "Files uploaded"
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
-                                 });
-
-});
-
 
 // Registers machine projects
 app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
@@ -982,13 +994,6 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
         .catch((err) => {
             next(err);
         });
-});
-// List preferences for this user
-app.post("/api/datasets", jsonParser, (req, res, next) => {
-//app.post("/api/datasets", (req, res, next) => {
-  postvars = req.body;
-  var list = datasets.returnUserDatasetsList(null);
-  return res.send(list);
 });
 
 /* Rendering Routes */
