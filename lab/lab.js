@@ -483,7 +483,7 @@ var optionChecker = (schema, obj) => {
     };
 };
 
-var submitJob = (projId, options, files) => {
+var submitJob = (projId, options, files, dataset) => {
     return new Promise((resolve, reject) => {
         db.machines.find({}, {
                 address: 1
@@ -508,6 +508,7 @@ var submitJob = (projId, options, files) => {
                         // Create experiment
                         db.experiments.insertAsync({
                                 _options: options,
+                                dataset: dataset,
                                 _project_id: db.toObjectID(projId),
                                 _machine_id: db.toObjectID(availableMac._id),
                                 files: [],
@@ -516,8 +517,11 @@ var submitJob = (projId, options, files) => {
                             .then((exp) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
-console.log(exp.ops[0]);
-                                var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                if(dataset == "") {
+                                   var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                } else {
+                                   var filesP = linkDataset(exp.ops[0], dataset); // Add files to project
+                                }
                                 // Wait for file upload to complete
                                 Promise.all(filesP)
                                     .then(() => {
@@ -562,6 +566,7 @@ console.log(exp.ops[0]);
 // Constructs an experiment
 app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files"), (req, res, next) => {
     var projId = req.params.id;
+    var dataset;
     // Check project actually exists
     db.projects.findByIdAsync(projId, {
             schema: 1
@@ -574,6 +579,10 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
                 });
             } else {
                 var obj = Object.assign(req.query, req.body);
+                if("dataset" in obj) {
+                    dataset = obj['dataset'];
+                    delete obj['dataset'];
+                }
                 var files = req.files;
 
                 // Validate
@@ -582,7 +591,7 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
                     res.status(400);
                     res.send(validation);
                 } else {
-                    submitJob(projId, obj, files)
+                    submitJob(projId, obj, files, dataset)
                         .then((resp) => {
                             res.status(201);
                             res.send(resp);
@@ -813,6 +822,29 @@ var processFiles = function(experiment, files) {
         }
     }
 
+    return filesP;
+};
+//associate files from a  dataset with an experiment
+var linkDataset = function(experiment, datasetId) {
+    var filesP = [];
+    db.datasets.findByIdAsync(datasetId, {
+            files: 1
+        })
+        .then((dataset) => {
+console.log(dataset)
+    if (dataset['files'] !== undefined) {
+      files = dataset['files'];
+                for (var i = 0; i < files.length; i++) {
+var file = files[i];
+if(file['mimetype'] && file['mimetype'] == "text/csv") {
+console.log(file['mimetype']);
+                                filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
+                                    $push: {files: file}
+                                });
+}
+                };
+}
+        })
     return filesP;
 };
 
