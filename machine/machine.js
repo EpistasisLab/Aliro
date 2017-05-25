@@ -327,10 +327,10 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     var sendFileResults = function(filename) {
         // Create form data
         var formData = {
-            _files: []
+            files: []
         };
         // Add file
-        formData._files.push(fs.createReadStream(filename));
+        formData.files.push(fs.createReadStream(filename));
         return rp({
             uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files",
             method: "PUT",
