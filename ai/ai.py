@@ -19,8 +19,6 @@ from ai.recommender.base import Recommender
 class AI():
     """AI managing agent for Penn AI.
 
-
-
     Responsible for:
     - checking for user requests for recommendations,
     - checking for new results from experiments,
@@ -54,6 +52,7 @@ class AI():
             self.load_state()
         # requests queue
         self.request_queue = []
+        
     def load_state(self):
         """loads pickled score file."""
         filehandler = open(self.rec_score_file)
