@@ -70,7 +70,7 @@ def get_input_file(_id, tmpdir):
 
 	response = http.request('GET', 'http://'+lab_host+':5080/api/v1/experiments/' + _id)
 	jsondata = json.loads(response.data.decode('utf-8'))
-	files = jsondata['_files']
+	files = jsondata['files']
 	input_file = ''
 
 	numfiles = 0;
