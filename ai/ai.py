@@ -7,11 +7,12 @@ import numpy as np
 import pandas as pd
 from time import sleep
 import json
-# import urllib
+import pickle
 import requests
 import pdb
 import time
 import ai.ml_ids
+import os
 from ai.recommender.base import Recommender
 
 
@@ -33,20 +34,30 @@ class AI():
 
     def __init__(self,rec=Recommender(),
                  db_path='http://ibi-admin-031.med.upenn.edu',
-                 extra_payload=dict()):
+                 extra_payload=dict(),
+                 user='testuser',rec_score_file='rec_scores.obj'):
         self.rec = rec
         # access to database
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
         self.data_path = '/'.join([self.db_path,'api/datasets'])
         self.submit_path = '/'.join([self.db_path,'/api/v1/projects/'])
+        self.user=user
         # api key for the recommender
         self.api_key='Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='
         # optional extra payloads (e.g. user id) for posting to the db
         self.extra_payload = extra_payload
-        # load previous state
+        # file name of stored scores for the recommender
+        self.rec_score_file = rec_score_file
+        # if there is a file, load it as the recommender scores
+        if os.path.isfile(self.rec_score_file):
+            self.load_state()
         # requests queue
         self.request_queue = []
+    def load_state(self):
+        """loads pickled score file."""
+        filehandler = open(self.rec_score_file)
+        self.rec.scores = pickle.load(filehandler)
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
@@ -73,7 +84,7 @@ class AI():
             timestamp = 0
 
         payload = {'token':self.api_key,
-                   'status':'finished',
+                   'status':'success',
                    'time':timestamp}
         # get new results
         r = requests.post(exp_db_path,data=json.dumps(payload))
@@ -145,13 +156,14 @@ class AI():
             recs = []
             for alg,params in zip(ml,p):
                 rec.append({'dataset_id':r['_id'],
-                            'dataset_name':r['name'],
-                            'ml_id':ml_ids[alg],
-                            'ml_name':alg,
+                            # 'dataset_name':r['name'],
+                            'algorithm_id':ml_ids[alg],
+                            # 'ml_name':alg,
+                            'parameters':dict()
                             })
                 # add recommended parameters
                 for p in params.sep(','):
-                    rec[-1][p.split(':')[0]] = p.split(':')[1]
+                    rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
 
             # submit path is ml_id/experiment
             submit_path = '/'.join([self.submit_path,r['_id'],'/experiment'])
@@ -166,6 +178,8 @@ class AI():
 
     def save_state(self):
         """Save ML+P scores in pickle or to DB"""
+        out = open(self.rec_score_file,'w')
+        pickle.dump(self.rec.scores, out)
 
     def db_to_results_data(self,response):
         """load json files from db and convert to results_data.
