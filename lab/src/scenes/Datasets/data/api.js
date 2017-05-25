@@ -7,7 +7,7 @@ import {
 } from './actions';
 
 export const fetchDatasets = () => {
-    const route = 'api/v1/datasets';
+    const route = 'api/datasets';
 
     return function(dispatch) {
         dispatch(requestDatasets());
