@@ -7,7 +7,7 @@ import {
 } from './actions';
 
 export const fetchExperiments = () => {
-    const route = 'api/v1/experiments';
+    const route = 'api/experiments';
 
     return function(dispatch) {
         dispatch(requestExperiments());
