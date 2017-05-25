@@ -22,8 +22,8 @@ export class Parameters extends React.Component {
 			}
 		};
 
-		const isActive = (param, choice, defaultValue) => {
-			return choice === (currentParams.get(param) || defaultValue);
+		const isActive = (param, value) => {
+			return value === currentParams.get(param);
 		};
 
 		const color = 'blue';
@@ -70,7 +70,7 @@ export class Parameters extends React.Component {
 											color={color}
 											fluid
 											content={value} 
-											active={isActive(param, value, info.get('default'))} 
+											active={isActive(param, value)} 
 											onClick={() => setParamValue(param, value)} 
 										/>
 									</Grid.Column>
