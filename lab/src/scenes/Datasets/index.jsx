@@ -40,26 +40,29 @@ export class Datasets extends React.Component {
 
 	render() {
 		const { datasets } = this.props;
-		return <div>
-			<div className='page-title'>
-				<Header inverted size='huge' content='Datasets' />
-				<Button inverted color='blue' compact size='small' icon='plus' content='Add new'/>
+
+		return (
+			<div>
+				<div className='page-title'>
+					<Header inverted size='huge' content='Datasets' />
+					<Button inverted color='blue' compact size='small' icon='plus' content='Add new'/>
+				</div>
+				{datasets.size > 0 ? (
+					<Grid stretched columns={this.calcCols()}>
+						{datasets.map(dataset =>
+							<DatasetPanel
+								key={dataset.get('_id')}
+								dataset={dataset}
+							/>
+						)}
+					</Grid>
+				) : (
+					<Header inverted size='small'>
+						You have no datasets uploaded yet.
+					</Header>
+				)};
 			</div>
-			{datasets.size > 0 ? (
-				<Grid stretched columns={this.calcCols()}>
-					{datasets.map(dataset =>
-						<DatasetPanel
-							key={dataset.get('_id')}
-							dataset={dataset}
-						/>
-					)}
-				</Grid>
-			) : (
-				<Header inverted size='small'>
-					You have no datasets uploaded yet.
-				</Header>
-			)};
-		</div>;
+		);
 	}
 }
 
