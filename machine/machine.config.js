@@ -17,7 +17,7 @@ module.exports = {
       },
       cwd : "/share/devel/Gp/machine",
 //      ignore_watch : ["node_modules","log",".+\.sw."],
-      watch: 'machine.js',
+      watch: ['machine.js','datasets.js'],
       ignore_watch : ["node_modules"],
     }
 

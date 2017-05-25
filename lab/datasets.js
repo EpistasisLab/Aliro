@@ -1,6 +1,7 @@
 require("./env"); // Load configuration variables
 var db = require("./db").db;
 
+// test to make sure everything is working
 var returnDummyDatasetsList = function() {
     var datasets = [{
         _id: '00000001',
@@ -108,9 +109,8 @@ var returnDummyDatasetsList = function() {
     return (datasets);
 }
 
+//return a list of datasets for each user
 exports.returnUserDatasetsList = function(username) {
-    //  req.collection.find({}).toArrayAsync()
-
     return new Promise(function(success, fail) {
         db.datasets.find({
                 username: username

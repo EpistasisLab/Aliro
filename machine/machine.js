@@ -163,7 +163,7 @@ chokidar.watch("projects.json").on("change", () => {
 //    }).on('add', (file) => {
 //      console.log(event, file);
 
- //   });
+//   });
 
 /* Global max capacity */
 /* Process Datasets */
