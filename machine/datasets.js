@@ -31,6 +31,8 @@ var metadata = [];
             'timestamp': Date.now(),
             'files': []
           }
+console.log(metadata);
+console.log(files);
             for (var i = 0; i < files.length; i++) {
                 if (files[i] == 'README.MD') {
                 //todo:parse README
