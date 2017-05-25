@@ -24,8 +24,14 @@ var jsonParser = bodyParser.json({
 var upload = multer(); // Store files in memory as Buffer objects
 app.use(compression()); // Compress all Express requests
 app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
-app.use(express.static(path.join(__dirname, "public"), {index: false, maxAge: '1d'})); // Static directory
-app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {index: false, maxAge: '1d'})); // Bower components
+app.use(express.static(path.join(__dirname, "public"), {
+    index: false,
+    maxAge: '1d'
+})); // Static directory
+app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {
+    index: false,
+    maxAge: '1d'
+})); // Bower components
 app.set("view engine", "jade"); // Jade template engine
 app.set('appPath', path.join(path.normalize(__dirname), '/www'));
 app.use(express.static(app.get('appPath')));
@@ -117,9 +123,7 @@ app.param("collection", (req, res, next, collection) => {
 // List projects and machines in api
 app.get("/api/v1/projects", (req, res, next) => {
 
-    var projP = db.projects.find({
-    }, {
-    }).sort({
+    var projP = db.projects.find({}, {}).sort({
         name: 1
     }).toArrayAsync(); // Get project names
     Promise.all(projP)
@@ -135,7 +139,7 @@ app.get("/api/v1/projects", (req, res, next) => {
 
 // List datasets for this user
 app.get("/api/datasets", (req, res, next) => {
-    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
+    var username = req.headers['X-Forwarded-User:'] || 'testuser';
     datasets.returnUserDatasetsList(username)
         .then((results) => {
             return res.send(results);
@@ -146,7 +150,7 @@ app.get("/api/datasets", (req, res, next) => {
 });
 // List datasets for this user, filtered
 app.post("/api/datasets", jsonParser, (req, res, next) => {
-    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
+    var username = req.headers['X-Forwarded-User:'] || 'testuser';
     var postvars = req.body;
     datasets.returnUserDatasetsList(username)
         .then((results) => {
@@ -157,21 +161,21 @@ app.post("/api/datasets", jsonParser, (req, res, next) => {
         });
 });
 //adds datasets
-app.put("/api/datasets", upload.array("_files","_metadata"), (req, res, next) => {
+app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
-        db.datasets.insertAsync({
-                                name: metadata.name,
-                                username: metadata.username,
-                                files: []
-                            }, {})
-                            .then((exp) => {
-                                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-            var filesP = processDataset(req.files,dataset_id);
+    db.datasets.insertAsync({
+            name: metadata.name,
+            username: metadata.username,
+            files: []
+        }, {})
+        .then((exp) => {
+            var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+            var filesP = processDataset(req.files, dataset_id);
             Promise.all(filesP)
                 .then((results) => {
-console.log(results[0].ops);
+                    console.log(results[0].ops);
                     res.send({
                         message: "Files uploaded"
                     });
@@ -179,7 +183,7 @@ console.log(results[0].ops);
                 .catch((err) => {
                     next(err);
                 });
-                                 });
+        });
 
 });
 
@@ -197,9 +201,10 @@ app.get("/api/v1/:collection", (req, res, next) => {
 });
 // List preferences for this user
 app.get("/api/v1/preferences", (req, res, next) => {
-    var username = req.headers['X-Forwarded-User:'] || 'testuser' ;
-    var preferences = db.users.find({username: username}, {
-    }).toArrayAsync(); // Get machine addresses and hostnames
+    var username = req.headers['X-Forwarded-User:'] || 'testuser';
+    var preferences = db.users.find({
+        username: username
+    }, {}).toArrayAsync(); // Get machine addresses and hostnames
     Promise.all(preferences)
         .then((results) => {
             return res.send(results);
@@ -388,7 +393,9 @@ app.delete("/api/v1/projects/:id/experiments", (req, res, next) => {
 
 // Gets the status of an experiment
 app.get("/api/v1/experiments/:id/status", (req, res, next) => {
-    db.experiments.findByIdAsync(req.params.id, { _status: 1 })
+    db.experiments.findByIdAsync(req.params.id, {
+            _status: 1
+        })
         .then((result) => {
             res.send(result);
         })
@@ -517,10 +524,10 @@ var submitJob = (projId, options, files, dataset) => {
                             .then((exp) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
-                                if(dataset == "") {
-                                   var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                if (dataset == "") {
+                                    var filesP = processFiles(exp.ops[0], files); // Add files to project
                                 } else {
-                                   var filesP = linkDataset(exp.ops[0], dataset); // Add files to project
+                                    var filesP = linkDataset(exp.ops[0], dataset); // Add files to project
                                 }
                                 // Wait for file upload to complete
                                 Promise.all(filesP)
@@ -579,7 +586,7 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
                 });
             } else {
                 var obj = Object.assign(req.query, req.body);
-                if("dataset" in obj) {
+                if ("dataset" in obj) {
                     dataset = obj['dataset'];
                     delete obj['dataset'];
                 }
@@ -831,65 +838,67 @@ var linkDataset = function(experiment, datasetId) {
             files: 1
         })
         .then((dataset) => {
-console.log(dataset)
-    if (dataset['files'] !== undefined) {
-      files = dataset['files'];
+            console.log(dataset)
+            if (dataset['files'] !== undefined) {
+                files = dataset['files'];
                 for (var i = 0; i < files.length; i++) {
-var file = files[i];
-if(file['mimetype'] && file['mimetype'] == "text/csv") {
-console.log(file['mimetype']);
-                                filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
-                                    $push: {files: file}
-                                });
-}
+                    var file = files[i];
+                    if (file['mimetype'] && file['mimetype'] == "text/csv") {
+                        console.log(file['mimetype']);
+                        filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
+                            $push: {
+                                files: file
+                            }
+                        });
+                    }
                 };
-}
+            }
         })
     return filesP;
 };
 
 //process files for a dataset
-var processDataset = function(files,dataset_id) {
+var processDataset = function(files, dataset_id) {
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
     obj = {};
     promises = [];
-    files.forEach(function (fileObj, i) {
+    files.forEach(function(fileObj, i) {
         fileId = new db.ObjectID();
         metadata = []
         var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-          metadata: {
-            contentType: fileObj.mimetype
-          },
+            metadata: {
+                contentType: fileObj.mimetype
+            },
             promiseLibrary: Promise
-          });
-      // ready = ready.then(function() {
+        });
+        // ready = ready.then(function() {
         var file_open = gfs.open((err, res1) => {
-         if (err) {
-            console.log(err);
-          } else {
-        // Write from buffer and flush to db
-            var file_write = res1.write(fileObj.buffer, true)
-                        .then((gfs) => {
-                                // Save file reference
-                                db.datasets.updateByIdAsync(dataset_id, {
-                                    $push: {
-                                        files: {
-                                            _id: gfs.fileId,
-                                            filename: gfs.filename,
-                                            mimetype: gfs.metadata.contentType
-                                        }
-                                    }
-                                });
-                          });
-            promises.push(file_write);
-          }
-    });
-    promises.push(file_open);
+            if (err) {
+                console.log(err);
+            } else {
+                // Write from buffer and flush to db
+                var file_write = res1.write(fileObj.buffer, true)
+                    .then((gfs) => {
+                        // Save file reference
+                        db.datasets.updateByIdAsync(dataset_id, {
+                            $push: {
+                                files: {
+                                    _id: gfs.fileId,
+                                    filename: gfs.filename,
+                                    mimetype: gfs.metadata.contentType
+                                }
+                            }
+                        });
+                    });
+                promises.push(file_write);
+            }
+        });
+        promises.push(file_open);
 
-    //});
- });
-return(promises);
+        //});
+    });
+    return (promises);
 };
 
 
@@ -1233,7 +1242,7 @@ app.get("/batches/:id", (req, res, next) => {
         .catch((err) => {
             next(err);
         });
-}); 
+});
 
 
 
