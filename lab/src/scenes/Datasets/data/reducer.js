@@ -1,13 +1,13 @@
-import { Map, List, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import { 
     REQUEST_DATASETS,
     RECEIVE_DATASETS
 } from './actions';
 
 import { initialDatasets } from './initialDatasets'; // for testing
-const initialState = Map({
+const initialState = fromJS({
     isFetching: false,
-    items: /* List() */ fromJS(initialDatasets) // for testing
+    items: /* [] */ fromJS(initialDatasets) // for testing
 });
 
 const datasets = (state = initialState, action) => {
