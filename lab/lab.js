@@ -200,7 +200,8 @@ app.get("/api/v1/:collection", (req, res, next) => {
         });
 });
 // List preferences for this user
-app.get("/api/v1/preferences", (req, res, next) => {
+app.get("/api/preferences", (req, res, next) => {
+console.log('foo');
     var username = req.headers['X-Forwarded-User:'] || 'testuser';
     var preferences = db.users.find({
         username: username
