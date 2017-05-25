@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setCurrentDataset, setCurrentAlgorithm, setParamValue, resetParams } from './data/actions';
+import { submitJob } from './data/api';
 import { Header, Grid, Button } from 'semantic-ui-react';
 import { SelectedAlgorithm } from './components/SelectedAlgorithm';
 import { Parameters } from './components/Parameters';
@@ -13,7 +14,8 @@ export class Builder extends React.Component {
 			datasets,
 			algorithms,
 			setCurrentDataset,
-			setCurrentAlgorithm
+			setCurrentAlgorithm,
+			setParamValue
 		} = this.props;
 
 		const currentDatasetId = this.props.params.id;
@@ -22,8 +24,14 @@ export class Builder extends React.Component {
 			return dataset.get('_id') === currentDatasetId;
 		};
 
-		setCurrentDataset(datasets.find(findDatasetById));
-		setCurrentAlgorithm(algorithms.first());
+		let currentDataset = datasets.find(findDatasetById);
+		let currentAlgorithm = algorithms.first();
+
+		setCurrentDataset(currentDataset);
+		setCurrentAlgorithm(currentAlgorithm);
+		currentAlgorithm.get('params').entrySeq().forEach(([key, value]) => {
+			setParamValue(key, value.get('default'));
+		});
 	}
 
 	render() {
@@ -33,6 +41,7 @@ export class Builder extends React.Component {
 			algorithms,
 			setCurrentAlgorithm,
 			setParamValue,
+			submitJob,
 			resetParams
 		} = this.props;
 
@@ -60,7 +69,11 @@ export class Builder extends React.Component {
 								setParamValue={setParamValue}
 							/>
 						</Grid>
-						<Button color="blue">Launch Experiment</Button>
+						<Button 
+							color="blue" 
+							content="Launch Experiment"
+							onClick={() => submitJob(builder.getIn(['currentAlgorithm', '_id']), builder.get('currentParams'))}
+						/>
 						<Button color="grey" onClick={() => resetParams()}>Reset</Button>
 					</div>
 					) : (
@@ -87,6 +100,7 @@ function mapDispatchToProps(dispatch) {
 		setCurrentDataset: bindActionCreators(setCurrentDataset, dispatch),
 		setCurrentAlgorithm: bindActionCreators(setCurrentAlgorithm, dispatch),
 		setParamValue: bindActionCreators(setParamValue, dispatch),
+		submitJob: bindActionCreators(submitJob, dispatch),
 		resetParams: bindActionCreators(resetParams, dispatch)
 	};
 }
