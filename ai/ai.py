@@ -7,9 +7,11 @@ import numpy as np
 import pandas as pd
 from time import sleep
 import json
-import urllib
+# import urllib
 import requests
 import pdb
+import time
+import ai.ml_ids
 from ai.recommender.base import Recommender
 
 
@@ -30,24 +32,57 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
-                 db_path='http://ibi-admin-031.med.upenn.edu/api/datasets',
+                 db_path='http://ibi-admin-031.med.upenn.edu',
                  extra_payload=dict()):
         self.rec = rec
         # access to database
         self.db_path = db_path
+        self.exp_path = '/'.join([self.db_path,'api/experiments'])
+        self.data_path = '/'.join([self.db_path,'api/datasets'])
+        self.submit_path = '/'.join([self.db_path,'/api/v1/projects/'])
         # api key for the recommender
         self.api_key='Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='
         # optional extra payloads (e.g. user id) for posting to the db
         self.extra_payload = extra_payload
         # load previous state
+        # requests queue
+        self.request_queue = []
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
+        payload = {'token':self.api_key,
+                   'ai':'requested'}
+        r = requests.post(self.data_path,data=json.dumps(payload))
+        pdb.set_trace()
+        responses = json.loads(r.text)
+        # if there are any requests, add them to the queue and return True
+        if len(responses) > 0:
+            self.request_queue = responses
+            return True
+
         return False
-    def check_results(self):
+
+    # def update_requests(self,requests):
+    #     """get request dataset ids"""
+    #     self.requests = [r['_id'] for r in requests]
+
+    def check_results(self,timestamp=None):
         """Returns true if new results have been posted since the previous
         time step."""
+        if timestamp is None:
+            timestamp = 0
+
+        payload = {'token':self.api_key,
+                   'status':'finished',
+                   'time':timestamp}
+        # get new results
+        r = requests.post(exp_db_path,data=json.dumps(payload))
+        # if there are new results, return True
+        if len(json.loads(r.text)) > 0:
+            return True
+
         return False
+
     def get_new_results(self,timestamp=None):
         """Returns a dataframe of new results from the DB"""
         # payload = {'token':self.api_key,
@@ -67,13 +102,13 @@ class AI():
         # print('response:',response[0])
 
         response = [
-                    {'experiment_id': 12345,
+                    {'_id': 12345,
                      'dataset': "Gametes",
                      'algorithm':"LogisticRegression",
                      'parameters':{'alpha': 0.1, 'C': 100.0},
                      'accuracy': 0.75
                      },
-                    {'experiment_id': 4623,
+                    {'_id': 4623,
                      'dataset': "HeartDisease",
                      'algorithm':"DecisionTree",
                      'parameters':{'max_depth':6},
@@ -102,15 +137,26 @@ class AI():
         return df
 
     def send_rec(self):
-        """Sends recommendation to the API."""
-        ml,p = self.rec.recommend()
-        recs = []
-        for algs,params in zip(ml,p):
-            rec.append({'recommendation':{'algorithm':ml,
-                               'parameters':p}
-             })
-        # dump recommendations
-        json.dumps(rec)
+        """Sends recommendation to the API."""(':')
+        for r in self.requests:
+            dataset = r['name']
+            # get recommendation for dataset
+            ml,p = self.rec.recommend()
+            recs = []
+            for alg,params in zip(ml,p):
+                rec.append({'dataset_id':r['_id'],
+                            'dataset_name':r['name'],
+                            'ml_id':ml_ids[alg],
+                            'ml_name':alg,
+                            })
+                # add recommended parameters
+                for p in params.sep(','):
+                    rec[-1][p.split(':')[0]] = p.split(':')[1]
+
+            # submit path is ml_id/experiment
+            submit_path = '/'.join([self.submit_path,r['_id'],'/experiment'])
+            # post recommendations
+            requests.post(submit_path,json.dumps(rec))
 
     def update(self):
         """Updates recommender based on new results."""
@@ -129,7 +175,7 @@ class AI():
                 self.metric
         """
 
-######################################################## Manager
+####################################################################### Manager
 def main():
     pennai = AI()
     try:
