@@ -1,15 +1,16 @@
 # tests for Penn AI recommender
-
+# from tests.context import test_recommender
 import pandas as pd
 import numpy as np
-from recommender import Recommender
+from ai.recommender.base import Recommender
+from ai.ai import AI
 import pdb
 def test_ml_p():
     """Recommender returns a valid recommendation for sklearn data"""
 
     # get sklearn benchmark results
     print('loading pmlb results data...')
-    data = pd.read_csv('../metalearning/sklearn-benchmark5-data.tsv.gz',
+    data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz',
                        compression='gzip',sep='\t',
                        names=['dataset',
                               'classifier',
@@ -23,12 +24,12 @@ def test_ml_p():
                           'GradientBoostingClassifier']
     mask = np.array([c in pennai_classifiers for c in data['classifier'].values])
     data = data.loc[mask,:]
-
+    data = data.rename(columns={'classifier':'algorithm'})
     pennai = Recommender()
     pennai.update(data)
     ml,p = pennai.recommend()
-    print('ml:',ml)
-    print('p:',p)
+    print('ml:',ml[0])
+    print('p:',p[0])
     del pennai
 
     # test updating scores
@@ -43,11 +44,8 @@ def test_ml_p():
         ml,p = pennai.recommend(n_recs=n_recs)
         # pdb.set_trace()
         #'p:',p,
-        if n_recs>1:
-            print(str(n),': ml:',ml,', p:',p,'scores=',
-                  [pennai.scores[mle+':'+pe] for mle,pe in zip(ml,p)])
-        else:
-            print(str(n),': ml:',ml,', p:',p,'scores=',pennai.scores[ml+':'+p])
+        print(str(n),': ml:',ml,', p:',p,'scores=',
+              [pennai.scores[mle+':'+pe] for mle,pe in zip(ml,p)])
 
     # pennai.update(data2)
     # ml,p = pennai.recommend()
@@ -56,7 +54,8 @@ def test_ml_p():
 
 def test_db_grab():
     """loading database grabs right info"""
-    pennai= Recommender()
+    pennai= AI()
     pennai.db_to_results_data()
 
-test_db_grab()
+print('running test_ml_p')
+test_ml_p()

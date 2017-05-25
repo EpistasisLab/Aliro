@@ -5,7 +5,7 @@ Recommender system for Penn AI.
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
-from dataset_describe import Dataset
+from .dataset_describe import Dataset
 from collections import OrderedDict
 import json
 import urllib
@@ -39,9 +39,7 @@ class Recommender():
     """
 
     def __init__(self,method='ml_p',ml=None,ml_type = 'classifier',
-                 metric='bal_accuracy',
-                 db_path='http://ibi-admin-031.med.upenn.edu/api/datasets',
-                 extra_payload=dict()):
+                 metric='accuracy'):
         """initialize recommendation system."""
         self.method = method
         self.ml = ml
@@ -73,42 +71,9 @@ class Recommender():
         self.scores = pd.Series()
         # number of datasets trained on so far
         self.w = 0
-        # access to database
-        self.db_path = db_path
-        # api key for the recommender
-        self.api_key='Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='
-        # optional extra payloads (e.g. user id) for posting to the db
-        self.extra_payload = extra_payload
         # store a list of keys that have been trained on
         self.trained_data_ids = []
 
-    def db_to_results_data(self):
-        """load json files from db and convert to results_data.
-        Output: a DataFrame with at least these columns:
-                self.ml_type
-                'parameters'
-                self.metric
-        """
-        payload = {'token':self.api_key,
-                #    'filter_ids':self.trained_data_ids,
-                    'algorithm': self.models,
-                    'experiments': 'finished',
-                  }
-        payload.update(self.extra_payload)
-        print('payload:',payload)
-        ##post the payload to the API
-        r = requests.post(self.db_path, data = json.dumps(payload))
-        if r.status_code==503:
-            raise ValueError('Failed to connect to database',r.reason)
-        print(r)
-        # pdb.set_trace()
-        response = json.loads(r.text)
-        print('response:',response[0])
-        results = pd.DataFrame(response)
-        # ai = pd.DataFrame(response[0]['ai'])
-        print('results:\n',results)
-        # print('ai:',ai)
-        
     def results_in_db(self,ml,p,dataset_name):
         """checks whether results are already in database."""
 
@@ -118,13 +83,10 @@ class Recommender():
         Parameters
         ----------
         results_data: DataFrame with at least these columns:
-                self.ml_type
+                'algorithm'
                 'parameters'
                 self.metric
         """
-        # grab new results from database
-        results_data = db_to_results_data()
-
         if self.method=='ml_p':
             # recommending ML and Parameters based on overall performance
             self.fit_ml_p(results_data)
@@ -184,20 +146,20 @@ class Recommender():
         Parameters
         ----------
         results_data: DataFrame with columns corresponding to:
-                self.ml_type
+                'algorithm'
                 'parameters'
                 self.metric
         """
         # make combined data column of classifiers and parameters
-        results_data.loc[:,self.ml_type+'-parameters'] = (
-                                       results_data[self.ml_type].values + ':' +
+        results_data.loc[:,'algorithm'+'-parameters'] = (
+                                       results_data['algorithm'].values + ':' +
                                        results_data['parameters'].values)
         # get unique parameter / classifier combos in results_data
-        ml_p = results_data[self.ml_type+'-parameters'].unique()
+        ml_p = results_data['algorithm'+'-parameters'].unique()
         # get average balanced accuracy by classifier-parameter combo
-        new_scores = results_data.groupby((self.ml_type +
+        new_scores = results_data.groupby(('algorithm' +
                                            '-parameters'))[self.metric].mean()
-        new_weights = results_data.groupby(self.ml_type + '-parameters').size()
+        new_weights = results_data.groupby('algorithm' + '-parameters').size()
         # update scores
         self.update_scores(new_scores, new_weights)
 
@@ -230,7 +192,7 @@ class Recommender():
         else:
             for n in new_ind:
                 if n in self.scores.index.values:
-                    step = new_weights[n]/self.w[n]
+                    step = new_weights[n]/(self.w[n]+new_weights[n])
                     self.scores.loc[n] = (self.scores[n] +
                                           step*(new_scores[n]-self.scores[n]))
                 else:
