@@ -7,7 +7,7 @@ import {
 } from './actions';
 
 export const fetchResults = (experimentId) => {
-    const route = `api/v1/datasets/${experimentId}`;
+    const route = `api/datasets/${experimentId}`;
 
     return function(dispatch) {
         dispatch(requestResults());
