@@ -187,6 +187,21 @@ app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) =
 
 });
 
+//toggles ai for dataset
+app.put("/api/datasets/:id/ai", jsonParser, (req, res, next) => {
+    db.datasets.updateByIdAsync(req.params.id, {
+            $set: { ai: req.body.ai }
+        })
+        .then((result) => {
+            return res.send({
+                message: "AI toggled for " + req.params.id
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
 
 
 // Return all entries

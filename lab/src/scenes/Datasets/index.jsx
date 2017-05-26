@@ -2,7 +2,7 @@ import React from 'react';
 import { breakpoints } from '../../breakpoints';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchDatasets } from './data/api';
+import { fetchDatasets, toggleAI } from './data/api';
 import { Header, Button, Grid } from 'semantic-ui-react';
 import { DatasetPanel } from './components/DatasetPanel';
 
@@ -22,7 +22,7 @@ export class Datasets extends React.Component {
 	}
 
 	componentWillUnmount() {
-	  window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
+		window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
 	}
 
 	updateWindowDimensions() {
@@ -32,20 +32,34 @@ export class Datasets extends React.Component {
 	calcCols() {
 		let { width } = this.state; 
 
-		if(width < breakpoints.MIN_TABLET) 				{ return 1; } 
+		if(width < breakpoints.MIN_TABLET) 			{ return 1; } 
 		else if(width < breakpoints.MAX_TABLET) 	{ return 2; } 
 		else if(width < breakpoints.MAX_DESKTOP) 	{ return 3; } 
-		else 																			{ return 4; }
+		else 										{ return 4; }
 	}
 
 	render() {
-		const { datasets } = this.props;
+		const { 
+			datasets,
+			toggleAI
+		} = this.props;
 
 		return (
 			<div>
-				<div className='page-title'>
-					<Header inverted size='huge' content='Datasets' />
-					<Button inverted color='blue' compact size='small' icon='plus' content='Add new'/>
+				<div className="page-title">
+					<Header 
+						inverted 
+						size="huge" 
+						content="Datasets" 
+					/>
+					<Button 
+						inverted 
+						color="blue" 
+						compact 
+						size="small" 
+						icon="plus" 
+						content="Add new"
+					/>
 				</div>
 				{datasets.size > 0 ? (
 					<Grid stretched columns={this.calcCols()}>
@@ -53,13 +67,16 @@ export class Datasets extends React.Component {
 							<DatasetPanel
 								key={dataset.get('_id')}
 								dataset={dataset}
+								toggleAI={toggleAI}
 							/>
 						)}
 					</Grid>
 				) : (
-					<Header inverted size='small'>
-						You have no datasets uploaded yet.
-					</Header>
+					<Header 
+						inverted 
+						size="small"
+						content="You have no datasets uploaded yet."
+					/>
 				)};
 			</div>
 		);
@@ -75,7 +92,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
-		fetchDatasets: bindActionCreators(fetchDatasets, dispatch)
+		fetchDatasets: bindActionCreators(fetchDatasets, dispatch),
+		toggleAI: bindActionCreators(toggleAI, dispatch)
 	};
 }
 
