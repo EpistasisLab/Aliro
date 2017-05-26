@@ -7,7 +7,11 @@ import { ExperimentsSegment } from './components/ExperimentsSegment';
 
 export class DatasetPanel extends React.Component {
 	render() {
-		const { dataset } = this.props;
+		const { 
+			dataset,
+			toggleAI
+		} = this.props;
+
 		const datasetLink = `/#/datasets/${dataset.get('_id')}`;
 		const buildLink = `/#/build/${dataset.get('_id')}`;
 		return <Grid.Column className='dataset-panel'>
@@ -22,7 +26,10 @@ export class DatasetPanel extends React.Component {
 				/>
 				<span className='float-right'>
 					{dataset.get('has_metadata') &&
-						<AIToggle isOn={dataset.get('ai')} />
+						<AIToggle 
+							isOn={dataset.get('ai')}
+							toggleAI={toggleAI.bind(null, dataset.get('_id'))}
+						/>
 					}	
 					<ActionsDropdown />
 				</span>

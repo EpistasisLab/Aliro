@@ -3,11 +3,14 @@ import fetch from 'isomorphic-fetch';
 import { fromJS } from 'immutable';
 import { 
     requestDatasets,
-    receiveDatasets
+    receiveDatasets,
+    requestAIToggle,
+    receiveAIToggle
 } from './actions';
 
 export const fetchDatasets = () => {
-    const route = 'api/datasets';
+    //const route = 'api/datasets';
+    const route = `http://localhost:5080/api/datasets`;
 
     return function(dispatch) {
         dispatch(requestDatasets());
@@ -19,6 +22,25 @@ export const fetchDatasets = () => {
     }
 };
 
-export const toggleAI = () => {
+export const toggleAI = (datasetId) => {
+    // const route = `api/datasets/${datasetId}/ai`;
+    const route = `http://localhost:5080/api/datasets/${datasetId}/ai`;
     
-}
+    let myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    return function(dispatch) {
+        dispatch(receiveAIToggle(datasetId));
+        return fetch(route, {
+            method: 'PUT',
+            headers: myHeaders,
+            mode: 'cors',
+            cache: 'default',
+            body: JSON.stringify({ai: true})
+        })
+            .then(response => response.json())
+            .then(json =>
+                dispatch(receiveAIToggle(datasetId))
+            );
+    }  
+};

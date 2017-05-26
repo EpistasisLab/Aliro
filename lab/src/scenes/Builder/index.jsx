@@ -87,6 +87,7 @@ export class Builder extends React.Component {
 }
 
 function mapStateToProps(state) {
+	console.log(state.datasets.toJSON());
 	return {
 		isFetching: state.preferences.get('isFetching'),
 		algorithms: state.preferences.getIn(['preferences', 'Algorithms']),
