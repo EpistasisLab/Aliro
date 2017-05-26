@@ -8,7 +8,7 @@ import {
 
 export const fetchPreferences = () => {
     //const route = 'http://localhost:5080/api/v1/preferences';
-    const route = 'api/v1/preferences';
+    const route = 'api/preferences';
 
     return function(dispatch) {
         dispatch(requestPreferences());
