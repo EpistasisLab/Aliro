@@ -31,8 +31,6 @@ var metadata = [];
             'timestamp': Date.now(),
             'files': []
           }
-console.log(metadata);
-console.log(files);
             for (var i = 0; i < files.length; i++) {
                 if (files[i] == 'README.MD') {
                 //todo:parse README
@@ -93,11 +91,13 @@ var processUserDatasets = function(username) {
 }
 
 exports.scrapeUsers = function() {
-    fs.readdir(byuser_datasets_path, function(err, users) {
-        console.log(users);
+
+if (fs.existsSync(byuser_datasets_path)) {
+    fs.readdir(byuser_datasets_path, function(err) {
         for (var i = 0; i < users.length; i++) {
             var username = users[i];
             processUserDatasets(username);
         }
     });
+}
 }
