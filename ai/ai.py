@@ -28,12 +28,23 @@ class AI():
 
     Parameters
     ----------
+    rec: recommender to use
+
+    db_path: base path to the database server
+
+    extra_payload: any additional payload that needs to be specified
+
+    user: the user for this AI instance.
+
+    rec_score_file: pickled score file to keep persistent scores between
+                    sessions
     """
 
     def __init__(self,rec=Recommender(),
                  db_path='http://ibi-admin-031.med.upenn.edu',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_scores.obj'):
+        """initializes AI managing agent."""
         self.rec = rec
         # access to database
         self.db_path = db_path
@@ -52,7 +63,12 @@ class AI():
             self.load_state()
         # requests queue
         self.request_queue = []
-        
+        # static payload is the payload that is constant for every API post
+        self.static_payload = {'token':self.api_key,
+                                'user':self.user}
+        # add any extra payload
+        self.static_payload.update(extra_payload)
+
     def load_state(self):
         """loads pickled score file."""
         filehandler = open(self.rec_score_file)
@@ -60,8 +76,9 @@ class AI():
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
-        payload = {'token':self.api_key,
-                   'ai':'requested'}
+        payload = {'ai':'requested'}
+        payload.update(self.static_payload)
+
         r = requests.post(self.data_path,data=json.dumps(payload))
         pdb.set_trace()
         responses = json.loads(r.text)
@@ -72,19 +89,15 @@ class AI():
 
         return False
 
-    # def update_requests(self,requests):
-    #     """get request dataset ids"""
-    #     self.requests = [r['_id'] for r in requests]
-
     def check_results(self,timestamp=None):
         """Returns true if new results have been posted since the previous
         time step."""
         if timestamp is None:
             timestamp = 0
 
-        payload = {'token':self.api_key,
-                   'status':'success',
+        payload = {'status':'success',
                    'time':timestamp}
+        payload.update(self.static_payload)
         # get new results
         r = requests.post(exp_db_path,data=json.dumps(payload))
         # if there are new results, return True
@@ -100,7 +113,7 @@ class AI():
         #             'algorithm': self.models,
         #             'experiments': 'finished',
         #           }
-        # payload.update(self.extra_payload)
+        # payload.update(self.static_payload)
         # print('payload:',payload)
         # ##post the payload to the API
         # r = requests.post(self.db_path, data = json.dumps(payload))
@@ -169,11 +182,12 @@ class AI():
             # post recommendations
             requests.post(submit_path,json.dumps(rec))
 
-    def update(self):
+    def update_recommender(self,timestamp=None):
         """Updates recommender based on new results."""
         # get new results
         new_data = self.get_new_results()
-        self.rec.update(new_data)
+        # update recommender
+        self.rec.update(new_data,timestamp)
 
     def save_state(self):
         """Save ML+P scores in pickle or to DB"""
@@ -197,8 +211,8 @@ def main():
             if pennai.check_requests():
                 pennai.send_rec()
             print('checking results...')
-            if pennai.check_results():
-                pennai.update()
+            if pennai.check_results(time.gmtime()):
+                pennai.update_recommender()
             sleep(5)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
