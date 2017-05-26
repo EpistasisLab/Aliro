@@ -1,5 +1,7 @@
 export const REQUEST_DATASETS = 'REQUEST_DATASETS';
 export const RECEIVE_DATASETS = 'RECEIVE_DATASETS';
+export const REQUEST_AI_TOGGLE = 'REQUEST_AI_TOGGLE';
+export const RECEIVE_AI_TOGGLE = 'RECEIVE_AI_TOGGLE';
 
 export const requestDatasets = () => {
     return {
@@ -12,5 +14,21 @@ export const receiveDatasets = (json) => {
         type: RECEIVE_DATASETS,
         datasets: json,
         receivedAt: Date.now()
+    }
+};
+
+export const requestAIToggle = (datasetId, aiState) => {
+    return {
+        type: REQUEST_AI_TOGGLE,
+        datasetId,
+        aiState
+    }
+};
+
+export const receiveAIToggle = (datasetId) => {
+    return {
+        type: RECEIVE_AI_TOGGLE,
+        receivedAt: Date.now(),
+        datasetId
     }
 };

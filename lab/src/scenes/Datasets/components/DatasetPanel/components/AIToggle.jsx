@@ -3,7 +3,10 @@ import { Checkbox } from 'semantic-ui-react';
 
 export class AIToggle extends React.Component {
 	render() {
-		const { isOn } = this.props;
+		const { 
+			isOn,
+			toggleAI 
+		} = this.props;
 		const labelClass = `ai-label ${isOn ? 'on' : 'off' }`;
 		return (
 			<span>
@@ -14,6 +17,7 @@ export class AIToggle extends React.Component {
 					toggle 
 					checked={isOn}
 					className='ai-switch'
+					onChange={() => toggleAI()}
 				/>
 			</span>
 		);
