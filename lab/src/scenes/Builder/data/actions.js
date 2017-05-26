@@ -1,7 +1,23 @@
+export const REQUEST_DATASET = 'REQUEST_DATASET';
+export const RECEIVE_DATASET = 'RECEIVE_DATASET';
 export const SET_CURRENT_DATASET = 'SET_CURRENT_DATASET';
 export const SET_CURRENT_ALGORITHM = 'SET_CURRENT_ALGORITHM';
 export const SET_PARAM_VALUE = 'SET_PARAM_VALUE';
 export const RESET_PARAMS = 'RESET_PARAMS';
+
+export const requestDataset = () => {
+    return {
+        type: REQUEST_DATASET
+    }
+};
+
+export const receiveDataset = (json) => {
+    return {
+        type: RECEIVE_DATASET,
+        dataset: json,
+        receivedAt: Date.now()
+    }
+};
 
 export const setCurrentDataset = (currentDataset) => {
     return {
