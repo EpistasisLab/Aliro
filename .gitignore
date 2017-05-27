@@ -1,1 +1,5 @@
 *.pyc
+.ipynb_checkpoints/*
+*~
+
+pennai-dev-notebook.ipynb
