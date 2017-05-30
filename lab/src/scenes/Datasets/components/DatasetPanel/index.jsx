@@ -27,8 +27,9 @@ export class DatasetPanel extends React.Component {
 				<span className='float-right'>
 					{dataset.get('has_metadata') &&
 						<AIToggle 
-							isOn={dataset.get('ai')}
+							aiState={dataset.get('ai')}
 							toggleAI={toggleAI.bind(null, dataset.get('_id'))}
+							isToggling={dataset.get('toggling')}
 						/>
 					}	
 					<ActionsDropdown />

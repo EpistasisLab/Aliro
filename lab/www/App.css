@@ -58,6 +58,10 @@ body {
     background: rgba(255,255,255,.35);
 }
 
+.pennai .dataset-panel .ai-switch.requested.ui.toggle.checkbox label:before {
+    background-color: #FBBD08 !important;
+}
+
 .pennai .dataset-panel .ai-switch.ui.toggle.checkbox input:checked~label:after {
     left: 1.15rem;
 }

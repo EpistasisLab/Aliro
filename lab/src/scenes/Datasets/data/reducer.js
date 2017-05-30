@@ -24,20 +24,39 @@ const datasets = (state = initialState, action) => {
                 items: action.datasets
             });
         case REQUEST_AI_TOGGLE:
-            /*return state.items.map({
-                isFetching: false,
-                items: action.datasets
-            });*/
-            console.log(action.datasetId);
-            return state;
+            return state.merge({
+                items: state.get('items').map(d => dataset(d, action))
+            });
         case RECEIVE_AI_TOGGLE:
-            /*return state.merge({
-                isFetching: false,
-                items: action.datasets
-            });*/
-            return state;
+            return state.merge({
+                items: state.get('items').map(d => dataset(d, action))
+            });
         default:
             return state;
+    }
+};
+
+const dataset = (state = fromJS({}), action) => {
+    switch(action.type) {
+        case REQUEST_AI_TOGGLE:
+            if(state.get('_id') !== action.datasetId) {
+                return state;
+            }
+
+            return state.merge({
+                toggling: true
+            });
+        case RECEIVE_AI_TOGGLE:
+            if(state.get('_id') !== action.datasetId) {
+                return state;
+            }
+        
+            return state.merge({
+                ai: action.aiState,
+                toggling: false
+            });
+        default:
+            return state;  
     }
 };
 
