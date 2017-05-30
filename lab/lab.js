@@ -15,10 +15,8 @@ var rp = require("request-promise");
 var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
-/* App instantiation */
-var datasets = require("./datasets");
-var experiments  = require("./experiments");
 var users = require("./users");
+/* App instantiation */
 var app = express();
 var jsonParser = bodyParser.json({
     limit: '100mb'
@@ -118,10 +116,13 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 });
 
 // Get collection for all API db-based endpoints
-app.param("apipath", (req, res, next, apipath) => {
-console.log('foo');
-req.lib = require("./"+apipath);
-console.log(req.lib);
+app.param("apipath", jsonParser, (req, res, next, apipath) => {
+//console.log(apipath);
+    if (['datasets','experiments','algorithms'].indexOf(apipath) >= 0) {
+    req.handler = require("./api/" + apipath).handler;
+    } else {
+    req.handler = false;
+    }
     return next();
 });
 // Get collection for all API db-based endpoints
@@ -144,62 +145,9 @@ app.get("/api/v1/projects", (req, res, next) => {
         });
 });
 
-//list experiments for this user,
-app.get("/api/:apipath", (req, res, next) => {
-    users.returnUsername(req)
-       .then((username) => {
-        req.lib.returnData(username)
-            .then((results) => {
-             console.log(results);
-                return res.send(results);
-            })
-            .catch((err) => {
-                next(err);
-            });
-        })
-       .catch((err) => {
-           next(err);
-       });
-});
-// List experiments for this user, filtered
-app.post("/api/experiments", jsonParser, (req, res, next) => {
-    var username = users.returnUsername(req)
-    var postvars = req.body;
-    console.log(postvars);
-    experiments.returnUserExperimentsList(username)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
 
-// List datasets for this user
-app.get("/api/datasets", (req, res, next) => {
-    var username = users.returnUsername(req)
-    datasets.returnUserDatasetsList(username)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
-// List datasets for this user, filtered
-app.post("/api/datasets", jsonParser, (req, res, next) => {
-    var username = users.returnUsername(req)
-    var postvars = req.body;
-    datasets.returnUserDatasetsList(username)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
 //adds datasets
-app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
+app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
@@ -226,7 +174,7 @@ app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) =
 });
 
 //toggles ai for dataset
-app.put("/api/datasets/:id/ai", jsonParser, (req, res, next) => {
+app.put("/api/v1/datasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
             $set: { ai: req.body.ai }
         })
@@ -253,7 +201,7 @@ app.get("/api/v1/:collection", (req, res, next) => {
         });
 });
 // List preferences for this user
-app.get("/api/preferences", (req, res, next) => {
+app.get("/api/v1/preferences", (req, res, next) => {
     var username = users.returnUsername(req)
     var preferences = db.users.find({
         username: username
@@ -1298,6 +1246,24 @@ app.get("/batches/:id", (req, res, next) => {
             next(err);
         });
 });
+
+//use api handler
+app.all("/api/:apipath", (req, res, next) => {
+    users.returnUsername(req)
+       .then((username) => {
+        req.handler(username)
+            .then((results) => {
+                return res.send(results);
+            })
+            .catch((err) => {
+                next(err);
+            });
+        })
+       .catch((err) => {
+           next(err);
+       });
+});
+
 
 
 
