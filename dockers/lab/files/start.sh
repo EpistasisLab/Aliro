@@ -3,6 +3,6 @@ mongorestore /dump
 mongoimport -d FGLab -c users initialize/users.json
 cd /share/devel/Gp/lab
 webpack --watch &
-#mongoimport -d FGLab -c users --file examples/Users/Users.json --type json
+mongoimport -d FGLab -c users --file initialize/users.json --type json
 pm2 start lab.config.js --watch
 bash
