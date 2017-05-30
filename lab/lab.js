@@ -15,8 +15,8 @@ var rp = require("request-promise");
 var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
+var users = require("./users");
 /* App instantiation */
-var datasets = require("./datasets");
 var app = express();
 var jsonParser = bodyParser.json({
     limit: '100mb'
@@ -116,6 +116,16 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 });
 
 // Get collection for all API db-based endpoints
+app.param("apipath", jsonParser, (req, res, next, apipath) => {
+//console.log(apipath);
+    if (['datasets','experiments','algorithms'].indexOf(apipath) >= 0) {
+    req.handler = require("./api/" + apipath).handler;
+    } else {
+    req.handler = false;
+    }
+    return next();
+});
+// Get collection for all API db-based endpoints
 app.param("collection", (req, res, next, collection) => {
     req.collection = db.collection(collection);
     return next();
@@ -136,32 +146,8 @@ app.get("/api/v1/projects", (req, res, next) => {
 });
 
 
-
-// List datasets for this user
-app.get("/api/datasets", (req, res, next) => {
-    var username = req.headers['X-Forwarded-User:'] || 'testuser';
-    datasets.returnUserDatasetsList(username)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
-// List datasets for this user, filtered
-app.post("/api/datasets", jsonParser, (req, res, next) => {
-    var username = req.headers['X-Forwarded-User:'] || 'testuser';
-    var postvars = req.body;
-    datasets.returnUserDatasetsList(username)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
 //adds datasets
-app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
+app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
@@ -188,7 +174,7 @@ app.put("/api/datasets", upload.array("_files", "_metadata"), (req, res, next) =
 });
 
 //toggles ai for dataset
-app.put("/api/datasets/:id/ai", jsonParser, (req, res, next) => {
+app.put("/api/v1/datasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
             $set: { ai: req.body.ai }
         })
@@ -215,9 +201,8 @@ app.get("/api/v1/:collection", (req, res, next) => {
         });
 });
 // List preferences for this user
-app.get("/api/preferences", (req, res, next) => {
-console.log('foo');
-    var username = req.headers['X-Forwarded-User:'] || 'testuser';
+app.get("/api/v1/preferences", (req, res, next) => {
+    var username = users.returnUsername(req)
     var preferences = db.users.find({
         username: username
     }, {}).toArrayAsync(); // Get machine addresses and hostnames
@@ -506,7 +491,7 @@ var optionChecker = (schema, obj) => {
     };
 };
 
-var submitJob = (projId, options, files, dataset) => {
+var submitJob = (projId, options, files, datasetId) => {
     return new Promise((resolve, reject) => {
         db.machines.find({}, {
                 address: 1
@@ -531,8 +516,10 @@ var submitJob = (projId, options, files, dataset) => {
                         // Create experiment
                         db.experiments.insertAsync({
                                 _options: options,
-                                dataset: dataset,
+                                parameters: options,
+                                _dataset_id: db.toObjectID(datasetId),
                                 _project_id: db.toObjectID(projId),
+                                _algorithm_id: db.toObjectID(projId),
                                 _machine_id: db.toObjectID(availableMac._id),
                                 files: [],
                                 _status: "running"
@@ -540,10 +527,10 @@ var submitJob = (projId, options, files, dataset) => {
                             .then((exp) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
-                                if (dataset == "") {
+                                if (datasetId == "") {
                                     var filesP = processFiles(exp.ops[0], files); // Add files to project
                                 } else {
-                                    var filesP = linkDataset(exp.ops[0], dataset); // Add files to project
+                                    var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
                                 }
                                 // Wait for file upload to complete
                                 Promise.all(filesP)
@@ -1259,6 +1246,24 @@ app.get("/batches/:id", (req, res, next) => {
             next(err);
         });
 });
+
+//use api handler
+app.all("/api/:apipath", (req, res, next) => {
+    users.returnUsername(req)
+       .then((username) => {
+        req.handler(username)
+            .then((results) => {
+                return res.send(results);
+            })
+            .catch((err) => {
+                next(err);
+            });
+        })
+       .catch((err) => {
+           next(err);
+       });
+});
+
 
 
 
