@@ -6,9 +6,9 @@ import {
     receiveDataset
 } from './actions';
 
-export const fetchDatasets = () => {
-    //const route = `api/dataset/${datasetId}`;
-    const route = `http://localhost:5080/api/dataset/${datasetId}`;
+export const fetchDataset = (datasetId) => {
+    const route = `api/v1/datasets/${datasetId}`;
+    //const route = `http://localhost:5080/api/v1/datasets/${datasetId}`;
 
     return function(dispatch) {
         dispatch(requestDataset());
@@ -21,7 +21,8 @@ export const fetchDatasets = () => {
 };
 
 export const submitJob = (algorithmId, params) => {
-    const route = `http://localhost:5080/api/v1/projects/${algorithmId}/experiment`;
+    const route = `api/v1/projects/${algorithmId}/experiment`;
+    //const route = `http://localhost:5080/api/v1/projects/${algorithmId}/experiment`;
 
     console.log(algorithmId, params.toJS());
     return function(dispatch) {
