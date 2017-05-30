@@ -17,18 +17,18 @@ export const receiveDatasets = (json) => {
     }
 };
 
-export const requestAIToggle = (datasetId, aiState) => {
+export const requestAIToggle = (datasetId) => {
     return {
         type: REQUEST_AI_TOGGLE,
-        datasetId,
-        aiState
+        datasetId
     }
 };
 
-export const receiveAIToggle = (datasetId) => {
+export const receiveAIToggle = (datasetId, aiState) => {
     return {
         type: RECEIVE_AI_TOGGLE,
         receivedAt: Date.now(),
-        datasetId
+        datasetId,
+        aiState
     }
 };
