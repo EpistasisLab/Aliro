@@ -117,7 +117,6 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {
-console.log(apipath);
     if (['datasets','experiments','algorithms'].indexOf(apipath) >= 0) {
     req.handler = require("./api/" + apipath).handler;
     } else {
@@ -1246,14 +1245,28 @@ app.get("/batches/:id", (req, res, next) => {
             next(err);
         });
 });
+app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
+    users.returnUsername(req)
+       .then((username) => {
+        req.handler(username,req.params.id)
+            .then((results) => {
+                return res.send(results);
+            })
+            .catch((err) => {
+                next(err);
+            });
+        })
+       .catch((err) => {
+           next(err);
+       });
+});
 
 //use api handler
 app.all("/api/:apipath", jsonParser, (req, res, next) => {
-//console.log(req);
-console.log(req.handler);
+var id = null;
     users.returnUsername(req)
        .then((username) => {
-        req.handler(username)
+        req.handler(username,id)
             .then((results) => {
                 return res.send(results);
             })
