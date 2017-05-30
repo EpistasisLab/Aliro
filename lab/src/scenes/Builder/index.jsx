@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setCurrentDataset, setCurrentAlgorithm, setParamValue, resetParams } from './data/actions';
-import { submitJob } from './data/api';
+import { fetchDataset, submitJob } from './data/api';
 import { Header, Grid, Button } from 'semantic-ui-react';
 import { SelectedAlgorithm } from './components/SelectedAlgorithm';
 import { Parameters } from './components/Parameters';
@@ -13,6 +13,7 @@ export class Builder extends React.Component {
 		const { 
 			datasets,
 			algorithms,
+			fetchDataset,
 			setCurrentDataset,
 			setCurrentAlgorithm,
 			setParamValue
@@ -27,7 +28,8 @@ export class Builder extends React.Component {
 		let currentDataset = datasets.find(findDatasetById);
 		let currentAlgorithm = algorithms.first();
 
-		setCurrentDataset(currentDataset);
+		fetchDataset(currentDatasetId);
+		//setCurrentDataset(currentDataset);
 		setCurrentAlgorithm(currentAlgorithm);
 		currentAlgorithm.get('params').entrySeq().forEach(([key, value]) => {
 			setParamValue(key, value.get('default'));
@@ -98,6 +100,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
+		fetchDataset: bindActionCreators(fetchDataset, dispatch),
 		setCurrentDataset: bindActionCreators(setCurrentDataset, dispatch),
 		setCurrentAlgorithm: bindActionCreators(setCurrentAlgorithm, dispatch),
 		setParamValue: bindActionCreators(setParamValue, dispatch),
