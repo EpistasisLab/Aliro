@@ -18,7 +18,7 @@ console.log(username);
                 //        success(results);
                 for (var i = 0; i < results.length; i++) {
                     var validation = results[i];
-                    if !("ai" in validation) {
+                    if (!("ai" in validation)) {
                         validation['ai'] = false;
                     }
                     validation['has_metadata'] = true;
