@@ -22,7 +22,7 @@ export const fetchDatasets = () => {
     }
 };
 
-export const toggleAI = (datasetId) => {
+export const toggleAI = (datasetId, aiState) => {
     const route = `api/v1/datasets/${datasetId}/ai`;
     //const route = `http://localhost:5080/api/v1/datasets/${datasetId}/ai`;
     
@@ -30,17 +30,17 @@ export const toggleAI = (datasetId) => {
     myHeaders.append('Content-Type', 'application/json');
 
     return function(dispatch) {
-        dispatch(receiveAIToggle(datasetId));
+        dispatch(requestAIToggle(datasetId));
         return fetch(route, {
             method: 'PUT',
             headers: myHeaders,
             mode: 'cors',
             cache: 'default',
-            body: JSON.stringify({ai: true})
+            body: JSON.stringify({ai: aiState})
         })
             .then(response => response.json())
             .then(json =>
-                dispatch(receiveAIToggle(datasetId))
+                dispatch(receiveAIToggle(datasetId, aiState))
             );
     }  
 };

@@ -4,20 +4,44 @@ import { Checkbox } from 'semantic-ui-react';
 export class AIToggle extends React.Component {
 	render() {
 		const { 
-			isOn,
-			toggleAI 
+			aiState,
+			toggleAI,
+			isToggling
 		} = this.props;
-		const labelClass = `ai-label ${isOn ? 'on' : 'off' }`;
+
+		const nextState = (() => {
+			return !aiState ? 'requested' : false;
+		})();
+
+		const isChecked = (() => {
+			return !aiState ? false : true;
+		})();
+
+		const labelText = (() => {
+			switch(aiState) {
+				case false:
+					return 'AI off';
+				case 'requested':
+					return 'AI requested';
+				case true:
+					return 'AI on';		
+			}
+		})();
+
+		const labelClass = `ai-label ${aiState ? 'on' : 'off' }`;
+
+		const toggleClass = aiState === 'requested' ? 'ai-switch requested' : 'ai-switch';
 		return (
 			<span>
 				<span className={labelClass}>
-					AI {isOn ? 'on' : 'off' }
+					{labelText}
 				</span>
 				<Checkbox
 					toggle 
-					checked={isOn}
-					className='ai-switch'
-					onChange={() => toggleAI()}
+					checked={isChecked}
+					className={toggleClass}
+					onChange={() => toggleAI(nextState)}
+					disabled={isToggling}
 				/>
 			</span>
 		);
