@@ -31,7 +31,6 @@ returnUserData = function(req) {
     return(false);
   } else {
     return new Promise(function(success, fail) {
-console.log(query);
         db.users.find(query).limit(1)
             .toArrayAsync()
             .then((results) => {
