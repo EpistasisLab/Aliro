@@ -4,7 +4,7 @@ export const initialExperiments = [
 		 status: 'pending',
 		 notification: undefined, // if finished experiment has not been seen yet
 		 accuracy_score: undefined,
-		 dataset: 'Thyroid',
+		 dataset: 'Thyroiid',
 		 algorithm: 'Random Forest',
 		 params: {
 			 n_estimators: 10,
