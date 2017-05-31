@@ -27,6 +27,8 @@ export const submitJob = (datasetId, algorithmId, params) => {
     let myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
+    let body = params.set('dataset', datasetId).toJSON();
+    console.log(body);
     return function(dispatch) {
         //dispatch(requestDatasets());
         return fetch(route, {
@@ -34,10 +36,7 @@ export const submitJob = (datasetId, algorithmId, params) => {
                 headers: myHeaders,
                 mode: 'cors',
                 cache: 'default', 
-                body: JSON.stringify({
-                    dataset: datasetId,
-                    params: params.toJSON()
-                })
+                body: JSON.stringify(body)
             })
             .then(response => response.json())
             .then(json =>
