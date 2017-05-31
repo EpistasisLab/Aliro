@@ -11,10 +11,10 @@ exports.responder = function(user,req,res) {
   if(req.params.id) {
     query['_id'] = db.ObjectID(req.params.id);
   }
-  if(req.body.finishedafter) {
-    query['_finished'] = {"$gte": new Date(req.body.finishedafter*1000)"}
+  if(req.body.finishedafter && isNaN(parseFloat(req.body.finishedafter) && isFinite(req.body.finishedafter))) {
+    max_date = req.body.finishedafter * 1000
+    query['_finished'] = {"$gte": new Date(max_date)"}
   }
-  console.log(query);
   res.set('Content-Type', 'application/json');
   res.write('[');
   var prevChunk = null;
