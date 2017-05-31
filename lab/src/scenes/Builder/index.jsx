@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setCurrentDataset, setCurrentAlgorithm, setParamValue, resetParams } from './data/actions';
+import { setDataset, setAlgorithm, setParamValue, resetParams } from './data/actions';
 import { fetchDataset, submitJob } from './data/api';
 import { Header, Grid, Button } from 'semantic-ui-react';
 import { SelectedAlgorithm } from './components/SelectedAlgorithm';
@@ -14,24 +14,28 @@ export class Builder extends React.Component {
 			datasets,
 			algorithms,
 			fetchDataset,
-			setCurrentDataset,
-			setCurrentAlgorithm,
+			setDataset,
+			setAlgorithm,
 			setParamValue
 		} = this.props;
 
-		const currentDatasetId = this.props.params.id;
+		const datasetId = this.props.params.id;
 
 		const findDatasetById = (dataset) => {
-			return dataset.get('_id') === currentDatasetId;
+			return dataset.get('_id') === datasetId;
 		};
 
-		let currentDataset = datasets.find(findDatasetById);
-		let currentAlgorithm = algorithms.first();
+		let dataset = datasets.find(findDatasetById);
+		let algorithm = algorithms.first();
 
-		fetchDataset(currentDatasetId);
-		//setCurrentDataset(currentDataset);
-		setCurrentAlgorithm(currentAlgorithm);
-		currentAlgorithm.get('params').entrySeq().forEach(([key, value]) => {
+		if(dataset) {
+			setDataset(dataset);
+		} else {
+			fetchDataset(datasetId);
+		}
+
+		setAlgorithm(algorithm);
+		algorithm.get('params').entrySeq().forEach(([key, value]) => {
 			setParamValue(key, value.get('default'));
 		});
 	}
@@ -41,7 +45,7 @@ export class Builder extends React.Component {
 		const {
 			builder,
 			algorithms,
-			setCurrentAlgorithm,
+			setAlgorithm,
 			setParamValue,
 			submitJob,
 			resetParams
@@ -53,28 +57,28 @@ export class Builder extends React.Component {
 					<Header 
 						inverted 
 						size="huge" 
-						content={`Experiment Builder: ${builder.getIn(['currentDataset', 'name'])}`}
+						content={`Experiment Builder: ${builder.getIn(['dataset', 'item', 'name']) || ''}`}
 					/>
 				</div>
-				{builder.get('currentDataset') ? (
+				{builder.getIn(['dataset', 'item']) ? (
 					<div>
 						<Grid stretched>
 							<SelectedAlgorithm
 								algorithms={algorithms}
-								currentAlgorithm={builder.get('currentAlgorithm')}
-								setCurrentAlgorithm={setCurrentAlgorithm}
+								currentAlgorithm={builder.get('algorithm')}
+								setCurrentAlgorithm={setAlgorithm}
 								setParamValue={setParamValue}
 							/>
 							<Parameters 
-								params={builder.getIn(['currentAlgorithm', 'params'])}
-								currentParams={builder.get('currentParams')}
+								params={builder.getIn(['algorithm', 'params'])}
+								currentParams={builder.get('params')}
 								setParamValue={setParamValue}
 							/>
 						</Grid>
 						<Button 
 							color="blue" 
 							content="Launch Experiment"
-							onClick={() => submitJob(builder.getIn(['currentAlgorithm', '_id']), builder.get('currentParams'))}
+							onClick={() => submitJob(builder.getIn(['dataset', 'item', '_id']), builder.getIn(['algorithm', '_id']), builder.get('params'))}
 						/>
 						<Button color="grey" onClick={() => resetParams()}>Reset</Button>
 					</div>
@@ -89,7 +93,6 @@ export class Builder extends React.Component {
 }
 
 function mapStateToProps(state) {
-	console.log(state.datasets.toJSON());
 	return {
 		isFetching: state.preferences.get('isFetching'),
 		algorithms: state.preferences.getIn(['preferences', 'Algorithms']),
@@ -101,8 +104,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		fetchDataset: bindActionCreators(fetchDataset, dispatch),
-		setCurrentDataset: bindActionCreators(setCurrentDataset, dispatch),
-		setCurrentAlgorithm: bindActionCreators(setCurrentAlgorithm, dispatch),
+		setDataset: bindActionCreators(setDataset, dispatch),
+		setAlgorithm: bindActionCreators(setAlgorithm, dispatch),
 		setParamValue: bindActionCreators(setParamValue, dispatch),
 		submitJob: bindActionCreators(submitJob, dispatch),
 		resetParams: bindActionCreators(resetParams, dispatch)
