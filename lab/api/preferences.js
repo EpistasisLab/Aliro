@@ -1,24 +1,22 @@
 require("../env"); // Load configuration variables
 var db = require("../db").db;
 //return a list of datasets for each user
-exports.handler = function(username,id) {
-    return new Promise(function(success, fail) {
+exports.responder = function(user,req,res) {
         query = {};
-        if(username != 'pmlb') {
-           query['username'] =  username;
+        if (!(user['roles']) || (!user['roles'].indexOf('ai'))) {
+          query['username'] = user['username'];
         }
-        if(id) {
-         query['_id'] = db.ObjectID(id);
+        if(req.params.id) {
+          query['_id'] = db.ObjectID(req.params.id);
         }
-        db.users.find(query)
-            .toArrayAsync()
+console.log(query);
+        db.collection('users').find(query).toArrayAsync()
             .then((results) => {
-                success(results);
-                //  success(returnDummyExperimentsList());
+                res.send(results);
+                //  success(returnDummyDatasetsList());
             })
             .catch((err) => {
                 fail(err);
             });
-    });
 
 }
