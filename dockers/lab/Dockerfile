@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 #RUN /etc/init.d/mongod start && mongorestore  /dump
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
-RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git 
+#RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git 
+RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlacc.pmacs.upenn.edu:svitale/Gp.git
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN cd /share/devel/Gp/lab && npm install 
