@@ -71,7 +71,8 @@ class Recommender():
         self.scores = pd.Series()
         # number of datasets trained on so far
         self.w = 0
-        # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
+        # maintain a set of dataset-algorithm-parameter combinations that have
+        # already been evaluated
         self.trained_dataset_models = set()
 
     def results_in_db(self,ml,p,dataset_name):
@@ -104,11 +105,12 @@ class Recommender():
             # return ML+P for best average y
             try:
                 rec = self.scores.sort_values(ascending=False).index.values
-                
-                # if a dataset is specified, do not make recommendations for algorithm-parameter combos
-                # that have already been run
+
+                # if a dataset is specified, do not make recommendations for
+                # algorithm-parameter combos that have already been run
                 if dataset_id is not None:
-                    rec = [r for r in rec if dataset_id + ':' + r not in self.trained_dataset_models]
+                    rec = [r for r in rec if dataset_id + ':' + r not in
+                           self.trained_dataset_models]
 
                 ml_rec = [r.split(':')[0] for r in rec]
                 p_rec = [r.split(':')[1] for r in rec]
@@ -118,11 +120,13 @@ class Recommender():
                 print('self.w:',self.w)
                 raise AttributeError
 
-            # update the recommender's memory with the new algorithm-parameter combos that it recommended
+            # update the recommender's memory with the new algorithm-parameter
+            # combos that it recommended
             ml_rec = ml_rec[:n_recs]
             p_rec = p_rec[:n_recs]
 
-            self.trained_dataset_models.update([':'.join([dataset_id, ml, p]) for ml, p in zip(ml_rec, p_rec)])
+            self.trained_dataset_models.update([':'.join([dataset_id, ml, p])
+                                            for ml, p in zip(ml_rec, p_rec)])
 
             return ml_rec, p_rec
         # # get metafeatures of the dataset
@@ -140,7 +144,8 @@ class Recommender():
             a 'class' column with dependent variable,
         """
 
-        dataset = Dataset(data, dependent_col = 'class', prediction_type='classification')
+        dataset = Dataset(data, dependent_col = 'class',
+                          prediction_type='classification')
 
         meta_features = OrderedDict()
         for i in dir(dataset):
