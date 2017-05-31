@@ -24,14 +24,21 @@ export const submitJob = (datasetId, algorithmId, params) => {
     const route = `api/v1/projects/${algorithmId}/experiment`;
     //const route = `http://localhost:5080/api/v1/projects/${algorithmId}/experiment`;
 
-    console.log(algorithmId, params.toJS());
+    let myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
     return function(dispatch) {
         //dispatch(requestDatasets());
-        let body = {
-            dataset: datasetId,
-            params: params.toJSON()
-        };
-        return fetch(route, {method: 'POST', body: JSON.stringify(body)})
+        return fetch(route, {
+                method: 'POST',
+                headers: myHeaders,
+                mode: 'cors',
+                cache: 'default', 
+                body: JSON.stringify({
+                    dataset: datasetId,
+                    params: params.toJSON()
+                })
+            })
             .then(response => response.json())
             .then(json =>
                 console.log(json)
