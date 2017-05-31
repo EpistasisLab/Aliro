@@ -2,38 +2,50 @@ import { fromJS } from 'immutable';
 import {
 	REQUEST_DATASET,
 	RECEIVE_DATASET,
-	SET_CURRENT_DATASET,
-	SET_CURRENT_ALGORITHM,
+	SET_DATASET,
+	SET_ALGORITHM,
 	SET_PARAM_VALUE,
 	RESET_PARAMS
 } from './actions';
 
 const initialState = fromJS({
-	currentDataset: null,
-	currentAlgorithm: null,
-	currentParams: {}
+	dataset: {
+		isFetching: false,
+		item: {}
+	},
+	algorithm: {},
+	params: {}
 });
 
 const builder = (state = initialState, action) => {
 	switch(action.type) {
 		case REQUEST_DATASET:
-			return state;
+			return state.mergeDeep({
+				dataset: {
+					isFetching: true
+				}
+			});
 		case RECEIVE_DATASET:
-			return state.merge({
-				currentDataset: action.dataset
+			return state.mergeDeep({
+				dataset: {
+					isFetching: false,
+					item: action.dataset
+				}
 			});
-		case SET_CURRENT_DATASET:
-			return state.merge({
-				currentDataset: action.currentDataset
+		case SET_DATASET:
+			return state.mergeDeep({
+				dataset: {
+					item: action.dataset
+				}
 			});
-		case SET_CURRENT_ALGORITHM:
+		case SET_ALGORITHM:
 			return state.merge({
-				currentAlgorithm: action.currentAlgorithm,
+				algorithm: action.algorithm,
 				params: {}
 			});
 		case SET_PARAM_VALUE:
 			return state.setIn(
-				['currentParams', action.param], 
+				['params', action.param], 
 				action.value
 			);
 		case RESET_PARAMS:
@@ -41,7 +53,7 @@ const builder = (state = initialState, action) => {
 				params: {}
 			});
 		default:
-			return state;	
+			return state;
 	}
 };
 
