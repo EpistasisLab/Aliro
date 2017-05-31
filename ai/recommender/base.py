@@ -71,8 +71,8 @@ class Recommender():
         self.scores = pd.Series()
         # number of datasets trained on so far
         self.w = 0
-        # store a list of keys that have been trained on
-        self.trained_data_ids = []
+        # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
+        self.trained_dataset_models = set()
 
     def results_in_db(self,ml,p,dataset_name):
         """checks whether results are already in database."""
@@ -94,7 +94,7 @@ class Recommender():
             # recommending ML and parameters based on metafeatures of data
             self.fit_ml_p_mf(results_data,data_name)
 
-    def recommend(self,dataset=None,n_recs=1):
+    def recommend(self,dataset=None,dataset_id=None,n_recs=1):
         """return a model and parameter values expected to do best on
         dataset.
         n_recs (default: 1): optionally, return a list of length n_recs
@@ -103,7 +103,13 @@ class Recommender():
         if self.method=='ml_p':
             # return ML+P for best average y
             try:
-                rec = self.scores.sort_values(ascending=False).index[:n_recs].values
+                rec = self.scores.sort_values(ascending=False).index.values
+                
+                # if a dataset is specified, do not make recommendations for algorithm-parameter combos
+                # that have already been run
+                if dataset_id is not None:
+                    rec = [r for r in rec if dataset_id + ':' + r not in self.trained_dataset_models]
+
                 ml_rec = [r.split(':')[0] for r in rec]
                 p_rec = [r.split(':')[1] for r in rec]
             except AttributeError:
@@ -111,6 +117,13 @@ class Recommender():
                 print('self.scores:',self.scores)
                 print('self.w:',self.w)
                 raise AttributeError
+
+            # update the recommender's memory with the new algorithm-parameter combos that it recommended
+            ml_rec = ml_rec[:n_recs]
+            p_rec = p_rec[:n_recs]
+
+            self.trained_dataset_models.update([':'.join([dataset_id, ml, p]) for ml, p in zip(ml_rec, p_rec)])
+
             return ml_rec, p_rec
         # # get metafeatures of the dataset
         # metafeatures = self.metafeatures(dataset)
@@ -150,12 +163,21 @@ class Recommender():
                 'parameters'
                 self.metric
         """
-        # make combined data column of classifiers and parameters
-        results_data.loc[:,'algorithm'+'-parameters'] = (
+        # make combined data columns of datasets, classifiers, and parameters
+        results_data.loc[:,'algorithm-parameters'] = (
                                        results_data['algorithm'].values + ':' +
                                        results_data['parameters'].values)
-        # get unique parameter / classifier combos in results_data
-        ml_p = results_data['algorithm'+'-parameters'].unique()
+
+        results_data.loc[:,'dataset-algorithm-parameters'] = (
+                                       results_data['dataset'].values + ':' +
+                                       results_data['algorithm'].values + ':' +
+                                       results_data['parameters'].values)
+
+        # get unique dataset / parameter / classifier combos in results_data
+        ml_p = results_data['algorithm-parameters'].unique()
+        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
+        self.trained_dataset_models.update(d_ml_p)
+
         # get average balanced accuracy by classifier-parameter combo
         new_scores = results_data.groupby(('algorithm' +
                                            '-parameters'))[self.metric].mean()
