@@ -12,11 +12,8 @@ export class Builder extends React.Component {
 	componentDidMount() {
 		const { 
 			datasets,
-			algorithms,
 			fetchDataset,
-			setDataset,
-			setAlgorithm,
-			setParamValue
+			setDataset
 		} = this.props;
 
 		const datasetId = this.props.params.id;
@@ -26,18 +23,28 @@ export class Builder extends React.Component {
 		};
 
 		let dataset = datasets.find(findDatasetById);
-		let algorithm = algorithms.first();
 
 		if(dataset) {
 			setDataset(dataset);
 		} else {
 			fetchDataset(datasetId);
 		}
+	}
 
-		setAlgorithm(algorithm);
-		algorithm.get('params').entrySeq().forEach(([key, value]) => {
-			setParamValue(key, value.get('default'));
-		});
+	componentWillReceiveProps(nextProps) {
+		const { 
+			algorithms,
+			setAlgorithm,
+			setParamValue
+		} = this.props;
+
+		if(algorithms !== nextProps.algorithms) {
+			let algorithm = nextProps.algorithms.first();
+			setAlgorithm(algorithm);
+			algorithm.get('params').entrySeq().forEach(([key, value]) => {
+				setParamValue(key, value.get('default'));
+			});
+		}
 	}
 
 	render() {

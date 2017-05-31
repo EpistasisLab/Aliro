@@ -7,7 +7,7 @@ import {
 import { initialPreferences } from './initialPreferences'; // for testing
 const initialState = fromJS({
     isFetching: false,
-    preferences: /* {} */ initialPreferences // for testing
+    preferences: {} /*initialPreferences*/ // for testing
 });
 
 const preferences = (state = initialState, action) => {
