@@ -13,7 +13,7 @@ exports.responder = function(user,req,res) {
   }
   if(req.body.finishedafter && isNaN(parseFloat(req.body.finishedafter) && isFinite(req.body.finishedafter))) {
     max_date = req.body.finishedafter * 1000
-    query['_finished'] = {"$gte": new Date(max_date)"}
+    query['_finished'] = {"$gte": new Date(max_date)}
   }
   res.set('Content-Type', 'application/json');
   res.write('[');
