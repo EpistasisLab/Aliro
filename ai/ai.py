@@ -41,7 +41,7 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
-                 db_path='http://ibi-admin-031.med.upenn.edu',
+                 db_path='http://ibi-admin-024.med.upenn.edu',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_scores.obj'):
         """initializes AI managing agent."""
