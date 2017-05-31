@@ -2,15 +2,13 @@ require("../env"); // Load configuration variables
 var db = require("../db").db;
 
 //return a list of datasets for each user
-exports.handler = function(username,id) {
-console.log(username);
-    return new Promise(function(success, fail) {
+exports.responder = function(user,req,res) {
         query = {};
-        if(username != 'pmlb') {
-           query['username'] =  username;
+        if(user['username'] != 'pmlb') {
+           query['username'] =  user['username'];
         }
-        if(id) {
-          query['_id'] = db.ObjectID(id);
+        if(req.params.id) {
+          query['_id'] = db.ObjectID(req.params.id);
         }
         db.datasets.find(query).toArrayAsync()
             .then((results) => {
@@ -33,13 +31,11 @@ console.log(username);
                     }
                     resultsList.push(validation);
                 }
-
-                success(resultsList);
+                res.send(resultsList);
                 //  success(returnDummyDatasetsList());
             })
             .catch((err) => {
                 fail(err);
             });
-    });
 
 }

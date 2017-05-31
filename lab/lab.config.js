@@ -15,6 +15,9 @@ module.exports = {
       env_production : {
         NODE_ENV: "dev"
       },
+      "args": [
+       "--max_old_space_size=8192"
+      ],
       cwd : "/share/devel/Gp/lab",
 //      ignore_watch : ["node_modules","log",".+\.sw."],
       watch: ['lab.js','users.js','./api/datasets.js', './api/experiments.js'],
