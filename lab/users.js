@@ -1,19 +1,7 @@
 require("./env"); // Load configuration variables
 var db = require("./db").db;
 //return a user data
-exports.returnUsername = function(req) {
-    return new Promise(function(success, fail) {
-        returnUserData(req)
-            .then((results) => {
-            var username = results[0]['username'];
-            success(username);
-            })
-            .catch((err) => {
-                fail(err);
-            });
-    });
-}
-returnUserData = function(req) {
+exports.returnUserData = function(req) {
   var data = {}
   var query = {}
   //if the username is handled by the server, use that
@@ -34,7 +22,7 @@ returnUserData = function(req) {
         db.users.find(query).limit(1)
             .toArrayAsync()
             .then((results) => {
-                 success(results);
+                 success(results[0]);
             })
             .catch((err) => {
                 fail(err);
