@@ -16,6 +16,7 @@ var Promise = require("bluebird");
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
+var fs = require("fs");
 /* App instantiation */
 var app = express();
 var jsonParser = bodyParser.json({
@@ -117,10 +118,10 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {
-    if (['datasets','experiments','algorithms'].indexOf(apipath) >= 0) {
-    req.handler = require("./api/" + apipath).handler;
+    if (fs.existsSync("./api/" + apipath + ".js")){
+      req.responder = require("./api/" + apipath).responder;
     } else {
-    req.handler = false;
+      req.responder = require("./api/default").responder;
     }
     return next();
 });
@@ -1246,15 +1247,9 @@ app.get("/batches/:id", (req, res, next) => {
         });
 });
 app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
-    users.returnUsername(req)
-       .then((username) => {
-        req.handler(username,req.params.id)
-            .then((results) => {
-                return res.send(results);
-            })
-            .catch((err) => {
-                next(err);
-            });
+    users.returnUserData(req)
+       .then((user) => {
+          req.responder(user,req,res)
         })
        .catch((err) => {
            next(err);
@@ -1263,16 +1258,9 @@ app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
 
 //use api handler
 app.all("/api/:apipath", jsonParser, (req, res, next) => {
-var id = null;
-    users.returnUsername(req)
-       .then((username) => {
-        req.handler(username,id)
-            .then((results) => {
-                return res.send(results);
-            })
-            .catch((err) => {
-                next(err);
-            });
+    users.returnUserData(req)
+       .then((user) => {
+          req.responder(user,req,res);
         })
        .catch((err) => {
            next(err);
