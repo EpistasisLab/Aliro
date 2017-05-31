@@ -72,7 +72,7 @@ class Recommender():
         # number of datasets trained on so far
         self.w = 0
         # maintain a set of dataset-algorithm-parameter combinations that have
-        # already been evaluated
+        # https://github.com/EpistasisLab/penn-ai.gitalready been evaluated
         self.trained_dataset_models = set()
 
     def results_in_db(self,ml,p,dataset_name):
