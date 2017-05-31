@@ -10,6 +10,9 @@ exports.responder = function(user,req,res) {
         if(req.params.id) {
           query['_id'] = db.ObjectID(req.params.id);
         }
+        if(req.body.ai) {
+          query['ai'] = req.body.ai;
+        }
         db.datasets.find(query).toArrayAsync()
             .then((results) => {
                 resultsList = [];
