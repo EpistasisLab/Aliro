@@ -11,7 +11,10 @@ exports.responder = function(user,req,res) {
   if(req.params.id) {
     query['_id'] = db.ObjectID(req.params.id);
   }
-console.log(collection);
+  if(req.body.finishedafter) {
+    query['_finished'] = {"$gte": new Date(req.body.finishedafter*1000)"}
+  }
+  console.log(query);
   res.set('Content-Type', 'application/json');
   res.write('[');
   var prevChunk = null;
