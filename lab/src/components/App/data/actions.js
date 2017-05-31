@@ -8,10 +8,9 @@ export const requestPreferences = () => {
 };
 
 export const receivePreferences = (json) => {
-console.log(JSON.stringify(json.first()));
     return {
         type: RECEIVE_PREFERENCES,
-        preferences: json.first(), // change this when preferences route is fixed
+        preferences: json.first(),
         receivedAt: Date.now()
     }
 };

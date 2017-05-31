@@ -28,7 +28,7 @@ export class SelectedAlgorithm extends React.Component {
 				</Segment>
 				<Segment inverted attached="bottom">	
 					<Grid columns={3} stackable className="compressed">
-						{algorithms.map(algorithm =>
+						{algorithms && algorithms.map(algorithm =>
 							<Grid.Column key={algorithm.get('name')}>
 								<Button
 									inverted 
