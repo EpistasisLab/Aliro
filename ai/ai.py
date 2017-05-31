@@ -41,9 +41,10 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
-                 db_path='http://ibi-admin-024.med.upenn.edu',
+                 db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
-                 user='testuser',rec_score_file='rec_scores.obj'):
+                 user='testuser',rec_score_file='rec_scores.obj',
+                 verbose=True):
         """initializes AI managing agent."""
         self.rec = rec
         # access to database
@@ -52,6 +53,7 @@ class AI():
         self.data_path = '/'.join([self.db_path,'api/datasets'])
         self.submit_path = '/'.join([self.db_path,'/api/v1/projects/'])
         self.user=user
+        self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
         self.api_key='Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='
         # optional extra payloads (e.g. user id) for posting to the db
@@ -64,15 +66,16 @@ class AI():
         # requests queue
         self.request_queue = []
         # static payload is the payload that is constant for every API post
-        self.static_payload = {'token':self.api_key,
-                                'user':self.user}
+        self.static_payload = {'token':self.api_key}#,
+                               # 'user':self.user}
         # add any extra payload
         self.static_payload.update(extra_payload)
 
     def load_state(self):
         """loads pickled score file."""
-        filehandler = open(self.rec_score_file)
-        self.rec.scores = pickle.load(filehandler)
+        if os.stat(self.rec_score_file).st_size != 0:
+            filehandler = open(self.rec_score_file,'rb')
+            self.rec.scores = pickle.load(filehandler)
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
@@ -85,6 +88,9 @@ class AI():
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
             self.request_queue = responses
+            if self.verbose:
+                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                      'new ai request for:',[r['name'] for r in responses])
             return True
 
         return False
@@ -92,16 +98,23 @@ class AI():
     def check_results(self,timestamp=None):
         """Returns true if new results have been posted since the previous
         time step."""
-        if timestamp is None:
-            timestamp = 0
-
-        payload = {'status':'success',
-                   'time':timestamp}
-        payload.update(self.static_payload)
+        #if timestamp is None:
+        #    timestamp = 0
+        #if timestamp is None:
+        #    payload = {}
+        #else:
+        #    payload = {'status':'success',
+        #               'time':timestamp}
+        payload={'apikey':self.api_key}
+        #payload.update(self.static_payload)
         # get new results
-        r = requests.post(exp_db_path,data=json.dumps(payload))
+        r = requests.post(self.exp_path,data=json.dumps(payload))
         # if there are new results, return True
+        pdb.set_trace()
         if len(json.loads(r.text)) > 0:
+            if self.verbose:
+                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                      'new results!')
             return True
 
         return False
@@ -160,8 +173,9 @@ class AI():
         return df
 
     def send_rec(self):
-        """Sends recommendation to the API."""(':')
-        for r in self.requests:
+        """Sends recommendation to the API."""
+        pdb.set_trace()
+        for r in self.request_queue:
             dataset = r['name']
             # get recommendation for dataset
             ml,p = self.rec.recommend()
@@ -188,10 +202,13 @@ class AI():
         new_data = self.get_new_results()
         # update recommender
         self.rec.update(new_data,timestamp)
+        if self.verbose:
+            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                 'recommender updated')
 
     def save_state(self):
         """Save ML+P scores in pickle or to DB"""
-        out = open(self.rec_score_file,'w')
+        out = open(self.rec_score_file,'wb')
         pickle.dump(self.rec.scores, out)
 
     def db_to_results_data(self,response):
@@ -205,14 +222,15 @@ class AI():
 ####################################################################### Manager
 def main():
     pennai = AI()
+    print('=======','Penn AI','=======',sep='\n')
     try:
         while True:
-            print('checking requests...')
-            if pennai.check_requests():
-                pennai.send_rec()
             print('checking results...')
             if pennai.check_results(time.gmtime()):
                 pennai.update_recommender()
+            print('checking requests...')
+            if pennai.check_requests():
+                pennai.send_rec()
             sleep(5)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
