@@ -20,14 +20,18 @@ export const fetchDataset = (datasetId) => {
     }
 };
 
-export const submitJob = (algorithmId, params) => {
+export const submitJob = (datasetId, algorithmId, params) => {
     const route = `api/v1/projects/${algorithmId}/experiment`;
     //const route = `http://localhost:5080/api/v1/projects/${algorithmId}/experiment`;
 
     console.log(algorithmId, params.toJS());
     return function(dispatch) {
         //dispatch(requestDatasets());
-        return fetch(route, {method: 'POST', body: JSON.stringify(params.toJSON())})
+        let body = {
+            dataset: datasetId,
+            params: params.toJSON()
+        };
+        return fetch(route, {method: 'POST', body: JSON.stringify(body)})
             .then(response => response.json())
             .then(json =>
                 console.log(json)
