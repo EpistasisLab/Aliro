@@ -11,7 +11,7 @@ export class Parameters extends React.Component {
 		} = this.props;
 
 		const getParams = () => {
-			return params && params.entrySeq();
+			return params.entrySeq();
 		};
 
 		const calcCols = (choices) => {
@@ -30,7 +30,7 @@ export class Parameters extends React.Component {
 
 		return (
 			<Grid.Row>
-				{getParams().map(([param, info]) =>
+				{params && getParams().map(([param, info]) =>
 					<Grid.Column 
 						key={param} 
 						mobile={16} 
