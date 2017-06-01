@@ -25,6 +25,10 @@ var responder = function(req, res) {
     if (params['date_start']) {
         query['_finished'] = {"$gte": new Date(params['date_start'])}
     }
+    for (param in params.match) {
+      var val = params.match[param]
+      query[param] = val;
+    }
 
              res.set('Content-Type', 'application/json');
   res.write('[');
@@ -58,14 +62,18 @@ var retParams = function(req) {
     var filter_on_user  = true;
     var _id = false;
     var limit = false;
+    params['match'] = {}
     //
     if (req.body !== undefined) {
         for (param in req.body) {
+         var val = req.body[param];
          if(param =='date_start') {
-          var val = req.body[param];
           if (!isNaN(parseFloat(val) && isFinite(val))) {
             date_start = val
           }
+         }
+         if(param =='ai') {
+           params['match']['ai'] = val;
          }
     }
  }
