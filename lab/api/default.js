@@ -25,8 +25,6 @@ var responder = function(req, res) {
     if (params['date_start']) {
         query['_finished'] = {"$gte": new Date(params['date_start'])}
     }
-    db.collection(params['collection']).find(query).toArrayAsync()
-        .then((results) => {
 
              res.set('Content-Type', 'application/json');
   res.write('[');
@@ -48,11 +46,6 @@ var responder = function(req, res) {
 
 
 
-
-        })
-        .catch((err) => {
-            console.log(err);
-        });
 
 }
 //format the request into a dict
