@@ -118,11 +118,7 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {
-    if (fs.existsSync("./api/" + apipath + ".js")){
-      req.responder = require("./api/" + apipath).responder;
-    } else {
-      req.responder = require("./api/default").responder;
-    }
+    req.responder = require("./api/default").responder;
     return next();
 });
 // Get collection for all API db-based endpoints
@@ -176,7 +172,9 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
 //toggles ai for dataset
 app.put("/api/v1/datasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
-            $set: { ai: req.body.ai }
+            $set: {
+                ai: req.body.ai
+            }
         })
         .then((result) => {
             return res.send({
@@ -200,21 +198,6 @@ app.get("/api/v1/:collection", (req, res, next) => {
             next(err);
         });
 });
-// List preferences for this user
-app.get("/api/v1/preferences", (req, res, next) => {
-    var username = users.returnUsername(req)
-    var preferences = db.users.find({
-        username: username
-    }, {}).toArrayAsync(); // Get machine addresses and hostnames
-    Promise.all(preferences)
-        .then((results) => {
-            return res.send(results);
-        })
-        .catch((err) => {
-            return next(err);
-        });
-});
-
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {
     req.collection.find({}).toArrayAsync()
@@ -491,7 +474,7 @@ var optionChecker = (schema, obj) => {
     };
 };
 
-var submitJob = (projId, options, files, datasetId) => {
+var submitJob = (projId, options, files, datasetId, username) => {
     return new Promise((resolve, reject) => {
         db.machines.find({}, {
                 address: 1
@@ -516,11 +499,10 @@ var submitJob = (projId, options, files, datasetId) => {
                         // Create experiment
                         db.experiments.insertAsync({
                                 _options: options,
-                                parameters: options,
                                 _dataset_id: db.toObjectID(datasetId),
                                 _project_id: db.toObjectID(projId),
-                                _algorithm_id: db.toObjectID(projId),
                                 _machine_id: db.toObjectID(availableMac._id),
+                                username: username,
                                 files: [],
                                 _status: "running"
                             }, {})
@@ -577,49 +559,55 @@ var submitJob = (projId, options, files, datasetId) => {
 app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files"), (req, res, next) => {
     var projId = req.params.id;
     var dataset;
-    // Check project actually exists
-    db.projects.findByIdAsync(projId, {
-            schema: 1
-        })
-        .then((project) => {
-            if (project === null) {
-                res.status(400);
-                res.send({
-                    error: "Project ID " + projId + " does not exist"
-                });
-            } else {
-                var obj = Object.assign(req.query, req.body);
-                if ("dataset" in obj) {
-                    dataset = obj['dataset'];
-                    delete obj['dataset'];
-                }
-                var files = req.files;
-
-                // Validate
-                var validation = optionChecker(project.schema, obj);
-                if (validation.error) {
-                    res.status(400);
-                    res.send(validation);
-                } else {
-                    submitJob(projId, obj, files, dataset)
-                        .then((resp) => {
-                            res.status(201);
-                            res.send(resp);
-                        })
-                        .catch((err) => {
-                            // TODO Check comprehensiveness of error catching
-                            if (err.error === "No machine capacity available") {
-                                res.status(501);
-                                res.send(err);
-                            } else if (err.error === "Experiment failed to run") {
-                                res.status(500);
-                                res.send(err);
-                            } else {
-                                next(err);
-                            }
+    users.returnUserData(req)
+        .then((user) => {
+            var username = user['username'];
+            db.projects.findByIdAsync(projId, {
+                    schema: 1
+                })
+                .then((project) => {
+                    if (project === null) {
+                        res.status(400);
+                        res.send({
+                            error: "Project ID " + projId + " does not exist"
                         });
-                }
-            }
+                    } else {
+                        var obj = Object.assign(req.query, req.body);
+                        if ("dataset" in obj) {
+                            dataset = obj['dataset'];
+                            delete obj['dataset'];
+                        }
+                        var files = req.files;
+
+                        // Validate
+                        var validation = optionChecker(project.schema, obj);
+                        if (validation.error) {
+                            res.status(400);
+                            res.send(validation);
+                        } else {
+                            submitJob(projId, obj, files, dataset, username)
+                                .then((resp) => {
+                                    res.status(201);
+                                    res.send(resp);
+                                })
+                                .catch((err) => {
+                                    // TODO Check comprehensiveness of error catching
+                                    if (err.error === "No machine capacity available") {
+                                        res.status(501);
+                                        res.send(err);
+                                    } else if (err.error === "Experiment failed to run") {
+                                        res.status(500);
+                                        res.send(err);
+                                    } else {
+                                        next(err);
+                                    }
+                                });
+                        }
+                    }
+                })
+                .catch((err) => {
+                    next(err);
+                });
         })
         .catch((err) => {
             next(err);
@@ -1248,23 +1236,25 @@ app.get("/batches/:id", (req, res, next) => {
 });
 app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
     users.returnUserData(req)
-       .then((user) => {
-          req.responder(user,req,res)
+        .then((user) => {
+            req.params.user = user;
+            req.responder(req, res)
         })
-       .catch((err) => {
-           next(err);
-       });
+        .catch((err) => {
+            next(err);
+        });
 });
 
 //use api handler
 app.all("/api/:apipath", jsonParser, (req, res, next) => {
     users.returnUserData(req)
-       .then((user) => {
-          req.responder(user,req,res);
+        .then((user) => {
+            req.params.user = user;
+            req.responder(req, res);
         })
-       .catch((err) => {
-           next(err);
-       });
+        .catch((err) => {
+            next(err);
+        });
 });
 
 
