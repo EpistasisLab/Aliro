@@ -111,7 +111,7 @@ class AI():
             self.last_update = state['last_update']
             if self.verbose:
                 print('loaded previous state from ',self.last_update)
-                
+
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
         payload = {'ai':'requested'}
@@ -232,6 +232,7 @@ class AI():
     def save_state(self):
         """Save ML+P scores in pickle or to DB"""
         out = open(self.rec_score_file,'wb')
+        state={}
         state['scores'] = self.rec.scores
         state['trained_dataset_models'] = self.rec.trained_dataset_models
         state['last_update'] = self.last_update
