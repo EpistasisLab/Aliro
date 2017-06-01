@@ -41,6 +41,7 @@ export class Datasets extends React.Component {
 	render() {
 		const { 
 			datasets,
+			isFetching,
 			toggleAI
 		} = this.props;
 
@@ -61,7 +62,21 @@ export class Datasets extends React.Component {
 						content="Add new"
 					/>
 				</div>
-				{datasets.size > 0 ? (
+				{isFetching &&
+					<Header 
+						inverted 
+						size="small"
+						content="Retrieving your datasets..."
+					/>
+				}
+				{!isFetching && !datasets.size &&
+					<Header 
+						inverted 
+						size="small"
+						content="You have no datasets uploaded yet."
+					/>
+				}
+				{!isFetching && datasets.size &&
 					<Grid stretched columns={this.calcCols()}>
 						{datasets.map(dataset =>
 							<DatasetPanel
@@ -71,13 +86,7 @@ export class Datasets extends React.Component {
 							/>
 						)}
 					</Grid>
-				) : (
-					<Header 
-						inverted 
-						size="small"
-						content="You have no datasets uploaded yet."
-					/>
-				)};
+				}
 			</div>
 		);
 	}
