@@ -69,6 +69,7 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
+                 #db_path=os.environ['FGLAB_URL'],
                  db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
@@ -137,7 +138,7 @@ class AI():
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
         req = urllib.request.Request(self.exp_path, data=params,
-          headers={'content-type': 'application/json'})
+                                   headers={'content-type': 'application/json'})
         r = urllib.request.urlopen(req)
         data = json.loads(r.read().decode(r.info().get_param('charset')
                                           or 'utf-8'))
