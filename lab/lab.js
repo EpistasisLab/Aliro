@@ -556,7 +556,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
 };
 
 // Constructs an experiment
-app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files"), (req, res, next) => {
+app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), (req, res, next) => {
     var projId = req.params.id;
     var dataset;
     users.returnUserData(req)
@@ -573,6 +573,7 @@ app.post("/api/v1/projects/:id/experiment", /*jsonParser,*/ upload.array("_files
                         });
                     } else {
                         var obj = Object.assign(req.query, req.body);
+console.log(obj);
                         if ("dataset" in obj) {
                             dataset = obj['dataset'];
                             delete obj['dataset'];
