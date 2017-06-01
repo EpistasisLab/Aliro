@@ -23,5 +23,4 @@
     "lastname": "User",
     "roles": ["admin", "beginner"],
     "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"]
-]
 }
