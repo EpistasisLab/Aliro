@@ -96,6 +96,8 @@ class AI():
                                # 'user':self.user}
         # add any extra payload
         self.static_payload.update(extra_payload)
+        # header info
+        self.header = {'content-type': 'application/json'}
         # timestamp for updates
         # self.last_update = int(datetime.datetime.now().strftime("%s")) * 1000
         self.last_update = 0
@@ -118,7 +120,8 @@ class AI():
         payload = {'ai':'requested'}
         payload.update(self.static_payload)
 
-        r = requests.post(self.data_path,data=json.dumps(payload))
+        r = requests.post(self.data_path,data=json.dumps(payload),
+                          headers=self.header)
         responses = json.loads(r.text)
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
@@ -138,7 +141,7 @@ class AI():
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
         req = urllib.request.Request(self.exp_path, data=params,
-                                   headers={'content-type': 'application/json'})
+                                   headers=self.header)
         r = urllib.request.urlopen(req)
         data = json.loads(r.read().decode(r.info().get_param('charset')
                                           or 'utf-8'))
@@ -209,12 +212,13 @@ class AI():
                                         rec['algorithm_id'],
                                         'experiment'])
                 # post recommendations
-                requests.post(rec_path,json.dumps(rec))
+                requests.post(rec_path,data=json.dumps(rec),headers=self.header)
                 #submit update to dataset to indicate ai:True
                 payload= {'ai':'True'}
                 payload.update(self.static_payload)
                 data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                r = requests.post(data_submit_path,data=json.dumps(payload))
+                r = requests.post(data_submit_path,data=json.dumps(payload),
+                                  headers=self.header)
             i += 1
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
