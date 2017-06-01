@@ -13,13 +13,13 @@ from tqdm import tqdm
 import os
 pd.options.mode.chained_assignment = None
 #limit number of records we'll process
-max_records = 5000000000;
+max_records = -1;
 #
 baseURL=os.environ['FGLAB_URL']
 datasetsURL=baseURL + '/api/datasets'
 algorithmsURL=baseURL + '/api/projects'
 datasetsURL=baseURL + '/api/datasets'
-apiDict = {'apikey':os.environ['apikey']}
+apiDict = {'apikey':os.environ['APIKEY']}
 apiParams = json.dumps(
     apiDict
     ).encode('utf8')
@@ -49,7 +49,7 @@ for algorithm in algorithms:
 #
 print('loading pmlb results data...')
 #data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
-data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
+data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
                          'parameters',
@@ -63,37 +63,45 @@ records = json.loads(data.T.to_json()).values()
 ret_records = []
 for record in records:
 #split parameters into individual fields
-  parameters= record['parameters'].split(",");
-  nested_parameters = {}
-  for parameter in parameters:
-    psplit = parameter.split("=")
-    if(len(psplit) > 1):
-      nested_parameters[psplit[0]] = psplit[1];
-# 
-  algorithm_name = record['classifier']
-  if(algorithm_name.lower() in algorithm_names):
+  # 
+  algorithm_name = record['classifier'].lower()
+  if(algorithm_name in algorithm_names):
     new_record = {}
-    dataset_name = record['dataset']
-    if(dataset_name.lower() in datasets_dict):
-      dataset_id = ObjectId(datasets_dict[dataset_name.lower()]['_id'])
-      dataset_files = datasets_dict[dataset_name.lower()]['files']
-      new_record['_dataset_id'] = dataset_id;
-      new_record['_files'] = dataset_files;
-    #
-    algorithm_id = ObjectId(algorithm_names[algorithm_name.lower()])
-    new_record['_project_id'] = algorithm_id
-    new_record['_options'] = nested_parameters;
+    new_record['_project_id'] = ObjectId(algorithm_names[algorithm_name])
+    #dataset info
+    dataset_name = record['dataset'].lower();
+    if(dataset_name in datasets_dict):
+      dataset = datasets_dict[dataset_name]
+      new_record['_dataset_id'] = ObjectId(dataset['_id'])
+      files = datasets_dict[dataset_name.lower()]['files']
+      new_files = []
+      for filedata in files:
+        filedata['_id'] = ObjectId(filedata['_id'])
+        new_files.append(filedata);
+      new_record['files'] = new_files 
+   
+      
+    #algorithm parameters
+    parameters = record['parameters'].split(",");
+    nested_parameters = {}
+    for parameter in parameters:
+      psplit = parameter.split("=")
+      if(len(psplit) > 1):
+        nested_parameters[psplit[0]] = psplit[1];
+        new_record['_options'] = nested_parameters;
+    #scores
     scores = {}
     scores['accuracy_score'] = record['accuracy']
     scores['balanced_accuracy'] = record['bal_accuracy']
+    scores['f1_score'] = record['macrof1']
     new_record['_scores'] = scores;
-    new_record['_macrof1'] = record['macrof1']
-    new_record['_started'] = datetime.now()
-    new_record['_finished'] = datetime.now()
+    #
+    new_record['_started'] = datetime.min
+    new_record['_finished'] = datetime.min
     new_record['_status'] = 'success'
-    new_record['_files'] = []
+    new_record['username'] = 'pmlb'
     ret_records.append(new_record);
-  if(len(ret_records) >= max_records):
+  if(max_records >=0 and len(ret_records) >= max_records):
     break
     
 #print(ret_records);
