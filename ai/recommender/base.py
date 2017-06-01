@@ -109,11 +109,12 @@ class Recommender():
                 # if a dataset is specified, do not make recommendations for
                 # algorithm-parameter combos that have already been run
                 if dataset_id is not None:
-                    rec = [r for r in rec if dataset_id + ':' + r not in
+                    rec = [r for r in rec if dataset_id + '|' + r not in
                            self.trained_dataset_models]
 
-                ml_rec = [r.split(':')[0] for r in rec]
-                p_rec = [r.split(':')[1] for r in rec]
+                ml_rec = [r.split('|')[0] for r in rec]
+                p_rec = [r.split('|')[1] for r in rec]
+                rec_score = [self.scores[r] for r in rec]
             except AttributeError:
                 print('rec:',rec)
                 print('self.scores:',self.scores)
@@ -125,10 +126,12 @@ class Recommender():
             ml_rec = ml_rec[:n_recs]
             p_rec = p_rec[:n_recs]
 
-            self.trained_dataset_models.update([':'.join([dataset_id, ml, p])
+            if dataset_id is not None:
+                self.trained_dataset_models.update(
+                                            ['|'.join([dataset_id, ml, p])
                                             for ml, p in zip(ml_rec, p_rec)])
 
-            return ml_rec, p_rec
+            return ml_rec, p_rec, rec_score
         # # get metafeatures of the dataset
         # metafeatures = self.metafeatures(dataset)
         # scores = np.array()
@@ -170,12 +173,12 @@ class Recommender():
         """
         # make combined data columns of datasets, classifiers, and parameters
         results_data.loc[:,'algorithm-parameters'] = (
-                                       results_data['algorithm'].values + ':' +
+                                       results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
 
         results_data.loc[:,'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + ':' +
-                                       results_data['algorithm'].values + ':' +
+                                       results_data['dataset'].values + '|' +
+                                       results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
