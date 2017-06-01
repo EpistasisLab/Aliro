@@ -6,6 +6,7 @@ HOSTNAME=$(shell hostname)
 LAB_HOST=${HOSTNAME}
 FGLAB_URL=http://${LAB_HOST}:5080
 FGMACHINE_URL=http://${HOSTNAME}:5081
+APIKEY=Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=
 IFROOT='/share/devel/Gp'
 PS1="machine"
 
@@ -21,7 +22,7 @@ run:
 
 
 shared:
-	docker run -i -v /share:/share -t --rm -p 5081:5081 -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
+	docker run -i -v /share:/share -t --rm -p 5081:5081 -e APIKEY=${APIKEY} -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
 		${DOCKER_REPO}
 #	docker run -i -v /share:/share  -t --rm -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name machine --net=host\
 
