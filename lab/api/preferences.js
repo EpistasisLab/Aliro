@@ -27,15 +27,6 @@ exports.responder = function(req,res) {
         {
             $lookup:
             {
-                from: "datasets",
-                localField: "username",
-                foreignField: "username",
-                as: "datasets"
-            }
-        },
-        {
-            $lookup:
-            {
                 from: "projects",
                 localField: "algorithms",
                 foreignField: "name",
@@ -46,14 +37,13 @@ exports.responder = function(req,res) {
             $unwind: "$algorithms"
         },
         {
-            $unwind: "$datasets"
-        },
-        {
   $group:
             {
                 _id: "$_id",
-                algorithms: { $push: "$algorithms" },
-                datasets: { $push: "datasets" },
+                username: {$first: '$username'},
+                firstname: {$first: '$firstname'},
+                lastname: {$first: '$lastname'},
+                algorithms: { $addToSet: "$algorithms" },
             }
         }
     ],
