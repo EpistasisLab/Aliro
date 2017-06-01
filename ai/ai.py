@@ -9,6 +9,7 @@ from time import sleep
 import json
 import pickle
 import requests
+import urllib.request, urllib.parse
 import pdb
 import time
 import ai.ml_ids
@@ -110,9 +111,18 @@ class AI():
         #payload.update(self.static_payload)
         # get new results
         r = requests.post(self.exp_path,data=json.dumps(payload),headers={'content-type': 'application/json'})
+        # r = requests.post(self.exp_path,data=json.dumps(payload))
+        baseURL = 'http://hoth.pmacs.upenn.edu:5080'
+        experimentsURL=baseURL+'/api/experiments'
+        postvars = {'apikey':'Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='}
+        params = json.dumps(postvars).encode('utf8')
+        req = urllib.request.Request(experimentsURL, data=params,
+          headers={'content-type': 'application/json'})
+        r = urllib.request.urlopen(req)
+        data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
         # if there are new results, return True
         pdb.set_trace()
-        if len(json.loads(r.text)) > 0:
+        if len(data) > 0:
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       'new results!')
