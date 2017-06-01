@@ -60,7 +60,7 @@ $cond: [{
                         $first: '$files'
                     },
                     ai: {
-                        $addToSet: "$ai"
+                        $first: "$ai"
                     },
                     experiments: {
                         $addToSet: "$experiments"
@@ -96,7 +96,7 @@ $cond: [{
                     }
                 }
                 var validation = results[i];
-                if (!("ai" in validation)) {
+                if (!("ai" in validation) || (validation['ai'] == null)) {
                     validation['ai'] = false;
                 }
                 validation['has_metadata'] = true;
