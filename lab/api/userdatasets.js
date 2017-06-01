@@ -34,14 +34,12 @@ exports.responder = function(req, res) {
                 "$unwind": "$experiments"
             }, {
                 "$redact": {
-             //       "$cond": [{
-             //               "$eq": ["$_id", "$experiments._dataset_id"]
-             //           },
-$cond: [{
-     $or: [
-          {$eq: ["$experiments._dataset_id" ,null]},
-          {$eq: ["$_id", "$experiments._dataset_id"]}
-     ]
+                    $cond: [{
+                            $or: [{
+                                $eq: ["$experiments._dataset_id", null]
+                            }, {
+                                $eq: ["$_id", "$experiments._dataset_id"]
+                            }]
                         },
                         "$$KEEP",
                         "$$PRUNE"
@@ -80,10 +78,21 @@ $cond: [{
                 var running = 0;
                 var finished = 0;
                 var failed = 0;
+                var best_accuracy_score = 0;
+                var best_experiment_id;
+                var best_experiment_name;
                 experiments = results[i]['experiments'];
                 for (var j = 0; j < experiments.length; j++) {
                     var experiment = experiments[j];
-                    var _status =  experiment['status'];
+                    var _status = experiment['status'];
+                    var _scores = experiment['_scores'];
+                    console.log(experiment);
+                    if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
+                        best_accuracy_score = _scores['accuracy_score']
+                        best_experiment_id = experiment['_id']
+                        best_experiment_name = experiment['name']
+                    }
+
                     if (_status == 'pending') {
                         pending += 1;
                     } else if (_status == 'running') {
@@ -91,7 +100,7 @@ $cond: [{
                     } else {
                         finished += 1;
                         if (_status == 'failed') {
-                        failed += 1;
+                            failed += 1;
                         }
                     }
                 }
@@ -104,6 +113,13 @@ $cond: [{
                     pending: pending,
                     running: running,
                     finished: finished
+                }
+                validation['best_result'] = undefined;
+                if (best_experiment_id) {
+                    validation['best_result'] = {}
+                    validation['best_result']['_id'] = best_experiment_id;
+                    validation['best_result']['algorithm'] = best_experiment_name;
+                    validation['best_result']['accuracy_score'] = best_accuracy_score;
                 }
                 validation['notifications'] = {
                     new: 0,
