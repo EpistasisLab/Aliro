@@ -11,7 +11,7 @@ export class SelectedAlgorithm extends React.Component {
 		} = this.props;
 
 		const isActive = (algorithm) => {
-			return currentAlgorithm && (algorithm.get('name') === currentAlgorithm.get('name'));
+			return currentAlgorithm && (algorithm.get('_id') === currentAlgorithm.get('_id'));
 		};
 
 		const color = 'orange';
@@ -29,7 +29,7 @@ export class SelectedAlgorithm extends React.Component {
 				<Segment inverted attached="bottom">	
 					<Grid columns={3} stackable className="compressed">
 						{algorithms && algorithms.map(algorithm =>
-							<Grid.Column key={algorithm.get('name')}>
+							<Grid.Column key={algorithm.get('_id')}>
 								<Button
 									inverted 
 									color={color}
@@ -40,7 +40,7 @@ export class SelectedAlgorithm extends React.Component {
 								>
 									{algorithm.get('name')}
 									<div className="param-count">
-										{algorithm.get('params').size} parameters
+										{algorithm.get('schema').size} parameters
 									</div>
 								</Button>
 							</Grid.Column>

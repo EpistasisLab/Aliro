@@ -10,10 +10,6 @@ export class Parameters extends React.Component {
 			setParamValue
 		} = this.props;
 
-		const getParams = () => {
-			return params.entrySeq();
-		};
-
 		const calcCols = (choices) => {
 			if(choices.size > 2) {
 				return 2;
@@ -30,14 +26,14 @@ export class Parameters extends React.Component {
 
 		return (
 			<Grid.Row>
-				{params && getParams().map(([param, info]) =>
+				{params && params.entrySeq().map(([param, info]) =>
 					<Grid.Column 
 						key={param} 
 						mobile={16} 
-						tablet={4} 
-						computer={4} 
-						widescreen={4} 
-						largeScreen={4}
+						tablet={8} 
+						computer={8} 
+						widescreen={8} 
+						largeScreen={8}
 					>
 						<Segment inverted attached="top" className="panel-header">
 							<Popup 
@@ -69,7 +65,7 @@ export class Parameters extends React.Component {
 											inverted 
 											color={color}
 											fluid
-											content={value} 
+											content={value.toString()} 
 											active={isActive(param, value)} 
 											onClick={() => setParamValue(param, value)} 
 										/>
