@@ -6,9 +6,10 @@ var fs = require("fs");
 
 exports.responder = function(req, res) {
     if (fs.existsSync('api/' + req.params.apipath + ".js")) {
-        responder = require("./" + req.params.apipath).responder;
+        return(require("./" + req.params.apipath).responder(req,res));
+    } else {
+    return(responder(req, res));
     }
-    return (responder(req, res));
 }
 
 //return a list of datasets for each user
