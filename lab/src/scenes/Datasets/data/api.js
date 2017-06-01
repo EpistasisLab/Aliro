@@ -9,7 +9,7 @@ import {
 } from './actions';
 
 export const fetchDatasets = () => {
-    const route = 'api/datasets';
+    const route = 'api/userdatasets';
     //const route = `http://localhost:5080/api/datasets`;
 
     return function(dispatch) {
