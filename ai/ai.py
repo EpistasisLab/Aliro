@@ -104,6 +104,7 @@ class AI():
         # if there is a file, load it as the recommender scores
         if os.path.isfile(self.rec_score_file):
             self.load_state()
+            
     def load_state(self):
         """loads pickled score file."""
         if os.stat(self.rec_score_file).st_size != 0:
