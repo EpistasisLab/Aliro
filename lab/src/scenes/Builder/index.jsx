@@ -34,16 +34,12 @@ export class Builder extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		const { 
 			algorithms,
-			setAlgorithm,
-			setParamValue
+			setAlgorithm
 		} = this.props;
 
 		if(algorithms !== nextProps.algorithms) {
 			let algorithm = nextProps.algorithms.first();
 			setAlgorithm(algorithm);
-			algorithm.get('params').entrySeq().forEach(([key, value]) => {
-				setParamValue(key, value.get('default'));
-			});
 		}
 	}
 
@@ -77,7 +73,7 @@ export class Builder extends React.Component {
 								setParamValue={setParamValue}
 							/>
 							<Parameters 
-								params={builder.getIn(['algorithm', 'params'])}
+								params={builder.getIn(['algorithm', 'schema'])}
 								currentParams={builder.get('params')}
 								setParamValue={setParamValue}
 							/>
@@ -102,7 +98,7 @@ export class Builder extends React.Component {
 function mapStateToProps(state) {
 	return {
 		isFetching: state.preferences.get('isFetching'),
-		algorithms: state.preferences.getIn(['preferences', 'Algorithms']),
+		algorithms: state.preferences.getIn(['preferences', 'algorithms']),
 		datasets: state.datasets.get('items'),
 		builder: state.builder
 	};

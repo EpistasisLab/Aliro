@@ -41,7 +41,7 @@ const builder = (state = initialState, action) => {
 		case SET_ALGORITHM:
 			return state.merge({
 				algorithm: action.algorithm,
-				params: {}
+				params: action.algorithm.get('schema').map(p => p.get('default'))
 			});
 		case SET_PARAM_VALUE:
 			return state.setIn(

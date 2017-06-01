@@ -220,13 +220,17 @@ body {
 }
 
 .pennai .builder-scene .ui.compressed.grid>.column:not(.row) {
-    padding-bottom: 0;
-    padding-right: 0;
+    padding-bottom: 0 !important;
+    padding-right: 0 !important;
 }
 
 .pennai .builder-scene .ui.grid {
     padding-bottom: 1rem;
     padding-right: 1rem;
+}
+
+.pennai .builder-scene .ui.stretched.grid>.row>.column {
+    padding-bottom: 2rem !important;
 }
 
 /*.table-container {
@@ -266,7 +270,7 @@ body {
     z-index: 100;
 }
 
-@media (min-width: 140rem) {
+/*@media (min-width: 140rem) {
     body {
         line-height: calc(1.5 * 2.5);
         padding: calc(1rem * 10);
@@ -291,4 +295,4 @@ body {
     .ui.segment.square > .content {
         padding: calc(1rem * 2.5);
     }
-}
+}*/

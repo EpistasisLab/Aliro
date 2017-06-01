@@ -6,12 +6,13 @@ import {
     RECEIVE_AI_TOGGLE
 } from './actions';
 
-import { initialDatasets } from './initialDatasets'; // for testing
+// import { initialDatasets } from './initialDatasets'; // for testing
 const initialState = fromJS({
     isFetching: false,
-    items: /* [] */ fromJS(initialDatasets) // for testing
+    items: [] /* fromJS(initialDatasets) */ // for testing
 });
 
+// manages list of datasets
 const datasets = (state = initialState, action) => {
     switch(action.type) {
         case REQUEST_DATASETS:
@@ -36,6 +37,7 @@ const datasets = (state = initialState, action) => {
     }
 };
 
+// manages individual dataset
 const dataset = (state = fromJS({}), action) => {
     switch(action.type) {
         case REQUEST_AI_TOGGLE:
