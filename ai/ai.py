@@ -41,6 +41,7 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
+                 #db_path=os.environ['FGLAB_URL'],
                  db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_scores.obj',
@@ -82,7 +83,7 @@ class AI():
         payload = {'ai':'requested'}
         payload.update(self.static_payload)
 
-        r = requests.post(self.data_path,data=json.dumps(payload))
+        r = requests.post(self.data_path,data=json.dumps(payload),headers={'content-type': 'application/json'})
         pdb.set_trace()
         responses = json.loads(r.text)
         # if there are any requests, add them to the queue and return True
@@ -108,7 +109,7 @@ class AI():
         payload={'apikey':self.api_key}
         #payload.update(self.static_payload)
         # get new results
-        r = requests.post(self.exp_path,data=json.dumps(payload))
+        r = requests.post(self.exp_path,data=json.dumps(payload),headers={'content-type': 'application/json'})
         # if there are new results, return True
         pdb.set_trace()
         if len(json.loads(r.text)) > 0:
@@ -194,7 +195,7 @@ class AI():
             # submit path is ml_id/experiment
             submit_path = '/'.join([self.submit_path,r['_id'],'/experiment'])
             # post recommendations
-            requests.post(submit_path,json.dumps(rec))
+            requests.post(submit_path,json.dumps(rec),headers={'content-type': 'application/json'})
 
     def update_recommender(self,timestamp=None):
         """Updates recommender based on new results."""
