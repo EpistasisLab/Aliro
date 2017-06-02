@@ -26,24 +26,14 @@ exports.responder = function(req, res) {
             {
                 $lookup: {
                     from: "experiments",
-                    localField: "username",
-                    foreignField: "username",
+                    localField: "_id",
+                    foreignField: "_dataset_id",
                     as: "experiments"
                 }
             }, {
-                "$unwind": "$experiments"
-            }, {
-                "$redact": {
-                    $cond: [{
-                            $or: [{
-                                $eq: ["$experiments._dataset_id", null]
-                            }, {
-                                $eq: ["$_id", "$experiments._dataset_id"]
-                            }]
-                        },
-                        "$$KEEP",
-                        "$$PRUNE"
-                    ]
+                "$unwind": {
+                    path: "$experiments",
+                    preserveNullAndEmptyArrays: true
                 }
             }, {
                 $group: {
@@ -69,6 +59,7 @@ exports.responder = function(req, res) {
 
 
 
+
         ],
         function(err, results) {
             resultsList = [];
@@ -82,25 +73,27 @@ exports.responder = function(req, res) {
                 var best_experiment_id;
                 var best_experiment_name;
                 experiments = results[i]['experiments'];
-                for (var j = 0; j < experiments.length; j++) {
-                    var experiment = experiments[j];
-                    var _status = experiment['status'];
-                    var _scores = experiment['_scores'];
-                    console.log(experiment);
-                    if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
-                        best_accuracy_score = _scores['accuracy_score']
-                        best_experiment_id = experiment['_id']
-                        best_experiment_name = experiment['name']
-                    }
+                if (experiments) {
+                    console.log(experiments);
+                    for (var j = 0; j < experiments.length; j++) {
+                        var experiment = experiments[j];
+                        var _status = experiment['status'];
+                        var _scores = experiment['_scores'];
+                        if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
+                            best_accuracy_score = _scores['accuracy_score']
+                            best_experiment_id = experiment['_id']
+                            best_experiment_name = experiment['name']
+                        }
 
-                    if (_status == 'pending') {
-                        pending += 1;
-                    } else if (_status == 'running') {
-                        running += 1;
-                    } else {
-                        finished += 1;
-                        if (_status == 'failed') {
-                            failed += 1;
+                        if (_status == 'pending') {
+                            pending += 1;
+                        } else if (_status == 'running') {
+                            running += 1;
+                        } else {
+                            finished += 1;
+                            if (_status == 'failed') {
+                                failed += 1;
+                            }
                         }
                     }
                 }

@@ -2,17 +2,17 @@
     "_id": {
         "$oid": "592e434749d74e09d31efefb"
     },
-    "username": "pmlb",
-    "firstname": "Pmlb",
-    "lastname": "User",
+    "username": "pennai",
+    "firstname": "Penn",
+    "lastname": "AI",
     "apikey": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
     "roles": ["ai"]
 } {
     "_id": {
         "$oid": "58c9a40915f1e8675d31972f"
     },
-    "username": "nulluser",
-    "firstname": "Null",
+    "username": "pmlb",
+    "firstname": "Pmlb",
     "lastname": "User"
 } {
     "_id": {
