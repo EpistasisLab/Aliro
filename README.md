@@ -45,5 +45,5 @@ recommendations using:
  - [ ] ml + p + mf, per model basis
  - [ ] incorporating expert knowledge rules
  - [ ] analyze which metafeatures are important
- - [x ] make method to submit jobs (`submit(dataset,ml,p)`)
+ - [x] make method to submit jobs (`submit(dataset,ml,p)`)
 
