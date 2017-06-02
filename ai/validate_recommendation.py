@@ -5,6 +5,13 @@ def find_nearest(array,value):
     idx = (np.abs(array-value)).argmin()
     return array[idx]
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 ui_options = [
 {"_id":"57bf24e1548cd20008bc71df","name":"GP-simplified","schema":{"primitives":{"description":"GP primitives (operators/operands)","type":"enum-checkbox","values":["+","-","*","/","neg","ephemeral"],"default":["+","-","*","/","neg","ephemeral"]},"population-size":{"description":"number of individuals","type":"enum-radio","values":[10,100,1000],"default":100},"generations":{"description":"number of generations, n>0 [default = 1000]","type":"enum-radio","values":[10,100,1000],"default":100},"crossover-probability":{"description":"crossover probability, 0.0<=f<=1.0","type":"enum-radio","values":[0.1,0.5,0.9],"default":0.9},"mutation-probability":{"description":"0.0<=f<=1.0","type":"enum-radio","values":[0.001,0.01,0.1],"default":0.1},"seletion-pressure":{"description":"selection pressure (tournament size), n>=1","type":"enum-radio","values":[1,2,3],"default":3},"elitism-size":{"description":"elitism size, 0<=n<=1","type":"enum-radio","values":[0,0.5,1],"default":1},"maximum-size ":{"description":"maximum program size","type":"enum-radio","values":[5,10,20],"default":20},"minimum-size":{"description":"minimum program size","type":"enum-radio","values":[1,2,3],"default":1}},"category":"ML"},
 {"_id":"57c5a83f4b09d40023ee4f6e","name":"MDR.js","schema":{"default-label":{"description":"Default Label","type":"enum-radio","values":[0,1],"default":0},"tie-break":{"description":"Tie Break","type":"enum-radio","values":[0,1],"default":1}},"category":"ML"},
@@ -36,8 +43,8 @@ def validate_recs(ml,p):
     available to the user and if parameter value is not available, it shifts
     the recommended value to the closest option."""
     match_ml = [ui_options[i] for i,op in enumerate(ui_options)
-                if ml==op['_id']]
-    pdb.set_trace()
+                if ml==op['_id']][0]
+
     p_d = eval(p)
     p_new = eval(p)
     match_p_d = match_ml['schema']
@@ -45,13 +52,28 @@ def validate_recs(ml,p):
 
     for k,v in p_d.items():
         if k in match_p_d.keys():
-            if v not in match_p_d[k]['values']:
-                if type(v) is str:
-                    del p_new[k]
-                else:
+            if str(v) not in [str(c) for c in match_p_d[k]['ui']['choices']]:
+                if is_number(v):
                     # set to closest value
-                    p_new[k] = find_nearest(match_p_d[k]['values'], v)
+                    try:
+                        p_new[k] = find_nearest(
+                                        np.array(match_p_d[k]['ui']['choices']),
+                                        float(v))
+                        print('warning:',k,'=',v,'not available.',
+                              'set to closest choice:',p_new[k])
+                    except:
+                        del p_new[k]
+                        print('warning:',k,'=',v,'not available.',
+                              'choices:',np.array(match_p_d[k]['ui']['choices']))
+                else:
+                    print('warning:',k,'=',v,'not available.',
+                          'choices:',np.array(match_p_d[k]['ui']['choices']))
+                    del p_new[k]
+
+            if is_number(v):
+                # convert to number
+                p_new[k] = float(v)
         else:
             del p_new[k]
-
-    return ml,str(p)
+    # pdb.set_trace()
+    return ml,str(p_new)
