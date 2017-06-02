@@ -11,7 +11,6 @@ import { hashHistory } from 'react-router';
 
 export const fetchExperiment = (experimentId) => {
     const route = `api/userexperiments/${experimentId}`;
-    //const route = `http://localhost:5080/api/userexperiments/${experimentId}`;
 
     return function(dispatch) {
         dispatch(requestExperiment());
@@ -25,7 +24,6 @@ export const fetchExperiment = (experimentId) => {
 
 export const fetchDataset = (datasetId) => {
     const route = `api/userdatasets/${datasetId}`;
-    //const route = `http://localhost:5080/api/datasets/${datasetId}`;
 
     return function(dispatch) {
         dispatch(requestDataset());
@@ -39,7 +37,6 @@ export const fetchDataset = (datasetId) => {
 
 export const submitJob = (datasetId, algorithmId, params) => {
     const route = `api/v1/projects/${algorithmId}/experiment`;
-    //const route = `http://localhost:5080/api/v1/projects/${algorithmId}/experiment`;
 
     let myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
