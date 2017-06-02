@@ -25,19 +25,19 @@ ai.send_rec()
 pennai.update(new_results_data)
 ```
 ## overall tasks
- - [ x ] build dataframe `results_data` from MongoDB results. 
+ - [x] build dataframe `results_data` from MongoDB results. 
   - Dataframe cols:
   - 'classifier' or 'regressor': e.g. "RandomForestClassifier"
   - ML parameter data:
   - metrics: 'accuracy','bal_accuracy', 'AUC': score of run
   - dataset: dataset name e.g. "iris"
   - metafeatures: list from `dataset_describe.py`
- - [ x ] make method to post job submissions 
+ - [x] make method to post job submissions 
  - [ ] recommendation shows up in launch page
 
 ## recommender tasks
-- [ x ] filter recommendations for what has already been run
-- [ x ] direct acess to MongDB results for checking what has been run
+- [x] filter recommendations for what has already been run
+- [x] direct acess to MongDB results for checking what has been run
 
 recommendations using:
  - [x] ml + p 
