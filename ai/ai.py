@@ -105,7 +105,7 @@ class AI():
         # if there is a file, load it as the recommender scores
         if os.path.isfile(self.rec_score_file):
             self.load_state()
-            
+
     def load_state(self):
         """loads pickled score file."""
         if os.stat(self.rec_score_file).st_size != 0:
@@ -131,6 +131,13 @@ class AI():
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':','new ai request for:',[r['name'] for r in responses])
+            # set AI flag to 'true' to acknowledge requests received
+            payload= {'ai':True}
+            payload.update(self.static_payload)
+            for r in self.request_queue:
+                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+                tmp = requests.post(data_submit_path,data=json.dumps(payload),
+                                  headers=self.header)
             return True
 
         return False
@@ -216,10 +223,12 @@ class AI():
                 # post recommendations
                 requests.post(rec_path,data=json.dumps(rec),headers=self.header)
                 #submit update to dataset to indicate ai:True
-                payload= {'ai':'True'}
+                payload= {'ai':'finished'}
                 payload.update(self.static_payload)
                 status_submit_path = '/'.join([self.status_path,r['_id'],'ai'])
                 r = requests.put(status_submit_path,data=json.dumps(payload),
+#                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+#                tmp = requests.post(data_submit_path,data=json.dumps(payload),
                                   headers=self.header)
             i += 1
         if self.verbose:
@@ -254,9 +263,9 @@ class AI():
         """
 
 ####################################################################### Manager
-def main():
-    pennai = AI()
+def main():    
     print('=======','Penn AI','=======',sep='\n')
+    pennai = AI()
     try:
         while True:
             print('checking results...')
