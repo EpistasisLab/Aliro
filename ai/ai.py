@@ -13,7 +13,7 @@ import requests
 import urllib.request, urllib.parse
 import pdb
 import time
-import ai.ml_ids
+from ai.check_recommendation import validate_recs
 import os
 from ai.recommender.base import Recommender
 from collections import OrderedDict
@@ -118,6 +118,8 @@ class AI():
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
+        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+              ':','checking requests...')
         payload = {'ai':'requested'}
         payload.update(self.static_payload)
 
@@ -144,6 +146,9 @@ class AI():
     def check_results(self):
         """Returns true if new results have been posted since the previous
         time step."""
+        if self.verbose:
+            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                  ':'','checking results...')
         # get new results
         payload = {'date_start':self.last_update}
         payload.update(self.static_payload)
@@ -260,15 +265,15 @@ class AI():
         """
 
 ####################################################################### Manager
-def main():    
+def main():
     print('=======','Penn AI','=======',sep='\n')
     pennai = AI()
     try:
         while True:
-            print('checking results...')
+            # check for new experiment results
             if pennai.check_results():
                 pennai.update_recommender()
-            print('checking requests...')
+            # check for new recommendation requests
             if pennai.check_requests():
                 pennai.send_rec()
             sleep(5)
