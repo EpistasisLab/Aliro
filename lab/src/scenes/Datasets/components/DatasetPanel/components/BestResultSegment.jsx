@@ -6,7 +6,8 @@ export class BestResultSegment extends React.Component {
 		const { result } = this.props;
 		const link = `/#/results/${result.get('_id')}`;
 		const subheader = `${result.get('algorithm')} (#${result.get('_id')})`;
-		const percent = result.get('accuracy_score') * 100;
+		const percent = (result.get('accuracy_score') * 100).toFixed(2);
+
 		return (
 			<Segment 
 				inverted 
