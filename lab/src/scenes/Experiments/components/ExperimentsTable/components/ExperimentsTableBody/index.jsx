@@ -69,7 +69,7 @@ export class ExperimentsTableBody extends React.Component {
 			const id = experiment.get('_id');
 
 			if(status === 'suggested' || status === 'pending') {
-				return `/#/build/${id}`;
+				return `/#/build/filler/${id}`;
 			} else {
 				return `/#/results/${id}`;
 			}

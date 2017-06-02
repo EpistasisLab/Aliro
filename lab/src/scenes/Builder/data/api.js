@@ -1,10 +1,27 @@
 require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 import { fromJS } from 'immutable';
-import { 
+import {
+    requestExperiment,
+    receiveExperiment,
     requestDataset,
     receiveDataset
 } from './actions';
+import { hashHistory } from 'react-router';
+
+export const fetchExperiment = (experimentId) => {
+    const route = `api/userexperiments/${experimentId}`;
+    //const route = `http://localhost:5080/api/userexperiments/${experimentId}`;
+
+    return function(dispatch) {
+        dispatch(requestExperiment());
+        return fetch(route)
+            .then(response => response.json())
+            .then(json =>
+                dispatch(receiveExperiment(fromJS(json)))
+            );
+    }
+};
 
 export const fetchDataset = (datasetId) => {
     const route = `api/userdatasets/${datasetId}`;
@@ -40,7 +57,7 @@ export const submitJob = (datasetId, algorithmId, params) => {
             })
             .then(response => response.json())
             .then(json =>
-                console.log(json)
+                hashHistory.push('experiments')
                 //dispatch(receiveDatasets(fromJS(json)))
             );
     }

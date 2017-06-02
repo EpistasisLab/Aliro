@@ -25,6 +25,7 @@ const routes = <Route path='/' component={AppContainer}>
 	<Route path='experiments' component={ExperimentsContainer} />
 	<Route path='results/:id' component={ResultsContainer} />
 	<Route path='build/:id' component={BuilderContainer} />
+	<Route path='build/:id/:exp' component={BuilderContainer} />
 	<Route path='*' component={NotFound} />
 </Route>;
 
