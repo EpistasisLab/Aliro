@@ -2,69 +2,30 @@ require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
 
-//return a list of datasets for each user
-exports.responder = function(req, res) {
-    var params = api.params(req);
-    var query = {};
-    if (params['filter_on_user']) {
-        query['username'] = params['username'];
+//helper function for searching and formatting results
+var convert_to_dict = function(array) {
+    var new_array = {};
+    for (var i = 0; i < array.length; i++) {
+        var entry = array[i];
+        var _id = entry['_id'];
+        new_array[_id] = entry;
     }
-    if (params['id']) {
-        query['_id'] = db.ObjectID(params['id']);
-    }
-    if (params['date_start']) {
-        query['_finished'] = {
-            "$gte": new Date(params['date_start'])
+    return(new_array);
+}
+var group_on_key = function(array,key) {
+    var new_array = {};
+    for (old_key in  array) {
+        var entry = array[old_key];
+        var _id = entry[key];
+        if (new_array[_id] === undefined) {
+          new_array[_id] = [];
         }
+        new_array[_id].push(entry);
     }
-
-    db.datasets.aggregate(
-        [{
-                $match: query
-            },
-
-            {
-                $lookup: {
-                    from: "experiments",
-                    localField: "_id",
-                    foreignField: "_dataset_id",
-                    as: "experiments"
-                }
-            }, {
-                "$unwind": {
-                    path: "$experiments",
-                    preserveNullAndEmptyArrays: true
-                }
-            }, {
-                $group: {
-                    _id: "$_id",
-                    name: {
-                        $first: '$name'
-                    },
-                    username: {
-                        $first: '$username'
-                    },
-                    files: {
-                        $first: '$files'
-                    },
-                    ai: {
-                        $first: "$ai"
-                    },
-                    experiments: {
-                        $addToSet: "$experiments"
-                    },
-                }
-            }
-
-
-
-
-
-        ],
-        function(err, results) {
-            resultsList = [];
-            for (var i = 0; i < results.length; i++) {
-
+    return(new_array);
+}
+var annotate_dataset = function(dataset) {
+               var validation = dataset;
                 var pending = 0;
                 var running = 0;
                 var finished = 0;
@@ -72,8 +33,8 @@ exports.responder = function(req, res) {
                 var best_accuracy_score = 0;
                 var best_experiment_id;
                 var best_experiment_name;
-                experiments = results[i]['experiments'];
-                if (experiments) {
+                if (dataset['experiments']) {
+                    experiments = dataset['experiments']
                     for (var j = 0; j < experiments.length; j++) {
                         var experiment = experiments[j];
                         var _status = experiment['status'];
@@ -81,7 +42,7 @@ exports.responder = function(req, res) {
                         if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
                             best_accuracy_score = _scores['accuracy_score']
                             best_experiment_id = experiment['_id']
-                            best_experiment_name = experiment['name']
+                            best_experiment_name = experiment['algorithm']['name']
                         }
 
                         if (_status == 'pending') {
@@ -96,10 +57,10 @@ exports.responder = function(req, res) {
                         }
                     }
                 }
-                var validation = results[i];
-                if (!("ai" in validation) || (validation['ai'] == null)) {
+                if (!("ai" in dataset) || (validation['ai'] == null)) {
                     validation['ai'] = false;
                 }
+
                 validation['has_metadata'] = true;
                 validation['experiments'] = {
                     pending: pending,
@@ -117,11 +78,99 @@ exports.responder = function(req, res) {
                     new: 0,
                     error: failed
                 }
-                resultsList.push(validation);
+
+return(validation);
+}
+//return a list of datasets for each user
+exports.responder = function(req,res) {
+   var params = api.params(req);
+    var query = {};
+    if (params['filter_on_user']) {
+        query['username'] = params['username'];
+    }
+    if (params['id']) {
+        query['_id'] = db.ObjectID(params['id']);
+    }
+    if (params['date_start']) {
+        query['_finished'] = {"$gte": new Date(params['date_start'])}
+    }
+
+        db.users.aggregate(
+ [
+        {
+         $match: query
+        },
+        {
+            $unwind: "$algorithms"
+        },
+        {
+            $lookup:
+            {
+                from: "datasets",
+                localField: "username",
+                foreignField: "username",
+                as: "datasets"
             }
-
-            res.send(resultsList)
-
+        },
+        {
+            $lookup:
+            {
+                from: "experiments",
+                localField: "username",
+                foreignField: "username",
+                as: "experiments"
+            }
+        },
+        {
+            $lookup:
+            {
+                from: "projects",
+                localField: "algorithms",
+                foreignField: "name",
+                as: "algorithms"
+            }
+        },
+        {
+            $unwind: "$algorithms"
+        },
+        {
+            $unwind: "$datasets"
+        },
+        {
+            $unwind: "$experiments"
+        },
+        {
+  $group:
+            {
+                _id: "$_id",
+                algorithms: { $addToSet: "$algorithms" },
+                datasets: { $addToSet: "$datasets" },
+                experiments: { $addToSet: "$experiments" },
+            }
         }
-    );
+    ],
+function(err,users) {
+retArray = []
+var user = users[0];
+var algorithms = convert_to_dict(user['algorithms']);
+var experiments = convert_to_dict(user['experiments']);
+var keyed_experiments = group_on_key(experiments,'_dataset_id');
+var datasets = convert_to_dict(user['datasets']);
+for (_id in experiments) {
+    var experiment = experiments[_id];
+    var algorithm_id = experiment['_project_id']
+    var algorithm = algorithms[algorithm_id]
+experiments[_id]['algorithm'] = algorithm;
+}
+for (_id in datasets) {
+if(keyed_experiments[_id] !== undefined) {
+//datasets[_id]['experiments'] = keyed_experiments[_id];
+datasets[_id]['experiments'] = annotate_dataset(keyed_experiments[_id]);
+}
+retArray.push(annotate_dataset(datasets[_id]));
+}
+res.send(retArray);
+
+    }
+         );
 }

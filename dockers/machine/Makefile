@@ -1,6 +1,5 @@
 #DOCKER_REPO=localhost:5000/machine
 DOCKER_REPO=devel/machine
-
 TAG=latest
 HOSTNAME=$(shell hostname)
 LAB_HOST=${HOSTNAME}
