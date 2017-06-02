@@ -8,7 +8,7 @@ var fs = require('fs');
 var rp = require("request-promise");
 const md5File = require('md5-file')
 var mime = require('mime');
-var debug = true;
+var debug = false;
 
 // change the algo to sha1, sha256 etc according to your requirements
 var processDataset = function(username, dataset_name) {
@@ -62,7 +62,7 @@ var metadata = [];
                 if (err) throw err;
                 console.log('wrote metadata');
                         var p= rp({
-                            uri: process.env.FGLAB_URL + "/api/datasets/",
+                            uri: process.env.FGLAB_URL + "/api/v1/datasets/",
                             method: "PUT",
                             formData: formData,
                             gzip: true
@@ -93,7 +93,7 @@ var processUserDatasets = function(username) {
 exports.scrapeUsers = function() {
 
 if (fs.existsSync(byuser_datasets_path)) {
-    fs.readdir(byuser_datasets_path, function(err) {
+    fs.readdir(byuser_datasets_path, function(err,users) {
         for (var i = 0; i < users.length; i++) {
             var username = users[i];
             processUserDatasets(username);
