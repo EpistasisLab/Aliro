@@ -157,7 +157,6 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
             var filesP = processDataset(req.files, dataset_id);
             Promise.all(filesP)
                 .then((results) => {
-                    console.log(results[0].ops);
                     res.send({
                         message: "Files uploaded"
                     });
@@ -573,7 +572,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                         });
                     } else {
                         var obj = Object.assign(req.query, req.body);
-console.log(obj);
+//console.log(obj);
                         if ("dataset" in obj) {
                             dataset = obj['dataset'];
                             delete obj['dataset'];
@@ -830,13 +829,13 @@ var linkDataset = function(experiment, datasetId) {
             files: 1
         })
         .then((dataset) => {
-            console.log(dataset)
+            //console.log(dataset)
             if (dataset['files'] !== undefined) {
                 files = dataset['files'];
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     if (file['mimetype'] && file['mimetype'] == "text/csv") {
-                        console.log(file['mimetype']);
+                        //console.log(file['mimetype']);
                         filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
                             $push: {
                                 files: file
