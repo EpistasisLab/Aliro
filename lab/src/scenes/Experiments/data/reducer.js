@@ -7,7 +7,7 @@ import {
 import { initialExperiments } from './initialExperiments'; // for testing
 const initialState = fromJS({
 	isFetching: false,
-	items: /* [] */ initialExperiments, // for testing
+	items: [] /*initialExperiments,*/ // for testing
 });
 
 const experiments = (state = initialState, action) => {
