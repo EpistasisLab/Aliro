@@ -10,7 +10,7 @@ export const requestExperiments = () => {
 export const receiveExperiments = (json) => {
 	return {
 		type: RECEIVE_EXPERIMENTS,
-		experiments: json,
+		experiments: json.first().get('experiments'),
 		receivedAt: Date.now()
 	}
 };
