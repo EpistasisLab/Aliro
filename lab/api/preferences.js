@@ -22,7 +22,11 @@ exports.responder = function(req, res) {
         [{
             $match: query
         }, {
-            $unwind: "$algorithms"
+                "$unwind": {
+                    path: "$algorithms",
+                    preserveNullAndEmptyArrays: true
+                }
+
         }, {
             $lookup: {
                 from: "projects",
@@ -31,7 +35,11 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
-            $unwind: "$algorithms"
+                "$unwind": {
+                    path: "$algorithms",
+                    preserveNullAndEmptyArrays: true
+                }
+
         }, {
             $group: {
                 _id: "$_id",
