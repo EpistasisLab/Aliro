@@ -20,7 +20,10 @@ exports.responder = function(req, res) {
         [{
             $match: query
         }, {
-            $unwind: "$algorithms"
+                "$unwind": {
+                    path: "$algorithms",
+                    preserveNullAndEmptyArrays: true
+                }
         }, {
             $lookup: {
                 from: "datasets",
@@ -43,11 +46,20 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
-            $unwind: "$algorithms"
+                "$unwind": {
+                    path: "$algorithms",
+                    preserveNullAndEmptyArrays: true
+                }
         }, {
-            $unwind: "$datasets"
+                "$unwind": {
+                    path: "$datasets",
+                    preserveNullAndEmptyArrays: true
+                }
         }, {
-            $unwind: "$experiments"
+                "$unwind": {
+                    path: "$experiments",
+                    preserveNullAndEmptyArrays: true
+                }
         }, {
             $group: {
                 _id: "$_id",
