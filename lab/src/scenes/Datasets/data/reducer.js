@@ -9,7 +9,7 @@ import {
 // import { initialDatasets } from './initialDatasets'; // for testing
 const initialState = fromJS({
     isFetching: false,
-    items: [] /* fromJS(initialDatasets) */ // for testing
+    items: [] /* initialDatasets */ // for testing
 });
 
 // manages list of datasets
