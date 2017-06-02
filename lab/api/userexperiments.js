@@ -71,7 +71,6 @@ exports.responder = function(req,res) {
         }
     ],
 function(err,result) {
-console.log(result);
 res.send(result);
 
     }
