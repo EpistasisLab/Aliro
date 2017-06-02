@@ -13,7 +13,7 @@ import requests
 import urllib.request, urllib.parse
 import pdb
 import time
-from ai.check_recommendation import validate_recs
+from ai.validate_recommendation import validate_recs
 import os
 from ai.recommender.base import Recommender
 from collections import OrderedDict
@@ -73,7 +73,7 @@ class AI():
                  #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True):
+                 verbose=True,warm_start=True):
         """initializes AI managing agent."""
         self.rec = rec
         # access to database
@@ -103,7 +103,8 @@ class AI():
         # self.last_update = int(datetime.datetime.now().strftime("%s")) * 1000
         self.last_update = 0
         # if there is a file, load it as the recommender scores
-        if os.path.isfile(self.rec_score_file):
+        self.warm_start = warm_start
+        if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
 
     def load_state(self):
@@ -144,26 +145,29 @@ class AI():
 
         return False
 
-    def check_results(self):
+    def check_results(self,debug=False):
         """Returns true if new results have been posted since the previous
         time step."""
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':'','checking results...')
-        # get new results
-        payload = {'date_start':self.last_update,'status':'success'}
-        payload.update(self.static_payload)
-        params = json.dumps(payload).encode('utf8')
-        req = urllib.request.Request(self.exp_path, data=params,
-                                   headers=self.header)
-        r = urllib.request.urlopen(req)
-        data = json.loads(r.read().decode(r.info().get_param('charset')
-                                          or 'utf-8'))
-        # DEBUG: load results from pickle
-        # f = open('experiments_response.obj','rb')
-        # data = pickle.load(f)
-        # if there are new results, return True
+                  ':','checking results...')
+        if debug:
+            # DEBUG: load results from pickle
+            f = open('experiments_response.obj','rb')
+            data = pickle.load(f)
+        else:
+            # get new results
+            payload = {'date_start':self.last_update,'status':'success'}
+            payload.update(self.static_payload)
+            params = json.dumps(payload).encode('utf8')
+            req = urllib.request.Request(self.exp_path, data=params,
+                                       headers=self.header)
+            r = urllib.request.urlopen(req)
+            data = json.loads(r.read().decode(r.info().get_param('charset')
+                                              or 'utf-8'))
+
         if len(data) > 0:
+            # if there are new results, return True
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':',len(data),' new results!')
@@ -208,8 +212,12 @@ class AI():
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'])
+            # ml,p = validate_recs(ml,p)
 
             for alg,params,score in zip(ml,p,ai_scores):
+                # validate recommendations against available options
+                alg,params = validate_recs(alg,params)
+
                 rec = {'dataset_id':r['_id'],
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
@@ -270,11 +278,11 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI()
+    pennai = AI(warm_start=False)
     try:
         while True:
             # check for new experiment results
-            if pennai.check_results():
+            if pennai.check_results(debug=True):
                 pennai.update_recommender()
             # check for new recommendation requests
             if pennai.check_requests():
