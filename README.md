@@ -26,12 +26,6 @@ pennai.update(new_results_data)
 ```
 ## overall tasks
  - [x] build dataframe `results_data` from MongoDB results. 
-  - Dataframe cols:
-  - 'classifier' or 'regressor': e.g. "RandomForestClassifier"
-  - ML parameter data:
-  - metrics: 'accuracy','bal_accuracy', 'AUC': score of run
-  - dataset: dataset name e.g. "iris"
-  - metafeatures: list from `dataset_describe.py`
  - [x] make method to post job submissions 
  - [ ] recommendation shows up in launch page
 
