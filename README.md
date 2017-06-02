@@ -1,8 +1,10 @@
 # Penn AI
 Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs. 
 ## workflow
- - runs are stored in database
- - the Penn AI recommender is instantiated
+ - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds. 
+ - when a new experiment is found, it is used to update the recommender. 
+ - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user. 
+### Recommender
 ```python
 pennai = Recommender(method='ml_p',ml_type='classifier')
 # data: a dataframe of results from database
@@ -24,47 +26,19 @@ submit(dataset,ml,p)
 pennai.update(new_results_data)
 ```
 ## overall tasks
- - [ ] build dataframe `results_data` from MongoDB results. 
+ - [ x ] build dataframe `results_data` from MongoDB results. 
   - Dataframe cols:
   - 'classifier' or 'regressor': e.g. "RandomForestClassifier"
   - ML parameter data:
-```python
-column_types = {
-    'fit_intercept':bool,
-    'loss':str,
-    'C':float,
-    'alpha':float,
-    'learning_rate':str,
-    'penalty':str,
-    'l1_ratio':float,
-    'eta0':float,
-    'power_t':int,
-    'min_weight_fraction_leaf':float,
-    'criterion':str,
-    'n_estimators':int,
-    'max_features':str,
-    'Unnamed: 19':str,
-    'degree':int,
-    'kernel':str,
-    'gamma':str,
-    'coef0':float,
-    'dual':bool,
-    'weights':str,
-    'n_neighbors':int,
-    'fit_prior':bool,
-    'max_depth':int,
-    'binarize':bool,
-}
-```
   - metrics: 'accuracy','bal_accuracy', 'AUC': score of run
   - dataset: dataset name e.g. "iris"
   - metafeatures: list from `dataset_describe.py`
- - [ ] make method to accept job submissions 
+ - [ x ] make method to post job submissions 
  - [ ] recommendation shows up in launch page
 
 ## recommender tasks
-- [ ] filter recommendations for what has already been run
-- [ ] direct acess to MongDB results for checking what has been run
+- [ x ] filter recommendations for what has already been run
+- [ x ] direct acess to MongDB results for checking what has been run
 
 recommendations using:
  - [x] ml + p 
