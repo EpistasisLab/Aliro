@@ -7,7 +7,7 @@ export const initialDatasets = [
     best_result: {
       _id: '103984903',
       algorithm: 'Linear Regression',
-      accuracy_score: 0.72
+      accuracy_score: 0.72445
     },
     experiments: {
       pending: 15,
@@ -27,7 +27,7 @@ export const initialDatasets = [
     best_result: {
       _id: '928392293',
       algorithm: 'Random Forest',
-      accuracy_score: 0.42
+      accuracy_score: 0.42443
     },
     experiments: {
       pending: 2,
@@ -47,7 +47,7 @@ export const initialDatasets = [
     best_result: {
       _id: '983748834',
       algorithm: 'Gradient Boosting',
-      accuracy_score: 0.94
+      accuracy_score: 0.94453
     },
     experiments: {
       pending: 27,
@@ -67,7 +67,7 @@ export const initialDatasets = [
     best_result: {
       _id: '293993203',
       algorithm: 'Support Vector Machine',
-      accuracy_score: 0.33
+      accuracy_score: 0.336662
     },
     experiments: {
       pending: 0,
