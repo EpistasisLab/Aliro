@@ -74,7 +74,6 @@ exports.responder = function(req, res) {
                 var best_experiment_name;
                 experiments = results[i]['experiments'];
                 if (experiments) {
-                    console.log(experiments);
                     for (var j = 0; j < experiments.length; j++) {
                         var experiment = experiments[j];
                         var _status = experiment['status'];
