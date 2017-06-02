@@ -43,7 +43,8 @@ export class Experiments extends React.Component {
 	render() {
 
 		const { 
-			experiments, 
+			experiments,
+			isFetching,
 			filters,
 			sort
 		} = this.props;
@@ -71,20 +72,28 @@ export class Experiments extends React.Component {
 					/>
 				</Segment>
 				<Segment inverted attached="bottom" className='tabled'>
-					{experiments.size ? (
+					{isFetching &&
+						<Header 
+							inverted 
+							size="small"
+							content="Retrieving your experiments..."
+						/>
+					}
+					{!isFetching && !experiments.size &&
+						<Header 
+							inverted 
+							size="small"
+							content="No results available."
+						/>
+					}
+					{!isFetching && experiments.size &&
 						<ExperimentsTable 
 							experiments={experiments}
 							filters={filters}
 							sort={sort}
 							updateQuery={this.updateQuery}
 						/>
-					) : (
-						<Header 
-							inverted 
-							size="small"
-							content="No results available."
-						/>
-					)}
+					}
 				</Segment>
 			</div>
 		);
