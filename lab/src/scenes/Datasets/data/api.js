@@ -10,8 +10,7 @@ import {
 
 export const fetchDatasets = () => {
     const route = 'api/userdatasets';
-    //const route = `http://localhost:5080/api/datasets`;
-
+    
     return function(dispatch) {
         dispatch(requestDatasets());
         return fetch(route)
@@ -24,7 +23,6 @@ export const fetchDatasets = () => {
 
 export const toggleAI = (datasetId, aiState) => {
     const route = `api/v1/datasets/${datasetId}/ai`;
-    //const route = `http://localhost:5080/api/v1/datasets/${datasetId}/ai`;
     
     let myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
