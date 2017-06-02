@@ -1,33 +1,41 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setDataset, setAlgorithm, setParamValue, resetParams } from './data/actions';
-import { fetchDataset, submitJob } from './data/api';
+import { setDataset, setExperiment, setAlgorithm, setParamValue, resetParams } from './data/actions';
+import { fetchExperiment, fetchDataset, submitJob } from './data/api';
 import { Header, Grid, Button } from 'semantic-ui-react';
 import { SelectedAlgorithm } from './components/SelectedAlgorithm';
 import { Parameters } from './components/Parameters';
 import { Launch } from './components/Launch';
 
+import { initialExperiment } from './data/initialExperiment'; // for testing
 export class Builder extends React.Component {
 	componentDidMount() {
 		const { 
 			datasets,
+			fetchExperiment,
+			setExperiment,
 			fetchDataset,
 			setDataset
 		} = this.props;
 
-		const datasetId = this.props.params.id;
-
-		const findDatasetById = (dataset) => {
-			return dataset.get('_id') === datasetId;
-		};
-
-		let dataset = datasets.find(findDatasetById);
-
-		if(dataset) {
-			setDataset(dataset);
+		const expId = this.props.params.exp;
+		if(expId) {
+			//fetchExperiment(expId);
+			setExperiment(initialExperiment);
 		} else {
-			fetchDataset(datasetId);
+			const datasetId = this.props.params.id;
+			const findDatasetById = (dataset) => {
+				return dataset.get('_id') === datasetId;
+			};
+
+			let dataset = datasets.find(findDatasetById);
+
+			if(dataset) {
+				setDataset(dataset);
+			} else {
+				fetchDataset(datasetId);
+			}
 		}
 	}
 
@@ -37,9 +45,13 @@ export class Builder extends React.Component {
 			setAlgorithm
 		} = this.props;
 
-		if(algorithms !== nextProps.algorithms) {
-			let algorithm = nextProps.algorithms.first();
-			setAlgorithm(algorithm);
+		const expId = this.props.params.exp;
+
+		if(!expId) {
+			if(algorithms !== nextProps.algorithms) {
+				let algorithm = nextProps.algorithms.first();
+				setAlgorithm(algorithm);
+			}
 		}
 	}
 
@@ -106,7 +118,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
+		fetchExperiment: bindActionCreators(fetchExperiment, dispatch),
 		fetchDataset: bindActionCreators(fetchDataset, dispatch),
+		setExperiment: bindActionCreators(setExperiment, dispatch),
 		setDataset: bindActionCreators(setDataset, dispatch),
 		setAlgorithm: bindActionCreators(setAlgorithm, dispatch),
 		setParamValue: bindActionCreators(setParamValue, dispatch),

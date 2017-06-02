@@ -1,5 +1,8 @@
 import { fromJS } from 'immutable';
 import {
+	REQUEST_EXPERIMENT,
+	RECEIVE_EXPERIMENT,
+	SET_EXPERIMENT,
 	REQUEST_DATASET,
 	RECEIVE_DATASET,
 	SET_DATASET,
@@ -9,6 +12,10 @@ import {
 } from './actions';
 
 const initialState = fromJS({
+	experiment: {
+		isFetching: false,
+		item: {}
+	},
 	dataset: {
 		isFetching: false,
 		item: {}
@@ -19,6 +26,31 @@ const initialState = fromJS({
 
 const builder = (state = initialState, action) => {
 	switch(action.type) {
+		case REQUEST_EXPERIMENT:
+			return state.mergeDeep({
+				experiment: {
+					isFetching: true
+				}
+			});
+		case RECEIVE_EXPERIMENT:
+			return state.mergeDeep({
+				experiment: {
+					isFetching: false,
+					item: action.experiment
+				}
+			});
+		case SET_EXPERIMENT:
+			var exp = fromJS(action.experiment);
+			return state.mergeDeep({
+				experiment: {
+					item: exp
+				},
+				dataset: {
+					item: exp.get('dataset')
+				},
+				algorithm: exp.get('algorithm'),
+				params: exp.get('params')
+			});	
 		case REQUEST_DATASET:
 			return state.mergeDeep({
 				dataset: {
