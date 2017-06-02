@@ -69,8 +69,8 @@ class AI():
     """
 
     def __init__(self,rec=Recommender(),
-                 #db_path=os.environ['FGLAB_URL'],
-                 db_path='http://hoth.pmacs.upenn.edu:5080',
+                 db_path=os.environ['FGLAB_URL'],
+                 #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
                  verbose=True):
@@ -80,7 +80,8 @@ class AI():
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
         self.data_path = '/'.join([self.db_path,'api/datasets'])
-        self.submit_path = '/'.join([self.db_path,'/api/v1/projects/'])
+        self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
+        self.submit_path = '/'.join([self.db_path,'api/v1/projects'])
         self.user=user
         self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
@@ -138,7 +139,7 @@ class AI():
         """Returns true if new results have been posted since the previous
         time step."""
         # get new results
-        payload = {'date_start':self.last_update}
+        payload = {'date_start':self.last_update,'status':'success'}
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
         req = urllib.request.Request(self.exp_path, data=params,
@@ -167,7 +168,7 @@ class AI():
         # clean up response
         processed_data = []
         for d in data:
-            if '_options' in d.keys():
+            if '_options' in d.keys() and '_scores' in d.keys() and all (k in d['_scores'] for k in ('accuracy_score','f1_score','balanced_accuracy')):
                 processed_data.append(
                     {'dataset':d['_dataset_id'],
                     'algorithm':d['_project_id'],
@@ -209,7 +210,7 @@ class AI():
                 #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
                 rec.update(self.static_payload)
                 # submit path is ml_id/experiment
-                rec_path = '/'.join([self.submit_path,'projects',
+                rec_path = '/'.join([self.submit_path,
                                         rec['algorithm_id'],
                                         'experiment'])
                 # post recommendations
@@ -217,8 +218,8 @@ class AI():
                 #submit update to dataset to indicate ai:True
                 payload= {'ai':'True'}
                 payload.update(self.static_payload)
-                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                r = requests.post(data_submit_path,data=json.dumps(payload),
+                status_submit_path = '/'.join([self.status_path,r['_id'],'ai'])
+                r = requests.put(status_submit_path,data=json.dumps(payload),
                                   headers=self.header)
             i += 1
         if self.verbose:
