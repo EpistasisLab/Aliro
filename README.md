@@ -15,11 +15,10 @@ pennai.update(results_data)
 # dataset_metafeatures: an optional set of metafeatures of the dataset to assist in recommendations
 ml,p = pennai.recommend(dataset_metafeatures=None)
 ```
- - the ML+P recommendation is run on the dataset using outside system
+ - the ML+P recommendation is run on the dataset using the AI system
 
 ```python
-#todo
-submit(dataset,ml,p)
+ai.send_rec()
 ```
  - the results are used to update the recommender
 ```python
