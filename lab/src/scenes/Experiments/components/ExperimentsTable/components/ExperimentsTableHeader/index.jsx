@@ -6,6 +6,7 @@ export class ExperimentsTableHeader extends React.Component {
 
 		const {
 			selectedAlgorithm,
+			shouldDisplayQuality,
 			shouldDisplayParams,
 			orderedParamKeys,
 			sort,
@@ -64,27 +65,52 @@ export class ExperimentsTableHeader extends React.Component {
 					>
 						Id #
 					</Table.HeaderCell>
-					<Table.HeaderCell 
-						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('accuracy_score')}
-						onClick={() => handleSort('accuracy_score')}
-					>
-						Accuracy
-						<Popup
-							header="What is accuracy?"
-							trigger={
-								<Icon 
-									inverted 
-									color="grey" 
-									name="question circle" 
-									className="float-right" 
-								/>
-							}
-							content="A definition of accuracy"
-							onOpen={() => openPopup()}
-							onClose={() => closePopup()}
-						/>
-					</Table.HeaderCell>
+					{shouldDisplayQuality &&
+						<Table.HeaderCell 
+							rowSpan={shouldDisplayParams && 2}
+							sorted={isSorted('quality_metric')}
+							onClick={() => handleSort('quality_metric')}
+						>
+							Quality
+							<Popup
+								header="What is quality?"
+								trigger={
+									<Icon 
+										inverted 
+										color="grey" 
+										name="question circle" 
+										className="float-right" 
+									/>
+								}
+								content="A definition of the quality metric"
+								onOpen={() => openPopup()}
+								onClose={() => closePopup()}
+							/>
+						</Table.HeaderCell>
+					}
+					{!shouldDisplayQuality &&
+						<Table.HeaderCell 
+							rowSpan={shouldDisplayParams && 2}
+							sorted={isSorted('accuracy_score')}
+							onClick={() => handleSort('accuracy_score')}
+						>
+							Accuracy
+							<Popup
+								header="What is accuracy?"
+								trigger={
+									<Icon 
+										inverted 
+										color="grey" 
+										name="question circle" 
+										className="float-right" 
+									/>
+								}
+								content="A definition of accuracy"
+								onOpen={() => openPopup()}
+								onClose={() => closePopup()}
+							/>
+						</Table.HeaderCell>
+					}
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
 						sorted={isSorted('dataset')}
