@@ -118,29 +118,33 @@ class AI():
             if self.verbose:
                 print('loaded previous state from ',self.last_update)
 
-    def check_requests(self):
+    def check_requests(self,debug=False):
         """Returns true if new AI request has been submitted by user."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
-        payload = {'ai':'requested'}
-        payload.update(self.static_payload)
+        if debug:
+            responses = [{'_id': '5930f023ffb08f0832362efd', 'files': [{'filename': 'mushroom.csv', '_id': '5930f023ffb08f0832362eff', 'mimetype': 'text/csv'}, {'filename': 'README.md', '_id': '5930f023ffb08f0832362efe', 'mimetype': 'text/x-markdown'}], 'ai': 'requested', 'name': 'Mushrooms', 'username': 'testuser'}, {'_id': '5930f023ffb08f0832362f06', 'files': [{'filename': 'README.md', '_id': '5930f023ffb08f0832362f0a', 'mimetype': 'text/x-markdown'}, {'filename': 'adult.csv', '_id': '5930f023ffb08f0832362f0b', 'mimetype': 'text/csv'}], 'ai': 'requested', 'name': 'Adults', 'username': 'testuser'}]
+        else:
+            payload = {'ai':'requested'}
+            payload.update(self.static_payload)
 
-        r = requests.post(self.data_path,data=json.dumps(payload),
-                          headers=self.header)
-        responses = json.loads(r.text)
+            r = requests.post(self.data_path,data=json.dumps(payload),
+                              headers=self.header)
+            responses = json.loads(r.text)
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
             self.request_queue = responses
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':','new ai request for:',[r['name'] for r in responses])
-            # set AI flag to 'true' to acknowledge requests received
-            payload= {'ai':True}
-            payload.update(self.static_payload)
-            for r in self.request_queue:
-                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                tmp = requests.post(data_submit_path,data=json.dumps(payload),
-                                  headers=self.header)
+            if not debug:
+                # set AI flag to 'true' to acknowledge requests received
+                payload= {'ai':True}
+                payload.update(self.static_payload)
+                for r in self.request_queue:
+                    data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+                    tmp = requests.post(data_submit_path,data=json.dumps(payload),
+                                      headers=self.header)
             return True
 
         return False
@@ -278,14 +282,15 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(warm_start=False)
+    pennai = AI(warm_start=True)
+    debug = False
     try:
         while True:
             # check for new experiment results
-            if pennai.check_results(debug=True):
+            if pennai.check_results(debug=debug):
                 pennai.update_recommender()
             # check for new recommendation requests
-            if pennai.check_requests():
+            if pennai.check_requests(debug=debug):
                 pennai.send_rec()
             sleep(5)
     except (KeyboardInterrupt, SystemExit):
