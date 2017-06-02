@@ -6,6 +6,7 @@ export class ExperimentsTableBody extends React.Component {
 
 		const { 
 			experiments,
+			shouldDisplayQuality,
 			shouldDisplayAwards,
 			shouldDisplayParams,
 			orderedParamKeys
@@ -13,6 +14,8 @@ export class ExperimentsTableBody extends React.Component {
 
 		const renderStatusIcon = (status) => {
 			switch(status) {
+				case 'suggested':
+					return <Icon inverted color="purple" name="android" />;
 				case 'pending':
 					return <Icon inverted color="yellow" name="clock" />;
 				case 'running':
@@ -30,7 +33,6 @@ export class ExperimentsTableBody extends React.Component {
 
 		const renderAwardPopup = (experiment) => {
 			if(!shouldDisplayAwards) { return; }
-
 			switch(experiment.get('award')) {
 				case 'best_overall':
 					return (
@@ -46,6 +48,8 @@ export class ExperimentsTableBody extends React.Component {
 							content={`Best result for this dataset with ${experiment.get('algorithm')}`}
 						/>
 					);
+				default:
+					return;	
 			}
 		};
 
@@ -76,12 +80,22 @@ export class ExperimentsTableBody extends React.Component {
 								{renderStatusIcon(experiment.get('status'))} #{experiment.get('_id')}
 							</a>	
 						</Table.Cell>
-						<Table.Cell selectable width={2}>
-							<a href={getResultsLink(experiment.get('_id'))}>
-								{experiment.get('accuracy_score') || '-'}
-								{renderAwardPopup(experiment)}
-							</a>	
-						</Table.Cell>
+						{shouldDisplayQuality &&
+							<Table.Cell selectable width={2}>
+								<a href={getResultsLink(experiment.get('_id'))}>
+									{experiment.get('quality_metric') ? experiment.get('quality_metric').toFixed(2) : '-'}
+									{renderAwardPopup(experiment)}
+								</a>	
+							</Table.Cell>
+						}
+						{!shouldDisplayQuality &&
+							<Table.Cell selectable width={2}>
+								<a href={getResultsLink(experiment.get('_id'))}>
+									{experiment.get('accuracy_score') ? experiment.get('accuracy_score').toFixed(2) : '-'}
+									{renderAwardPopup(experiment)}
+								</a>	
+							</Table.Cell>
+						}
 						<Table.Cell selectable width={3}>
 							<a href={getResultsLink(experiment.get('_id'))}>
 								{experiment.get('dataset')}

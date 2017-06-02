@@ -1,10 +1,55 @@
 export const initialExperiments = [
 	{
 		 _id: 109283123,
+		 status: 'suggested',
+		 quality_metric: 0.9734,
+		 notification: undefined, // if finished experiment has not been seen yet
+		 accuracy_score: undefined,
+		 dataset: 'Thyroid',
+		 algorithm: 'Random Forest',
+		 params: {
+			 n_estimators: 10,
+			 max_features: 'sqrt',
+			 min_impurity_split: 1e-9,
+		 },
+		 launched_by: 'user'
+	},
+	{
+		 _id: 103283123,
+		 status: 'suggested',
+		 quality_metric: 0.83734,
+		 notification: undefined, // if finished experiment has not been seen yet
+		 accuracy_score: undefined,
+		 dataset: 'Thyroid',
+		 algorithm: 'Random Forest',
+		 params: {
+			 n_estimators: 10,
+			 max_features: 'sqrt',
+			 min_impurity_split: 1e-9,
+		 },
+		 launched_by: 'user'
+	},
+	{
+		 _id: 102283123,
+		 status: 'suggested',
+		 quality_metric: 0.86334,
+		 notification: undefined, // if finished experiment has not been seen yet
+		 accuracy_score: undefined,
+		 dataset: 'Thyroid',
+		 algorithm: 'Random Forest',
+		 params: {
+			 n_estimators: 10,
+			 max_features: 'sqrt',
+			 min_impurity_split: 1e-9,
+		 },
+		 launched_by: 'user'
+	},
+	{
+		 _id: 102283122,
 		 status: 'pending',
 		 notification: undefined, // if finished experiment has not been seen yet
 		 accuracy_score: undefined,
-		 dataset: 'Thyroiid',
+		 dataset: 'Thyroid',
 		 algorithm: 'Random Forest',
 		 params: {
 			 n_estimators: 10,
@@ -72,7 +117,8 @@ export const initialExperiments = [
 		 _id: 109283128,
 		 status: 'finished',
 		 notification: 'new',
-		 accuracy_score: 0.97,
+		 award: 'best_overall',
+		 accuracy_score: 0.9734343,
 		 dataset: 'Adults',
 		 algorithm: 'k-Nearest Neighbors',
 		 params: {
@@ -100,7 +146,8 @@ export const initialExperiments = [
 		 _id: 109283126,
 		 status: 'finished',
 		 notification: 'new',
-		 accuracy_score: 0.67,
+		 award: 'best_for_algorithm',
+		 accuracy_score: 0.64437,
 		 dataset: 'Adults',
 		 algorithm: 'Logistic Regression',
 		 params: {
@@ -113,7 +160,7 @@ export const initialExperiments = [
 		 _id: 109283125,
 		 status: 'finished',
 		 notification: 'new',
-		 accuracy_score: 0.57,
+		 accuracy_score: 0.53457,
 		 dataset: 'Hepatitis',
 		 algorithm: 'Gradient Boosting',
 		 params: {
@@ -130,7 +177,7 @@ export const initialExperiments = [
 		 _id: 109283165,
 		 status: 'finished',
 		 notification: 'new',
-		 accuracy_score: 0.45,
+		 accuracy_score: 0.4335,
 		 dataset: 'Hepatitis',
 		 algorithm: 'Logistic Regression',
 		 params: {
@@ -158,7 +205,7 @@ export const initialExperiments = [
 		 _id: 109283163,
 		 status: 'finished',
 		 notification: 'new',
-		 accuracy_score: 0.94,
+		 accuracy_score: 0.9444,
 		 dataset: 'Heart',
 		 algorithm: 'Gradient Boosting',
 		 params: {
@@ -175,7 +222,7 @@ export const initialExperiments = [
 		 _id: 109283162,
 		 status: 'finished',
 		 notification: undefined,
-		 accuracy_score: 0.22,
+		 accuracy_score: 0.3422,
 		 dataset: 'Thyroid',
 		 algorithm: 'Decision Tree',
 		 params: {
@@ -188,7 +235,7 @@ export const initialExperiments = [
 		 _id: 109283161,
 		 status: 'finished',
 		 notification: undefined,
-		 accuracy_score: 0.83,
+		 accuracy_score: 0.8563,
 		 dataset: 'Heart',
 		 algorithm: 'Decision Tree',
 		 params: {
@@ -201,7 +248,7 @@ export const initialExperiments = [
 		 _id: 109283113,
 		 status: 'finished',
 		 notification: undefined,
-		 accuracy_score: 0.21,
+		 accuracy_score: 0.2331,
 		 dataset: 'Heart',
 		 algorithm: 'Gradient Boosting',
 		 params: {
@@ -218,7 +265,7 @@ export const initialExperiments = [
 		 _id: 109283114,
 		 status: 'finished',
 		 notification: undefined,
-		 accuracy_score: 0.21,
+		 accuracy_score: 0.2122,
 		 dataset: 'Heart',
 		 algorithm: 'Gradient Boosting',
 		 params: {

@@ -13,11 +13,17 @@ export class ExperimentsTable extends React.Component {
 			updateQuery
 		} = this.props;
 
+		const selectedStatus = filters.status.selected;
+
 		const selectedDataset = filters.dataset.selected;
 
 		const selectedAlgorithm = filters.algorithm.selected;
 
 		const currentParameters = experiments.first().get('params');
+
+		const shouldDisplayQuality = (() => {
+			return selectedStatus === 'suggested';
+		})();
 
 		const shouldDisplayAwards = (() => {
 			return selectedDataset !== 'all';
@@ -45,6 +51,7 @@ export class ExperimentsTable extends React.Component {
 				>
 					<ExperimentsTableHeader
 						selectedAlgorithm={selectedAlgorithm}
+						shouldDisplayQuality={shouldDisplayQuality}
 						shouldDisplayParams={shouldDisplayParams}
 						orderedParamKeys={orderedParamKeys}
 						sort={sort}
@@ -52,6 +59,7 @@ export class ExperimentsTable extends React.Component {
 					/>
 					<ExperimentsTableBody
 						experiments={experiments}
+						shouldDisplayQuality={shouldDisplayQuality}
 						shouldDisplayAwards={shouldDisplayAwards}
 						shouldDisplayParams={shouldDisplayParams}
 						orderedParamKeys={orderedParamKeys}
