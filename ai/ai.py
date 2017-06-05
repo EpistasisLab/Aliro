@@ -15,7 +15,7 @@ import pdb
 import time
 from ai.validate_recommendation import validate_recs
 import os
-from ai.recommender.base import Recommender
+from ai.recommender.average_recommender import AverageRecommender
 from collections import OrderedDict
 
 ml_ids = {
@@ -68,7 +68,7 @@ class AI():
                     sessions
     """
 
-    def __init__(self,rec=Recommender(),
+    def __init__(self,rec=AverageRecommender(),
                  db_path=os.environ['FGLAB_URL'],
                  #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
