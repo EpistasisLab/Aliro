@@ -1,50 +1,40 @@
 import React from 'react';
-import { breakpoints } from '../../breakpoints';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchDatasets, toggleAI } from './data/api';
 import { Header, Button, Grid } from 'semantic-ui-react';
 import { DatasetPanel } from './components/DatasetPanel';
+import DeviceWatcher from '../../device-watcher';
 
 export class Datasets extends React.Component {
-	constructor() {
-		super();
-		this.state = { width: 0, height: 0 };
-		this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+	static getColsByDevice() {
+		return {mobile: 1, tablet: 2, desktop: 3, largescreen: 4};
+	}
+
+	constructor(props) {
+		super(props);
+		this.state = DeviceWatcher.initState();
+		this.handleCols = this.handleCols.bind(this);
 	}
 
 	componentDidMount() {
 		const { fetchDatasets } = this.props;
 		fetchDatasets();
 
-		this.updateWindowDimensions();
-		window.addEventListener('resize', this.updateWindowDimensions.bind(this));
+		DeviceWatcher.startWatch(this.setState.bind(this));
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
+		DeviceWatcher.endWatch();
 	}
 
-	updateWindowDimensions() {
-		this.setState({ width: window.innerWidth, height: window.innerHeight });
-	}
-
-	calcCols() {
-		let { width } = this.state; 
-
-		if(width < breakpoints.MIN_TABLET) 			{ return 1; } 
-		else if(width < breakpoints.MAX_TABLET) 	{ return 2; } 
-		else if(width < breakpoints.MAX_DESKTOP) 	{ return 3; } 
-		else 										{ return 4; }
+	handleCols() {
+		const { getColsByDevice } = this.constructor;
+		return DeviceWatcher.calcCols(this.state, getColsByDevice());
 	}
 
 	render() {
-		const { 
-			datasets,
-			isFetching,
-			toggleAI
-		} = this.props;
-
+		const { datasets, isFetching, toggleAI } = this.props;
 		return (
 			<div>
 				<div className="page-title">
@@ -77,7 +67,7 @@ export class Datasets extends React.Component {
 					/>
 				}
 				{!isFetching && datasets.size &&
-					<Grid stretched columns={this.calcCols()}>
+					<Grid stretched columns={this.handleCols()}>
 						{datasets.map(dataset =>
 							<DatasetPanel
 								key={dataset.get('_id')}
