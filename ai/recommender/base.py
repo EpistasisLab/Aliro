@@ -18,13 +18,6 @@ class Recommender():
 
     Parameters
     ----------
-    method: str, default: 'ml_p'
-        the problem formulation.
-        options: 'ml_p' | 'ml_mf' | 'ml_p_mf'
-        ml_p: recommend a ML and parameters without modeling metafeatures.
-        ml_mf: recommend a ML using metafeatures.
-        ml_p_mf: recommend a ML and parameters using metafeatures.
-
     ml: object, default: None
         the machine learning algorithm used as a meta-model. unused if
         metafeatures are not included
@@ -38,10 +31,9 @@ class Recommender():
 
     """
 
-    def __init__(self,method='ml_p',ml=None,ml_type = 'classifier',
+    def __init__(self,ml=None,ml_type = 'classifier',
                  metric='accuracy'):
         """initialize recommendation system."""
-        self.method = method
         self.ml = ml
         self.ml_type = ml_type
         self.metric = metric
@@ -75,9 +67,6 @@ class Recommender():
         # https://github.com/EpistasisLab/penn-ai.gitalready been evaluated
         self.trained_dataset_models = set()
 
-    def results_in_db(self,ml,p,dataset_name):
-        """checks whether results are already in database."""
-
     def update(self,results_data,learner=None,data_name=None):
         """update meta-models by incorporating new data.
 
@@ -88,12 +77,7 @@ class Recommender():
                 'parameters'
                 self.metric
         """
-        if self.method=='ml_p':
-            # recommending ML and Parameters based on overall performance
-            self.fit_ml_p(results_data)
-        elif self.method=='ml_p_mf':
-            # recommending ML and parameters based on metafeatures of data
-            self.fit_ml_p_mf(results_data,data_name)
+        self.fit(results_data)
 
     def recommend(self,dataset=None,dataset_id=None,n_recs=1):
         """return a model and parameter values expected to do best on
@@ -101,37 +85,37 @@ class Recommender():
         n_recs (default: 1): optionally, return a list of length n_recs
         in order of estimators and parameters expected to do best."""
 
-        if self.method=='ml_p':
-            # return ML+P for best average y
-            try:
-                rec = self.scores.sort_values(ascending=False).index.values
+        # return ML+P for best average y
+        try:
+            rec = self.scores.sort_values(ascending=False).index.values
 
-                # if a dataset is specified, do not make recommendations for
-                # algorithm-parameter combos that have already been run
-                if dataset_id is not None:
-                    rec = [r for r in rec if dataset_id + '|' + r not in
-                           self.trained_dataset_models]
-
-                ml_rec = [r.split('|')[0] for r in rec]
-                p_rec = [r.split('|')[1] for r in rec]
-                rec_score = [self.scores[r] for r in rec]
-            except AttributeError:
-                print('rec:',rec)
-                print('self.scores:',self.scores)
-                print('self.w:',self.w)
-                raise AttributeError
-
-            # update the recommender's memory with the new algorithm-parameter
-            # combos that it recommended
-            ml_rec = ml_rec[:n_recs]
-            p_rec = p_rec[:n_recs]
-
+            # if a dataset is specified, do not make recommendations for
+            # algorithm-parameter combos that have already been run
             if dataset_id is not None:
-                self.trained_dataset_models.update(
-                                            ['|'.join([dataset_id, ml, p])
-                                            for ml, p in zip(ml_rec, p_rec)])
+                rec = [r for r in rec if dataset_id + '|' + r not in
+                       self.trained_dataset_models]
 
-            return ml_rec, p_rec, rec_score
+            ml_rec = [r.split('|')[0] for r in rec]
+            p_rec = [r.split('|')[1] for r in rec]
+            rec_score = [self.scores[r] for r in rec]
+        except AttributeError:
+            print('rec:',rec)
+            print('self.scores:',self.scores)
+            print('self.w:',self.w)
+            raise AttributeError
+
+        # update the recommender's memory with the new algorithm-parameter
+        # combos that it recommended
+        ml_rec = ml_rec[:n_recs]
+        p_rec = p_rec[:n_recs]
+        rec_score = rec_score[:n_recs]
+
+        if dataset_id is not None:
+            self.trained_dataset_models.update(
+                                        ['|'.join([dataset_id, ml, p])
+                                        for ml, p in zip(ml_rec, p_rec)])
+
+        return ml_rec, p_rec, rec_score
         # # get metafeatures of the dataset
         # metafeatures = self.metafeatures(dataset)
         # scores = np.array()
@@ -159,7 +143,7 @@ class Recommender():
         # meta_features['dataset'] = data['dataset']
         return meta_features
 
-    def fit_ml_p(self,results_data):
+    def fit(self,results_data):
         """Fit ML / Parameter recommendation based on overall performance
         in results_data.
         Updates self.scores
@@ -192,17 +176,6 @@ class Recommender():
         new_weights = results_data.groupby('algorithm' + '-parameters').size()
         # update scores
         self.update_scores(new_scores, new_weights)
-
-    def dictify(self,p):
-        """convert parameter entry into dictionary."""
-        d = dict()
-        for ps in p.split(','):
-            if str(ps.split('=')[0]) != '':
-                if self.is_number(ps.split('=')[-1]):
-                    d[str(ps.split('=')[0])] = float(ps.split('=')[-1])
-                else:
-                    d[str(ps.split('=')[0])] = ps.split('=')[-1]
-        return d
 
     def is_number(self,s):
         """check if parameter is a number."""
