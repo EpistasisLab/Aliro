@@ -27,7 +27,7 @@ def test_ml_p():
     data = data.rename(columns={'classifier':'algorithm'})
     pennai = Recommender()
     pennai.update(data)
-    ml,p = pennai.recommend()
+    ml,p,scores = pennai.recommend()
     print('ml:',ml[0])
     print('p:',p[0])
     del pennai
@@ -41,11 +41,11 @@ def test_ml_p():
         new_data = data.iloc[n*datlen:(n+1)*datlen]
         # pdb.set_trace()
         pennai.update(new_data)
-        ml,p = pennai.recommend(n_recs=n_recs)
+        ml,p,scores = pennai.recommend(n_recs=n_recs)
         # pdb.set_trace()
         #'p:',p,
         print(str(n),': ml:',ml,', p:',p,'scores=',
-              [pennai.scores[mle+':'+pe] for mle,pe in zip(ml,p)])
+              scores)
 
     # pennai.update(data2)
     # ml,p = pennai.recommend()
