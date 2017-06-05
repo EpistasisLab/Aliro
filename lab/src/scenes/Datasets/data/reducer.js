@@ -6,10 +6,9 @@ import {
     RECEIVE_AI_TOGGLE
 } from './actions';
 
-import { initialDatasets } from './initialDatasets'; // for testing
 const initialState = fromJS({
     isFetching: false,
-    items: [] /* initialDatasets */ // for testing
+    items: []
 });
 
 // manages list of datasets
