@@ -1,6 +1,6 @@
 #working off of an ubuntu wily rootfs
 FROM scratch
-ADD files/xenial.tgz /
+ADD files/rootfs.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
 #add repo for mongodb
@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 #check if we need to rebuild
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
-#RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git 
-RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlacc.pmacs.upenn.edu:svitale/Gp.git
+RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git 
+#RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@sarlacc.pmacs.upenn.edu:svitale/Gp.git
 #install bower globally, needs "node" available as "node"
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN cd /share/devel/Gp/lab && npm install 
