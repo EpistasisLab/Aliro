@@ -48,7 +48,7 @@ RUN cd /share/devel/Gp/machine && npm install
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 COPY files/start.sh /root/
 #COPY files/env /share/devel/Gp/machine/.env
-COPY files/projects.json /share/devel/Gp/machine/
+#COPY files/projects.json /share/devel/Gp/machine/
 # apache configs
 #RUN cd /share/devel/Gp/gpocl && mkdir build && cd build && cmake ../ && make
 #install the service
