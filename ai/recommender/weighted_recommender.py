@@ -68,7 +68,7 @@ class WeightedRecommender(BaseRecommender):
         runtime = time.time() - start
         # get average balanced accuracy by classifier-parameter combo
         new_scores = weightMean * results_data.groupby(('algorithm-parameters'))[self.metric].mean() +
-            weightTime / runtime + weightInterpret * _find_interpret(ml_type)
+            weightTime / runtime + weightInterpret * _find_interpret(self.ml_type)
         new_weights = results_data.groupby('algorithm-parameters').size()
 
         # update scores
