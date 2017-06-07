@@ -1,0 +1,1 @@
+import React from 'React'; // only import component

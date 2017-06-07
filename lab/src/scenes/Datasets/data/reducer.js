@@ -1,64 +1,73 @@
-import { fromJS } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
+import { combineReducers } from 'redux-immutable';
 import { 
-    REQUEST_DATASETS,
-    RECEIVE_DATASETS,
-    REQUEST_AI_TOGGLE,
-    RECEIVE_AI_TOGGLE
+    FETCH_DATASETS_REQUEST,
+    FETCH_DATASETS_SUCCESS,
+    FETCH_DATASETS_FAILURE
 } from './actions';
 
-const initialState = fromJS({
-    isFetching: false,
-    items: []
-});
-
-// manages list of datasets
-const datasets = (state = initialState, action) => {
+const byId = (state = Map(), action) => {
     switch(action.type) {
-        case REQUEST_DATASETS:
-            return state.merge({
-                isFetching: true
+        case FETCH_DATASETS_SUCCESS:
+            const newDatasets = {};
+            action.response.forEach(dataset => {
+                newDatasets[dataset._id] = dataset;
             });
-        case RECEIVE_DATASETS:
-            return state.merge({
-                isFetching: false,
-                items: action.datasets
-            });
-        case REQUEST_AI_TOGGLE:
-            return state.merge({
-                items: state.get('items').map(d => dataset(d, action))
-            });
-        case RECEIVE_AI_TOGGLE:
-            return state.merge({
-                items: state.get('items').map(d => dataset(d, action))
-            });
+            return state.merge(newDatasets);
         default:
             return state;
     }
 };
 
-// manages individual dataset
-const dataset = (state = fromJS({}), action) => {
+const isFetching = (state = false, action) => {
     switch(action.type) {
-        case REQUEST_AI_TOGGLE:
-            if(state.get('_id') !== action.datasetId) {
-                return state;
-            }
-
-            return state.merge({
-                toggling: true
-            });
-        case RECEIVE_AI_TOGGLE:
-            if(state.get('_id') !== action.datasetId) {
-                return state;
-            }
-        
-            return state.merge({
-                ai: action.aiState,
-                toggling: false
-            });
+        case FETCH_DATASETS_REQUEST:
+            return true;
+        case FETCH_DATASETS_SUCCESS:
+        case FETCH_DATASETS_FAILURE:
+            return false;   
         default:
-            return state;  
+            return state;
     }
 };
+
+const datasets = combineReducers({
+    byId,
+    isFetching
+});
+
+/*case REQUEST_AI_TOGGLE:
+        return state.merge({
+                items: state.get('items').map(d => dataset(d, action))
+        });
+case RECEIVE_AI_TOGGLE:
+        return state.merge({
+                items: state.get('items').map(d => dataset(d, action))
+        });*/
+
+// manages individual dataset
+/*const dataset = (state = fromJS({}), action) => {
+        switch(action.type) {
+                case REQUEST_AI_TOGGLE:
+                        if(state.get('_id') !== action.datasetId) {
+                                return state;
+                        }
+
+                        return state.merge({
+                                toggling: true
+                        });
+                case RECEIVE_AI_TOGGLE:
+                        if(state.get('_id') !== action.datasetId) {
+                                return state;
+                        }
+                
+                        return state.merge({
+                                ai: action.aiState,
+                                toggling: false
+                        });
+                default:
+                        return state;  
+        }
+};*/
 
 export default datasets;
