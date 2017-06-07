@@ -11,16 +11,15 @@ class BaseRecommender:
     Parameters
     ----------
     ml_type: str, 'classifier' or 'regressor'
-        recommending classifiers or regressors. used to determine ML options.
+        Recommending classifiers or regressors. Used to determine ML options.
 
-    metric: str
-        the metric by which to assess performance in the data.
-        default: accuracy for classifiers, mse for regressors.
+    metric: str (default: accuracy for classifiers, mse for regressors)
+        The metric by which to assess performance on the datasets.
 
     """
 
     def __init__(self, ml_type='classifier', metric=None):
-        """initialize recommendation system."""
+        """Initialize recommendation system."""
         raise RuntimeError('Do not instantiate the BaseRecommender class directly.')
 
     def update(self, results_data):
@@ -36,12 +35,13 @@ class BaseRecommender:
         raise NotImplementedError
 
     def recommend(self, dataset_id=None, n_recs=1):
-        """return a model and parameter values expected to do best on
-        dataset.
+        """Return a model and parameter values expected to do best on dataset.
 
         Parameters
         ----------
-        n_recs (default: 1): optionally, return a list of length n_recs
-        in order of estimators and parameters expected to do best.
+        dataset_id: string
+            ID of the dataset for which the recommender is generating recommendations.
+        n_recs: int (default: 1), optional
+            Return a list of length n_recs in order of estimators and parameters expected to do best.
         """
         raise NotImplementedError
