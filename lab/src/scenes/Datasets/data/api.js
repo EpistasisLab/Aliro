@@ -1,9 +1,9 @@
 require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
-import { fromJS } from 'immutable';
-import { 
-	requestDatasets,
-	receiveDatasets,
+import {
+	FETCH_DATASETS_REQUEST,
+	FETCH_DATASETS_SUCCESS,
+	FETCH_DATASETS_FAILURE,
 	requestAIToggle,
 	receiveAIToggle
 } from './actions';
@@ -12,16 +12,26 @@ export const fetchDatasets = () => {
 	const route = 'api/userdatasets';
 	
 	return function(dispatch) {
-			dispatch(requestDatasets());
+			dispatch({
+        type: FETCH_DATASETS_REQUEST
+    	});
+
 			return fetch(route)
 					.then(response => {
+							console.log(response);
 							if(response.status >= 400) {
 									//dispatch()
 							}  
 							return response.json();
 					})
-					.then(json =>
-							dispatch(receiveDatasets(fromJS(json)))
+					.then(response => {
+						console.log(response);
+						dispatch({
+				      type: FETCH_DATASETS_SUCCESS,
+				      receivedAt: Date.now(),
+				      response
+				    })
+					}
 					);
 	}
 };

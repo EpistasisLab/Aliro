@@ -1,50 +1,48 @@
-export const REQUEST_DATASETS = 'REQUEST_DATASETS';
-export const RECEIVE_DATASETS = 'RECEIVE_DATASETS';
+import * as api from './api';
+//import { getIsFetching } from './reducers';
+export const FETCH_DATASETS_REQUEST = 'FETCH_DATASETS_REQUEST';
+export const FETCH_DATASETS_SUCCESS = 'FETCH_DATASETS_SUCCESS';
+export const FETCH_DATASETS_FAILURE = 'FETCH_DATASETS_FAILURE';
 export const REQUEST_AI_TOGGLE = 'REQUEST_AI_TOGGLE';
 export const RECEIVE_AI_TOGGLE = 'RECEIVE_AI_TOGGLE';
 
-export const DATASETS_REQUEST = 'DATASETS_REQUEST';
-export const DATASETS_SUCCESS = 'DATASETS_SUCCESS';
-export const DATASETS_FAILURE = 'DATASETS_FAILURE';
+export const fetchDatasets = (dispatch, getState) => {
+        /*if(getIsFetching(getState())) {
+                return Promise.resolve();
+        }*/
 
-export const FETCH_DATASETS = 'FETCH_DATASETS';
+        dispatch({
+                type: FETCH_DATASETS_REQUEST
+        });
 
-export const fetchDatasets = (status, json, error) => {
-    return {
-        type: FETCH_DATASETS,
-        datasets: json || [],
-        receivedAt: Date.now(),
-        status,
-        error
-    }
+        return api.fetchDatasets().then(
+                response => {
+                        dispatch({
+                                type: FETCH_DATASETS_SUCCESS,
+                                receivedAt: Date.now(),
+                                response
+                        });
+                },
+                error => {
+                        dispatch({
+                                type: FETCH_DATASETS_FAILURE,
+                                receivedAt: Date.now(),
+                                message: error.message || 'Something went wrong.'
+                        });
+                }
+        );
 };
 
-export const requestDatasets = () => {
-    return {
-        type: REQUEST_DATASETS
-    }
-};
+export const requestAIToggle = (datasetId) => ({
+    type: REQUEST_AI_TOGGLE,
+    datasetId
+});
 
-export const receiveDatasets = (json) => {
-    return {
-        type: RECEIVE_DATASETS,
-        datasets: json,
-        receivedAt: Date.now()
-    }
-};
+export const receiveAIToggle = (datasetId, aiState) => ({
+    type: RECEIVE_AI_TOGGLE,
+    receivedAt: Date.now(),
+    datasetId,
+    aiState
+});
 
-export const requestAIToggle = (datasetId) => {
-    return {
-        type: REQUEST_AI_TOGGLE,
-        datasetId
-    }
-};
-
-export const receiveAIToggle = (datasetId, aiState) => {
-    return {
-        type: RECEIVE_AI_TOGGLE,
-        receivedAt: Date.now(),
-        datasetId,
-        aiState
-    }
-};
+// export const actions;
