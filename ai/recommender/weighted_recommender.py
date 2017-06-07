@@ -1,13 +1,14 @@
 """
 Recommender system for Penn AI.
 """
+import time
 import pandas as pd
 from .base import BaseRecommender
 
-class AverageRecommender(BaseRecommender):
+class WeightedRecommender(BaseRecommender):
     """Penn AI average recommender.
-    Recommends machine learning algorithms and parameters based on their average performance
-    across all evaluated datasets.
+    Recommends machine learning algorithms and parameters based on weighted averages and ranks them according to which are 
+    significantly better across all evaluated datasets.
     Parameters
     ----------
     ml_type: str, 'classifier' or 'regressor'
@@ -38,7 +39,7 @@ class AverageRecommender(BaseRecommender):
         # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
         self.trained_dataset_models = set()
 
-    def update(self, results_data):
+    def update(self, results_data, weightMean, weightTime, weightInterpret):
         """Update ML / Parameter recommendations based on overall performance in results_data.
         Updates self.scores
         Parameters
@@ -48,6 +49,7 @@ class AverageRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         """
+        start = time.time()
         # make combined data columns of datasets, classifiers, and parameters
         results_data.loc[:, 'algorithm-parameters'] = (
                                        results_data['algorithm'].values + '|' +
@@ -63,8 +65,10 @@ class AverageRecommender(BaseRecommender):
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
 
+        runtime = time.time() - start
         # get average balanced accuracy by classifier-parameter combo
-        new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()
+        new_scores = weightMean * results_data.groupby(('algorithm-parameters'))[self.metric].mean() +
+            weightTime / runtime + weightInterpret * _find_interpret(ml_type)
         new_weights = results_data.groupby('algorithm-parameters').size()
 
         # update scores
@@ -77,7 +81,6 @@ class AverageRecommender(BaseRecommender):
         n_recs (default: 1): optionally, return a list of length n_recs
         in order of estimators and parameters expected to do best.
         """
-
         # return ML+P for best average y
         try:
             rec = self.scores.sort_values(ascending=False).index.values
@@ -109,6 +112,23 @@ class AverageRecommender(BaseRecommender):
 
         return ml_rec, p_rec, rec_score
 
+   
+    def _find_interpret(ml_type):
+        """finds the interpretability constant depending on the ml_type
+        Higher numbers indicate easier to interpret"""
+        if ml_type == 'LogisticRegression':
+            3
+        elif ml_type == 'RandomForestClassifier':
+            1
+        elif ml_type == 'KNeighborsClassifier':
+            2
+        elif ml_type == 'DecisionTreeClassifier':
+            3
+        elif ml_type == 'GradientBoostingClassifier':
+            1
+        else:
+            2
+    
     def _update_scores(self, new_scores, new_weights):
         """update scores based on new_scores"""
         new_ind = new_scores.index.values
