@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+//import { combineReducers } from 'redux-immutable';
 import preferences from './components/App/data';
 import datasets from './scenes/Datasets/data';
 import experiments from './scenes/Experiments/data';
