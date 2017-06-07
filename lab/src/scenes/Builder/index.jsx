@@ -31,6 +31,7 @@ export class Builder extends React.Component {
 
 			let dataset = datasets.find(findDatasetById);
 
+			// DEFAULTING TO FETCH DATASET (since dataset is undefined)
 			if(dataset) {
 				setDataset(dataset);
 			} else {
@@ -111,7 +112,7 @@ function mapStateToProps(state) {
 	return {
 		isFetching: state.preferences.get('isFetching'),
 		algorithms: state.preferences.getIn(['preferences', 'algorithms']),
-		datasets: state.datasets.get('items'),
+		datasets: state.datasets.get('byId'),
 		builder: state.builder
 	};
 }
