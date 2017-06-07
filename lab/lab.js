@@ -1040,10 +1040,9 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 /* Rendering Routes */
 
 // React app
-// All other routes should redirect to the index.html
-//app.route('/*').get(function(req, res) {
-//    res.redirect('/');
-//});
+/*app.get('/*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'www', 'index.html'));
+});*/
 
 // List projects and machines on homepage
 app.get("/oldui", (req, res, next) => {
