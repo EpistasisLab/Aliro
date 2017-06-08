@@ -29,7 +29,6 @@ export class AIToggle extends React.Component {
 		})();
 
 		const labelClass = `ai-label ${aiState ? 'on' : 'off' }`;
-
 		const toggleClass = aiState === 'requested' ? 'ai-switch requested' : 'ai-switch';
 		return (
 			<span>
