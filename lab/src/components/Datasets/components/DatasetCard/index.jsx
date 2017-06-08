@@ -1,20 +1,27 @@
-import React from 'react';
-import { Grid, Segment, Header, Button } from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from './data/actions';
+import { 
+	getIsToggling, 
+	getErrorMessage // use error message of main page?
+} from './data/reducer';
 import { AIToggle } from './components/AIToggle';
 import { ActionsDropdown } from './components/ActionsDropdown';
 import { BestResultSegment } from './components/BestResultSegment';
 import { ExperimentsSegment } from './components/ExperimentsSegment';
+import { Grid, Segment, Header, Button } from 'semantic-ui-react';
 
-export class DatasetPanel extends React.Component {
+class DatasetCard extends Component {
 	render() {
 		const { 
 			dataset,
-			toggleAI
+			toggleAI,
+			isToggling
 		} = this.props;
 
 		const datasetLink = `/#/datasets/${dataset.get('_id')}`;
 		const buildLink = `/#/build/${dataset.get('_id')}`;
-		return <Grid.Column className='dataset-panel'>
+		return <Grid.Column className='dataset-card'>
 			<Segment inverted attached='top' className='panel-header'>
 				<Header 
 					as='a'
@@ -28,8 +35,8 @@ export class DatasetPanel extends React.Component {
 					{dataset.get('has_metadata') &&
 						<AIToggle 
 							aiState={dataset.get('ai')}
-							toggleAI={toggleAI}
-							isToggling={dataset.get('toggling')}
+							toggleAI={toggleAI.bind(null, dataset.get('_id'))}
+							isToggling={isToggling}
 						/>
 					}	
 					<ActionsDropdown />
@@ -64,3 +71,15 @@ export class DatasetPanel extends React.Component {
 		</Grid.Column>;
 	}
 }
+
+const mapStateToProps = (state, { dataset }) => ({
+	isToggling: getIsToggling(state, dataset.get('_id')),
+	errorMessage: getErrorMessage(state, dataset.get('_id'))
+});
+
+DatasetCard = connect(
+	mapStateToProps, 
+	actions
+)(DatasetCard);
+
+export default DatasetCard;
