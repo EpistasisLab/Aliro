@@ -110,10 +110,10 @@ export class Builder extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		isFetching: state.preferences.get('isFetching'),
-		algorithms: state.preferences.getIn(['preferences', 'algorithms']),
-		datasets: state.datasets.get('byId'),
-		builder: state.builder
+		isFetching: state.getIn(['preferences, isFetching']),
+		algorithms: state.getIn(['preferences', 'preferences', 'algorithms']),
+		datasets: state.getIn(['datasets', 'byId']),
+		builder: state.get('builder')
 	};
 }
 
