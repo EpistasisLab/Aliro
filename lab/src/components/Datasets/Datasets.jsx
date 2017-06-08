@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ResponsiveGrid from '../ResponsiveGrid';
+import DatasetCard from './components/DatasetCard';
 import FetchError from '../FetchError';
-import { DatasetPanel } from './components/DatasetPanel';
 import { Header } from 'semantic-ui-react';
 
 class Datasets extends Component {
@@ -46,7 +46,7 @@ class Datasets extends Component {
 				lgscreen={4}
 			>
 				{datasets.entrySeq().map(([id, dataset]) =>
-					<DatasetPanel
+					<DatasetCard
 						key={id}
 						dataset={dataset}
 					/>
