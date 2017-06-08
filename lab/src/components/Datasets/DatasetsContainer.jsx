@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import * as actions from './data/actions';
-import { fetchDatasets, toggleAI } from './data/api';
+import { 
+	getDatasets, 
+	getIsFetching, 
+	getErrorMessage 
+} from './data/reducer';
 import Datasets from './Datasets';
 
 class DatasetsContainer extends Component {
@@ -18,17 +21,14 @@ class DatasetsContainer extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	datasets: state.datasets
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	fetchDatasets: bindActionCreators(fetchDatasets, dispatch),
-	toggleAI: bindActionCreators(toggleAI, dispatch)
+	datasets: getDatasets(state),
+	isFetching: getIsFetching(state),
+	errorMessage: getErrorMessage(state)
 });
 
 DatasetsContainer = connect(
 	mapStateToProps, 
-	mapDispatchToProps
+	actions
 )(DatasetsContainer);
 
 export default DatasetsContainer;

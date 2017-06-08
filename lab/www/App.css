@@ -7,12 +7,12 @@ body {
     line-height: 1.5;
 }
 
-.pennai .page-title .ui.header {
+.pennai .ui.header.scene-title {
     display: inline-block;
     margin-right: 1rem;
 }
 
-.pennai .page-title .ui.button {
+.pennai .ui.button.scene-btn {
     vertical-align: middle;
     margin-bottom: 0.9rem;
 }
