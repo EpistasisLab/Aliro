@@ -5,6 +5,7 @@ import {
 	FETCH_DATASETS_SUCCESS,
 	FETCH_DATASETS_FAILURE
 } from './actions';
+import dataset from '../components/DatasetCard/data/reducer';
 
 export const getDatasets = (state) => 
 	state.getIn(['datasets', 'byId']);
@@ -52,10 +53,13 @@ const errorMessage = (state = null, action) => {
 	}
 };
 
+// import reducers from 'dataset' here to handle individial datasets
 const datasets = combineReducers({
 	byId,
 	isFetching,
-	errorMessage
+	errorMessage,
+	dataset
 });
 
 export default datasets;
+
