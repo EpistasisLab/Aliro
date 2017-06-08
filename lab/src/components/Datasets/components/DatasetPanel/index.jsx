@@ -28,7 +28,7 @@ export class DatasetPanel extends React.Component {
 					{dataset.get('has_metadata') &&
 						<AIToggle 
 							aiState={dataset.get('ai')}
-							toggleAI={toggleAI.bind(null, dataset.get('_id'))}
+							toggleAI={toggleAI}
 							isToggling={dataset.get('toggling')}
 						/>
 					}	
