@@ -1,33 +1,10 @@
 import React, { Component } from 'react';
-import { Header, Grid } from 'semantic-ui-react';
-import { DatasetPanel } from './components/DatasetPanel';
+import ResponsiveGrid from '../ResponsiveGrid';
 import FetchError from '../FetchError';
-import DeviceWatcher from '../../device-watcher';
+import { DatasetPanel } from './components/DatasetPanel';
+import { Header } from 'semantic-ui-react';
 
 class Datasets extends Component {
-	static getColsByDevice() {
-		return {mobile: 1, tablet: 2, desktop: 3, largescreen: 4};
-	}
-
-	constructor(props) {
-		super(props);
-		this.state = DeviceWatcher.initState();
-		this.handleCols = this.handleCols.bind(this);
-	}
-
-	componentDidMount() {
-		DeviceWatcher.startWatch(this.setState.bind(this));
-	}
-
-	componentWillUnmount() {
-		DeviceWatcher.endWatch();
-	}
-
-	handleCols() {
-		const { getColsByDevice } = this.constructor;
-		return DeviceWatcher.calcCols(this.state, getColsByDevice());
-	}
-
 	render() {
 		const { 
 			datasets,
@@ -62,14 +39,19 @@ class Datasets extends Component {
 		}
 			
 		return (
-			<Grid stretched columns={this.handleCols()}>
+			<ResponsiveGrid
+				mobile={1}
+				tablet={2}
+				desktop={3}
+				lgscreen={4}
+			>
 				{datasets.entrySeq().map(([id, dataset]) =>
 					<DatasetPanel
 						key={id}
 						dataset={dataset}
 					/>
 				)}
-			</Grid>
+			</ResponsiveGrid>
 		);
 	}
 }
