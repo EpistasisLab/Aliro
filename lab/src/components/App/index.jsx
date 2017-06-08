@@ -22,8 +22,8 @@ export class App extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		isFetching: state.preferences.get('isFetching'),
-		preferences: state.preferences.get('preferences')
+		isFetching: state.getIn(['preferences', 'isFetching']),
+		preferences: state.getIn(['preferences', 'preferences'])
 	};
 }
 

@@ -170,16 +170,15 @@ function getVisibleItems(items, filters, sort) {
 }
 
 function mapStateToProps(state, props) {
-	const { experiments } = state;
 	const { query } = props.location;
 
-	const items = experiments.get('items');
+	const items = state.getIn(['experiments', 'items']);
 	const filters = getFilters(items, query);
 	const sort = getSort(query);
 	const visibleItems = getVisibleItems(items, filters, sort);
 
 	return {
-		isFetching: experiments.get('isFetching'),
+		isFetching: state.getIn(['experiments', 'isFetching']),
 		experiments: visibleItems,
 		filters,
 		sort
