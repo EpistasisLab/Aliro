@@ -1,48 +1,22 @@
-import { List, Map } from 'immutable';
-import { combineReducers } from 'redux-immutable';
 import { 
-	TOGGLE_AI_REQUEST,
-	TOGGLE_AI_SUCCESS,
-	TOGGLE_AI_FAILURE
+	AI_TOGGLE_REQUEST, 
+	AI_TOGGLE_SUCCESS, 
+	AI_TOGGLE_FAILURE
 } from './actions';
 
-const getDataset = (state, id) =>
-	state.getIn(['datasets', id]);
-
-export const getIsToggling = (state, id) => 
-	state.getIn(['datasets', id, 'isToggling']);
-
-const isToggling = (state = false, action) => {
-	//const val = getDataset(state, action.id).get('isToggling');
-	console.log(state);
+const dataset = (state = Map(), action) => {
 	switch(action.type) {
-		case TOGGLE_AI_REQUEST:
-			return true;
-		case TOGGLE_AI_SUCCESS:
-		case TOGGLE_AI_FAILURE:
-			return false;   
+		case AI_TOGGLE_REQUEST:
+			return state.get(action.id).set('isTogglingAI', true);
+		case AI_TOGGLE_SUCCESS:
+		case AI_TOGGLE_FAILURE:
+			return state.get(action.id).set('isTogglingAI', false);
 		default:
-			return state;
+			return state;	
 	}
 };
 
-export const getErrorMessage = (state, id) =>
-	state.getIn(['datasets', id, 'errorMessage']);
+export const getIsTogglingAI = (state, id) =>
+	state.getIn(['datasets', 'byId', id, 'isTogglingAI']);
 
-const errorMessage = (state = null, action) => {
-	switch(action.type) {
-		case TOGGLE_AI_FAILURE:
-			return action.message
-		case TOGGLE_AI_REQUEST:
-		case TOGGLE_AI_SUCCESS:
-			return null;
-		default:
-			return state;
-	}
-};
-
-const dataset = combineReducers({
-	isToggling
-});
-
-export default dataset;
+export default dataset;	

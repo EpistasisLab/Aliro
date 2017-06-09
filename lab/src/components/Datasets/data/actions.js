@@ -1,9 +1,9 @@
 import * as api from './api';
 import { getIsFetching } from './reducer';
 
-export const FETCH_DATASETS_REQUEST = 'FETCH_DATASETS_REQUEST';
-export const FETCH_DATASETS_SUCCESS = 'FETCH_DATASETS_SUCCESS';
-export const FETCH_DATASETS_FAILURE = 'FETCH_DATASETS_FAILURE';
+export const DATASETS_FETCH_REQUEST = 'DATASETS_FETCH_REQUEST';
+export const DATASETS_FETCH_SUCCESS = 'DATASETS_FETCH_SUCCESS';
+export const DATASETS_FETCH_FAILURE = 'DATASETS_FETCH_FAILURE';
 
 export const fetchDatasets = () => (dispatch, getState) => {
 	if(getIsFetching(getState())) {
@@ -11,20 +11,20 @@ export const fetchDatasets = () => (dispatch, getState) => {
 	}
 
 	dispatch({
-		type: FETCH_DATASETS_REQUEST
+		type: DATASETS_FETCH_REQUEST
 	});
 
 	return api.fetchDatasets().then(
 		response => {
 			dispatch({
-				type: FETCH_DATASETS_SUCCESS,
+				type: DATASETS_FETCH_SUCCESS,
 				receivedAt: Date.now(),
 				response
 			});
 		},
 		error => {
 			dispatch({
-				type: FETCH_DATASETS_FAILURE,
+				type: DATASETS_FETCH_FAILURE,
 				receivedAt: Date.now(),
 				message: error.message || 'Something went wrong.'
 			});

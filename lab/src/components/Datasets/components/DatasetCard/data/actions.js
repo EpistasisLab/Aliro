@@ -1,25 +1,25 @@
 import * as api from './api';
-import { getIsToggling } from './reducer';
+import { getIsTogglingAI } from './reducer';
 
-export const TOGGLE_AI_REQUEST = 'TOGGLE_AI_REQUEST';
-export const TOGGLE_AI_SUCCESS = 'TOGGLE_AI_SUCCESS';
-export const TOGGLE_AI_FAILURE = 'TOGGLE_AI_FAILURE';
+export const ACTION_PREFIX = 'DATASET_';
+export const AI_TOGGLE_REQUEST = ACTION_PREFIX + 'AI_TOGGLE_REQUEST';
+export const AI_TOGGLE_SUCCESS = ACTION_PREFIX + 'AI_TOGGLE_SUCCESS';
+export const AI_TOGGLE_FAILURE = ACTION_PREFIX + 'AI_TOGGLE_FAILURE';
 
 export const toggleAI = (id, aiState) => (dispatch, getState) => {
-	console.log(id);
-	if(getIsToggling(getState())) {
+	if(getIsTogglingAI(getState(), id)) {
 		return Promise.resolve();
 	}
 
 	dispatch({
-		type: TOGGLE_AI_REQUEST,
+		type: AI_TOGGLE_REQUEST,
 		id
 	});
 
 	return api.toggleAI(id).then(
 		response => {
 			dispatch({
-				type: TOGGLE_AI_SUCCESS,
+				type: AI_TOGGLE_SUCCESS,
 				receivedAt: Date.now(),
 				id,
 				aiState
@@ -28,7 +28,7 @@ export const toggleAI = (id, aiState) => (dispatch, getState) => {
 		},
 		error => {
 			dispatch({
-				type: FETCH_DATASETS_FAILURE,
+				type: AI_TOGGLE_FAILURE,
 				receivedAt: Date.now(),
 				message: error.message || 'Something went wrong.'
 			});
