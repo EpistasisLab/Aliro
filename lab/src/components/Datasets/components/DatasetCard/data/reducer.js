@@ -7,10 +7,19 @@ import {
 const dataset = (state = Map(), action) => {
 	switch(action.type) {
 		case AI_TOGGLE_REQUEST:
-			return state.get(action.id).set('isTogglingAI', true);
+			return state.mergeIn([action.id], {
+				isTogglingAI: true
+			});
 		case AI_TOGGLE_SUCCESS:
+			return state.mergeIn([action.id], {
+				ai: action.nextAIState,
+				isTogglingAI: false
+			});
 		case AI_TOGGLE_FAILURE:
-			return state.get(action.id).set('isTogglingAI', false);
+			return state.mergeIn([action.id], {
+				//errorMessage: action.message,
+				isTogglingAI: false
+			});
 		default:
 			return state;	
 	}
