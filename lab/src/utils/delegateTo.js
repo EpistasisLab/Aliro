@@ -2,10 +2,12 @@
 export const delegateTo = (children) => {
 	// create a mapping instead
 	return (state, action) => {
+		let reducer;
 		children.forEach(child => {
 			if(action.type.startsWith(child.prefix)) {
-				return child.reducer(state, action);
+				reducer = child.reducer(state, action);
 			}
 		});
+		return reducer;
 	};
 };
