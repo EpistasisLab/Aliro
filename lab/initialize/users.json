@@ -23,4 +23,13 @@
     "lastname": "User",
     "roles": ["admin", "beginner"],
     "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"]
+} {
+    "_id": {
+        "$oid": "58c9a40915f1e8675d319731"
+    },
+    "username": "svitale",
+    "firstname": "Steven",
+    "lastname": "Vitale",
+    "roles": ["admin", "beginner"],
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"]
 }

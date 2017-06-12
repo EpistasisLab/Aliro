@@ -12,9 +12,12 @@ import { hashHistory } from 'react-router';
 export const fetchExperiment = (experimentId) => {
     const route = `api/userexperiments/${experimentId}`;
 
+
     return function(dispatch) {
         dispatch(requestExperiment());
-        return fetch(route)
+        return fetch(route, {
+             credentials: 'include'
+           })
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveExperiment(fromJS(json)))
