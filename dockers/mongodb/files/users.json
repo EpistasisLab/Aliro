@@ -1,0 +1,36 @@
+{
+    "_id": {
+        "$oid": "592e434749d74e09d31efefb"
+    },
+    "username": "pennai",
+    "firstname": "Penn",
+    "lastname": "AI",
+    "apikey": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
+    "roles": ["ai"]
+} {
+    "_id": {
+        "$oid": "58c9a40915f1e8675d31972f"
+    },
+    "username": "pmlb",
+    "firstname": "Pmlb",
+    "lastname": "User"
+} {
+    "_id": {
+        "$oid": "58c9a40915f1e8675d319730"
+    },
+    "username": "testuser",
+    "firstname": "Test",
+    "lastname": "User",
+    "roles": ["admin", "beginner"],
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"]
+} {
+    "_id": {
+        "$oid": "58c9a40915f1e8675d319731"
+    },
+    "username": "svitale",
+    "firstname": "Steven",
+    "lastname": "Vitale",
+    "roles": ["admin", "beginner"],
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"],
+    "datasets": ["GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1","GAMETES_Heterogeneity_20atts_1600_Het_0.4_0.2_75_EDM-2_001","GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1","Hill_Valley_with_noise","GAMETES_Epistasis_3-Way_20atts_0.2H_EDM-1_1","GAMETES_Heterogeneity_20atts_1600_Het_0.4_0.2_50_EDM-2_001","Hill_Valley_without_noise","agaricus-lepiota","allbp","allhyper","analcatdata_aids","allhypo","analcatdata_authorship","allrep","analcatdata_asbestos","analcatdata_bankruptcy","analcatdata_boxing2","analcatdata_boxing1","analcatdata_creditscore","analcatdata_cyyoung8092","analcatdata_dmft","analcatdata_cyyoung9302","analcatdata_fraud","analcatdata_germangss","analcatdata_happiness","analcatdata_lawsuit","ann-thyroid","analcatdata_japansolvent","appendicitis","australian","auto","backache","balance-scale","banana","biomed","breast","breast-cancer","breast-cancer-wisconsin","buggyCrx","breast-w","bupa","calendarDOW","car","car-evaluation","cars","cars1","chess","churn","clean1","cleveland","cleve","cleveland-nominal","cloud","cmc","coil2000","colic","confidence","collins","contraceptive","corral","credit-a","credit-g","crx","dermatology","diabetes","dis","dna","ecoli","flags","flare","german","glass2","haberman","hayes-roth","heart-c","heart-statlog","hepatitis","horse-colic","house-votes-84","hypothyroid","irish","iris","ionosphere","krkopt","labor","led24","led7","liver-disorder","lymphography","magic","lupus","glass","heart-h","hungarian","kr-vs-kp","letter","mfeat-fourier","mfeat-karhunen","mfeat-morphological","mfeat-pixel","mfeat-zernike","molecular-biology_promoters","monk1","monk3","monk2","mushroom","new-thyroid","nursery","mux6","page-blocks","parity5","pendigits","parity5+5","pima","prnn_fglass","postoperative-patient-data","prnn_crabs","prnn_synth","promoters","mofn-3-7-10","movement_libras","optdigits","phoneme","profb","ring","saheart","segmentation","schizo","solar-flare_1","satimage","solar-flare_2","sonar","soybean","spambase","spect","spectf","tae","threeOf9","tic-tac-toe","titanic","vehicle","twonorm","vote","vowel","waveform-21","wdbc","wine-quality-red","wine-quality-white","xd6","yeast","splice","tokyo1","waveform-40","wine-recognition","GAMETES_Epistasis_2-Way_1000atts_0.4H_EDM-1_EDM-1_1","adult","mfeat-factors","shuttle","connect-4","sleep","texture","clean2","fars","poker","kddcup","mnist"]
+}
