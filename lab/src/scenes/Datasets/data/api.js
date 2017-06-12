@@ -16,7 +16,9 @@ export const fetchDatasets = () => {
 			type: FETCH_DATASETS_REQUEST
 		});
 
-		return fetch(route)
+		return fetch(route, {
+                         credentials: 'include'
+                        })
 			.then(response => {
 				console.log(response);
 				if(response.status >= 400) {
