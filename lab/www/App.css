@@ -7,12 +7,12 @@ body {
     line-height: 1.5;
 }
 
-.pennai .page-title .ui.header {
+.pennai .ui.header.scene-title {
     display: inline-block;
     margin-right: 1rem;
 }
 
-.pennai .page-title .ui.button {
+.pennai .ui.button.scene-btn {
     vertical-align: middle;
     margin-bottom: 0.9rem;
 }
@@ -21,93 +21,93 @@ body {
     background-color: rgba(255,255,255,.08);
 }
 
-.pennai .dataset-panel .panel-header {
+.pennai .dataset-card .panel-header {
     max-height: 57px;
 }
 
-.pennai .dataset-panel .ui.header.title {
+.pennai .dataset-card .ui.header.title {
     display: inline-block;
     margin-bottom: 0;
 }
 
-.pennai .dataset-panel .ui.header.title:hover {
+.pennai .dataset-card .ui.header.title:hover {
     text-decoration: underline
 }
 
-.pennai .dataset-panel .ai-label {
+.pennai .dataset-card .ai-label {
     margin-right: 1rem;
     vertical-align: middle;
 }
 
-.pennai .dataset-panel .ai-label.on {
+.pennai .dataset-card .ai-label.on {
     color: rgba(255,255,255,.95);
 }
 
-.pennai .dataset-panel .ai-label.off {
+.pennai .dataset-card .ai-label.off {
     color: rgba(255,255,255,.55);
 }
 
-.pennai .dataset-panel .ai-switch.ui.toggle {
+.pennai .dataset-card .ai-switch.ui.toggle {
     width: 2.5rem;
     margin-right: 0.75rem;
     vertical-align: middle;
 }
 
-.pennai .dataset-panel .ai-switch.ui.toggle.checkbox label:before {
+.pennai .dataset-card .ai-switch.ui.toggle.checkbox label:before {
     width: 2.5rem;
     background: rgba(255,255,255,.35);
 }
 
-.pennai .dataset-panel .ai-switch.requested.ui.toggle.checkbox label:before {
+.pennai .dataset-card .ai-switch.requested.ui.toggle.checkbox label:before {
     background-color: #FBBD08 !important;
 }
 
-.pennai .dataset-panel .ai-switch.ui.toggle.checkbox input:checked~label:after {
+.pennai .dataset-card .ai-switch.ui.toggle.checkbox input:checked~label:after {
     left: 1.15rem;
 }
 
-.pennai .dataset-panel .panel-body {
+.pennai .dataset-card .panel-body {
     min-height: 115px;
 }
 
-.pennai .dataset-panel .best-result.ui.segment:hover {
+.pennai .dataset-card .best-result.ui.segment:hover {
     background: rgba(255,255,255,.12);
 }
 
-.pennai .dataset-panel .best-result .ui.progress {
+.pennai .dataset-card .best-result .ui.progress {
     margin: 0;
     margin-bottom: 1rem;
 }
 
-.pennai .dataset-panel .best-result .ui.progress.accuracy-score .bar {
+.pennai .dataset-card .best-result .ui.progress.accuracy-score .bar {
     background-color: #9B59B6;
 }
 
-.pennai .dataset-panel .best-result .ui.progress .bar .progress {
+.pennai .dataset-card .best-result .ui.progress .bar .progress {
     right: 0;
     left: 0.5rem;
 }
 
-.pennai .dataset-panel .best-result .ui.progress .bar .progress::after {
+.pennai .dataset-card .best-result .ui.progress .bar .progress::after {
     margin-left: 0.4rem;
     content: "accuracy";
 }
 
-.pennai .dataset-panel .experiments.table {
+.pennai .dataset-card .experiments.table {
     background-color: rgba(255,255,255,.08);
     border: 1px solid #555;
     border-collapse: collapse;
 }
 
-.pennai .dataset-panel .experiments.table td {
+.pennai .dataset-card .experiments.table td {
     position: relative;
 }
 
-.pennai .dataset-panel .experiments.table .ui.floating.label {
+.pennai .dataset-card .experiments.table .ui.floating.label {
     margin-left: -5.25em !important;
 }
 
-.pennai .dataset-panel .ui.red.label {
+.pennai .dataset-card .ui.red.label {
     background-color: #ff5144 !important;
 }
 
