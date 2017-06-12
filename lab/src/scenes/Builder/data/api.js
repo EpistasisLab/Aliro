@@ -30,7 +30,10 @@ export const fetchDataset = (datasetId) => {
 
     return function(dispatch) {
         dispatch(requestDataset());
-        return fetch(route)
+        return fetch(route, {
+                credentials: 'include'
+        })
+
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveDataset(fromJS(json)))
@@ -50,6 +53,7 @@ export const submitJob = (datasetId, algorithmId, params) => {
         //dispatch(requestDatasets());
         return fetch(route, {
                 method: 'POST',
+                credentials: 'include',
                 headers: myHeaders,
                 mode: 'cors',
                 cache: 'default', 

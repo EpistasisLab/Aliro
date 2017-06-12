@@ -3,10 +3,7 @@ FROM scratch
 ADD files/rootfs.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
-#add repo for mongodb
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
-RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org  npm git openssh-client htop net-tools iputils-ping --no-install-recommends
+RUN apt-get update && apt-get install -y vim  npm git openssh-client htop net-tools iputils-ping --no-install-recommends
 #check if we need to rebuild
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
@@ -18,11 +15,6 @@ RUN cd /share/devel/Gp/lab && npm install -g bower pm2 webpack webpack-dev-serve
 RUN cd /share/devel/Gp/lab && bower install --allow-root
 RUN cd /share/devel/Gp/lab && webpack
 # mongo configs
-ADD files/mongodump.tgz /
-COPY files/.mongo* /root/
-COPY files/mongod.conf /etc/
-RUN echo "starting up";
 COPY files/start.sh /root/
 EXPOSE 5080
-EXPOSE 27017
 CMD ["/bin/bash", "/root/start.sh"]
