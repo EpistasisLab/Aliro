@@ -1,14 +1,18 @@
-import pennaiApp from '../reducer';
 import { createStore, applyMiddleware } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import logger from 'redux-logger';
+import thunk from 'redux-thunk';
+import { createLogger } from 'redux-logger';
+import pennaiApp from '../reducer';
 
+// create dev env for logging
 const configureStore = () => {
 	const store = createStore(
 		pennaiApp,
 		applyMiddleware(
-			thunkMiddleware, // lets us dispatch() functions
-			logger
+			thunk, // lets us dispatch() functions
+			createLogger({
+				collapsed: true,
+				stateTransformer: state => state.toJS()
+			})
 		)
 	);
 
