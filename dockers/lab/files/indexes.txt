@@ -1,0 +1,3 @@
+db.datasets.createIndex({username: 1})
+db.experiments.createIndex({username: 1})
+db.experiments.createIndex({_dataset_id: 1})
