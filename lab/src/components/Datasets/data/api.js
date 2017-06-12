@@ -4,7 +4,10 @@ import fetch from 'isomorphic-fetch';
 export const fetchDatasets = () => {
 	const route = 'api/userdatasets';
 	
-	return fetch(route)
+ return fetch(route, {
+             credentials: 'include'
+           })
+
 		.then(response => {
 			if(response.status >= 400) {
 				throw new Error(`${response.status}: ${response.statusText}`);

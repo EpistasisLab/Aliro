@@ -19,10 +19,12 @@
   "author": "Kaixhin <design@kaixhin.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Kaixhin/FGLab/issues"
+    "url": "https://github.com/EpistasisLab/Gp/Issues"
   },
-  "homepage": "https://github.com/Kaixhin/FGLab#readme",
+  "homepage": "https://github.com/EpistasisLab/Gp",
   "dependencies": {
+    "alexa-sdk": "^1.0.10",
+    "react-socket-io": "0.2.4",
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "bower": "^1.7.9",
@@ -34,7 +36,6 @@
     "express": "^4.13.4",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
-    "jade": "^1.11.0",
     "kerberos": "0.0.21",
     "lodash": "^4.13.0",
     "moment": "^2.18.1",
