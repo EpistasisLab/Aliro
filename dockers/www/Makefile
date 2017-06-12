@@ -1,6 +1,6 @@
 DOCKER_REPO=pennai/www
 TAG=latest
-DOCKER_ARGS=-i -t --rm -p 443:443 --hostname www --name www --net pennai 
+DOCKER_ARGS=-i -t -p 443:443 --hostname www --name www --net pennai 
 
 
 build:
