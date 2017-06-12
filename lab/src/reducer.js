@@ -1,7 +1,6 @@
-import { combineReducers } from 'redux';
-//import { combineReducers } from 'redux-immutable';
+import { combineReducers } from 'redux-immutable';
 import preferences from './components/App/data';
-import datasets from './scenes/Datasets/data';
+import datasets from './components/Datasets/data';
 import experiments from './scenes/Experiments/data';
 import results from './scenes/Results/data';
 import builder from './scenes/Builder/data';
