@@ -11,7 +11,10 @@ export const fetchPreferences = () => {
 
     return function(dispatch) {
         dispatch(requestPreferences());
-        return fetch(route)
+        return fetch(route,
+             {
+              credentials: 'include'
+             })
             .then(response => response.json())
             .then(json =>
                 dispatch(receivePreferences(fromJS(json)))
