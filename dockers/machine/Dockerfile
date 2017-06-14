@@ -1,7 +1,7 @@
 #working off of an ubuntu wily rootfs
 FROM scratch
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-WORKDIR = /opt/
+WORKDIR /opt/
 ADD files/rootfs.tgz /
 #ssh for deploy from git
 ADD files/ssh.tgz /

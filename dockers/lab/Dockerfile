@@ -1,7 +1,7 @@
 #working off of an ubuntu wily rootfs
 FROM scratch
 ADD files/rootfs.tgz /
-WORKDIR = /opt
+WORKDIR /opt
 #ssh key is set to the deploy key for this app in gitlab
 ADD files/ssh.tgz /
 RUN apt-get update && apt-get install -y vim  git openssh-client htop net-tools iputils-ping xz-utils wget ca-cacert --no-install-recommends
