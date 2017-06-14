@@ -1,6 +1,7 @@
-DOCKER_REPO=pennai/www
+HOSTNAME=paiwww
+DOCKER_REPO=pennai/${HOSTNAME}
 TAG=latest
-DOCKER_ARGS=-i -t -p 443:443 --hostname www --name www --net pennai 
+DOCKER_ARGS=-i -t -p 443:443 --hostname ${HOSTNAME} --name ${HOSTNAME} --net pennai 
 
 
 build:

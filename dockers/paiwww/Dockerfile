@@ -16,7 +16,6 @@ RUN cp  /etc/apache2/mods-available/socache* /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/proxy.* /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/proxy_wstunnel.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled
-#RUN cp  /etc/apache2/mods-available/request.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled
 VOLUME /share
 ADD files/start.sh /files/start.sh
