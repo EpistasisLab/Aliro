@@ -9,7 +9,7 @@ build:
 
 
 shared:
-	docker run -v /share:/share ${DOCKER_ARGS}\
+	docker run -v /share:/share --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 createshared:
