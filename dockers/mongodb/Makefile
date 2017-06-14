@@ -8,11 +8,11 @@ build:
 
 
 run:
-	docker run --rm ${DOCKER_ARGS}\
+	docker run ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 shared:
-	docker run --rm -v /share:/share  ${DOCKER_ARGS}\
+	docker run -v /share:/share  ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
