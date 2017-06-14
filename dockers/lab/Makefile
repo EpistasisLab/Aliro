@@ -1,9 +1,10 @@
 #DOCKER_REPO=localhost:5000/lab
-DOCKER_REPO=pennai/lab
+HOSTNAME=lab
+DOCKER_REPO=pennai/${HOSTNAME}
 TAG=latest
 MONGODB_URI=mongodb://mongodb:27017/FGLab
 FGLAB_PORT=5080
-DOCKER_ARGS=-i -t --rm -p 5080:5080 -e FGLAB_PORT=${FGLAB_PORT} -e MONGODB_URI=${MONGODB_URI} -h lab --name lab --net=pennai\
+DOCKER_ARGS=-i -t --rm -p 5080:5080 -e FGLAB_PORT=${FGLAB_PORT} -e MONGODB_URI=${MONGODB_URI} -h ${HOSTNAME} --name ${HOSTNAME} --net=pennai\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .

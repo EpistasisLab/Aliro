@@ -18,7 +18,7 @@ module.exports = {
       "args": [
        "--max_old_space_size=8192"
       ],
-      cwd : "/share/devel/Gp/lab",
+//      cwd : "/share/devel/Gp/lab",
 //      ignore_watch : ["node_modules","log",".+\.sw."],
       watch: ['lab.js','api/preferences.js'],
  //     watch: ['lab.js'],
