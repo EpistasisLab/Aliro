@@ -17,12 +17,12 @@ build:
 
 
 run:
-	docker run ${DOCKER_ARGS}\
+	docker run --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 
 shared:
-	docker run -v /share:/share ${DOCKER_ARGS}\
+	docker run -v /share:/share --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
