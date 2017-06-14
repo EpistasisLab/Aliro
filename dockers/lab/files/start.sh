@@ -1,4 +1,4 @@
-cd /share/devel/Gp/lab
+cd Gp/lab
 webpack --watch &
 pm2 start lab.config.js --watch
 bash

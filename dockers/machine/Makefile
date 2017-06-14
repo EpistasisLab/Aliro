@@ -1,7 +1,7 @@
 #DOCKER_REPO=localhost:5000/machine
-DOCKER_REPO=pennai/machine
-TAG=latest
 HOSTNAME=machine
+DOCKER_REPO=pennai/${HOSTNAME}
+TAG=latest
 LAB_HOST=lab
 FGLAB_URL=http://${LAB_HOST}:5080
 FGMACHINE_URL=http://${HOSTNAME}:5081
