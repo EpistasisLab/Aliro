@@ -13,6 +13,7 @@ var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
+var socketServer = require('./socketServer');
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
@@ -1280,6 +1281,7 @@ app.use((err, req, res, next) => {
 
 /* HTTP server */
 var server = http.createServer(app); // Create HTTP server
+socketServer(server);
 if (!process.env.FGLAB_PORT) {
     console.log("Error: No port specified");
     process.exit(1);
