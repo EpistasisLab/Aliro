@@ -11,7 +11,9 @@ export const fetchExperiments = () => {
 
     return function(dispatch) {
         dispatch(requestExperiments());
-        return fetch(route)
+        return fetch(route, {
+            credentials: 'include'
+        })
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveExperiments(fromJS(json)))
