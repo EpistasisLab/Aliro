@@ -10,7 +10,7 @@ dist
 .swp
 *.pyc
 .remote-sync.json
-machine/datasets
+machine/datasets/byuser/*
 lab/www/*.js
 lab/www/*.json
 bigfiles/
