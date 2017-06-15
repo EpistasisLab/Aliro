@@ -5,8 +5,8 @@ exports.returnUserData = function(req) {
   var data = {}
   var query = {}
   //if the username is handled by the server, use that
-  if(req.headers['X-Forwarded-User:']) {
-    var username = req.headers['X-Forwarded-User:'];
+  if(req.headers['x-forwarded-user']) {
+    var username = req.headers['x-forwarded-user'];
     query = {username:username}
   } else if (req.body && req.body.apikey) {
     var apikey = req.body.apikey;
@@ -15,6 +15,7 @@ exports.returnUserData = function(req) {
     var username = 'testuser'; 
     query = {username:username}
   }
+console.log(query);
   if(Object.keys(query).length === 0) {
     return(false);
   } else {
