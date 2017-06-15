@@ -29,7 +29,7 @@ exports.responder = function(req, res) {
                 from: "datasets",
                 localField: "username",
                 foreignField: "username",
-                as: "datasets"
+                as: "user_datasets"
             }
         }, {
             $lookup: {
@@ -52,7 +52,7 @@ exports.responder = function(req, res) {
                 }
         }, {
                 "$unwind": {
-                    path: "$datasets",
+                    path: "$user_datasets",
                     preserveNullAndEmptyArrays: true
                 }
         }, {
@@ -67,7 +67,7 @@ exports.responder = function(req, res) {
                     $addToSet: "$algorithms"
                 },
                 datasets: {
-                    $addToSet: "$datasets"
+                    $addToSet: "$user_datasets"
                 },
                 experiments: {
                     $addToSet: "$experiments"

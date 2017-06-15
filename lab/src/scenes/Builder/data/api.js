@@ -12,9 +12,12 @@ import { hashHistory } from 'react-router';
 export const fetchExperiment = (experimentId) => {
     const route = `api/userexperiments/${experimentId}`;
 
+
     return function(dispatch) {
         dispatch(requestExperiment());
-        return fetch(route)
+        return fetch(route, {
+             credentials: 'include'
+           })
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveExperiment(fromJS(json)))
@@ -27,7 +30,10 @@ export const fetchDataset = (datasetId) => {
 
     return function(dispatch) {
         dispatch(requestDataset());
-        return fetch(route)
+        return fetch(route, {
+                credentials: 'include'
+        })
+
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveDataset(fromJS(json)))
@@ -47,6 +53,7 @@ export const submitJob = (datasetId, algorithmId, params) => {
         //dispatch(requestDatasets());
         return fetch(route, {
                 method: 'POST',
+                credentials: 'include',
                 headers: myHeaders,
                 mode: 'cors',
                 cache: 'default', 

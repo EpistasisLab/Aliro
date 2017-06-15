@@ -11,7 +11,10 @@ export const fetchResults = (experimentId) => {
 
     return function(dispatch) {
         dispatch(requestResults());
-        return fetch(route)
+        return fetch(route, {
+          credentials: 'include'
+        })
+
             .then(response => response.json())
             .then(json =>
                 dispatch(receiveResults(fromJS(json)))
