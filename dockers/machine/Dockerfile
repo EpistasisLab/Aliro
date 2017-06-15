@@ -41,6 +41,9 @@ COPY files/env Gp/machine/.env
 COPY files/projects.json Gp/machine/
 VOLUME /share
 EXPOSE 5081
+RUN  wget --quiet https://s3.us-east-2.amazonaws.com/pennai-docker-files/pmlb.tgz -O ~/pmlb.tgz && \
+    tar -xzvf ~/pmlb.tgz -C Gp/machine/datasets/byuser && \
+    rm ~/pmlb.tgz
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 #CMD ["/bin/bash"]
 CMD ["/bin/bash", "/root/start.sh"]
