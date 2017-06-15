@@ -38,6 +38,7 @@ RUN git clone git@github.com:EpistasisLab/Gp.git
 RUN cd Gp/machine && npm install && npm -g install pm2
 COPY files/start.sh /root/
 COPY files/env Gp/machine/.env
+COPY files/projects.json Gp/machine/
 VOLUME /share
 EXPOSE 5081
 #ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
