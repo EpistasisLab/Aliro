@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
-import { 
-	getIsTogglingAI, 
-	//getErrorMessage // use error message of main page?
-} from './data/reducer';
-import { AIToggle } from './components/AIToggle';
-import { ActionsDropdown } from './components/ActionsDropdown';
+import DatasetActions from './components/DatasetActions';
+
 import { BestResultSegment } from './components/BestResultSegment';
 import { ExperimentsSegment } from './components/ExperimentsSegment';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
 
-// AvailableActions
 // BestResults
 // ExperimentStatus
 // BuilderButton
@@ -25,21 +20,6 @@ class DatasetCard extends Component {
 	getBuilderLink() {
 		const id = this.props.dataset.get('_id');
 		return `/#/build/${id}`;
-	}
-
-	renderEnabledActions() {
-		const hasMetadata = this.props.dataset.get('has_metadata');
-
-		if(!hasMetadata) {
-			return <ActionsDropdown />;
-		}
-
-		return (
-			<span>
-				<AIToggle {...this.props} />
-				<ActionsDropdown />
-			</span>
-		);
 	}
 
 	// make this into own component
@@ -81,7 +61,7 @@ class DatasetCard extends Component {
 						className="title"
 					/>
 					<span className="float-right">
-						{this.renderEnabledActions()}
+						<DatasetActions {...this.props} />
 					</span>
 				</Segment>
 				{this.renderBestResult()}
@@ -102,13 +82,8 @@ class DatasetCard extends Component {
 	}
 }
 
-const mapStateToProps = (state, { dataset }) => ({
-	//isTogglingAI: getIsTogglingAI(state, dataset.get('_id')),
-	//errorMessage: getErrorMessage(state, dataset.get('_id'))
-});
-
 DatasetCard = connect(
-	mapStateToProps, 
+	null,
 	actions
 )(DatasetCard);
 
