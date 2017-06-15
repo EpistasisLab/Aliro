@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y vim  git openssh-client htop net-tools 
 #check if we need to rebuild
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
-RUN git clone -b aws git@github.com:EpistasisLab/Gp.git 
+RUN git clone git@github.com:EpistasisLab/Gp.git 
 RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /opt/ && \
     rm ~/node.tar.xz

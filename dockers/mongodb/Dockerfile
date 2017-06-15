@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 VOLUME /share
-ADD files/mongodump.tgz /
+ADD files/mongodump.min.tgz /
 COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/
