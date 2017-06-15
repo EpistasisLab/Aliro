@@ -49,6 +49,7 @@
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.7",
     "react-router": "^3.0.2",
+    "redis": "^2.7.1",
     "redux": "^3.6.0",
     "redux-immutable": "^4.0.0",
     "redux-logger": "^3.0.6",
@@ -56,6 +57,8 @@
     "request-promise": "^3.0.0",
     "semantic-ui-react": "^0.64.7",
     "serve-favicon": "^2.3.0",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
     "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
