@@ -15,7 +15,7 @@ module.exports = {
       env_production : {
         NODE_ENV: "dev"
       },
-      cwd : "/share/devel/Gp/machine",
+//      cwd : "/share/devel/Gp/machine",
 //      ignore_watch : ["node_modules","log",".+\.sw."],
       watch: ['machine.js','datasets.js'],
       ignore_watch : ["node_modules"],

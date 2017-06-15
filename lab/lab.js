@@ -24,6 +24,9 @@ var jsonParser = bodyParser.json({
     limit: '100mb'
 }); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
+//app.set('superSecret',config.secret);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(compression()); // Compress all Express requests
 app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
 app.use(express.static(path.join(__dirname, "public"), {
