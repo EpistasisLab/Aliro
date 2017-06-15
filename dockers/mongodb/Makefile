@@ -1,7 +1,7 @@
 #DOCKER_REPO=localhost:5000/lab
 DOCKER_REPO=pennai/mongodb
 TAG=latest
-DOCKER_ARGS=-i -t -p 27017:27017 -h mongodb --name mongodb --net=pennai\
+DOCKER_ARGS=-i -t -p 28017:27017 -h mongodb --name mongodb --net=pennai\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
