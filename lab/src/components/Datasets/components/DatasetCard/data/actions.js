@@ -6,7 +6,7 @@ export const AI_TOGGLE_REQUEST = ACTION_PREFIX + 'AI_TOGGLE_REQUEST';
 export const AI_TOGGLE_SUCCESS = ACTION_PREFIX + 'AI_TOGGLE_SUCCESS';
 export const AI_TOGGLE_FAILURE = ACTION_PREFIX + 'AI_TOGGLE_FAILURE';
 
-export const toggleAI = (id, aiState) => (dispatch, getState) => {
+export const toggleAI = (id, nextAIState) => (dispatch, getState) => {
 	if(getIsTogglingAI(getState(), id)) {
 		return Promise.resolve();
 	}
@@ -16,21 +16,21 @@ export const toggleAI = (id, aiState) => (dispatch, getState) => {
 		id
 	});
 
-	return api.toggleAI(id).then(
+	return api.toggleAI(id, nextAIState).then(
 		response => {
 			dispatch({
 				type: AI_TOGGLE_SUCCESS,
 				receivedAt: Date.now(),
 				id,
-				aiState
-				//response, should get response of updated dataset
+				nextAIState
 			});
 		},
 		error => {
 			dispatch({
 				type: AI_TOGGLE_FAILURE,
 				receivedAt: Date.now(),
-				message: error.message || 'Something went wrong.'
+				message: error.message || 'Something went wrong.',
+				id
 			});
 		}
 	);
