@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Table, Header, Label } from 'semantic-ui-react';
 
-export class ExperimentsSegment extends React.Component {
+class ExperimentStatus extends Component {
 	render() {
-		const { datasetName, experiments, notifications } = this.props;
-		const link = `/#/experiments?dataset=${datasetName}&status=`;
+
+		const { 
+			filter,
+			experiments, 
+			notifications 
+		} = this.props;
+
+		const filterLink = `/#/experiments?dataset=${filter}&status=`;
+
 		return (
 			<Table 
 				inverted
@@ -12,47 +19,47 @@ export class ExperimentsSegment extends React.Component {
 				unstackable
 				celled 
 				columns={3} 
-				className='experiments'
+				className="experiments"
 			>
 				<Table.Body>
 					<Table.Row>
-						<Table.Cell selectable textAlign='center'>
-							<a href={link + 'pending'}>
-								<Header inverted size='tiny'>
+						<Table.Cell selectable textAlign="center">
+							<a href={filterLink + 'pending'}>
+								<Header inverted size="tiny">
 									{experiments.get('pending')}<br />
 									experiments<br />
 									pending
 								</Header>
 							</a>	
 						</Table.Cell>
-						<Table.Cell selectable textAlign='center'>
-							<a href={link + 'running'}>
-								<Header inverted size='tiny'>
+						<Table.Cell selectable textAlign="center">
+							<a href={filterLink + 'running'}>
+								<Header inverted size="tiny">
 									{experiments.get('running')}<br />
 									experiments<br />
 									running
 								</Header>
 							</a>	
 						</Table.Cell>
-						<Table.Cell selectable textAlign='center'>
-							<a href={link + 'finished'}>
-								<Header inverted size='tiny'>
+						<Table.Cell selectable textAlign="center">
+							<a href={filterLink + 'finished'}>
+								<Header inverted size="tiny">
 									{experiments.get('finished')}<br />
 									results
 								</Header>
 							</a>
 							{notifications.get('error') > 0 &&
 								<Label 
-									color='red' 
-									size='tiny'
+									color="red" 
+									size="tiny"
 									floating
 									content={`${notifications.get('error')} error`}
 								/>
 							}
 							{!notifications.get('error') && notifications.get('new') > 0 &&
 								<Label 
-									color='green' 
-									size='tiny'
+									color="green" 
+									size="tiny"
 									floating
 									content={`${notifications.get('new')} new`}
 								/>
@@ -64,3 +71,5 @@ export class ExperimentsSegment extends React.Component {
 		);
 	}
 }
+
+export default ExperimentStatus;
