@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { socketMiddleware } from './configureSocket';
 import { createLogger } from 'redux-logger';
 import pennaiApp from '../reducer';
 
@@ -9,6 +10,7 @@ const configureStore = () => {
 		pennaiApp,
 		applyMiddleware(
 			thunk, // lets us dispatch() functions
+			socketMiddleware,
 			createLogger({
 				collapsed: true,
 				stateTransformer: state => state.toJS()

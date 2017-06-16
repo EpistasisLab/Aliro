@@ -173,7 +173,7 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
 });
 
 //toggles ai for dataset
-app.put("/api/v1/datasets/:id/ai", jsonParser, (req, res, next) => {
+app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
             $set: {
                 ai: req.body.ai

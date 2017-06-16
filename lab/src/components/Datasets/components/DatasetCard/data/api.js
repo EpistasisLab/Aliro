@@ -2,7 +2,7 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 
 export const toggleAI = (datasetId, nextAIState) => {
-	const route = `api/v1/datasets/${datasetId}/ai`;
+	const route = `api/userdatasets/${datasetId}/ai`;
 		
 	let myHeaders = new Headers();
 	myHeaders.append('Content-Type', 'application/json');
