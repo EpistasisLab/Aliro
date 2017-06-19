@@ -2,6 +2,7 @@ import * as api from './api';
 import { getIsTogglingAI } from './reducer';
 
 export const ACTION_PREFIX = 'DATASET_';
+export const AI_TOGGLE_UPDATE = ACTION_PREFIX + 'AI_TOGGLE_UPDATE';
 export const AI_TOGGLE_REQUEST = ACTION_PREFIX + 'AI_TOGGLE_REQUEST';
 export const AI_TOGGLE_SUCCESS = ACTION_PREFIX + 'AI_TOGGLE_SUCCESS';
 export const AI_TOGGLE_FAILURE = ACTION_PREFIX + 'AI_TOGGLE_FAILURE';

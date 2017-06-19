@@ -9,75 +9,55 @@ class DatasetActions extends Component {
 	}
 
 	onToggleAI() {
-		const { toggleAI, dataset } = this.props;
-		toggleAI(dataset.get('_id'), this.getNextAIState(dataset.get('ai')));
-	}
+		const { dataset, toggleAI } = this.props;
+		const aiState = dataset.get('ai');
+		const aiNextState = !aiState ? 'requested' : false;
 
-	getIsTogglingAI() {
-		const isTogglingAI = this.props.dataset.get('isTogglingAI');
-		return isTogglingAI;
-	}
-
-	getShouldDisplayAIToggle() {
-		const hasMetadata = this.props.dataset.get('has_metadata');
-		return hasMetadata;
-	}
-
-	getIsAIChecked() {
-		const aiState = this.props.dataset.get('ai');
-		return !aiState ? false : true;
-	}
-
-	getNextAIState() {
-		const aiState = this.props.dataset.get('ai');
-		return !aiState ? 'requested' : false;
-	}
-
-	getAILabelText() {
-		const aiState = this.props.dataset.get('ai');
-		return aiState ? 'AI on' : aiState === 'requested' ? 'AI requested' : 'AI off';  
-	}
-
-	getAILabelClass() {
-		const aiState = this.props.dataset.get('ai');
-		return `ai-label ${aiState ? 'on' : 'off' }`;
-	}
-
-	getAIToggleClass() {
-		const aiState = this.props.dataset.get('ai');
-		return aiState === 'requested' ? 'ai-switch requested' : 'ai-switch';
-	}
-
-	getDropdownIcon() {
-		return <Icon inverted color='grey' size='large' name='caret down' />;
+		toggleAI(dataset.get('_id'), aiNextState);
 	}
 
 	render() {
+
 		const { 
-			dataset,
-			isTogglingAI
+			dataset
 		} = this.props;
+
+		const hasMetadata = dataset.get('has_metadata');
+
+		const aiState = dataset.get('ai');
+
+		const aiLabelText = aiState === 'requested' ? 'AI requested' : aiState ? 'AI on' : 'AI off';
+
+		const aiLabelClass = `ai-label ${aiState ? 'on' : 'off' }`;
+
+		const aiToggleClass = aiState === 'requested' ? 'ai-switch requested' : 'ai-switch';
+
+		const aiIsChecked = !aiState ? false : true;
+
+		const aiIsToggling = dataset.get('isTogglingAI');
+
+		const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />;
 
 		return (
 			<span>
-				{this.getShouldDisplayAIToggle() &&
+				{hasMetadata &&
 					<span>
-						<span className={this.getAILabelClass()}>
-							{this.getAILabelText()}
+						<span className={aiLabelClass}>
+							{aiLabelText}
 						</span>
 						<Checkbox
 							toggle 
-							checked={this.getIsAIChecked()}
-							className={this.getAIToggleClass()}
+							checked={aiIsChecked}
+							className={aiToggleClass}
 							onChange={this.onToggleAI}
-							disabled={this.getIsTogglingAI()}
+							disabled={aiIsToggling}
 						/>
 					</span>	
 				}
-				<Dropdown pointing='top right' icon={this.getDropdownIcon()}>
+				<Dropdown pointing="top right" icon={dropdownIcon}>
 					<Dropdown.Menu>
-						<Dropdown.Item icon='file' text='Replace file' />
-						<Dropdown.Item icon='trash' text='Delete' />
+						<Dropdown.Item icon="file" text="Replace file" />
+						<Dropdown.Item icon="trash" text="Delete" />
 					</Dropdown.Menu>
 				</Dropdown>
 			</span>
