@@ -1,0 +1,39 @@
+#!/bin/bash
+#DPL 
+running_hosts=`docker ps --format "table {{.Names}}" | tail -n +2 | sort`
+hosts=`ls | grep -v toggle| sort`
+echo "$hosts"
+echo "$running_hosts"
+if [ "$hosts" == "$running_hosts" ] ; then
+    echo "up and running";
+    docker_state=1;
+else
+    echo "not all hosts are running" ;
+    docker_state=0;
+fi;
+basedir=`pwd`
+
+
+docker_init()
+{
+  for host in $hosts; do
+    cd $basedir/$host && make  && make create && docker start $host 
+  done
+}
+# starts the dockers
+docker_destroy()
+{
+  for host in $hosts; do
+    cd $basedir/$host && ./killall.sh 
+  done
+}
+
+
+echo $docker_state
+if [ $docker_state -eq 1 ]; then
+echo "docker_destroy"
+docker_destroy
+else
+echo "docker_create"
+docker_init
+fi
