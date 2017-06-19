@@ -1,4 +1,5 @@
-import { 
+import {
+	AI_TOGGLE_UPDATE,
 	AI_TOGGLE_REQUEST, 
 	AI_TOGGLE_SUCCESS, 
 	AI_TOGGLE_FAILURE
@@ -6,6 +7,10 @@ import {
 
 const dataset = (state = Map(), action) => {
 	switch(action.type) {
+		case AI_TOGGLE_UPDATE:
+			return state.mergeIn([action.id], {
+				ai: action.nextAIState
+			});
 		case AI_TOGGLE_REQUEST:
 			return state.mergeIn([action.id], {
 				isTogglingAI: true
