@@ -25,6 +25,6 @@ function Root({ store }) {
 			</Router>
 		</Provider>
 	);
-};
+}
 
 export default Root;
