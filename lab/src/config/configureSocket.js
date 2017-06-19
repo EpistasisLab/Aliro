@@ -20,7 +20,7 @@ export const socketMiddleware = (store) => {
 const configureSocket = (store) => {
 	socket = io(`${location.protocol}//${location.hostname}:5080`);
 
-	socket.on('updateAIToggle', data => {
+	socket.on('toggleAI', data => {
     store.dispatch({
     	type: AI_TOGGLE_UPDATE,
     	id: data.id,
