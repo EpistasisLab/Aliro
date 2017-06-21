@@ -21,6 +21,7 @@ fi;
 
 docker_init()
 {
+ docker_destroy;
   netstate=`docker network create $network`;
   for host in $hosts; do
     cd $basedir/$host && make  && make create && docker start $host 
@@ -34,8 +35,6 @@ docker_destroy()
   done
   netstate=`docker network rm $network`;
 }
-
-echo "$docker_state"
 
 if [ "$docker_state" == 0 ] ; then
   echo "docker_init";
