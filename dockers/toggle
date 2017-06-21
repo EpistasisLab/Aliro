@@ -1,7 +1,8 @@
 #!/bin/bash
 #DPL 
 basedir=`pwd`
-running_hosts=`docker ps --filter network=pennai --format "table {{.Names}}" | tail -n +2 | sort`
+network='pennai';
+running_hosts=`docker ps --filter network=$network --format "table {{.Names}}" | tail -n +2 | sort`
 hosts=`ls | grep -v toggle| sort`
 num_running=`echo "$running_hosts" | wc -w`
 num_hosts=`echo "$hosts" | wc -w`
@@ -20,6 +21,7 @@ fi;
 
 docker_init()
 {
+  netstate=`docker network create $network`;
   for host in $hosts; do
     cd $basedir/$host && make  && make create && docker start $host 
   done
@@ -30,6 +32,7 @@ docker_destroy()
   for host in $hosts; do
     cd $basedir/$host && ./killall.sh 
   done
+  netstate=`docker network rm $network`;
 }
 
 echo "$docker_state"
