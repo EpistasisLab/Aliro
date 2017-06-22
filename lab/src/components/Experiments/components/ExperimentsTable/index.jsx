@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
+import ExperimentsTableHeader from './components/ExperimentsTableHeader';
+import ExperimentsTableBody from './components/ExperimentsTableBody';
 import { Table } from 'semantic-ui-react';
-import { ExperimentsTableHeader } from './components/ExperimentsTableHeader';
-import { ExperimentsTableBody } from './components/ExperimentsTableBody';
 
-export class ExperimentsTable extends React.Component {
+class ExperimentsTable extends Component {
 	render() {
 
 		const { 
@@ -21,21 +21,13 @@ export class ExperimentsTable extends React.Component {
 
 		const currentParameters = experiments.first().get('params');
 
-		const shouldDisplayQuality = (() => {
-			return selectedStatus === 'suggested';
-		})();
+		const shouldDisplayQuality = selectedStatus === 'suggested';
 
-		const shouldDisplayAwards = (() => {
-			return selectedDataset !== 'all';
-		})();
+		const shouldDisplayAwards = selectedDataset !== 'all';
 
-		const shouldDisplayParams = (() => {
-			return selectedAlgorithm !== 'all' && currentParameters.size > 0;
-		})();
+		const shouldDisplayParams = selectedAlgorithm !== 'all' && currentParameters.size > 0;
 
-		const orderedParamKeys = (() => {
-			return currentParameters.keySeq().sort();
-		})();
+		const orderedParamKeys = currentParameters.keySeq().sort();
 
 		return (
 			<div className="table-container">
@@ -69,3 +61,5 @@ export class ExperimentsTable extends React.Component {
 		);
 	}
 }
+
+export default ExperimentsTable;

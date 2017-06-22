@@ -77,10 +77,10 @@ export default experiments;
 const getAllExperiments = (state) =>
 	getAllIds(state).map(id => getById(state).get(id));
 
-export const getVisibleExperiments = (state, query) => {
+export const getVisibleExperiments = (state, filters, sort) => {
 	return getAllExperiments(state)
-		.filter(filterBy(getFilters(state, query)))
-		.sort(sortBy(getSort(query)));
+		.filter(filterBy(filters))
+		.sort(sortBy(sort));
 };
 
 const filterBy = (filters) => (experiment) => {
@@ -99,7 +99,7 @@ const sortBy = (sort) => (a, b) => {
 
 	let A = a.getIn([column]) || a.getIn(['params', column]),
 		 	B = b.getIn([column]) || b.getIn(['params', column]);
-
+	
 	if(typeof(A) === 'number' && typeof(B) === 'number') {
 		return direction === 'ascending' ? (A - B) : (B - A);
 	} else if(typeof(A) === 'string' && typeof(B) === 'string') {

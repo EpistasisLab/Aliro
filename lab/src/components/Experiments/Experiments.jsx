@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
-import { ExperimentFilters } from './components/ExperimentFilters';
-import { ExperimentsTable } from './components/ExperimentsTable';
+import ExperimentFilters from './components/ExperimentFilters';
+import ExperimentsTable from './components/ExperimentsTable';
 import FetchError from '../FetchError';
 import { Header, Segment } from 'semantic-ui-react';
 
@@ -35,10 +35,10 @@ class Experiments extends Component {
 
 		const { 
 			experiments,
-			filters,
-			sort,
 			isFetching,
 			errorMessage,
+			filters,
+			sort,
 			fetchExperiments
 		} = this.props;
 
