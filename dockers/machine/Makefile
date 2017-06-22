@@ -22,7 +22,7 @@ ifeq ($(IFROOT),)
 IFROOT := /opt
 endif
 ifeq ($(SHARE_PATH),)
-SHARE_PATH := /tmp 
+SHARE_PATH := /share/devel
 endif
 DOCKER_REPO=${NETWORK}/${MACHINE_HOST}
 FGLAB_URL=http://${LAB_HOST}:${LAB_PORT}
