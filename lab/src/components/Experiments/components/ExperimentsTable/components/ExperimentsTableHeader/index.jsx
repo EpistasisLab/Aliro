@@ -1,147 +1,78 @@
-import React from 'react';
-import { Table, Popup, Icon } from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Table } from 'semantic-ui-react';
 
-export class ExperimentsTableHeader extends React.Component {
+class ExperimentsTableHeader extends Component {
+	onSort(clickedColumn) {
+		const { sort, updateQuery } = this.props;
+
+		let direction;
+		if(clickedColumn === sort.column) {
+			direction = sort.direction === 'ascending' ? 'descending' : 'ascending';
+		} else {
+			direction = 'ascending';
+		}
+
+		updateQuery('col', clickedColumn);
+		updateQuery('direction', direction);
+	}
+
+	getIsSorted(column) {
+		const { sort } = this.props;
+		return (sort.column === column && sort.direction) || null;
+	}
+
 	render() {
 
 		const {
 			selectedAlgorithm,
 			shouldDisplayQuality,
 			shouldDisplayParams,
-			orderedParamKeys,
-			sort,
-			updateQuery
-		} = this.props; 
-
-		let popupStatus = 'untouched';
-
-		const openPopup = () => {
-			popupStatus = 'opened';
-		};
-
-		const closePopup = () => {
-			popupStatus = 'closed';
-		};
-
-		const shouldPreventSort = () => {
-			if(popupStatus === 'opened') {
-				return true;
-			} else if(popupStatus === 'closed') {
-				popupStatus = 'untouched';
-				return true;
-			}
-
-			return false;
-		};
-
-		const handleSort = (clickedColumn) => {
-			let direction;
-			
-			if(shouldPreventSort()) {
-				return;
-			}
-
-			if(clickedColumn === sort.column) {
-				direction = sort.direction === 'ascending' ? 'descending' : 'ascending';
-			} else {
-				direction = 'ascending';
-			}
-
-			updateQuery('col', clickedColumn);
-			updateQuery('direction', direction)
-		};
-
-		const isSorted = (column) => {
-			return (sort.column === column && sort.direction) || null;
-		};
+			orderedParamKeys
+		} = this.props;
 
 		return (
 			<Table.Header>
 				<Table.Row>
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('_id')}
-						onClick={() => handleSort('_id')}
+						sorted={this.getIsSorted('_id')}
+						onClick={() => this.onSort('_id')}
 					>
 						Id #
 					</Table.HeaderCell>
-					{shouldDisplayQuality &&
+					{shouldDisplayQuality ? (
 						<Table.HeaderCell 
 							rowSpan={shouldDisplayParams && 2}
-							sorted={isSorted('quality_metric')}
-							onClick={() => handleSort('quality_metric')}
+							sorted={this.getIsSorted('quality_metric')}
+							onClick={() => this.onSort('quality_metric')}
 						>
 							Quality
-							<Popup
-								header="What is quality?"
-								trigger={
-									<Icon 
-										inverted 
-										color="grey" 
-										name="question circle" 
-										className="float-right" 
-									/>
-								}
-								content="A definition of the quality metric"
-								onOpen={() => openPopup()}
-								onClose={() => closePopup()}
-							/>
 						</Table.HeaderCell>
-					}
-					{!shouldDisplayQuality &&
+					) : (
 						<Table.HeaderCell 
 							rowSpan={shouldDisplayParams && 2}
-							sorted={isSorted('accuracy_score')}
-							onClick={() => handleSort('accuracy_score')}
+							sorted={this.getIsSorted('accuracy_score')}
+							onClick={() => this.onSort('accuracy_score')}
 						>
 							Accuracy
-							<Popup
-								header="What is accuracy?"
-								trigger={
-									<Icon 
-										inverted 
-										color="grey" 
-										name="question circle" 
-										className="float-right" 
-									/>
-								}
-								content="A definition of accuracy"
-								onOpen={() => openPopup()}
-								onClose={() => closePopup()}
-							/>
 						</Table.HeaderCell>
-					}
+					)}
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={isSorted('dataset')}
-						onClick={() => handleSort('dataset')}
+						sorted={this.getIsSorted('dataset')}
+						onClick={() => this.onSort('dataset')}
 					>
 						Dataset
 					</Table.HeaderCell>
 					<Table.HeaderCell 
 						colSpan={shouldDisplayParams && orderedParamKeys.size}
-						sorted={shouldDisplayParams ? null : isSorted('algorithm')}
-						onClick={shouldDisplayParams ? null : () => handleSort('algorithm')}
+						sorted={shouldDisplayParams ? null : this.getIsSorted('algorithm')}
+						onClick={shouldDisplayParams ? null : () => this.onSort('algorithm')}
 					>
 						Algorithm
 						{shouldDisplayParams &&
 							<span className="alg-name">({selectedAlgorithm})</span>
 						}
-					</Table.HeaderCell>
-					<Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
-						Who?
-						<Popup
-							header="You or the AI?"
-							trigger={
-								<Icon 
-									inverted 
-									color="grey" 
-									name="question circle" 
-									className="float-right" 
-								/>
-							}
-							content="Displays who launched this experiment."
-						/>
 					</Table.HeaderCell>
 					<Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
 						Actions
@@ -152,8 +83,8 @@ export class ExperimentsTableHeader extends React.Component {
 						{orderedParamKeys.map((key) =>
 							<Table.HeaderCell 
 								key={key}
-								sorted={isSorted(key)}
-								onClick={() => handleSort(key)}
+								sorted={this.getIsSorted(key)}
+								onClick={() => this.onSort(key)}
 							>
 								{key}
 							</Table.HeaderCell>	
@@ -164,3 +95,5 @@ export class ExperimentsTableHeader extends React.Component {
 		);
 	}
 }
+
+export default ExperimentsTableHeader;
