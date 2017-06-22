@@ -1,10 +1,26 @@
 #DOCKER_REPO=localhost:5000/lab
-HOSTNAME=lab
-DOCKER_REPO=pennai/${HOSTNAME}
+ifeq ($(LAB_HOST),)
+LAB_HOST := lab
+endif
+ifeq ($(LAB_PORT),)
+LAB_PORT := 5080
+endif
+ifeq ($(NETWORK),)
+NETWORK := pennai
+endif
+ifeq ($(MONGO_URI),)
+DB_URI := mongodb://db:27017/FGLab
+endif
+ifeq ($(IFROOT),)
+IFROOT := /opt
+endif
+ifeq ($(SHARE_PATH),)
+SHARE_PATH := /tmp
+endif
+
+DOCKER_REPO=${NETWORK}/${LAB_HOST}
 TAG=latest
-MONGODB_URI=mongodb://mongodb:27017/FGLab
-FGLAB_PORT=5080
-DOCKER_ARGS=-i -t -p 5080:5080 -e FGLAB_PORT=${FGLAB_PORT} -e MONGODB_URI=${MONGODB_URI} -h ${HOSTNAME} --name ${HOSTNAME} --net=pennai\
+DOCKER_ARGS=-i -t -p ${LAB_PORT}:${LAB_PORT} -e FGLAB_PORT=${LAB_PORT} -e MONGODB_URI=${DB_URI} -e IFROOT=${IFROOT} -h ${LAB_HOST} --name ${LAB_HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
@@ -15,7 +31,7 @@ run:
 		${DOCKER_REPO}
 
 shared:
-	docker run -v /share:/share --rm ${DOCKER_ARGS}\
+	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
@@ -23,7 +39,7 @@ create:
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v /share:/share ${DOCKER_ARGS}\
+	docker create -i -v ${SHARE_PATH}:/share/devel  ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 push:

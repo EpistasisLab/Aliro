@@ -1,9 +1,21 @@
 #!/bin/bash
 #DPL 
 basedir=`pwd`
-network='pennai';
-running_hosts=`docker ps --filter network=$network --format "table {{.Names}}" | tail -n +2 | sort`
-hosts=`ls | grep -v toggle| sort`
+# load variables from vars file
+. $basedir/vars
+if [ "$1" != "" ] ; then
+   echo "running shared env:"
+   echo "container:/share/devel->host:$1"
+   export SHARE_PATH=$1;
+   export IFROOT=/share/devel;
+   cmd='createshared';
+else
+   cmd='create'
+fi;
+
+#check to see if there's a running host for each directory
+running_hosts=`docker ps --filter network=${NETWORK} --format "table {{.Names}}" | tail -n +2 | sort`
+hosts=$(ls -d */ | tr -d \/)
 num_running=`echo "$running_hosts" | wc -w`
 num_hosts=`echo "$hosts" | wc -w`
 if [ "$hosts" == "$running_hosts" ] ; then
@@ -18,13 +30,12 @@ if [ "$num_running" == 0 ]; then
     docker_state=0;
 fi;
 
-
 docker_init()
 {
- docker_destroy;
-  netstate=`docker network create $network`;
+  docker_destroy;
+  netstate=`docker network create ${NETWORK}`;
   for host in $hosts; do
-    cd $basedir/$host && make  && make create && docker start $host 
+    cd $basedir/$host && make  && make $cmd && docker start $host
   done
 }
 # starts the dockers
@@ -33,7 +44,7 @@ docker_destroy()
   for host in $hosts; do
     cd $basedir/$host && ./killall.sh 
   done
-  netstate=`docker network rm $network`;
+  netstate=`docker network rm ${NETWORK}`;
 }
 
 if [ "$docker_state" == 0 ] ; then

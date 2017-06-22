@@ -83,10 +83,12 @@ var metadata = [];
 var processUserDatasets = function(username) {
     datasets_path = byuser_datasets_path + '/' + username;
     fs.readdir(datasets_path, function(err, datasets) {
+    if(datasets !== undefined) {
         for (var i = 0; i < datasets.length; i++) {
             var dataset_name = datasets[i];
             processDataset(username, dataset_name);
         }
+    } 
     });
 }
 
