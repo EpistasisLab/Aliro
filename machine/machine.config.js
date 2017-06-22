@@ -33,7 +33,7 @@ module.exports = {
       ref  : "origin/master",
       //host : "0.0.0.0",
       //repo : "git@github.com:repo.git",
-      path : "/share/devel/Gp/machine",
+      //path : "devel/Gp/machine",
       //"post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env dev",
       env  : {
         NODE_ENV: "dev"

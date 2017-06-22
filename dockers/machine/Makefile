@@ -1,15 +1,34 @@
 #DOCKER_REPO=localhost:5000/machine
-HOSTNAME=machine
-DOCKER_REPO=pennai/${HOSTNAME}
 TAG=latest
-LAB_HOST=lab
-FGLAB_URL=http://${LAB_HOST}:5080
-FGMACHINE_URL=http://${HOSTNAME}:5081
+ifeq ($(LAB_HOST),)
+LAB_HOST := lab
+endif
+ifeq ($(LAB_PORT),)
+LAB_PORT := 5080
+endif
+ifeq ($(NETWORK),)
+NETWORK := pennai
+endif 
+ifeq ($(MONGO_URI),)
+DB_URI := mongodb://mongodb:27017/FGLab
+endif
+ifeq ($(MACHINE_HOST),)
+MACHINE_HOST := machine
+endif
+ifeq ($(MACHINE_PORT),)
+MACHINE_PORT := 5081
+endif
+ifeq ($(IFROOT),)
+IFROOT := /opt
+endif
+ifeq ($(SHARE_PATH),)
+SHARE_PATH := /share/devel
+endif
+DOCKER_REPO=${NETWORK}/${MACHINE_HOST}
+FGLAB_URL=http://${LAB_HOST}:${LAB_PORT}
+FGMACHINE_URL=http://${MACHINE_HOST}:${MACHINE_PORT}
 APIKEY=Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=
-#IFROOT='//Gp'
-PS1="machine"
-DOCKER_ARGS = -i -t -p 5081:5081 -e PS1=${PS1} -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${HOSTNAME} --name ${HOSTNAME} --net=pennai\
-
+DOCKER_ARGS = -i -t -p 5081:5081 -e FGLAB_URL=${FGLAB_URL} -e FGMACHINE_URL=${FGMACHINE_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${IFROOT} -h ${MACHINE_HOST} --name ${MACHINE_HOST} --net=${NETWORK}\
 
 
 build:
@@ -22,7 +41,7 @@ run:
 
 
 shared:
-	docker run -v /share:/share --rm ${DOCKER_ARGS}\
+	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
@@ -30,7 +49,7 @@ create:
 		${DOCKER_REPO}
 
 createshared:
-	docker create -v /share:/share ${DOCKER_ARGS}\
+	docker create -v ${SHARE_PATH}:/share/devel ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 push:
