@@ -1,0 +1,7 @@
+export LAB_HOST='lab'
+export LAB_PORT=5080;
+export MACHINE_HOST='machine';
+export MACHINE_PORT=5081
+export NETWORK='pennai';
+export MONGO_HOST='mongodb';
+export MONGO_PORT=27017;
