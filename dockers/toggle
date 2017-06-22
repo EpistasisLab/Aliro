@@ -1,16 +1,19 @@
 #!/bin/bash
 #DPL 
 basedir=`pwd`
-#LOAD vars
+# load variables from vars file
 . $basedir/vars
 if [ "$1" != "" ] ; then
-   echo "running shared env:\n\tcontainer: /share/\n maps to:\n\thost on dir: $1"
+   echo "running shared env:"
+   echo "container:/share/devel->host:$1"
    export SHARE_PATH=$1;
+   export IFROOT=/share/devel;
    cmd='createshared';
 else
    cmd='create'
 fi;
 
+#check to see if there's a running host for each directory
 running_hosts=`docker ps --filter network=${NETWORK} --format "table {{.Names}}" | tail -n +2 | sort`
 hosts=$(ls -d */ | tr -d \/)
 num_running=`echo "$running_hosts" | wc -w`
@@ -26,8 +29,6 @@ fi;
 if [ "$num_running" == 0 ]; then
     docker_state=0;
 fi;
-
-docker_state=0
 
 docker_init()
 {
