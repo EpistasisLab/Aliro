@@ -23,13 +23,18 @@ class ExperimentsContainer extends Component {
 	}
 }
 
-const mapStateToProps = (state, { location }) => ({
-	experiments: getVisibleExperiments(state, location.query),
-	isFetching: getIsFetching(state),
-	errorMessage: getErrorMessage(state),
-	filters: getFilters(state, location.query),
-	sort: getSort(location.query)
-});
+const mapStateToProps = (state, { location }) => {
+	const filters = getFilters(state, location.query);
+	const sort = getSort(location.query);
+
+	return {
+		experiments: getVisibleExperiments(state, filters, sort),
+		isFetching: getIsFetching(state),
+		errorMessage: getErrorMessage(state),
+		filters,
+		sort
+	};
+};
 
 ExperimentsContainer = withRouter(connect(
 	mapStateToProps, 
