@@ -21,6 +21,9 @@ endif
 ifeq ($(IFROOT),)
 IFROOT := /opt
 endif
+ifeq ($(SHARE_PATH),)
+SHARE_PATH := /tmp 
+endif
 DOCKER_REPO=${NETWORK}/${MACHINE_HOST}
 FGLAB_URL=http://${LAB_HOST}:${LAB_PORT}
 FGMACHINE_URL=http://${MACHINE_HOST}:${MACHINE_PORT}
@@ -38,7 +41,7 @@ run:
 
 
 shared:
-	docker run -v /share:/share --rm ${DOCKER_ARGS}\
+	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
@@ -46,7 +49,7 @@ create:
 		${DOCKER_REPO}
 
 createshared:
-	docker create -v /share:/share ${DOCKER_ARGS}\
+	docker create -v ${SHARE_PATH}:/share/devel ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 push:
