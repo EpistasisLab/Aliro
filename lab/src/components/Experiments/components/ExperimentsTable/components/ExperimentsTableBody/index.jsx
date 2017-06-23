@@ -7,7 +7,7 @@ class ExperimentsTableBody extends Component {
 		const id = experiment.get('_id');
 
 		if(status === 'suggested' || status === 'pending') {
-			return `/#/build/filler/${id}`;
+			return `/#/builder?experiment=${id}`;
 		} else {
 			return `/#/results/${id}`;
 		}
