@@ -1,5 +1,5 @@
 import * as api from './api';
-import { getIsFetching } from './reducer';
+import { getIsFetching } from './index';
 
 export const DATASETS_FETCH_REQUEST = 'DATASETS_FETCH_REQUEST';
 export const DATASETS_FETCH_SUCCESS = 'DATASETS_FETCH_SUCCESS';
