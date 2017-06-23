@@ -1,5 +1,5 @@
 import * as api from './api';
-import { getIsFetching } from './reducer';
+import { getIsFetching } from './index';
 
 export const EXPERIMENTS_FETCH_REQUEST = 'EXPERIMENTS_FETCH_REQUEST';
 export const EXPERIMENTS_FETCH_SUCCESS = 'EXPERIMENTS_FETCH_SUCCESS';

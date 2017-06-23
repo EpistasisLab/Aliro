@@ -16,7 +16,7 @@ class DatasetCard extends Component {
 
 		const datasetLink = `/#/datasets/${dataset.get('_id')}`;
 
-		const builderLink = `/#/build/${dataset.get('_id')}`;
+		const builderLink = `/#/builder?dataset=${dataset.get('_id')}`;
 
 		return (
 			<Grid.Column className="dataset-card">
