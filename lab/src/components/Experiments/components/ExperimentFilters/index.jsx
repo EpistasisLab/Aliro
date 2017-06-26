@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Form, Dropdown, Button } from 'semantic-ui-react';
 
-export class ExperimentFilters extends React.Component {
+class ExperimentFilters extends Component {
+	getOptionsArray(filter) {
+		const { filters } = this.props;
+
+		let optionsArray = filters[filter].options.map((option) => {
+			return { text: option, value: option };
+		});
+
+		optionsArray.unshift({ text: 'all', value: 'all' });
+
+		return optionsArray;
+	}
+
 	render() {
 
 		const {
@@ -9,16 +21,6 @@ export class ExperimentFilters extends React.Component {
 			updateQuery,
 			resetQuery
 		} = this.props;
-
-		const buildOptionsArray = (filter) => {
-			let optionsArray = filters[filter].options.map((option) => {
-				return { text: option, value: option };
-			});
-
-			optionsArray.unshift({ text: 'all', value: 'all' });
-
-			return optionsArray;
-		};
 
 		return (
 			<Form inverted>
@@ -28,7 +30,7 @@ export class ExperimentFilters extends React.Component {
 						label="Status:"
 						control={Dropdown}
 						value={filters.status.selected}
-						options={buildOptionsArray('status')}
+						options={this.getOptionsArray('status')}
 						onChange={(e, data) => updateQuery('status', data.value)}
 						className="filter"
 					/>
@@ -37,7 +39,7 @@ export class ExperimentFilters extends React.Component {
 						label="Dataset:"
 						control={Dropdown} 
 						value={filters.dataset.selected}
-						options={buildOptionsArray('dataset')}
+						options={this.getOptionsArray('dataset')}
 						onChange={(e, data) => updateQuery('dataset', data.value) }
 						className="filter"
 					/>
@@ -46,7 +48,7 @@ export class ExperimentFilters extends React.Component {
 						label="Algorithm:"
 						control={Dropdown} 
 						value={filters.algorithm.selected}
-						options={buildOptionsArray('algorithm')} 
+						options={this.getOptionsArray('algorithm')} 
 						onChange={(e, data) => updateQuery('algorithm', data.value)}
 						className="filter"
 					/>
@@ -64,3 +66,5 @@ export class ExperimentFilters extends React.Component {
 		);
 	}
 }
+
+export default ExperimentFilters;

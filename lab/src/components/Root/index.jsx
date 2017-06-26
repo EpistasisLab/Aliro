@@ -2,25 +2,23 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 
-import { AppContainer } from '../App';
-import DatasetsScene from '../../scenes/DatasetsScene';
-import ExperimentsScene from '../../scenes/ExperimentsScene';
-
-import { ResultsContainer } from '../../scenes/Results';
-import { BuilderContainer } from '../../scenes/Builder';
-import { NotFound } from '../../scenes/NotFound';
+import App from '../App';
+import Datasets from '../Datasets';
+import Experiments from '../Experiments';
+import { ResultsContainer } from '../Results';
+import Builder from '../Builder';
+import NotFound from '../NotFound';
 
 function Root({ store }) {
 	return (
 		<Provider store={store}>
-			<Router history={hashHistory}>
-				<Route path='/' component={AppContainer}>
+			<Router history={hashHistory} onUpdate={() => window.scrollTo(0, 0)}>
+				<Route path='/' component={App}>
 					<IndexRedirect to="datasets" />
-					<Route path='datasets' component={DatasetsScene} />
-					<Route path='experiments' component={ExperimentsScene} />
+					<Route path='datasets' component={Datasets} />
+					<Route path='experiments' component={Experiments} />
+					<Route path='builder' component={Builder} />
 					<Route path='results/:id' component={ResultsContainer} />
-					<Route path='build/:id' component={BuilderContainer} />
-					<Route path='build/:id/:exp' component={BuilderContainer} />
 					<Route path='*' component={NotFound} />
 				</Route>
 			</Router>
