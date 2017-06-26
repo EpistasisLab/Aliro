@@ -13,12 +13,9 @@ import {
 } from './data';
 import { getPreferences } from '../App/data';
 import SceneWrapper from '../SceneWrapper';
-import { SelectedAlgorithm } from './components/SelectedAlgorithm';
-import { Parameters } from './components/Parameters';
-import { Launch } from './components/Launch';
-import { Header, Grid, Button } from 'semantic-ui-react';
+import Builder from './Builder';
 
-class Builder extends Component {
+class BuilderContainer extends Component {
 	componentDidMount() {
 		const { query } = this.props.location;
 		const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
@@ -46,7 +43,7 @@ class Builder extends Component {
 		}
 	}
 
-	getSceneHeader() {
+	/*getSceneHeader() {
 		const { dataset, experiment } = this.props;
 
 		if(dataset.get('name')) {
@@ -57,62 +54,13 @@ class Builder extends Component {
 
 		return;
 		// handle errors
-	}
+	}*/
 
 	render() {
-
-		const {
-			dataset,
-			experiment,
-			isFetching,
-			errorMessage,
-			defaultAlgorithms,
-			currentAlgorithm,
-			currentParams,
-			setCurrentAlgorithm,
-			setParamValue,
-			submitExperiment
-		} = this.props;
-
 		return (
-			<SceneWrapper headerContent={this.getSceneHeader()}>
-				<div className="builder-scene">
-					{dataset ? (
-						<div>
-							<Grid stretched>
-								<SelectedAlgorithm
-									algorithms={defaultAlgorithms}
-									currentAlgorithm={currentAlgorithm}
-									setCurrentAlgorithm={setCurrentAlgorithm}
-									setParamValue={setParamValue}
-								/>
-								<Parameters 
-									params={currentAlgorithm.get('schema')}
-									currentParams={currentParams}
-									setParamValue={setParamValue}
-								/>
-							</Grid>
-							<Button 
-								color="blue" 
-								content="Launch Experiment"
-								onClick={() => submitExperiment(
-									currentAlgorithm.get('_id'), 
-									currentParams.set('dataset', dataset.get('_id'))
-								)}
-							/>
-							<Button 
-								color="grey" 
-								onClick={() => setCurrentAlgorithm(currentAlgorithm)}>
-									Reset
-							</Button>
-						</div>
-						) : (
-							<Header inverted size='small'>
-								The specified dataset does not exist.
-							</Header>
-						)};
-				</div>
-			</SceneWrapper>	
+			<SceneWrapper headerContent="Experiment Builder">
+				<Builder {...this.props} />
+			</SceneWrapper>
 		);
 	}
 }
@@ -130,9 +78,9 @@ const mapStateToProps = (state) => ({
 	isSubmitting: getIsSubmitting(state)
 });
 
-const BuilderContainer = connect(
+BuilderContainer = connect(
 	mapStateToProps, 
 	actions
-)(Builder);
+)(BuilderContainer);
 
 export default BuilderContainer;
