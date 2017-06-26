@@ -25,7 +25,7 @@ class ExperimentsTableBody extends Component {
 				return <Icon inverted color="green" name="check" />;
 			case 'cancelled':
 				return <Icon inverted color="red" name="ban" />;
-			case 'failed':
+			case 'fail':
 				return <Icon inverted color="red" name="warning sign" />;
 			default: 
 				return;
