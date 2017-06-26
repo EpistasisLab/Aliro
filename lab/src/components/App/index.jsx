@@ -1,36 +1,46 @@
-import React from 'react';
-import MediaQuery from 'react-responsive';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { fetchPreferences } from './data/api';
+import * as actions from './data/actions';
+import { 
+	getPreferences,
+	getIsFetching,
+	getErrorMessage
+} from './data';
+import Navbar from './Navbar';
 import { Container } from 'semantic-ui-react';
-import { Navbar } from './Navbar';
 
-export class App extends React.Component {
+class App extends Component {
+	render() {
+		return (
+			<Container fluid className="app pennai">
+				<Navbar />
+				{this.props.children}
+			</Container>
+		);
+	}
+}
+
+class AppContainer extends Component {
 	componentDidMount() {
-		const { fetchPreferences } = this.props;
-		fetchPreferences();
+		this.props.fetchPreferences();
 	}
 
 	render() {
-		return <Container fluid className="app pennai">
-			<Navbar />
-			{this.props.children}
-		</Container>;
+		return (
+			<App {...this.props} />
+		);
 	}
 }
 
-function mapStateToProps(state) {
-	return {
-		isFetching: state.getIn(['preferences', 'isFetching']),
-		preferences: state.getIn(['preferences', 'preferences'])
-	};
-}
+const mapStateToProps = (state) => ({
+	preferences: getPreferences(state),
+	isFetching: getIsFetching(state),
+	errorMessage: getErrorMessage(state)
+});
 
-function mapDispatchToProps(dispatch) {
-	return {
-		fetchPreferences: bindActionCreators(fetchPreferences, dispatch)
-	};
-}
+AppContainer = connect(
+	mapStateToProps, 
+	actions
+)(AppContainer);
 
-export const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);
+export default AppContainer;
