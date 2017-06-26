@@ -11,6 +11,7 @@
     "_id": {
         "$oid": "58c9a40915f1e8675d31972f"
     },
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"],
     "username": "pmlb",
     "firstname": "Pmlb",
     "lastname": "User"

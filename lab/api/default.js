@@ -6,11 +6,13 @@ var fs = require("fs");
 //helper function for searching and formatting results
 var convert_to_dict = function(array) {
     var new_array = {};
+    if(array !== undefined && array.length >= 0) {
     for (var i = 0; i < array.length; i++) {
         var entry = array[i];
         var _id = entry['_id'];
         new_array[_id] = entry;
     }
+}
     return(new_array);
 }
 exports.convert_to_dict = convert_to_dict;

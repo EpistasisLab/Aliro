@@ -5,3 +5,4 @@ export MACHINE_PORT=5081
 export NETWORK='pennai';
 export MONGO_HOST='mongodb';
 export MONGO_PORT=27017;
+export MONGODB_URI= 'mongodb://db:27017/FGLab';
