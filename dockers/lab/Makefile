@@ -8,7 +8,7 @@ endif
 ifeq ($(NETWORK),)
 NETWORK := pennai
 endif
-ifeq ($(MONGO_URI),)
+ifeq ($(DB_URI),)
 DB_URI := mongodb://db:27017/FGLab
 endif
 ifeq ($(IFROOT),)
