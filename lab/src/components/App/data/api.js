@@ -1,24 +1,4 @@
-require('es6-promise').polyfill();
-import fetch from 'isomorphic-fetch';
-import {
-    fromJS
-} from 'immutable';
-import {
-    requestPreferences,
-    receivePreferences
-} from './actions';
+import { get } from '../../../utils/apiHelper';
 
-export const fetchPreferences = () => {
-    const route = 'api/preferences';
-
-    return function(dispatch) {
-        dispatch(requestPreferences());
-        return fetch(route, {
-                credentials: 'include'
-            })
-            .then(response => response.json())
-            .then(json =>
-                dispatch(receivePreferences(fromJS(json)))
-            );
-    }
-};
+export const fetchPreferences = () =>
+    get('api/preferences');
