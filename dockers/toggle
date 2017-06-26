@@ -7,7 +7,7 @@ if [ "$1" != "" ] ; then
    echo "running shared env:"
    echo "container:/share/devel->host:$1"
    export SHARE_PATH=$1;
-   export IFROOT=/share/devel;
+   export IFROOT=$1;
    cmd='createshared';
 else
    cmd='create'
