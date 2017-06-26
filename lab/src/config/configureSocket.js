@@ -18,7 +18,7 @@ export const socketMiddleware = (store) => {
 };
 
 const configureSocket = (store) => {
-	socket = io(`${location.protocol}//${location.hostname}:5080`);
+	socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
 
 	socket.on('toggleAI', data => {
     store.dispatch({
