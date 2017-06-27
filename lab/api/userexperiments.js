@@ -69,16 +69,6 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
-            $project: {
-                experiments: {
-                    $slice: ["$experiments", 10]
-                },
-                datasets: {
-                    $slice: ["$datasets", 10]
-                },
-                algorithms: "$algorithms"
-            }
-        }, {
                 "$unwind": {
                     path: "$algorithms",
                     preserveNullAndEmptyArrays: true
@@ -106,20 +96,15 @@ exports.responder = function(req, res) {
                     $addToSet: "$experiments"
                 },
             }
-        }],{
-//  allowDiskUse: true,
-  cursor: {}
-        },
+        }],
         function(err, users) {
-            var formatted_experiments = []
-if(users !== undefined && users.length >= 0) {
-
+            retArray = []
             var user = users[0];
             var algorithms = api.convert_to_dict(user['algorithms']);
             var experiments = api.convert_to_dict(user['experiments']);
             var datasets = api.convert_to_dict(user['datasets']);
             var keyed_experiments = api.group_on_key(experiments, '_dataset_id')
-            formatted_experiments = format_experiments(experiments,algorithms,datasets);
+            var formatted_experiments = format_experiments(experiments,algorithms,datasets);
 /*
             var datasets = api.convert_to_dict(user['datasets']);
             for (_id in experiments) {
@@ -135,9 +120,6 @@ if(users !== undefined && users.length >= 0) {
                 retArray.push(api.annotate_dataset(datasets[_id]));
             }
 */
-} else {
-console.log(err);
-}
             res.send(formatted_experiments);
 
         }
