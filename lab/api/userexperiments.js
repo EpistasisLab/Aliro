@@ -18,6 +18,9 @@ new_experiment['dataset'] = null;
 //experiment['dataset'] = datasets[experiment['_dataset_id']]['name'];
 new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
 new_experiment['params'] = experiment['_options'];
+if(experiment['_scores']  && experiment['_scores']['accuracy_score']) {
+new_experiment['accuracy_score'] = experiment['_scores']['accuracy_score'];
+}
 new_experiment['launched_by'] = experiment['username'];
 //experiments[_id] = experiment;
 ret_experiments.push(new_experiment);
