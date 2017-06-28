@@ -6,6 +6,7 @@ class SceneHeader extends Component {
 	render() {
 		const {
 			headerContent,
+			subheader,
 			btnContent,
 			btnIcon,
 			btnAction,
@@ -18,6 +19,7 @@ class SceneHeader extends Component {
 						inverted 
 						size="huge" 
 						content={headerContent}
+						subheader={subheader}
 						className="scene-title"
 					/>
 				}
