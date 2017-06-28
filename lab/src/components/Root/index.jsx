@@ -5,7 +5,7 @@ import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 import App from '../App';
 import Datasets from '../Datasets';
 import Experiments from '../Experiments';
-import { ResultsContainer } from '../Results';
+import Results from '../Results';
 import Builder from '../Builder';
 import NotFound from '../NotFound';
 
@@ -18,7 +18,7 @@ function Root({ store }) {
 					<Route path='datasets' component={Datasets} />
 					<Route path='experiments' component={Experiments} />
 					<Route path='builder' component={Builder} />
-					<Route path='results/:id' component={ResultsContainer} />
+					<Route path='results/:id' component={Results} />
 					<Route path='*' component={NotFound} />
 				</Route>
 			</Router>
