@@ -75,7 +75,7 @@ const experiments = combineReducers({
 export default experiments;
 
 const getAllExperiments = (state) =>
-	getAllIds(state).map(id => getById(state).get(id));
+	getAllIds(state).sort().reverse().map(id => getById(state).get(id));
 
 export const getVisibleExperiments = (state, filters, sort) => {
 	return getAllExperiments(state)
