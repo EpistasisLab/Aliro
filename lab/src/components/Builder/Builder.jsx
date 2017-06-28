@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hashHistory } from 'react-router';
 import FetchError from '../FetchError';
 import { SelectedAlgorithm } from './components/SelectedAlgorithm';
 import { Parameters } from './components/Parameters';
@@ -6,6 +7,13 @@ import { Launch } from './components/Launch';
 import { Header, Grid, Button } from 'semantic-ui-react';
 
 class Builder extends Component {
+	onSubmitExperiment(algorithm, params) {
+		const { submitExperiment } = this.props;
+
+		submitExperiment(algorithm, params)
+			.then(res => hashHistory.push('/experiments')); // redirect to experiments page
+	}
+
 	render() {
 
 		const {
@@ -17,8 +25,7 @@ class Builder extends Component {
 			currentAlgorithm,
 			currentParams,
 			setCurrentAlgorithm,
-			setParamValue,
-			submitExperiment
+			setParamValue
 		} = this.props;
 
 		const { query } = this.props.location;
@@ -66,7 +73,7 @@ class Builder extends Component {
 				<Button 
 					color="blue" 
 					content="Launch Experiment"
-					onClick={() => submitExperiment(
+					onClick={() => this.onSubmitExperiment(
 						currentAlgorithm.get('_id'), 
 						currentParams.set('dataset', dataset.get('_id'))
 					)}
