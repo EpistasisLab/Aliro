@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
 
-export class SelectedAlgorithm extends React.Component {
+class AlgorithmOptions extends Component {
+	getIsActive(algorithm) {
+		const { currentAlgorithm } = this.props;
+		return currentAlgorithm && (algorithm.get('_id') === currentAlgorithm.get('_id'));
+	}
+
 	render() {
 
 		const { 
@@ -10,19 +15,13 @@ export class SelectedAlgorithm extends React.Component {
 			setCurrentAlgorithm
 		} = this.props;
 
-		const isActive = (algorithm) => {
-			return currentAlgorithm && (algorithm.get('_id') === currentAlgorithm.get('_id'));
-		};
-
-		const color = 'orange';
-
 		return (
 			<Grid.Column width={16}>
 				<Segment inverted attached="top" className="panel-header">
 					<Header 
 						inverted
 						size="large"
-						color={color} 
+						color="orange"
 						content="Select Algorithm" 
 					/>
 				</Segment>
@@ -32,10 +31,10 @@ export class SelectedAlgorithm extends React.Component {
 							<Grid.Column key={algorithm.get('_id')}>
 								<Button
 									inverted 
-									color={color}
+									color="orange"
 									size="large"
 									fluid
-									active={isActive(algorithm)}
+									active={this.getIsActive(algorithm)}
 									onClick={() => setCurrentAlgorithm(algorithm)}
 								>
 									{algorithm.get('name')}
@@ -51,3 +50,5 @@ export class SelectedAlgorithm extends React.Component {
 		);
 	}
 }
+
+export default AlgorithmOptions;
