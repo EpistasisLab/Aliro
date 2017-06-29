@@ -18,6 +18,7 @@ var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
 var fs = require("fs");
+var pub = require("./pubsub").pub;
 /* App instantiation */
 var app = express();
 var jsonParser = bodyParser.json({
@@ -602,6 +603,9 @@ console.log(projId, obj, files, dataset, username);
                                 .then((resp) => {
                                     res.status(201);
                                     res.send(resp);
+                                    /* pub.publish('startExperiment', JSON.stringify(
+                                        { _id: resp._id }
+                                    )); */
                                 })
                                 .catch((err) => {
                                     // TODO Check comprehensiveness of error catching
@@ -908,7 +912,7 @@ var processDataset = function(files, dataset_id) {
 
 
 // Processess files for an experiment
-app.put("/api/v1/experiments/:id/files", upload.array("_files"), (req, res, next) => {
+app.put("/api/v1/experiments/:id/files", upload.array("files"), (req, res, next) => {
     // Retrieve list of files for experiment
     db.experiments.findByIdAsync(req.params.id, {
             files: 1
