@@ -1,28 +1,21 @@
-import React from 'react';
-import { Grid, Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Grid, Segment, Header, Popup, Icon, Button } from 'semantic-ui-react';
 
-export class Parameters extends React.Component {
+class ParameterOptions extends Component {
+	calcCols(choices) {
+		return choices.size > 2 ? 2 : 1;
+	}
+
+	isActive(param, value) {
+		return value === this.props.currentParams.get(param);
+	}
+
 	render() {
 
 		const { 
 			params,
-			currentParams,
 			setParamValue
 		} = this.props;
-
-		const calcCols = (choices) => {
-			if(choices.size > 2) {
-				return 2;
-			} else {
-				return 1;
-			}
-		};
-
-		const isActive = (param, value) => {
-			return value === currentParams.get(param);
-		};
-
-		const color = 'blue';
 
 		return (
 			<Grid.Row>
@@ -42,31 +35,32 @@ export class Parameters extends React.Component {
 								trigger={
 									<Icon 
 										inverted
-										color={color}
+										size="large"
+										color="blue"
 										name="info circle"
 										className="info-icon float-right"
 									/>
 								}
-								content={info.get('help')}
+								content={info.get('description')}
 							/>
 							<Header 
-								as="h1"
+								as="h2"
 								inverted 
-								color={color} 
+								color="blue"
 								content={info.get('alias') || param}
 								className="param-name"
 							/>
 						</Segment>	
 						<Segment inverted attached="bottom">
-							<Grid columns={calcCols(info.getIn(['ui', 'choices']))} className="compressed">
+							<Grid columns={this.calcCols(info.getIn(['ui', 'choices']))} className="compressed">
 								{info.getIn(['ui', 'choices']).map(value =>
 									<Grid.Column key={value}>
 										<Button
 											inverted 
-											color={color}
+											color="blue"
 											fluid
 											content={value.toString()} 
-											active={isActive(param, value)} 
+											active={this.isActive(param, value)} 
 											onClick={() => setParamValue(param, value)} 
 										/>
 									</Grid.Column>
@@ -79,3 +73,5 @@ export class Parameters extends React.Component {
 		);
 	}
 }
+
+export default ParameterOptions;

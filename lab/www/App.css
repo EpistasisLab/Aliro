@@ -216,7 +216,7 @@ body {
 
 .pennai .builder-scene .info-icon {
    margin-top: 0.15rem;
-   font-size: 1.1rem;
+   cursor: pointer;
 }
 
 .pennai .builder-scene .ui.compressed.grid>.column:not(.row) {
@@ -231,6 +231,11 @@ body {
 
 .pennai .builder-scene .ui.stretched.grid>.row>.column {
     padding-bottom: 2rem !important;
+}
+
+.pennai .builder-scene .builder-btns {
+    margin-top: -2rem;
+    margin-bottom: 2rem;
 }
 
 /*.table-container {

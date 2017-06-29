@@ -12,7 +12,6 @@ import {
 	getIsSubmitting
 } from './data';
 import { getPreferences } from '../App/data';
-import SceneWrapper from '../SceneWrapper';
 import Builder from './Builder';
 
 class BuilderContainer extends Component {
@@ -43,24 +42,9 @@ class BuilderContainer extends Component {
 		}
 	}
 
-	/*getSceneHeader() {
-		const { dataset, experiment } = this.props;
-
-		if(dataset.get('name')) {
-			return `Build ${dataset.get('name')} Experiment`;
-		} else if(experiment.get('_id')) {
-			return `Review Experiment #${experiment.get('_id')}`;
-		}
-
-		return;
-		// handle errors
-	}*/
-
 	render() {
 		return (
-			<SceneWrapper headerContent="Experiment Builder">
-				<Builder {...this.props} />
-			</SceneWrapper>
+			<Builder {...this.props} />
 		);
 	}
 }
