@@ -4,6 +4,7 @@ import { getIsFetching } from './index';
 export const EXPERIMENTS_FETCH_REQUEST = 'EXPERIMENTS_FETCH_REQUEST';
 export const EXPERIMENTS_FETCH_SUCCESS = 'EXPERIMENTS_FETCH_SUCCESS';
 export const EXPERIMENTS_FETCH_FAILURE = 'EXPERIMENTS_FETCH_FAILURE';
+export const EXPERIMENT_ADD = 'EXPERIMENT_ADD';
 
 export const fetchExperiments = () => (dispatch, getState) => {
 	if(getIsFetching(getState())) {
@@ -30,4 +31,11 @@ export const fetchExperiments = () => (dispatch, getState) => {
 			});
 		}
 	);
+};
+
+export const addExperiment = (experiment) => (dispatch) => {
+  dispatch({
+    type: EXPERIMENT_ADD,
+    experiment
+  });
 };
