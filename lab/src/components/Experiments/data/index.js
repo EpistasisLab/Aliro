@@ -3,7 +3,8 @@ import { combineReducers } from 'redux-immutable';
 import { 
 	EXPERIMENTS_FETCH_REQUEST, 
 	EXPERIMENTS_FETCH_SUCCESS, 
-	EXPERIMENTS_FETCH_FAILURE
+	EXPERIMENTS_FETCH_FAILURE,
+	EXPERIMENT_ADD
 } from './actions';
 
 const getById = (state) => 
@@ -17,6 +18,8 @@ const byId = (state = Map(), action) => {
 				newExperiments[experiment._id] = experiment;
 			});
 			return state.merge(newExperiments);
+		case EXPERIMENT_ADD:
+			return state.merge(action.experiment[0]._id, action.experiment[0]);
 		default:
 			return state;
 	}
@@ -30,6 +33,8 @@ const allIds = (state = List(), action) => {
 		case EXPERIMENTS_FETCH_SUCCESS:
 			const newExperiments = action.response.map(experiment => experiment['_id']);
 			return state.merge(newExperiments);
+		case EXPERIMENT_ADD:
+			return state.push(action.experiment[0]._id);
 		default:
 			return state;
 	}
