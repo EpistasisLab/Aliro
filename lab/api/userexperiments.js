@@ -111,6 +111,11 @@ exports.responder = function(req, res) {
             var user = users[0];
             var algorithms = api.convert_to_dict(user['algorithms']);
             var experiments = api.convert_to_dict(user['experiments']);
+            if (params['id']) {
+                var experiment = experiments[params['id']];
+                experiments = {};
+                experiments[params['id']] = experiment;
+            }
             var datasets = api.convert_to_dict(user['datasets']);
             var keyed_experiments = api.group_on_key(experiments, '_dataset_id')
             var formatted_experiments = format_experiments(experiments, algorithms, datasets);

@@ -20,10 +20,10 @@ exports.responder = function(req, res) {
         [{
             $match: query
         }, {
-                "$unwind": {
-                    path: "$algorithms",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
             $lookup: {
                 from: "datasets",
@@ -46,20 +46,20 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
-                "$unwind": {
-                    path: "$algorithms",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
-                "$unwind": {
-                    path: "$user_datasets",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$user_datasets",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
-                "$unwind": {
-                    path: "$experiments",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$experiments",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
             $group: {
                 _id: "$_id",
@@ -81,6 +81,12 @@ exports.responder = function(req, res) {
             var experiments = api.convert_to_dict(user['experiments']);
             var keyed_experiments = api.group_on_key(experiments, '_dataset_id');
             var datasets = api.convert_to_dict(user['datasets']);
+            if (params['id']) {
+                var dataset = datasets[params['id']];
+                datasets = {};
+                datasets[params['id']] = dataset;
+            }
+
             for (_id in experiments) {
                 var experiment = experiments[_id];
                 var algorithm_id = experiment['_project_id']
