@@ -14,11 +14,11 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 var socketServer = require('./socketServer');
+var publisher = require("./pubsub").publisher;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
 var fs = require("fs");
-var pub = require("./pubsub").pub;
 /* App instantiation */
 var app = express();
 var jsonParser = bodyParser.json({
@@ -181,9 +181,12 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             }
         })
         .then((result) => {
-            return res.send({
+            res.send({
                 message: "AI toggled for " + req.params.id
             });
+            publisher.publish('toggleAI', JSON.stringify(
+                { _id: req.params.id, nextAIState: req.body.ai  }
+            ));
         })
         .catch((err) => {
             next(err);
@@ -603,7 +606,7 @@ console.log(projId, obj, files, dataset, username);
                                 .then((resp) => {
                                     res.status(201);
                                     res.send(resp);
-                                    /* pub.publish('startExperiment', JSON.stringify(
+                                    /* publisher.publish('startExperiment', JSON.stringify(
                                         { _id: resp._id }
                                     )); */
                                 })
