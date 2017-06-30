@@ -59,6 +59,7 @@ class ExperimentFilters extends Component {
 						size="mini" 
 						compact
 						content="Reset filters"
+						type="button"
 						onClick={() => resetQuery()}
 					/>
 				</Form.Group>
