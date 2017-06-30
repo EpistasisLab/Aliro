@@ -1,21 +1,12 @@
 #DOCKER_REPO=localhost:5000/lab
-ifeq ($(LAB_HOST),)
-LAB_HOST := lab
-endif
-ifeq ($(LAB_PORT),)
-LAB_PORT := 5080
-endif
 ifeq ($(NETWORK),)
 NETWORK := pennai
 endif
-ifeq ($(MONGODB_URI),)
-MONGODB_URI := mongodb://dbmongo:27017/FGLab
+ifeq ($(MONGO_HOST),)
+MONGO_HOST :=  dbmongo
 endif
-ifeq ($(REDIS_HOST),)
-REDIS_HOST :=  redis
-endif
-ifeq ($(REDIS_PORT),)
-REDIS_PORT :=  6379
+ifeq ($(MONGO_PORT),)
+MONGO_PORT :=  27017
 endif
 ifeq ($(IFROOT),)
 IFROOT := /opt
@@ -24,9 +15,9 @@ ifeq ($(SHARE_PATH),)
 SHARE_PATH := /tmp
 endif
 
-DOCKER_REPO=${NETWORK}/${LAB_HOST}
+DOCKER_REPO=${NETWORK}/${MONGO_HOST}
 TAG=latest
-DOCKER_ARGS=-i -t -p ${LAB_PORT}:${LAB_PORT} -e FGLAB_PORT=${LAB_PORT} -e MONGODB_URI=${MONGODB_URI} -e IFROOT=${IFROOT} -e REDIS_HOST=${REDIS_HOST} -e REDIS_PORT=${REDIS_PORT} -h ${LAB_HOST} --name ${LAB_HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p 127.0.0.67:${MONGO_PORT}:${MONGO_PORT} -e IFROOT=${IFROOT} -h ${MONGO_HOST} --name ${MONGO_HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
