@@ -3,7 +3,8 @@ import { combineReducers } from 'redux-immutable';
 import { 
 	EXPERIMENTS_FETCH_REQUEST, 
 	EXPERIMENTS_FETCH_SUCCESS, 
-	EXPERIMENTS_FETCH_FAILURE
+	EXPERIMENTS_FETCH_FAILURE,
+	EXPERIMENT_ADD
 } from './actions';
 
 const getById = (state) => 
@@ -17,6 +18,8 @@ const byId = (state = Map(), action) => {
 				newExperiments[experiment._id] = experiment;
 			});
 			return state.merge(newExperiments);
+		case EXPERIMENT_ADD:
+			return state.merge(action.experiment[0]._id, action.experiment[0]);
 		default:
 			return state;
 	}
@@ -30,6 +33,8 @@ const allIds = (state = List(), action) => {
 		case EXPERIMENTS_FETCH_SUCCESS:
 			const newExperiments = action.response.map(experiment => experiment['_id']);
 			return state.merge(newExperiments);
+		case EXPERIMENT_ADD:
+			return state.push(action.experiment[0]._id);
 		default:
 			return state;
 	}
@@ -104,12 +109,10 @@ const sortBy = (sort) => (a, b) => {
 		return direction === 'ascending' ? (A - B) : (B - A);
 	} else if(typeof(A) === 'string' && typeof(B) === 'string') {
 		A = A.toUpperCase(), B = B.toUpperCase();
-		let result = direction === 'ascending' ? (
-			A > B ? 1 : A < B ? -1 : 0
-		) : (
-			B > A ? 1 : B < A ? -1 : 0
-		);
-		return result;
+		return alphabetize(A, B, direction);
+	} else if(typeof(A) === 'boolean' && typeof(B) === 'boolean') {
+		A = A.toString().toUpperCase(), B = B.toString().toUpperCase();
+		return alphabetize(A, B, direction);
 	} else if(typeof(A) !== typeof(B)) {
 		if(!A) {
 			return Number.POSITIVE_INFINITY;
@@ -121,7 +124,15 @@ const sortBy = (sort) => (a, b) => {
 			return direction === 'ascending' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
 		}
 	}
-}
+};
+
+const alphabetize = (A, B, direction) => {
+	return direction === 'ascending' ? (
+			A > B ? 1 : A < B ? -1 : 0
+		) : (
+			B > A ? 1 : B < A ? -1 : 0
+		);
+};
 
 export const getFilters = (state, query) => {
 	const allExperiments = getAllExperiments(state);

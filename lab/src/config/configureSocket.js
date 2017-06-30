@@ -1,4 +1,6 @@
 import io from 'socket.io-client';
+import { addExperiment } from '../components/Experiments/data/actions.js';
+
 import { 
 	AI_TOGGLE_SUCCESS,
 	AI_TOGGLE_UPDATE
@@ -19,6 +21,10 @@ export const socketMiddleware = (store) => {
 
 const configureSocket = (store) => {
 	socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
+
+  socket.on('startExperiment', data => {
+    addExperiment(JSON.parse(data))(store.dispatch);
+  });
 
 	socket.on('toggleAI', data => {
     store.dispatch({
