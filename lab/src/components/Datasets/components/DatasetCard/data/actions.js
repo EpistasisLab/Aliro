@@ -36,3 +36,11 @@ export const toggleAI = (id, nextAIState) => (dispatch, getState) => {
 		}
 	);
 };
+
+export const updateAIToggle = (id, nextAIState) => (dispatch) => {
+  dispatch({
+    type: AI_TOGGLE_UPDATE,
+    id,
+    nextAIState
+  });
+};
