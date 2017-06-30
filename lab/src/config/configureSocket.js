@@ -1,20 +1,15 @@
 import io from 'socket.io-client';
+import { updateAIToggle }from '../components/Datasets/components/DatasetCard/data/actions.js';
 import { addExperiment } from '../components/Experiments/data/actions.js';
-
-import { 
-	AI_TOGGLE_SUCCESS,
-	AI_TOGGLE_UPDATE
- } from '../components/Datasets/components/DatasetCard/data/actions.js';
 
 let socket = null;
 
 export const socketMiddleware = (store) => {
   return next => action => {
     const result = next(action);
-    if(socket && action.type === AI_TOGGLE_SUCCESS) {
+    /*if(socket && action.type === AI_TOGGLE_SUCCESS) {
      	socket.emit('toggleAI', action);
-    }
-    
+    }*/
     return result;
   };
 };
@@ -22,16 +17,13 @@ export const socketMiddleware = (store) => {
 const configureSocket = (store) => {
 	socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
 
-  socket.on('startExperiment', data => {
-    addExperiment(JSON.parse(data))(store.dispatch);
+  socket.on('toggleAI', data => {
+    const parsed = JSON.parse(data);
+    updateAIToggle(parsed._id, parsed.nextAIState)(store.dispatch);
   });
 
-	socket.on('toggleAI', data => {
-    store.dispatch({
-    	type: AI_TOGGLE_UPDATE,
-    	id: data.id,
-    	nextAIState: data.nextAIState
-    });
+  socket.on('startExperiment', data => {
+    addExperiment(JSON.parse(data))(store.dispatch);
   });
 };
 
