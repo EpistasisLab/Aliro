@@ -63,10 +63,13 @@ var annotate_dataset = function(dataset) {
                     }
                 }
                 if (!("ai" in dataset) || (validation['ai'] == null)) {
-                    validation['ai'] = false;
+                    validation['ai'] = 'off';
+                } else if (dataset['ai'] == true) {
+                    validation['ai'] = 'on';
+                } else if (dataset['ai'] == false) {
+                    validation['ai'] = 'off';
                 } else {
-                   if (validation['ai'] == 'finished');
-                    validation['ai'] = true;
+                    validation['ai'] = dataset['ai'];
                 }
 
                 validation['has_metadata'] = true;

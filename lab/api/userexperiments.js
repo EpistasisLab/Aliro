@@ -1,31 +1,37 @@
 require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
-var format_experiments = function(experiments,algorithms,datasets) {
-ret_experiments = []
-for (var _id in experiments) {
-experiment = experiments[_id];
-new_experiment = {};
-new_experiment['_id'] = experiment['_id'];
-new_experiment['status'] = experiment['_status'];
-new_experiment['notification'] =  null;
-new_experiment['accuracy_score'] =  null;
-if(datasets[experiment['_dataset_id']]) {
-new_experiment['dataset'] = datasets[experiment['_dataset_id']]['name'];
-} else {
-new_experiment['dataset'] = null;
-}
-//experiment['dataset'] = datasets[experiment['_dataset_id']]['name'];
-new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
-new_experiment['params'] = experiment['_options'];
-if(experiment['_scores']  && experiment['_scores']['accuracy_score']) {
-new_experiment['accuracy_score'] = experiment['_scores']['accuracy_score'];
-}
-new_experiment['launched_by'] = experiment['username'];
-//experiments[_id] = experiment;
-ret_experiments.push(new_experiment);
-}
-return(ret_experiments);
+var format_experiments = function(experiments, algorithms, datasets) {
+    ret_experiments = []
+    for (var _id in experiments) {
+        experiment = experiments[_id];
+        new_experiment = {};
+        //todo make this a loop
+        new_experiment['_id'] = experiment['_id'];
+        new_experiment['status'] = experiment['_status'];
+        new_experiment['started'] = experiment['_started'];
+        new_experiment['finished'] = experiment['_finished'];
+        new_experiment['notification'] = experiment['notification'];
+        if (datasets[experiment['_dataset_id']]) {
+            new_experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
+            new_experiment['dataset_id'] = experiment['_dataset_id'];
+            new_experiment['dataset_files'] = datasets[experiment['_dataset_id']]['files'];
+            for (file in datasets[experiment['_dataset_id']]['files']) {
+                file_id = datasets[experiment['_dataset_id']]['files'][file]['_id'];
+            }
+        }
+        if (experiment['files']) {
+            new_experiment['experiment_files'] = experiment['files'];
+        }
+        new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
+        new_experiment['params'] = experiment['_options'];
+        if (experiment['_scores']) {
+            new_experiment['scores'] = experiment['_scores'];
+        }
+        new_experiment['launched_by'] = experiment['username'];
+        ret_experiments.push(new_experiment);
+    }
+    return (ret_experiments);
 }
 
 //return a list of datasets for each user
@@ -46,10 +52,10 @@ exports.responder = function(req, res) {
         [{
             $match: query
         }, {
-                "$unwind": {
-                    path: "$algorithms",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
             $lookup: {
                 from: "datasets",
@@ -72,20 +78,20 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
-                "$unwind": {
-                    path: "$algorithms",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
-                "$unwind": {
-                    path: "$datasets",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$datasets",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
-                "$unwind": {
-                    path: "$experiments",
-                    preserveNullAndEmptyArrays: true
-                }
+            "$unwind": {
+                path: "$experiments",
+                preserveNullAndEmptyArrays: true
+            }
         }, {
             $group: {
                 _id: "$_id",
@@ -107,22 +113,22 @@ exports.responder = function(req, res) {
             var experiments = api.convert_to_dict(user['experiments']);
             var datasets = api.convert_to_dict(user['datasets']);
             var keyed_experiments = api.group_on_key(experiments, '_dataset_id')
-            var formatted_experiments = format_experiments(experiments,algorithms,datasets);
-/*
-            var datasets = api.convert_to_dict(user['datasets']);
-            for (_id in experiments) {
-                var experiment = experiments[_id];
-                var algorithm_id = experiment['_project_id']
-                var algorithm = algorithms[algorithm_id]
-                experiments[_id]['algorithm'] = algorithm;
-            }
-            for (_id in datasets) {
-                if (keyed_experiments[_id] !== undefined) {
-                    datasets[_id]['experiments'] = keyed_experiments[_id];
-                }
-                retArray.push(api.annotate_dataset(datasets[_id]));
-            }
-*/
+            var formatted_experiments = format_experiments(experiments, algorithms, datasets);
+            /*
+                        var datasets = api.convert_to_dict(user['datasets']);
+                        for (_id in experiments) {
+                            var experiment = experiments[_id];
+                            var algorithm_id = experiment['_project_id']
+                            var algorithm = algorithms[algorithm_id]
+                            experiments[_id]['algorithm'] = algorithm;
+                        }
+                        for (_id in datasets) {
+                            if (keyed_experiments[_id] !== undefined) {
+                                datasets[_id]['experiments'] = keyed_experiments[_id];
+                            }
+                            retArray.push(api.annotate_dataset(datasets[_id]));
+                        }
+            */
             res.send(formatted_experiments);
 
         }
