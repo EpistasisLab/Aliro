@@ -67,7 +67,7 @@ body {
 }
 
 .pennai .dataset-card .panel-body {
-    min-height: 115px;
+    min-height: 132px;
 }
 
 .pennai .dataset-card .best-result.ui.segment:hover {

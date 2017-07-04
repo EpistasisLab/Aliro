@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
-	getDatasets, 
+	getAllDatasets, 
 	getIsFetching, 
 	getErrorMessage 
 } from './data';
@@ -28,7 +28,7 @@ class DatasetsContainer extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	datasets: getDatasets(state),
+	datasets: getAllDatasets(state),
 	isFetching: getIsFetching(state),
 	errorMessage: getErrorMessage(state)
 });
