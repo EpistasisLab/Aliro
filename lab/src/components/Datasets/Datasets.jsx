@@ -46,9 +46,9 @@ class Datasets extends Component {
 				desktop={3}
 				lgscreen={4}
 			>
-				{datasets.entrySeq().map(([id, dataset]) =>
+				{datasets.map(dataset =>
 					<DatasetCard
-						key={id}
+						key={dataset.get('_id')}
 						dataset={dataset}
 					/>
 				)}
