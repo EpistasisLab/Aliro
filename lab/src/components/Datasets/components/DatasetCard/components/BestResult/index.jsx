@@ -15,7 +15,7 @@ class BestResult extends Component {
 	}
 
 	getSubheader(result) {
-		return `${result.get('algorithm')} (#${result.get('_id')})`;
+		return `${result.get('algorithm')} #${result.get('_id')}`;
 	}
 
 	getPercent(result) {
@@ -44,12 +44,13 @@ class BestResult extends Component {
 				href={this.getResultLink(result)}
 				className="panel-body best-result"
 			>
-				<Header 
-					inverted
-					size="small"
-					content="Best Result"
-					subheader={this.getSubheader(result)}
-				/>
+				<Header inverted size="small">
+					Best Result
+					<Header.Subheader>
+						<div>{result.get('algorithm')}</div>
+						<span>#{result.get('_id')}</span>
+					</Header.Subheader>
+				</Header>
 				<Progress 
 					inverted
 					progress
