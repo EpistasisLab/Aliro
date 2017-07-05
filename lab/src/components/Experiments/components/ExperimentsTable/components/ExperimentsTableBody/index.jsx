@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Icon, Popup, Dropdown } from 'semantic-ui-react';
+import moment from 'moment';
 
 class ExperimentsTableBody extends Component {
 	getExperimentLink(experiment) {
@@ -11,6 +12,10 @@ class ExperimentsTableBody extends Component {
 		} else {
 			return `/#/results/${id}`;
 		}
+	}
+
+	getFormattedDate(date) {
+		return moment(date).format('M/DD/YY h:mm a');
 	}
 
 	renderStatusIcon(status) {
@@ -70,28 +75,31 @@ class ExperimentsTableBody extends Component {
 						key={experiment.get('_id')}
 						className={experiment.get('notification')}
 					>
-						<Table.Cell selectable width={3}>
+						<Table.Cell selectable>
 							<a href={this.getExperimentLink(experiment)}>
-								{this.renderStatusIcon(experiment.get('status'))} #{experiment.get('_id')}
+								{this.renderStatusIcon(experiment.get('status'))} 
+								{this.getFormattedDate(experiment.get('started'))}
 							</a>	
 						</Table.Cell>
 						{shouldDisplayQuality ? (
-							<Table.Cell selectable width={2}>
+							<Table.Cell selectable>
 								<a href={this.getExperimentLink(experiment)}>
 									{experiment.get('quality_metric').toFixed(2)}
 								</a>	
 							</Table.Cell>
 						) : (
-							<Table.Cell selectable width={2}>
+							<Table.Cell selectable>
 								<a href={this.getExperimentLink(experiment)}>
-									{experiment.get('accuracy_score') ? experiment.get('accuracy_score').toFixed(2) : '-'}
+									{experiment.getIn(['scores', 'accuracy_score']) ? 
+										experiment.getIn(['scores', 'accuracy_score']).toFixed(2) : '-'
+									}
 									{shouldDisplayAwards && this.renderAwardPopup(experiment)}
 								</a>	
 							</Table.Cell>
 						)}
-						<Table.Cell selectable width={3}>
+						<Table.Cell selectable>
 							<a href={this.getExperimentLink(experiment)}>
-								{experiment.get('dataset')}
+								{experiment.get('dataset_name')}
 							</a>	
 						</Table.Cell>
 						{shouldDisplayParams ? (
@@ -103,13 +111,13 @@ class ExperimentsTableBody extends Component {
 								</Table.Cell>
 							)
 						) : (
-							<Table.Cell selectable width={5}>
+							<Table.Cell selectable>
 								<a href={this.getExperimentLink(experiment)}>
 									{experiment.get('algorithm')}
 								</a>	
 							</Table.Cell>	
 						)}
-						<Table.Cell width={1} textAlign="center">
+						<Table.Cell textAlign="center">
 							<Dropdown 
 								pointing="top right" 
 								icon={<Icon inverted color="grey" size="large" name="caret down" />}
