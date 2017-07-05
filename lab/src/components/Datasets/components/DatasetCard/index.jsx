@@ -41,7 +41,7 @@ class DatasetCard extends Component {
 					hasMetadata={dataset.get('has_metadata')}
 				/>
 				<ExperimentStatus
-					filter={dataset.get('name')}
+					filter={dataset.get('_id')}
 					experiments={dataset.get('experiments')}
 					notifications={dataset.get('notifications')}
 				/>

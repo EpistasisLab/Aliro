@@ -42,7 +42,7 @@ class ExperimentStatus extends Component {
 							</a>	
 						</Table.Cell>
 						<Table.Cell selectable textAlign="center">
-							<a href={filterLink + 'finished'}>
+							<a href={filterLink + 'success'}>
 								<Header inverted size="tiny">
 									{experiments.get('finished')}<br />
 									results
