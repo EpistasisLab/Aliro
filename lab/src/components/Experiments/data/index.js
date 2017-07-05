@@ -1,11 +1,20 @@
 import { List, Map } from 'immutable';
 import { combineReducers } from 'redux-immutable';
+import { createSelector } from 'reselect';
 import { 
 	EXPERIMENTS_FETCH_REQUEST, 
 	EXPERIMENTS_FETCH_SUCCESS, 
 	EXPERIMENTS_FETCH_FAILURE,
 	EXPERIMENT_ADD
 } from './actions';
+
+// cleanup getfilters function
+// alphabetize datasets and algorithms in filters
+// make sure on click doesnt rerun change if same
+// why does changing filter cause two updates?
+// use selectors throughout app
+// make table filters reponsive
+// stylize table scrollbar
 
 const getById = (state) => 
 	state.getIn(['experiments', 'byId']);
@@ -79,21 +88,94 @@ const experiments = combineReducers({
 
 export default experiments;
 
-const getAllExperiments = (state) =>
-	getAllIds(state).sort().reverse().map(id => getById(state).get(id));
+// transform selectors
+const getAllExperiments = createSelector(
+	[getAllIds, getById],
+	(allIds, byId) => 
+		allIds.sort().reverse().map(id => byId.get(id))
+);
 
-export const getVisibleExperiments = (state, filters, sort) => {
-	return getAllExperiments(state)
-		.filter(filterBy(filters))
-		.sort(sortBy(sort));
-};
+const getQuery = (state, props) => props.location.query;
+
+export const getFilters = createSelector(
+	[getAllExperiments, getQuery],
+	(allExperiments, query) => {
+
+		const filterKeys = [
+			{ key: 'status',    keyPath: ['status'], textPath: ['status'], valuePath: ['status'] },
+			{ key: 'dataset',   keyPath: ['dataset_name'], textPath: ['dataset_name'], valuePath: ['dataset_id']  },
+			{ key: 'algorithm', keyPath: ['algorithm'], textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
+		];
+
+		//let filters = {};
+		let test = {};
+
+		// initalize options as array for each filter
+		filterKeys.forEach((filter) => {
+			test[filter.key] = {};
+			test[filter.key].values = [];
+			test[filter.key].options = [];
+		});
+
+		// get all possible filter options
+		allExperiments.forEach((exp) => {
+			filterKeys.forEach((filter) => {
+				if(!test[filter.key].values.includes(exp.getIn(filter.valuePath))) {
+					test[filter.key].values.push(exp.getIn(filter.valuePath));
+
+					test[filter.key].options.push({ 
+						text: exp.getIn(filter.textPath), 
+						value: exp.getIn(filter.valuePath) 
+					});
+				}
+			});
+		});
+
+		filterKeys.forEach((filter) => {
+			test[filter.key].options.unshift({
+				text: 'all',
+				value: 'all'
+			});
+
+			test[filter.key].selected = test[filter.key].values.includes(query[filter.key]) ? query[filter.key] : 'all';
+		});
+
+		/*let filters = {};
+		filterKeys.forEach((filter) => {
+			let options = getUniqOptions(allExperiments, filter.keyPath);
+			let selected = options.includes(query[filter.key]) ? query[filter.key] : 'all';
+
+			filters[filter.key] = {options, selected};
+		});*/
+
+		return test;
+	}
+);
+
+export const getSort = createSelector(
+	[getQuery],
+	(query) => ({
+		column: query.col || null,
+		direction: query.direction || null
+	})
+);
+
+export const getVisibleExperiments = createSelector(
+		[getAllExperiments, getFilters, getSort],
+		(allExperiments, filters, sort) => {
+		//console.log(filters);
+		return allExperiments
+			.filter(filterBy(filters))
+			.sort(sortBy(sort))
+	}
+);
 
 const filterBy = (filters) => (experiment) => {
 	const { status, dataset, algorithm  } = filters;
 
 	return (
 		(status.selected    === 'all' || status.selected    === experiment.get('status')) &&
-		(dataset.selected   === 'all' || dataset.selected   === experiment.get('dataset')) &&
+		(dataset.selected   === 'all' || dataset.selected   === experiment.get('dataset_id')) &&
 		(algorithm.selected === 'all' || algorithm.selected === experiment.get('algorithm'))
 	);
 };
@@ -133,31 +215,3 @@ const alphabetize = (A, B, direction) => {
 			B > A ? 1 : B < A ? -1 : 0
 		);
 };
-
-export const getFilters = (state, query) => {
-	const allExperiments = getAllExperiments(state);
-
-	const filterKeys = [
-		{ key: 'status',    keyPath: ['status'] },
-		{ key: 'dataset',   keyPath: ['dataset'] },  // ['dataset', '_id']
-		{ key: 'algorithm', keyPath: ['algorithm'] } // ['algorithm', '_id']
-	];
-
-	let filters = {};
-	filterKeys.forEach((filter) => {
-		let options = getUniqOptions(allExperiments, filter.keyPath);
-		let selected = options.includes(query[filter.key]) ? query[filter.key] : 'all';
-
-		filters[filter.key] = {options, selected};
-	});
-
-	return filters;
-};
-
-const getUniqOptions = (items, keyPath) =>
-	[...new Set(items.map(item => item.getIn(keyPath)))];
-
-export const getSort = (query) => ({
-	column: query.col || null,
-	direction: query.direction || null
-});
