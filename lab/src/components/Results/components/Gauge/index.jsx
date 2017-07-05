@@ -40,6 +40,7 @@ export class Gauge extends React.Component {
 
 	render() {
 		const { chartName, color, value } = this.props;
+		console.log(this.props);
 		this.renderChart(chartName, color, value);
 		return (
       <div className={chartName}></div>
