@@ -238,15 +238,15 @@ body {
     margin-bottom: 2rem;
 }
 
-/*.table-container {
+.table-container {
     width: 100%;
     overflow-y: auto;
     margin: 0 0 1em;
 }
 
 .table-container .table {
-    min-width: 1000px;
-}*/
+    min-width: 650px;
+}
 
 .pennai .ui.menu .link.active > .item {
     background-color: rgba(0,0,0,.1)!important;

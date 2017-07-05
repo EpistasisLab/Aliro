@@ -1,5 +1,6 @@
 import { List, Map } from 'immutable';
 import { combineReducers } from 'redux-immutable';
+import { createSelector } from 'reselect';
 import { 
 	DATASETS_FETCH_REQUEST, 
 	DATASETS_FETCH_SUCCESS, 
@@ -13,7 +14,7 @@ const delegator = delegateTo([
 	{ prefix: DATASET_PREFIX, reducer: dataset }
 ]);
 
-export const getById = (state) => 
+const getById = (state) => 
 	state.getIn(['datasets', 'byId']);
 
 const byId = (state = Map(), action) => {
@@ -79,9 +80,13 @@ const datasets = combineReducers({
 	errorMessage
 });
 
-export const getAllDatasets = (state) =>
-	getAllIds(state)
-		.map(id => getById(state).get(id))
-		.sort((a, b) => a.get('name').toUpperCase() > b.get('name').toUpperCase());
+// transform selectors
+export const getAllDatasets = createSelector(
+	[getAllIds, getById],
+	(allIds, byId) => 
+		allIds
+			.map(id => byId.get(id))
+			.sort((a, b) => a.get('name').toUpperCase() > b.get('name').toUpperCase())
+);
 
 export default datasets;
