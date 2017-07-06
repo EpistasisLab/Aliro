@@ -14,6 +14,19 @@ export const get = (route) => {
     .then(json => json);
 }
 
+export const getFile = (route) => {
+	return fetch(route, {
+		credentials: 'include'
+  })
+    .then(response => {
+      if(response.status >= 400) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }  
+      return response.blob();
+    })
+    .then(json => json);
+}
+
 export const post = (route, body) => {
 	let myHeaders = new Headers();
 	myHeaders.append('Content-Type', 'application/json');

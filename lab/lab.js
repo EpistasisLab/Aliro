@@ -184,9 +184,13 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             res.send({
                 message: "AI toggled for " + req.params.id
             });
-            publisher.publish('toggleAI', JSON.stringify(
-                { _id: req.params.id, nextAIState: req.body.ai  }
-            ));
+
+            // only publish if publisher is available
+            if(publisher) {
+                publisher.publish('toggleAI', JSON.stringify(
+                    { _id: req.params.id, nextAIState: req.body.ai  }
+                ));
+            }
         })
         .catch((err) => {
             next(err);
