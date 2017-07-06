@@ -17,7 +17,7 @@ export class Gauge extends React.Component {
 				gauge: {
 					label: {
 						format: function(value, ratio) {
-							return value;
+							return value.toFixed(2);
 						},
 						show: true
 					},
@@ -40,10 +40,9 @@ export class Gauge extends React.Component {
 
 	render() {
 		const { chartName, color, value } = this.props;
-		console.log(this.props);
 		this.renderChart(chartName, color, value);
 		return (
-      <div className={chartName}></div>
+      <div className={`gauge ${chartName}`}></div>
 		);
 	}
 }
