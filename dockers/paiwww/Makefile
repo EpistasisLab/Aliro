@@ -1,15 +1,8 @@
+include ../Makevars
+HOST=${WEB_HOST}
 TAG=latest
-ifeq ($(WEB_HOST),)
-WEB_HOST := paiwww
-endif
-ifeq ($(NETWORK),)
-NETWORK := pennai
-endif
-ifeq ($(SHARE_PATH),)
-SHARE_PATH := /tmp 
-endif
-DOCKER_REPO=${NETWORK}/${WEB_HOST}
-DOCKER_ARGS=-i -t -p 443:443 --hostname ${WEB_HOST} --name ${WEB_HOST} --net ${NETWORK}
+DOCKER_REPO=${NETWORK}/${HOST}
+DOCKER_ARGS=-i -t -p ${IP}:443:443 --hostname ${HOST} --name ${HOST} --net ${NETWORK}
 
 
 build:
