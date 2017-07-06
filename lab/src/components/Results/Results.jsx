@@ -54,7 +54,7 @@ class Results extends Component {
 
 		return (
 			<div className="results-scene">
-				<Grid columns={3}>
+				<Grid columns={3} stackable>
 					<Grid.Row stretched>
 						<Grid.Column>
 							<Segment inverted attached="top" className="panel-header">
@@ -168,7 +168,7 @@ class Results extends Component {
 							<Segment inverted attached="bottom">	
 								<Gauge 
 									chartName="training" 
-									color="#AEA8D3"
+									color="#7D5BA6"
 									value={results.getIn(['scores', 'train_score'])}
 								/>
 							</Segment>
@@ -184,7 +184,7 @@ class Results extends Component {
 							<Segment inverted attached="bottom">	
 								<Gauge 
 									chartName="testing" 
-									color="#2ABB9B"
+									color="#55D6BE"
 									value={results.getIn(['scores', 'test_score'])}
 								/>
 							</Segment>
