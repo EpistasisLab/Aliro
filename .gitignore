@@ -14,3 +14,7 @@ machine/datasets/byuser/*
 lab/www/*.js
 lab/www/*.json
 bigfiles/
+dockers/Makevars
+dockers/paiwww/files/certs
+dockers/paiwww/files/htpasswd
+tmp/

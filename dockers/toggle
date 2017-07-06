@@ -1,15 +1,13 @@
 #!/bin/bash
 #DPL 
 basedir=`pwd`
+NETWORK=pennai
 # load variables from vars file
-. $basedir/vars
-if [ "$1" != "" ] ; then
-   echo "running shared env:"
-   echo "container:/share/devel->host:$1"
-   export SHARE_PATH=$1;
-   export IFROOT=$1;
+if [ "$1" == "shared" ] ; then
+   echo "running shared environment"
    cmd='createshared';
 else
+   echo "running standalone environment"
    cmd='create'
 fi;
 
