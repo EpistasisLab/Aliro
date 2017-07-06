@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import FetchError from '../FetchError';
 import { Gauge } from './components/Gauge';
-import { Header, Grid, Segment, Icon } from 'semantic-ui-react';
+import { Header, Grid, Segment, Icon, Image } from 'semantic-ui-react';
 import moment from 'moment';
 import twix from 'twix';
 
@@ -22,7 +22,9 @@ class Results extends Component {
 			results,
 			isFetching,
 			errorMessage,
-			fetchResults
+			fetchResults,
+			confusionMatrix,
+			rocCurve
 		} = this.props;
 
 		if(errorMessage) {
@@ -52,131 +54,73 @@ class Results extends Component {
 
 		return (
 			<div className="results-scene">
-				<Grid columns={4}>
+				<Grid columns={3}>
 					<Grid.Row stretched>
-						<Segment inverted attached="top" className="panel-header">
-							<Header inverted size="medium" content="Algorithm" />
-						</Segment>
-						<Segment inverted attached="bottom">	
-							<Header inverted size="small" content={results.get('algorithm')} />
+						<Grid.Column>
+							<Segment inverted attached="top" className="panel-header">
+								<Header inverted size="medium" content="Algorithm" />
+							</Segment>
+							<Segment inverted attached="bottom">	
+								<Header inverted size="small" content={results.get('algorithm')} />
+									<Grid columns={2}>
+									{results.get('params').entrySeq().map(([param, value]) =>
+										<Grid.Column key={param}>
+											<Header
+												inverted
+												size="tiny"
+												color="grey"
+												content={param}
+												subheader={value.toString()}
+											/>
+										</Grid.Column>
+									)}
+								</Grid>
+							</Segment>
+							<Segment inverted attached="top" className="panel-header">
+								<Header inverted size="medium" content="Run Details" />
+							</Segment>
+							<Segment inverted attached="bottom">	
 								<Grid columns={2}>
-								{results.get('params').entrySeq().map(([param, value]) =>
-									<Grid.Column key={param}>
-										<Header
-											inverted
-											size="tiny"
-											color="grey"
-											content={param}
-											subheader={value.toString()}
+									<Grid.Column>
+										<Header 
+											inverted 
+											color="grey" 
+											size="tiny" 
+											content="Started" 
+											subheader={this.getFormattedDate(results.get('started'))}
 										/>
 									</Grid.Column>
-								)}
-							</Grid>
-						</Segment>
-						<Segment inverted attached="top" className="panel-header">
-							<Header inverted size="medium" content="Run Details" />
-						</Segment>
-						<Segment inverted attached="bottom">	
-							<Grid columns={2}>
-								<Grid.Column>
-									<Header 
-										inverted 
-										color="grey" 
-										size="tiny" 
-										content="Started" 
-										subheader={this.getFormattedDate(results.get('_started'))}
-									/>
-								</Grid.Column>
-								<Grid.Column>
-									<Header 
-										inverted 
-										color="grey" 
-										size="tiny" 
-										content="Finished"
-										subheader={this.getFormattedDate(results.get('_finished'))}
-									/>
-								</Grid.Column>
-								<Grid.Column>
-									<Header 
-										inverted 
-										color="grey" 
-										size="tiny" 
-										content="Duration"
-										subheader={this.getDuration(
-											results.get('_started'), 
-											results.get('_finished')
-										)}
-									/>
-								</Grid.Column>
-								<Grid.Column>
-									<Header 
-										inverted 
-										color="grey" 
-										size="tiny" 
-										content="Launched By"
-										subheader={results.get('launched_by')}
-									/>
-								</Grid.Column>
-								</Grid>
-								</Segment>
-				</Grid.Row>
-				</Grid>
-			</div>
-		);
-			
-		/*return (
-				<Grid columns={4}>
-					<Grid.Row stretched>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Run Details" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Grid columns={2}>
 									<Grid.Column>
-										<Header inverted color="grey" size="tiny" content="Started" />
-										{started}
+										<Header 
+											inverted 
+											color="grey" 
+											size="tiny" 
+											content="Finished"
+											subheader={this.getFormattedDate(results.get('finished'))}
+										/>
 									</Grid.Column>
 									<Grid.Column>
-										<Header inverted color="grey" size="tiny" content="Finished" />
-										{finished}
+										<Header 
+											inverted 
+											color="grey" 
+											size="tiny" 
+											content="Duration"
+											subheader={this.getDuration(
+												results.get('started'), 
+												results.get('finished')
+											)}
+										/>
 									</Grid.Column>
 									<Grid.Column>
-										<Header inverted color="grey" size="tiny" content="Duration" />
-										{duration}
-									</Grid.Column>
-									<Grid.Column>
-										<Header inverted color="grey" size="tiny" content="Who?" />
-										{renderWhoIcon()}
+										<Header 
+											inverted 
+											color="grey" 
+											size="tiny" 
+											content="Launched By"
+											subheader={results.get('launched_by')}
+										/>
 									</Grid.Column>
 								</Grid>
-							</Segment>
-						</Grid.Column>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="ROC Curve" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								
-							</Segment>
-
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Predictive Features" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								
 							</Segment>
 						</Grid.Column>
 						<Grid.Column>
@@ -188,18 +132,45 @@ class Results extends Component {
 								/>
 							</Segment>
 							<Segment inverted attached="bottom">	
-								
+								{confusionMatrix ? (
+									<Image src={confusionMatrix} />
+								) : (
+									<span>Not available</span>
+								)}
 							</Segment>
-							
+						</Grid.Column>
+						<Grid.Column>	
 							<Segment inverted attached="top" className="panel-header">
 								<Header 
 									inverted
 									size="medium"
-									content="Decision Tree" 
+									content="ROC Curve" 
 								/>
 							</Segment>
 							<Segment inverted attached="bottom">	
-								
+								{rocCurve ? (
+									<Image src={rocCurve} />
+								) : (
+									<span>Not available</span>
+								)}
+							</Segment>
+						</Grid.Column>
+					</Grid.Row>
+					<Grid.Row>
+						<Grid.Column>
+							<Segment inverted attached="top" className="panel-header">
+								<Header 
+									inverted
+									size="medium"
+									content="Training Accuracy" 
+								/>
+							</Segment>
+							<Segment inverted attached="bottom">	
+								<Gauge 
+									chartName="training" 
+									color="#AEA8D3"
+									value={results.getIn(['scores', 'train_score'])}
+								/>
 							</Segment>
 						</Grid.Column>
 						<Grid.Column>
@@ -213,26 +184,12 @@ class Results extends Component {
 							<Segment inverted attached="bottom">	
 								<Gauge 
 									chartName="testing" 
-									color="#AEA8D3"
-									value={details.getIn(['scores', 'testing_accuracy'])}
-								/>
-							</Segment>
-
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Training Accuracy" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Gauge 
-									chartName="training" 
 									color="#2ABB9B"
-									value={details.getIn(['scores', 'training_accuracy'])} 
+									value={results.getIn(['scores', 'test_score'])}
 								/>
 							</Segment>
-
+						</Grid.Column>
+						<Grid.Column>
 							<Segment inverted attached="top" className="panel-header">
 								<Header 
 									inverted
@@ -242,15 +199,16 @@ class Results extends Component {
 							</Segment>
 							<Segment inverted attached="bottom">	
 								<Gauge 
-									chartName="auc"
+									chartName="auc" 
 									color="#59ABE3"
-									value={details.getIn(['scores', 'AUC'])} 
+									value={results.getIn(['scores', 'roc_auc_score'])}
 								/>
 							</Segment>
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
-		);*/
+			</div>
+		);
 	}
 }
 
