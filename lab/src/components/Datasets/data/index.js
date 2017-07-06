@@ -1,5 +1,6 @@
 import { List, Map } from 'immutable';
 import { combineReducers } from 'redux-immutable';
+import { createSelector } from 'reselect';
 import { 
 	DATASETS_FETCH_REQUEST, 
 	DATASETS_FETCH_SUCCESS, 
@@ -13,7 +14,7 @@ const delegator = delegateTo([
 	{ prefix: DATASET_PREFIX, reducer: dataset }
 ]);
 
-export const getDatasets = (state) => 
+const getById = (state) => 
 	state.getIn(['datasets', 'byId']);
 
 const byId = (state = Map(), action) => {
@@ -26,6 +27,19 @@ const byId = (state = Map(), action) => {
 			return state.merge(newDatasets);
 		default:
 			return delegator(state, action) || state;
+	}
+};
+
+const getAllIds = (state) => 
+	state.getIn(['datasets', 'allIds']);
+
+const allIds = (state = List(), action) => {
+	switch(action.type) {
+		case DATASETS_FETCH_SUCCESS:
+			const newDatasets = action.response.map(dataset => dataset['_id']);
+			return state.merge(newDatasets);
+		default:
+			return state;
 	}
 };
 
@@ -61,8 +75,18 @@ const errorMessage = (state = null, action) => {
 
 const datasets = combineReducers({
 	byId,
+	allIds,
 	isFetching,
 	errorMessage
 });
+
+// transform selectors
+export const getAllDatasets = createSelector(
+	[getAllIds, getById],
+	(allIds, byId) => 
+		allIds
+			.map(id => byId.get(id))
+			.sort((a, b) => a.get('name').toUpperCase() > b.get('name').toUpperCase())
+);
 
 export default datasets;

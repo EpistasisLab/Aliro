@@ -35,10 +35,10 @@ class ExperimentsTableHeader extends Component {
 				<Table.Row>
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={this.getIsSorted('_id')}
-						onClick={() => this.onSort('_id')}
+						sorted={this.getIsSorted('started')}
+						onClick={() => this.onSort('started')}
 					>
-						Id #
+						Start Time
 					</Table.HeaderCell>
 					{shouldDisplayQuality ? (
 						<Table.HeaderCell 
