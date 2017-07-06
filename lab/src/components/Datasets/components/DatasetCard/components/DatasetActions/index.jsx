@@ -26,7 +26,7 @@ class DatasetActions extends Component {
 
 		const aiState = dataset.get('ai');
 
-		const aiLabelText = aiState === 'requested' ? 'AI requested' : aiState ? 'AI on' : 'AI off';
+		const aiLabelText = aiState === 'requested' ? 'AI req' : aiState ? 'AI on' : 'AI off';
 
 		const aiLabelClass = `ai-label ${aiState ? 'on' : 'off' }`;
 
