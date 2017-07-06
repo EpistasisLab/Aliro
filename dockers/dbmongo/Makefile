@@ -1,23 +1,9 @@
 #DOCKER_REPO=localhost:5000/lab
-ifeq ($(NETWORK),)
-NETWORK := pennai
-endif
-ifeq ($(MONGO_HOST),)
-MONGO_HOST :=  dbmongo
-endif
-ifeq ($(MONGO_PORT),)
-MONGO_PORT :=  27017
-endif
-ifeq ($(IFROOT),)
-IFROOT := /opt
-endif
-ifeq ($(SHARE_PATH),)
-SHARE_PATH := /tmp
-endif
-
-DOCKER_REPO=${NETWORK}/${MONGO_HOST}
+include ../Makevars
+HOST=${MONGO_HOST}
+DOCKER_REPO=${NETWORK}/${HOST}
 TAG=latest
-DOCKER_ARGS=-i -t -p 127.0.0.67:${MONGO_PORT}:${MONGO_PORT} -e IFROOT=${IFROOT} -h ${MONGO_HOST} --name ${MONGO_HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p ${IP}:${MONGO_PORT}:${MONGO_PORT} -e IFROOT=${PROJECTS_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .

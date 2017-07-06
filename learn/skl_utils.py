@@ -52,6 +52,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 	save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
 
 def generate_results(model, input_file, tmpdir, _id):
+	print('loading..')
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 
 	# hard coded values for now (to be added as cmd line args later)
