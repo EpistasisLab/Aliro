@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { fmtAlg } from '../../../../utils/formatter';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
 
 class AlgorithmOptions extends Component {
@@ -37,7 +38,7 @@ class AlgorithmOptions extends Component {
 									active={this.getIsActive(algorithm)}
 									onClick={() => setCurrentAlgorithm(algorithm)}
 								>
-									{algorithm.get('name')}
+									{fmtAlg(algorithm.get('name'))}
 									<div className="param-count">
 										{algorithm.get('schema').size} parameters
 									</div>
