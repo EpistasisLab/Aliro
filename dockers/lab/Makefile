@@ -1,8 +1,32 @@
-include ../Makevars
-HOST=${LAB_HOST}
-DOCKER_REPO=${NETWORK}/${HOST}
+#DOCKER_REPO=localhost:5000/lab
+ifeq ($(LAB_HOST),)
+LAB_HOST := lab
+endif
+ifeq ($(LAB_PORT),)
+LAB_PORT := 5080
+endif
+ifeq ($(NETWORK),)
+NETWORK := pennai
+endif
+ifeq ($(DB_URI),)
+DB_URI := mongodb://db:27017/FGLab
+endif
+ifeq ($(REDIS_HOST),)
+REDIS_HOST :=  redis
+endif
+ifeq ($(REDIS_PORT),)
+REDIS_PORT :=  6379
+endif
+ifeq ($(IFROOT),)
+IFROOT := /opt
+endif
+ifeq ($(SHARE_PATH),)
+SHARE_PATH := /tmp
+endif
+
+DOCKER_REPO=${NETWORK}/${LAB_HOST}
 TAG=latest
-DOCKER_ARGS=-i -t -p ${IP}:${LAB_PORT}:${LAB_PORT} -e FGLAB_PORT=${LAB_PORT} -e MONGODB_URI=${MONGO_URI} -e IFROOT=${PROJECTS_ROOT} -e REDIS_HOST=${REDIS_HOST} -e REDIS_PORT=${REDIS_PORT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p ${LAB_PORT}:${LAB_PORT} -e FGLAB_PORT=${LAB_PORT} -e MONGODB_URI=${DB_URI} -e IFROOT=${IFROOT} -e REDIS_HOST=${REDIS_HOST} -e REDIS_PORT:${REDIS_PORT} -h ${LAB_HOST} --name ${LAB_HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
