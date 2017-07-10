@@ -1,8 +1,7 @@
-include ../Makevars
-HOST=${REDIS_HOST}
-DOCKER_REPO=${NETWORK}/${HOST}
+#DOCKER_REPO=localhost:5000/lab
+DOCKER_REPO=pennai/db
 TAG=latest
-DOCKER_ARGS=-i -t -p ${IP}:${REDIS_PORT}:${REDIS_PORT} -e IFROOT=${PROJECTS_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p 28017:27017 -h db --name db --net=pennai\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
@@ -13,7 +12,7 @@ run:
 		${DOCKER_REPO}
 
 shared:
-	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
+	docker run -v ${SHARE_PATH}:/share/devel --rm  ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
@@ -21,7 +20,7 @@ create:
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v ${SHARE_PATH}:/share/devel  ${DOCKER_ARGS}\
+	docker create -i -v ${SHARE_PATH}:/share/devel ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 push:
