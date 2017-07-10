@@ -1,9 +1,7 @@
 #DOCKER_REPO=localhost:5000/lab
-include ../Makevars
-HOST=${MONGO_HOST}
-DOCKER_REPO=${NETWORK}/${HOST}
+DOCKER_REPO=pennai/redis
 TAG=latest
-DOCKER_ARGS=-i -t -p ${IP}:${MONGO_PORT}:${MONGO_PORT} -e IFROOT=${PROJECTS_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p 6397:6397 -h redis --name redis --net=pennai\
 
 build:
 	docker build -t ${DOCKER_REPO}:${TAG} .
@@ -14,7 +12,7 @@ run:
 		${DOCKER_REPO}
 
 shared:
-	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
+	docker run -v ${SHARE_PATH}:/share/devel --rm  ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 create:
@@ -22,7 +20,7 @@ create:
 		${DOCKER_REPO}
 
 createshared:
-	docker create -i -v ${SHARE_PATH}:/share/devel  ${DOCKER_ARGS}\
+	docker create -i -v ${SHARE_PATH}:/share/devel ${DOCKER_ARGS}\
 		${DOCKER_REPO}
 
 push:
