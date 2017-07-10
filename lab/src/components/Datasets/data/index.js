@@ -86,7 +86,11 @@ export const getAllDatasets = createSelector(
 	(allIds, byId) => 
 		allIds
 			.map(id => byId.get(id))
-			.sort((a, b) => a.get('name').toUpperCase() > b.get('name').toUpperCase())
+			.sort((a, b) => { // alphabetize
+				const A = a.get('name').toUpperCase();
+				const B = b.get('name').toUpperCase();
+				return A > B ? 1 : A < B ? -1 : 0;
+			})
 );
 
 export default datasets;
