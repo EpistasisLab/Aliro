@@ -5,7 +5,8 @@ import {
 	EXPERIMENTS_FETCH_REQUEST, 
 	EXPERIMENTS_FETCH_SUCCESS, 
 	EXPERIMENTS_FETCH_FAILURE,
-	EXPERIMENT_ADD
+	EXPERIMENT_ADD,
+	EXPERIMENT_UPDATE
 } from './actions';
 
 // cleanup getfilters function
@@ -29,6 +30,11 @@ const byId = (state = Map(), action) => {
 			return state.merge(newExperiments);
 		case EXPERIMENT_ADD:
 			return state.merge(action.experiment[0]._id, action.experiment[0]);
+		case EXPERIMENT_UPDATE:
+		console.log(action.experiment);
+		console.log(state.get(action.experiment._id));
+			return state;
+			//return state.merge(action.experiment._id, action.experiment);
 		default:
 			return state;
 	}
@@ -184,8 +190,8 @@ const filterBy = (filters) => (experiment) => {
 const sortBy = (sort) => (a, b) => {
 	const { column, direction } = sort;
 
-	let A = a.getIn([column]) || a.getIn(['params', column]),
-		 	B = b.getIn([column]) || b.getIn(['params', column]);
+	let A = a.getIn([column]) || a.getIn(['params', column]) || a.getIn(['scores', column]),
+		 	B = b.getIn([column]) || b.getIn(['params', column]) || b.getIn(['scores', column]);
 	
 	if(typeof(A) === 'number' && typeof(B) === 'number') {
 		return direction === 'ascending' ? (A - B) : (B - A);

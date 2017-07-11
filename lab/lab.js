@@ -770,6 +770,13 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
             } : {
                 msg: "error"
             });
+
+            // only publish if publisher is available
+            if(publisher) {
+                publisher.publish('finishExperiment', JSON.stringify(
+                    { _id: req.params.id  }
+                ));
+            }
         })
         .catch((err) => {
             next(err);
@@ -1257,6 +1264,7 @@ app.get("/batches/:id", (req, res, next) => {
             next(err);
         });
 });
+
 app.all("/api/:apipath/:id", jsonParser, (req, res, next) => {
     users.returnUserData(req)
         .then((user) => {
