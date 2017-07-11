@@ -7,8 +7,10 @@ if (process.env.REDIS_PORT && process.env.REDIS_HOST) {
     subscriber.on('subscribe', function(channel, count) {
         console.log('Subscribed to channel: ' + channel);
     });
-    subscriber.subscribe('toggleAI');
-    subscriber.subscribe('finishExperiment');
+    subscriber.subscribe('toggledAI');
+    subscriber.subscribe('startedExperiment');
+    subscriber.subscribe('finishedExperiment');
+    subscriber.subscribe('failedExperiment');
 } else {
     console.log("No redis server defined, pubsub disabled");
 }

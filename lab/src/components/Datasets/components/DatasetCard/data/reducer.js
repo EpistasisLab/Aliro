@@ -1,4 +1,5 @@
 import {
+	DATASET_UPDATE,
 	AI_TOGGLE_UPDATE,
 	AI_TOGGLE_REQUEST, 
 	AI_TOGGLE_SUCCESS, 
@@ -7,6 +8,8 @@ import {
 
 const dataset = (state = Map(), action) => {
 	switch(action.type) {
+		case DATASET_UPDATE:
+			return state.mergeIn([action.dataset._id], action.dataset);
 		case AI_TOGGLE_UPDATE:
 			return state.mergeIn([action.id], {
 				ai: action.nextAIState
