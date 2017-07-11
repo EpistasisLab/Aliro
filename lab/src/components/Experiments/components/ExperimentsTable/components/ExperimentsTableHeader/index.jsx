@@ -59,8 +59,8 @@ class ExperimentsTableHeader extends Component {
 					)}
 					<Table.HeaderCell 
 						rowSpan={shouldDisplayParams && 2}
-						sorted={this.getIsSorted('dataset')}
-						onClick={() => this.onSort('dataset')}
+						sorted={this.getIsSorted('dataset_name')}
+						onClick={() => this.onSort('dataset_name')}
 					>
 						Dataset
 					</Table.HeaderCell>
