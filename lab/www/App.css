@@ -39,7 +39,8 @@ body {
     vertical-align: middle;
 }
 
-.pennai .dataset-card .ai-label.on {
+.pennai .dataset-card .ai-label.on,
+.pennai .dataset-card .ai-label.requested {
     color: rgba(255,255,255,.95);
 }
 
