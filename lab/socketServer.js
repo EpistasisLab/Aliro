@@ -1,3 +1,5 @@
+var FGLAB_URL = 'http://localhost:5080';
+
 var socket = require('socket.io');
 var subscriber = require("./pubsub").subscriber;
 var rp = require('request-promise');
@@ -19,7 +21,6 @@ function socketServer(server) {
 		});*/
 	 
 		socket.on('disconnect', () => {
-			console.log('HERE');
 		  var index = connections.indexOf(socket);
 		  connections.splice(index, 1);
 		});
@@ -33,6 +34,29 @@ function socketServer(server) {
 				connections.forEach(connectedSocket => {
 					connectedSocket.emit('toggleAI', message);
 				});	
+			}
+
+			if(channel === 'finishExperiment') {
+				// call api directly from file to get information
+				rp({
+					uri: FGLAB_URL + "/api/userexperiments/" + JSON.parse(message)._id,
+		      method: "GET"
+		    })
+		    .then((body) => {
+		    	connections.forEach(connectedSocket => {
+						connectedSocket.emit('updateExperiment', body);
+					});
+
+		    	/* rp({
+						uri: FGLAB_URL + "/api/userdatasets/" + body.dataset_id,
+			      method: "GET"
+			    }).then((body) => {
+			    	console.log(body);
+		    		//socket.emit('startExperiment', body);
+		   		})
+		    	.catch(() => {}); // Ignore failures*/
+		    })
+		    .catch(() => {}); // Ignore failures
 			}
 
 			/*if(channel === 'startExperiment') {
