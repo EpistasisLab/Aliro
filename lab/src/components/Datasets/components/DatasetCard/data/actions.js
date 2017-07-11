@@ -2,6 +2,7 @@ import * as api from './api';
 import { getIsTogglingAI } from './reducer';
 
 export const ACTION_PREFIX = 'DATASET_';
+export const DATASET_UPDATE = 'DATASET_UPDATE';
 export const AI_TOGGLE_UPDATE = ACTION_PREFIX + 'AI_TOGGLE_UPDATE';
 export const AI_TOGGLE_REQUEST = ACTION_PREFIX + 'AI_TOGGLE_REQUEST';
 export const AI_TOGGLE_SUCCESS = ACTION_PREFIX + 'AI_TOGGLE_SUCCESS';
@@ -42,5 +43,12 @@ export const updateAIToggle = (id, nextAIState) => (dispatch) => {
     type: AI_TOGGLE_UPDATE,
     id,
     nextAIState
+  });
+};
+
+export const updateDataset = (dataset) => (dispatch) => {
+  dispatch({
+    type: DATASET_UPDATE,
+    dataset
   });
 };

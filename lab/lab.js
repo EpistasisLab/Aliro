@@ -187,7 +187,7 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
 
             // only publish if publisher is available
             if(publisher) {
-                publisher.publish('toggleAI', JSON.stringify(
+                publisher.publish('toggledAI', JSON.stringify(
                     { _id: req.params.id, nextAIState: req.body.ai  }
                 ));
             }
@@ -308,6 +308,29 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
             } : {
                 msg: "error"
             });
+
+            // only for experiment updates
+            if(req.params.collection === 'experiments') {
+                // publish when experiment scores are updated
+                if(req.body._scores) {
+                    // only publish if publisher is available    
+                    if(publisher) {
+                        publisher.publish('finishedExperiment', JSON.stringify(
+                            { _id: req.params.id  }
+                        ));
+                    }
+                }
+
+                // publish when experiment fails
+                if(req.body._status === 'fail') {
+                    // only publish if publisher is available    
+                    if(publisher) {
+                        publisher.publish('failedExperiment', JSON.stringify(
+                            { _id: req.params.id  }
+                        ));
+                    }
+                }
+            }
         })
         .catch((err) => {
             next(err);
@@ -610,9 +633,6 @@ console.log(projId, obj, files, dataset, username);
                                 .then((resp) => {
                                     res.status(201);
                                     res.send(resp);
-                                    /* publisher.publish('startExperiment', JSON.stringify(
-                                        { _id: resp._id }
-                                    )); */
                                 })
                                 .catch((err) => {
                                     // TODO Check comprehensiveness of error catching
@@ -748,6 +768,13 @@ app.put("/api/v1/experiments/:id/started", (req, res, next) => {
             } : {
                 msg: "error"
             });
+
+            // only publish if publisher is available
+            if(publisher) {
+                publisher.publish('startedExperiment', JSON.stringify(
+                    { _id: req.params.id  }
+                ));
+            }
         })
         .catch((err) => {
             next(err);
@@ -770,13 +797,6 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
             } : {
                 msg: "error"
             });
-
-            // only publish if publisher is available
-            if(publisher) {
-                publisher.publish('finishExperiment', JSON.stringify(
-                    { _id: req.params.id  }
-                ));
-            }
         })
         .catch((err) => {
             next(err);
