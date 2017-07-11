@@ -11,7 +11,7 @@ class DatasetActions extends Component {
 	onToggleAI() {
 		const { dataset, toggleAI } = this.props;
 		const aiState = dataset.get('ai');
-		const aiNextState = !aiState ? 'requested' : false;
+		const aiNextState = aiState === 'off' ? 'requested' : 'off';
 
 		toggleAI(dataset.get('_id'), aiNextState);
 	}
@@ -26,13 +26,13 @@ class DatasetActions extends Component {
 
 		const aiState = dataset.get('ai');
 
-		const aiLabelText = aiState === 'requested' ? 'AI req' : aiState ? 'AI on' : 'AI off';
+		const aiLabelText = `AI ${aiState}`;
 
-		const aiLabelClass = `ai-label ${aiState ? 'on' : 'off' }`;
+		const aiLabelClass = `ai-label ${aiState}`;
 
-		const aiToggleClass = aiState === 'requested' ? 'ai-switch requested' : 'ai-switch';
+		const aiToggleClass = `ai-switch ${aiState === 'requested' ? 'requested' : '' }`;
 
-		const aiIsChecked = !aiState ? false : true;
+		const aiIsChecked = aiState === 'off' ? false : true;
 
 		const aiIsToggling = dataset.get('isTogglingAI');
 
