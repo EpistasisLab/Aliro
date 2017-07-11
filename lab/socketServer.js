@@ -30,13 +30,28 @@ function socketServer(server) {
 	if(subscriber) {
 		subscriber.on('message', function(channel, message) {
 
-			if(channel === 'toggleAI') {
+			if(channel === 'toggledAI') {
 				connections.forEach(connectedSocket => {
-					connectedSocket.emit('toggleAI', message);
+					connectedSocket.emit('updateAIToggle', message);
 				});	
 			}
 
-			if(channel === 'finishExperiment') {
+			if(channel === 'startedExperiment') {
+				rp({
+					uri: FGLAB_URL + "/api/userexperiments/" + JSON.parse(message)._id,
+		      method: "GET"
+		    })
+		    .then((body) => {
+		    	connections.forEach(connectedSocket => {
+		    		if(connectedSocket !== socket) {
+							connectedSocket.emit('addExperiment', body);
+						}
+					});
+		    })
+		    .catch(() => {}); // Ignore failures
+			}
+
+			if(channel === 'finishedExperiment') {
 				// call api directly from file to get information
 				rp({
 					uri: FGLAB_URL + "/api/userexperiments/" + JSON.parse(message)._id,
@@ -47,28 +62,32 @@ function socketServer(server) {
 						connectedSocket.emit('updateExperiment', body);
 					});
 
-		    	/* rp({
-						uri: FGLAB_URL + "/api/userdatasets/" + body.dataset_id,
+		    	rp({
+						uri: FGLAB_URL + "/api/userdatasets/" + JSON.parse(body)[0].dataset_id,
 			      method: "GET"
 			    }).then((body) => {
-			    	console.log(body);
-		    		//socket.emit('startExperiment', body);
+		    		connections.forEach(connectedSocket => {
+							connectedSocket.emit('updateDataset', body);
+						});
 		   		})
-		    	.catch(() => {}); // Ignore failures*/
+		    	.catch(() => {}); // Ignore failures
 		    })
 		    .catch(() => {}); // Ignore failures
 			}
 
-			/*if(channel === 'startExperiment') {
+			if(channel === 'failedExperiment') {
+				// call api directly from file to get information
 				rp({
-					uri: FGLAB_URL + "/api/experiments/" + JSON.parse(message)._id,
+					uri: FGLAB_URL + "/api/userexperiments/" + JSON.parse(message)._id,
 		      method: "GET"
 		    })
 		    .then((body) => {
-		    	socket.emit('startExperiment', body);
+		    	connections.forEach(connectedSocket => {
+						connectedSocket.emit('updateExperiment', body);
+					});
 		    })
 		    .catch(() => {}); // Ignore failures
-			}*/
+			}
 		});
 	}
 };
