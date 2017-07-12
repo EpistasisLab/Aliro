@@ -105,6 +105,7 @@ app.get("/api/v1/files/:id", (req, res, next) => {
         promiseLibrary: Promise
     });
     gfs.open((err, gfs) => {
+      if (!err) {
         // Set read head pointer to beginning of file
         gfs.seek(0, () => {
             // Read entire file
@@ -118,6 +119,11 @@ app.get("/api/v1/files/:id", (req, res, next) => {
                     next(err);
                 });
         });
+      } else {
+        console.log('error loading file: ' .  req.params.id);
+        console.log(err);
+        res.send([]);
+      }
     });
 });
 
