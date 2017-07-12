@@ -44,5 +44,4 @@ RUN  wget --quiet https://s3.us-east-2.amazonaws.com/pennai-docker-files/pmlb.tg
 COPY files/env Gp/machine/.env
 COPY files/start.sh /root/
 COPY files/projects.json Gp/machine/
-COPY files/gei.tgz /files/
 CMD ["/bin/bash", "/root/start.sh"]
