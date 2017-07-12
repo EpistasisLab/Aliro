@@ -7,7 +7,8 @@ dist
 .ssh
 .viminfo
 .nv
-.swp
+*.*.swp
+*.swp
 *.pyc
 .remote-sync.json
 machine/datasets/byuser/*
@@ -18,3 +19,8 @@ dockers/Makevars
 dockers/paiwww/files/certs
 dockers/paiwww/files/htpasswd
 tmp/
+.mongorc.js
+ca.crt
+ssh.tgz
+dockers/dbmongo/files/.mongodbauth.js
+
