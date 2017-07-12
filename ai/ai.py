@@ -86,7 +86,7 @@ class AI():
         self.user=user
         self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
-        self.api_key='Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E='
+        self.api_key=os.environ['APIKEY']
         # optional extra payloads (e.g. user id) for posting to the db
         self.extra_payload = extra_payload
         # file name of stored scores for the recommender
@@ -94,8 +94,8 @@ class AI():
         # requests queue
         self.request_queue = []
         # static payload is the payload that is constant for every API post
+        # with api key for this host
         self.static_payload = {'apikey':self.api_key}#,
-                               # 'user':self.user}
         # add any extra payload
         self.static_payload.update(extra_payload)
         # header info
@@ -126,7 +126,7 @@ class AI():
         if debug:
             responses = [{'_id': '5930f023ffb08f0832362efd', 'files': [{'filename': 'mushroom.csv', '_id': '5930f023ffb08f0832362eff', 'mimetype': 'text/csv'}, {'filename': 'README.md', '_id': '5930f023ffb08f0832362efe', 'mimetype': 'text/x-markdown'}], 'ai': 'requested', 'name': 'Mushrooms', 'username': 'testuser'}, {'_id': '5930f023ffb08f0832362f06', 'files': [{'filename': 'README.md', '_id': '5930f023ffb08f0832362f0a', 'mimetype': 'text/x-markdown'}, {'filename': 'adult.csv', '_id': '5930f023ffb08f0832362f0b', 'mimetype': 'text/csv'}], 'ai': 'requested', 'name': 'Adults', 'username': 'testuser'}]
         else:
-            payload = {'ai':'requested'}
+            payload = {'ai':['finished','requested']}
             payload.update(self.static_payload)
 
             r = requests.post(self.data_path,data=json.dumps(payload),
@@ -202,7 +202,10 @@ class AI():
                     #                                     reverse=True)))
                     })
 
-        self.new_data = pd.DataFrame(processed_data)
+        new_data = pd.DataFrame(processed_data)
+        if(len(new_data) >= 1):
+          self.new_data = new_data
+          print(self.new_data)
         # print('results:\n',results)
         # df = pd.DataFrame(response)
         # ai = pd.DataFrame(response[0]['ai'])
@@ -222,8 +225,6 @@ class AI():
                 # validate recommendations against available options
                 alg,params = validate_recs(alg,params)
                 modified_params = eval(params)
-                print('max_features')
-                print(modified_params['max_features'])
                 #print(modified_params.max_features)
                 if('max_features' in modified_params):
                     modified_params['max_features'] = 'sqrt'
@@ -259,12 +260,14 @@ class AI():
     def update_recommender(self):
         """Updates recommender based on new results."""
         # update recommender
-        self.rec.update(self.new_data)
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                 'recommender updated')
-        # reset new data
-        self.new_data = pd.DataFrame()
+        print(self);
+        if(hasattr(self,'new_data') and len(self.new_data) >= 1):
+            self.rec.update(self.new_data)
+            if self.verbose:
+                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                     'recommender updated')
+            # reset new data
+            self.new_data = pd.DataFrame()
 
     def save_state(self):
         """Save ML+P scores in pickle or to DB"""
