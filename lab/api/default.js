@@ -123,9 +123,15 @@ var responder = function(req, res) {
         query['_finished'] = {"$gte": new Date(params['date_start'])}
     }
     for (param in params.match) {
-      var val = params.match[param]
-      query[param] = val;
+      var vals = params.match[param]
+      if(vals.length !== undefined && vals.length >= 2) {
+      //{ $or: [ { quantity: { $lt: 20 } }, { price: 10 } 
+      query[param] = vals;
+      vals = {$in: vals}
+      }
+      query[param] = vals;
     }
+    console.log(query);
 
              res.set('Content-Type', 'application/json');
   res.write('[');
