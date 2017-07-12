@@ -8,17 +8,16 @@ function socketServer(server) {
 	var io = socket(server);
 	var connections = [];
 
-	io.on('connection', socket => {
-		connections.push(socket);
+	require('socketio-auth')(io, {
+	  authenticate: function (socket, data, callback) {
+	    socket.client.userid = data.userid;
+	    connections.push(socket);
+	 
+	   	return callback(null, true);
+	  }
+	});
 
-		/*socket.on('startExperiment', data => {
-			connections.forEach(connectedSocket => {
-				connectedSocket.emit('startExperiment', data);
-				if(connectedSocket !== socket) {
-					connectedSocket.emit('startExperiment', data);
-				}
-			});
-		});*/
+	io.on('connection', socket => {
 	 
 		socket.on('disconnect', () => {
 		  var index = connections.indexOf(socket);
@@ -29,9 +28,19 @@ function socketServer(server) {
 
 	if(subscriber) {
 		subscriber.on('message', function(channel, message) {
+			var msg = JSON.parse(message);
+
+			var userSockets = [];
+			if(msg.userid) {
+				connections.forEach(function(connectedSocket) {
+					if(connectedSocket.client.userid === msg.userid) {
+						userSockets.push(connectedSocket);
+					}
+				});
+			}
 
 			if(channel === 'toggledAI') {
-				connections.forEach(connectedSocket => {
+				userSockets.forEach(connectedSocket => {
 					connectedSocket.emit('updateAIToggle', message);
 				});	
 			}
@@ -42,7 +51,7 @@ function socketServer(server) {
 		      method: "GET"
 		    })
 		    .then((body) => {
-		    	connections.forEach(connectedSocket => {
+		    	userSockets.forEach(connectedSocket => {
 		    		if(connectedSocket !== socket) {
 							connectedSocket.emit('addExperiment', body);
 						}
@@ -58,7 +67,7 @@ function socketServer(server) {
 		      method: "GET"
 		    })
 		    .then((body) => {
-		    	connections.forEach(connectedSocket => {
+		    	userSockets.forEach(connectedSocket => {
 						connectedSocket.emit('updateExperiment', body);
 					});
 
@@ -66,7 +75,7 @@ function socketServer(server) {
 						uri: FGLAB_URL + "/api/userdatasets/" + JSON.parse(body)[0].dataset_id,
 			      method: "GET"
 			    }).then((body) => {
-		    		connections.forEach(connectedSocket => {
+		    		userSockets.forEach(connectedSocket => {
 							connectedSocket.emit('updateDataset', body);
 						});
 		   		})
@@ -82,7 +91,7 @@ function socketServer(server) {
 		      method: "GET"
 		    })
 		    .then((body) => {
-		    	connections.forEach(connectedSocket => {
+		    	userSockets.forEach(connectedSocket => {
 						connectedSocket.emit('updateExperiment', body);
 					});
 		    })
