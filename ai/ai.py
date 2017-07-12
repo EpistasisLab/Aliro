@@ -80,8 +80,9 @@ class AI():
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
         self.data_path = '/'.join([self.db_path,'api/datasets'])
+        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
         self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
-        self.submit_path = '/'.join([self.db_path,'api/v1/projects'])
+        self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
         self.user=user
         self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
@@ -139,11 +140,11 @@ class AI():
                       ':','new ai request for:',[r['name'] for r in responses])
             if not debug:
                 # set AI flag to 'true' to acknowledge requests received
-                payload= {'ai':True}
+                payload= {'ai':'on'}
                 payload.update(self.static_payload)
                 for r in self.request_queue:
                     data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                    tmp = requests.post(data_submit_path,data=json.dumps(payload),
+                    tmp = requests.put(data_submit_path,data=json.dumps(payload),
                                       headers=self.header)
             return True
 
@@ -217,16 +218,21 @@ class AI():
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'])
             # ml,p = validate_recs(ml,p)
-
             for alg,params,score in zip(ml,p,ai_scores):
                 # validate recommendations against available options
                 alg,params = validate_recs(alg,params)
+                modified_params = eval(params)
+                print('max_features')
+                print(modified_params['max_features'])
+                #print(modified_params.max_features)
+                if('max_features' in modified_params):
+                    modified_params['max_features'] = 'sqrt'
 
                 rec = {'dataset_id':r['_id'],
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
                         # 'ml_name':alg,
-                        'parameters':eval(params),
+                        'parameters':modified_params,
                         'ai_score':score,
                         }
                 # # add recommended parameters
@@ -234,19 +240,17 @@ class AI():
                 #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
                 rec.update(self.static_payload)
                 # submit path is ml_id/experiment
-                rec_path = '/'.join([self.submit_path,
+                rec_path = '/'.join([self.projects_path,
                                         rec['algorithm_id'],
                                         'experiment'])
                 # post recommendations
+                print(rec_path)
                 requests.post(rec_path,data=json.dumps(rec),headers=self.header)
                 #submit update to dataset to indicate ai:True
                 payload= {'ai':'finished'}
-                payload.update(self.static_payload)
-                status_submit_path = '/'.join([self.status_path,r['_id'],'ai'])
-                r = requests.put(status_submit_path,data=json.dumps(payload),
-#                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-#                tmp = requests.post(data_submit_path,data=json.dumps(payload),
-                                  headers=self.header)
+                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+                tmp = requests.put(data_submit_path,data=json.dumps(payload),
+                    headers=self.header)
             i += 1
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
