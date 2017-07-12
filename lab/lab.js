@@ -14,7 +14,7 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 var socketServer = require('./socketServer');
-var publisher = require("./pubsub").publisher;
+var publishToUser = require("./pubsub").publishToUser;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
@@ -184,13 +184,9 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             res.send({
                 message: "AI toggled for " + req.params.id
             });
-
-            // only publish if publisher is available
-            if(publisher) {
-                publisher.publish('toggledAI', JSON.stringify(
-                    { _id: req.params.id, nextAIState: req.body.ai  }
-                ));
-            }
+            
+            var publishData = { _id: req.params.id, nextAIState: req.body.ai  };
+            publishToUser('toggledAI', publishData, req);
         })
         .catch((err) => {
             next(err);
@@ -309,26 +305,13 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
                 msg: "error"
             });
 
-            // only for experiment updates
             if(req.params.collection === 'experiments') {
-                // publish when experiment scores are updated
                 if(req.body._scores) {
-                    // only publish if publisher is available    
-                    if(publisher) {
-                        publisher.publish('finishedExperiment', JSON.stringify(
-                            { _id: req.params.id  }
-                        ));
-                    }
+                    publishToUser('finishedExperiment', { _id: req.params.id  }, req);
                 }
 
-                // publish when experiment fails
                 if(req.body._status === 'fail') {
-                    // only publish if publisher is available    
-                    if(publisher) {
-                        publisher.publish('failedExperiment', JSON.stringify(
-                            { _id: req.params.id  }
-                        ));
-                    }
+                    publishToUser('failedExperiment', { _id: req.params.id  }, req);
                 }
             }
         })
@@ -769,12 +752,7 @@ app.put("/api/v1/experiments/:id/started", (req, res, next) => {
                 msg: "error"
             });
 
-            // only publish if publisher is available
-            if(publisher) {
-                publisher.publish('startedExperiment', JSON.stringify(
-                    { _id: req.params.id  }
-                ));
-            }
+            publishToUser('startedExperiment',  { _id: req.params.id  }, req);
         })
         .catch((err) => {
             next(err);
