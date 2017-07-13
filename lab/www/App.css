@@ -81,7 +81,7 @@ body {
 }
 
 .pennai .dataset-card .best-result .ui.progress.accuracy-score .bar {
-    background-color: #9B59B6;
+    background-color: #A333C8;
 }
 
 .pennai .dataset-card .best-result .ui.progress .bar .progress {
@@ -237,6 +237,43 @@ body {
 .pennai .builder-scene .builder-btns {
     margin-top: -2rem;
     margin-bottom: 2rem;
+}
+
+.c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
+    font-size: 0.8rem;
+}
+
+.ui.progress.score .bar .progress {
+    right: 0;
+    left: 0.5rem;
+}
+
+.ui.progress.train.score .bar {
+    background-color: #6435C9;
+}
+
+.ui.progress.test.score .bar {
+    background-color: #A333C8;
+}
+
+.ui.progress.auc.score .bar {
+    background-color: #2185D0;
+}
+
+.ui.progress.score .bar .progress::after {
+    margin-left: 0.4rem;
+}
+
+.ui.progress.train.score .bar .progress::after {
+    content: "training accuracy";
+}
+
+.ui.progress.test.score .bar .progress::after {
+    content: "testing accuracy";
+}
+
+.ui.progress.auc.score .bar .progress::after {
+    content: "area under the curve";
 }
 
 .table-container {

@@ -33,15 +33,14 @@ class Builder extends Component {
 
 		if(builderType === 'build') {
 			return {
-				header: 'Build a New Experiment',
-				subheader: `Dataset: ${dataset.get('name')}`
+				header: `Build a New Experiment: ${dataset.get('name')}`
 			};
 		}
 
 		if(builderType === 'review') {
 			return {
-				header: 'Review Experiment',
-				subheader: `Dataset: ${experiment.get('dataset')}, Id # ${experiment.get('_id')}`
+				header: `Review Experiment: ${dataset.get('name')}`,
+				subheader: `Experiment: #${experiment.get('_id')}`
 			};
 		}
 	}
