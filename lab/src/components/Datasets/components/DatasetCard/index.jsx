@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
+import { fmtDatasetName } from '../../../../utils/formatter';
 import DatasetActions from './components/DatasetActions';
 import BestResult from './components/BestResult';
 import ExperimentStatus from './components/ExperimentStatus';
@@ -25,7 +26,7 @@ class DatasetCard extends Component {
 						as="a"
 						inverted 
 						size="large"
-						content={dataset.get('name')}
+						content={fmtDatasetName(dataset.get('name'))}
 						href={datasetLink}
 						className="title"
 					/>
