@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import FetchError from '../FetchError';
+import SceneWrapper from '../SceneWrapper';
 import { Gauge } from './components/Gauge';
 import { Header, Grid, Segment, Icon, Image } from 'semantic-ui-react';
 import moment from 'moment';
@@ -53,6 +54,10 @@ class Results extends Component {
 		}
 
 		return (
+			<SceneWrapper
+				headerContent="Results"
+				subheader={`Dataset: ${results.get('dataset_name')}, Experiment: #${results.get('_id')}`}
+			>
 			<div className="results-scene">
 				<Grid columns={3} stackable>
 					<Grid.Row stretched>
@@ -208,6 +213,7 @@ class Results extends Component {
 					</Grid.Row>
 				</Grid>
 			</div>
+			</SceneWrapper>
 		);
 	}
 }
