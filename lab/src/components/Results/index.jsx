@@ -8,7 +8,6 @@ import {
 	getConfusionMatrix,
 	getROCCurve
 } from './data';
-import SceneWrapper from '../SceneWrapper';
 import Results from './Results';
 
 class ResultsContainer extends Component {
@@ -34,12 +33,7 @@ class ResultsContainer extends Component {
 	render() {
 		const { results } = this.props;
 		return (
-			<SceneWrapper
-				headerContent="Results"
-				subheader={`Experiment #${this.props.params.id}`}
-			>
-				<Results {...this.props} />
-			</SceneWrapper>
+			<Results {...this.props} />
 		);
 	}
 }
