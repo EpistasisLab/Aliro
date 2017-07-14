@@ -48,7 +48,7 @@ var channels = [
 		prepareMessage: function(req) {
 			return  { _id: req.params.id  };
 		},
-		emitToSockets: function(req) {
+		emitToSockets: function(message, sockets) {
 			rp(FGLAB_URL + "/api/userexperiments/" + JSON.parse(message)._id)
 		    .then((experiment) => {
 		    	sockets.forEach(socket => socket.emit('updateExperiment', experiment));
