@@ -123,13 +123,13 @@ export const initialExperiment = {
     max_features: 'log2'
   },
   run: {
-  	started: 1495484890013,
-  	finished: 1495485103872,
-  	launched_by: 'ai'
+    started: 1495484890013,
+    finished: 1495485103872,
+    launched_by: 'ai'
   },
   scores: {
-  	testing_accuracy: 0.68,
-  	training_accuracy: 0.78,
-  	AUC: 0.96
+    testing_accuracy: 0.68,
+    training_accuracy: 0.78,
+    AUC: 0.96
   }
 };
