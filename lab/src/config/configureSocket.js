@@ -36,8 +36,8 @@ export const socketMiddleware = (store) => {
   };
 };
 
-const configureSocket = (store) => {
-	socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
+const configureSocket = (/*store*/) => {
+  socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
 };
 
 export default configureSocket;
