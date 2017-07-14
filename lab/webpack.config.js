@@ -6,11 +6,19 @@ module.exports = {
         './src/index.jsx'
     ],
     module: {
-        loaders: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loader: 'react-hot-loader!babel-loader'
-        }]
+        rules: [
+            /*{
+                enforce: 'pre',
+                test: /\.(js|jsx)?$/,
+                exclude: /node_modules/,
+                loader: 'eslint-loader'
+            },*/
+            {
+                test: /\.(js|jsx)?$/,
+                exclude: /node_modules/,
+                loader: 'react-hot-loader!babel-loader'
+            }
+        ]
     },
     resolve: {
         extensions: ['.js', '.jsx']
