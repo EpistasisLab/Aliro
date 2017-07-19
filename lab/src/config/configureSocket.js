@@ -9,7 +9,8 @@ export const socketMiddleware = (store) => {
     const result = next(action);
     if(socket && action.type === 'PREFERENCES_FETCH_SUCCESS') {
       let preferences = store.getState().getIn(['preferences', 'data']).toJS();
-      socket.emit('authentication', {userid: preferences._id});
+      socket.emit('authentication', { userid: preferences._id });
+
       socket.on('authenticated', function() {
         socket.on('updateAIToggle', data => {
           const parsed = JSON.parse(data);

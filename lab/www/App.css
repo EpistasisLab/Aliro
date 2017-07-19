@@ -7,16 +7,26 @@ body {
     line-height: 1.5;
 }
 
-.pennai .ui.header.scene-title {
+.pennai .scene-header .ui.header {
     display: inline-block;
     margin-right: 1rem;
+    margin-bottom: 0.9rem;
 }
 
-.pennai .ui.button.scene-btn {
+.pennai .scene-header .ui.button {
     vertical-align: middle;
     margin-bottom: 0.9rem;
 }
 
+.pennai .inverted-card .ui.top.attached.segment {
+    max-height: 57px;
+}
+
+.pennai .inverted-card .ui.segment {
+    background-color: rgba(255,255,255,.08);
+}
+
+/* remove this */
 .pennai .ui.segment {
     background-color: rgba(255,255,255,.08);
 }
@@ -180,14 +190,6 @@ body {
     background-color: transparent !important;
     color: rgba(255,255,255,.9) !important;
     border-left: 7px solid #FF695E;
-}
-
-.pennai .results-scene .page-title {
-    margin-bottom: 1rem;
-}
-
-.pennai .results-scene .panel-header {
-    max-height: 51px;
 }
 
 .pennai .builder-scene .page-title {

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 
@@ -13,7 +14,7 @@ function Root({ store }) {
   return (
     <Provider store={store}>
       <Router history={hashHistory} onUpdate={() => window.scrollTo(0, 0)}>
-        <Route path='/' component={App}>
+        <Route path="/" component={App}>
           <IndexRedirect to="datasets" />
           <Route path="datasets" component={Datasets} />
           <Route path="experiments" component={Experiments} />
@@ -25,5 +26,9 @@ function Root({ store }) {
     </Provider>
   );
 }
+
+Root.propTypes = {
+  store: PropTypes.objectOf(PropTypes.func).isRequired
+};
 
 export default Root;

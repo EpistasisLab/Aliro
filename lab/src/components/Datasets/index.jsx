@@ -6,7 +6,7 @@ import {
   getIsFetching, 
   getErrorMessage 
 } from './data';
-import SceneWrapper from '../SceneWrapper';
+import SceneHeader from '../SceneHeader';
 import Datasets from './Datasets';
 
 class DatasetsContainer extends Component {
@@ -16,13 +16,10 @@ class DatasetsContainer extends Component {
 
   render() {
     return (
-      <SceneWrapper 
-        headerContent="Datasets"
-        btnContent="Add new"
-        btnIcon="plus"
-      >
+      <div>
+        <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />
         <Datasets {...this.props} />
-      </SceneWrapper>
+      </div>
     );
   }
 }
