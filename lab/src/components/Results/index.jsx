@@ -8,6 +8,7 @@ import {
   getConfusionMatrix,
   getROCCurve
 } from './data';
+import SceneHeader from '../SceneHeader';
 import Results from './Results';
 
 class ResultsContainer extends Component {
@@ -30,9 +31,25 @@ class ResultsContainer extends Component {
     }
   }
 
+  getSceneHeader() {
+    const { results } = this.props;
+    if(results.size) {
+      return {
+        header: `Results: ${results.get('dataset_name')}`,
+        subheader: `Experiment: #${results.get('_id')}`
+      };
+    }
+
+    return { header: 'Results', subheader: null };
+  }
+
   render() {
+    const sceneHeader = this.getSceneHeader();
     return (
-      <Results {...this.props} />
+      <div>
+        <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
+        <Results {...this.props} />
+      </div>
     );
   }
 }

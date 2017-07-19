@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
 import NotFound from '../NotFound';
 import FetchError from '../FetchError';
-import SceneWrapper from '../SceneWrapper';
+import SceneHeader from '../SceneHeader';
 import AlgorithmOptions from './components/AlgorithmOptions';
 import ParameterOptions from './components/ParameterOptions';
 import { Header, Grid, Button, Icon } from 'semantic-ui-react';
@@ -87,46 +87,42 @@ class Builder extends Component {
     }
 
     return (
-      <SceneWrapper
-        headerContent={sceneHeader.header}
-        subheader={sceneHeader.subheader}
-      >
-        <div className="builder-scene">
-          <Grid stretched>
-            <AlgorithmOptions
-              algorithms={defaultAlgorithms}
-              currentAlgorithm={currentAlgorithm}
-              setCurrentAlgorithm={setCurrentAlgorithm}
-            />
-            <ParameterOptions
-              params={currentAlgorithm.get('schema')}
-              currentParams={currentParams}
-              setParamValue={setParamValue}
-            />
-          </Grid>
-          <div className="builder-btns">
-            <Button 
-              color="blue"
-              size="large"
-              content="Launch Experiment"
-              icon={isSubmitting ? <Icon loading name="spinner" /> : null}
-              disabled={isSubmitting}
-              onClick={() => this.onSubmitExperiment(
-                currentAlgorithm.get('_id'), 
-                currentParams.set('dataset', dataset.get('_id'))
-              )}
-            />
-            <Button 
-              color="grey"
-              size="large"
-              disabled={isSubmitting}
-              onClick={() => setCurrentAlgorithm(currentAlgorithm)}
-            >
-                Reset
-            </Button>
-          </div>
+      <div className="builder-scene">
+        <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
+        <Grid stretched>
+          <AlgorithmOptions
+            algorithms={defaultAlgorithms}
+            currentAlgorithm={currentAlgorithm}
+            setCurrentAlgorithm={setCurrentAlgorithm}
+          />
+          <ParameterOptions
+            params={currentAlgorithm.get('schema')}
+            currentParams={currentParams}
+            setParamValue={setParamValue}
+          />
+        </Grid>
+        <div className="builder-btns">
+          <Button 
+            color="blue"
+            size="large"
+            content="Launch Experiment"
+            icon={isSubmitting ? <Icon loading name="spinner" /> : null}
+            disabled={isSubmitting}
+            onClick={() => this.onSubmitExperiment(
+              currentAlgorithm.get('_id'), 
+              currentParams.set('dataset', dataset.get('_id'))
+            )}
+          />
+          <Button 
+            color="grey"
+            size="large"
+            disabled={isSubmitting}
+            onClick={() => setCurrentAlgorithm(currentAlgorithm)}
+          >
+            Reset
+          </Button>
         </div>
-      </SceneWrapper> 
+      </div>
     );
   }
 }

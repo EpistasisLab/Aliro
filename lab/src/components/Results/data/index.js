@@ -58,7 +58,7 @@ const errorMessage = (state = null, action) => {
 export const getConfusionMatrix = (state) =>
   state.getIn(['results', 'confusionMatrix']);
 
-const confusionMatrix = (state = false, action) => {
+const confusionMatrix = (state = '', action) => {
   switch(action.type) {
     case CONF_MATRIX_FETCH_SUCCESS:
       return URL.createObjectURL(action.response);
@@ -70,7 +70,7 @@ const confusionMatrix = (state = false, action) => {
 export const getROCCurve = (state) =>
   state.getIn(['results', 'rocCurve']);
 
-const rocCurve = (state = false, action) => {
+const rocCurve = (state = '', action) => {
   switch(action.type) {
     case ROC_CURVE_FETCH_SUCCESS:
       return URL.createObjectURL(action.response);
