@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Dropdown } from 'semantic-ui-react';
 
-function ExperimentFilters({filters, updateQuery, resetQuery}) {
+function ExperimentFilters({ filters, updateQuery, resetQuery }) {
  
 
   return (

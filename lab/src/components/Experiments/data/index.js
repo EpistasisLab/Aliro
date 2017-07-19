@@ -109,9 +109,9 @@ export const getFilters = createSelector(
   (allExperiments, query) => {
 
     const filterKeys = [
-      {key: 'status', keyPath: ['status'], textPath: ['status'], valuePath: ['status']},
-      {key: 'dataset', keyPath: ['dataset_name'], textPath: ['dataset_name'], valuePath: ['dataset_id'] },
-      {key: 'algorithm', keyPath: ['algorithm'], textPath: ['algorithm'], valuePath: ['algorithm']} // ['algorithm', '_id']
+      { key: 'status', keyPath: ['status'], textPath: ['status'], valuePath: ['status'] },
+      { key: 'dataset', keyPath: ['dataset_name'], textPath: ['dataset_name'], valuePath: ['dataset_id'] },
+      { key: 'algorithm', keyPath: ['algorithm'], textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
     ];
 
     //let filters = {};
@@ -178,7 +178,7 @@ export const getVisibleExperiments = createSelector(
 );
 
 const filterBy = (filters) => (experiment) => {
-  const { status, dataset, algorithm  } = filters;
+  const { status, dataset, algorithm } = filters;
 
   return (
     (status.selected === 'all' || status.selected === experiment.get('status')) &&

@@ -34,56 +34,52 @@ module.exports = {
             "always"
         ],
         // Disallow multiple spaces
-        /*"no-multi-spaces": [
-            "error"
-        ],*/
-        // Enforce consistent spacing inside braces
-        /*"object-curly-spacing": [
-            "error",
-            "always"
-        ],*/
-        // Enforce valid JSDoc comments (eventually set up)
-        /*"valid-jsdoc": [
+        "no-multi-spaces": [
             "warn"
-        ],*/
+        ],
+        // Enforce consistent spacing inside braces
+        "object-curly-spacing": [
+            "warn",
+            "always"
+        ],
         // Require Variable Declarations to be at the top of their scope 
-        /*"vars-on-top": [
-            "error"
-        ],*/
+        "vars-on-top": [
+            "warn"
+        ],
         // Require === and !==
-        /*"eqeqeq": [
+        "eqeqeq": [
             "error"
-        ],*/
-        
+        ],
+
         /* REACT-SPECIFIC RULES */
-        // Enforces consistent naming for boolean props
+        // Enforces consistent naming for boolean props (not released yet)
         /*"react/boolean-prop-naming": [
             "warn"
         ],*/
         // Enforce all defaultProps have a corresponding non-required PropType
-        /*"react/default-props-match-prop-types": [
+        "react/default-props-match-prop-types": [
             "warn"
-        ],*/
+        ],
         // Forbid certain props on Components (className, style)
         /*"react/forbid-component-props": [
             "warn"
         ],*/
         // Prevent usage of Array index in keys
-        /*"react/no-array-index-key": [
+        "react/no-array-index-key": [
             "error"
-        ],*/
+        ],
         // Prevent passing of children as props
-        /*"react/no-children-prop": [
-            "warn"
-        ],*/
+        "react/no-children-prop": [
+            "error"
+        ],
         // Prevent usage of dangerous JSX properties
-        /*"react/no-danger": [
+        "react/no-danger": [
             "error"
-        ],*/
+        ],
         // Prevent problem with children and props.dangerouslySetInnerHTML
-        /*"react/no-danger-with-children": [
+        "react/no-danger-with-children": [
             "error"
-        ],*/
+        ],
         // Prevent usage of deprecated methods (set React version in shared settings or use default)
         /*"react/no-deprecated" [
             "error"
@@ -101,37 +97,37 @@ module.exports = {
             "error"
         ],*/
         // Prevent direct mutation of this.state
-        /*"react/no-direct-mutation-state": [
+        "react/no-direct-mutation-state": [
             "error"
-        ],*/
+        ],
         // Prevent usage of findDOMNode (will be deprecated)
-        /*"react/no-find-dom-node": [
+        "react/no-find-dom-node": [
             "error"
-        ],*/
+        ],
         // Prevent usage of isMounted (will be deprecated)
-        /*"react/no-is-mounted": [
+        "react/no-is-mounted": [
             "error"
-        ],*/
+        ],
         // Prevent multiple component definition per file
         /*"react/no-multi-comp": [
             "warn"
         ],*/
         // Prevent usage of the return value of React.render
-        /*"react/no-render-return-value": [
+        "react/no-render-return-value": [
             "error"
-        ],*/
-        // Prevents common casing typos
+        ],
+        // Prevents common casing typos (not released yet)
         /*"react/no-typos": [
             "error"
         ],*/
         // Prevent invalid characters from appearing in markup
-        /*"react/no-unescaped-entities":[
+        "react/no-unescaped-entities":[
             "error"
-        ],*/
+        ],
         // Prevent usage of unknown DOM property
-        /*"react/no-unknown-property": [
+        "react/no-unknown-property": [
             "error"
-        ],*/
+        ],
         // Enforce ES5 or ES6 class for React Components
         "react/prefer-es6-class": [
             "error",
