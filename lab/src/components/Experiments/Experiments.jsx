@@ -18,7 +18,7 @@ class Experiments extends Component {
     if(value === 'all') {
       delete location.query[key];
     } else {
-      Object.assign(location.query, {[key]: value});
+      Object.assign(location.query, { [key]: value });
     }
     hashHistory.push(location);
   }

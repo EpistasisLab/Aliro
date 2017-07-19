@@ -7,7 +7,7 @@ const breakpoints = {
 };
 
 const initState = () => {
-  return {width: window.innerWidth, height: window.innerHeight};
+  return { width: window.innerWidth, height: window.innerHeight };
 };
 
 let eventListener;
@@ -21,7 +21,7 @@ const startWatch = (setState) => {
 };
 
 const updateState = (setState) => {
-  setState({width: window.innerWidth, height: window.innerHeight});
+  setState({ width: window.innerWidth, height: window.innerHeight });
 };
 
 const endWatch = () => {

@@ -9,7 +9,7 @@ import {
   getFilters,
   getSort
 } from './data';
-import SceneWrapper from '../SceneWrapper';
+import SceneHeader from '../SceneHeader';
 import Experiments from './Experiments';
 
 class ExperimentsContainer extends Component {
@@ -19,9 +19,10 @@ class ExperimentsContainer extends Component {
 
   render() {
     return (
-      <SceneWrapper headerContent="Experiments">
+      <div>
+        <SceneHeader header="Experiments" />
         <Experiments {...this.props} />
-      </SceneWrapper> 
+      </div>
     );
   }
 }

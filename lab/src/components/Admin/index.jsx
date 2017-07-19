@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 /*import {
   //getAllAlgorithms
 } from './data';*/
-import SceneWrapper from '../SceneWrapper';
+import SceneHeader from '../SceneHeader';
 import Admin from './Admin';
 
 class AdminContainer extends Component {
@@ -14,9 +14,10 @@ class AdminContainer extends Component {
 
   render() {
     return (
-      <SceneWrapper headerContent="Manage Algorithms">
+      <div>
+        <SceneHeader header="Manage Algorithms" />
         <Admin {...this.props} />
-      </SceneWrapper> 
+      </div>
     );
   }
 }
