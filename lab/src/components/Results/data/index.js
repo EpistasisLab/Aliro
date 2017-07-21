@@ -3,7 +3,8 @@ import { combineReducers } from 'redux-immutable';
 import {
   RESULTS_FETCH_REQUEST,
   RESULTS_FETCH_SUCCESS,
-  RESULTS_FETCH_FAILURE
+  RESULTS_FETCH_FAILURE,
+  RESULTS_CLEAR
 } from './actions';
 import confusionMatrix from '../components/ConfusionMatrix/data';
 import rocCurve from '../components/ROCCurve/data';
@@ -15,6 +16,8 @@ const data = (state = Map(), action) => {
   switch(action.type) {
     case RESULTS_FETCH_SUCCESS:
       return state.merge(action.response[0]);
+    case RESULTS_CLEAR:
+      return Map(); 
     default:
       return state;
   }
@@ -29,7 +32,8 @@ const isFetching = (state = false, action) => {
       return true;
     case RESULTS_FETCH_SUCCESS:
     case RESULTS_FETCH_FAILURE:
-      return false;   
+    case RESULTS_CLEAR:
+      return false; 
     default:
       return state;
   }
@@ -44,6 +48,7 @@ const errorMessage = (state = null, action) => {
       return action.message;
     case RESULTS_FETCH_REQUEST:
     case RESULTS_FETCH_SUCCESS:
+    case RESULTS_CLEAR:
       return null;
     default:
       return state; 
