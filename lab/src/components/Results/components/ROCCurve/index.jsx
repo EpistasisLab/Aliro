@@ -2,38 +2,38 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
-  getConfusionMatrix, 
+  getROCCurve, 
   getIsFetching, 
   getErrorMessage
 } from './data';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import ConfusionMatrix from './ConfusionMatrix';
+import ROCCurve from './ROCCurve';
 
-class ConfusionMatrixContainer extends Component {
+class ROCCurveContainer extends Component {
   componentDidMount() {
     if(this.props.file) {
-      this.props.fetchConfusionMatrix(this.props.file.get('_id'));
+      this.props.fetchROCCurve(this.props.file.get('_id'));
     }
   }
 
   render() {
     return (
-      <ConfusionMatrix {...this.props} />
+      <ROCCurve {...this.props} />
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  confusionMatrix: getConfusionMatrix(state),
+  rocCurve: getROCCurve(state),
   isFetching: getIsFetching(state),
   errorMessage: getErrorMessage(state)
 });
 
-ConfusionMatrixContainer.propTypes = {
+ROCCurveContainer.propTypes = {
   file: ImmutablePropTypes.map
 };
 
 export default connect(
   mapStateToProps, 
   actions
-)(ConfusionMatrixContainer);
+)(ROCCurveContainer);
