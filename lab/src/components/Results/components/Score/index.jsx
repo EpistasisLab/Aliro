@@ -1,26 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import FetchMessage from '../../../FetchMessage';
 import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
 
 function Score({ scoreName, scoreValue, chartKey, chartColor }) {
+  const getCardContent = () => {
+    if(!scoreValue) {
+      return (
+        <FetchMessage message={`${scoreName} is not available.`} />
+      );
+    }
+
+    return (
+      <Gauge 
+        value={scoreValue}
+        chartKey={chartKey}
+        chartColor={chartColor}
+      />
+    );
+  };
+
   return (
     <InvertedCard 
       header={scoreName}
-      content={
-        <Gauge 
-          value={scoreValue}
-          chartKey={chartKey}
-          chartColor={chartColor}
-        />
-      }
+      content={getCardContent()}
     />
   );
 }
 
 Score.propTypes = {
   scoreName: PropTypes.string.isRequired,
-  scoreValue: PropTypes.number.isRequired,
+  scoreValue: PropTypes.number,
   chartKey: PropTypes.string.isRequired,
   chartColor: PropTypes.string.isRequired
 };
