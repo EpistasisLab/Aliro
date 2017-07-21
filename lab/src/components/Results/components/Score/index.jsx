@@ -6,7 +6,7 @@ import Gauge from '../../../Gauge';
 
 function Score({ scoreName, scoreValue, chartKey, chartColor }) {
   const getCardContent = () => {
-    if(!scoreValue) {
+    if(typeof(scoreValue) !== 'number') {
       return (
         <FetchMessage message={`${scoreName} is not available.`} />
       );
@@ -31,7 +31,10 @@ function Score({ scoreName, scoreValue, chartKey, chartColor }) {
 
 Score.propTypes = {
   scoreName: PropTypes.string.isRequired,
-  scoreValue: PropTypes.number,
+  scoreValue: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string
+  ]),
   chartKey: PropTypes.string.isRequired,
   chartColor: PropTypes.string.isRequired
 };
