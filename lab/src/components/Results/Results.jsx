@@ -1,21 +1,21 @@
 import React from 'react';
-//import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import FetchMessage from '../FetchMessage';
 import FetchError from '../FetchError';
 import AlgorithmDetails from './components/AlgorithmDetails';
 import RunDetails from './components/RunDetails';
 import ConfusionMatrix from './components/ConfusionMatrix';
-import { Gauge } from './components/Gauge';
-import { Header, Grid, Segment, Image } from 'semantic-ui-react';
+import ROCCurve from './components/ROCCurve';
+import Score from './components/Score';
+import { Grid } from 'semantic-ui-react';
 
 function Results({
+  params,
   results,
   isFetching,
   errorMessage,
-  fetchResults,
-  confusionMatrix,
-  rocCurve,
-  params
+  fetchResults
 }) {
   if(errorMessage === 'Failed to fetch') {
     return (
@@ -38,6 +38,17 @@ function Results({
     );
   }
 
+  // check if files are available
+  let confusionMatrix, rocCurve;
+  results.get('experiment_files').forEach(file => {
+    const filename = file.get('filename');
+    if(filename.includes('confusion_matrix')) {
+      confusionMatrix = file;
+    } else if(filename.includes('roc_curve')) {
+      rocCurve = file;
+    }
+  });
+
   return (
     <Grid columns={3} stackable>
       <Grid.Row>
@@ -53,65 +64,28 @@ function Results({
           />
         </Grid.Column>
         <Grid.Column>
-          <ConfusionMatrix imageSrc={confusionMatrix} />
-          <Segment inverted attached="top" className="panel-header">
-            <Header 
-              inverted
-              size="medium"
-              content="ROC Curve" 
-            />
-          </Segment>
-          <Segment inverted attached="bottom">  
-            {rocCurve ? (
-              <Image src={rocCurve} />
-            ) : (
-              <span>Not available</span>
-            )}
-          </Segment>
+          <ConfusionMatrix file={confusionMatrix} />
+          <ROCCurve file={rocCurve} />
         </Grid.Column>
         <Grid.Column>
-          <Segment inverted attached="top" className="panel-header">
-            <Header 
-              inverted
-              size="medium"
-              content="Training Accuracy" 
-            />
-          </Segment>
-          <Segment inverted attached="bottom">  
-            <Gauge 
-              chartName="training" 
-              color="#7D5BA6"
-              value={results.getIn(['scores', 'train_score'])}
-            />
-          </Segment>
-          <Segment inverted attached="top" className="panel-header">
-            <Header 
-              inverted
-              size="medium"
-              content="Testing Accuracy" 
-            />
-          </Segment>
-          <Segment inverted attached="bottom">  
-            <Gauge 
-              chartName="testing" 
-              color="#55D6BE"
-              value={results.getIn(['scores', 'test_score'])}
-            />
-          </Segment>
-          <Segment inverted attached="top" className="panel-header">
-            <Header 
-              inverted
-              size="medium"
-              content="AUC" 
-            />
-          </Segment>
-          <Segment inverted attached="bottom">  
-            <Gauge 
-              chartName="auc" 
-              color="#59ABE3"
-              value={results.getIn(['scores', 'roc_auc_score'])}
-            />
-          </Segment>
+          <Score
+            scoreName="Training Accuracy"
+            scoreValue={results.getIn(['scores', 'train_score'])}
+            chartKey="training"
+            chartColor="#7D5BA6"
+          />
+          <Score
+            scoreName="Testing Accuracy"
+            scoreValue={results.getIn(['scores', 'test_score'])}
+            chartKey="testing"
+            chartColor="#55D6BE"
+          />
+          <Score
+            scoreName="AUC"
+            scoreValue={results.getIn(['scores', 'roc_auc_score'])}
+            chartKey="auc"
+            chartColor="#59ABE3"
+          />
         </Grid.Column>
       </Grid.Row>
     </Grid>
@@ -119,8 +93,11 @@ function Results({
 }
 
 Results.propTypes = {
-
+  params: PropTypes.shape({ id: PropTypes.string }).isRequired,
+  results: ImmutablePropTypes.map.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  fetchResults: PropTypes.func.isRequired
 };
-
 
 export default Results;
