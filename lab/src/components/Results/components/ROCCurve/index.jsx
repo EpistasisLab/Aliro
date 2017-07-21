@@ -10,6 +10,10 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ROCCurve from './ROCCurve';
 
 class ROCCurveContainer extends Component {
+  componentWillMount() {
+    this.props.clearROCCurve();
+  }
+
   componentDidMount() {
     if(this.props.file) {
       this.props.fetchROCCurve(this.props.file.get('_id'));
