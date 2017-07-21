@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MomentPropTypes from 'react-moment-proptypes';
 import InvertedCard from '../../../InvertedCard';
 import { Grid, Header } from 'semantic-ui-react';
 import moment from 'moment';
@@ -63,8 +64,8 @@ function RunDetails({ startTime, finishTime, launchedBy }) {
 }
 
 RunDetails.propTypes = {
-  startTime: PropTypes.string.isRequired,
-  finishTime: PropTypes.string.isRequired,
+  startTime: MomentPropTypes.momentString.isRequired,
+  finishTime: MomentPropTypes.momentString.isRequired,
   launchedBy: PropTypes.string.isRequired
 };
 

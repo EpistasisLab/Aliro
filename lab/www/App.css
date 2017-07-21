@@ -18,6 +18,10 @@ body {
     margin-bottom: 0.9rem;
 }
 
+.pennai .inverted-card {
+    margin-bottom: 2rem;
+}
+
 .pennai .inverted-card .ui.top.attached.segment {
     max-height: 57px;
 }
