@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import c3 from 'c3';
 
-export class Gauge extends React.Component {
-  renderChart(chartName, color, value) {
+class Gauge extends Component {
+  componentDidMount() {
+    const { value, chartKey, chartColor } = this.props;
+    this.renderChart(value, chartKey, chartColor);
+  }
+
+  renderChart(value, chartKey, chartColor) {
     c3.generate({
-      bindto: `.${chartName}`,
+      bindto: `.${chartKey}`,
       data: {
         columns: [
           ['data', value]
@@ -25,7 +31,7 @@ export class Gauge extends React.Component {
         max: 1.0
       },
       color: {
-        pattern: [color], // the three color levels for the percentage values.
+        pattern: [chartColor], // the three color levels for the percentage values.
         threshold: {
           unit: 'value', // percentage is default
           max: 200, // 100 is default
@@ -39,10 +45,20 @@ export class Gauge extends React.Component {
   }
 
   render() {
-    const { chartName, color, value } = this.props;
-    this.renderChart(chartName, color, value);
     return (
-      <div className={`gauge ${chartName}`} />
+      <div className={`gauge ${this.props.chartKey}`} />
     );
   }
 }
+
+Gauge.propTypes = {
+  value: PropTypes.number.isRequired,
+  chartKey: PropTypes.string.isRequired,
+  chartColor: PropTypes.string
+};
+
+Gauge.defaultProps = {
+  chartColor: '#60B044'
+};
+
+export default Gauge;
