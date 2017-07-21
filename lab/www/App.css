@@ -144,6 +144,16 @@ body {
    margin-top: -1.5rem;
 }
 
+.pennai .experiments-scene .table-container {
+    width: 100%;
+    overflow-y: auto;
+    margin: 0 0 1em;
+}
+
+.pennai .experiments-scene .table-container .table {
+    min-width: 650px;
+}
+
 .pennai .experiments-scene .ui.table thead th {
     padding: .3rem .78571429em;
 }
@@ -280,16 +290,6 @@ body {
 
 .ui.progress.auc.score .bar .progress::after {
     content: "area under the curve";
-}
-
-.table-container {
-    width: 100%;
-    overflow-y: auto;
-    margin: 0 0 1em;
-}
-
-.table-container .table {
-    min-width: 650px;
 }
 
 .pennai .ui.menu .link.active > .item {

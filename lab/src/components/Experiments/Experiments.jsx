@@ -1,98 +1,83 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { hashHistory } from 'react-router';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import FetchMessage from '../FetchMessage';
+import FetchError from '../FetchError';
 import ExperimentFilters from './components/ExperimentFilters';
 import ExperimentsTable from './components/ExperimentsTable';
-import FetchError from '../FetchError';
 import { Header, Segment } from 'semantic-ui-react';
 
-class Experiments extends Component {
-  constructor(props) {
-    super(props);
-
-    this.updateQuery = this.updateQuery.bind(this);
-    this.resetQuery = this.resetQuery.bind(this);
-  }
-
-  updateQuery(key, value) {
-    const location = Object.assign({}, this.props.location);
+function Experiments({
+  experiments,
+  isFetching,
+  errorMessage,
+  filters,
+  sort,
+  location,
+  fetchExperiments
+}) {
+  const updateQuery = (key, value) => {
+    const nextLocation = Object.assign({}, location);
     if(value === 'all') {
-      delete location.query[key];
+      delete nextLocation.query[key];
     } else {
-      Object.assign(location.query, { [key]: value });
+      Object.assign(nextLocation.query, { [key]: value });
     }
-    hashHistory.push(location);
-  }
+    hashHistory.push(nextLocation);
+  };
 
-  resetQuery() {
-    const location = Object.assign({}, this.props.location);
-    Object.keys(location.query).forEach((key) => {
-      delete location.query[key];
+  const resetQuery = () => {
+    const nextLocation = Object.assign({}, location);
+    Object.keys(nextLocation.query).forEach((key) => {
+      delete nextLocation.query[key];
     });
-    hashHistory.push(location);
+    hashHistory.push(nextLocation);
+  };
+
+  if(errorMessage && !experiments.size) {
+    return (
+      <FetchError 
+        message={errorMessage}
+        onRetry={() => fetchExperiments()}
+      />
+    );
+  } else if(isFetching && !experiments.size) {
+    return (
+      <FetchMessage message="Retrieving your experiments..." />
+    );
   }
 
-  render() {
-
-    const { 
-      experiments,
-      isFetching,
-      errorMessage,
-      filters,
-      sort,
-      fetchExperiments
-    } = this.props;
-
-    if(errorMessage && !experiments.size) {
-      return (
-        <FetchError 
-          message={errorMessage}
-          onRetry={() => fetchExperiments()}
+  return (
+    <div>
+      <Segment inverted attached="top">
+        <ExperimentFilters
+          filters={filters}
+          updateQuery={updateQuery}
+          resetQuery={resetQuery}
         />
-      );
-    } else if(isFetching && !experiments.size) {
-      return (
-        <Header 
-          inverted 
-          size="small"
-          content="Retrieving your experiments..."
-        />
-      );
-    }
-
-    return (
-      <div className="experiments-scene">
-        <Segment inverted attached="top" className="filters">
-          <ExperimentFilters
-            filters={filters}
-            updateQuery={this.updateQuery}
-            resetQuery={this.resetQuery}
-          />
+        <span className="experiment-count float-right">
           <Header 
             inverted
             size="small" 
             content={`${experiments.size} result${experiments.size === 1 ? '' : 's'}`}
-            className="float-right experiment-count"
           />
-        </Segment>
-        <Segment inverted attached="bottom" className="tabled">
-          {experiments.size > 0 ? (
-            <ExperimentsTable 
-              experiments={experiments}
-              filters={filters}
-              sort={sort}
-              updateQuery={this.updateQuery}
-            />
-          ) : (
-            <Header 
-              inverted 
-              size="small"
-              content="No results available."
-            />
-          )}
-        </Segment>
-      </div>
-    );
-  }
+        </span>
+      </Segment>
+      <Segment inverted attached="bottom">
+        {experiments.size > 0 ? (
+          <ExperimentsTable 
+            experiments={experiments}
+            filters={filters}
+            sort={sort}
+            updateQuery={updateQuery}
+          />
+        ) : (
+          <FetchMessage message="No results available." />
+        )}
+      </Segment>
+    </div>
+  );
 }
 
 export default Experiments;
