@@ -19,7 +19,7 @@ class ExperimentsContainer extends Component {
 
   render() {
     return (
-      <div>
+      <div className="experiments-scene">
         <SceneHeader header="Experiments" />
         <Experiments {...this.props} />
       </div>

@@ -1,9 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table, Icon, Popup, Dropdown } from 'semantic-ui-react';
 import moment from 'moment';
 
-class ExperimentsTableBody extends Component {
-  getExperimentLink(experiment) {
+function ExperimentsTableBody({
+  experiments,
+  shouldDisplayQuality,
+  shouldDisplayAwards,
+  shouldDisplayParams,
+  orderedParamKeys
+}) {
+  const getExperimentLink = (experiment) => {
     const status = experiment.get('status');
     const id = experiment.get('_id');
 
@@ -12,13 +20,13 @@ class ExperimentsTableBody extends Component {
     } else {
       return `/#/results/${id}`;
     }
-  }
+  };
 
-  getFormattedDate(date) {
-    return moment(date).format('M/DD/YY h:mm a');
-  }
+  const getFormattedTime = (time) => {
+    return moment(time).format('M/DD/YY h:mm a');
+  };
 
-  renderStatusIcon(status) {
+  const renderStatusIcon = (status) => {
     switch(status) {
       case 'suggested': 
         return <Icon inverted color="purple" name="android" />;
@@ -35,9 +43,9 @@ class ExperimentsTableBody extends Component {
       default: 
         return;
     }
-  }
+  };
 
-  renderAwardPopup(experiment) {
+  const renderAwardPopup = (experiment) => {
     switch(experiment.get('award')) {
       case 'best_overall':
         return (
@@ -56,40 +64,32 @@ class ExperimentsTableBody extends Component {
       default:
         return; 
     }
-  }
+  };
 
-  render() {
-
-    const { 
-      experiments,
-      shouldDisplayQuality,
-      shouldDisplayAwards,
-      shouldDisplayParams,
-      orderedParamKeys
-    } = this.props;
-
-    return (
-      <Table.Body>
-        {experiments.map(experiment => (
+  return (
+    <Table.Body>
+      {experiments.map(experiment => {
+        const experimentLink = getExperimentLink(experiment);
+        return (
           <Table.Row 
             key={experiment.get('_id')}
             className={experiment.get('notification')}
           >
             <Table.Cell selectable>
-              <a href={this.getExperimentLink(experiment)}>
-                {this.renderStatusIcon(experiment.get('status'))} 
-                {this.getFormattedDate(experiment.get('started'))}
+              <a href={experimentLink}>
+                {renderStatusIcon(experiment.get('status'))} 
+                {getFormattedTime(experiment.get('started'))}
               </a>  
             </Table.Cell>
             {shouldDisplayQuality ? (
               <Table.Cell selectable>
-                <a href={this.getExperimentLink(experiment)}>
+                <a href={experimentLink}>
                   {experiment.get('quality_metric').toFixed(2)}
                 </a>  
               </Table.Cell>
             ) : (
               <Table.Cell selectable>
-                <a href={this.getExperimentLink(experiment)}>
+                <a href={experimentLink}>
                   {experiment.getIn(['scores', 'accuracy_score']) ? 
                     experiment.getIn(['scores', 'accuracy_score']).toFixed(2) : '-'
                   }
@@ -98,21 +98,21 @@ class ExperimentsTableBody extends Component {
               </Table.Cell>
             )}
             <Table.Cell selectable>
-              <a href={this.getExperimentLink(experiment)}>
+              <a href={experimentLink}>
                 {experiment.get('dataset_name')}
               </a>  
             </Table.Cell>
             {shouldDisplayParams ? (
               orderedParamKeys.map((key) => (
                 <Table.Cell key={[experiment._id, key]} selectable>
-                  <a href={this.getExperimentLink(experiment)}>
+                  <a href={experimentLink}>
                     {experiment.getIn(['params', key]).toString() || '-'}
                   </a>
                 </Table.Cell>
               ))
             ) : (
               <Table.Cell selectable>
-                <a href={this.getExperimentLink(experiment)}>
+                <a href={experimentLink}>
                   {experiment.get('algorithm')}
                 </a>  
               </Table.Cell> 
@@ -128,10 +128,18 @@ class ExperimentsTableBody extends Component {
               </Dropdown>
             </Table.Cell>
           </Table.Row>
-        ))}
-      </Table.Body>
-    );
-  }
+        );
+      })}
+    </Table.Body>
+  );
 }
+
+ExperimentsTableBody.propTypes = {
+  experiments: ImmutablePropTypes.list.isRequired,
+  shouldDisplayQuality: PropTypes.bool.isRequired,
+  shouldDisplayAwards: PropTypes.bool.isRequired,
+  shouldDisplayParams: PropTypes.bool.isRequired,
+  orderedParamKeys: ImmutablePropTypes.seq.isRequired
+};
 
 export default ExperimentsTableBody;
