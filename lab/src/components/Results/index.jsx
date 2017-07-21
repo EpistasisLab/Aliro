@@ -10,6 +10,10 @@ import SceneHeader from '../SceneHeader';
 import Results from './Results';
 
 class ResultsContainer extends Component {
+  componentWillMount() {
+    this.props.clearResults();
+  }
+
   componentDidMount() {
     this.props.fetchResults(this.props.params.id);
   }
