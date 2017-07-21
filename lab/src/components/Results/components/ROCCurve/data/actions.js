@@ -4,6 +4,7 @@ import { getIsFetching } from './index';
 export const ROC_CURVE_FETCH_REQUEST = 'ROC_CURVE_FETCH_REQUEST';
 export const ROC_CURVE_FETCH_SUCCESS = 'ROC_CURVE_FETCH_SUCCESS';
 export const ROC_CURVE_FETCH_FAILURE = 'ROC_CURVE_FETCH_FAILURE';
+export const ROC_CURVE_CLEAR = 'ROC_CURVE_CLEAR';
 
 export const fetchROCCurve = (id) => (dispatch, getState) => {
   if(getIsFetching(getState())) {
@@ -30,4 +31,10 @@ export const fetchROCCurve = (id) => (dispatch, getState) => {
       });
     }
   );
+};
+
+export const clearROCCurve = () => (dispatch) => {
+  dispatch({
+    type: ROC_CURVE_CLEAR
+  });
 };

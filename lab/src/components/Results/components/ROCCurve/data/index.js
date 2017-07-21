@@ -2,7 +2,8 @@ import { combineReducers } from 'redux-immutable';
 import {
   ROC_CURVE_FETCH_REQUEST,
   ROC_CURVE_FETCH_SUCCESS,
-  ROC_CURVE_FETCH_FAILURE
+  ROC_CURVE_FETCH_FAILURE,
+  ROC_CURVE_CLEAR
 } from './actions';
 
 export const getROCCurve = (state) => 
@@ -12,6 +13,8 @@ const data = (state = null, action) => {
   switch(action.type) {
     case ROC_CURVE_FETCH_SUCCESS:
       return action.response;
+    case ROC_CURVE_CLEAR:
+      return null;
     default:
       return state;
   }
@@ -26,6 +29,7 @@ const isFetching = (state = false, action) => {
       return true;
     case ROC_CURVE_FETCH_SUCCESS:
     case ROC_CURVE_FETCH_FAILURE:
+    case ROC_CURVE_CLEAR:
       return false;   
     default:
       return state;
@@ -41,6 +45,7 @@ const errorMessage = (state = null, action) => {
       return action.message;
     case ROC_CURVE_FETCH_REQUEST:
     case ROC_CURVE_FETCH_SUCCESS:
+    case ROC_CURVE_CLEAR:
       return null;
     default:
       return state;

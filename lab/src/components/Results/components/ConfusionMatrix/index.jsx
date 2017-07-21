@@ -10,6 +10,10 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ConfusionMatrix from './ConfusionMatrix';
 
 class ConfusionMatrixContainer extends Component {
+  componentWillMount() {
+    this.props.clearConfusionMatrix();
+  }
+
   componentDidMount() {
     if(this.props.file) {
       this.props.fetchConfusionMatrix(this.props.file.get('_id'));
