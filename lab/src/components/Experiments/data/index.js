@@ -16,9 +16,11 @@ import {
 // use selectors throughout app
 // make table filters reponsive
 // stylize table scrollbar
-//format dataset names throughout
-//also format alg names in dropdown + alphabetize
+// format dataset names throughout
+// also format alg names in dropdown + alphabetize
 // think about incompatible params
+// boolean sorting not working
+// number cols init should be descending, strings ascending
 
 const getById = (state) => 
   state.getIn(['experiments', 'byId']);
