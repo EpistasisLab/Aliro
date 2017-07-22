@@ -93,7 +93,7 @@ function ExperimentsTableBody({
                   {experiment.getIn(['scores', 'accuracy_score']) ? 
                     experiment.getIn(['scores', 'accuracy_score']).toFixed(2) : '-'
                   }
-                  {shouldDisplayAwards && this.renderAwardPopup(experiment)}
+                  {shouldDisplayAwards && renderAwardPopup(experiment)}
                 </a>  
               </Table.Cell>
             )}
