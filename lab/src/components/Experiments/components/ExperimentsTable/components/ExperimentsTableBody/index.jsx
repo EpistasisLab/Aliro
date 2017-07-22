@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table, Icon, Popup, Dropdown } from 'semantic-ui-react';
-import moment from 'moment';
+import { formatTime, formatDataset, formatAlgorithm } from '../../../../../../utils/formatter';
 
 function ExperimentsTableBody({
   experiments,
@@ -20,10 +20,6 @@ function ExperimentsTableBody({
     } else {
       return `/#/results/${id}`;
     }
-  };
-
-  const getFormattedTime = (time) => {
-    return moment(time).format('M/DD/YY h:mm a');
   };
 
   const renderStatusIcon = (status) => {
@@ -58,7 +54,7 @@ function ExperimentsTableBody({
         return (
           <Popup
             trigger={<Icon inverted color="grey" size="large" name="trophy" className="float-right" />}
-            content={`Best result for this dataset with ${experiment.get('algorithm')}`}
+            content={`Best result for this dataset with ${formatAlgorithm(experiment.get('algorithm'))}`}
           />
         );
       default:
@@ -78,7 +74,7 @@ function ExperimentsTableBody({
             <Table.Cell selectable>
               <a href={experimentLink}>
                 {renderStatusIcon(experiment.get('status'))} 
-                {getFormattedTime(experiment.get('started'))}
+                {formatTime(experiment.get('started'))}
               </a>  
             </Table.Cell>
             {shouldDisplayQuality ? (
@@ -99,7 +95,7 @@ function ExperimentsTableBody({
             )}
             <Table.Cell selectable>
               <a href={experimentLink}>
-                {experiment.get('dataset_name')}
+                {formatDataset(experiment.get('dataset_name'))}
               </a>  
             </Table.Cell>
             {shouldDisplayParams ? (
@@ -113,7 +109,7 @@ function ExperimentsTableBody({
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.get('algorithm')}
+                  {formatAlgorithm(experiment.get('algorithm'))}
                 </a>  
               </Table.Cell> 
             )}

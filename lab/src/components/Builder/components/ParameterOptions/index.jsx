@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { fmtParam } from '../../../../utils/formatter';
 import { Grid, Segment, Header, Popup, Icon, Button } from 'semantic-ui-react';
+import { formatParam } from '../../../../utils/formatter';
 
 class ParameterOptions extends Component {
   calcCols(choices) {
@@ -48,7 +48,7 @@ class ParameterOptions extends Component {
                 as="h2"
                 inverted 
                 color="blue"
-                content={fmtParam(info.get('alias') || param)}
+                content={formatParam(info.get('alias') || param)}
                 className="param-name"
               />
             </Segment>  
