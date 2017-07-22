@@ -3,19 +3,9 @@ import PropTypes from 'prop-types';
 import MomentPropTypes from 'react-moment-proptypes';
 import InvertedCard from '../../../InvertedCard';
 import { Grid, Header } from 'semantic-ui-react';
-import moment from 'moment';
-import twix from 'twix';
+import { formatTime, formatDuration } from '../../../../utils/formatter';
 
 function RunDetails({ startTime, finishTime, launchedBy }) {
-  const getFormattedTime = (time) => {
-    return moment(time).format('M/DD/YY h:mm a');
-  };
-
-  const getDuration = (startTime, finishTime) => {
-    let duration = moment(startTime).twix(finishTime).asDuration();
-    return `${duration._data.hours}h ${duration._data.minutes}m ${duration._data.seconds}s`;
-  };
-  
   return (
     <InvertedCard 
       header="Run Details"
@@ -27,7 +17,7 @@ function RunDetails({ startTime, finishTime, launchedBy }) {
               color="grey" 
               size="tiny" 
               content="Started" 
-              subheader={getFormattedTime(startTime)}
+              subheader={formatTime(startTime)}
             />
           </Grid.Column>
           <Grid.Column>
@@ -36,7 +26,7 @@ function RunDetails({ startTime, finishTime, launchedBy }) {
               color="grey" 
               size="tiny" 
               content="Finished"
-              subheader={getFormattedTime(finishTime)}
+              subheader={formatTime(finishTime)}
             />
           </Grid.Column>
           <Grid.Column>
@@ -45,7 +35,7 @@ function RunDetails({ startTime, finishTime, launchedBy }) {
               color="grey" 
               size="tiny" 
               content="Duration"
-              subheader={getDuration(startTime, finishTime)}
+              subheader={formatDuration(startTime, finishTime)}
             />
           </Grid.Column>
           <Grid.Column>

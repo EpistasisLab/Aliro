@@ -8,6 +8,7 @@ import {
 } from './data';
 import SceneHeader from '../SceneHeader';
 import Results from './Results';
+import { formatDataset } from '../../utils/formatter';
 
 class ResultsContainer extends Component {
   componentWillMount() {
@@ -22,7 +23,7 @@ class ResultsContainer extends Component {
     const { results } = this.props;
     if(results.size) {
       return {
-        header: `Results: ${results.get('dataset_name')}`,
+        header: `Results: ${formatDataset(results.get('dataset_name'))}`,
         subheader: `Experiment: #${results.get('_id')}`
       };
     }

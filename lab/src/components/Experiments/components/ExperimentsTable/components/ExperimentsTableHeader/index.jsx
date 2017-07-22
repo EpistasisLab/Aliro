@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table } from 'semantic-ui-react';
+import { formatAlgorithm, formatParam } from '../../../../../../utils/formatter';
 
 function ExperimentsTableHeader({
   selectedAlgorithm,
@@ -68,7 +69,7 @@ function ExperimentsTableHeader({
         >
           Algorithm
           {shouldDisplayParams &&
-            <span className="alg-name">({selectedAlgorithm})</span>
+            <span className="alg-name">({formatAlgorithm(selectedAlgorithm)})</span>
           }
         </Table.HeaderCell>
         <Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
@@ -83,7 +84,7 @@ function ExperimentsTableHeader({
               sorted={getIsSorted(key)}
               onClick={() => onSort(key)}
             >
-              {key}
+              {formatParam(key)}
             </Table.HeaderCell> 
           ))}
         </Table.Row>
