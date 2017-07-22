@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
-import { fmtDatasetName } from '../../../../utils/formatter';
 import DatasetActions from './components/DatasetActions';
 import BestResult from './components/BestResult';
 import ExperimentStatus from './components/ExperimentStatus';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
+import { formatDataset } from '../../../../utils/formatter';
 
 class DatasetCard extends Component {
   render() {
@@ -26,7 +26,7 @@ class DatasetCard extends Component {
             as="a"
             inverted 
             size="large"
-            content={fmtDatasetName(dataset.get('name'))}
+            content={formatDataset(dataset.get('name'))}
             href={datasetLink}
             className="title"
           />

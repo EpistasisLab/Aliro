@@ -8,19 +8,17 @@ import {
   EXPERIMENT_ADD,
   EXPERIMENT_UPDATE
 } from './actions';
+import { formatDataset, formatAlgorithm } from '../../../utils/formatter';
 
-// cleanup getfilters function
-// alphabetize datasets and algorithms in filters
 // make sure on click doesnt rerun change if same
 // why does changing filter cause two updates?
 // use selectors throughout app
 // make table filters reponsive
 // stylize table scrollbar
-// format dataset names throughout
-// also format alg names in dropdown + alphabetize
 // think about incompatible params
 // boolean sorting not working
 // number cols init should be descending, strings ascending
+// fix sorting so it doesn't use () bind
 
 const getById = (state) => 
   state.getIn(['experiments', 'byId']);
@@ -109,57 +107,64 @@ const getQuery = (state, props) => props.location.query;
 export const getFilters = createSelector(
   [getAllExperiments, getQuery],
   (allExperiments, query) => {
-
     const filterKeys = [
-      { key: 'status', keyPath: ['status'], textPath: ['status'], valuePath: ['status'] },
-      { key: 'dataset', keyPath: ['dataset_name'], textPath: ['dataset_name'], valuePath: ['dataset_id'] },
-      { key: 'algorithm', keyPath: ['algorithm'], textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
+      { key: 'status', textPath: ['status'], valuePath: ['status'] },
+      { key: 'dataset', textPath: ['dataset_name'], valuePath: ['dataset_id'] },
+      { key: 'algorithm', textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
     ];
 
-    //let filters = {};
-    let test = {};
+    let filters = {};
 
     // initalize options as array for each filter
     filterKeys.forEach((filter) => {
-      test[filter.key] = {};
-      test[filter.key].values = [];
-      test[filter.key].options = [];
+      filters[filter.key] = {};
+      filters[filter.key].values = [];
+      filters[filter.key].options = [];
     });
 
     // get all possible filter options
     allExperiments.forEach((exp) => {
       filterKeys.forEach((filter) => {
-        if(!test[filter.key].values.includes(exp.getIn(filter.valuePath))) {
-          test[filter.key].values.push(exp.getIn(filter.valuePath));
+        if(!filters[filter.key].values.includes(exp.getIn(filter.valuePath))) {
+          filters[filter.key].values.push(exp.getIn(filter.valuePath));
 
-          test[filter.key].options.push({ 
-            text: exp.getIn(filter.textPath), 
+          filters[filter.key].options.push({ 
+            text: formatOptionText(filter.key, exp.getIn(filter.textPath)), 
             value: exp.getIn(filter.valuePath) 
           });
         }
       });
     });
 
+    // alphabetize dataset and algorithm filters
+    filters.dataset.options.sort((a, b) => alphabetize(a.text, b.text, 'ascending'));
+    filters.algorithm.options.sort((a, b) => alphabetize(a.text, b.text, 'ascending'));
+
+    // add 'all' option and set selected based on query
     filterKeys.forEach((filter) => {
-      test[filter.key].options.unshift({
+      filters[filter.key].options.unshift({
         text: 'all',
         value: 'all'
       });
 
-      test[filter.key].selected = test[filter.key].values.includes(query[filter.key]) ? query[filter.key] : 'all';
+      filters[filter.key].selected = filters[filter.key].values.includes(query[filter.key]) ? query[filter.key] : 'all';
     });
 
-    /*let filters = {};
-    filterKeys.forEach((filter) => {
-      let options = getUniqOptions(allExperiments, filter.keyPath);
-      let selected = options.includes(query[filter.key]) ? query[filter.key] : 'all';
-
-      filters[filter.key] = {options, selected};
-    });*/
-
-    return test;
+    return filters;
   }
 );
+
+const formatOptionText = (filterKey, text) => {
+  if(filterKey === 'dataset') {
+    return formatDataset(text);
+  }
+
+  if(filterKey === 'algorithm') {
+    return formatAlgorithm(text);
+  }
+
+  return text;
+};
 
 export const getSort = createSelector(
   [getQuery],
