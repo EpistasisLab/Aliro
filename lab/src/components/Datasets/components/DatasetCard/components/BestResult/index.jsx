@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { fmtAlg } from '../../../../../../utils/formatter';
 import { Segment, Header, Progress } from 'semantic-ui-react';
+import { formatAlgorithm } from '../../../../../../utils/formatter';
 
 class BestResult extends Component {
   getNoResultMessage(hasMetadata) {
@@ -48,7 +48,7 @@ class BestResult extends Component {
         <Header inverted size="small">
           Best Result
           <Header.Subheader>
-            <div>{fmtAlg(result.get('algorithm'))}</div>
+            <div>{formatAlgorithm(result.get('algorithm'))}</div>
             <span>#{result.get('_id')}</span>
           </Header.Subheader>
         </Header>
