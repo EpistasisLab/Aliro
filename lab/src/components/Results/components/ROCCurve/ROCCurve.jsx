@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import FetchMessage from '../../../FetchMessage';
 import FetchError from '../../../FetchError';
 import InvertedCard from '../../../InvertedCard';
-import { Image } from 'semantic-ui-react';
+import { Header, Image, Loader } from 'semantic-ui-react';
 
 function ROCCurve({
   rocCurve, 
@@ -23,11 +22,13 @@ function ROCCurve({
       );
     } else if(isFetching) {
       return (
-        <FetchMessage message="Retrieving ROC Curve..." />
+        <Loader active inverted inline="centered">
+          Retrieving ROC curve...
+        </Loader>
       );
     } else if(!isFetching && !rocCurve) {
       return (
-        <FetchMessage message="ROC Curve is not available." />
+        <Header inverted size="tiny" content="ROC Curve is not available." />
       );
     }
 

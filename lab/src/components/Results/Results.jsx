@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import FetchMessage from '../FetchMessage';
 import FetchError from '../FetchError';
 import AlgorithmDetails from './components/AlgorithmDetails';
 import RunDetails from './components/RunDetails';
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
 import Score from './components/Score';
-import { Grid } from 'semantic-ui-react';
+import { Header, Grid, Loader } from 'semantic-ui-react';
 
 function Results({
   params,
@@ -19,7 +18,9 @@ function Results({
 }) {
   if(errorMessage === 'Failed to fetch') {
     return (
-      <FetchError message="The specified experiment does not exist." />
+      <FetchError 
+        message="The specified experiment does not exist." 
+      />
     );
   } else if(errorMessage && !results.size) {
     return (
@@ -30,11 +31,13 @@ function Results({
     );
   } else if(isFetching && !results.size) {
     return (
-      <FetchMessage message="Retrieving experiment results..." />
+      <Loader active inverted size="large">
+        Retrieving experiment results...
+      </Loader>
     );
   } else if(!isFetching && !results.size) {
     return (
-      <FetchMessage message="No results available yet." />
+      <Header inverted size="small" content="No results available yet." />
     );
   }
 
