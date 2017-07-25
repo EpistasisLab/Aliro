@@ -1,8 +1,10 @@
 var webpack = require('webpack');
+require("babel-polyfill");
 
 module.exports = {
     entry: [
         'webpack/hot/only-dev-server',
+        'babel-polyfill',
         './src/index.jsx'
     ],
     module: {
