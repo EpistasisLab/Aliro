@@ -1,8 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Dropdown } from 'semantic-ui-react';
+import { Form, Dropdown, Header } from 'semantic-ui-react';
 
-function ExperimentFilters({ filters, updateQuery, resetQuery }) {
+function ExperimentFilters({ 
+  filters,
+  resultCount,
+  updateQuery, 
+  resetQuery 
+}) {
   return (
     <span className="filters">
       <Form inverted>
@@ -43,7 +48,11 @@ function ExperimentFilters({ filters, updateQuery, resetQuery }) {
             content="Reset filters"
             type="button"
             onClick={() => resetQuery()}
+            className="reset"
           />
+          <div className="experiment-count float-right">
+            <Header inverted size="small" content={`${resultCount} result${resultCount === 1 ? '' : 's'}`} />
+          </div>
         </Form.Group>
       </Form>
     </span>  
@@ -65,6 +74,7 @@ ExperimentFilters.propTypes = {
       options: PropTypes.array.isRequired
     })
   }).isRequired,
+  resultCount: PropTypes.number.isRequired,
   updateQuery: PropTypes.func.isRequired,
   resetQuery: PropTypes.func.isRequired
 };

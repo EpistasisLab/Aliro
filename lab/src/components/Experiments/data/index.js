@@ -10,16 +10,6 @@ import {
 } from './actions';
 import { formatDataset, formatAlgorithm } from '../../../utils/formatter';
 
-// make sure on click doesnt rerun change if same
-// why does changing filter cause two updates?
-// use selectors throughout app
-// make table filters reponsive
-// stylize table scrollbar
-// think about incompatible params
-// boolean sorting not working
-// number cols init should be descending, strings ascending
-// fix sorting so it doesn't use () bind
-
 const getById = (state) => 
   state.getIn(['experiments', 'byId']);
 
@@ -194,30 +184,30 @@ const filterBy = (filters) => (experiment) => {
   );
 };
 
-
 const sortBy = (sort) => (a, b) => {
   const { column, direction } = sort;
 
-  let A = a.getIn([column]) || a.getIn(['params', column]) || a.getIn(['scores', column]);
-  let B = b.getIn([column]) || b.getIn(['params', column]) || b.getIn(['scores', column]);
-  
-  if(typeof(A) === 'number' && typeof(B) === 'number') {
-    return direction === 'ascending' ? (A - B) : (B - A);
-  } else if(typeof(A) === 'string' && typeof(B) === 'string') {
-    A = A.toUpperCase(), B = B.toUpperCase();
-    return alphabetize(A, B, direction);
-  } else if(typeof(A) === 'boolean' && typeof(B) === 'boolean') {
-    A = A.toString().toUpperCase(), B = B.toString().toUpperCase();
-    return alphabetize(A, B, direction);
-  } else if(typeof(A) !== typeof(B)) {
-    if(!A) {
-      return Number.POSITIVE_INFINITY;
-    } else if(!B) {
-      return Number.NEGATIVE_INFINITY;
-    } if(typeof(A) === 'number') {
-      return direction === 'ascending' ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
-    } else if(typeof(B) === 'number') {
-      return direction === 'ascending' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
+  if(column) {
+    const keyPath = column.split('-');
+    let A = a.getIn(keyPath), B = b.getIn(keyPath);
+
+    if(typeof(A) === 'number' && typeof(B) === 'number') {
+      return direction === 'ascending' ? (A - B) : (B - A);
+    } else if(typeof(A) === 'string' && typeof(B) === 'string') {
+      A = A.toUpperCase(), B = B.toUpperCase();
+      return alphabetize(A, B, direction);
+    } else if(typeof(A) === 'boolean' && typeof(B) === 'boolean') {
+      return direction === 'ascending' ? (A - B) : (B - A); // treat booleans like numbers
+    } else if(typeof(A) !== typeof(B)) {
+      if(!A) {
+        return Number.POSITIVE_INFINITY;
+      } else if(!B) {
+        return Number.NEGATIVE_INFINITY;
+      } if(typeof(A) === 'number') {
+        return direction === 'ascending' ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+      } else if(typeof(B) === 'number') {
+        return direction === 'ascending' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
+      }
     }
   }
 };
