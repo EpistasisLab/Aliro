@@ -12,6 +12,8 @@ function ExperimentsTableHeader({
   sort,
   updateQuery
 }){
+  // for sorting to work, clickedColumn string must be defined as keyPath for value
+  // ex: scores-accuracy_score -> getIn([scores, accuracy_score])
   const onSort = (clickedColumn) => {
     let direction;
     if(clickedColumn === sort.column) {
@@ -49,8 +51,8 @@ function ExperimentsTableHeader({
         ) : (
           <Table.HeaderCell 
             rowSpan={shouldDisplayParams && 2}
-            sorted={getIsSorted('accuracy_score')}
-            onClick={() => onSort('accuracy_score')}
+            sorted={getIsSorted('scores-accuracy_score')}
+            onClick={() => onSort('scores-accuracy_score')}
           >
             Accuracy
           </Table.HeaderCell>
@@ -81,8 +83,8 @@ function ExperimentsTableHeader({
           {orderedParamKeys.map((key) => (
             <Table.HeaderCell 
               key={key}
-              sorted={getIsSorted(key)}
-              onClick={() => onSort(key)}
+              sorted={getIsSorted(`params-${key}`)}
+              onClick={() => onSort(`params-${key}`)}
             >
               {formatParam(key)}
             </Table.HeaderCell> 
