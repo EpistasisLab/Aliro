@@ -141,13 +141,18 @@ body {
 }
 
 .pennai .experiments-scene .experiment-count {
-   margin-top: -1.5rem;
+   padding-top: 0.25rem;
+   padding-left: 0.5rem;
+}
+
+.pennai .experiments-scene .ui.bottom.segment {
+    margin-bottom: 2rem;
 }
 
 .pennai .experiments-scene .table-container {
     width: 100%;
+    margin: 0;
     overflow-y: auto;
-    margin: 0 0 1em;
 }
 
 .pennai .experiments-scene .table-container .table {
@@ -259,39 +264,6 @@ body {
     font-size: 0.8rem;
 }
 
-.ui.progress.score .bar .progress {
-    right: 0;
-    left: 0.5rem;
-}
-
-.ui.progress.train.score .bar {
-    background-color: #6435C9;
-}
-
-.ui.progress.test.score .bar {
-    background-color: #A333C8;
-}
-
-.ui.progress.auc.score .bar {
-    background-color: #2185D0;
-}
-
-.ui.progress.score .bar .progress::after {
-    margin-left: 0.4rem;
-}
-
-.ui.progress.train.score .bar .progress::after {
-    content: "training accuracy";
-}
-
-.ui.progress.test.score .bar .progress::after {
-    content: "testing accuracy";
-}
-
-.ui.progress.auc.score .bar .progress::after {
-    content: "area under the curve";
-}
-
 .pennai .ui.menu .link.active > .item {
     background-color: rgba(0,0,0,.1)!important;
 }
@@ -321,6 +293,17 @@ body {
     right: 1em;
     bottom: 1em;
     z-index: 100;
+}
+
+@media (max-width: 321px) {
+
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        padding-top: 4.5rem;
+    }
 }
 
 /*@media (min-width: 140rem) {
