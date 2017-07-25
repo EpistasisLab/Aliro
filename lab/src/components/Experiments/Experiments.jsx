@@ -6,7 +6,7 @@ import FetchMessage from '../FetchMessage';
 import FetchError from '../FetchError';
 import ExperimentFilters from './components/ExperimentFilters';
 import ExperimentsTable from './components/ExperimentsTable';
-import { Header, Segment } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 
 function Experiments({
   experiments,
@@ -53,16 +53,10 @@ function Experiments({
       <Segment inverted attached="top">
         <ExperimentFilters
           filters={filters}
+          resultCount={experiments.size}
           updateQuery={updateQuery}
           resetQuery={resetQuery}
         />
-        <span className="experiment-count float-right">
-          <Header 
-            inverted
-            size="small" 
-            content={`${experiments.size} result${experiments.size === 1 ? '' : 's'}`}
-          />
-        </span>
       </Segment>
       <Segment inverted attached="bottom">
         {experiments.size > 0 ? (
@@ -79,5 +73,31 @@ function Experiments({
     </div>
   );
 }
+
+Experiments.propTypes = {
+  experiments: ImmutablePropTypes.list.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  filters: PropTypes.shape({ 
+    algorithm: PropTypes.shape({
+      selected: PropTypes.string.isRequired,
+      options: PropTypes.array.isRequired
+    }),
+    dataset: PropTypes.shape({
+      selected: PropTypes.string.isRequired,
+      options: PropTypes.array.isRequired
+    }),
+    status: PropTypes.shape({
+      selected: PropTypes.string.isRequired,
+      options: PropTypes.array.isRequired
+    })
+  }).isRequired,
+  sort: PropTypes.shape({
+    column: PropTypes.string,
+    direction: PropTypes.string
+  }),
+  location: PropTypes.object.isRequired,
+  fetchExperiments: PropTypes.func.isRequired
+};
 
 export default Experiments;
