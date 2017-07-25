@@ -2,11 +2,10 @@ import React from 'react';
 import { hashHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import FetchMessage from '../FetchMessage';
 import FetchError from '../FetchError';
 import ExperimentFilters from './components/ExperimentFilters';
 import ExperimentsTable from './components/ExperimentsTable';
-import { Segment } from 'semantic-ui-react';
+import { Segment, Header, Loader } from 'semantic-ui-react';
 
 function Experiments({
   experiments,
@@ -44,7 +43,9 @@ function Experiments({
     );
   } else if(isFetching && !experiments.size) {
     return (
-      <FetchMessage message="Retrieving your experiments..." />
+      <Loader active inverted size="large">
+        Retrieving your experiments...
+      </Loader>
     );
   }
 
@@ -67,7 +68,7 @@ function Experiments({
             updateQuery={updateQuery}
           />
         ) : (
-          <FetchMessage message="No results available." />
+          <Header inverted size="small" content="No results available." />
         )}
       </Segment>
     </div>

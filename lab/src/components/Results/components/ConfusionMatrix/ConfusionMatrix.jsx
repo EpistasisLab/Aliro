@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import FetchMessage from '../../../FetchMessage';
 import FetchError from '../../../FetchError';
 import InvertedCard from '../../../InvertedCard';
-import { Image } from 'semantic-ui-react';
+import { Header, Image, Loader } from 'semantic-ui-react';
 
 function ConfusionMatrix({
   confusionMatrix, 
@@ -23,11 +22,13 @@ function ConfusionMatrix({
       );
     } else if(isFetching) {
       return (
-        <FetchMessage message="Retrieving Confusion Matrix..." />
+        <Loader active inverted inline="centered">
+          Retrieving confusion matrix...
+        </Loader>
       );
     } else if(!isFetching && !confusionMatrix) {
       return (
-        <FetchMessage message="Confusion Matrix is not available." />
+        <Header inverted size="tiny" content="Confusion Matrix is not available." />
       );
     }
 

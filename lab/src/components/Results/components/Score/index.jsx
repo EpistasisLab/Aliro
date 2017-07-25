@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FetchMessage from '../../../FetchMessage';
 import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
+import { Header } from 'semantic-ui-react';
 
 function Score({ scoreName, scoreValue, chartKey, chartColor }) {
   const getCardContent = () => {
     if(typeof(scoreValue) !== 'number') {
       return (
-        <FetchMessage message={`${scoreName} is not available.`} />
+        <Header inverted size="tiny" content={`${scoreName} is not available.`} />
       );
     }
 
