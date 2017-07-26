@@ -16,6 +16,7 @@ import time
 from ai.validate_recommendation import validate_recs
 import os
 from ai.recommender.average_recommender import AverageRecommender
+from ai.recommender.random_recommender import RandomRecommender
 from collections import OrderedDict
 
 ml_ids = {
@@ -205,7 +206,7 @@ class AI():
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
           self.new_data = new_data
-          print(self.new_data)
+          #print(self.new_data)
         # print('results:\n',results)
         # df = pd.DataFrame(response)
         # ai = pd.DataFrame(response[0]['ai'])
@@ -245,7 +246,7 @@ class AI():
                                         rec['algorithm_id'],
                                         'experiment'])
                 # post recommendations
-                print(rec_path)
+                #print(rec_path)
                 requests.post(rec_path,data=json.dumps(rec),headers=self.header)
                 #submit update to dataset to indicate ai:True
                 payload= {'ai':'finished'}
@@ -260,7 +261,7 @@ class AI():
     def update_recommender(self):
         """Updates recommender based on new results."""
         # update recommender
-        print(self);
+        #print(self);
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             self.rec.update(self.new_data)
             if self.verbose:
@@ -289,7 +290,7 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(warm_start=True)
+    pennai = AI(rec=RandomRecommender(),warm_start=True)
     debug = False
     try:
         while True:
