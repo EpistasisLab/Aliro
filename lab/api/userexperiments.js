@@ -12,24 +12,26 @@ var format_experiments = function(experiments, algorithms, datasets) {
         new_experiment['started'] = experiment['_started'];
         new_experiment['finished'] = experiment['_finished'];
         new_experiment['notification'] = experiment['notification'];
-        if (datasets[experiment['_dataset_id']]) {
-            new_experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
-            new_experiment['dataset_id'] = experiment['_dataset_id'];
-            new_experiment['dataset_files'] = datasets[experiment['_dataset_id']]['files'];
-            for (file in datasets[experiment['_dataset_id']]['files']) {
-                file_id = datasets[experiment['_dataset_id']]['files'][file]['_id'];
+        if (experiment['_project_id'] && experiment['_scores'] && algorithms[experiment['_project_id']]) {
+            if (datasets[experiment['_dataset_id']]) {
+                new_experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
+                new_experiment['dataset_id'] = experiment['_dataset_id'];
+                new_experiment['dataset_files'] = datasets[experiment['_dataset_id']]['files'];
+                for (file in datasets[experiment['_dataset_id']]['files']) {
+                    file_id = datasets[experiment['_dataset_id']]['files'][file]['_id'];
+                }
             }
+            if (experiment['files']) {
+                new_experiment['experiment_files'] = experiment['files'];
+            }
+            new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
+            new_experiment['params'] = experiment['_options'];
+            if (experiment['_scores']) {
+                new_experiment['scores'] = experiment['_scores'];
+            }
+            new_experiment['launched_by'] = experiment['username'];
+            ret_experiments.push(new_experiment);
         }
-        if (experiment['files']) {
-            new_experiment['experiment_files'] = experiment['files'];
-        }
-        new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
-        new_experiment['params'] = experiment['_options'];
-        if (experiment['_scores']) {
-            new_experiment['scores'] = experiment['_scores'];
-        }
-        new_experiment['launched_by'] = experiment['username'];
-        ret_experiments.push(new_experiment);
     }
     return (ret_experiments);
 }
