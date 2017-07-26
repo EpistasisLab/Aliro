@@ -28,7 +28,7 @@ class ResultsContainer extends Component {
       };
     }
 
-    return { header: 'Results', subheader: null };
+    return { header: 'Results' };
   }
 
   render() {
