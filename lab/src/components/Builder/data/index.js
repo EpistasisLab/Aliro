@@ -22,7 +22,7 @@ const dataset = (state = Map(), action) => {
     case DATASET_FETCH_SUCCESS:
       return state.merge(action.response[0]);
     case EXPERIMENT_FETCH_SUCCESS:
-      return state.clear(); 
+      return state.clear();
     default:
       return state;
   }
