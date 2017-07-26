@@ -57,7 +57,7 @@ function Builder({
   } else if(isFetching) {
     return (
       <Loader active inverted size="large">
-        Prepating the builder...
+        Preparing the builder...
       </Loader>
     );
   }
