@@ -6,10 +6,10 @@ import {
   DATASETS_FETCH_SUCCESS, 
   DATASETS_FETCH_FAILURE
 } from './actions';
-
 import { delegateTo } from '../../../utils/delegateTo';
 import dataset, { DATASET_PREFIX } from '../components/DatasetCard/data';
 
+// delegate actions to dataset reducer
 const delegator = delegateTo([
   { prefix: DATASET_PREFIX, reducer: dataset }
 ]);
