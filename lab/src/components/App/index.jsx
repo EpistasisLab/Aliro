@@ -6,19 +6,7 @@ import {
   getIsFetching,
   getErrorMessage
 } from './data';
-import Navbar from './Navbar';
-import { Container } from 'semantic-ui-react';
-
-class App extends Component {
-  render() {
-    return (
-      <Container fluid className="app pennai">
-        <Navbar />
-        {this.props.children}
-      </Container>
-    );
-  }
-}
+import App from './App';
 
 class AppContainer extends Component {
   componentDidMount() {
