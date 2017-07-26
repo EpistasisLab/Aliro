@@ -35,6 +35,17 @@ body {
     background-color: rgba(255,255,255,.08);
 }
 
+.pennai .dataset-card .ui.error.message {
+    background-color: rgba(255,255,255,.08);
+    border: 1px solid #555;
+    box-shadow: none;
+}
+
+.pennai .dataset-card .ui.error.message .icon {
+    color: #ff695e;
+    font-size: 1rem;
+}
+
 .pennai .dataset-card .panel-header {
     max-height: 57px;
 }
