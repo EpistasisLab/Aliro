@@ -1,130 +1,118 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { hashHistory } from 'react-router';
 import NotFound from '../NotFound';
 import FetchError from '../FetchError';
-import SceneHeader from '../SceneHeader';
 import AlgorithmOptions from './components/AlgorithmOptions';
 import ParameterOptions from './components/ParameterOptions';
-import { Header, Grid, Button, Icon } from 'semantic-ui-react';
+import { Grid, Button, Icon, Loader } from 'semantic-ui-react';
 
-class Builder extends Component {
-  onSubmitExperiment(algorithm, params) {
-    const { submitExperiment } = this.props;
+function Builder({
+  dataset,
+  //experiment,
+  isFetching,
+  errorMessage,
+  defaultAlgorithms,
+  currentAlgorithm,
+  currentParams,
+  isSubmitting,
+  fetchDataset,
+  fetchExperiment,
+  submitExperiment,
+  setCurrentAlgorithm,
+  setParamValue,
+  location
+}) {
+  const onSubmitExperiment = () => {
+    submitExperiment(
+      currentAlgorithm.get('_id'), 
+      currentParams.set('dataset', dataset.get('_id'))
+    ).then(() => hashHistory.push('/experiments')); // redirect to experiments page
+  };
 
-    submitExperiment(algorithm, params)
-      // redirect to experiments page
-      .then(() => hashHistory.push('/experiments')); 
-  }
+  const onResetExperiment = () => {
+    setCurrentAlgorithm(currentAlgorithm);
+  };
 
-  getRetry(builderType) {
-    const { query } = this.props.location;
-
-    if(builderType === 'build') {
-      return this.props.fetchDataset(query.dataset);
+  const getRetry = () => {
+    if(location.query.dataset) {
+      return fetchDataset(location.query.dataset);
+    } else if(location.query.experiment) {
+      return fetchExperiment(location.query.experiment);
     }
+  };
 
-    if(builderType === 'review') {
-      return this.props.fetchExperiment(query.experiment);
-    }
-  }
-
-  getSceneHeader(builderType) {
-    const { dataset, experiment } = this.props;
-
-    if(builderType === 'build') {
-      return {
-        header: `Build a New Experiment: ${dataset.get('name')}`
-      };
-    }
-
-    if(builderType === 'review') {
-      return {
-        header: `Review Experiment: ${dataset.get('name')}`,
-        subheader: `Experiment: #${experiment.get('_id')}`
-      };
-    }
-  }
-
-  render() {
-
-    const {
-      dataset,
-      isFetching,
-      errorMessage,
-      defaultAlgorithms,
-      currentAlgorithm,
-      currentParams,
-      isSubmitting,
-      setCurrentAlgorithm,
-      setParamValue
-    } = this.props;
-
-    const { query } = this.props.location;
-
-    const builderType = query.dataset ? 'build' : query.experiment ? 'review' : null;
-
-    const sceneHeader = this.getSceneHeader(builderType);
-
-    if(!query.dataset && !query.experiment) {
-      return (
-        <NotFound />
-      );
-    } else if(errorMessage) {
-      return (
-        <FetchError 
-          message={errorMessage}
-          onRetry={() => this.getRetry(builderType)}
-        />
-      );
-    } else if(isFetching) {
-      return (
-        <Header 
-          inverted 
-          size="small"
-          content="Preparing the builder..."
-        />
-      );
-    }
-
+  if(!location.query.dataset && !location.query.experiment) {
     return (
-      <div className="builder-scene">
-        <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
-        <Grid stretched>
-          <AlgorithmOptions
-            algorithms={defaultAlgorithms}
-            currentAlgorithm={currentAlgorithm}
-            setCurrentAlgorithm={setCurrentAlgorithm}
-          />
-          <ParameterOptions
-            params={currentAlgorithm.get('schema')}
-            currentParams={currentParams}
-            setParamValue={setParamValue}
-          />
-        </Grid>
-        <div className="builder-btns">
-          <Button 
-            color="blue"
-            size="large"
-            content="Launch Experiment"
-            icon={isSubmitting ? <Icon loading name="spinner" /> : null}
-            disabled={isSubmitting}
-            onClick={() => this.onSubmitExperiment(
-              currentAlgorithm.get('_id'), 
-              currentParams.set('dataset', dataset.get('_id'))
-            )}
-          />
-          <Button 
-            color="grey"
-            size="large"
-            disabled={isSubmitting}
-            onClick={() => setCurrentAlgorithm(currentAlgorithm)}
-          >
-            Reset
-          </Button>
-        </div>
-      </div>
+      <NotFound />
+    );
+  } else if(errorMessage) {
+    return (
+      <FetchError 
+        message={errorMessage}
+        onRetry={() => getRetry()}
+      />
+    );
+  } else if(isFetching) {
+    return (
+      <Loader active inverted size="large">
+        Prepating the builder...
+      </Loader>
     );
   }
+
+  return (
+    <div>
+      <Grid stretched>
+        <AlgorithmOptions
+          algorithms={defaultAlgorithms}
+          currentAlgorithm={currentAlgorithm}
+          setCurrentAlgorithm={setCurrentAlgorithm}
+        />
+        <ParameterOptions
+          params={currentAlgorithm.get('schema')}
+          currentParams={currentParams}
+          setParamValue={setParamValue}
+        />
+      </Grid>
+      <div className="builder-btns">
+        <Button 
+          color="blue"
+          size="large"
+          content="Launch Experiment"
+          icon={isSubmitting ? <Icon loading name="spinner" /> : null}
+          disabled={isSubmitting}
+          onClick={onSubmitExperiment}
+        />
+        <Button 
+          color="grey"
+          size="large"
+          disabled={isSubmitting}
+          onClick={onResetExperiment}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
 }
+
+Builder.propTypes = {
+  dataset: ImmutablePropTypes.map,
+  //experiment: ImmutablePropTypes.map,
+  isFetching: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  defaultAlgorithms: ImmutablePropTypes.list,
+  currentAlgorithm: ImmutablePropTypes.map.isRequired,
+  currentParams: ImmutablePropTypes.map.isRequired,
+  isSubmitting: PropTypes.bool.isRequired,
+  fetchDataset: PropTypes.func.isRequired,
+  fetchExperiment: PropTypes.func.isRequired,
+  submitExperiment: PropTypes.func.isRequired,
+  setCurrentAlgorithm: PropTypes.func.isRequired,
+  setParamValue: PropTypes.func.isRequired,
+  location: PropTypes.shape({ query: PropTypes.object }).isRequired
+};
 
 export default Builder;
