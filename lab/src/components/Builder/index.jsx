@@ -12,7 +12,9 @@ import {
   getIsSubmitting
 } from './data';
 import { getPreferences } from '../App/data';
+import SceneHeader from '../SceneHeader';
 import Builder from './Builder';
+import { formatDataset } from '../../utils/formatter';
 
 class BuilderContainer extends Component {
   componentDidMount() {
@@ -42,9 +44,41 @@ class BuilderContainer extends Component {
     }
   }
 
+  getSceneHeader() {
+    const { dataset, experiment } = this.props;
+    const { query } = this.props.location;
+
+    if(dataset.size) {
+      return {
+        header: `Build New Experiment: ${formatDataset(dataset.get('name'))}`
+      };
+    } else if(experiment.size) {
+      return {
+        header: `Review Experiment: ${formatDataset(dataset.get('name'))}`,
+        subheader: `Experiment: #${experiment.get('_id')}`
+      };
+    } else if(query.dataset) {
+      return {
+        header: 'Build New Experiment'
+      };
+    } else if(query.experiment) {
+      return {
+        header: 'Review Experiment'
+      };
+    }
+
+    return {};
+  }
+
   render() {
+    const sceneHeader = this.getSceneHeader();
     return (
-      <Builder {...this.props} />
+      <div className="builder-scene">
+        {sceneHeader.header &&
+          <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
+        }
+        <Builder {...this.props} />
+      </div>
     );
   }
 }
