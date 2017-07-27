@@ -136,10 +136,9 @@ class WeightedRecommender(BaseRecommender):
             #for loop through rec and group by significance
             rec_copy = rec
             results_sig_dif = []
-            results_dict = []
             results_sig_dif.append(rec[0])
             n = 1
-            while len(results_sig_dif) < 100:
+            while len(results_sig_dif) < 100 and n < 1000:
                 key1 = results_sig_dif[len(results_sig_dif)-1]#first key is last value in new list
                 value1 = self.ml_p_scores.get(key1)
                 if n < len(rec):
@@ -147,7 +146,7 @@ class WeightedRecommender(BaseRecommender):
                     value2 = self.ml_p_scores.get(key2)
                     t_val, p_val = stats.ttest_ind(value1, value2)
                     if p_val < 0.05: #change to rerun code and check significance started 0.05
-                        results_dict.append(key2)
+                        results_sig_dif.append(key2)
                         print('added')
                         print(p_val)
                     else:
