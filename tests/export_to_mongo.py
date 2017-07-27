@@ -1,5 +1,3 @@
-# first, we need to construct a dataset that has each parameter as a feature. to do this we have to deconstruct
-#the 'parameter' column into new columns.
 import pandas as pd
 import dask.dataframe as dd
 import json
@@ -16,6 +14,7 @@ pd.options.mode.chained_assignment = None
 max_records = -1;
 #
 baseURL=os.environ['FGLAB_URL']
+MONGODB_URI=os.environ['MONGODB_URI']
 datasetsURL=baseURL + '/api/datasets'
 algorithmsURL=baseURL + '/api/projects'
 datasetsURL=baseURL + '/api/datasets'
@@ -24,6 +23,7 @@ apiParams = json.dumps(
     apiDict
     ).encode('utf8')
 #
+# first, we need to construct a dataset
 print('loading api datasets into dictionary...')
 req = urllib.request.Request(datasetsURL, data=apiParams,
   headers={'content-type': 'application/json'})
@@ -48,7 +48,6 @@ for algorithm in algorithms:
      algorithm_names[name.lower()] =  _id;
 #
 print('loading pmlb results data...')
-#data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
 data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
@@ -106,7 +105,7 @@ for record in records:
     
 #print(ret_records);
 #
-client = pymongo.MongoClient()
+client = pymongo.MongoClient(MONGODB_URI)
 db = client.FGLab
 db.experiments.insert(ret_records)
 #for record_dict in ret_records:

@@ -1,6 +1,5 @@
 """
 Recommender system for Penn AI.
-
 """
 import pandas as pd
 from .base import BaseRecommender
@@ -14,16 +13,15 @@ class AverageRecommender(BaseRecommender):
     Parameters
     ----------
     ml_type: str, 'classifier' or 'regressor'
-        recommending classifiers or regressors. used to determine ML options.
+        Recommending classifiers or regressors. Used to determine ML options.
 
-    metric: str
-        the metric by which to assess performance in the data.
-        default: accuracy for classifiers, mse for regressors.
+    metric: str (default: accuracy for classifiers, mse for regressors)
+        The metric by which to assess performance on the datasets.
 
     """
 
     def __init__(self, ml_type='classifier', metric=None):
-        """initialize recommendation system."""
+        """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
@@ -51,6 +49,7 @@ class AverageRecommender(BaseRecommender):
         Parameters
         ----------
         results_data: DataFrame with columns corresponding to:
+                'dataset'
                 'algorithm'
                 'parameters'
                 self.metric
@@ -78,12 +77,14 @@ class AverageRecommender(BaseRecommender):
         self._update_scores(new_scores, new_weights)
 
     def recommend(self, dataset_id=None, n_recs=1):
-        """return a model and parameter values expected to do best on the dataset.
+        """Return a model and parameter values expected to do best on dataset.
 
         Parameters
         ----------
-        n_recs (default: 1): optionally, return a list of length n_recs
-        in order of estimators and parameters expected to do best.
+        dataset_id: string
+            ID of the dataset for which the recommender is generating recommendations.
+        n_recs: int (default: 1), optional
+            Return a list of length n_recs in order of estimators and parameters expected to do best.
         """
 
         # return ML+P for best average y
@@ -118,7 +119,7 @@ class AverageRecommender(BaseRecommender):
         return ml_rec, p_rec, rec_score
 
     def _update_scores(self, new_scores, new_weights):
-        """update scores based on new_scores"""
+        """Update scores based on new_scores."""
         new_ind = new_scores.index.values
         if len(self.scores.index) == 0:
             self.scores = new_scores
