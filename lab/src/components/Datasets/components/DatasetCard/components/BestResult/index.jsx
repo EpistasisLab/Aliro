@@ -1,66 +1,57 @@
-import React, { Component } from 'react';
-import { fmtAlg } from '../../../../../../utils/formatter';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Segment, Header, Progress } from 'semantic-ui-react';
+import { formatAlgorithm } from '../../../../../../utils/formatter';
 
-class BestResult extends Component {
-	getNoResultMessage(hasMetadata) {
-		if(!hasMetadata) {
-			return 'You must upload a metadata file in order to use this dataset.'
-		}
+function BestResult({ result, hasMetadata }) {
+  const getNoResultMessage = () => {
+    if(!hasMetadata) {
+      return 'You must upload a metadata file in order to use this dataset.';
+    }
 
-		return 'No results yet, build a new experiment to start.';
-	}
+    return 'No results yet, build a new experiment to start.';
+  };
 
-	getResultLink(result) {
-		return `/#/results/${result.get('_id')}`;
-	}
+  const getResultLink = () => `/#/results/${result.get('_id')}`;
 
-	getSubheader(result) {
-		return `${result.get('algorithm')} #${result.get('_id')}`;
-	}
+  const getPercent = () => (result.get('accuracy_score') * 100).toFixed(2);
 
-	getPercent(result) {
-		return (result.get('accuracy_score') * 100).toFixed(2);
-	}
+  if(!result) {
+    return (
+      <Segment inverted attached className="panel-body">
+        {getNoResultMessage()}
+      </Segment>
+    );
+  }
 
-	render() {
-		
-		const { 
-			result,
-			hasMetadata
-		} = this.props;
-
-		if(!result) {
-			return (
-				<Segment inverted attached className="panel-body">
-					{this.getNoResultMessage(hasMetadata)}
-				</Segment>
-			);
-		}
-
-		return (
-			<Segment 
-				inverted 
-				attached 
-				href={this.getResultLink(result)}
-				className="panel-body best-result"
-			>
-				<Header inverted size="small">
-					Best Result
-					<Header.Subheader>
-						<div>{fmtAlg(result.get('algorithm'))}</div>
-						<span>#{result.get('_id')}</span>
-					</Header.Subheader>
-				</Header>
-				<Progress 
-					inverted
-					progress
-					percent={this.getPercent(result)}
-					className="accuracy-score"
-				/>
-			</Segment>
-		);
-	}
+  return (
+    <Segment 
+      inverted 
+      attached 
+      href={getResultLink()}
+      className="panel-body best-result"
+    >
+      <Header inverted size="small">
+        {'Best Result'}
+        <Header.Subheader>
+          <div>{formatAlgorithm(result.get('algorithm'))}</div>
+          <span>{`#${result.get('_id')}`}</span>
+        </Header.Subheader>
+      </Header>
+      <Progress 
+        inverted
+        progress
+        percent={getPercent()}
+        className="accuracy-score"
+      />
+    </Segment>
+  );
 }
+
+BestResult.propTypes = {
+  result: ImmutablePropTypes.map,
+  hasMetadata: PropTypes.bool.isRequired
+};
 
 export default BestResult;

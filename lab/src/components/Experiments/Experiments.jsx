@@ -1,98 +1,86 @@
-import React, { Component } from 'react';
-import { hashHistory } from 'react-router';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import FetchError from '../FetchError';
 import ExperimentFilters from './components/ExperimentFilters';
 import ExperimentsTable from './components/ExperimentsTable';
-import FetchError from '../FetchError';
-import { Header, Segment } from 'semantic-ui-react';
+import { Segment, Header, Loader } from 'semantic-ui-react';
+import { hashHistory } from 'react-router';
 
-class Experiments extends Component {
-	constructor(props) {
-		super(props);
+function Experiments({
+  experiments,
+  isFetching,
+  errorMessage,
+  filters,
+  sort,
+  location,
+  fetchExperiments
+}) {
+  const updateQuery = (key, value) => {
+    const nextLocation = Object.assign({}, location);
+    if(value === 'all') {
+      delete nextLocation.query[key];
+    } else {
+      Object.assign(nextLocation.query, { [key]: value });
+    }
+    hashHistory.push(nextLocation);
+  };
 
-		this.updateQuery = this.updateQuery.bind(this);
-		this.resetQuery = this.resetQuery.bind(this);
-	}
+  const resetQuery = () => {
+    const nextLocation = Object.assign({}, location);
+    Object.keys(nextLocation.query).forEach((key) => {
+      delete nextLocation.query[key];
+    });
+    hashHistory.push(nextLocation);
+  };
 
-	updateQuery(key, value) {
-		const location = Object.assign({}, this.props.location);
-		if(value === 'all') {
-			delete location.query[key];
-		} else {
-			Object.assign(location.query, {[key]: value});
-		}
-		hashHistory.push(location);
-	}
+  if(errorMessage && !experiments.size) {
+    return (
+      <FetchError 
+        message={errorMessage}
+        onRetry={() => fetchExperiments()}
+      />
+    );
+  } else if(isFetching && !experiments.size) {
+    return (
+      <Loader active inverted size="large" content="Retrieving your experiments..." />
+    );
+  }
 
-	resetQuery() {
-		const location = Object.assign({}, this.props.location);
-		Object.keys(location.query).forEach((key) => {
-			delete location.query[key];
-		});
-		hashHistory.push(location);
-	}
-
-	render() {
-
-		const { 
-			experiments,
-			isFetching,
-			errorMessage,
-			filters,
-			sort,
-			fetchExperiments
-		} = this.props;
-
-		if(errorMessage && !experiments.size) {
-			return (
-				<FetchError 
-					message={errorMessage}
-					onRetry={() => fetchExperiments()}
-				/>
-			);
-		} else if(isFetching && !experiments.size) {
-			return (
-				<Header 
-					inverted 
-					size="small"
-					content="Retrieving your experiments..."
-				/>
-			);
-		}
-
-		return (
-			<div className="experiments-scene">
-				<Segment inverted attached="top" className="filters">
-					<ExperimentFilters
-						filters={filters}
-						updateQuery={this.updateQuery}
-						resetQuery={this.resetQuery}
-					/>
-					<Header 
-						inverted
-						size="small" 
-						content={`${experiments.size} result${experiments.size === 1 ? '' : 's'}`}
-						className="float-right experiment-count"
-					/>
-				</Segment>
-				<Segment inverted attached="bottom" className='tabled'>
-					{experiments.size > 0 ? (
-						<ExperimentsTable 
-							experiments={experiments}
-							filters={filters}
-							sort={sort}
-							updateQuery={this.updateQuery}
-						/>
-					) : (
-						<Header 
-							inverted 
-							size="small"
-							content="No results available."
-						/>
-					)}
-				</Segment>
-			</div>
-		);
-	}
+  return (
+    <div>
+      <Segment inverted attached="top">
+        <ExperimentFilters
+          filters={filters}
+          resultCount={experiments.size}
+          updateQuery={updateQuery}
+          resetQuery={resetQuery}
+        />
+      </Segment>
+      <Segment inverted attached="bottom">
+        {experiments.size > 0 ? (
+          <ExperimentsTable 
+            experiments={experiments}
+            filters={filters}
+            sort={sort}
+            updateQuery={updateQuery}
+          />
+        ) : (
+          <Header inverted size="small" content="No results available." />
+        )}
+      </Segment>
+    </div>
+  );
 }
+
+Experiments.propTypes = {
+  experiments: ImmutablePropTypes.list.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  filters: PropTypes.object.isRequired,
+  sort: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  fetchExperiments: PropTypes.func.isRequired
+};
 
 export default Experiments;
