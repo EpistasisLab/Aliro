@@ -22,9 +22,7 @@ function ROCCurve({
       );
     } else if(isFetching) {
       return (
-        <Loader active inverted inline="centered">
-          Retrieving ROC curve...
-        </Loader>
+        <Loader active inverted inline="centered" content="Retrieving ROC curve..." />
       );
     } else if(!isFetching && !rocCurve) {
       return (
@@ -46,11 +44,11 @@ function ROCCurve({
 }
 
 ROCCurve.propTypes = {
+  file: ImmutablePropTypes.map,
   rocCurve: PropTypes.instanceOf(Blob),
   isFetching: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
-  fetchROCCurve: PropTypes.func.isRequired,
-  file: ImmutablePropTypes.map
+  fetchROCCurve: PropTypes.func.isRequired
 };
 
 export default ROCCurve;

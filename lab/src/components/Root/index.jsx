@@ -28,7 +28,7 @@ function Root({ store }) {
 }
 
 Root.propTypes = {
-  store: PropTypes.objectOf(PropTypes.func).isRequired
+  store: PropTypes.object.isRequired
 };
 
 export default Root;

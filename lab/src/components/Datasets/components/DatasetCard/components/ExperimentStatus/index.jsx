@@ -22,7 +22,7 @@ function ExperimentStatus({ filter, experiments, notifications }) {
               <Header inverted size="tiny">
                 {experiments.get('pending')}<br />
                 {`experiment${experiments.get('pending') === 1 ? '' : 's'}`}<br />
-                pending
+                {'pending'}
               </Header>
             </a>  
           </Table.Cell>
@@ -31,7 +31,7 @@ function ExperimentStatus({ filter, experiments, notifications }) {
               <Header inverted size="tiny">
                 {experiments.get('running')}<br />
                 {`experiment${experiments.get('running') === 1 ? '' : 's'}`}<br />
-                running
+                {'running'}
               </Header>
             </a>  
           </Table.Cell>

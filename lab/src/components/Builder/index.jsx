@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
@@ -95,6 +97,16 @@ const mapStateToProps = (state) => ({
   currentParams: getCurrentParams(state),
   isSubmitting: getIsSubmitting(state)
 });
+
+BuilderContainer.propTypes = {
+  dataset: ImmutablePropTypes.map,
+  experiment: ImmutablePropTypes.map,
+  defaultAlgorithms: ImmutablePropTypes.list,
+  setCurrentAlgorithm: PropTypes.func.isRequired,
+  fetchDataset: PropTypes.func.isRequired,
+  fetchExperiment: PropTypes.func.isRequired,
+  location: PropTypes.shape({ query: PropTypes.object }).isRequired
+};
 
 export default connect(
   mapStateToProps, 
