@@ -1,11 +1,11 @@
 import React from 'react';
-import { hashHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import FetchError from '../FetchError';
 import ExperimentFilters from './components/ExperimentFilters';
 import ExperimentsTable from './components/ExperimentsTable';
 import { Segment, Header, Loader } from 'semantic-ui-react';
+import { hashHistory } from 'react-router';
 
 function Experiments({
   experiments,
@@ -43,9 +43,7 @@ function Experiments({
     );
   } else if(isFetching && !experiments.size) {
     return (
-      <Loader active inverted size="large">
-        Retrieving your experiments...
-      </Loader>
+      <Loader active inverted size="large" content="Retrieving your experiments..." />
     );
   }
 
@@ -79,24 +77,8 @@ Experiments.propTypes = {
   experiments: ImmutablePropTypes.list.isRequired,
   isFetching: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
-  filters: PropTypes.shape({ 
-    algorithm: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    }),
-    dataset: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    }),
-    status: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    })
-  }).isRequired,
-  sort: PropTypes.shape({
-    column: PropTypes.string,
-    direction: PropTypes.string
-  }),
+  filters: PropTypes.object.isRequired,
+  sort: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   fetchExperiments: PropTypes.func.isRequired
 };

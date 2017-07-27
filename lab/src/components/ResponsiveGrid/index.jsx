@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Grid } from 'semantic-ui-react';
 
 class ResponsiveGrid extends Component {
@@ -59,5 +60,13 @@ class ResponsiveGrid extends Component {
     );
   }
 }
+
+ResponsiveGrid.propTypes = {
+  children: PropTypes.object.isRequired,
+  mobile: PropTypes.number.isRequired,
+  tablet: PropTypes.number.isRequired,
+  desktop: PropTypes.number.isRequired,
+  lgscreen: PropTypes.number.isRequired
+};
 
 export default ResponsiveGrid;

@@ -61,21 +61,8 @@ function ExperimentsTable({
 
 ExperimentsTable.propTypes = {
   experiments: ImmutablePropTypes.list.isRequired,
-  filters: PropTypes.shape({ 
-    algorithm: PropTypes.shape({
-      selected: PropTypes.string.isRequired
-    }),
-    dataset: PropTypes.shape({
-      selected: PropTypes.string.isRequired
-    }),
-    status: PropTypes.shape({
-      selected: PropTypes.string.isRequired
-    })
-  }).isRequired,
-  sort: PropTypes.shape({
-    column: PropTypes.string,
-    direction: PropTypes.string
-  }),
+  filters: PropTypes.object.isRequired,
+  sort: PropTypes.object.isRequired,
   updateQuery: PropTypes.func.isRequired
 };
 
