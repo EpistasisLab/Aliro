@@ -8,6 +8,6 @@ const store = configureStore();
 configureSocket(store);
 
 render(
-	<Root store={store} />,
-	document.getElementById('app')
+  <Root store={store} />,
+  document.getElementById('app')
 );

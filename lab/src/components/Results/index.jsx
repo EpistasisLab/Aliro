@@ -1,60 +1,63 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
-	getResults, 
-	getIsFetching, 
-	getErrorMessage,
-	getConfusionMatrix,
-	getROCCurve
+  getResults, 
+  getIsFetching, 
+  getErrorMessage
 } from './data';
-import SceneWrapper from '../SceneWrapper';
+import SceneHeader from '../SceneHeader';
 import Results from './Results';
+import { formatDataset } from '../../utils/formatter';
 
 class ResultsContainer extends Component {
-	componentDidMount() {
-		this.props.fetchResults(this.props.params.id);
-	}
+  componentWillMount() {
+    this.props.clearResults();
+  }
 
-	componentDidUpdate(prevProps) {
-		const { results } = this.props;
-		if(results !== prevProps.results) {
-			const files = results.get('experiment_files');
-			files.forEach(f => {
-				const filename = f.get('filename');
-				if(filename.includes('confusion_matrix')) {
-					this.props.fetchConfusionMatrix(f.get('_id'));
-				} else if(filename.includes('roc_curve')) {
-					this.props.fetchROCCurve(f.get('_id'));
-				}
-			});
-		}
-	}
+  componentDidMount() {
+    this.props.fetchResults(this.props.params.id);
+  }
 
-	render() {
-		const { results } = this.props;
-		return (
-			<SceneWrapper
-				headerContent="Results"
-				subheader={`Experiment #${this.props.params.id}`}
-			>
-				<Results {...this.props} />
-			</SceneWrapper>
-		);
-	}
+  getSceneHeader() {
+    const { results } = this.props;
+    if(results.size) {
+      return {
+        header: `Results: ${formatDataset(results.get('dataset_name'))}`,
+        subheader: `Experiment: #${results.get('_id')}`
+      };
+    }
+
+    return { header: 'Results' };
+  }
+
+  render() {
+    const sceneHeader = this.getSceneHeader();
+    return (
+      <div>
+        <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
+        <Results {...this.props} />
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = (state) => ({
-	results: getResults(state),
-	isFetching: getIsFetching(state),
-	errorMessage: getErrorMessage(state),
-	confusionMatrix: getConfusionMatrix(state),
-	rocCurve: getROCCurve(state)
+  results: getResults(state),
+  isFetching: getIsFetching(state),
+  errorMessage: getErrorMessage(state)
 });
 
-ResultsContainer = connect(
-	mapStateToProps, 
-	actions
-)(ResultsContainer);
+ResultsContainer.propTypes = {
+  results: ImmutablePropTypes.map.isRequired,
+  clearResults: PropTypes.func.isRequired,
+  fetchResults: PropTypes.func.isRequired,
+  params: PropTypes.shape({ id: PropTypes.string }).isRequired
+};
 
-export default ResultsContainer;
+export default connect(
+  mapStateToProps, 
+  actions
+)(ResultsContainer);

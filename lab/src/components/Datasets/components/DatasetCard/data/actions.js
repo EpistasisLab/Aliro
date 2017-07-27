@@ -1,41 +1,43 @@
 import * as api from './api';
-import { getIsTogglingAI } from './reducer';
+import { getIsTogglingAI } from './index';
 
 export const ACTION_PREFIX = 'DATASET_';
-export const DATASET_UPDATE = 'DATASET_UPDATE';
+
+export const DATASET_UPDATE = ACTION_PREFIX + 'UPDATE';
 export const AI_TOGGLE_UPDATE = ACTION_PREFIX + 'AI_TOGGLE_UPDATE';
 export const AI_TOGGLE_REQUEST = ACTION_PREFIX + 'AI_TOGGLE_REQUEST';
 export const AI_TOGGLE_SUCCESS = ACTION_PREFIX + 'AI_TOGGLE_SUCCESS';
 export const AI_TOGGLE_FAILURE = ACTION_PREFIX + 'AI_TOGGLE_FAILURE';
 
 export const toggleAI = (id, nextAIState) => (dispatch, getState) => {
-	if(getIsTogglingAI(getState(), id)) {
-		return Promise.resolve();
-	}
+  if(getIsTogglingAI(getState(), id)) {
+    return Promise.resolve();
+  }
 
-	dispatch({
-		type: AI_TOGGLE_REQUEST,
-		id
-	});
+  dispatch({
+    type: AI_TOGGLE_REQUEST,
+    id
+  });
 
-	return api.toggleAI(id, nextAIState).then(
-		response => {
-			dispatch({
-				type: AI_TOGGLE_SUCCESS,
-				receivedAt: Date.now(),
-				id,
-				nextAIState
-			});
-		},
-		error => {
-			dispatch({
-				type: AI_TOGGLE_FAILURE,
-				receivedAt: Date.now(),
-				message: error.message || 'Something went wrong.',
-				id
-			});
-		}
-	);
+  return api.toggleAI(id, nextAIState).then(
+    response => {
+      dispatch({
+        type: AI_TOGGLE_SUCCESS,
+        receivedAt: Date.now(),
+        id,
+        nextAIState,
+        response
+      });
+    },
+    error => {
+      dispatch({
+        type: AI_TOGGLE_FAILURE,
+        receivedAt: Date.now(),
+        message: error.message || 'Something went wrong.',
+        id
+      });
+    }
+  );
 };
 
 export const updateAIToggle = (id, nextAIState) => (dispatch) => {

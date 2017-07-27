@@ -7,18 +7,43 @@ body {
     line-height: 1.5;
 }
 
-.pennai .ui.header.scene-title {
+.pennai .scene-header .ui.header {
     display: inline-block;
     margin-right: 1rem;
+    margin-bottom: 0.9rem;
 }
 
-.pennai .ui.button.scene-btn {
+.pennai .scene-header .ui.button {
     vertical-align: middle;
     margin-bottom: 0.9rem;
 }
 
+.pennai .inverted-card {
+    margin-bottom: 2rem;
+}
+
+.pennai .inverted-card .ui.top.attached.segment {
+    max-height: 57px;
+}
+
+.pennai .inverted-card .ui.segment {
+    background-color: rgba(255,255,255,.08);
+}
+
+/* remove this */
 .pennai .ui.segment {
     background-color: rgba(255,255,255,.08);
+}
+
+.pennai .dataset-card .ui.error.message {
+    background-color: rgba(255,255,255,.08);
+    border: 1px solid #555;
+    box-shadow: none;
+}
+
+.pennai .dataset-card .ui.error.message .icon {
+    color: #ff695e;
+    font-size: 1rem;
 }
 
 .pennai .dataset-card .panel-header {
@@ -81,7 +106,7 @@ body {
 }
 
 .pennai .dataset-card .best-result .ui.progress.accuracy-score .bar {
-    background-color: #9B59B6;
+    background-color: #A333C8;
 }
 
 .pennai .dataset-card .best-result .ui.progress .bar .progress {
@@ -127,7 +152,22 @@ body {
 }
 
 .pennai .experiments-scene .experiment-count {
-   margin-top: -1.5rem;
+   padding-top: 0.25rem;
+   padding-left: 0.5rem;
+}
+
+.pennai .experiments-scene .ui.bottom.segment {
+    margin-bottom: 2rem;
+}
+
+.pennai .experiments-scene .table-container {
+    width: 100%;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.pennai .experiments-scene .table-container .table {
+    min-width: 650px;
 }
 
 .pennai .experiments-scene .ui.table thead th {
@@ -182,14 +222,6 @@ body {
     border-left: 7px solid #FF695E;
 }
 
-.pennai .results-scene .page-title {
-    margin-bottom: 1rem;
-}
-
-.pennai .results-scene .panel-header {
-    max-height: 51px;
-}
-
 .pennai .builder-scene .page-title {
     margin-bottom: 1rem;
 }
@@ -239,14 +271,8 @@ body {
     margin-bottom: 2rem;
 }
 
-.table-container {
-    width: 100%;
-    overflow-y: auto;
-    margin: 0 0 1em;
-}
-
-.table-container .table {
-    min-width: 650px;
+.c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
+    font-size: 0.8rem;
 }
 
 .pennai .ui.menu .link.active > .item {
@@ -278,6 +304,17 @@ body {
     right: 1em;
     bottom: 1em;
     z-index: 100;
+}
+
+@media (max-width: 321px) {
+
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        padding-top: 4.5rem;
+    }
 }
 
 /*@media (min-width: 140rem) {
