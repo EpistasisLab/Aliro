@@ -114,11 +114,12 @@ class AI():
         if os.stat(self.rec_score_file).st_size != 0:
             filehandler = open(self.rec_score_file,'rb')
             state = pickle.load(filehandler)
-            self.rec.scores = state['scores']
-            self.rec.trained_dataset_models = state['trained_dataset_models']
-            self.last_update = state['last_update']
-            if self.verbose:
-                print('loaded previous state from ',self.last_update)
+            if(hasattr(self.rec, 'scores')):
+              self.rec.scores = state['scores']
+              self.rec.trained_dataset_models = state['trained_dataset_models']
+              self.last_update = state['last_update']
+              if self.verbose:
+                  print('loaded previous state from ',self.last_update)
 
     def check_requests(self,debug=False):
         """Returns true if new AI request has been submitted by user."""
@@ -190,22 +191,25 @@ class AI():
         # clean up response
         processed_data = []
         for d in data:
-            if '_options' in d.keys() and '_scores' in d.keys() and all (k in d['_scores'] for k in ('accuracy_score','f1_score','balanced_accuracy')):
-                processed_data.append(
-                    {'dataset':d['_dataset_id'],
+            if '_options' in d.keys() and '_scores' in d.keys() and '_dataset_id' in d.keys():
+                frame={
+                    'dataset':d['_dataset_id'],
                     'algorithm':d['_project_id'],
                     'accuracy':d['_scores']['accuracy_score'],
                     'f1':d['_scores']['f1_score'],
-                    'balanced_accuracy':d['_scores']['balanced_accuracy'],
                     'parameters':str(d['_options']),
-                    # 'parameters':str(OrderedDict(sorted(d['_options'].items(),
-                    #                                     key=lambda x:x[1],
-                    #                                     reverse=True)))
-                    })
-
+                    }
+                if(hasattr(d['_scores'],'balanced_accuracy')):
+                    frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
+                processed_data.append(frame)
+            else:
+              print("frame is missing something:")
+              print(d)
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
           self.new_data = new_data
+        else:
+          print("no new data")
           #print(self.new_data)
         # print('results:\n',results)
         # df = pd.DataFrame(response)
@@ -249,10 +253,10 @@ class AI():
                 #print(rec_path)
                 requests.post(rec_path,data=json.dumps(rec),headers=self.header)
                 #submit update to dataset to indicate ai:True
-                payload= {'ai':'finished'}
-                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                    headers=self.header)
+            payload= {'ai':'finished'}
+            data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+            tmp = requests.put(data_submit_path,data=json.dumps(payload),
+                headers=self.header)
             i += 1
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
@@ -274,7 +278,8 @@ class AI():
         """Save ML+P scores in pickle or to DB"""
         out = open(self.rec_score_file,'wb')
         state={}
-        state['scores'] = self.rec.scores
+        if(hasattr(self.rec, 'scores')):
+          state['scores'] = self.rec.scores
         state['trained_dataset_models'] = self.rec.trained_dataset_models
         state['last_update'] = self.last_update
         pickle.dump(state, out)
