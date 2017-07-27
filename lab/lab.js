@@ -13,8 +13,8 @@ var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
-var socketServer = require('./socketServer');
-var publisher = require("./pubsub").publisher;
+var socketServer = require("./socketServer").socketServer;
+var publishTo = require("./redis-pubsub").publishTo;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var users = require("./users");
@@ -189,16 +189,11 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             }
         })
         .then((result) => {
+            publishTo('toggledAI', req);
+
             res.send({
                 message: "AI toggled for " + req.params.id
             });
-
-            // only publish if publisher is available
-            if(publisher) {
-                publisher.publish('toggledAI', JSON.stringify(
-                    { _id: req.params.id, nextAIState: req.body.ai  }
-                ));
-            }
         })
         .catch((err) => {
             next(err);
@@ -310,35 +305,20 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
             $set: req.body
         })
         .then((result) => {
+            if(req.params.collection === 'experiments') {
+                if(req.body._scores) { 
+                    publishTo('finishedExperiment', req); 
+                } else if(req.body._status === 'fail') {
+                    publishTo('failedExperiment', req);
+                }
+            }
+
             // Update returns the count of affected objects
             res.send((result === 1) ? {
                 msg: "success"
             } : {
                 msg: "error"
             });
-
-            // only for experiment updates
-            if(req.params.collection === 'experiments') {
-                // publish when experiment scores are updated
-                if(req.body._scores) {
-                    // only publish if publisher is available    
-                    if(publisher) {
-                        publisher.publish('finishedExperiment', JSON.stringify(
-                            { _id: req.params.id  }
-                        ));
-                    }
-                }
-
-                // publish when experiment fails
-                if(req.body._status === 'fail') {
-                    // only publish if publisher is available    
-                    if(publisher) {
-                        publisher.publish('failedExperiment', JSON.stringify(
-                            { _id: req.params.id  }
-                        ));
-                    }
-                }
-            }
         })
         .catch((err) => {
             next(err);
@@ -770,19 +750,14 @@ app.put("/api/v1/experiments/:id/started", (req, res, next) => {
             }
         })
         .then((result) => {
+            publishTo('startedExperiment', req);
+
             // Update returns the count of affected objects
             res.send((result === 1) ? {
                 msg: "success"
             } : {
                 msg: "error"
             });
-
-            // only publish if publisher is available
-            if(publisher) {
-                publisher.publish('startedExperiment', JSON.stringify(
-                    { _id: req.params.id  }
-                ));
-            }
         })
         .catch((err) => {
             next(err);

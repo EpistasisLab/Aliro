@@ -1,65 +1,69 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import ExperimentsTableHeader from './components/ExperimentsTableHeader';
 import ExperimentsTableBody from './components/ExperimentsTableBody';
 import { Table } from 'semantic-ui-react';
 
-class ExperimentsTable extends Component {
-	render() {
+function ExperimentsTable({
+  experiments, 
+  filters,
+  sort,
+  updateQuery
+}) {
+  const selectedStatus = filters.status.selected;
 
-		const { 
-			experiments, 
-			filters,
-			sort,
-			updateQuery
-		} = this.props;
+  const selectedDataset = filters.dataset.selected;
 
-		const selectedStatus = filters.status.selected;
+  const selectedAlgorithm = filters.algorithm.selected;
 
-		const selectedDataset = filters.dataset.selected;
+  const currentParameters = experiments.first().get('params');
 
-		const selectedAlgorithm = filters.algorithm.selected;
+  const shouldDisplayQuality = selectedStatus === 'suggested';
 
-		const currentParameters = experiments.first().get('params');
+  const shouldDisplayAwards = selectedDataset !== 'all';
 
-		const shouldDisplayQuality = selectedStatus === 'suggested';
+  const shouldDisplayParams = selectedAlgorithm !== 'all' && currentParameters.size > 0;
 
-		const shouldDisplayAwards = selectedDataset !== 'all';
+  const orderedParamKeys = currentParameters.keySeq().sort();
 
-		const shouldDisplayParams = selectedAlgorithm !== 'all' && currentParameters.size > 0;
-
-		const orderedParamKeys = currentParameters.keySeq().sort();
-
-		return (
-			<div className="table-container">
-				<Table 
-					inverted
-					basic
-					celled
-					compact
-					selectable
-					sortable
-					structured
-					unstackable
-				>
-					<ExperimentsTableHeader
-						selectedAlgorithm={selectedAlgorithm}
-						shouldDisplayQuality={shouldDisplayQuality}
-						shouldDisplayParams={shouldDisplayParams}
-						orderedParamKeys={orderedParamKeys}
-						sort={sort}
-						updateQuery={updateQuery}
-					/>
-					<ExperimentsTableBody
-						experiments={experiments}
-						shouldDisplayQuality={shouldDisplayQuality}
-						shouldDisplayAwards={shouldDisplayAwards}
-						shouldDisplayParams={shouldDisplayParams}
-						orderedParamKeys={orderedParamKeys}
-					/>
-				</Table>
-			</div>	
-		);
-	}
+  return (
+    <div className="table-container">
+      <Table 
+        inverted
+        basic
+        celled
+        compact
+        selectable
+        sortable
+        structured
+        unstackable
+      >
+        <ExperimentsTableHeader
+          selectedAlgorithm={selectedAlgorithm}
+          shouldDisplayQuality={shouldDisplayQuality}
+          shouldDisplayParams={shouldDisplayParams}
+          orderedParamKeys={orderedParamKeys}
+          sort={sort}
+          updateQuery={updateQuery}
+        />
+        <ExperimentsTableBody
+          experiments={experiments}
+          shouldDisplayQuality={shouldDisplayQuality}
+          shouldDisplayAwards={shouldDisplayAwards}
+          shouldDisplayParams={shouldDisplayParams}
+          orderedParamKeys={orderedParamKeys}
+        />
+      </Table>
+    </div>  
+  );
 }
+
+ExperimentsTable.propTypes = {
+  experiments: ImmutablePropTypes.list.isRequired,
+  filters: PropTypes.object.isRequired,
+  sort: PropTypes.object.isRequired,
+  updateQuery: PropTypes.func.isRequired
+};
 
 export default ExperimentsTable;

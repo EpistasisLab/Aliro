@@ -1,68 +1,61 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Checkbox, Dropdown, Icon } from 'semantic-ui-react';
 
-class DatasetActions extends Component {
-	constructor(props) {
-		super(props);
+function DatasetActions({ dataset, toggleAI }) {
+  const onToggleAI = () => {
+    const aiState = dataset.get('ai');
+    const aiNextState = aiState === 'off' ? 'requested' : 'off';
 
-		this.onToggleAI = this.onToggleAI.bind(this);
-	}
+    toggleAI(dataset.get('_id'), aiNextState);
+  };
 
-	onToggleAI() {
-		const { dataset, toggleAI } = this.props;
-		const aiState = dataset.get('ai');
-		const aiNextState = aiState === 'off' ? 'requested' : 'off';
+  const hasMetadata = dataset.get('has_metadata');
 
-		toggleAI(dataset.get('_id'), aiNextState);
-	}
+  const aiState = dataset.get('ai');
 
-	render() {
+  const aiLabelText = `AI ${aiState}`;
 
-		const { 
-			dataset
-		} = this.props;
+  const aiLabelClass = `ai-label ${aiState}`;
 
-		const hasMetadata = dataset.get('has_metadata');
+  const aiToggleClass = `ai-switch ${aiState === 'requested' ? 'requested' : '' }`;
 
-		const aiState = dataset.get('ai');
+  const aiIsChecked = aiState === 'off' ? false : true;
 
-		const aiLabelText = `AI ${aiState}`;
+  const aiIsToggling = dataset.get('isTogglingAI');
 
-		const aiLabelClass = `ai-label ${aiState}`;
+  const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />;
 
-		const aiToggleClass = `ai-switch ${aiState === 'requested' ? 'requested' : '' }`;
-
-		const aiIsChecked = aiState === 'off' ? false : true;
-
-		const aiIsToggling = dataset.get('isTogglingAI');
-
-		const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />;
-
-		return (
-			<span>
-				{hasMetadata &&
-					<span>
-						<span className={aiLabelClass}>
-							{aiLabelText}
-						</span>
-						<Checkbox
-							toggle 
-							checked={aiIsChecked}
-							className={aiToggleClass}
-							onChange={this.onToggleAI}
-							disabled={aiIsToggling}
-						/>
-					</span>	
-				}
-				<Dropdown pointing="top right" icon={dropdownIcon}>
-					<Dropdown.Menu>
-						<Dropdown.Item icon="file" text="Replace file" />
-						<Dropdown.Item icon="trash" text="Delete" />
-					</Dropdown.Menu>
-				</Dropdown>
-			</span>
-		);
-	}
+  return (
+    <span>
+      {hasMetadata &&
+        <span>
+          <span className={aiLabelClass}>
+            {aiLabelText}
+          </span>
+          <Checkbox
+            toggle 
+            checked={aiIsChecked}
+            className={aiToggleClass}
+            onChange={onToggleAI}
+            disabled={aiIsToggling}
+          />
+        </span> 
+      }
+      <Dropdown pointing="top right" icon={dropdownIcon}>
+        <Dropdown.Menu>
+          <Dropdown.Item icon="file" text="Replace file" />
+          <Dropdown.Item icon="trash" text="Delete" />
+        </Dropdown.Menu>
+      </Dropdown>
+    </span>
+  );
 }
+
+DatasetActions.propTypes = {
+  dataset: ImmutablePropTypes.map.isRequired,
+  toggleAI: PropTypes.func.isRequired
+};
 
 export default DatasetActions;

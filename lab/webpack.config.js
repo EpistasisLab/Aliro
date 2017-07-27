@@ -1,16 +1,30 @@
 var webpack = require('webpack');
+var DotenvPlugin = require('dotenv-webpack');
+require("babel-polyfill");
 
 module.exports = {
     entry: [
         'webpack/hot/only-dev-server',
+        'babel-polyfill',
         './src/index.jsx'
     ],
     module: {
-        loaders: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loader: 'react-hot-loader!babel-loader'
-        }]
+        rules: [
+            {
+                enforce: 'pre',
+                test: /\.(js|jsx)?$/,
+                exclude: /node_modules/,
+                loader: 'eslint-loader',
+                options: {
+                    formatter: require("eslint-friendly-formatter")
+                }
+            },
+            {
+                test: /\.(js|jsx)?$/,
+                exclude: /node_modules/,
+                loader: 'react-hot-loader!babel-loader'
+            }
+        ]
     },
     resolve: {
         extensions: ['.js', '.jsx']
@@ -25,6 +39,12 @@ module.exports = {
         hot: true
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        // access vars from .env
+        new DotenvPlugin(),
+        // set defaults if not defined in .env
+        new webpack.EnvironmentPlugin({
+            NODE_ENV: 'development'
+        })
     ]
 };
