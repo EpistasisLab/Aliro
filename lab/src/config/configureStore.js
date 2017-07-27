@@ -4,18 +4,25 @@ import { socketMiddleware } from './configureSocket';
 import { createLogger } from 'redux-logger';
 import pennaiApp from '../reducer';
 
-// create dev env for logging
 const configureStore = () => {
+  const middlewares = [
+    thunk, // lets us dispatch() functions
+    socketMiddleware
+  ];
+
+  // middleware for development environment
+  if(process.env.NODE_ENV === 'development') {
+    const logger = createLogger({
+      collapsed: true,
+      stateTransformer: state => state.toJS()
+    });
+
+    middlewares.push(logger);
+  }
+
   const store = createStore(
     pennaiApp,
-    applyMiddleware(
-      thunk, // lets us dispatch() functions
-      socketMiddleware,
-      createLogger({
-        collapsed: true,
-        stateTransformer: state => state.toJS()
-      })
-    )
+    applyMiddleware(...middlewares)
   );
 
   return store;
