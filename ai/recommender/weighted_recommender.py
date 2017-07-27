@@ -142,16 +142,17 @@ class WeightedRecommender(BaseRecommender):
             while len(results_sig_dif) < 100:
                 key1 = results_sig_dif[len(results_sig_dif)-1]#first key is last value in new list
                 value1 = self.ml_p_scores.get(key1)
-                key2 = rec[n]#second key is 
-                value2 = self.ml_p_scores.get(key2)
-                t_val, p_val = stats.ttest_ind(value1, value2)
-                if p_val < 0.05: #change to rerun code and check significance started 0.05
-                    results_dict.append(key2)
-                    print('added')
-                    print(p_val)
-                else:
-                    print('not added')
-                n += 1
+                if n < len(rec):
+                    key2 = rec[n]#second key is 
+                    value2 = self.ml_p_scores.get(key2)
+                    t_val, p_val = stats.ttest_ind(value1, value2)
+                    if p_val < 0.05: #change to rerun code and check significance started 0.05
+                        results_dict.append(key2)
+                        print('added')
+                        print(p_val)
+                    else:
+                        print('not added')
+                    n += 1
             rec = results_sig_dif #update with new list
         except AttributeError:
             print('rec:', rec)
