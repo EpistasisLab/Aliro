@@ -152,7 +152,7 @@ class WeightedRecommender(BaseRecommender):
                         print(p_val)
                     else:
                         print('not added')
-                    n += 1
+                n += 1
             rec = results_sig_dif #update with new list
         except AttributeError:
             print('rec:', rec)
