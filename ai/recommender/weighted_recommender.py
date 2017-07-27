@@ -92,8 +92,6 @@ class WeightedRecommender(BaseRecommender):
         self.trained_dataset_models.update(d_ml_p)
         
         new_scores = 0.8 * results_data.groupby(('algorithm-parameters'))[self.metric].mean() + 0.2 * self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm'])
-        print("test")
-        print(self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm']))
         new_weights = results_data.groupby('algorithm-parameters').size()
 
         # make a dictionary
@@ -145,12 +143,8 @@ class WeightedRecommender(BaseRecommender):
                     key2 = rec[n]#second key is 
                     value2 = self.ml_p_scores.get(key2)
                     t_val, p_val = stats.ttest_ind(value1, value2)
-                    if p_val < 0.05: #change to rerun code and check significance started 0.05
+                    if p_val < 0.5: #change to rerun code and check significance started 0.05
                         results_sig_dif.append(key2)
-                        print('added')
-                        print(p_val)
-                    else:
-                        print('not added')
                 n += 1
             rec = results_sig_dif #update with new list
         except AttributeError:
