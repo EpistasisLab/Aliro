@@ -86,7 +86,7 @@ class RandomRecommender(BaseRecommender):
         # return ML+P for best average y
         print(self.ml_p)
         try:
-            rec = np.random.choice(self.ml_p,size=1)
+            rec = np.random.choice(self.ml_p,size=n_recs,replace=False)
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
