@@ -37,7 +37,7 @@ function AlgorithmOptions({
               >
                 {formatAlgorithm(algorithm.get('name'))}
                 <div className="param-count">
-                  {algorithm.get('schema').size} parameters
+                  {`${algorithm.get('schema').size} parameters`}
                 </div>
               </Button>
             </Grid.Column>

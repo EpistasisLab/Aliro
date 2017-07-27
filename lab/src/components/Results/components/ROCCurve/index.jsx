@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
@@ -6,7 +8,6 @@ import {
   getIsFetching, 
   getErrorMessage
 } from './data';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import ROCCurve from './ROCCurve';
 
 class ROCCurveContainer extends Component {
@@ -34,7 +35,9 @@ const mapStateToProps = (state) => ({
 });
 
 ROCCurveContainer.propTypes = {
-  file: ImmutablePropTypes.map
+  file: ImmutablePropTypes.map,
+  clearROCCurve: PropTypes.func.isRequired,
+  fetchROCCurve: PropTypes.func.isRequired
 };
 
 export default connect(

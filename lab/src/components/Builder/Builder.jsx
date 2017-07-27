@@ -56,9 +56,7 @@ function Builder({
     );
   } else if(isFetching) {
     return (
-      <Loader active inverted size="large">
-        Preparing the builder...
-      </Loader>
+      <Loader active inverted size="large" content="Preparing the builder..." />
     );
   }
 
@@ -88,11 +86,10 @@ function Builder({
         <Button 
           color="grey"
           size="large"
+          content="Reset"
           disabled={isSubmitting}
           onClick={onResetExperiment}
-        >
-          Reset
-        </Button>
+        />
       </div>
     </div>
   );

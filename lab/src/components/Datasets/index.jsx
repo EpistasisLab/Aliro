@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
@@ -29,6 +30,10 @@ const mapStateToProps = (state) => ({
   isFetching: getIsFetching(state),
   errorMessage: getErrorMessage(state)
 });
+
+DatasetsContainer.propTypes = {
+  fetchDatasets: PropTypes.func.isRequired
+};
 
 export default connect(
   mapStateToProps, 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import * as actions from './data/actions';
@@ -34,6 +35,10 @@ const mapStateToProps = (state, props) => ({
   filters: getFilters(state, props),
   sort: getSort(state, props)
 });
+
+ExperimentsContainer.propTypes = {
+  fetchExperiments: PropTypes.func.isRequired
+};
 
 export default withRouter(connect(
   mapStateToProps, 

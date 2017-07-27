@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
@@ -47,6 +49,13 @@ const mapStateToProps = (state) => ({
   isFetching: getIsFetching(state),
   errorMessage: getErrorMessage(state)
 });
+
+ResultsContainer.propTypes = {
+  results: ImmutablePropTypes.map.isRequired,
+  clearResults: PropTypes.func.isRequired,
+  fetchResults: PropTypes.func.isRequired,
+  params: PropTypes.shape({ id: PropTypes.string }).isRequired
+};
 
 export default connect(
   mapStateToProps, 

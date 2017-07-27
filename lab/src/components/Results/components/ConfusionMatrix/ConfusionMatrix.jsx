@@ -22,9 +22,7 @@ function ConfusionMatrix({
       );
     } else if(isFetching) {
       return (
-        <Loader active inverted inline="centered">
-          Retrieving confusion matrix...
-        </Loader>
+        <Loader active inverted inline="centered" content="Retrieving confusion matrix..." />
       );
     } else if(!isFetching && !confusionMatrix) {
       return (
@@ -46,11 +44,11 @@ function ConfusionMatrix({
 }
 
 ConfusionMatrix.propTypes = {
+  file: ImmutablePropTypes.map,
   confusionMatrix: PropTypes.instanceOf(Blob),
   isFetching: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
-  fetchConfusionMatrix: PropTypes.func.isRequired,
-  file: ImmutablePropTypes.map
+  fetchConfusionMatrix: PropTypes.func.isRequired
 };
 
 export default ConfusionMatrix;
