@@ -8,30 +8,30 @@ export const EXPERIMENT_ADD = 'EXPERIMENT_ADD';
 export const EXPERIMENT_UPDATE = 'EXPERIMENT_UPDATE';
 
 export const fetchExperiments = () => (dispatch, getState) => {
-	if(getIsFetching(getState())) {
-		return Promise.resolve();
-	}
+  if(getIsFetching(getState())) {
+    return Promise.resolve();
+  }
 
-	dispatch({
-		type: EXPERIMENTS_FETCH_REQUEST
-	});
+  dispatch({
+    type: EXPERIMENTS_FETCH_REQUEST
+  });
 
-	return api.fetchExperiments().then(
-		response => {
-			dispatch({
-				type: EXPERIMENTS_FETCH_SUCCESS,
-				receivedAt: Date.now(),
-				response
-			});
-		},
-		error => {
-			dispatch({
-				type: EXPERIMENTS_FETCH_FAILURE,
-				receivedAt: Date.now(),
-				message: error.message || 'Something went wrong.'
-			});
-		}
-	);
+  return api.fetchExperiments().then(
+    response => {
+      dispatch({
+        type: EXPERIMENTS_FETCH_SUCCESS,
+        receivedAt: Date.now(),
+        response
+      });
+    },
+    error => {
+      dispatch({
+        type: EXPERIMENTS_FETCH_FAILURE,
+        receivedAt: Date.now(),
+        message: error.message || 'Something went wrong.'
+      });
+    }
+  );
 };
 
 export const addExperiment = (experiment) => (dispatch) => {

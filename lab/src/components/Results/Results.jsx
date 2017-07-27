@@ -1,215 +1,104 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import FetchError from '../FetchError';
-import { Gauge } from './components/Gauge';
-import { Header, Grid, Segment, Icon, Image } from 'semantic-ui-react';
-import moment from 'moment';
-import twix from 'twix';
+import AlgorithmDetails from './components/AlgorithmDetails';
+import RunDetails from './components/RunDetails';
+import ConfusionMatrix from './components/ConfusionMatrix';
+import ROCCurve from './components/ROCCurve';
+import Score from './components/Score';
+import { Header, Grid, Loader } from 'semantic-ui-react';
 
-// if results does not exist, then go to not found page or error message!!
-class Results extends Component {
-	getFormattedDate(date) {
-		return moment(date).format('M/DD/YY h:mm a');
-	}
+function Results({
+  params,
+  results,
+  isFetching,
+  errorMessage,
+  fetchResults
+}) {
+  if(errorMessage === 'Failed to fetch') {
+    return (
+      <FetchError 
+        message="The specified experiment does not exist." 
+      />
+    );
+  } else if(errorMessage && !results.size) {
+    return (
+      <FetchError
+        message={errorMessage}
+        onRetry={() => fetchResults(params.id)}
+      />
+    );
+  } else if(isFetching && !results.size) {
+    return (
+      <Loader active inverted size="large" content="Retrieving experiment results..." />
+    );
+  } else if(!isFetching && !results.size) {
+    return (
+      <Header inverted size="small" content="No results available yet." />
+    );
+  }
 
-	getDuration(started, finished) {
-		let duration = moment(started).twix(finished).asDuration();
-		return `${duration._data.hours}h ${duration._data.minutes}m ${duration._data.seconds}s`;
-	}
+  // check if files are available
+  let confusionMatrix, rocCurve;
+  results.get('experiment_files').forEach(file => {
+    const filename = file.get('filename');
+    if(filename.includes('confusion_matrix')) {
+      confusionMatrix = file;
+    } else if(filename.includes('roc_curve')) {
+      rocCurve = file;
+    }
+  });
 
-	render() {
-		
-		const { 
-			results,
-			isFetching,
-			errorMessage,
-			fetchResults,
-			confusionMatrix,
-			rocCurve
-		} = this.props;
-
-		if(errorMessage) {
-			return (
-				<FetchError 
-					message={errorMessage}
-					onRetry={() => fetchResults(this.props.params.id)}
-				/>
-			);
-		} else if(isFetching) {
-			return (
-				<Header 
-					inverted 
-					size="small"
-					content="Retrieving your results..."
-				/>
-			);
-		} else if(!isFetching && !results.size) {
-			return (
-				<Header 
-					inverted 
-					size="small"
-					content="This result does not appear to exist."
-				/>
-			);
-		}
-
-		return (
-			<div className="results-scene">
-				<Grid columns={3} stackable>
-					<Grid.Row stretched>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header inverted size="medium" content="Algorithm" />
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Header inverted size="small" content={results.get('algorithm')} />
-									<Grid columns={2}>
-									{results.get('params').entrySeq().map(([param, value]) =>
-										<Grid.Column key={param}>
-											<Header
-												inverted
-												size="tiny"
-												color="grey"
-												content={param}
-												subheader={value.toString()}
-											/>
-										</Grid.Column>
-									)}
-								</Grid>
-							</Segment>
-							<Segment inverted attached="top" className="panel-header">
-								<Header inverted size="medium" content="Run Details" />
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Grid columns={2}>
-									<Grid.Column>
-										<Header 
-											inverted 
-											color="grey" 
-											size="tiny" 
-											content="Started" 
-											subheader={this.getFormattedDate(results.get('started'))}
-										/>
-									</Grid.Column>
-									<Grid.Column>
-										<Header 
-											inverted 
-											color="grey" 
-											size="tiny" 
-											content="Finished"
-											subheader={this.getFormattedDate(results.get('finished'))}
-										/>
-									</Grid.Column>
-									<Grid.Column>
-										<Header 
-											inverted 
-											color="grey" 
-											size="tiny" 
-											content="Duration"
-											subheader={this.getDuration(
-												results.get('started'), 
-												results.get('finished')
-											)}
-										/>
-									</Grid.Column>
-									<Grid.Column>
-										<Header 
-											inverted 
-											color="grey" 
-											size="tiny" 
-											content="Launched By"
-											subheader={results.get('launched_by')}
-										/>
-									</Grid.Column>
-								</Grid>
-							</Segment>
-						</Grid.Column>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Confusion Matrix" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								{confusionMatrix ? (
-									<Image src={confusionMatrix} />
-								) : (
-									<span>Not available</span>
-								)}
-							</Segment>
-						</Grid.Column>
-						<Grid.Column>	
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="ROC Curve" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								{rocCurve ? (
-									<Image src={rocCurve} />
-								) : (
-									<span>Not available</span>
-								)}
-							</Segment>
-						</Grid.Column>
-					</Grid.Row>
-					<Grid.Row>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Training Accuracy" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Gauge 
-									chartName="training" 
-									color="#7D5BA6"
-									value={results.getIn(['scores', 'train_score'])}
-								/>
-							</Segment>
-						</Grid.Column>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="Testing Accuracy" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Gauge 
-									chartName="testing" 
-									color="#55D6BE"
-									value={results.getIn(['scores', 'test_score'])}
-								/>
-							</Segment>
-						</Grid.Column>
-						<Grid.Column>
-							<Segment inverted attached="top" className="panel-header">
-								<Header 
-									inverted
-									size="medium"
-									content="AUC" 
-								/>
-							</Segment>
-							<Segment inverted attached="bottom">	
-								<Gauge 
-									chartName="auc" 
-									color="#59ABE3"
-									value={results.getIn(['scores', 'roc_auc_score'])}
-								/>
-							</Segment>
-						</Grid.Column>
-					</Grid.Row>
-				</Grid>
-			</div>
-		);
-	}
+  return (
+    <Grid columns={3} stackable>
+      <Grid.Row>
+        <Grid.Column>
+          <AlgorithmDetails
+            algorithm={results.get('algorithm')}
+            params={results.get('params')}
+          />
+          <RunDetails
+            startTime={results.get('started')}
+            finishTime={results.get('finished')}
+            launchedBy={results.get('launched_by')}
+          />
+        </Grid.Column>
+        <Grid.Column>
+          <ConfusionMatrix file={confusionMatrix} />
+          <ROCCurve file={rocCurve} />
+        </Grid.Column>
+        <Grid.Column>
+          <Score
+            scoreName="Training Accuracy"
+            scoreValue={results.getIn(['scores', 'train_score'])}
+            chartKey="training"
+            chartColor="#7D5BA6"
+          />
+          <Score
+            scoreName="Testing Accuracy"
+            scoreValue={results.getIn(['scores', 'test_score'])}
+            chartKey="testing"
+            chartColor="#55D6BE"
+          />
+          <Score
+            scoreName="AUC"
+            scoreValue={results.getIn(['scores', 'roc_auc_score'])}
+            chartKey="auc"
+            chartColor="#59ABE3"
+          />
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
+  );
 }
+
+Results.propTypes = {
+  results: ImmutablePropTypes.map.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  fetchResults: PropTypes.func.isRequired,
+  params: PropTypes.shape({ id: PropTypes.string }).isRequired
+};
 
 export default Results;
