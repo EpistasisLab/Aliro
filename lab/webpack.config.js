@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var DotenvPlugin = require('dotenv-webpack');
 require("babel-polyfill");
 
 module.exports = {
@@ -39,10 +40,11 @@ module.exports = {
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.DefinePlugin({
-          "process.env": { 
-             NODE_ENV: JSON.stringify("development") 
-           }
+        // access vars from .env
+        new DotenvPlugin(),
+        // set defaults if not defined in .env
+        new webpack.EnvironmentPlugin({
+            NODE_ENV: 'development'
         })
     ]
 };
