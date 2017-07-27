@@ -31,6 +31,7 @@
     "compression": "^1.6.2",
     "continuation-local-storage": "^3.1.7",
     "dotenv": "^2.0.0",
+    "dotenv-webpack": "^1.5.4",
     "es6-promise": "^4.1.0",
     "express": "^4.13.4",
     "immutable": "^3.8.1",
