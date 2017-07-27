@@ -120,7 +120,8 @@ app.get("/api/v1/files/:id", (req, res, next) => {
                 });
         });
       } else {
-        console.log('error loading file: ' .  req.params.id);
+        console.log('error loading file');
+        console.log(req);
         console.log(err);
         res.send([]);
       }
@@ -181,6 +182,7 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
 
 //toggles ai for dataset
 app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
+    console.log(req.body)
     db.datasets.updateByIdAsync(req.params.id, {
             $set: {
                 ai: req.body.ai
