@@ -17,6 +17,7 @@ from ai.validate_recommendation import validate_recs
 import os
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
+from ai.recommender.weighted_recommender import WeightedRecommender
 from collections import OrderedDict
 
 ml_ids = {
@@ -295,7 +296,7 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(rec=RandomRecommender(),warm_start=True)
+    pennai = AI(rec=WeightedRecommender(),warm_start=True)
     debug = False
     try:
         while True:
