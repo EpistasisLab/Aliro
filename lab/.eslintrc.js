@@ -81,21 +81,21 @@ module.exports = {
             "error"
         ],
         // Prevent usage of deprecated methods (set React version in shared settings or use default)
-        /*"react/no-deprecated" [
+        "react/no-deprecated": [
             "error"
-        ],*/
+        ],
         // Prevent usage of setState in componentDidMount
-        /*"react/no-did-mount-set-state": [
+        "react/no-did-mount-set-state": [
             "error"
-        ],*/
+        ],
         // Prevent usage of setState in componentDidUpdate
-        /*"react/no-did-update-set-state": [
+        "react/no-did-update-set-state": [
             "error"
-        ],*/
+        ],
         // Prevent usage of setState in componentWillUpdate
-        /*"react/no-will-update-set-state": [
+        "react/no-will-update-set-state": [
             "error"
-        ],*/
+        ],
         // Prevent direct mutation of this.state
         "react/no-direct-mutation-state": [
             "error"
@@ -109,9 +109,10 @@ module.exports = {
             "error"
         ],
         // Prevent multiple component definition per file
-        /*"react/no-multi-comp": [
-            "warn"
-        ],*/
+        "react/no-multi-comp": [
+            "warn",
+            {"ignoreStateless": true}
+        ],
         // Prevent usage of the return value of React.render
         "react/no-render-return-value": [
             "error"
@@ -133,22 +134,22 @@ module.exports = {
             "error",
             "always"
         ],
-        // Enforce stateless React Components to be written as a pure function
-        /*"react/prefer-stateless-function": [
+        // Prevent definitions of unused prop types
+        "react/no-unused-prop-types": [
             "warn"
-        ],*/
+        ],
+        // Enforce stateless React Components to be written as a pure function
+        "react/prefer-stateless-function": [
+            "warn"
+        ],
         // Prevent missing props validation in a React component definition
-        /*"react/prop-types": [
-            "error"
-        ],*/
+        "react/prop-types": [
+            "warn"
+        ],
         // Prevent missing React when using JSX
-        /*"react/react-in-jsx-scope": [
+        "react/react-in-jsx-scope": [
             "error"
-        ],*/
-        // Enforce a defaultProps definition for every prop that is not a required prop
-        /*"react/require-default-props": [
-            "error"
-        ],*/
+        ],
         // Enforce ES5 or ES6 class for returning value in render function
         "react/require-render-return": [
             "error"
@@ -158,107 +159,107 @@ module.exports = {
             "error"
         ],
         // Enforce component methods order (formatting preference)
-        /*"react/sort-comp": [
+        "react/sort-comp": [
             "warn"
-        ],*/
+        ],
         // Prevent void DOM elements (e.g. <img />, <br />) from receiving children
-        /*"react/void-dom-elements-no-children": [
+        "react/void-dom-elements-no-children": [
             "error"
-        ],*/
+        ],
 
         /* JSX-SPECIFIC RULES */
         // Enforce boolean attributes notation in JSX
-        /*"react/jsx-boolean-value": [
-            "error"
+        "react/jsx-boolean-value": [
+            "error",
             "never"
-        ],*/
+        ],
         // Validate closing bracket location in JSX
-        /*"react/jsx-closing-bracket-location": [
+        "react/jsx-closing-bracket-location": [
             "error"
-        ],*/
+        ],
         // Validate closing tag location in JSX
-        /*"react/jsx-closing-tag-location": [
+        "react/jsx-closing-tag-location": [
             "error"
-        ],*/
+        ],
         // Enforce or disallow spaces inside of curly braces in JSX attributes and expressions
-        /*"react/jsx-curly-spacing": [
+        "react/jsx-curly-spacing": [
             "error", 
             {"when": "never"}
-        ],*/
+        ],
         // Enforce or disallow spaces around equal signs in JSX attributes
-        /*"react/jsx-equals-spacing": [
+        "react/jsx-equals-spacing": [
             "error", 
             "never"
-        ],*/
+        ],
         // Restrict file extensions that may contain JSX
-        /*"react/jsx-filename-extension": [
+        "react/jsx-filename-extension": [
             "error"
-        ],*/
+        ],
         // Configure the position of the first property
-        /*"react/jsx-first-prop-new-line": [
+        "react/jsx-first-prop-new-line": [
             "error"
-        ],*/
+        ],
         // Enforce event handler naming conventions in JSX
-        /*"react/jsx-handler-names": [
-            "error"
-        ],*/
-        // Validate JSX indentation (must be enabled)
+        "react/jsx-handler-names": [
+            "warn"
+        ],
+        // Validate JSX indentation (DO NOT REMOVE: must be enabled)
         "react/jsx-indent": [
             "error", 
             2
         ],
         // Validate props indentation in JSX
-        /*"react/jsx-indent-props": [
+        "react/jsx-indent-props": [
             "error",
             2
-        ],*/
+        ],
         // Detect missing key prop
-        /*"react/jsx-key": [
+        "react/jsx-key": [
             "error"
-        ],*/
+        ],
         // Limit maximum of props on a single line in JSX
-        /*"react/jsx-max-props-per-line": [
+        "react/jsx-max-props-per-line": [
             "warn",
-            { "maximum": 3 }
-        ],*/
+            { "maximum": 5 }
+        ],
         // No .bind() or Arrow Functions in JSX Props
         /*"react/jsx-no-bind": [
             "error"
         ],*/
         // Prevent comments from being inserted as text nodes
-        /*"react/jsx-no-comment-textnodes": [
+        "react/jsx-no-comment-textnodes": [
             "error"
-        ],*/
+        ],
         // Prevent duplicate properties in JSX
-        /*"react/jsx-no-duplicate-props": [
+        "react/jsx-no-duplicate-props": [
             "error"
-        ],*/
+        ],
         // Prevent usage of string literals in JSX
-        /*"react/jsx-no-literals": [
-            "error"
-        ],*/
+        "react/jsx-no-literals": [
+            "warn"
+        ],
         // Prevent usage of unsafe target='_blank'
-        /*"react/jsx-no-target-blank": [
+        "react/jsx-no-target-blank": [
             "error"
-        ],*/
+        ],
         // Disallow undeclared variables in JSX
-        /*"react/jsx-no-undef": [
+        "react/jsx-no-undef": [
             "error"
-        ],*/
+        ],
         // Enforce PascalCase for user-defined JSX components
-        /*"react/jsx-pascal-case": [
+        "react/jsx-pascal-case": [
             "error", 
             { allowAllCaps: false }
-        ],*/
+        ],
         // Validate whitespace in and around the JSX opening and closing brackets
-        /*"react/jsx-tag-spacing": [
+        "react/jsx-tag-spacing": [
             "error"
-        ],*/
-        // Prevent React to be incorrectly marked as unused (must be enabled)
+        ],
+        // Prevent React to be incorrectly marked as unused (DO NOT REMOVE: must be enabled)
         "react/jsx-uses-react": [
             "error"
         ],
-        // Prevent variables used in JSX to be incorrectly marked as unused (must be enabled)
+        // Prevent variables used in JSX to be incorrectly marked as unused (DO NOT REMOVE: must be enabled)
         "react/jsx-uses-vars": [
             "error"
         ],

@@ -36,7 +36,7 @@ SceneHeader.propTypes = {
   subheader: PropTypes.string,
   btnText: PropTypes.string,
   btnIcon: PropTypes.string,
-  btnAction: PropTypes.func
+  //btnAction: PropTypes.func
 };
 
 export default SceneHeader;

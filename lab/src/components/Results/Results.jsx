@@ -31,9 +31,7 @@ function Results({
     );
   } else if(isFetching && !results.size) {
     return (
-      <Loader active inverted size="large">
-        Retrieving experiment results...
-      </Loader>
+      <Loader active inverted size="large" content="Retrieving experiment results..." />
     );
   } else if(!isFetching && !results.size) {
     return (
@@ -96,11 +94,11 @@ function Results({
 }
 
 Results.propTypes = {
-  params: PropTypes.shape({ id: PropTypes.string }).isRequired,
   results: ImmutablePropTypes.map.isRequired,
   isFetching: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
-  fetchResults: PropTypes.func.isRequired
+  fetchResults: PropTypes.func.isRequired,
+  params: PropTypes.shape({ id: PropTypes.string }).isRequired
 };
 
 export default Results;

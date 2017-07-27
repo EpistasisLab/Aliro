@@ -21,9 +21,7 @@ function Datasets({
     );
   } else if(isFetching && !datasets.size) {
     return (
-      <Loader active inverted size="large">
-        Retrieving your datasets...
-      </Loader>
+      <Loader active inverted size="large" content="Retrieving your datasets..." />
     );
   } else if(!isFetching && !datasets.size) {
     return (

@@ -60,20 +60,7 @@ function ExperimentFilters({
 }
 
 ExperimentFilters.propTypes = {
-  filters: PropTypes.shape({ 
-    algorithm: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    }),
-    dataset: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    }),
-    status: PropTypes.shape({
-      selected: PropTypes.string.isRequired,
-      options: PropTypes.array.isRequired
-    })
-  }).isRequired,
+  filters: PropTypes.object.isRequired,
   resultCount: PropTypes.number.isRequired,
   updateQuery: PropTypes.func.isRequired,
   resetQuery: PropTypes.func.isRequired

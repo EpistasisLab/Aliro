@@ -22,9 +22,7 @@ function App({
       );
     } else if(isFetching) {
       return (
-        <Loader active inverted size="large">
-          Retrieving your preferences...
-        </Loader>
+        <Loader active inverted size="large" content="Retrieving your preferences..." />
       );
     }
 

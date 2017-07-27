@@ -38,7 +38,7 @@ function ExperimentsTableHeader({
           sorted={getIsSorted('started')}
           onClick={() => onSort('started')}
         >
-          Start Time
+          {'Start Time'}
         </Table.HeaderCell>
         {shouldDisplayQuality ? (
           <Table.HeaderCell 
@@ -46,7 +46,7 @@ function ExperimentsTableHeader({
             sorted={getIsSorted('quality_metric')}
             onClick={() => onSort('quality_metric')}
           >
-            Quality
+            {'Quality'}
           </Table.HeaderCell>
         ) : (
           <Table.HeaderCell 
@@ -54,7 +54,7 @@ function ExperimentsTableHeader({
             sorted={getIsSorted('scores-accuracy_score')}
             onClick={() => onSort('scores-accuracy_score')}
           >
-            Accuracy
+            {'Accuracy'}
           </Table.HeaderCell>
         )}
         <Table.HeaderCell 
@@ -62,20 +62,20 @@ function ExperimentsTableHeader({
           sorted={getIsSorted('dataset_name')}
           onClick={() => onSort('dataset_name')}
         >
-          Dataset
+          {'Dataset'}
         </Table.HeaderCell>
         <Table.HeaderCell 
           colSpan={shouldDisplayParams && orderedParamKeys.size}
           sorted={shouldDisplayParams ? null : getIsSorted('algorithm')}
           onClick={shouldDisplayParams ? null : () => onSort('algorithm')}
         >
-          Algorithm
+          {'Algorithm'}
           {shouldDisplayParams &&
-            <span className="alg-name">({formatAlgorithm(selectedAlgorithm)})</span>
+            <span className="alg-name">{`(${formatAlgorithm(selectedAlgorithm)})`}</span>
           }
         </Table.HeaderCell>
         <Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
-          Actions
+          {'Actions'}
         </Table.HeaderCell>
       </Table.Row>
       {shouldDisplayParams &&
@@ -100,10 +100,7 @@ ExperimentsTableHeader.propTypes = {
   shouldDisplayQuality: PropTypes.bool.isRequired,
   shouldDisplayParams: PropTypes.bool.isRequired,
   orderedParamKeys: ImmutablePropTypes.seq.isRequired,
-  sort: PropTypes.shape({
-    column: PropTypes.string,
-    direction: PropTypes.string
-  }),
+  sort: PropTypes.object.isRequired,
   updateQuery: PropTypes.func.isRequired
 };
 

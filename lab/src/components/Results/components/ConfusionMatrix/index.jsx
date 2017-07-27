@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import { 
@@ -6,7 +8,6 @@ import {
   getIsFetching, 
   getErrorMessage
 } from './data';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import ConfusionMatrix from './ConfusionMatrix';
 
 class ConfusionMatrixContainer extends Component {
@@ -34,7 +35,9 @@ const mapStateToProps = (state) => ({
 });
 
 ConfusionMatrixContainer.propTypes = {
-  file: ImmutablePropTypes.map
+  file: ImmutablePropTypes.map,
+  clearConfusionMatrix: PropTypes.func.isRequired,
+  fetchConfusionMatrix: PropTypes.func.isRequired
 };
 
 export default connect(
