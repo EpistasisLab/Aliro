@@ -4,7 +4,6 @@ require("babel-polyfill");
 
 module.exports = {
     entry: [
-        'webpack/hot/only-dev-server',
         'babel-polyfill',
         './src/index.jsx'
     ],
@@ -22,7 +21,7 @@ module.exports = {
             {
                 test: /\.(js|jsx)?$/,
                 exclude: /node_modules/,
-                loader: 'react-hot-loader!babel-loader'
+                loader: 'babel-loader'
             }
         ]
     },
@@ -35,11 +34,9 @@ module.exports = {
         filename: 'bundle.js'
     },
     devServer: {
-        contentBase: './www',
-        hot: true
+        contentBase: './www'
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         // access vars from .env
         new DotenvPlugin(),
         // set defaults if not defined in .env
