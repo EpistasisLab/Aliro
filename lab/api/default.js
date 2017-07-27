@@ -42,12 +42,15 @@ var annotate_dataset = function(dataset) {
                     experiments = dataset['experiments']
                     for (var j = 0; j < experiments.length; j++) {
                         var experiment = experiments[j];
-                        var _status = experiment['status'];
+                        var _status = experiment['_status'];
                         var _scores = experiment['_scores'];
                         if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
                             best_accuracy_score = _scores['accuracy_score']
                             best_experiment_id = experiment['_id']
-                            best_experiment_name = experiment['algorithm']['name']
+                            if(experiment['algorithm'] && experiment['algorithm']['name']) {
+                                best_experiment_name = experiment['algorithm']['name']
+                            }
+
                         }
 
                         if (_status == 'pending') {
