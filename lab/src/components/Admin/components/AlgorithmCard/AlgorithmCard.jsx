@@ -1,6 +1,6 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { Grid, Segment, Header, Form, Dropdown } from 'semantic-ui-react';
+import { Grid, Segment, Header, Dropdown, Button } from 'semantic-ui-react';
 import { formatAlgorithm } from '../../../../utils/formatter';
 
 function AlgorithmCard({ algorithm }) {
@@ -34,30 +34,9 @@ function AlgorithmCard({ algorithm }) {
         />
       </Segment>
       <Segment inverted attached='bottom'className="panel-body">
-        <Form inverted>
-          <Form.Group>
-            <Form.Field 
-              inline
-              label="Category:"
-              control={Dropdown} 
-              value={algorithm.get('category')}
-              options={categoryOptions} 
-              //onChange={(e, data) => updateQuery('algorithm', data.value)}
-              className="filter"
-            />
-            <Form.Button
-              inline
-              inverted 
-              color="blue"
-              size="mini" 
-              compact
-              content="Update category"
-              type="button"
-              onClick={() => resetQuery()}
-              className="reset"
-            />
-          </Form.Group>
-        </Form>  
+        <Header inverted size="small" content="Category" style={{'display': 'inline-block', 'margin-right': '1rem'}} />
+        <Button inverted color="blue" compact size="mini" content="Update category" style={{'vertical-align': 'middle', 'margin-bottom': '0.4rem'}} />
+        <Dropdown fluid selection options={categoryOptions} defaultValue={algorithm.get('category')} />
       </Segment>
     </Grid.Column>
   );
