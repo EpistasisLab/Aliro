@@ -30,12 +30,7 @@ function Datasets({
   }
       
   return (
-    <ResponsiveGrid
-      mobile={1}
-      tablet={2}
-      desktop={3}
-      lgscreen={4}
-    >
+    <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
       {datasets.map(dataset => (
         <DatasetCard
           key={dataset.get('_id')}
