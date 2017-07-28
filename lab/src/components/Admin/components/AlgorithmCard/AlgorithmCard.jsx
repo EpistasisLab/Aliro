@@ -25,7 +25,7 @@ function AlgorithmCard({ algorithm }) {
 
   return (
     <Grid.Column>
-      <Segment inverted attached='top' className="panel-header">
+      <Segment inverted attached="top" className="panel-header">
         <Header
           inverted 
           size="medium"
@@ -33,9 +33,21 @@ function AlgorithmCard({ algorithm }) {
           subheader={`#${algorithm.get('_id')}`}
         />
       </Segment>
-      <Segment inverted attached='bottom'className="panel-body">
-        <Header inverted size="small" content="Category" style={{'display': 'inline-block', 'margin-right': '1rem'}} />
-        <Button inverted color="blue" compact size="mini" content="Update category" style={{'vertical-align': 'middle', 'margin-bottom': '0.4rem'}} />
+      <Segment inverted attached="bottom" className="panel-body">
+        <Header 
+          inverted 
+          size="small" 
+          content="Category" 
+          style={{ 'display': 'inline-block', 'margin-right': '1rem' }} 
+        />
+        <Button 
+          inverted 
+          color="blue" 
+          compact 
+          size="mini" 
+          content="Update category" 
+          style={{ 'vertical-align': 'middle', 'margin-bottom': '0.4rem' }} 
+        />
         <Dropdown fluid selection options={categoryOptions} defaultValue={algorithm.get('category')} />
       </Segment>
     </Grid.Column>
