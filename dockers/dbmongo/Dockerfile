@@ -12,7 +12,6 @@ ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 VOLUME /share
 ADD files/mongodump.min.tgz /
-COPY files/.mongo* /root/
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/
 COPY files/start.sh /root/
