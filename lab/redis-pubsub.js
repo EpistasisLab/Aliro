@@ -33,7 +33,10 @@ function publishTo(channel, req) {
 		var message = channelsByName[channel].prepareMessage(req);
 		users.returnUserData(req)
       .then((user) => {
-          message.userid = user._id;
+          // temp allows pennai to emit events to all sockets by not setting userid
+          if(user.username !== 'pennai') { message.userid = user._id; } 
+          
+          //message.userid = user._id;
           publisher.publish(channel, JSON.stringify(message));
       })
       .catch(() => { console.log('User not found'); });
@@ -53,7 +56,11 @@ function emitTo(channel, message) {
 			});
 
 			channelsByName[channel].emitToSockets(message, userSockets);
-		}
+		} else {
+      // if no userid defined, emit to all sockets
+      var allSockets = getSockets();
+      channelsByName[channel].emitToSockets(message, allSockets);
+    }
 	} else {
 		console.log('Channel does not exist: ' + channel);
 	}
