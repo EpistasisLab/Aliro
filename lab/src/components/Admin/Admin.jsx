@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import ResponsiveGrid from '../ResponsiveGrid';
-import AlgorithmCard from './components/AlgorithmCard';
 import FetchError from '../FetchError';
-import { Header, Loader } from 'semantic-ui-react';
+import AlgorithmRow from './components/AlgorithmRow';
+import { Header, Segment, Table, Loader } from 'semantic-ui-react';
 
 function Admin({
   algorithms,
@@ -30,14 +29,32 @@ function Admin({
   }
       
   return (
-    <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
-      {algorithms.map(algorithm => (
-        <AlgorithmCard
-          key={algorithm.get('_id')}
-          algorithm={algorithm}
-        />
-      ))}
-    </ResponsiveGrid>
+    <Segment inverted>
+      <Table 
+        inverted
+        basic
+        celled
+        compact
+        unstackable
+      >
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>{'Algorithm'}</Table.HeaderCell>
+            <Table.HeaderCell>{'Category'}</Table.HeaderCell>
+            <Table.HeaderCell>{'Add to Machines'}</Table.HeaderCell>
+            <Table.HeaderCell>{'Actions'}</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {algorithms.map(algorithm => (
+            <AlgorithmRow
+              key={algorithm.get('_id')}
+              algorithm={algorithm}
+            />
+          ))}
+        </Table.Body>  
+      </Table>
+    </Segment>
   );
 }
 
