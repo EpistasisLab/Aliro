@@ -11,6 +11,7 @@ class AlgorithmRow extends React.Component {
     };
 
     this.onChangeCategory = this.onChangeCategory.bind(this);
+    this.onUpdateCategory = this.onUpdateCategory.bind(this);
   }
 
   getCategoryOptions() {
@@ -31,6 +32,10 @@ class AlgorithmRow extends React.Component {
   onChangeCategory(e, data) {
     this.setState({ currentCategory: data.value });
   }
+
+  onUpdateCategory() {
+    this.props.updateCategory(this.props.algorithm.get('_id'), this.state.currentCategory);
+  };
 
   render() {
     const { algorithm } = this.props;
@@ -59,7 +64,9 @@ class AlgorithmRow extends React.Component {
               inverted 
               color="blue" 
               content="Save"
+              onClick={this.onUpdateCategory}
               disabled={this.getCanUpdateCategory()}
+              loading={algorithm.get('isUpdatingCategory')}
             />
           </Button.Group>
         </Table.Cell>
