@@ -165,7 +165,7 @@ class AI():
             data = pickle.load(f)
         else:
             # get new results
-            payload = {'date_start':self.last_update,'status':'success'}
+            payload = {'date_start':self.last_update,'has_scores':True}
             payload.update(self.static_payload)
             params = json.dumps(payload).encode('utf8')
             req = urllib.request.Request(self.exp_path, data=params,
