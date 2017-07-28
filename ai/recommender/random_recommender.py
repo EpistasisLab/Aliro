@@ -34,9 +34,10 @@ class RandomRecommender(BaseRecommender):
         else:
             self.metric = metric
 
-        # ml p options
-        self.ml_p = []
-
+        # ml options
+        self.ml = []
+        # dictionary maps ML choices to parameter choices
+        self.ml_p_dict = {}
         # number of datasets trained on so far
         self.w = 0
 
@@ -56,10 +57,14 @@ class RandomRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         """
+        self.ml = results_data['algorithm'].unique()
+        for ml in self.ml:
+            self.ml_p_dict[ml] = results_data.loc[results_data['algorithm']==ml,'parameters'].unique()
+
         # make combined data columns of datasets, classifiers, and parameters
-        results_data.loc[:, 'algorithm-parameters'] = (
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
+        # results_data.loc[:, 'algorithm-parameters'] = (
+        #                                results_data['algorithm'].values + '|' +
+        #                                results_data['parameters'].values)
 
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
@@ -67,7 +72,7 @@ class RandomRecommender(BaseRecommender):
                                        results_data['parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
-        self.ml_p = results_data['algorithm-parameters'].unique()
+        # self.ml_p = results_data['algorithm-parameters'].unique()
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
 
@@ -85,9 +90,13 @@ class RandomRecommender(BaseRecommender):
 
         # return ML+P for best average y
         try:
-            rec = np.random.choice(self.ml_p,size=n_recs)
+            # pdb.set_trace()
+            ml_rec = np.random.choice(self.ml,size=n_recs)
+            p_rec = [np.random.choice(self.ml_p_dict[r]) for r in ml_rec]
+            rec = [ml+'|'+p for ml,p in zip(ml_rec,p_rec)]
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
+
             if dataset_id is not None:
                 rec = [r for r in rec if dataset_id + '|' + r not in
                        self.trained_dataset_models]
