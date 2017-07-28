@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
 import DatasetCard from './DatasetCard';
 
-class DatasetCardContainer extends Component {
-  render() {
-    return (
-      <DatasetCard {...this.props} />
-    );
-  }
+function DatasetCardContainer(props) {
+  return (
+    <DatasetCard {...props} />
+  );
 }
 
 export default connect(
