@@ -234,7 +234,6 @@ class AI():
                 #print(modified_params.max_features)
                 if('max_features' in modified_params):
                     modified_params['max_features'] = 'sqrt'
-
                 rec = {'dataset_id':r['_id'],
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
@@ -242,6 +241,9 @@ class AI():
                         'parameters':modified_params,
                         'ai_score':score,
                         }
+                if self.verbose:
+                    print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                        ':','sent a recommendation for',r['name'])
                 # # add recommended parameters
                 # for p in params.sep(','):
                 #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
@@ -261,7 +263,7 @@ class AI():
             i += 1
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':',' sent ',i,' recommendations')
+                  ':','processed',i,'requests')
 
     def update_recommender(self):
         """Updates recommender based on new results."""
