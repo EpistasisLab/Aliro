@@ -91,9 +91,16 @@ class TimeRecommender(BaseRecommender):
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
         
-        new_scores = (0.6 * results_data.groupby(('algorithm-parameters'))[self.metric].mean() + \
-            0.2 * self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm'])
-            + 0.2 * self._interpret(results_data.groupby(('duration'))['algorithm']))
+        if('duration' in results_data.columns):
+            print('has duration')
+            new_scores = (0.6 * results_data.groupby(('algorithm-parameters'))[self.metric].mean() + \
+                0.2 * self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm'])
+                + 0.2 * self._interpret(results_data.groupby(('duration'))['algorithm']))
+        else:
+            print('has no duration')
+            new_scores = (0.6 * results_data.groupby(('algorithm-parameters'))[self.metric].mean() + \
+                0.2 * self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm'])
+                + 0.2)
         new_weights = results_data.groupby('algorithm-parameters').size()
 
         # make a dictionary
