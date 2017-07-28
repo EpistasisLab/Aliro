@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 //import * as actions from './data/actions';
-import AlgorithmCard from './AlgorithmCard';
+import AlgorithmRow from './AlgorithmRow';
 
-function AlgorithmCardContainer(props) {
+function AlgorithmRowContainer(props) {
   return (
-    <AlgorithmCard {...props} />
+    <AlgorithmRow {...props} />
   );
 }
 
 export default connect(
   null
   //actions
-)(AlgorithmCardContainer);
+)(AlgorithmRowContainer);
