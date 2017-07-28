@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 //import * as actions from './data/actions';
 import AlgorithmCard from './AlgorithmCard';
 
-class AlgorithmCardContainer extends Component {
-  render() {
-    return (
-      <AlgorithmCard {...this.props} />
-    );
-  }
+function AlgorithmCardContainer(props) {
+  return (
+    <AlgorithmCard {...props} />
+  );
 }
 
 export default connect(
-  null,
+  null
   //actions
 )(AlgorithmCardContainer);
