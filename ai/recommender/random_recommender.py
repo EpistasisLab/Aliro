@@ -3,12 +3,14 @@ Recommender system for Penn AI.
 """
 import pandas as pd
 from .base import BaseRecommender
+import numpy as np
+import pdb
 
-class AverageRecommender(BaseRecommender):
-    """Penn AI average recommender.
+class RandomRecommender(BaseRecommender):
+    """Penn AI random recommender.
 
-    Recommends machine learning algorithms and parameters based on their average performance
-    across all evaluated datasets.
+    Recommends random machine learning algorithms and parameters from the
+    results.
 
     Parameters
     ----------
@@ -32,8 +34,8 @@ class AverageRecommender(BaseRecommender):
         else:
             self.metric = metric
 
-        # empty scores pandas series
-        self.scores = pd.Series()
+        # ml p options
+        self.ml_p = []
 
         # number of datasets trained on so far
         self.w = 0
@@ -65,16 +67,10 @@ class AverageRecommender(BaseRecommender):
                                        results_data['parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
-        ml_p = results_data['algorithm-parameters'].unique()
+        self.ml_p = results_data['algorithm-parameters'].unique()
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
 
-        # get average balanced accuracy by classifier-parameter combo
-        new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()
-        new_weights = results_data.groupby('algorithm-parameters').size()
-
-        # update scores
-        self._update_scores(new_scores, new_weights)
 
     def recommend(self, dataset_id=None, n_recs=1):
         """Return a model and parameter values expected to do best on dataset.
@@ -88,9 +84,9 @@ class AverageRecommender(BaseRecommender):
         """
 
         # return ML+P for best average y
+        print(self.ml_p)
         try:
-            rec = self.scores.sort_values(ascending=False).index.values
-
+            rec = np.random.choice(self.ml_p,size=n_recs,replace=False)
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
@@ -99,7 +95,7 @@ class AverageRecommender(BaseRecommender):
 
             ml_rec = [r.split('|')[0] for r in rec]
             p_rec = [r.split('|')[1] for r in rec]
-            rec_score = [self.scores[r] for r in rec]
+            rec_score = [0 for r in rec]
         except AttributeError:
             print('rec:', rec)
             print('self.scores:', self.scores)
@@ -117,19 +113,3 @@ class AverageRecommender(BaseRecommender):
                                         for ml, p in zip(ml_rec, p_rec)])
 
         return ml_rec, p_rec, rec_score
-
-    def _update_scores(self, new_scores, new_weights):
-        """Update scores based on new_scores."""
-        new_ind = new_scores.index.values
-        if len(self.scores.index) == 0:
-            self.scores = new_scores
-            self.w = new_weights
-        else:
-            for n in new_ind:
-                if n in self.scores.index.values:
-                    step = new_weights[n] / float(self.w[n] + new_weights[n])
-                    self.scores.loc[n] = (self.scores[n] + step * (new_scores[n] - self.scores[n]))
-                else:
-                    self.scores.loc[n] = new_scores[n]
-            # update weights
-            self.w = self.w.add(new_weights, fill_value=0)
