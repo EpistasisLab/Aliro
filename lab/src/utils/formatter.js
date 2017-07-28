@@ -1,5 +1,5 @@
 import moment from 'moment';
-import twix from 'twix';
+import twix from 'twix'; // eslint-disable-line no-unused-vars
 
 export const formatDataset = (str) => {
   str = str.replace(/_/g,' '); // remove underscore
