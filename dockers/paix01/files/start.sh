@@ -1,4 +1,4 @@
-#!b/in/bash
+#!/bin/bash
 cd ${IFROOT}/penn-ai
 #results already in the db?
 if [ -f "mongo_export.log" ]
