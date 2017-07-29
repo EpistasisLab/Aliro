@@ -24,7 +24,9 @@ const byId = (state = Map(), action) => {
     }
     case EXPERIMENT_ADD:
     case EXPERIMENT_UPDATE:
-      return state.mergeIn([action.experiment._id], action.experiment);
+      //console.log(action);
+      //return state.mergeIn([action.experiment._id], action.experiment);
+      return state;
     default:
       return state;
   }
@@ -40,7 +42,8 @@ const allIds = (state = List(), action) => {
       return state.merge(newExperiments);
     }
     case EXPERIMENT_ADD:
-      return state.push(action.experiment._id);
+      //return state.push(action.experiment._id);
+      return state
     default:
       return state;
   }

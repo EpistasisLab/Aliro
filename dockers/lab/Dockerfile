@@ -16,5 +16,6 @@ RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz 
 ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
 RUN cd Gp/lab && npm install && npm install -g bower pm2 webpack webpack-dev-server  && bower install --allow-root
 COPY files/start.sh /root/
+COPY files/env /opt/.env
 EXPOSE 5080
 CMD ["/bin/bash", "/root/start.sh"]
