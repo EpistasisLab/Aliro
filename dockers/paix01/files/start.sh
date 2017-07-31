@@ -3,9 +3,9 @@ cd ${IFROOT}/penn-ai
 #results already in the db?
 if [ -f "mongo_export.log" ]
 then
-        echo "$file found."
+        echo "mongo_export.log found."
 else
-        python3 /opt/penn-ai/tests/export_to_mongo.py > $file
+        python3 /opt/penn-ai/tests/export_to_mongo.py > mongo_export.log
 fi
 if [ -f "rec_state.obj" ]
 then

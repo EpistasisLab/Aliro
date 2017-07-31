@@ -6,6 +6,10 @@ NETWORK=pennai
 if [ "$1" == "shared" ] ; then
    echo "running shared environment"
    cmd='createshared';
+elif [ "$1" == "resume" ] ; then
+   echo "stop containers" 
+elif [ "$1" == "halt" ] ; then
+   echo "stop containers" 
 else
    echo "running standalone environment"
    cmd='create'
@@ -28,6 +32,7 @@ if [ "$num_running" == 0 ]; then
     docker_state=0;
 fi;
 
+# create and start the containers
 docker_init()
 {
   docker_destroy;
@@ -36,7 +41,7 @@ docker_init()
     cd $basedir/$host && make  && make $cmd && docker start $host
   done
 }
-# starts the dockers
+# destroy the containers
 docker_destroy()
 {
   for host in $hosts; do
@@ -44,8 +49,28 @@ docker_destroy()
   done
   netstate=`docker network rm ${NETWORK}`;
 }
+# resume the containers
+docker_resume()
+{
+  for host in $hosts; do
+    docker start $host
+  done
+}
+# stop the containers
+docker_stop()
+{
+  for host in $hosts; do
+    docker stop $host
+  done
+}
 
-if [ "$docker_state" == 0 ] ; then
+if [ "$1" == "resume" ]; then
+  echo "docker_resume";
+  docker_resume;
+elif [ "$1" == "stop" ]; then
+  echo "docker_stop";
+  docker_stop;
+elif [ "$docker_state" == 0 ];then
   echo "docker_init";
   docker_init;
 else
