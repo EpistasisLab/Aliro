@@ -143,18 +143,19 @@ class TimeRecommender(BaseRecommender):
             #for loop through rec and group by significance
             rec_copy = rec
             results_sig_dif = []
-            results_sig_dif.append(rec[0])
-            n = 1
-            while len(results_sig_dif) < 100 and n < 1000:
-                key1 = results_sig_dif[len(results_sig_dif)-1]#first key is last value in new list
-                value1 = self.ml_p_scores.get(key1)
-                if n < len(rec):
-                    key2 = rec[n]#second key is 
-                    value2 = self.ml_p_scores.get(key2)
-                    t_val, p_val = stats.ttest_ind(value1, value2)
-                    if p_val < 0.5: #change to rerun code and check significance started 0.05
-                        results_sig_dif.append(key2)
-                n += 1
+            if(len(rec) >0):
+              results_sig_dif.append(rec[0])
+              n = 1
+              while len(results_sig_dif) < 100 and n < 1000:
+                  key1 = results_sig_dif[len(results_sig_dif)-1]#first key is last value in new list
+                  value1 = self.ml_p_scores.get(key1)
+                  if n < len(rec):
+                      key2 = rec[n]#second key is 
+                      value2 = self.ml_p_scores.get(key2)
+                      t_val, p_val = stats.ttest_ind(value1, value2)
+                      if p_val < 0.5: #change to rerun code and check significance started 0.05
+                          results_sig_dif.append(key2)
+                  n += 1
             rec = results_sig_dif #update with new list
         except AttributeError:
             print('rec:', rec)
