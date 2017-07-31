@@ -71,7 +71,7 @@ class AI():
                     sessions
     """
 
-    def __init__(self,rec=TimeRecommender(),
+    def __init__(self,rec=RandomRecommender(),
                  db_path=os.environ['FGLAB_URL'],
                  #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
