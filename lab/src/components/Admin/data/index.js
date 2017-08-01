@@ -7,6 +7,14 @@ import {
   ALGORITHMS_FETCH_FAILURE
 } from './actions';
 
+import { delegateTo } from '../../../utils/delegateTo';
+import algorithm, { ALGORITHM_PREFIX } from '../components/AlgorithmRow/data';
+
+// delegate actions to dataset reducer
+const delegator = delegateTo([
+  { prefix: ALGORITHM_PREFIX, reducer: algorithm }
+]);
+
 const getById = (state) => 
   state.getIn(['admin', 'byId']);
 
@@ -20,7 +28,7 @@ const byId = (state = Map(), action) => {
       return state.merge(newAlgorithms);
     }
     default:
-      return state;
+      return delegator(state, action) || state;
   }
 };
 
