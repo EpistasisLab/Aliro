@@ -56,6 +56,8 @@ data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz', sep='\t'
                          'bal_accuracy']).fillna('')
 
 
+print('discarding duplicate dataset/classifier combinations...')
+data = data.groupby(['dataset','classifier']).head(1).reset_index(drop=True)
 print('formatting records for import...')
 records = json.loads(data.T.to_json()).values()
 ret_records = []
