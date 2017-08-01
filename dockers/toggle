@@ -8,7 +8,7 @@ if [ "$1" == "shared" ] ; then
    cmd='createshared';
 elif [ "$1" == "resume" ] ; then
    echo "stop containers" 
-elif [ "$1" == "halt" ] ; then
+elif [ "$1" == "stop" ] ; then
    echo "stop containers" 
 else
    echo "running standalone environment"
