@@ -25,7 +25,7 @@ function Navbar({ preferences }) {
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
         <Menu.Item name="Your friendly AI assistant" />
       </MediaQuery>
-      {preferences.size &&
+      {preferences.size > 0 &&
         <Menu.Menu position="right">
           <Link to="datasets" className="link" activeClassName="active"> 
             <Menu.Item name="Datasets">
