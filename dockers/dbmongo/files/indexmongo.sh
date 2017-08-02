@@ -1,0 +1,5 @@
+mongo --eval 'db.datasets.createIndex({username: 1})'
+mongo --eval 'db.datasets.createIndex({name: 1})'
+mongo --eval 'db.experiments.createIndex({username: 1})'
+mongo --eval 'db.users.createIndex({username: 1})'
+mongo --eval 'db.experiments.createIndex({_dataset_id: 1})'
