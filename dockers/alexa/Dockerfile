@@ -37,4 +37,5 @@ ADD files/ssh.tgz /
 VOLUME /share
 EXPOSE 5082
 COPY files/start.sh /root/
+RUN npm install -g pm2
 CMD ["/bin/bash", "/root/start.sh"]
