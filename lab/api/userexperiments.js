@@ -7,13 +7,11 @@ var format_experiments = function(experiments, algorithms, datasets) {
     for (var _id in experiments) {
         //jjj
         experiment = experiments[_id];
-        new_experiment = {};
         experiment['_id'] = experiment['_id'];
         experiment['status'] = experiment['_status'];
         experiment['started'] = experiment['_started'];
         experiment['finished'] = experiment['_finished'];
         experiment['notification'] = experiment['notification'];
-        if (experiment['_project_id'] && experiment['_scores'] && algorithms[experiment['_project_id']]) {
             if (datasets[experiment['_dataset_id']]) {
                 experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
                 experiment['dataset_id'] = experiment['_dataset_id'];
@@ -25,14 +23,19 @@ var format_experiments = function(experiments, algorithms, datasets) {
             if (experiment['files']) {
                 experiment['experiment_files'] = experiment['files'];
             }
-            experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
             experiment['params'] = experiment['_options'];
-            if (experiment['_scores']) {
-                experiment['scores'] = experiment['_scores'];
-            }
-            experiment['launched_by'] = experiment['username'];
-            experiments.push(new_experiment);
+        if (experiment['_project_id'] && algorithms[experiment['_project_id']]) {
+            experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
+        } else {
+            experiment['algorithm'] = '';
         }
+        if (experiment['_scores']) {
+          experiment['scores'] = experiment['_scores'];
+        } else {
+            experiment['scores'] = '';
+        }
+        experiment['launched_by'] = experiment['username'];
+        ret_experiments.push(experiment);
     }
     return (ret_experiments);
 }
