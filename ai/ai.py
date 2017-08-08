@@ -76,7 +76,7 @@ class AI():
                  #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=True):
+                 verbose=True,warm_start=False):
         """initializes AI managing agent."""
         self.rec = rec
         # access to database
@@ -299,17 +299,19 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(rec=TimeRecommender(),warm_start=True)
+    pennai = AI(rec=WeightedRecommender(),warm_start=False)
     debug = False
+    n = 0;
     try:
-        while True:
+        while (n <= 10):
             # check for new experiment results
             if pennai.check_results(debug=debug):
                 pennai.update_recommender()
             # check for new recommendation requests
             if pennai.check_requests(debug=debug):
                 pennai.send_rec()
-            sleep(5)
+            n = n + 1
+            sleep(2)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
