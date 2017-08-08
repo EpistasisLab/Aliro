@@ -34,7 +34,7 @@ RUN conda install scikit-learn pymongo tqdm
 #RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 #RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git
 ADD files/version /tmp
-RUN git clone -b realnewmake git@github.com:EpistasisLab/Gp.git
+RUN git clone git@github.com:EpistasisLab/Gp.git
 RUN cd Gp/machine && npm install && npm -g install pm2
 VOLUME /share
 EXPOSE 5081

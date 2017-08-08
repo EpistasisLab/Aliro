@@ -7,10 +7,6 @@ then
 else
         python3 tests/export_to_mongo.py > mongo_export.log
 fi
-if [ -f "rec_state.obj" ]
-then
-        rm -f rec_state.obj
-fi
 #start the ai
-python3 -m ai.ai
+while true;do python3 -m ai.ai;sleep 5;done
 bash
