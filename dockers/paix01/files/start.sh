@@ -8,5 +8,5 @@ else
         python3 tests/export_to_mongo.py > mongo_export.log
 fi
 #start the ai
-python3 -m ai.ai
+while true;do python3 -m ai.ai;sleep 5;done
 bash
