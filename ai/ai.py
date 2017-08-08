@@ -299,7 +299,7 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(rec=TimeRecommender(),warm_start=True)
+    pennai = AI(rec=RandomRecommender(),warm_start=False)
     debug = False
     try:
         while True:
