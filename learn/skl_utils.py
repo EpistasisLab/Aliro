@@ -21,7 +21,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 						 input_data.dtype.names.index(target_name), axis=1)
 
 	training_features, testing_features, training_classes, testing_classes = \
-		train_test_split(features, input_data[target_name], train_size=train_size, random_state=random_state)
+		train_test_split(features, input_data[target_name], train_size=train_size, random_state=random_state, stratify=input_data[target_name])
 
 	print('args used in model:', model.get_params())
 
@@ -57,7 +57,7 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	# hard coded values for now (to be added as cmd line args later)
 	train_size = 0.75 		# default = 0.75
-	random_state = None 	# default = None
+	random_state = 42	# default = None
 	target_name = 'class'	# for testing, using 'class'
 
 	if target_name not in input_data.dtype.names:
@@ -67,7 +67,7 @@ def generate_results(model, input_file, tmpdir, _id):
 						 input_data.dtype.names.index(target_name), axis=1)
 
 	training_features, testing_features, training_classes, testing_classes = \
-		train_test_split(features, input_data[target_name], train_size=train_size, random_state=random_state)
+		train_test_split(features, input_data[target_name], train_size=train_size, random_state=random_state,stratify=input_data[target_name])
 
 	print('args used in model:', model.get_params())
 
@@ -147,7 +147,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
 		plt.text(j, i, cm[i, j],
 				horizontalalignment="center",
-				color="white" if cm[i, j] > thresh else "black")
+				color="gray" if cm[i, j] > thresh else "black")
 
 	plt.subplots_adjust(bottom=0.15)
 	plt.ylabel('True label')

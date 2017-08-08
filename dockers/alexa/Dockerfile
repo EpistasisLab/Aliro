@@ -4,7 +4,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 WORKDIR /opt/
 ADD files/rootfs.tgz /
 #ssh for deploy from git
-ADD files/ssh.tgz /
 #ADD files/intel_opencl.tgz /
 #ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
@@ -34,14 +33,9 @@ RUN conda install scikit-learn pymongo tqdm
 #RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 #RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git
 ADD files/version /tmp
-RUN git clone git@github.com:EpistasisLab/Gp.git
-RUN cd Gp/machine && npm install && npm -g install pm2
+ADD files/ssh.tgz /
 VOLUME /share
-EXPOSE 5081
-RUN  wget --quiet https://s3.us-east-2.amazonaws.com/pennai-docker-files/pmlb.tgz -O ~/pmlb.tgz && \
-    tar -xzvf ~/pmlb.tgz -C Gp/machine/datasets/byuser && \
-    rm ~/pmlb.tgz
-COPY files/env Gp/machine/.env
+EXPOSE 5082
 COPY files/start.sh /root/
-COPY files/projects.json Gp/machine/
+RUN npm install -g pm2
 CMD ["/bin/bash", "/root/start.sh"]

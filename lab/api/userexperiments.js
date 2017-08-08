@@ -1,37 +1,41 @@
 require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
+
 var format_experiments = function(experiments, algorithms, datasets) {
     ret_experiments = []
     for (var _id in experiments) {
+        //jjj
         experiment = experiments[_id];
-        new_experiment = {};
-        //todo make this a loop
-        new_experiment['_id'] = experiment['_id'];
-        new_experiment['status'] = experiment['_status'];
-        new_experiment['started'] = experiment['_started'];
-        new_experiment['finished'] = experiment['_finished'];
-        new_experiment['notification'] = experiment['notification'];
-        if (experiment['_project_id'] && experiment['_scores'] && algorithms[experiment['_project_id']]) {
+        experiment['_id'] = experiment['_id'];
+        experiment['status'] = experiment['_status'];
+        experiment['started'] = experiment['_started'];
+        experiment['finished'] = experiment['_finished'];
+        experiment['notification'] = experiment['notification'];
             if (datasets[experiment['_dataset_id']]) {
-                new_experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
-                new_experiment['dataset_id'] = experiment['_dataset_id'];
-                new_experiment['dataset_files'] = datasets[experiment['_dataset_id']]['files'];
+                experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
+                experiment['dataset_id'] = experiment['_dataset_id'];
+                experiment['dataset_files'] = datasets[experiment['_dataset_id']]['files'];
                 for (file in datasets[experiment['_dataset_id']]['files']) {
                     file_id = datasets[experiment['_dataset_id']]['files'][file]['_id'];
                 }
             }
             if (experiment['files']) {
-                new_experiment['experiment_files'] = experiment['files'];
+                experiment['experiment_files'] = experiment['files'];
             }
-            new_experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
-            new_experiment['params'] = experiment['_options'];
-            if (experiment['_scores']) {
-                new_experiment['scores'] = experiment['_scores'];
-            }
-            new_experiment['launched_by'] = experiment['username'];
-            ret_experiments.push(new_experiment);
+            experiment['params'] = experiment['_options'];
+        if (experiment['_project_id'] && algorithms[experiment['_project_id']]) {
+            experiment['algorithm'] = algorithms[experiment['_project_id']]['name']
+        } else {
+            experiment['algorithm'] = '';
         }
+        if (experiment['_scores']) {
+          experiment['scores'] = experiment['_scores'];
+        } else {
+            experiment['scores'] = '';
+        }
+        experiment['launched_by'] = experiment['username'];
+        ret_experiments.push(experiment);
     }
     return (ret_experiments);
 }
