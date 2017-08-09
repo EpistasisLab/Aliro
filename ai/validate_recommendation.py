@@ -26,8 +26,8 @@ def validate_recs(ml,p,debug=False):
     available to the user and if parameter value is not available, it shifts
     the recommended value to the closest option."""
 #    if(debug):
-        match_ml = [ui_options[i] for i,op in enumerate(ui_options)
-                    if ml==op['_id']][0]
+    match_ml = [ui_options[i] for i,op in enumerate(ui_options)
+                if ml==op['_id']][0]
 #    else:
 ## todo: load valid params from lab api 
 #        match_ml = [ui_options[i] for i,op in enumerate(ui_options)
