@@ -47,7 +47,7 @@ for algorithm in algorithms:
      algorithm_names[name.lower()] =  _id;
 #
 print('loading pmlb results data...')
-data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
+data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
                          'parameters',
