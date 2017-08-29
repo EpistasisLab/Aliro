@@ -26,7 +26,9 @@ var jsonParser = bodyParser.json({
 }); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 //app.set('superSecret',config.secret);
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(bodyParser.json());
 app.use(compression()); // Compress all Express requests
 app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
@@ -105,26 +107,26 @@ app.get("/api/v1/files/:id", (req, res, next) => {
         promiseLibrary: Promise
     });
     gfs.open((err, gfs) => {
-      if (!err) {
-        // Set read head pointer to beginning of file
-        gfs.seek(0, () => {
-            // Read entire file
-            gfs.read()
-                .then((file) => {
-                    res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
-                    res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
-                    res.send(file); // Send file
-                })
-                .catch((err) => {
-                    next(err);
-                });
-        });
-      } else {
-        console.log('error loading file');
-        console.log(req);
-        console.log(err);
-        res.send([]);
-      }
+        if (!err) {
+            // Set read head pointer to beginning of file
+            gfs.seek(0, () => {
+                // Read entire file
+                gfs.read()
+                    .then((file) => {
+                        res.setHeader("Content-Disposition", "attachment; filename=" + gfs.filename); // Set as download
+                        res.setHeader("Content-Type", gfs.metadata.contentType); // MIME Type
+                        res.send(file); // Send file
+                    })
+                    .catch((err) => {
+                        next(err);
+                    });
+            });
+        } else {
+            console.log('error loading file');
+            console.log(req);
+            console.log(err);
+            res.send([]);
+        }
     });
 });
 
@@ -152,6 +154,21 @@ app.get("/api/v1/projects", (req, res, next) => {
             return next(err);
         });
 });
+// List projects and machines in api
+app.post("/api/v1/projects", (req, res, next) => {
+
+    var projP = db.projects.find({}, {schema: 1}).sort({
+        name: 1
+    }).toArrayAsync(); // Get project names
+    Promise.all(projP)
+        .then((results) => {
+            return res.send(results);
+        })
+        .catch((err) => {
+            return next(err);
+        });
+});
+
 
 
 //adds datasets
@@ -170,7 +187,8 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
             Promise.all(filesP)
                 .then((results) => {
                     res.send({
-                        message: "Files uploaded"
+                        message: "Files uploaded",
+                        dataset_id: dataset_id
                     });
                 })
                 .catch((err) => {
@@ -305,10 +323,10 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
             $set: req.body
         })
         .then((result) => {
-            if(req.params.collection === 'experiments') {
-                if(req.body._scores) { 
-                    publishTo('finishedExperiment', req); 
-                } else if(req.body._status === 'fail') {
+            if (req.params.collection === 'experiments') {
+                if (req.body._scores) {
+                    publishTo('finishedExperiment', req);
+                } else if (req.body._status === 'fail') {
                     publishTo('failedExperiment', req);
                 }
             }
@@ -495,86 +513,106 @@ var optionChecker = (schema, obj) => {
         success: "Options validated"
     };
 };
+var retPrevExp = function(projId, options, datasetId) {
+    return db.experiments.find({
+        _dataset_id: db.toObjectID(datasetId),
+        _project_id: db.toObjectID(projId),
+        _options: options
+    }).toArrayAsync(); // Get project names
+}
 
 var submitJob = (projId, options, files, datasetId, username) => {
-    return new Promise((resolve, reject) => {
-        db.machines.find({}, {
-                address: 1
-            }).toArrayAsync() // Get machine hostnames
-            .then((machines) => {
-                var macsP = Array(machines.length);
-                // Check machine capacities
-                for (var i = 0; i < machines.length; i++) {
-                    macsP[i] = rp({
-                        uri: machines[i].address + "/projects/" + projId + "/capacity",
-                        method: "GET",
-                        data: null
-                    });
-                }
+    var prevExp = retPrevExp(projId, options, datasetId);
+    Promise.all(prevExp)
+        .then((results) => {
+//if(results.length >= 1 ) {
+//error = {error:"already exists"};
+//console.log(error);
+//return error;
+//} else {
 
-                // Loop over reponses
-                Promise.any(macsP)
-                    // First machine with capacity, so use
-                    .then((availableMac) => {
-                        availableMac = JSON.parse(availableMac);
+            return new Promise((resolve, reject) => {
+                db.machines.find({}, {
+                        address: 1
+                    }).toArrayAsync() // Get machine hostnames
+                    .then((machines) => {
+                        var macsP = Array(machines.length);
+                        // Check machine capacities
+                        for (var i = 0; i < machines.length; i++) {
+                            macsP[i] = rp({
+                                uri: machines[i].address + "/projects/" + projId + "/capacity",
+                                method: "GET",
+                                data: null
+                            });
+                        }
 
-                        // Create experiment
-                        db.experiments.insertAsync({
-                                _options: options,
-                                _dataset_id: db.toObjectID(datasetId),
-                                _project_id: db.toObjectID(projId),
-                                _machine_id: db.toObjectID(availableMac._id),
-                                username: username,
-                                files: [],
-                                _status: "running"
-                            }, {})
-                            .then((exp) => {
-                                options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+                        // Loop over reponses
 
-                                if (datasetId == "") {
-                                    var filesP = processFiles(exp.ops[0], files); // Add files to project
-                                } else {
-                                    var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
-                                }
-                                // Wait for file upload to complete
-                                Promise.all(filesP)
-                                    .then(() => {
-                                        // Send project
-                                        rp({
-                                                uri: availableMac.address + "/projects/" + projId,
-                                                method: "POST",
-                                                json: options,
-                                                gzip: true
+                        Promise.any(macsP)
+                            // First machine with capacity, so use
+                            .then((availableMac) => {
+                                availableMac = JSON.parse(availableMac);
+
+                                // Create experiment
+                                db.experiments.insertAsync({
+                                        _options: options,
+                                        _dataset_id: db.toObjectID(datasetId),
+                                        _project_id: db.toObjectID(projId),
+                                        _machine_id: db.toObjectID(availableMac._id),
+                                        username: username,
+                                        files: [],
+                                        _status: "running"
+                                    }, {})
+                                    .then((exp) => {
+                                        options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+
+                                        if (datasetId == "") {
+                                            var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                        } else {
+                                            var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
+                                        }
+                                        // Wait for file upload to complete
+                                        Promise.all(filesP)
+                                            .then(() => {
+                                                // Send project
+                                                rp({
+                                                        uri: availableMac.address + "/projects/" + projId,
+                                                        method: "POST",
+                                                        json: options,
+                                                        gzip: true
+                                                    })
+                                                    .then((body) => {
+                                                        resolve(body);
+                                                    })
+                                                    .catch(() => {
+                                                        db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+                                                        reject({
+                                                            error: "Experiment failed to run"
+                                                        });
+                                                    });
                                             })
-                                            .then((body) => {
-                                                resolve(body);
-                                            })
-                                            .catch(() => {
-                                                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                                                reject({
-                                                    error: "Experiment failed to run"
-                                                });
+                                            .catch((err) => {
+                                                reject(err);
                                             });
                                     })
                                     .catch((err) => {
                                         reject(err);
                                     });
                             })
-                            .catch((err) => {
-                                reject(err);
+                            // No machines responded, therefore fail
+                            .catch(() => {
+                                reject({
+                                    error: "No machine capacity available"
+                                });
                             });
                     })
-                    // No machines responded, therefore fail
-                    .catch(() => {
-                        reject({
-                            error: "No machine capacity available"
-                        });
+                    .catch((err) => {
+                        reject(err);
                     });
-            })
-            .catch((err) => {
-                reject(err);
             });
-    });
+//};
+        })
+        .catch((err) => {});
 };
 
 // Constructs an experiment
@@ -596,14 +634,14 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                         });
                     } else {
                         var obj = Object.assign(req.query, req.body);
-if(obj['parameters']){
-old_obj = obj;
-obj = new Object(obj['parameters']);
-obj['dataset'] = old_obj['dataset_id'];
-ai_score = old_obj['ai_score'];
-dataset = old_obj['dataset_id']
-username = 'testuser';
-}
+                        if (obj['parameters']) {
+                            old_obj = obj;
+                            obj = new Object(obj['parameters']);
+                            obj['dataset'] = old_obj['dataset_id'];
+                            ai_score = old_obj['ai_score'];
+                            dataset = old_obj['dataset_id']
+                            username = 'testuser';
+                        }
                         if ("dataset" in obj) {
                             dataset = obj['dataset'];
                             delete obj['dataset'];
@@ -616,7 +654,7 @@ username = 'testuser';
                             res.status(400);
                             res.send(validation);
                         } else {
-console.log(projId, obj, files, dataset, username);
+                            console.log(projId, obj, files, dataset, username);
                             submitJob(projId, obj, files, dataset, username)
                                 .then((resp) => {
                                     res.status(201);
@@ -1100,6 +1138,9 @@ app.get("/oldui", (req, res, next) => {
         .catch((err) => {
             return next(err);
         });
+
+
+
 });
 
 // List projects and machines on admin page
