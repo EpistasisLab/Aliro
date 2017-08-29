@@ -11,9 +11,11 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 VOLUME /share
+#ADD files/mongodump.min.tgz /
 ADD files/mongodump.min.tgz /
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/
+COPY files/userprojects.json /root/
 COPY files/start.sh /root/
 EXPOSE 27017
 CMD ["/bin/bash", "/root/start.sh"]

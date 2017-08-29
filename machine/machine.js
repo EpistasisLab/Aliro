@@ -158,12 +158,14 @@ chokidar.watch("projects.json").on("change", () => {
         });
 });
 
-//chokidar.watch(byuser_datasets_path, {
-//    ignored: /(^|[\/\\])\../
-//    }).on('add', (file) => {
-//      console.log(event, file);
-
-//   });
+chokidar.watch(datasets.byuser_datasets_path, {
+    awaitWriteFinish: true,
+    ignored: /(^|[\/\\])\../
+    }).on("all", (event, path) => {
+      if(event == 'change') {
+      datasets.processChangedFile(path);
+      }
+   });
 
 /* Global max capacity */
 /* Process Datasets */

@@ -54,12 +54,12 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 def generate_results(model, input_file, tmpdir, _id):
 	print('loading..')
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
-
 	# hard coded values for now (to be added as cmd line args later)
 	train_size = 0.75 		# default = 0.75
 	random_state = 42	# default = None
 	target_name = 'class'	# for testing, using 'class'
 
+	print(input_data) 
 	if target_name not in input_data.dtype.names:
 		raise ValueError('The provided data file does not seem to have a target column.')
 
