@@ -102,12 +102,13 @@ var retParams = function(req) {
     var date_start = false;
     var filter_on_user = true;
     var _id = false;
-    var limit = false;
+    var limit = 100;
     params['match'] = {}
     //
     if (req.body !== undefined) {
         for (param in req.body) {
             var val = req.body[param];
+console.log(param);
             if (param == 'date_start') {
                 if (!isNaN(parseFloat(val) && isFinite(val))) {
                     date_start = val
