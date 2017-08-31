@@ -160,7 +160,7 @@ chokidar.watch("projects.json").on("change", () => {
 
 chokidar.watch(datasets.byuser_datasets_path, {
     awaitWriteFinish: true,
-    ignored: /(^|[\/\\])\../
+   ignored: /metadata/,
     }).on("all", (event, path) => {
       if(event == 'change') {
       datasets.processChangedFile(path);
