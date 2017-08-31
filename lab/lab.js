@@ -176,6 +176,7 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
+    console.log(metadata);
     db.datasets.insertAsync({
             name: metadata.name,
             username: metadata.username,
