@@ -10,9 +10,73 @@ const md5File = require('md5-file')
 var mime = require('mime');
 var debug = false;
 
+//genForm
+// process parentdir for file, execute callback with results
+var genForm = function(file, callback) {
+    dataset_id = false;
+    has_metadata = false;
+    p = file.split('/')
+    updated_file = p.pop()
+    dataset_path = p.join('/');
+    dataset_name = p.pop()
+    username = p.pop()
+    fs.readdir(dataset_path, function(err, files) {
+        var formData = {
+            _files: [],
+            _metadata: []
+        };
+        var metadata = [];
+        metadata = {
+            'name': dataset_name,
+            'username': username,
+            'timestamp': Date.now(),
+            'files': []
+        }
+        for (var i = 0; i < files.length; i++) {
+            if (files[i] == 'README.MD') {
+                //todo:parse README
+            }
+            if (files[i] == 'metadata.json') {
+                has_metadata = true;
+            }
+            var filename = dataset_path + '/' + files[i];
+            var is_zipped = false;
+            checksum = md5File.sync(filename);
+            if (path.extname(filename) == '.gz') {
+                filetype = mime.lookup(path.basename(filename, '.gz'));
+                is_zipped = true;
+            } else {
+                filetype = mime.lookup(filename);
+            }
+            var file_level_metadata = {
+                'filename': files[i],
+                'checksum': checksum,
+                'filetype': filetype
+            }
+            if (filetype == 'text/csv') {
+                file_level_metadata['classlabel'] = 'class';
+            }
+            metadata.files.push(file_level_metadata);
+            formData._files.push(fs.createReadStream(filename));
+        }
+        if(has_metadata) {
+                fs.readFile(dataset_path + '/metadata.json', 'utf8', function(err, data) {
+                    if (err) throw err;
+                    obj = JSON.parse(data);
+                    metadata['dataset_id'] = obj['dataset_id'];
+        formData._metadata = JSON.stringify(metadata);
+        callback(formData);
+                })
+        } else {
+        formData._metadata = JSON.stringify(metadata);
+        callback(formData,metadata);
+        }
+
+    });
+};
 // change the algo to sha1, sha256 etc according to your requirements
 //var processDataset = function(dataset_path) {
-var processUserDataset = function(username,dataset_name) {
+var processUserDataset = function(username, dataset_name) {
     var dataset_path = byuser_datasets_path + '/' + username + '/' + dataset_name;
     var formData = {
         _files: [],
@@ -22,18 +86,9 @@ var processUserDataset = function(username,dataset_name) {
     // Create form data
     fs.readdir(dataset_path, function(err, files) {
         // if metadata exists, ignore
-        var metadata_file = dataset_path + '/metadata.json'
-        if (fs.existsSync(metadata_file) && !debug) {
+        var metadata_json = dataset_path + '/metadata.json'
+        if (fs.existsSync(metadata_json) && !debug) {
             console.log('exists')
-            //path.push('metadata.json')
-            //metadatafile = path.join('/')
-            //console.log("Update metadata:" + metadatafile);
-            fs.readFile(metadata_file, 'utf8', function(err, data) {
-                if (err) throw err;
-                obj = JSON.parse(data);
-                console.log(obj)
-            });
-
         } else {
             metadata = {
                 'name': dataset_name,
@@ -76,7 +131,7 @@ var processUserDataset = function(username,dataset_name) {
                 .then(response => {
                     data = JSON.parse(response);
                     metadata['dataset_id'] = data['dataset_id'];
-                    fs.writeFile(metadata_file, JSON.stringify(metadata), function(err) {
+                    fs.writeFile(metadata_json, JSON.stringify(metadata), function(err) {
                         if (err) throw err;
                         console.log('wrote metadata');
                     });
@@ -92,6 +147,10 @@ var processUserDataset = function(username,dataset_name) {
     // Add file
     // return(formData);
 };
+
+
+
+
 var processUserDatasets = function(username) {
     datasets_path = byuser_datasets_path + '/' + username;
     fs.readdir(datasets_path, function(err, datasets) {
@@ -99,7 +158,7 @@ var processUserDatasets = function(username) {
             for (var i = 0; i < datasets.length; i++) {
                 var dataset_name = datasets[i];
                 //processDataset(dataset_path);
-                processUserDataset(username,dataset_name);
+                processUserDataset(username, dataset_name);
             }
         }
     });
@@ -116,11 +175,12 @@ exports.scrapeUsers = function() {
         });
     }
 }
-exports.processChangedFile = function(csvfile) {
-    console.log("Update metadata for " + csvfile);
-    path = csvfile.split('/')
-    path.pop()
-    dataset_path = path.join('/')
-    processDataset(dataset_path);
+var submitForm = function(formData) {
+}
+exports.processChangedFile = function(file) {
+    console.log("Update metadata for " + file);
+    // get base path for dataset
+    genForm(file, submitForm);
+    //processDataset(dataset_path);
 }
 exports.byuser_datasets_path = byuser_datasets_path;
