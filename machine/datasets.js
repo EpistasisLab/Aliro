@@ -11,7 +11,8 @@ var mime = require('mime');
 var debug = false;
 
 // change the algo to sha1, sha256 etc according to your requirements
-var processDataset = function(username, dataset_name) {
+//var processDataset = function(dataset_path) {
+var processUserDataset = function(username,dataset_name) {
     var dataset_path = byuser_datasets_path + '/' + username + '/' + dataset_name;
     var formData = {
         _files: [],
@@ -24,6 +25,15 @@ var processDataset = function(username, dataset_name) {
         var metadata_file = dataset_path + '/metadata.json'
         if (fs.existsSync(metadata_file) && !debug) {
             console.log('exists')
+            //path.push('metadata.json')
+            //metadatafile = path.join('/')
+            //console.log("Update metadata:" + metadatafile);
+            fs.readFile(metadata_file, 'utf8', function(err, data) {
+                if (err) throw err;
+                obj = JSON.parse(data);
+                console.log(obj)
+            });
+
         } else {
             metadata = {
                 'name': dataset_name,
@@ -88,7 +98,8 @@ var processUserDatasets = function(username) {
         if (datasets !== undefined) {
             for (var i = 0; i < datasets.length; i++) {
                 var dataset_name = datasets[i];
-                processDataset(username, dataset_name);
+                //processDataset(dataset_path);
+                processUserDataset(username,dataset_name);
             }
         }
     });
@@ -109,14 +120,7 @@ exports.processChangedFile = function(csvfile) {
     console.log("Update metadata for " + csvfile);
     path = csvfile.split('/')
     path.pop()
-    path.push('metadata.json')
-    metadatafile = path.join('/')
-    console.log("Update metadata:" + metadatafile);
-    fs.readFile(metadatafile, 'utf8', function(err, data) {
-        if (err) throw err;
-        obj = JSON.parse(data);
-        console.log(obj)
-    });
-
+    dataset_path = path.join('/')
+    processDataset(dataset_path);
 }
 exports.byuser_datasets_path = byuser_datasets_path;
