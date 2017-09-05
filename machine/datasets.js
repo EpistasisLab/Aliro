@@ -38,7 +38,7 @@ var genForm = function(file, callback) {
             }
             if (files[i] == 'metadata.json') {
                 has_metadata = true;
-            }
+            } else {
             var filename = dataset_path + '/' + files[i];
             var is_zipped = false;
             checksum = md5File.sync(filename);
@@ -58,14 +58,14 @@ var genForm = function(file, callback) {
             }
             metadata.files.push(file_level_metadata);
             formData._files.push(fs.createReadStream(filename));
+            }
         }
         if(has_metadata) {
                 fs.readFile(dataset_path + '/metadata.json', 'utf8', function(err, data) {
                     if (err) throw err;
                     obj = JSON.parse(data);
                     metadata['dataset_id'] = obj['dataset_id'];
-        formData._metadata = JSON.stringify(metadata);
-        callback(formData);
+                    callback(formData,metadata);
                 })
         } else {
         formData._metadata = JSON.stringify(metadata);
@@ -175,7 +175,28 @@ exports.scrapeUsers = function() {
         });
     }
 }
-var submitForm = function(formData) {
+var submitForm = function(formData,metadata) {
+            metadata_json = byuser_datasets_path + '/' + username + '/' + dataset_name + '/metadata.json';
+            formData._metadata = JSON.stringify(metadata);
+            var p = rp({
+                    uri: process.env.FGLAB_URL + "/api/v1/datasets/",
+                    method: "PUT",
+                    formData: formData,
+                    gzip: true
+                })
+                .then(response => {
+                    data = JSON.parse(response);
+                    metadata['dataset_id'] = data['dataset_id'];
+                    fs.writeFile(metadata_json, JSON.stringify(metadata), function(err) {
+                        if (err) throw err;
+                        console.log('wrote metadata');
+                    });
+
+
+                }).catch(err => {
+                    console.log(err);
+                });
+
 }
 exports.processChangedFile = function(file) {
     console.log("Update metadata for " + file);
