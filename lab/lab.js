@@ -177,6 +177,20 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
     // Process files
     var metadata = JSON.parse(req.body._metadata);
     console.log(metadata);
+    if(metadata['dataset_id'] !== undefined) {
+    dataset_id = metadata['dataset_id'];
+            var filesP = processDataset(req.files, dataset_id);
+            Promise.all(filesP)
+                .then((results) => {
+                    res.send({
+                        message: "Files uploaded",
+                        dataset_id: dataset_id
+                    });
+                })
+                .catch((err) => {
+                    next(err);
+                });
+    } else {
     db.datasets.insertAsync({
             name: metadata.name,
             username: metadata.username,
@@ -196,6 +210,7 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
                     next(err);
                 });
         });
+    }
 
 });
 
@@ -955,6 +970,10 @@ var processDataset = function(files, dataset_id) {
                             }
                         });
                     });
+
+//db.events.update( { "user_id" : "714638ba-2e08-2168-2b99-00002f3d43c0" }, 
+//{ $push : { "events" : { "profile" : 10, "data" : "X"}}}, {"upsert" : true
+
                 promises.push(file_write);
             }
         });
