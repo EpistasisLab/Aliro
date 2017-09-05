@@ -13,6 +13,8 @@
 4. **Start the network**
         - ./toggle shared
 
+Fedora/Redhat/Systems with SELinux:
+chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 
 **Host Based Install**
 1. **Check out the project**
