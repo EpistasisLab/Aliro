@@ -82,6 +82,7 @@ class AI():
         self.last_update = 0
         # if there is a file, load it as the recommender scores
         self.warm_start = warm_start
+        self.load_options()
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
 
@@ -97,6 +98,23 @@ class AI():
               if self.verbose:
                   print('loaded previous state from ',self.last_update)
 
+    def load_options(self,debug=False):
+        """Returns true if new AI request has been submitted by user."""
+        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+              ':','loading options...')
+        v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
+                          headers=self.header)
+        responses = json.loads(v.text)
+        self.ui_options = responses
+        if len(responses) > 0:
+            self.ui_options = responses
+            #if self.verbose:
+                #print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                #      ':','new ai request for:',r for r in responses])
+            #return True
+        return False
+
+
     def check_requests(self,debug=False):
         """Returns true if new AI request has been submitted by user."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
@@ -110,7 +128,7 @@ class AI():
             r = requests.post(self.data_path,data=json.dumps(payload),
                               headers=self.header)
             responses = json.loads(r.text)
-            print(responses);
+            #print(responses);
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
             self.request_queue = responses
@@ -181,7 +199,7 @@ class AI():
                 processed_data.append(frame)
             else:
               print("frame is missing something:")
-              print(d)
+              #print(d)
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
           self.new_data = new_data
@@ -205,7 +223,7 @@ class AI():
             # ml,p = validate_recs(ml,p)
             for alg,params,score in zip(ml,p,ai_scores):
                 # validate recommendations against available options
-                alg,params = validate_recs(alg,params)
+                alg,params = validate_recs(self,alg,params)
                 modified_params = eval(params)
                 #print(modified_params.max_features)
                 rec = {'dataset_id':r['_id'],
@@ -216,6 +234,7 @@ class AI():
                         'ai_score':score,
                         }
                 if self.verbose:
+                    #print(rec)
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','sent a recommendation for',r['name'])
                 # # add recommended parameters
@@ -228,7 +247,9 @@ class AI():
                                         'experiment'])
                 # post recommendations
                 #print(rec_path)
-                requests.post(rec_path,data=json.dumps(rec),headers=self.header)
+                v=requests.post(rec_path,data=json.dumps(rec),headers=self.header)
+                print(v)
+
                 #submit update to dataset to indicate ai:True
             payload= {'ai':'finished'}
             data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
