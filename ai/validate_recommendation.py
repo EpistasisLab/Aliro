@@ -21,12 +21,17 @@ ui_options = [
 {"_id":"5817af52382153354043496e","name":"RandomForestClassifier","schema":{"n_estimators":{"description":"The number of trees in the forest.","type":"int","default":100,"ui":{"style":"radio","choices":[10,100,500,1000]}},"criterion":{"description":"The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.","type":"string","default":"gini","ui":{"style":"radio","choices":["gini","entropy"]}},"max_features":{"description":"The number of features to consider when looking for the best split.","type":"string","default":"sqrt","ui":{"style":"radio","choices":["sqrt","log2","None"]}},"min_samples_split":{"description":"The minimum number of samples required to split an internal node.","type":"int","default":2,"ui":{"style":"radio","choices":[2,5,10,15,20]}},"min_samples_leaf":{"description":"The minimum number of samples required to be at a leaf node.","type":"int","default":1,"ui":{"style":"radio","choices":[1,5,10,15,20]}},"bootstrap":{"description":"Whether bootstrap samples are used when building trees.","type":"bool","default":True,"ui":{"style":"radio","choices":[True,False]}}},"category":"ML"}
 ]
 
-def validate_recs(ml,p,debug=False):
+def validate_recs(self,ml,p,debug=False):
     """Checks rec against possible settings for user. Removes parameters not
     available to the user and if parameter value is not available, it shifts
     the recommended value to the closest option."""
+   # if ('_id' in op):
+   #   print('yup')
+   # else:
+   #   print('yup')
 #    if(debug):
-    match_ml = [ui_options[i] for i,op in enumerate(ui_options)
+    #print(ui_options)
+    match_ml = [self.ui_options[i] for i,op in enumerate(self.ui_options)
                 if ml==op['_id']][0]
 #    else:
 ## todo: load valid params from lab api 
@@ -53,9 +58,9 @@ def validate_recs(ml,p,debug=False):
                         print('warning:',k,'=',v,'not available.',
                               'choices:',np.array(match_p_d[k]['ui']['choices']))
                 else:
+                    del p_new[k]
                     print('warning:',k,'=',v,'not available.',
                           'choices:',np.array(match_p_d[k]['ui']['choices']))
-                    del p_new[k]
 
             if is_number(v):
                 # convert to number
@@ -63,4 +68,5 @@ def validate_recs(ml,p,debug=False):
         else:
             del p_new[k]
     # pdb.set_trace()
+    print(p_new)
     return ml,str(p_new)
