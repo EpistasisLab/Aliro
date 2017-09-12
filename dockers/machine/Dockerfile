@@ -5,8 +5,8 @@ WORKDIR /opt/
 ADD files/rootfs.tgz /
 #ssh for deploy from git
 ADD files/ssh.tgz /
-#ADD files/intel_opencl.tgz /
-#ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
+ADD files/intel_opencl.tgz /
+ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN apt-get update && apt-get install -y --allow-unauthenticated \
     vim wget git openssh-client net-tools iputils-ping htop\
@@ -31,7 +31,7 @@ RUN pip install deap
 RUN pip install requests_toolbelt
 RUN pip install urllib3
 RUN conda install scikit-learn pymongo tqdm
-#RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
+RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 #RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git
 ADD files/version /tmp
 RUN git clone git@github.com:EpistasisLab/Gp.git

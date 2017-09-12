@@ -666,6 +666,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                             obj['dataset'] = old_obj['dataset_id'];
                             ai_score = old_obj['ai_score'];
                             dataset = old_obj['dataset_id']
+console.log(old_obj);
                             username = 'testuser';
                         }
                         if ("dataset" in obj) {
