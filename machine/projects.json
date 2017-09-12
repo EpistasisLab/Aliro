@@ -1,11 +1,11 @@
 {
     "57bf24e1548cd20008bc71df": {
-        "cwd": "/share/devel/Gp/gpocl/build",
-        "command": "./gpocl",
-        "args": ["../datasets/gei.csv"],
-        "capacity": "0.1",
-        "options": "double-dash-noequals",
-        "results": "./examples/GP"
+        "cwd": "/share/devel/Gp/learn/gpocl",
+        "command": "python3",
+        "args": ["main.py"],
+        "options": "double-dash",
+        "capacity": "0.2",
+        "results": "/share/devel/Gp/learn/gpocl/tmp/"
     },
     "57c5a83f4b09d40023ee4f6e": {
         "cwd": "/share/devel/Gp/mdr/bin",
@@ -15,13 +15,13 @@
         "options": "double-dash",
         "results": "./examples/MDR"
     },
-    "58535d64a52513003444132a": {
-        "cwd": "/share/devel/Gp/learn/deap-GP-SymbReg",
+    "57ffd3c1fa76cb0022258722": {
+        "cwd": "/share/devel/Gp/learn/deapGP",
         "command": "python3",
         "args": ["main.py"],
         "options": "double-dash",
         "capacity": "0.2",
-        "results": "/share/devel/Gp/learn/deap-GP-SymbReg/tmp/"
+        "results": "/share/devel/Gp/learn/deapGP/tmp/"
     },
     "58535b8fa525130034441327": {
         "cwd": "/share/devel/Gp/learn/Meta-GA",
