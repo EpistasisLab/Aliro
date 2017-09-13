@@ -45,8 +45,7 @@ class AI():
                     sessions
     """
 
-    def __init__(self,rec=RandomRecommender(),
-                 db_path=os.environ['FGLAB_URL'],
+    def __init__(self,rec=None,db_path=os.environ['FGLAB_URL'],
                  #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
@@ -85,6 +84,8 @@ class AI():
         self.load_options()
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
+        if not rec:
+            self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
 
     def load_state(self):
         """loads pickled score file."""
@@ -293,7 +294,8 @@ class AI():
 ####################################################################### Manager
 def main():
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(rec=RandomRecommender(),warm_start=False)
+    pennai = AI(warm_start=False)
+    
     debug = False
     n = 0;
     try:

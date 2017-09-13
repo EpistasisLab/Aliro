@@ -38,7 +38,8 @@ class AverageRecommender(BaseRecommender):
         # number of datasets trained on so far
         self.w = 0
 
-        # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
+        # maintain a set of dataset-algorithm-parameter combinations that have already been 
+        # evaluated
         self.trained_dataset_models = set()
 
     def update(self, results_data):

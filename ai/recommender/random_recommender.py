@@ -5,12 +5,13 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
+from ..db_utils import get_all_ml_p_from_db  
 
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
 
-    Recommends random machine learning algorithms and parameters from the
-    results.
+    Recommends random machine learning algorithms and parameters from the possible algorithms
+    fetched from the server.
 
     Parameters
     ----------
@@ -20,9 +21,11 @@ class RandomRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
 
+    db_path: path to the server. 
     """
 
-    def __init__(self, ml_type='classifier', metric=None):
+
+    def __init__(self, ml_type='classifier', metric=None, db_path='', api_key='' ):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -35,12 +38,18 @@ class RandomRecommender(BaseRecommender):
             self.metric = metric
 
         # ml p options
-        self.ml_p = []
-
+        self.db_path = db_path
+        self.api_key = api_key
+        self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
+        
         # number of datasets trained on so far
-        self.w = 0
+        #self.w = 0
 
-        # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
+        # pull algorithm/parameter combinations from the server. 
+        #self.ml_p = self.get_ml_p()
+
+        # maintain a set of dataset-algorithm-parameter combinations that have already been 
+        # evaluated
         self.trained_dataset_models = set()
 
     def update(self, results_data):
@@ -57,17 +66,17 @@ class RandomRecommender(BaseRecommender):
                 self.metric
         """
         # make combined data columns of datasets, classifiers, and parameters
-        results_data.loc[:, 'algorithm-parameters'] = (
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
+        #results_data.loc[:, 'algorithm-parameters'] = (
+        #                               results_data['algorithm'].values + '|' +
+        #                               results_data['parameters'].values)
 
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
-
+        #pdb.set_trace()
         # get unique dataset / parameter / classifier combos in results_data
-        self.ml_p = results_data['algorithm-parameters'].unique()
+        #self.ml_p = results_data['algorithm-parameters'].unique()
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
 
@@ -80,7 +89,7 @@ class RandomRecommender(BaseRecommender):
         dataset_id: string
             ID of the dataset for which the recommender is generating recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters expected to do best.
+            Return a list of len n_recs in order of estimators and parameters expected to do best.
         """
 
         # return ML+P for best average y
@@ -102,7 +111,8 @@ class RandomRecommender(BaseRecommender):
             print('self.w:', self.w)
             raise AttributeError
 
-        # update the recommender's memory with the new algorithm-parameter combos that it recommended
+        # update the recommender's memory with the new algorithm-parameter combos that it 
+        # recommended
         ml_rec = ml_rec[:n_recs]
         p_rec = p_rec[:n_recs]
         rec_score = rec_score[:n_recs]
