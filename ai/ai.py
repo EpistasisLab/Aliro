@@ -14,6 +14,7 @@ import urllib.request, urllib.parse
 import pdb
 import time
 from ai.validate_recommendation import validate_recs
+import ai.db_utils as db_utils
 import os
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
@@ -59,6 +60,7 @@ class AI():
         self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
         self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
         self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
+        self.algo_path = '/'.join([self.db_path,'api/projects'])
         self.user=user
         self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
@@ -86,6 +88,8 @@ class AI():
             self.load_state()
         if not rec:
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
+        # build dictionary of ml ids to names conversion
+        self.ml_id_to_name = db_utils.get_ml_id_dict(self.algo_path,self.api_key)
 
     def load_state(self):
         """loads pickled score file."""
@@ -99,7 +103,7 @@ class AI():
               if self.verbose:
                   print('loaded previous state from ',self.last_update)
 
-    def load_options(self,debug=False):
+    def load_options(self):
         """Returns true if new AI request has been submitted by user."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','loading options...')
@@ -116,58 +120,53 @@ class AI():
         return False
 
 
-    def check_requests(self,debug=False):
+    def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
+        
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
-        if debug:
-            responses = [{'_id': '5930f023ffb08f0832362efd', 'files': [{'filename': 'mushroom.csv', '_id': '5930f023ffb08f0832362eff', 'mimetype': 'text/csv'}, {'filename': 'README.md', '_id': '5930f023ffb08f0832362efe', 'mimetype': 'text/x-markdown'}], 'ai': 'requested', 'name': 'Mushrooms', 'username': 'testuser'}, {'_id': '5930f023ffb08f0832362f06', 'files': [{'filename': 'README.md', '_id': '5930f023ffb08f0832362f0a', 'mimetype': 'text/x-markdown'}, {'filename': 'adult.csv', '_id': '5930f023ffb08f0832362f0b', 'mimetype': 'text/csv'}], 'ai': 'requested', 'name': 'Adults', 'username': 'testuser'}]
-        else:
-            payload = {'ai':['finished','requested','on']}
-            payload.update(self.static_payload)
+        
+        payload = {'ai':['requested','fake']}
+        #payload = {'ai':'requested'}
+        payload.update(self.static_payload)
+        r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
+        responses = json.loads(r.text)
+        #print(responses);
+        #pdb.set_trace()
 
-            r = requests.post(self.data_path,data=json.dumps(payload),
-                              headers=self.header)
-            responses = json.loads(r.text)
-            #print(responses);
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
             self.request_queue = responses
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':','new ai request for:',[r['name'] for r in responses])
-            if not debug:
-                # set AI flag to 'true' to acknowledge requests received
-                payload= {'ai':'on'}
-                payload.update(self.static_payload)
-                for r in self.request_queue:
-                    data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                    tmp = requests.put(data_submit_path,data=json.dumps(payload),
+            # set AI flag to 'true' to acknowledge requests received
+            payload= {'ai':'on'}
+            payload.update(self.static_payload)
+            for r in self.request_queue:
+                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+                tmp = requests.put(data_submit_path,data=json.dumps(payload),
                                       headers=self.header)
             return True
 
         return False
 
-    def check_results(self,debug=False):
+    def check_results(self):
         """Returns true if new results have been posted since the previous
         time step."""
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
-        if debug:
-            # DEBUG: load results from pickle
-            f = open('experiments_response.obj','rb')
-            data = pickle.load(f)
-        else:
-            # get new results
-            payload = {'date_start':self.last_update,'has_scores':True}
-            payload.update(self.static_payload)
-            params = json.dumps(payload).encode('utf8')
-            req = urllib.request.Request(self.exp_path, data=params,
-                                       headers=self.header)
-            r = urllib.request.urlopen(req)
-            data = json.loads(r.read().decode(r.info().get_param('charset')
-                                              or 'utf-8'))
+        
+        # get new results
+        payload = {'date_start':self.last_update,'has_scores':True}
+        payload.update(self.static_payload)
+        params = json.dumps(payload).encode('utf8')
+        req = urllib.request.Request(self.exp_path, data=params,
+                                   headers=self.header)
+        r = urllib.request.urlopen(req)
+        data = json.loads(r.read().decode(r.info().get_param('charset')
+                                          or 'utf-8'))
 
         if len(data) > 0:
             # if there are new results, return True
@@ -199,7 +198,10 @@ class AI():
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
                 processed_data.append(frame)
             else:
-              print("frame is missing something:")
+              print("new results are missing these fields:",
+                      '_options' if '_options' not in d.keys() else '',
+                      '_scores' if '_scores' not in d.keys() else '',
+                      '_dataset_id' if '_dataset_id' not in d.keys() else '')
               #print(d)
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
@@ -237,7 +239,7 @@ class AI():
                 if self.verbose:
                     #print(rec)
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                        ':','sent a recommendation for',r['name'])
+                        ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
                 # # add recommended parameters
                 # for p in params.sep(','):
                 #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
@@ -249,7 +251,7 @@ class AI():
                 # post recommendations
                 #print(rec_path)
                 v=requests.post(rec_path,data=json.dumps(rec),headers=self.header)
-                print(v)
+                #print(v)
 
                 #submit update to dataset to indicate ai:True
             payload= {'ai':'finished'}
@@ -295,16 +297,15 @@ class AI():
 def main():
     print('=======','Penn AI','=======',sep='\n')
     pennai = AI(warm_start=False)
-    
-    debug = False
+
     n = 0;
     try:
-        while (n <= 10):
+        while True:
             # check for new experiment results
-            if pennai.check_results(debug=debug):
+            if pennai.check_results():
                 pennai.update_recommender()
             # check for new recommendation requests
-            if pennai.check_requests(debug=debug):
+            if pennai.check_requests():
                 pennai.send_rec()
             n = n + 1
             sleep(2)

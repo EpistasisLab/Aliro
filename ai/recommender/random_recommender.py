@@ -41,6 +41,7 @@ class RandomRecommender(BaseRecommender):
         self.db_path = db_path
         self.api_key = api_key
         self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
+        #self.ml_p = all_ml_p['algorithm'].values + '|' + all_ml_p['parameters'].values 
         
         # number of datasets trained on so far
         #self.w = 0
@@ -95,27 +96,41 @@ class RandomRecommender(BaseRecommender):
         # return ML+P for best average y
         #print(self.ml_p)
         try:
-            rec = np.random.choice(self.ml_p,size=n_recs,replace=False)
+            ml_rec,p_rec,rec_score=[],[],[]
+
+            for i in np.arange(n_recs):
+                n=0
+                rec_not_new = True
+                while (rec_not_new and n<1000):
+                    ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
+                    p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
+                                                          'parameters'])
+                    if dataset_id is not None:
+                        rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
+                                       self.trained_dataset_models)
+                    else:
+                        rec_not_new = False
+                if n==99:
+                    print('warning: tried 1000 times (and failed) to find a novel recommendation')
+                
+                ml_rec.append(ml_tmp)
+                p_rec.append(p_tmp)
+                rec_score.append(0) 
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
-            if dataset_id is not None:
-                rec = [r for r in rec if dataset_id + '|' + r not in
-                       self.trained_dataset_models]
+            
+            #if dataset_id is not None:
+            #    rec = [r for r in rec if dataset_id + '|' + r not in
+            #           self.trained_dataset_models]
 
-            ml_rec = [r.split('|')[0] for r in rec]
-            p_rec = [r.split('|')[1] for r in rec]
-            rec_score = [0 for r in rec]
+            #ml_rec = [r.split('|')[0] for r in rec]
+            #p_rec = [r.split('|')[1] for r in rec]
+            #rec_score = [0 for r in rec]
         except AttributeError:
             print('rec:', rec)
             print('self.scores:', self.scores)
             print('self.w:', self.w)
             raise AttributeError
-
-        # update the recommender's memory with the new algorithm-parameter combos that it 
-        # recommended
-        ml_rec = ml_rec[:n_recs]
-        p_rec = p_rec[:n_recs]
-        rec_score = rec_score[:n_recs]
 
         if dataset_id is not None:
             self.trained_dataset_models.update(
