@@ -1,27 +1,34 @@
 """
 Recommender system for Penn AI.
+
 """
 import pandas as pd
+import numpy as np
 from .base import BaseRecommender
+from collections import OrderedDict
+from itertools import tee
+from scipy import stats
+from collections import defaultdict
 
-class AverageRecommender(BaseRecommender):
-    """Penn AI average recommender.
+class WeightedRecommender(BaseRecommender):
+    """Penn AI recommender that separates values that are significantly different.
 
     Recommends machine learning algorithms and parameters based on their average performance
-    across all evaluated datasets.
+    across all evaluated datasets and ranks them according to whether they are significantly different.
 
     Parameters
     ----------
     ml_type: str, 'classifier' or 'regressor'
-        Recommending classifiers or regressors. Used to determine ML options.
+        recommending classifiers or regressors. used to determine ML options.
 
-    metric: str (default: accuracy for classifiers, mse for regressors)
-        The metric by which to assess performance on the datasets.
+    metric: str
+        the metric by which to assess performance in the data.
+        default: accuracy for classifiers, mse for regressors.
 
     """
 
     def __init__(self, ml_type='classifier', metric=None):
-        """Initialize recommendation system."""
+        """initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
@@ -35,12 +42,27 @@ class AverageRecommender(BaseRecommender):
         # empty scores pandas series
         self.scores = pd.Series()
 
+        self.ml_p_scores = defaultdict(list)
+
         # number of datasets trained on so far
         self.w = 0
 
-        # maintain a set of dataset-algorithm-parameter combinations that have already been 
-        # evaluated
+        # maintain a set of dataset-algorithm-parameter combinations that have already been evaluated
         self.trained_dataset_models = set()
+
+    def _interpret(self, ml):
+        if ml == 'DecisionTreeClassifier':
+            return 0.7
+        elif ml == 'LogisticRegression':
+            return 0.7
+        elif ml == 'RandomForestClassifier':
+            return 0.2
+        elif ml == 'SVC':
+            return 0.5
+        elif ml == 'KNeighborsClassifier':
+            return 0.5
+        else: 
+            return 0.2
 
     def update(self, results_data):
         """Update ML / Parameter recommendations based on overall performance in results_data.
@@ -50,7 +72,6 @@ class AverageRecommender(BaseRecommender):
         Parameters
         ----------
         results_data: DataFrame with columns corresponding to:
-                'dataset'
                 'algorithm'
                 'parameters'
                 self.metric
@@ -69,31 +90,39 @@ class AverageRecommender(BaseRecommender):
         ml_p = results_data['algorithm-parameters'].unique()
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
-
-        # get average balanced accuracy by classifier-parameter combo
-        new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()
+        
+        new_scores = 0.8 * results_data.groupby(('algorithm-parameters'))[self.metric].mean() + 0.2 * self._interpret(results_data.groupby(('algorithm-parameters'))['algorithm'])
         new_weights = results_data.groupby('algorithm-parameters').size()
 
-        # update scores
+        # make a dictionary
+        new_dict = results_data.groupby('algorithm-parameters')['accuracy'].apply(list).to_dict()
+        for key in new_dict:
+            self.ml_p_scores[key] += new_dict[key]
+
+        # update scores-->merge
         self._update_scores(new_scores, new_weights)
 
     def recommend(self, dataset_id=None, n_recs=1):
-        """Return a model and parameter values expected to do best on dataset.
+        """return a model and parameter values expected to do best on the dataset.
 
         Parameters
         ----------
-        dataset_id: string
-            ID of the dataset for which the recommender is generating recommendations.
-        n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters expected to do best.
+        n_recs (default: 1): optionally, return a list of length n_recs
+        in order of estimators and parameters expected to do best.
         """
-
         # return ML+P for best average y
         try:
+
             rec = self.scores.sort_values(ascending=False).index.values
 
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
+
+            #for loop through rec and group by significance
+            #rec is the ordered list
+            #ml_p_scores is the dictionary that has the list of values in the dictionary
+            #check indent
+
             if dataset_id is not None:
                 rec = [r for r in rec if dataset_id + '|' + r not in
                        self.trained_dataset_models]
@@ -101,6 +130,24 @@ class AverageRecommender(BaseRecommender):
             ml_rec = [r.split('|')[0] for r in rec]
             p_rec = [r.split('|')[1] for r in rec]
             rec_score = [self.scores[r] for r in rec]
+
+            #for loop through rec and group by significance
+            rec_copy = rec
+            results_sig_dif = []
+            if(len(rec) >0):
+              results_sig_dif.append(rec[0])
+              n = 1
+              while len(results_sig_dif) < 100 and n < 1000:
+                  key1 = results_sig_dif[len(results_sig_dif)-1]#first key is last value in new list
+                  value1 = self.ml_p_scores.get(key1)
+                  if n < len(rec):
+                      key2 = rec[n]#second key is 
+                      value2 = self.ml_p_scores.get(key2)
+                      t_val, p_val = stats.ttest_ind(value1, value2)
+                      if p_val < 0.5: #change to rerun code and check significance started 0.05
+                          results_sig_dif.append(key2)
+                  n += 1
+              rec = results_sig_dif #update with new list
         except AttributeError:
             print('rec:', rec)
             print('self.scores:', self.scores)
@@ -119,8 +166,8 @@ class AverageRecommender(BaseRecommender):
 
         return ml_rec, p_rec, rec_score
 
-    def _update_scores(self, new_scores, new_weights):
-        """Update scores based on new_scores."""
+    def _update_scores(self, new_scores, new_weights):# key value
+        """update scores based on new_scores"""
         new_ind = new_scores.index.values
         if len(self.scores.index) == 0:
             self.scores = new_scores

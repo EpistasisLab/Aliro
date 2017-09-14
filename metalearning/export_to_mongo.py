@@ -1,3 +1,5 @@
+# first, we need to construct a dataset that has each parameter as a feature. to do this we have to deconstruct
+#the 'parameter' column into new columns.
 import pandas as pd
 import dask.dataframe as dd
 import json
@@ -11,18 +13,18 @@ from tqdm import tqdm
 import os
 pd.options.mode.chained_assignment = None
 #limit number of records we'll process
+max_records = 5000000000;
 #
-baseURL=os.environ['FGLAB_URL']
-MONGODB_URI=os.environ['MONGODB_URI']
-datasetsURL=baseURL + '/api/datasets'
-algorithmsURL=baseURL + '/api/projects'
-datasetsURL=baseURL + '/api/datasets'
-apiDict = {'apikey':os.environ['APIKEY']}
+baseURL=os.environ['FGLab'] + '/api';
+print(baseURL);
+datasetsURL=baseURL + '/datasets'
+algorithmsURL=baseURL + '/projects'
+datasetsURL=baseURL + '/datasets'
+apiDict = {'apikey':os.environ['apikey']}
 apiParams = json.dumps(
     apiDict
     ).encode('utf8')
 #
-# first, we need to construct a dataset
 print('loading api datasets into dictionary...')
 req = urllib.request.Request(datasetsURL, data=apiParams,
   headers={'content-type': 'application/json'})
@@ -47,7 +49,8 @@ for algorithm in algorithms:
      algorithm_names[name.lower()] =  _id;
 #
 print('loading pmlb results data...')
-data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz', sep='\t',
+#data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
+data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
                          'parameters',
@@ -56,56 +59,49 @@ data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz', sep='\t'
                          'bal_accuracy']).fillna('')
 
 
-print('discarding duplicate dataset/classifier combinations...')
-data = data.groupby(['dataset','classifier']).head(1).reset_index(drop=True)
 print('formatting records for import...')
 records = json.loads(data.T.to_json()).values()
 ret_records = []
-client = pymongo.MongoClient(MONGODB_URI)
-db = client.FGLab
 for record in records:
 #split parameters into individual fields
-  # 
-  algorithm_name = record['classifier'].lower()
-  if(algorithm_name in algorithm_names):
+  parameters= record['parameters'].split(",");
+  nested_parameters = {}
+  for parameter in parameters:
+    psplit = parameter.split("=")
+    if(len(psplit) > 1):
+      nested_parameters[psplit[0]] = psplit[1];
+# 
+  algorithm_name = record['classifier']
+  if(algorithm_name.lower() in algorithm_names):
     new_record = {}
-    new_record['_project_id'] = ObjectId(algorithm_names[algorithm_name])
-    #dataset info
-    dataset_name = record['dataset'].lower();
-    if(dataset_name in datasets_dict):
-      dataset = datasets_dict[dataset_name]
-      new_record['_dataset_id'] = ObjectId(dataset['_id'])
-      files = datasets_dict[dataset_name.lower()]['files']
-      new_files = []
-      for filedata in files:
-        filedata['_id'] = ObjectId(filedata['_id'])
-        new_files.append(filedata);
-      new_record['files'] = new_files 
-   
-      
-    #algorithm parameters
-    parameters = record['parameters'].split(",");
-    nested_parameters = {}
-    for parameter in parameters:
-      psplit = parameter.split("=")
-      if(len(psplit) > 1):
-        nested_parameters[psplit[0]] = psplit[1];
-        new_record['_options'] = nested_parameters;
-    #scores
+    dataset_name = record['dataset']
+    if(dataset_name.lower() in datasets_dict):
+      dataset_id = ObjectId(datasets_dict[dataset_name.lower()]['_id'])
+      dataset_files = datasets_dict[dataset_name.lower()]['files']
+      new_record['_dataset_id'] = dataset_id;
+      new_record['_files'] = dataset_files;
+    #
+    algorithm_id = ObjectId(algorithm_names[algorithm_name.lower()])
+    new_record['_project_id'] = algorithm_id
+    new_record['_options'] = nested_parameters;
     scores = {}
     scores['accuracy_score'] = record['accuracy']
     scores['balanced_accuracy'] = record['bal_accuracy']
-    scores['f1_score'] = record['macrof1']
     new_record['_scores'] = scores;
-    #
-    new_record['_started'] = datetime.min
-    new_record['_finished'] = datetime.min
+    new_record['_macrof1'] = record['macrof1']
+    new_record['_started'] = datetime.now()
+    new_record['_finished'] = datetime.now()
     new_record['_status'] = 'success'
-    new_record['username'] = 'pmlb'
-    db.experiments.insert(new_record)
+    new_record['_files'] = []
+    ret_records.append(new_record);
+  if(len(ret_records) >= max_records):
+    break
     
 #print(ret_records);
 #
+client = pymongo.MongoClient()
+db = client.FGLab
+db.experiments.insert(ret_records)
 #for record_dict in ret_records:
 #  post_params = json.dumps(
 #    {**record_dict, **apiDict}
