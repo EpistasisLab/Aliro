@@ -22,7 +22,7 @@ def get_all_ml_p_from_db(path,key):
     good_def = True # checks that json for ML is in good form
     
     for i,x in enumerate(responses):
-        print('ML: ',x['name'])
+        #print('ML: ',x['name'])
         hyperparams = x['schema'].keys()
         hyperparam_dict = {}
                 
@@ -40,16 +40,16 @@ def get_all_ml_p_from_db(path,key):
                                       for prod in it.product(*(hyperparam_dict[k] 
                                       for k in sorted_hp))]
             
-            print('\thyperparams: ',hyperparam_dict)
-            print(len(all_hyperparam_combos),' total hyperparameter combinations')
+            #print('\thyperparams: ',hyperparam_dict)
+            #print(len(all_hyperparam_combos),' total hyperparameter combinations')
                              
             for ahc in all_hyperparam_combos:
-                result.append({'algorithm':x['_id'],'parameters':ahc})
+                result.append({'algorithm':x['_id'],'parameters':str(ahc)})
         else:
-            print(x['name'], 'was skipped')
+            print('warning: ', x['name'], 'was skipped')
         good_def = True
 
-    
+    print(len(result),' ml-parameter options loaded')    
     return pd.DataFrame(result)
 
 def get_random_ml_p_from_db(path,key):
@@ -84,3 +84,17 @@ def get_random_ml_p_from_db(path,key):
 
     return ml,p
 
+def get_ml_id_dict(path,key):
+    """Returns a dictionary for converting algorithm IDs to names."""
+    
+    # get json from server
+    payload = {'apikey':key}
+    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    print('r:',r)
+    responses = json.loads(r.text)
+
+    ml_id_to_name = {}
+    for ml in responses:
+        ml_id_to_name.update({ml['_id']:ml['name']})
+
+    return ml_id_to_name
