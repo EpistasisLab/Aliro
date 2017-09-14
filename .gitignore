@@ -1,6 +1,7 @@
 *.pyc
 .ipynb_checkpoints/*
 *~
+tmp/
 
 pennai-dev-notebook.ipynb
 
