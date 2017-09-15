@@ -126,7 +126,7 @@ class AI():
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
         
-        payload = {'ai':['requested','fake']}
+        payload = {'ai':['requested','finished']}
         #payload = {'ai':'requested'}
         payload.update(self.static_payload)
         r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
