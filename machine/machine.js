@@ -340,6 +340,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             gzip: true
         });
     };
+
     // Watch for experiment folder
     var resultsDir = path.join(project.results, experimentId);
     var watcher = chokidar.watch(resultsDir, {
@@ -349,8 +350,12 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             if (path.match(/\.json$/)) {
                 // Process JSON files
                 filesP.push(fs.readFile(path, "utf-8").then(sendJSONResults));
+            //ugly hack to prevent input files from getting uploaded
+            } else if (path.match(/\.csv$/)) {
+                console.log('ignoring ' + path);
             } else {
                 // Store filenames for other files
+                filesP.push(sendFileResults(path));
                 filesP.push(sendFileResults(path));
             }
         }
