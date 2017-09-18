@@ -39,25 +39,6 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
     	- <b>FGLAB_URL=http://localhost:5080</b>
     	- <b>FGMACHINE_URL=http://localhost:5081</b>
 
-3. **Perform Docker Install**
-	- Follow [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/) to install Docker
-	- Create a network for the lab and machine to use to communicate:
-	    - <i>docker network create dockernet</i>
-	- Install the lab
-    	- Change directories to <b>/share/devel/Gp/dockers/lab</b>
-    	- On a system with 'make' installed:
-        	- <i>make && make run</i>
-    	- Alternatively, you can manually run these steps with the following commands:
-        	- <i>docker build -t devel/lab</i>
-        	- <i>docker run -i -t --rm -p 5080:5080 --network dockernet -h lab --name lab devel/lab</i>
-    - Install the machine: 
-	    - Change directories to <b>/share/devel/Gp/dockers/machine</b>
-      	- On a system with 'make' installed:
-    	    - <i>make && make run</i>
-    	- Alternatively, you can manually run these steps with the following commands:
-        	- <i>docker build -t devel/machine</i>
-        	- <i>docker run -i -t --rm -p 5081:5081 --network dockernet -h machine --name machine devel/machine</i>
-
 3. **Test the lab**
 	- Connect to:
     	- http://localhost:5080/
