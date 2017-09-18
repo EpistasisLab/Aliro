@@ -13,15 +13,17 @@ def get_all_ml_p_from_db(path,key):
     """ Returns a list of ml and parameter options from the server."""
 
     # get json from server
-    payload = {'apikey':key}
+    # filter on username (given in dataset)
+    payload = {'apikey':key,'username':'testuser'}
     r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
     print('r:',r)
-    responses = json.loads(r.text)
-
+    response = json.loads(r.text)
+    algorithms = response[0]['algorithms']
     result = [] # returned value 
     good_def = True # checks that json for ML is in good form
     
-    for i,x in enumerate(responses):
+    for i,x in enumerate(algorithms):
+    #for i,x in enumerate(response):
         #print('ML: ',x['name'])
         hyperparams = x['schema'].keys()
         hyperparam_dict = {}
