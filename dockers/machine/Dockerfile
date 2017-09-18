@@ -31,7 +31,7 @@ RUN pip install deap
 RUN pip install requests_toolbelt
 RUN pip install urllib3
 RUN conda install scikit-learn pymongo tqdm
-RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
+#RUN cd /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/ && ./install.sh -s intel_opencl.conf
 #RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git
 ADD files/version /tmp
 RUN git clone git@github.com:EpistasisLab/Gp.git
