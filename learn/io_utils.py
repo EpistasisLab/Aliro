@@ -64,7 +64,6 @@ def parse_args(params):
 
 def get_input_file(_id, tmpdir):
 	expdir = tmpdir + _id + '/'
-
 	if not os.path.exists(expdir):
 		os.makedirs(expdir)
 
@@ -72,14 +71,15 @@ def get_input_file(_id, tmpdir):
 	jsondata = json.loads(response.data.decode('utf-8'))
 	files = jsondata['files']
 	input_file = ''
-
 	numfiles = 0;
 	for file in files:
-		response = http.request('GET', 'http://'+lab_host+':5080/api/v1/files/' + file['_id'])
+		uri='http://'+lab_host+':5080/api/v1/files/' + file['_id']
+		response = http.request('GET', uri)
 		input_file = expdir + file['filename']
 		with open(input_file, 'w') as f:
 			f.write(response.data.decode('utf-8'))
 			numfiles += 1
+                
 
 	if numfiles == 1:
 		return input_file
@@ -102,7 +102,6 @@ def int_or_none(val):
 		int(val)
 	except Exception:
 		raise argparse.ArgumentTypeError(val + ' is not a valid int value')
-
 	return int(val)
 
 # this shouldn't be for all str types --> change later
@@ -113,7 +112,6 @@ def str_or_none(val):
 		str(val)
 	except Exception:
 		raise argparse.ArgumentTypeError(val + ' is not a valid str value')
-
 	return str(val)
 
 # how should this check what kind of enum type? right now, just returns a string.
@@ -130,5 +128,4 @@ def get_type(type):
 		# float between 1 and 0
 		# enum type
 	}
-
 	return known_types[type]

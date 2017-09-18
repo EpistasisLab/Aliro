@@ -41,6 +41,7 @@ exports.responder = function(req, res) {
 //return a list of datasets for each user
 var responder = function(req, res) {
     var params = retParams(req);
+console.log(params);
     var query = {};
     if (params['filter_on_user']) {
         query['username'] = params['username'];
@@ -69,7 +70,6 @@ var responder = function(req, res) {
         }
         query[param] = vals;
     }
-    console.log(query);
 
     res.set('Content-Type', 'application/json');
     res.write('[');
@@ -108,7 +108,6 @@ var retParams = function(req) {
     if (req.body !== undefined) {
         for (param in req.body) {
             var val = req.body[param];
-console.log(param);
             if (param == 'date_start') {
                 if (!isNaN(parseFloat(val) && isFinite(val))) {
                     date_start = val
@@ -142,11 +141,20 @@ console.log(param);
     if (req.params.id) {
         _id = req.params.id;
     }
-    if (is_global || is_ai) {
+    if (is_global && !is_ai) {
         filter_on_user = false;
     }
+    //allow ai to filter on other users
+    if (is_ai) {
+        if (req.body['username'] !== undefined) {
+            params['username'] = req.body['username'];
+        } else {
+            filter_on_user = false;
+        }
+    } else {
+        params['username'] = req.params.user.username;
+    }
     params['collection'] = collection;
-    params['username'] = req.params.user.username;
     params['is_ai'] = is_ai;
     params['is_global'] = is_global;
     params['id'] = _id;

@@ -178,7 +178,6 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
-    console.log(metadata);
     if (metadata['dataset_id'] !== undefined) {
         dataset_id = metadata['dataset_id'];
         var filesP = processDataset(req.files, dataset_id);
@@ -218,7 +217,6 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
 
 //toggles ai for dataset
 app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
-    console.log(req.body)
     db.datasets.updateByIdAsync(req.params.id, {
             $set: {
                 ai: req.body.ai
@@ -490,10 +488,10 @@ app.put("/api/v1/projects/:id/category", jsonParser, (req, res, next) => {
 });
 
 var optionChecker = (schema, obj) => {
-    console.log('schema');
-    console.log(schema);
-    console.log('obj');
-    console.log(obj);
+    //console.log('schema');
+    //console.log(schema);
+    //console.log('obj');
+    //console.log(obj);
     /*for (var prop in schema) {
       var schemaField = schema[prop];
       var val = obj[prop];
@@ -666,7 +664,6 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                             obj['dataset'] = old_obj['dataset_id'];
                             ai_score = old_obj['ai_score'];
                             dataset = old_obj['dataset_id']
-console.log(old_obj);
                             username = 'testuser';
                         }
                         if ("dataset" in obj) {
@@ -681,7 +678,7 @@ console.log(old_obj);
                             res.status(400);
                             res.send(validation);
                         } else {
-                            console.log(projId, obj, files, dataset, username);
+                            //console.log(projId, obj, files, dataset, username);
                             submitJob(projId, obj, files, dataset, username)
                                 .then((resp) => {
                                     res.status(201);
