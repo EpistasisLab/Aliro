@@ -147,11 +147,11 @@
         },
         "fit_prior": {
             "description": "Whether to learn class prior probabilities or not. If false, a uniform prior will be used.",
-            "type": "bool",
-            "default": true,
+            "type": "enum",
+            "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         }
     },
@@ -180,11 +180,11 @@
         },
         "fit_prior": {
             "description": "Whether to learn class prior probabilities or not. If false, a uniform prior will be used.",
-            "type": "bool",
-            "default": true,
+            "type": "enum",
+            "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         }
     },
@@ -288,11 +288,11 @@
         },
         "bootstrap": {
             "description": "Whether bootstrap samples are used when building trees.",
-            "type": "bool",
-            "default": false,
+            "type": "enum",
+            "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         }
     },
@@ -429,11 +429,11 @@
         },
         "dual": {
             "description": "Select the algorithm to either solve the dual or primal optimization problem. Prefer dual=False when n_samples \u003e n_features.",
-            "type": "bool",
-            "default": true,
+            "type": "enum",
+            "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         },
         "tol": {
@@ -482,11 +482,11 @@
         },
         "dual": {
             "description": "Select the algorithm to either solve the dual or primal optimization problem. Prefer dual=False when n_samples \u003e n_features.",
-            "type": "bool",
-            "default": false,
+            "type": "enum",
+            "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         }
     },
@@ -544,11 +544,11 @@
         },
         "bootstrap": {
             "description": "Whether bootstrap samples are used when building trees.",
-            "type": "bool",
-            "default": true,
+            "type": "enum",
+            "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": [true, false]
+                "choices": ["true", "false"]
             }
         }
     },
