@@ -40,7 +40,8 @@ class RandomRecommender(BaseRecommender):
         # ml p options
         self.db_path = db_path
         self.api_key = api_key
-        self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
+        #self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
+        self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
         #self.ml_p = all_ml_p['algorithm'].values + '|' + all_ml_p['parameters'].values 
         
         # number of datasets trained on so far
@@ -102,6 +103,7 @@ class RandomRecommender(BaseRecommender):
                 n=0
                 rec_not_new = True
                 while (rec_not_new and n<1000):
+                    #print(self.ml_p)
                     ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
                     p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
                                                           'parameters'])
