@@ -227,7 +227,7 @@ class AI():
             for alg,params,score in zip(ml,p,ai_scores):
                 # validate recommendations against available options
                 alg,params = validate_recs(self,alg,params)
-                pdb.set_trace()
+                #pdb.set_trace()
                 modified_params = eval(params)
                 #print(modified_params.max_features)
                 rec = {'dataset_id':r['_id'],
