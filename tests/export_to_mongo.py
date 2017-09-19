@@ -11,7 +11,6 @@ from tqdm import tqdm
 import os
 pd.options.mode.chained_assignment = None
 #limit number of records we'll process
-max_records = -1;
 #
 baseURL=os.environ['FGLAB_URL']
 MONGODB_URI=os.environ['MONGODB_URI']
@@ -48,7 +47,7 @@ for algorithm in algorithms:
      algorithm_names[name.lower()] =  _id;
 #
 print('loading pmlb results data...')
-data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
+data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
                          'parameters',
@@ -57,9 +56,13 @@ data = pd.read_csv('metalearning/sklearn-benchmark5-data-edited.tsv.gz', sep='\t
                          'bal_accuracy']).fillna('')
 
 
+print('discarding duplicate dataset/classifier combinations...')
+data = data.groupby(['dataset','classifier']).head(1).reset_index(drop=True)
 print('formatting records for import...')
 records = json.loads(data.T.to_json()).values()
 ret_records = []
+client = pymongo.MongoClient(MONGODB_URI)
+db = client.FGLab
 for record in records:
 #split parameters into individual fields
   # 
@@ -99,15 +102,10 @@ for record in records:
     new_record['_finished'] = datetime.min
     new_record['_status'] = 'success'
     new_record['username'] = 'pmlb'
-    ret_records.append(new_record);
-  if(max_records >=0 and len(ret_records) >= max_records):
-    break
+    db.experiments.insert(new_record)
     
 #print(ret_records);
 #
-client = pymongo.MongoClient(MONGODB_URI)
-db = client.FGLab
-db.experiments.insert(ret_records)
 #for record_dict in ret_records:
 #  post_params = json.dumps(
 #    {**record_dict, **apiDict}
