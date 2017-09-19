@@ -310,8 +310,8 @@ def main():
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
-    parser.add_argument('-n_recs',action='store',dest='N_RECS',default=1,help='Number of '
-                        ' recommenations to make at a time. If zero, will send continous '
+    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
+                        ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
     parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=False,
                         help='Print out more messages.')
