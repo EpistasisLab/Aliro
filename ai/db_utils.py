@@ -50,9 +50,13 @@ def get_all_ml_p_from_db(path,key):
         else:
             print('warning: ', x['name'], 'was skipped')
         good_def = True
-
-    print(len(result),' ml-parameter options loaded')    
-    return pd.DataFrame(result)
+        
+    # convert to dataframe, making sure there are no duplicates    
+    all_ml_p = pd.DataFrame(result).drop_duplicates()
+    
+    print(len(all_ml_p),' ml-parameter options loaded')    
+    
+    return all_ml_p
 
 def get_random_ml_p_from_db(path,key):
     """ Returns a random ml+parameter option from the server."""
@@ -100,3 +104,6 @@ def get_ml_id_dict(path,key):
         ml_id_to_name.update({ml['_id']:ml['name']})
 
     return ml_id_to_name
+
+def validate_ml_p():
+    """(WIP) Catch any invalid parameter combinations that might arise"""
