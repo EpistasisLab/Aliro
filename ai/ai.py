@@ -13,7 +13,6 @@ import requests
 import urllib.request, urllib.parse
 import pdb
 import time
-from ai.validate_recommendation import validate_recs
 import ai.db_utils as db_utils
 import os
 from ai.recommender.average_recommender import AverageRecommender
@@ -228,14 +227,12 @@ class AI():
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-            # ml,p = validate_recs(ml,p)
+            
             for alg,params,score in zip(ml,p,ai_scores):
-                # validate recommendations against available options
-                alg,params = validate_recs(self,alg,params)
-                #pdb.set_trace()
+                # turn params into a dictionary
                 modified_params = eval(params)
                 #print(modified_params.max_features)
-                rec = {'dataset_id':r['_id'],
+                rec_payload = {'dataset_id':r['_id'],
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
                         # 'ml_name':alg,
@@ -243,20 +240,18 @@ class AI():
                         'ai_score':score,
                         }
                 if self.verbose:
-                    #print(rec)
+                    #print(rec_payload)
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                # # add recommended parameters
-                # for p in params.sep(','):
-                #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
-                rec.update(self.static_payload)
+                # add static payload
+                rec_payload.update(self.static_payload)
                 # submit path is ml_id/experiment
                 rec_path = '/'.join([self.projects_path,
-                                        rec['algorithm_id'],
+                                        rec_payload['algorithm_id'],
                                         'experiment'])
                 # post recommendations
                 #print(rec_path)
-                v=requests.post(rec_path,data=json.dumps(rec),headers=self.header)
+                v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
                 #print(v)
 
                 #submit update to dataset to indicate ai:True
