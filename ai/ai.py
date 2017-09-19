@@ -47,12 +47,14 @@ class AI():
     """
 
     def __init__(self,rec=None,db_path=os.environ['FGLAB_URL'],
-                 #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=False):
+                 verbose=True,warm_start=False, n_recs=1):
         """initializes AI managing agent."""
+        # recommender settings
         self.rec = rec
+        self.n_recs=n_recs if n_recs>0 else 1
+        self.continous= n_recs<1
         # access to database
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
@@ -126,8 +128,11 @@ class AI():
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
         
-        payload = {'ai':['requested','finished']}
-        #payload = {'ai':'requested'}
+        if self.continous:
+            payload = {'ai':['requested','finished']}
+        else:
+            payload = {'ai':['requested','dummy']}
+
         payload.update(self.static_payload)
         r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
         responses = json.loads(r.text)
@@ -222,7 +227,7 @@ class AI():
         for r in self.request_queue:
             dataset = r['name']
             # get recommendation for dataset
-            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'])
+            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
             # ml,p = validate_recs(ml,p)
             for alg,params,score in zip(ml,p,ai_scores):
                 # validate recommendations against available options
@@ -294,10 +299,42 @@ class AI():
                 self.metric
         """
 
+
 ####################################################################### Manager
+import argparse
+
 def main():
+    """Handles command line arguments and runs Penn-AI."""
+    parser = argparse.ArgumentParser(description='PennAI is a recommendation system for data'
+                                    ' science. ', add_help=False)
+    parser.add_argument('-h','--help',action='help',
+                        help="Show this help message and exit.")
+    parser.add_argument('-rec',action='store',dest='REC',default='random',
+                        choices = ['random','average'],#'exhaustive'], 
+                        help='Recommender algorithm options.')
+    parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
+                        help='Path to the database.')
+    parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
+    parser.add_argument('-n_recs',action='store',dest='N_RECS',default=1,help='Number of '
+                        ' recommenations to make at a time. If zero, will send continous '
+                        'recommendations until AI is turned off.')
+    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=False,
+                        help='Print out more messages.')
+    parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
+                        help='Start from last saved session.')
+   
+    args = parser.parse_args()
+
+    # dictionary of default recommenders to choose from at the command line. 
+    name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
+                                                api_key=os.environ['APIKEY']),
+            'average': AverageRecommender(),
+            #'exhaustive': ExhaustiveRecommender()
+            }
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(warm_start=False)
+
+    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START)
 
     n = 0;
     try:
