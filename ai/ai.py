@@ -20,6 +20,7 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
+from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
 class AI():
@@ -295,6 +296,36 @@ class AI():
 
 ####################################################################### Manager
 def main():
+<<<<<<< realnewmake
+=======
+    """Handles command line arguments and runs Penn-AI."""
+    parser = argparse.ArgumentParser(description='PennAI is a recommendation system for data'
+                                    ' science. ', add_help=False)
+    parser.add_argument('-h','--help',action='help',
+                        help="Show this help message and exit.")
+    parser.add_argument('-rec',action='store',dest='REC',default='random',
+                        choices = ['random','average','exhaustive'], 
+                        help='Recommender algorithm options.')
+    parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
+                        help='Path to the database.')
+    parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
+    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
+                        ' recommendations to make at a time. If zero, will send continous '
+                        'recommendations until AI is turned off.')
+    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=False,
+                        help='Print out more messages.')
+    parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
+                        help='Start from last saved session.')
+   
+    args = parser.parse_args()
+
+    # dictionary of default recommenders to choose from at the command line. 
+    name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
+                                                api_key=os.environ['APIKEY']),
+            'average': AverageRecommender(),
+            'exhaustive': ExhaustiveRecommender()
+            }
+>>>>>>> local
     print('=======','Penn AI','=======',sep='\n')
     pennai = AI(warm_start=False)
 
