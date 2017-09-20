@@ -13,14 +13,12 @@ import requests
 import urllib.request, urllib.parse
 import pdb
 import time
-from ai.validate_recommendation import validate_recs
 import ai.db_utils as db_utils
 import os
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
-from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
 class AI():
@@ -48,12 +46,14 @@ class AI():
     """
 
     def __init__(self,rec=None,db_path=os.environ['FGLAB_URL'],
-                 #db_path='http://hoth.pmacs.upenn.edu:5080',
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=False):
+                 verbose=True,warm_start=False, n_recs=1):
         """initializes AI managing agent."""
+        # recommender settings
         self.rec = rec
+        self.n_recs=n_recs if n_recs>0 else 1
+        self.continous= n_recs<1
         # access to database
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
@@ -127,8 +127,11 @@ class AI():
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
         
-        payload = {'ai':['requested','fake']}
-        #payload = {'ai':'requested'}
+        if self.continous:
+            payload = {'ai':['requested','finished']}
+        else:
+            payload = {'ai':['requested','dummy']}
+
         payload.update(self.static_payload)
         r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
         responses = json.loads(r.text)
@@ -223,14 +226,13 @@ class AI():
         for r in self.request_queue:
             dataset = r['name']
             # get recommendation for dataset
-            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'])
-            # ml,p = validate_recs(ml,p)
+            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
+            
             for alg,params,score in zip(ml,p,ai_scores):
-                # validate recommendations against available options
-                alg,params = validate_recs(self,alg,params)
+                # turn params into a dictionary
                 modified_params = eval(params)
                 #print(modified_params.max_features)
-                rec = {'dataset_id':r['_id'],
+                rec_payload = {'dataset_id':r['_id'],
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
                         # 'ml_name':alg,
@@ -238,20 +240,18 @@ class AI():
                         'ai_score':score,
                         }
                 if self.verbose:
-                    #print(rec)
+                    #print(rec_payload)
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                # # add recommended parameters
-                # for p in params.sep(','):
-                #     rec[-1]['parameters'][p.split(':')[0]] = p.split(':')[1]
-                rec.update(self.static_payload)
+                # add static payload
+                rec_payload.update(self.static_payload)
                 # submit path is ml_id/experiment
                 rec_path = '/'.join([self.projects_path,
-                                        rec['algorithm_id'],
+                                        rec_payload['algorithm_id'],
                                         'experiment'])
                 # post recommendations
                 #print(rec_path)
-                v=requests.post(rec_path,data=json.dumps(rec),headers=self.header)
+                v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
                 #print(v)
 
                 #submit update to dataset to indicate ai:True
@@ -294,17 +294,18 @@ class AI():
                 self.metric
         """
 
+
 ####################################################################### Manager
+import argparse
+
 def main():
-<<<<<<< realnewmake
-=======
     """Handles command line arguments and runs Penn-AI."""
     parser = argparse.ArgumentParser(description='PennAI is a recommendation system for data'
                                     ' science. ', add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive'], 
+                        choices = ['random','average'],#'exhaustive'], 
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
                         help='Path to the database.')
@@ -323,11 +324,12 @@ def main():
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
                                                 api_key=os.environ['APIKEY']),
             'average': AverageRecommender(),
-            'exhaustive': ExhaustiveRecommender()
+            #'exhaustive': ExhaustiveRecommender()
             }
->>>>>>> local
     print('=======','Penn AI','=======',sep='\n')
-    pennai = AI(warm_start=False)
+
+    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START)
 
     n = 0;
     try:
