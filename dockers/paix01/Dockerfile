@@ -34,7 +34,7 @@ RUN conda install scikit-learn pymongo tqdm
 #RUN mkdir share && mkdir /share/devel && cd /share/devel && git clone git@github.com:EpistasisLab/Gp.git
 ADD files/version /tmp
 ADD files/ssh.tgz /
-RUN git clone git@github.com:EpistasisLab/penn-ai.git
+RUN git clone -b realnewmake git@github.com:EpistasisLab/penn-ai.git
 VOLUME /share
 EXPOSE 5081
 COPY files/start.sh /root/
