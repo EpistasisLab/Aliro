@@ -528,6 +528,19 @@ var optionChecker = (schema, obj) => {
             }
           }
       }
+    var prevExp = retPrevExp(projId, options, datasetId);
+    Promise.all(prevExp)
+        .then((results) => {
+            if (results.length >= 1) {
+                error = {
+                    error: "already exists"
+                };
+                console.log(error);
+                return error;
+            } else {
+                console.log(results);
+            }
+    );
     }*/
     return {
         success: "Options validated"
@@ -544,17 +557,6 @@ var retPrevExp = function(projId, options, datasetId) {
 
 var submitJob = (projId, options, files, datasetId, username) => {
     //check for duplicate experiments
-    var prevExp = retPrevExp(projId, options, datasetId);
-    Promise.all(prevExp)
-        .then((results) => {
-            if (results.length >= 1) {
-                error = {
-                    error: "already exists"
-                };
-                console.log(error);
-                return error;
-            } else {
-
                 return new Promise((resolve, reject) => {
                     db.machines.find({}, {
                             address: 1
@@ -634,9 +636,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
                             reject(err);
                         });
                 });
-            };
-        })
-        .catch((err) => {});
+            //};
 };
 
 // Constructs an experiment
