@@ -19,6 +19,7 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
+from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
 class AI():
@@ -219,6 +220,26 @@ class AI():
         # print('dataframe:\n',self.new_data.head())
         # print('ai:',ai)
 
+    def transfer_rec(self,rec_payload):
+            n=0
+            rec_path = '/'.join([self.projects_path,
+                        rec_payload['algorithm_id'],
+                                      'experiment'])
+            v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
+            submitresponses = json.loads(v.text)
+            #parse json response into named array
+            submitstatus={}
+            if len(submitresponses) > 0:
+                for submiti in submitresponses:
+                    submitstatus[submiti] = submitresponses[submiti]
+            #look for errors and resubmit
+            if('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
+                print('slow it down pal')
+                sleep(1);
+                self.transfer_rec(rec_payload)
+                n=n+1
+            if(n>0):
+                print('looped ' + str(n) + 'times')
 
     def send_rec(self):
         """Sends recommendation to the API."""
@@ -240,19 +261,12 @@ class AI():
                         'ai_score':score,
                         }
                 if self.verbose:
-                    #print(rec_payload)
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
                 # add static payload
                 rec_payload.update(self.static_payload)
-                # submit path is ml_id/experiment
-                rec_path = '/'.join([self.projects_path,
-                                        rec_payload['algorithm_id'],
-                                        'experiment'])
-                # post recommendations
-                #print(rec_path)
-                v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
-                #print(v)
+                # do http transfer
+                transfer_status = self.transfer_rec(rec_payload)
 
                 #submit update to dataset to indicate ai:True
             payload= {'ai':'finished'}
@@ -305,7 +319,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average'],#'exhaustive'], 
+                        choices = ['random','average','exhaustive'], 
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
                         help='Path to the database.')
@@ -324,7 +338,7 @@ def main():
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
                                                 api_key=os.environ['APIKEY']),
             'average': AverageRecommender(),
-            #'exhaustive': ExhaustiveRecommender()
+            'exhaustive': ExhaustiveRecommender()
             }
     print('=======','Penn AI','=======',sep='\n')
 

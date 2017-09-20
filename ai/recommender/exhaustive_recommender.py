@@ -67,15 +67,6 @@ class ExhaustiveRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         """
-        #self.ml = results_data['algorithm'].unique()
-        #for ml in self.ml:
-        #    self.ml_p_dict[ml] = results_data.loc[results_data['algorithm']==ml,'parameters'].unique()
-
-        # make combined data columns of datasets, classifiers, and parameters
-
-        #results_data.loc[:, 'algorithm-parameters'] = (
-        #                               results_data['algorithm'].values + '|' +
-        #                               results_data['parameters'].values)
 
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
@@ -103,28 +94,24 @@ class ExhaustiveRecommender(BaseRecommender):
         #print(self.ml_p)
         try:
             ml_rec,p_rec,rec_score=[],[],[]
-
-            for i in np.arange(n_recs):
-                n=0
-                rec_not_new = True
-                while (rec_not_new and n<1000):
-                    #print(self.ml_p)
-                    ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
-                    p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
-                                                          'parameters'])
+            rec_not_new = False 
+            n=0
+            ml_all = sorted(self.ml_p['algorithm'].unique())
+            print(n)
+            for ml_tmp in ml_all:
+                for p_tmp in (self.ml_p.loc[self.ml_p['algorithm']==ml_tmp])['parameters']:
                     if dataset_id is not None:
                         rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
-                                       self.trained_dataset_models)
+                                                     self.trained_dataset_models)
+                        # if a dataset is specified, do not make recommendations for
+                    # algorithm-parameter combos that have already been run
+                    if rec_not_new or (n>=n_recs):
+                        break
                     else:
-                        rec_not_new = False
-                if n==99:
-                    print('warning: tried 1000 times (and failed) to find a novel recommendation')
-                
-                ml_rec.append(ml_tmp)
-                p_rec.append(p_tmp)
-                rec_score.append(0) 
-            # if a dataset is specified, do not make recommendations for
-            # algorithm-parameter combos that have already been run
+                        ml_rec.append(ml_tmp)
+                        p_rec.append(p_tmp)
+                        rec_score.append(0) 
+                        n=n+1
             
             #if dataset_id is not None:
             #    rec = [r for r in rec if dataset_id + '|' + r not in
