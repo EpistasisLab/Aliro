@@ -41,7 +41,6 @@ exports.responder = function(req, res) {
 //return a list of datasets for each user
 var responder = function(req, res) {
     var params = retParams(req);
-console.log(params);
     var query = {};
     if (params['filter_on_user']) {
         query['username'] = params['username'];
@@ -50,6 +49,12 @@ console.log(params);
         query['_scores'] = {
             $exists: 1
         }
+    }
+    if (params['_project_id']) {
+        query['_project_id'] = db.ObjectID(params['_project_id']);
+    }
+    if (params['_dataset_id']) {
+        query['_dataset_id'] = db.ObjectID(params['_dataset_id']);
     }
     if (params['id']) {
         query['_id'] = db.ObjectID(params['id']);
@@ -74,7 +79,13 @@ console.log(params);
     res.set('Content-Type', 'application/json');
     res.write('[');
     var prevChunk = null;
-    db.collection(params['collection']).find(query)
+    if(params.limit !==undefined  && params.limit > 0) {
+   limit = params.limit;
+    } else {
+   limit = 0;
+    }
+
+    db.collection(params['collection']).find(query).limit(limit)
         .on('data', function onData(data) {
             if (prevChunk) {
                 res.write(JSON.stringify(prevChunk) + ',');
@@ -102,7 +113,7 @@ var retParams = function(req) {
     var date_start = false;
     var filter_on_user = true;
     var _id = false;
-    var limit = 100;
+    var limit = 0;
     params['match'] = {}
     //
     if (req.body !== undefined) {
@@ -121,6 +132,21 @@ var retParams = function(req) {
             }
         }
     }
+    if (req.query !== undefined) {
+        for (param in req.query) {
+            var val = req.query[param];
+            if(param == 'limit') {
+               limit = parseInt(val);
+            } 
+            if(param == 'project_id') {
+            params['_' + param] =val;
+            }
+            if(param == 'dataset_id') {
+            params['_' + param] =val;
+            }
+        }
+    }
+ 
     if (req.params.user['roles'] !== undefined && req.params.user['roles'].indexOf('ai') >= 0) {
         is_ai = true;
     }
@@ -140,6 +166,9 @@ var retParams = function(req) {
     }
     if (req.params.id) {
         _id = req.params.id;
+    }
+    if (req.params.project_id) {
+        params['project_id'] = req.params.project_id;
     }
     if (is_global && !is_ai) {
         filter_on_user = false;
