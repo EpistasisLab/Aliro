@@ -15,7 +15,6 @@ exports.returnUserData = function(req) {
     var username = 'testuser'; 
     query = {username:username}
   }
-console.log(query);
   if(Object.keys(query).length === 0) {
     return(false);
   } else {
