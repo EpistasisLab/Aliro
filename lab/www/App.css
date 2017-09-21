@@ -60,7 +60,8 @@ body {
 }
 
 .pennai .dataset-card .ai-label {
-    margin-right: 1rem;
+    font-size: 1.1em;
+    margin-right: 0.7rem;
     vertical-align: middle;
 }
 
