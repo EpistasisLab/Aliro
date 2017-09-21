@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { Checkbox, Dropdown, Icon } from 'semantic-ui-react';
+import { Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
 
 function DatasetActions({ dataset, toggleAI }) {
   const onToggleAI = () => {
@@ -15,7 +15,7 @@ function DatasetActions({ dataset, toggleAI }) {
 
   const aiState = dataset.get('ai');
 
-  const aiLabelText = `AI ${aiState}`;
+  const aiLabelText = 'AI';
 
   const aiLabelClass = `ai-label ${aiState}`;
 
@@ -24,6 +24,8 @@ function DatasetActions({ dataset, toggleAI }) {
   const aiIsChecked = aiState === 'off' ? false : true;
 
   const aiIsToggling = dataset.get('isTogglingAI');
+
+  const aiPopupContent = `AI ${aiState}`;
 
   const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />;
 
@@ -34,12 +36,19 @@ function DatasetActions({ dataset, toggleAI }) {
           <span className={aiLabelClass}>
             {aiLabelText}
           </span>
-          <Checkbox
-            toggle 
-            checked={aiIsChecked}
-            className={aiToggleClass}
-            onChange={onToggleAI}
-            disabled={aiIsToggling}
+          <Popup
+            content={aiPopupContent}
+            size="small"
+            hideOnScroll
+            trigger={
+              <Checkbox
+                toggle 
+                checked={aiIsChecked}
+                className={aiToggleClass}
+                onChange={onToggleAI}
+                disabled={aiIsToggling}
+              />
+            } 
           />
         </span> 
       }
