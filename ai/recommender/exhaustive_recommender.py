@@ -42,6 +42,7 @@ class ExhaustiveRecommender(BaseRecommender):
         self.api_key = api_key
         #self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
         self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
+        self.exhaustive_ml = {}
         #self.ml_p = all_ml_p['algorithm'].values + '|' + all_ml_p['parameters'].values 
         
         # number of datasets trained on so far
@@ -52,6 +53,17 @@ class ExhaustiveRecommender(BaseRecommender):
 
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
+        ml_rec,p_rec=[],[]
+        self.exhaustive = {}
+        self.exhaustive_n = 0;
+        #the index of the last recommended exhaustive experiment
+        self.last_n = 0;
+        for ml_tmp in  sorted(self.ml_p['algorithm'].unique()):
+            for p_tmp in (self.ml_p.loc[self.ml_p['algorithm']==ml_tmp])['parameters']:
+                self.exhaustive[self.exhaustive_n] = {}
+                self.exhaustive[self.exhaustive_n][0] = ml_tmp
+                self.exhaustive[self.exhaustive_n][1] = p_tmp
+                self.exhaustive_n = self.exhaustive_n + 1
         self.trained_dataset_models = set()
 
     def update(self, results_data):
@@ -96,22 +108,26 @@ class ExhaustiveRecommender(BaseRecommender):
             ml_rec,p_rec,rec_score=[],[],[]
             rec_not_new = False 
             n=0
-            ml_all = sorted(self.ml_p['algorithm'].unique())
-            print(n)
-            for ml_tmp in ml_all:
-                for p_tmp in (self.ml_p.loc[self.ml_p['algorithm']==ml_tmp])['parameters']:
+            print("recommending " + str(self.last_n) + " to " + str(self.last_n + n_recs - 1))
+            while (n < n_recs):
+                    next_n = self.last_n + n
+                    exhaustive_rec = self.exhaustive[next_n]
+                    ml_tmp = exhaustive_rec[0]
+                    p_tmp = exhaustive_rec[1]
                     if dataset_id is not None:
                         rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
                                                      self.trained_dataset_models)
-                        # if a dataset is specified, do not make recommendations for
+                    # if a dataset is specified, do not make recommendations for
                     # algorithm-parameter combos that have already been run
-                    if rec_not_new or (n>=n_recs):
-                        break
+                    if rec_not_new:
+                        print(p_tmp)
+                        print(str(next_n) + ' not new')
                     else:
                         ml_rec.append(ml_tmp)
                         p_rec.append(p_tmp)
                         rec_score.append(0) 
-                        n=n+1
+                    n=n+1
+            self.last_n = self.last_n + n_recs
             
             #if dataset_id is not None:
             #    rec = [r for r in rec if dataset_id + '|' + r not in
