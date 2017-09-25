@@ -338,7 +338,7 @@ def main():
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
                                                 api_key=os.environ['APIKEY']),
             'average': AverageRecommender(),
-            'exhaustive': ExhaustiveRecommender()
+            'exhaustive': ExhaustiveRecommender(db_path=args.DB_PATH,api_key=os.environ['APIKEY'])
             }
     print('=======','Penn AI','=======',sep='\n')
 
