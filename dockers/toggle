@@ -10,6 +10,9 @@ elif [ "$1" == "resume" ] ; then
    echo "stop containers" 
 elif [ "$1" == "stop" ] ; then
    echo "stop containers" 
+elif [ "$1" == "push" ] ; then
+   echo "push images to registry" 
+   cmd='push';
 else
    echo "running standalone environment"
    cmd='create'
@@ -63,10 +66,19 @@ docker_stop()
     docker stop $host
   done
 }
+# push the containers
+docker_push()
+{
+  for host in $hosts; do
+    cd $basedir/$host && make && make tag && make push
+  done
+}
 
 if [ "$1" == "resume" ]; then
   echo "docker_resume";
   docker_resume;
+elif [ "$1" == "push" ]; then
+  docker_push;
 elif [ "$1" == "stop" ]; then
   echo "docker_stop";
   docker_stop;
