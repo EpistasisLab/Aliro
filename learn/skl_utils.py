@@ -6,6 +6,45 @@ import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
+def balanced_accuracy(y_true, y_pred):
+    """Default scoring function: balanced accuracy.
+    Balanced accuracy computes each class' accuracy on a per-class basis using a
+    one-vs-rest encoding, then computes an unweighted average of the class accuracies.
+    Parameters
+    ----------
+    y_true: numpy.ndarray {n_samples}
+        True class labels
+    y_pred: numpy.ndarray {n_samples}
+        Predicted class labels by the estimator
+    Returns
+    -------
+    fitness: float
+        Returns a float value indicating the individual's balanced accuracy
+        0.5 is as good as chance, and 1.0 is perfect predictive accuracy
+    """
+    all_classes = list(set(np.append(y_true, y_pred)))
+    all_class_accuracies = []
+    for this_class in all_classes:
+        this_class_sensitivity = 0.
+        this_class_specificity = 0.
+        if sum(y_true == this_class) != 0:
+            this_class_sensitivity = \
+                float(sum((y_pred == this_class) & (y_true == this_class))) /\
+                float(sum((y_true == this_class)))
+
+            this_class_specificity = \
+                float(sum((y_pred != this_class) & (y_true != this_class))) /\
+                float(sum((y_true != this_class)))
+
+        this_class_accuracy = (this_class_sensitivity + this_class_specificity) / 2.
+        all_class_accuracies.append(this_class_accuracy)
+
+    return np.mean(all_class_accuracies)
+
+# make new SCORERS
+SCORERS = metrics.SCORERS
+SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
+
 def generate_results_regressor(model, input_file, tmpdir, _id):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 
@@ -41,7 +80,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
 	# save metrics
 	save_metrics(tmpdir, _id, {
-		'train_score': train_score, 
+		'train_score': train_score,
 		'test_score': test_score,
 		'r2_score': r2_score,
 		'mean_squared_error': mean_squared_error
@@ -59,7 +98,7 @@ def generate_results(model, input_file, tmpdir, _id):
 	random_state = 42	# default = None
 	target_name = 'class'	# for testing, using 'class'
 
-	print(input_data) 
+	print(input_data)
 	if target_name not in input_data.dtype.names:
 		raise ValueError('The provided data file does not seem to have a target column.')
 
@@ -85,9 +124,9 @@ def generate_results(model, input_file, tmpdir, _id):
 		average = 'binary'
 
 	# get metrics and plots
-	train_score = model.score(training_features, training_classes)
-	test_score =  model.score(testing_features, testing_classes)
-	accuracy_score = metrics.accuracy_score(testing_classes, predicted_classes)
+	train_score = SCORERS['balanced_accuracy'](model, training_features, training_classes)
+	test_score =  SCORERS['balanced_accuracy'](model, testing_features, testing_classes)
+	accuracy_score = balanced_accuracy(testing_classes, predicted_classes)
 	precision_score = metrics.precision_score(testing_classes, predicted_classes, average=average)
 	recall_score = metrics.recall_score(testing_classes, predicted_classes, average=average)
 	f1_score = metrics.f1_score(testing_classes, predicted_classes, average=average)
@@ -168,5 +207,5 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	plt.ylabel('True Positive Rate')
 	plt.title('ROC Curve')
 	plt.legend(loc="lower right")
-	
+
 	plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
