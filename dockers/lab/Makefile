@@ -1,7 +1,6 @@
 include ../Makevars
 HOST=${LAB_HOST}
 DOCKER_REPO=${NETWORK}/${HOST}
-AWS_REPO=035856437156.dkr.ecr.us-east-2.amazonaws.com/${HOST}
 TAG=latest
 DOCKER_ARGS=-i -t -p ${IP}:${LAB_PORT}:${LAB_PORT} -e FGLAB_PORT=${LAB_PORT} -e MONGODB_URI=${MONGO_URI} -e IFROOT=${PROJECTS_ROOT} -e REDIS_HOST=${REDIS_HOST} -e REDIS_PORT=${REDIS_PORT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
 
