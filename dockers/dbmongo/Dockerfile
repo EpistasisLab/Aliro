@@ -1,8 +1,6 @@
 #working off of an ubuntu wily rootfs
-FROM scratch
-ADD files/rootfs.tgz /
+FROM pennai/base:latest
 #ssh key is set to the deploy key for this app in gitlab
-ADD files/ssh.tgz /
 #add repo for mongodb
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
@@ -11,8 +9,6 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org
 ADD files/version /tmp
 #add Gp sourcecode || not needed if mounting /share
 VOLUME /share
-#ADD files/mongodump.min.tgz /
-#ADD files/mongodump.min.tgz /
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/
 COPY files/projects.json /root/

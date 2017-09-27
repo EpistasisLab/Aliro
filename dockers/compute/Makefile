@@ -9,20 +9,16 @@ build:
 
 
 run:
-	docker run --rm ${DOCKER_ARGS}\
-		${NETWORK}/${HOST}
+	echo "run? not gonna do it!"
 
 shared:
-	docker run -v ${SHARE_PATH}:/share/devel --rm ${DOCKER_ARGS}\
-		${NETWORK}/${HOST}
+	echo "shared? not gonna do it!"
 
 create:
-	docker create ${DOCKER_ARGS}\
-		${NETWORK}/${HOST}
+	echo "create something for you? not gonna do it!"
 
 createshared:
-	docker create -i -v ${SHARE_PATH}:/share/devel  ${DOCKER_ARGS}\
-		${NETWORK}/${HOST}
+	echo "create something shared for you? not gonna do it!"
 
 push:
 	docker push ${REGISTRY}/${HOST}:${TAG}
