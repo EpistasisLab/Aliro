@@ -3,7 +3,6 @@ FROM pennai/base:latest
 WORKDIR /opt/
 #ADD files/intel_opencl.tgz /
 #ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
-#ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN apt-get update && apt-get install -y --allow-unauthenticated \
     mercurial subversion \
@@ -11,6 +10,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
     --no-install-recommends
 #
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     wget --quiet https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh -O ~/anaconda.sh && \
     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
