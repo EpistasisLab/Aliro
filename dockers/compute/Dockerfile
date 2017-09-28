@@ -17,11 +17,11 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     rm ~/anaconda.sh
 #
 ENV PATH /opt/conda/bin:$PATH
-RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \
-    tar -xvf ~/node.tar.xz -C /opt/ && \
-    rm ~/node.tar.xz
+#RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+#    tar -xvf ~/node.tar.xz -C /opt/ && \
+#    rm ~/node.tar.xz
 #
-ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
+#ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
 RUN pip install scikit-mdr
 RUN pip install deap
 RUN pip install requests_toolbelt
