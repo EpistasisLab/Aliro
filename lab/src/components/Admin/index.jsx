@@ -7,8 +7,9 @@ import {
   getIsFetching, 
   getErrorMessage
 } from './data';
-import SceneHeader from '../SceneHeader';
 import Admin from './Admin';
+import AddNewAlgorithm from './components/AddNewAlgorithm';
+import { Header } from 'semantic-ui-react';
 
 class AdminContainer extends Component {
   componentDidMount() {
@@ -17,8 +18,11 @@ class AdminContainer extends Component {
 
   render() {
     return (
-      <div>
-        <SceneHeader header="Admin" btnText="Add new algorithm" btnIcon="plus" />
+      <div className="admin-scene">
+        <div className="scene-header">
+          <Header inverted size="huge" content="Admin" />
+          <AddNewAlgorithm />
+        </div>
         <Admin {...this.props} />
       </div>
     );
