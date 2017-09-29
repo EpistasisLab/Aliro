@@ -29,20 +29,21 @@ function Admin({
   }
       
   return (
-    <Segment inverted>
+    <Segment inverted className="table-container">
       <Table 
         inverted
         basic
         celled
         compact
         unstackable
+        selectable
       >
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>{'Algorithm'}</Table.HeaderCell>
             <Table.HeaderCell>{'Category'}</Table.HeaderCell>
-            <Table.HeaderCell>{'Add to Machines'}</Table.HeaderCell>
-            <Table.HeaderCell>{'Actions'}</Table.HeaderCell>
+            <Table.HeaderCell>{'Update Metadata'}</Table.HeaderCell>
+            <Table.HeaderCell>{'Delete'}</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
