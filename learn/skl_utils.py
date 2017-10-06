@@ -134,6 +134,12 @@ def generate_results(model, input_file, tmpdir, _id):
 	recall_score = metrics.recall_score(testing_classes, predicted_classes, average=average)
 	f1_score = metrics.f1_score(testing_classes, predicted_classes, average=average)
 	cnf_matrix = metrics.confusion_matrix(testing_classes, predicted_classes, labels=class_names)
+    cnf_matrix_dict = {
+                    'cnf_matrix': cnf_matrix.tolist(),
+                    'class_names': class_names.tolist()
+                    }
+    save_json_fmt(outdir=tmpdir, _id=_id, fname="cnf_matrix.json", content=cnf_matrix_dict)
+    # remove this function if it is not useful any more
 	plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
 	roc_auc_score = 'not supported for multiclass'
@@ -146,8 +152,16 @@ def generate_results(model, input_file, tmpdir, _id):
 
 		roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
 		roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
-		plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 
+        fpr, tpr, _ = roc_curve
+        roc_curve_dict = {
+                        'fpr': fpr.tolist(),
+                        'tpr': tpr.tolist(),
+                        'roc_auc_score': roc_auc_score
+                        }
+        save_json_fmt(outdir=tmpdir, _id=_id, fname="roc_curve.json", content=roc_curve_dict)
+        # remove this function if it is not useful any more
+        plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 	# save metrics
     metrics_dict = {'_scores':{
                     		'train_score': train_score,
@@ -187,7 +201,7 @@ def save_json_fmt(outdir, _id, fname, content):
 	with open(os.path.join(expdir, fname), 'w') as outfile:
 		json.dump(content, outfile)
 
-
+# remove this function if it is not useful any more
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	cm = cnf_matrix
 	classes = class_names
@@ -211,6 +225,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	plt.xlabel('Predicted label')
 	plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
 
+# remove this function if it is not useful any more
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	fpr, tpr, _ = roc_curve
 
