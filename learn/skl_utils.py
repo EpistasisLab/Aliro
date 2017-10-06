@@ -79,12 +79,14 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 	# scatter plot of predicted vs true target values
 
 	# save metrics
-	save_metrics(tmpdir, _id, {
-		'train_score': train_score,
-		'test_score': test_score,
-		'r2_score': r2_score,
-		'mean_squared_error': mean_squared_error
-	})
+    metrics_dict = {'_scores':{
+                    		'train_score': train_score,
+                    		'test_score': test_score,
+                    		'r2_score': r2_score,
+                    		'mean_squared_error': mean_squared_error
+                    	       }
+                    }
+    save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
 	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
@@ -147,15 +149,17 @@ def generate_results(model, input_file, tmpdir, _id):
 		plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 
 	# save metrics
-	save_metrics(tmpdir, _id, {
-		'train_score': train_score,
-		'test_score': test_score,
-		'accuracy_score': accuracy_score,
-		'precision_score': precision_score,
-		'recall_score': recall_score,
-		'f1_score': f1_score,
-		'roc_auc_score': roc_auc_score
-	})
+    metrics_dict = {'_scores':{
+                    		'train_score': train_score,
+                    		'test_score': test_score,
+                    		'accuracy_score': accuracy_score,
+                    		'precision_score': precision_score,
+                    		'recall_score': recall_score,
+                    		'f1_score': f1_score,
+                    		'roc_auc_score': roc_auc_score
+                    	       }
+                    }
+    save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
 	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
@@ -182,11 +186,6 @@ def save_json_fmt(outdir, _id, fname, content):
 	expdir = tmpdir + _id + '/'
 	with open(os.path.join(expdir, fname), 'w') as outfile:
 		json.dump(content, outfile)
-
-def save_metrics(tmpdir, _id, output):
-	expdir = tmpdir + _id + '/'
-	with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
-		json.dump({ '_scores': output }, outfile)
 
 
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
