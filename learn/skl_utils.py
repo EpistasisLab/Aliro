@@ -7,39 +7,39 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 def balanced_accuracy(y_true, y_pred):
-    """Default scoring function: balanced accuracy.
-    Balanced accuracy computes each class' accuracy on a per-class basis using a
-    one-vs-rest encoding, then computes an unweighted average of the class accuracies.
-    Parameters
-    ----------
-    y_true: numpy.ndarray {n_samples}
-        True class labels
-    y_pred: numpy.ndarray {n_samples}
-        Predicted class labels by the estimator
-    Returns
-    -------
-    fitness: float
-        Returns a float value indicating the individual's balanced accuracy
-        0.5 is as good as chance, and 1.0 is perfect predictive accuracy
-    """
-    all_classes = list(set(np.append(y_true, y_pred)))
-    all_class_accuracies = []
-    for this_class in all_classes:
-        this_class_sensitivity = 0.
-        this_class_specificity = 0.
-        if sum(y_true == this_class) != 0:
-            this_class_sensitivity = \
-                float(sum((y_pred == this_class) & (y_true == this_class))) /\
-                float(sum((y_true == this_class)))
+	"""Default scoring function: balanced accuracy.
+	Balanced accuracy computes each class' accuracy on a per-class basis using a
+	one-vs-rest encoding, then computes an unweighted average of the class accuracies.
+	Parameters
+	----------
+	y_true: numpy.ndarray {n_samples}
+		True class labels
+	y_pred: numpy.ndarray {n_samples}
+		Predicted class labels by the estimator
+	Returns
+	-------
+	fitness: float
+		Returns a float value indicating the individual's balanced accuracy
+		0.5 is as good as chance, and 1.0 is perfect predictive accuracy
+	"""
+	all_classes = list(set(np.append(y_true, y_pred)))
+	all_class_accuracies = []
+	for this_class in all_classes:
+		this_class_sensitivity = 0.
+		this_class_specificity = 0.
+		if sum(y_true == this_class) != 0:
+			this_class_sensitivity = \
+				float(sum((y_pred == this_class) & (y_true == this_class))) /\
+				float(sum((y_true == this_class)))
 
-            this_class_specificity = \
-                float(sum((y_pred != this_class) & (y_true != this_class))) /\
-                float(sum((y_true != this_class)))
+			this_class_specificity = \
+				float(sum((y_pred != this_class) & (y_true != this_class))) /\
+				float(sum((y_true != this_class)))
 
-        this_class_accuracy = (this_class_sensitivity + this_class_specificity) / 2.
-        all_class_accuracies.append(this_class_accuracy)
+		this_class_accuracy = (this_class_sensitivity + this_class_specificity) / 2.
+		all_class_accuracies.append(this_class_accuracy)
 
-    return np.mean(all_class_accuracies)
+	return np.mean(all_class_accuracies)
 
 # make new SCORERS
 SCORERS = metrics.SCORERS
@@ -49,8 +49,8 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 
 	# hard coded values for now (to be added as cmd line args later)
-	train_size = 0.75 		# default = 0.75
-	random_state = None 	# default = None
+	train_size = 0.75		# default = 0.75
+	random_state = None		# default = None
 	target_name = 'class'	# for testing, using 'class'
 
 	if target_name not in input_data.dtype.names:
@@ -79,25 +79,25 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 	# scatter plot of predicted vs true target values
 
 	# save metrics
-    metrics_dict = {'_scores':{
-                    		'train_score': train_score,
-                    		'test_score': test_score,
-                    		'r2_score': r2_score,
-                    		'mean_squared_error': mean_squared_error
-                    	       }
-                    }
-    save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
+	metrics_dict = {'_scores':{
+							'train_score': train_score,
+							'test_score': test_score,
+							'r2_score': r2_score,
+							'mean_squared_error': mean_squared_error
+							   }
+					}
+	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
 	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
-    save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
+	save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
 
 
 def generate_results(model, input_file, tmpdir, _id):
 	print('loading..')
 	input_data = np.recfromcsv(input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
 	# hard coded values for now (to be added as cmd line args later)
-	train_size = 0.75 		# default = 0.75
+	train_size = 0.75		# default = 0.75
 	random_state = 42	# default = None
 	target_name = 'class'	# for testing, using 'class'
 
@@ -134,12 +134,12 @@ def generate_results(model, input_file, tmpdir, _id):
 	recall_score = metrics.recall_score(testing_classes, predicted_classes, average=average)
 	f1_score = metrics.f1_score(testing_classes, predicted_classes, average=average)
 	cnf_matrix = metrics.confusion_matrix(testing_classes, predicted_classes, labels=class_names)
-    cnf_matrix_dict = {
-                    'cnf_matrix': cnf_matrix.tolist(),
-                    'class_names': class_names.tolist()
-                    }
-    save_json_fmt(outdir=tmpdir, _id=_id, fname="cnf_matrix.json", content=cnf_matrix_dict)
-    # remove this function if it is not useful any more
+	cnf_matrix_dict = {
+					'cnf_matrix': cnf_matrix.tolist(),
+					'class_names': class_names.tolist()
+					}
+	save_json_fmt(outdir=tmpdir, _id=_id, fname="cnf_matrix.json", content=cnf_matrix_dict)
+	# remove this function if it is not useful any more
 	plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
 	roc_auc_score = 'not supported for multiclass'
@@ -153,50 +153,50 @@ def generate_results(model, input_file, tmpdir, _id):
 		roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
 		roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
 
-        fpr, tpr, _ = roc_curve
-        roc_curve_dict = {
-                        'fpr': fpr.tolist(),
-                        'tpr': tpr.tolist(),
-                        'roc_auc_score': roc_auc_score
-                        }
-        save_json_fmt(outdir=tmpdir, _id=_id, fname="roc_curve.json", content=roc_curve_dict)
-        # After switching to dynamic charts, possibly disable outputting graphs from this function
-        plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
+		fpr, tpr, _ = roc_curve
+		roc_curve_dict = {
+						'fpr': fpr.tolist(),
+						'tpr': tpr.tolist(),
+						'roc_auc_score': roc_auc_score
+						}
+		save_json_fmt(outdir=tmpdir, _id=_id, fname="roc_curve.json", content=roc_curve_dict)
+		# After switching to dynamic charts, possibly disable outputting graphs from this function
+		plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 	# save metrics
-    metrics_dict = {'_scores':{
-                    		'train_score': train_score,
-                    		'test_score': test_score,
-                    		'accuracy_score': accuracy_score,
-                    		'precision_score': precision_score,
-                    		'recall_score': recall_score,
-                    		'f1_score': f1_score,
-                    		'roc_auc_score': roc_auc_score
-                    	       }
-                    }
-    save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
+	metrics_dict = {'_scores':{
+							'train_score': train_score,
+							'test_score': test_score,
+							'accuracy_score': accuracy_score,
+							'precision_score': precision_score,
+							'recall_score': recall_score,
+							'f1_score': f1_score,
+							'roc_auc_score': roc_auc_score
+							   }
+					}
+	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
 	# After switching to dynamic charts, possibly disable outputting graphs from this function
 	predicted_classes_list = predicted_classes.tolist()
-    save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
+	save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
 
 
 def save_json_fmt(outdir, _id, fname, content):
-    """
-    Save results into json format.
-    Parameters
-    ----------
-    outdir: string
-        path of output directory
-    _id: string
-        Job ID in FGlab
-    fname: string
-        file name
-    content: list or directory
-        content for results
-    Returns
-    -------
-    None
-    """
+	"""
+	Save results into json format.
+	Parameters
+	----------
+	outdir: string
+		path of output directory
+	_id: string
+		Job ID in FGlab
+	fname: string
+		file name
+	content: list or directory
+		content for results
+	Returns
+	-------
+	None
+	"""
 	expdir = tmpdir + _id + '/'
 	with open(os.path.join(expdir, fname), 'w') as outfile:
 		json.dump(content, outfile)
@@ -232,7 +232,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	plt.figure()
 	lw = 2
 	plt.plot(fpr, tpr, color='darkorange',
-	         lw=lw, label='ROC curve (area = %0.2f)' % roc_auc_score)
+			 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc_score)
 	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
 	plt.xlim([0.0, 1.0])
 	plt.ylim([0.0, 1.05])
