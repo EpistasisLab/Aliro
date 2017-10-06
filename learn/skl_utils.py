@@ -4,7 +4,7 @@ import os
 import json
 import itertools
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def balanced_accuracy(y_true, y_pred):
 	"""Default scoring function: balanced accuracy.
@@ -70,6 +70,9 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 	# get predicted classes
 	predicted_classes = model.predict(testing_features)
 
+	# computing cross-validated metrics
+	cv_scores = cross_val_score(model, training_features, training_classes, cv=5)
+
 	# get metrics and plots
 	train_score = model.score(training_features, training_classes)
 	test_score =  model.score(testing_features, testing_classes)
@@ -83,7 +86,10 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 							'train_score': train_score,
 							'test_score': test_score,
 							'r2_score': r2_score,
-							'mean_squared_error': mean_squared_error
+							'mean_squared_error': mean_squared_error,
+							'cv_scores_mean': cv_scores.mean(),
+							'cv_scores_std': cv_scores.std(),
+							'cv_scores': cv_scores
 							   }
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
@@ -118,6 +124,9 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	# get predicted classes
 	predicted_classes = model.predict(testing_features)
+
+	# computing cross-validated metrics
+	cv_scores = cross_val_score(model, training_features, training_classes, cv=5)
 
 	# determine if target is binary or multiclass
 	class_names = model.classes_
@@ -170,7 +179,10 @@ def generate_results(model, input_file, tmpdir, _id):
 							'precision_score': precision_score,
 							'recall_score': recall_score,
 							'f1_score': f1_score,
-							'roc_auc_score': roc_auc_score
+							'roc_auc_score': roc_auc_score,
+							'cv_scores_mean': cv_scores.mean(),
+							'cv_scores_std': cv_scores.std(),
+							'cv_scores': cv_scores
 							   }
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
