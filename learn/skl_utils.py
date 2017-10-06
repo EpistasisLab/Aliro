@@ -90,7 +90,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 							'cv_scores_mean': cv_scores.mean(),
 							'cv_scores_std': cv_scores.std(),
 							'cv_scores': cv_scores
-							   }
+							}
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
@@ -183,7 +183,7 @@ def generate_results(model, input_file, tmpdir, _id):
 							'cv_scores_mean': cv_scores.mean(),
 							'cv_scores_std': cv_scores.std(),
 							'cv_scores': cv_scores
-							   }
+							}
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
