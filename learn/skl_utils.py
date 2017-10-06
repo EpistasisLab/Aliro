@@ -88,7 +88,8 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
 	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
-	save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
+	#save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
+    save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
 
 def generate_results(model, input_file, tmpdir, _id):
 	print('loading..')
@@ -158,17 +159,35 @@ def generate_results(model, input_file, tmpdir, _id):
 
 	# save predicted values, what format should this be in? pickle? add id here too
 	predicted_classes_list = predicted_classes.tolist()
-	save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
+	#save_text_file(tmpdir, _id, 'prediction_values', predicted_classes_list)
+    save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
+
+def save_json_fmt(outdir, _id, fname, content):
+    """
+    Save results into json format.
+    Parameters
+    ----------
+    outdir: string
+        path of output directory
+    _id: string
+        Job ID in FGlab
+    fname: string
+        file name
+    content: list or directory
+        content for results
+    Returns
+    -------
+    None
+    """
+	expdir = tmpdir + _id + '/'
+	with open(os.path.join(expdir, fname), 'w') as outfile:
+		json.dump(content, outfile)
 
 def save_metrics(tmpdir, _id, output):
 	expdir = tmpdir + _id + '/'
 	with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
 		json.dump({ '_scores': output }, outfile)
 
-def save_text_file(tmpdir, _id, fname, content):
-	expdir = tmpdir + _id + '/'
-	with open(os.path.join(expdir, fname + '.txt'), 'w') as outfile:
-		json.dump(content, outfile)
 
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	cm = cnf_matrix
