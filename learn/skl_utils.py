@@ -160,7 +160,7 @@ def generate_results(model, input_file, tmpdir, _id):
                         'roc_auc_score': roc_auc_score
                         }
         save_json_fmt(outdir=tmpdir, _id=_id, fname="roc_curve.json", content=roc_curve_dict)
-        # remove this function if it is not useful any more
+        # After switching to dynamic charts, possibly disable outputting graphs from this function
         plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 	# save metrics
     metrics_dict = {'_scores':{
@@ -175,7 +175,7 @@ def generate_results(model, input_file, tmpdir, _id):
                     }
     save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
 
-	# save predicted values, what format should this be in? pickle? add id here too
+	# After switching to dynamic charts, possibly disable outputting graphs from this function
 	predicted_classes_list = predicted_classes.tolist()
     save_json_fmt(outdir=tmpdir, _id=_id, fname="prediction_values.txt", content=predicted_classes_list)
 
@@ -201,7 +201,7 @@ def save_json_fmt(outdir, _id, fname, content):
 	with open(os.path.join(expdir, fname), 'w') as outfile:
 		json.dump(content, outfile)
 
-# remove this function if it is not useful any more
+# After switching to dynamic charts, possibly disable outputting graphs from this function
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	cm = cnf_matrix
 	classes = class_names
@@ -225,7 +225,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 	plt.xlabel('Predicted label')
 	plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
 
-# remove this function if it is not useful any more
+# After switching to dynamic charts, possibly disable outputting graphs from this function
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 	fpr, tpr, _ = roc_curve
 
