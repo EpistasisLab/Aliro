@@ -89,7 +89,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 							'mean_squared_error': mean_squared_error,
 							'cv_scores_mean': cv_scores.mean(),
 							'cv_scores_std': cv_scores.std(),
-							'cv_scores': cv_scores
+							'cv_scores': cv_scores.tolist()
 							}
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
@@ -182,7 +182,7 @@ def generate_results(model, input_file, tmpdir, _id):
 							'roc_auc_score': roc_auc_score,
 							'cv_scores_mean': cv_scores.mean(),
 							'cv_scores_std': cv_scores.std(),
-							'cv_scores': cv_scores
+							'cv_scores': cv_scores.tolist()
 							}
 					}
 	save_json_fmt(outdir=tmpdir, _id=_id, fname="value.json", content=metrics_dict)
