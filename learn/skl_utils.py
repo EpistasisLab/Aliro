@@ -197,7 +197,7 @@ def save_json_fmt(outdir, _id, fname, content):
 	-------
 	None
 	"""
-	expdir = tmpdir + _id + '/'
+	expdir = outdir + _id + '/'
 	with open(os.path.join(expdir, fname), 'w') as outfile:
 		json.dump(content, outfile)
 
