@@ -8,18 +8,20 @@ import requests
 import os
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-basedir='/share/devel/Gp/learn/metaga/'
-tmpdir=basedir+'tmp/'
+basedir = '/share/devel/Gp/learn/metaga/'
+tmpdir = basedir + 'tmp/'
 param_batch_json = tmpdir + 'batch.json'
-args_list = ["population_size", "generations", "crossover_rate", "mutation_rate", "tournsize"]
+args_list = ["population_size", "generations",
+             "crossover_rate", "mutation_rate", "tournsize"]
 if not os.path.exists(tmpdir):
     os.makedirs(tmpdir)
 
 #lab_host = os.environ['LAB_HOST']
 # change the problem id to different problem
 project_id = '57ffd3c1fa76cb0022258722'
-baseuri='http://lab:5080/api/v1/projects/'+project_id+'/batch'
-expbase='http://lab:5080/api/v1/batches/'
+baseuri = 'http://lab:5080/api/v1/projects/' + project_id + '/batch'
+expbase = 'http://lab:5080/api/v1/batches/'
+
 
 def SymbReg_FGlab_submit(population):
     """
@@ -39,7 +41,8 @@ def SymbReg_FGlab_submit(population):
     for individual in population:
         param_list_file.write('{')
         for key in range(len(args_list)):
-            param_list_file.write("\"{}\" : \"{}\", ".format(args_list[key], str(individual[key])))
+            param_list_file.write("\"{}\" : \"{}\", ".format(
+                args_list[key], str(individual[key])))
         param_list_file.write("\"{}\" : \"{}\" ".format('random_state', '42'))
         if inpos < num_ind:
             param_list_file.write('},\n')
@@ -49,8 +52,10 @@ def SymbReg_FGlab_submit(population):
     param_list_file.write(']\n')
     param_list_file.close()
 
-    headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
-    response = requests.post(baseuri, data=open(param_batch_json, 'rb'), headers=headers)
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json'}
+    response = requests.post(baseuri, data=open(
+        param_batch_json, 'rb'), headers=headers)
     # check after 5 seconds
     time.sleep(5)
 
@@ -60,27 +65,27 @@ def SymbReg_FGlab_submit(population):
     # initial status
     exp_status = 'init'
     # batch URI
-    batchuri =  expbase + batch_id
-    nofinished =  0
+    batchuri = expbase + batch_id
+    nofinished = 0
     while (exp_status != 'success' and num_ind != nofinished):
         exp_response = requests.get(batchuri)
         exp_data = exp_response.json()
         exp_status = exp_data['_status']
         exps = exp_data['_experiments']
         # reset nofinished
-        nofinished =  0
+        nofinished = 0
         for exp_ind in exps:
             if 'best_fitness_score' in exp_ind:
                 nofinished += 1
         if exp_status == 'success' or num_ind == nofinished:
             break
         if exp_status == 'running':
-            time.sleep(2) # check every 2 seconds
+            time.sleep(2)  # check every 2 seconds
         if exp_status == 'fail':
             break
     # rebuild population based on experiments
     fitnesses = []
-    for experiment,individual in zip(exp_data['_experiments'],population):
+    for experiment, individual in zip(exp_data['_experiments'], population):
         tmpdict = experiment['_options']
         for key in range(len(args_list)):
             individual[key] = tmpdict[args_list[key]]
