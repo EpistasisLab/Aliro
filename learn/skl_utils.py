@@ -141,7 +141,12 @@ def generate_results(model, input_file, tmpdir, _id):
 
     # computing cross-validated metrics
     cv_scores = cross_val_score(
-        model, training_features, training_classes, cv=5)
+                                estimator=model,
+                                X=training_features,
+                                y=training_classes,
+                                scoring=SCORERS["balanced_accuracy"],
+                                cv=5
+                                )
 
     # determine if target is binary or multiclass
     class_names = model.classes_
