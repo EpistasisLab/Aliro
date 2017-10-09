@@ -3,7 +3,7 @@
         "cwd": "/opt/Gp/gpocl/build",
         "command": "./gpocl",
         "args": ["../datasets/gei.csv"],
-        "capacity": "0.1",
+        "capacity": "0.01",
         "options": "double-dash-noequals",
         "results": "./examples/GP"
     },
@@ -11,7 +11,7 @@
         "cwd": "/opt/Gp/mdr/bin",
         "command": "python3",
         "args": ["process.py"],
-        "capacity": "0.1",
+        "capacity": "0.01",
         "options": "double-dash",
         "results": "./examples/MDR"
     },
@@ -20,7 +20,7 @@
         "command": "python3",
         "args": ["main.py"],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/deap-GP-SymbReg/tmp/"
     },
     "58535b8fa525130034441327": {
@@ -28,7 +28,7 @@
         "command": "python3",
         "args": ["main.py"],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/Meta-GA/tmp/"
     },
     "5813bdaec1321420f8bbcc7f": {
@@ -38,7 +38,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/BernoulliNB/tmp"
     },
     "5813bdb8c1321420f8bbcc80": {
@@ -48,7 +48,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/GaussianNB/tmp"
     },
     "5813bdc4c1321420f8bbcc81": {
@@ -58,7 +58,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/MultinomialNB/tmp"
     },
     "5817660338215335404347c7": {
@@ -68,7 +68,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/DecisionTreeClassifier/tmp"
     },
     "5853571ca52513003444131b": {
@@ -78,7 +78,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/DecisionTreeRegressor/tmp"
     },
     "58535850a52513003444131e": {
@@ -88,7 +88,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/ElasticNetCV/tmp"
     },
     "585358eba52513003444131f": {
@@ -98,7 +98,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/ExtraTreesRegressor/tmp"
     },
     "581791063821533540434826": {
@@ -108,7 +108,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/ExtraTreesClassifier/tmp"
     },
     "58535984a525130034441320": {
@@ -118,7 +118,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/GradientBoostingRegressor/tmp"
     },
     "581796a43821533540434890": {
@@ -128,7 +128,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/GradientBoostingClassifier/tmp"
     },
     "5817a21138215335404348cd": {
@@ -138,7 +138,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/KNeighborsClassifier/tmp"
     },
     "58535a05a525130034441321": {
@@ -148,7 +148,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/KNeighborsRegressor/tmp"
     },
     "58535a5aa525130034441322": {
@@ -158,7 +158,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/LassoLarsCV/tmp"
     },
     "5817a73538215335404348ee": {
@@ -168,7 +168,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/LinearSVC/tmp"
     },
     "58535b31a525130034441326": {
@@ -178,7 +178,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/LinearSVR/tmp"
     },
     "5817ad7f3821533540434948": {
@@ -188,7 +188,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/LogisticRegression/tmp"
     },
     "5817af52382153354043496e": {
@@ -198,7 +198,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/RandomForestClassifier/tmp"
     },
     "58535c7ea525130034441328": {
@@ -208,7 +208,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/RandomForestRegressor/tmp"
     },
     "58535d09a525130034441329": {
@@ -218,7 +218,7 @@
             "main.py"
         ],
         "options": "double-dash",
-        "capacity": "0.2",
+        "capacity": "0.01",
         "results": "/opt/Gp/learn/RidgeCV/tmp"
     }
 }
