@@ -5,14 +5,11 @@ ADD files/version /tmp
 RUN git clone -b realnewmake git@github.com:EpistasisLab/Gp.git
 RUN cd Gp/machine && npm install && npm -g install pm2
 VOLUME /share
-#extract pmlb test datasets
-#RUN  wget --quiet https://s3.us-east-2.amazonaws.com/pennai-docker-files/pmlb.tgz -O ~/pmlb.tgz && \
-#    tar -xzvf ~/pmlb.tgz -C Gp/machine/datasets/byuser && \
-#    rm ~/pmlb.tgz
 COPY files/env Gp/machine/.env
 COPY files/projects.json Gp/machine/
 COPY files/start.sh /root/
 COPY files/entrypoint.sh /root/
+COPY files/get_datasets.sh /root/
 EXPOSE 5081
 #need ssh?
 #RUN echo "root:training" | chpasswd
