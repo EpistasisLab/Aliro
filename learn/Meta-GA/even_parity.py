@@ -32,7 +32,7 @@ for i in range(PARITY_SIZE_M):
     outputs[i] = parity
 
 
-def EvenParity(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state = 99):
+def EvenParity(population_size, generations, crossover_rate, mutation_rate, tournsize, random_state=99):
     pset = gp.PrimitiveSet("MAIN", PARITY_FANIN_M, "IN")
     pset.addPrimitive(operator.and_, 2)
     pset.addPrimitive(operator.or_, 2)
@@ -46,7 +46,8 @@ def EvenParity(population_size,generations,crossover_rate,mutation_rate,tournsiz
 
     toolbox = base.Toolbox()
     toolbox.register("expr", gp.genFull, pset=pset, min_=3, max_=5)
-    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+    toolbox.register("individual", tools.initIterate,
+                     creator.Individual, toolbox.expr)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("compile", gp.compile, pset=pset)
 
@@ -60,8 +61,10 @@ def EvenParity(population_size,generations,crossover_rate,mutation_rate,tournsiz
     toolbox.register("expr_mut", gp.genGrow, min_=0, max_=2)
     toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
     # avoid MemoryError in python
-    toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=40))
-    toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=40))
+    toolbox.decorate("mate", gp.staticLimit(
+        key=operator.attrgetter("height"), max_value=40))
+    toolbox.decorate("mutate", gp.staticLimit(
+        key=operator.attrgetter("height"), max_value=40))
 
     random.seed(random_state)
     pop = toolbox.population(n=population_size)
@@ -73,9 +76,10 @@ def EvenParity(population_size,generations,crossover_rate,mutation_rate,tournsiz
     stats.register("max", numpy.max)
 
     algorithms.eaSimple(pop, toolbox, cxpb=crossover_rate,
-    mutpb=mutation_rate, ngen=generations, stats=stats, halloffame=hof, verbose=False)
+                        mutpb=mutation_rate, ngen=generations, stats=stats, halloffame=hof, verbose=False)
 
     return pop, stats, hof
+
 
 def EvenParity_Best_GP_Individual(individual):
     """
@@ -92,5 +96,7 @@ def EvenParity_Best_GP_Individual(individual):
     best_ind = tools.selBest(pop, 1)[0]
     return (best_ind.fitness.values[0]),
 
+
 if __name__ == "__main__":
-    EvenParty(population_size = 100,generations=100,crossover_rate = 0.5,mutation_rate = 0.2,tournsize = 3,random_state = 42)
+    EvenParty(population_size=100, generations=100, crossover_rate=0.5,
+              mutation_rate=0.2, tournsize=3, random_state=42)
