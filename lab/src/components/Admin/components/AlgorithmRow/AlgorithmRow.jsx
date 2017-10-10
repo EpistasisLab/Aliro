@@ -6,6 +6,7 @@ import { formatAlgorithm } from '../../../../utils/formatter';
 class AlgorithmRow extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       currentCategory: props.algorithm.get('category')
     };
@@ -17,9 +18,7 @@ class AlgorithmRow extends React.Component {
   getCategoryOptions() {
     const categoryOptions = [
       { text: 'Classification', value: 'Classification' },
-      { text: 'Regression', value: 'Regression' },
-      { text: 'Machine Learning', value: 'ML' },
-      { text: 'Artificial Intelligence', value: 'AI' }
+      { text: 'Regression', value: 'Regression' }
     ];
 
     return categoryOptions;

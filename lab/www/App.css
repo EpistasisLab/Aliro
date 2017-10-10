@@ -161,34 +161,34 @@ body {
     margin-bottom: 2rem;
 }
 
-.pennai .experiments-scene .table-container {
+.pennai .table-container {
     width: 100%;
     margin: 0;
     overflow-y: auto;
 }
 
-.pennai .experiments-scene .table-container .table {
+.pennai .table-container .table {
     min-width: 650px;
 }
 
-.pennai .experiments-scene .ui.table thead th {
+.pennai .table-container .ui.table thead th {
     padding: .3rem .78571429em;
 }
 
-.pennai .experiments-scene .ui.table th {
+.pennai .table-container .ui.table th {
     color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .table-container .ui.inverted.table tbody tr td.selectable:hover {
+    background-color: transparent !important;
+}
+
+.pennai .table-container .ui.table tbody tr td.selectable>a:not(.ui) {
+     padding: 0 .78571429em;
 }
 
 .pennai .experiments-scene .ui.table th .alg-name {
     margin-left: 0.5rem;
-}
-
-.pennai .experiments-scene .ui.inverted.table tbody tr td.selectable:hover {
-    background-color: transparent !important;
-}
-
-.pennai .experiments-scene .ui.table tbody tr td.selectable>a:not(.ui) {
-     padding: 0 .78571429em;
 }
 
 /*.pennai .experiments-scene .ui.table tr.new {
@@ -270,6 +270,11 @@ body {
 .pennai .builder-scene .builder-btns {
     margin-top: -2rem;
     margin-bottom: 2rem;
+}
+
+.pennai .admin-scene .table-container {
+    margin-bottom: 2rem;
+    border: 1px solid #555;;
 }
 
 .c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {

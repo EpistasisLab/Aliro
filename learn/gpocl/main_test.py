@@ -28,6 +28,8 @@ from deap import gp
 import pandas as pd
 
 # Define new functions
+
+
 def protectedDiv(left, right):
     try:
         return left / right
@@ -35,8 +37,7 @@ def protectedDiv(left, right):
         return 1
 
 
-
-def main(population_size,generations,crossover_rate,mutation_rate,tournsize,random_state):
+def main(population_size, generations, crossover_rate, mutation_rate, tournsize, random_state):
     random.seed(random_state)
     pset = gp.PrimitiveSet("MAIN", 1)
     pset.addPrimitive(operator.add, 2)
@@ -46,7 +47,7 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
     pset.addPrimitive(operator.neg, 1)
     pset.addPrimitive(math.cos, 1)
     pset.addPrimitive(math.sin, 1)
-    pset.addEphemeralConstant("rand101", lambda: random.randint(-1,1))
+    pset.addEphemeralConstant("rand101", lambda: random.randint(-1, 1))
     pset.renameArguments(ARG0='x')
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -54,7 +55,8 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
 
     toolbox = base.Toolbox()
     toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=1, max_=2)
-    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+    toolbox.register("individual", tools.initIterate,
+                     creator.Individual, toolbox.expr)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("compile", gp.compile, pset=pset)
 
@@ -66,17 +68,20 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
         sqerrors = ((func(x) - x**4 - x**3 - x**2 - x)**2 for x in points)
         return math.fsum(sqerrors) / len(points),
 
-    toolbox.register("evaluate", evalSymbReg, points=[x/10. for x in range(-10,10)])
-    toolbox.register("select", tools.selTournament, tournsize=tournsize) # tournsize arguments
+    toolbox.register("evaluate", evalSymbReg, points=[
+                     x / 10. for x in range(-10, 10)])
+    toolbox.register("select", tools.selTournament,
+                     tournsize=tournsize)  # tournsize arguments
     toolbox.register("mate", gp.cxOnePoint)
     toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
     toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
-    toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))
-    toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=17))
+    toolbox.decorate("mate", gp.staticLimit(
+        key=operator.attrgetter("height"), max_value=17))
+    toolbox.decorate("mutate", gp.staticLimit(
+        key=operator.attrgetter("height"), max_value=17))
 
-
-    pop = toolbox.population(n=population_size) # population_size arguments
+    pop = toolbox.population(n=population_size)  # population_size arguments
     hof = tools.HallOfFame(1)
 
     stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
@@ -88,31 +93,33 @@ def main(population_size,generations,crossover_rate,mutation_rate,tournsize,rand
     mstats.register("max", numpy.max)
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb=crossover_rate,
-    mutpb=mutation_rate, ngen=generations, stats=mstats, halloffame=hof, verbose=True) # crossover_rate, mutation_rate, generations
+                                   mutpb=mutation_rate, ngen=generations, stats=mstats, halloffame=hof, verbose=True)  # crossover_rate, mutation_rate, generations
     stats_table = []
     statslist = ["avg", "max", "min", "std"]
-    statsterm = ["fitness","size"]
+    statsterm = ["fitness", "size"]
     # make header
     stats_table_header = []
     stats_table_header.append('gen')
     stats_table_header.append('nevals')
     for j in range(len(statsterm)):
         for p in range(len(statslist)):
-            stats_table_header.append(statsterm[j]+'_'+statslist[p])
-    for i in range(generations+1):
-        stats_table.append([log[i]['gen'],log[i]['nevals']])
+            stats_table_header.append(statsterm[j] + '_' + statslist[p])
+    for i in range(generations + 1):
+        stats_table.append([log[i]['gen'], log[i]['nevals']])
         for j in range(len(statsterm)):
             for p in range(len(statslist)):
-                stats_table[i].append(log.chapters[statsterm[j]].select(statslist[p])[i])
+                stats_table[i].append(
+                    log.chapters[statsterm[j]].select(statslist[p])[i])
     df = pd.DataFrame(stats_table)
-    print(df.to_csv(index=False ,header=stats_table_header))
-    #df.to_json()???
+    print(df.to_csv(index=False, header=stats_table_header))
+    # df.to_json()???
     return pop, log, hof
+
 
 if __name__ == "__main__":
     main(population_size=100,
-    generations=5,
-    crossover_rate=0.1,
-    mutation_rate=0.05,
-    tournsize=3,
-    random_state=42)
+         generations=5,
+         crossover_rate=0.1,
+         mutation_rate=0.05,
+         tournsize=3,
+         random_state=42)
