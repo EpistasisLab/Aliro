@@ -170,8 +170,6 @@ def generate_results(model, input_file, tmpdir, _id):
     }
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="cnf_matrix.json", content=cnf_matrix_dict)
-    # remove this function if it is not useful any more
-    plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
     roc_auc_score = 'not supported for multiclass'
     if(average == 'binary'):
@@ -192,8 +190,7 @@ def generate_results(model, input_file, tmpdir, _id):
         }
         save_json_fmt(outdir=tmpdir, _id=_id,
                       fname="roc_curve.json", content=roc_curve_dict)
-        # After switching to dynamic charts, possibly disable outputting graphs from this function
-        plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
+
     # save metrics
     metrics_dict = {'_scores': {
         'train_score': train_score,
@@ -211,7 +208,6 @@ def generate_results(model, input_file, tmpdir, _id):
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="value.json", content=metrics_dict)
 
-    # After switching to dynamic charts, possibly disable outputting graphs from this function
     predicted_classes_list = predicted_classes.tolist()
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.txt", content=predicted_classes_list)
@@ -237,49 +233,3 @@ def save_json_fmt(outdir, _id, fname, content):
     expdir = outdir + _id + '/'
     with open(os.path.join(expdir, fname), 'w') as outfile:
         json.dump(content, outfile)
-
-# After switching to dynamic charts, possibly disable outputting graphs from this function
-
-
-def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
-    cm = cnf_matrix
-    classes = class_names
-
-    np.set_printoptions(precision=2)
-    plt.figure()
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('Confusion Matrix')
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
-
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 horizontalalignment="center",
-                 color="gray" if cm[i, j] > thresh else "black")
-
-    plt.subplots_adjust(bottom=0.15)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
-
-# After switching to dynamic charts, possibly disable outputting graphs from this function
-
-
-def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
-    fpr, tpr, _ = roc_curve
-
-    plt.figure()
-    lw = 2
-    plt.plot(fpr, tpr, color='darkorange',
-             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc_score)
-    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend(loc="lower right")
-
-    plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
