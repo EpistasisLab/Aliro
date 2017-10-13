@@ -2,7 +2,7 @@
 FROM pennai/compute:latest
 WORKDIR /opt/
 ADD files/version /tmp
-RUN git clone -b realnewmake git@github.com:EpistasisLab/Gp.git
+RUN git clone git@github.com:EpistasisLab/Gp.git
 RUN cd Gp/machine && npm install && npm -g install pm2
 VOLUME /share
 COPY files/env Gp/machine/.env
