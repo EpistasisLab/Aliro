@@ -4,13 +4,8 @@ dist
 /bin/
 /target/
 .bash_history
-.ssh
-.viminfo
-.nv
-*.*.swp
 *.swp
 *.pyc
-.remote-sync.json
 machine/datasets/byuser/*
 lab/www/*.js
 lab/www/*.json
@@ -19,8 +14,8 @@ dockers/Makevars
 dockers/paiwww/files/certs
 dockers/paiwww/files/htpasswd
 tmp/
-.mongorc.js
-ca.crt
 ssh.tgz
 dockers/dbmongo/files/.mongodbauth.js
-
+dockers/dbmongo/dump.tgz
+dockers/dbmongo/dump/
+core
