@@ -107,7 +107,7 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
     # save predicted values, what format should this be in? pickle? add id here too
     predicted_classes_list = predicted_classes.tolist()
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.txt", content=predicted_classes_list)
+                  fname="prediction_values.json", content=predicted_classes_list)
 
 
 def generate_results(model, input_file, tmpdir, _id):
@@ -210,7 +210,7 @@ def generate_results(model, input_file, tmpdir, _id):
 
     predicted_classes_list = predicted_classes.tolist()
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.txt", content=predicted_classes_list)
+                  fname="prediction_values.json", content=predicted_classes_list)
 
 
 def save_json_fmt(outdir, _id, fname, content):
