@@ -160,17 +160,23 @@ chokidar.watch("projects.json").on("change", () => {
 
 chokidar.watch(datasets.byuser_datasets_path, {
     awaitWriteFinish: true,
-   ignored: /metadata/,
-    }).on("all", (event, path) => {
-      if(event == 'change') {
-      datasets.processChangedFile(path);
-      }
-   });
+    ignored: /metadata/,
+}).on("all", (event, path) => {
+    if (event == 'change') {
+        datasets.processChangedFile(path);
+    }
+});
 
 /* Global max capacity */
 /* Process Datasets */
 datasets.scrapeUsers()
+
 var maxCapacity = 1;
+if (process.env.CAPACITY) {
+    maxCapacity = process.env.CAPACITY;
+}
+console.log("capacity is", maxCapacity)
+
 
 var getCapacity = function(projId) {
     var capacity = 0;
@@ -350,7 +356,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             if (path.match(/\.json$/)) {
                 // Process JSON files
                 filesP.push(fs.readFile(path, "utf-8").then(sendJSONResults));
-            //ugly hack to prevent input files from getting uploaded
+                //ugly hack to prevent input files from getting uploaded
             } else if (path.match(/\.csv$/)) {
                 console.log('ignoring ' + path);
             } else {
