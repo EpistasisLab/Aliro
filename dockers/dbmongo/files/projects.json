@@ -309,7 +309,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [10, 100, 250]
             }
         },
         "learning_rate": {
