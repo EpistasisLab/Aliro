@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mz": "^2.4.0"
+  },
+  "engines": {
+    "node": "6.x"
+  }
+}
