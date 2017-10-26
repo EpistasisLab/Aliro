@@ -1,20 +1,28 @@
-var fs = require('fs');
+var readline = require('readline');
 var fs = require('fs');
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
+var Stream = require('stream');
+var ws = new Stream;
+ws.writable = true;
+ws.bytes = 0;
 var spawnSync = require("child_process").spawnSync;
 var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child_process').exec,child;
-var getVars = function(cb) {
-    var varsfile = dockerDir + '/Makevars';
-    fs.readFile(varsfile, 'utf-8', function(err, file) {
-    if (!err) {
-    console.log(file);
+var makevars = {}
+fileBuffer =  fs.readFileSync(dockerDir + '/Makevars');
+to_string = fileBuffer.toString();
+split_lines = to_string.split("\n");
+for(i in split_lines){
+    var line = split_lines[i]
+    var spliteded = line.split(':=');
+    var name = spliteded[0];
+    var val = spliteded[1];
+    if(name && val) {
+    makevars[name] = val;
     }
-    });
 }
-
 
 // see which subdirs need processing
 var getDirs = function(cb) {
@@ -42,25 +50,23 @@ var getDirs = function(cb) {
 
 
 //build the specified container
-function makeContainer(dir, arg) {
-    child = exec('cd ' + dir + ' && make',
+function makeContainer(dir, makevars) {
+        child = exec('cd ' + dir + ' && make',
         function(error, stdout, stderr) {
             console.log('stdout: ' + stdout);
+            if(stderr) {
             console.log('stderr: ' + stderr);
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
-        });
+            }
+        },
+        {env:makevars}
+     );
 }
 
 
-getVars(function(vars) {
-    for (i in vars) {
-    console.log(vars[i]);
-    }
-});
 // do it
-/*
 getDirs(function(dirs) {
     //return filename if file exists
     function checkFile(dir, file, callback) {
@@ -78,11 +84,19 @@ getDirs(function(dirs) {
         var makedir = dockerDir + '/' + dirs[i];
         checkFile(makedir, 'Makefile', function(dirname) {
             if (dirname) {
-                makeContainer(dirname)
+            //    makeContainer(makevars)
+            }
+        });
+        checkFile(makedir, 'Dockerfile', function(dirname) {
+var network = 'pennai';
+var host = dirname;
+var tag = 'latest';
+            if (dirname) {
+                var cmd = 'docker build -t '+ network + '/'+ host + ':' + tag + ' .';
+                console.log(cmd)
             }
         });
     }
 });
-*/
 
 
