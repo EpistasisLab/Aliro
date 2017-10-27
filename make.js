@@ -52,7 +52,10 @@ var getDirs = function(cb) {
 // do it
 getDirs(function(dirs) {
     //Make subdirse
+    var buildP = Array(dirs.length);
     var createP = Array(dirs.length);
+    var startP = Array(dirs.length);
+creators = [];
     for (i in dirs) {
         var makedir = dockerDir + '/' + dirs[i];
 
@@ -62,6 +65,24 @@ getDirs(function(dirs) {
         var tag = 'latest';
         var host = makedir.split("\/").pop();
         var build = 'docker build -t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
+        var buildor = exec(build, {
+                      cwd: makedir
+        });
+                    buildP[i] = buildor;
+                    buildor.then(function(result) {
+                        var stdout = result.stdout;
+                        var stderr = result.stderr;
+                    console.log(build);
+                        console.log('stdout: ', stdout);
+                        console.log('stderr: ', stderr);
+                    })
+
+
+
+
+
+
+
         for (varname in makevars) {
             var splitted = varname.split('_');
             if (splitted[1] == 'HOST') {
@@ -73,28 +94,45 @@ getDirs(function(dirs) {
                     var portvar = splitted[0] + '_PORT';
                     if (makevars[portvar]) {
                         var port = makevars[portvar];
-                        console.log(port);
                         docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
                     }
-                    var docker_create = 'docker create -i -v ' + makevars['SHARE_PATH'] + ':/share/devel' + docker_args;
-                    docker_create += ' ' + network + '/' + host;
-                    var execer = exec(docker_create, {
-                        cwd: makedir
-                    });
-                    createP[i] = execer;
-                    execer.then(function (result) {
-        var stdout = result.stdout;
-        var stderr = result.stderr;
-        console.log('stdout: ', stdout);
-        console.log('stderr: ', stderr);
-    })
-                   
+                    var create = 'docker create -i -v ' + makevars['SHARE_PATH'] + ':/share/devel' + docker_args;
+                    create += ' ' + network + '/' + host;
+                    creators.push({cwd:makedir,cmd:create});
+/*
+*/
                 }
             }
         }
+
+
+
+
+
     }
-    Promise.all(createP).then(function() {
-            console.log('done');
+    var createContainers = function(creators) {
+for (i in creators) {
+job=creators[i];
+                    var creator = exec(job['cmd'], {
+                        cwd: job['cwd']
+                    });
+                    createP[i] = creator;
+                    creator.then(function(result) {
+                        var stdout = result.stdout;
+                        var stderr = result.stderr;
+                    console.log(job['cmd']);
+                        console.log('stdout: ', stdout);
+                        console.log('stderr: ', stderr);
+                    })
+
+
+    }
+}
+    Promise.all(buildP).then(function() {
+            console.log('build done');
+createContainers(creators);
+console.log(creators);
+
         })
         .catch((err) => {
             console.log(err);
