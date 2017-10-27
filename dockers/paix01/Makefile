@@ -1,7 +1,7 @@
 include ../Makevars
 HOST=${PAIX_HOST}
 TAG=latest
-DOCKER_ARGS = -i -t -e APIKEY=${APIKEY} -e FGLAB_URL=${LAB_URL} -e LAB_HOST=${LAB_HOST} -e IFROOT=${PROJECTS_ROOT} -e MONGODB_URI=mongodb://${MONGO_HOST}:${MONGO_PORT}/FGLab -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS = -i -t -e APIKEY=${APIKEY} -e LAB_PORT=${LAB_PORT} -e LAB_HOST=${LAB_HOST} -e IFROOT=${PROJECTS_ROOT} -e MONGODB_URI=mongodb://${MONGO_HOST}:${MONGO_PORT}/FGLab -h ${HOST} --name ${HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${NETWORK}/${HOST}:${TAG} .
