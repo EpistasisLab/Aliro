@@ -46,7 +46,7 @@ class AI():
                     sessions
     """
 
-    def __init__(self,rec=None,db_path=os.environ['FGLAB_URL'],
+    def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
                  verbose=True,warm_start=False, n_recs=1):
@@ -321,7 +321,7 @@ def main():
     parser.add_argument('-rec',action='store',dest='REC',default='random',
                         choices = ['random','average','exhaustive'], 
                         help='Recommender algorithm options.')
-    parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
+    parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
