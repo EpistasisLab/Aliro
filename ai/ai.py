@@ -15,6 +15,7 @@ import pdb
 import time
 import ai.db_utils as db_utils
 import os
+import ai.q_utils as q_utils
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
@@ -92,6 +93,10 @@ class AI():
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = db_utils.get_ml_id_dict(self.algo_path,self.api_key)
+        # build dictionary of dataset ids to names conversion
+        self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
+        #each dataset gets its own thread 
+        self.dataset_threads = {}
 
     def load_state(self):
         """loads pickled score file."""
@@ -152,6 +157,7 @@ class AI():
                 data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
                 tmp = requests.put(data_submit_path,data=json.dumps(payload),
                                       headers=self.header)
+                q_utils.startQ(self,r['_id'])
             return True
 
         return False
@@ -221,6 +227,8 @@ class AI():
         # print('ai:',ai)
 
     def transfer_rec(self,rec_payload):
+            """performs http transfer of recommendation"""
+            self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
             n=0
             rec_path = '/'.join([self.projects_path,
                         rec_payload['algorithm_id'],
@@ -240,6 +248,49 @@ class AI():
                 n=n+1
             if(n>0):
                 print('looped ' + str(n) + 'times')
+
+
+    def process_rec(self):
+        """Sends recommendation to the API."""
+        i = 0
+        for r in self.request_queue:
+            dataset = r['name']
+            # get recommendation for dataset
+            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
+            self.rec.last_n = 0 
+            for alg,params,score in zip(ml,p,ai_scores):
+                # turn params into a dictionary
+                modified_params = eval(params)
+                #print(modified_params.max_features)
+                rec_payload = {'dataset_id':r['_id'],
+                        # 'dataset_name':r['name'],
+                        'algorithm_id':alg,
+                        # 'ml_name':alg,
+                        'parameters':modified_params,
+                        'ai_score':score,
+                        }
+                if self.verbose:
+                    print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                        ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
+                
+                # add static payload
+                rec_payload.update(self.static_payload)
+                # do http transfer
+                #transfer_status = self.transfer_rec(rec_payload)
+                q_utils.addToQueue(self,r,rec_payload)
+                #print('wait for it...')
+                #sleep(1)
+
+                #submit update to dataset to indicate ai:True
+            payload= {'ai':'finished'}
+            data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
+            tmp = requests.put(data_submit_path,data=json.dumps(payload),
+                headers=self.header)
+            i += 1
+        if self.verbose:
+            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                  ':','processed',i,'requests')
+
 
     def send_rec(self):
         """Sends recommendation to the API."""
@@ -277,6 +328,10 @@ class AI():
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','processed',i,'requests')
+
+
+
+
 
     def update_recommender(self):
         """Updates recommender based on new results."""
@@ -353,12 +408,15 @@ def main():
                 pennai.update_recommender()
             # check for new recommendation requests
             if pennai.check_requests():
-                pennai.send_rec()
+               pennai.process_rec()
+                #pennai.send_rec()
             n = n + 1
             sleep(2)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
+        # tell queues to exit
+        q_utils.exitFlag=1
         pennai.save_state()
 
 if __name__ == '__main__':
