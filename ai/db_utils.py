@@ -105,5 +105,20 @@ def get_ml_id_dict(path,key):
 
     return ml_id_to_name
 
+
+def get_user_datasets(path,key,user):
+    """Returns a dictionary for converting dataset IDs to names."""
+    # get json from server
+    payload = {'apikey':key,'username':user}
+    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    responses = json.loads(r.text)
+    dataset_id_to_name = {}
+    for dataset in responses:
+        dataset_id_to_name.update({dataset['_id']:dataset['name']})
+    return dataset_id_to_name
+
+
+
+
 def validate_ml_p():
     """(WIP) Catch any invalid parameter combinations that might arise"""
