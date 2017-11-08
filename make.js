@@ -3,6 +3,7 @@ var fs = require('fs');
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
+var Promise = require("bluebird");
 var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child-process-promise').exec;
 var makevars = {}
@@ -25,7 +26,7 @@ var initVars = function(callback) {
             makevars[name] = val;
         }
     }
-    var running = retHosts(makevars['NETWORK'], callback)
+    var hosts = retHosts(makevars['NETWORK'], callback)
 }
 
 
@@ -70,7 +71,6 @@ var retHosts = function(network, callback) {
             var host = splitted[0];
             var container_id = splitted[1];
             var state = splitted[2].split(" ")[0].toLowerCase();
-            console.log(state);
             existing[host] = {
                 'id': container_id,
                 'state': state
@@ -107,7 +107,6 @@ var getState = function(dirs, callback) {
 
 // container build, run, etc.
 var processDirs = function(cb) {
-    
     createNetwork(makevars['NETWORK'], function() {
         fs.readdir(dockerDir, function(err, files) {
             var dirs = [];
@@ -138,7 +137,8 @@ var processDirs = function(cb) {
 
 //execution wrapper
 var fexec = function(cmd, cwd) {
-    console.log(cmd);
+    console.log('cmd: ' + cmd);
+cmd='true';
     return (exec(cmd, {
         cwd: cwd
     }));
@@ -150,7 +150,7 @@ var runJobs = function(jobs) {
 if(jobs === undefined) {
 return []
 } 
-console.log(jobs);
+//console.log(jobs);
     var promise_array = Array(jobs.length);
     for (i in jobs) {
         var job = jobs[i];
@@ -164,7 +164,7 @@ console.log(jobs);
                 runner.then(function(result) {
                     var stdout = result.stdout;
                     var stderr = result.stderr;
-                    console.log(result.childProcess['spawnargs']);
+                    //console.log(result.childProcess['spawnargs']);
                     //console.log(result.childProcess['spawnargs']);
                     if (stdout) {
                         console.log('stdout: ', stdout);
@@ -217,6 +217,7 @@ console.log(jobs);
 
 
 var commander = function(cmd, args, cwd) {
+//skip execution if cmd is not a valid step
 if(steps.indexOf(cmd) >= 0) {
     if (cmds[cmd] === undefined) {
         cmds[cmd] = [];
@@ -234,8 +235,7 @@ if(steps.indexOf(cmd) >= 0) {
 // do it
 initVars(function(running) {
     processDirs(function(dirs) {
-        //Make subdirse
-        var buildP = Array(dirs.length);
+        //Make subdirs
         for (i in dirs) {
             var makedir = dockerDir + '/' + dirs[i];
             //build continers
@@ -284,29 +284,19 @@ initVars(function(running) {
             }
         }
 
-/*
-        getState(dirs, function(depends) {
-            for (var i = 0; i < cmds['build'].length; i++) {
-//                var buildor = cmds['build'][i];
-                var name = buildor['name'];
-                if (depends[name]) {
-                    buildor['depends'] = depends[name];
-                    //cmds['build'][i] = buildor;
-                }
-            }
-            //        runJobs(buildors, buildP);
-        });
-*/
 
 
-
+var buildP = runJobs(cmds['build'])
+Promise.each(buildP,function(foo) {
+console.log('foo');
+});
 
         Promise.all(buildP).then(function() {
                 console.log('build done');
 
                 var stopP = runJobs(cmds['stop']);
                 Promise.all(stopP).then(function() {
-                        console.log('all containers stopped');
+                        console.log('stop done');
 
                         var removeP = runJobs(cmds['rm']);
                         Promise.all(removeP).then(function() {
