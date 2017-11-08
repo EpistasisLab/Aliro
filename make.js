@@ -10,6 +10,7 @@ var makevars = {}
 var cmds = {}
 //var steps = ['stop','rm','build','create']
 var steps = ['build']
+var hosts = ['paix01', 'lab', 'dbmongo', 'dbredis']
 
 
 //read the initialization variables from Makevars file
@@ -26,7 +27,7 @@ var initVars = function(callback) {
             makevars[name] = val;
         }
     }
-    var hosts = retHosts(makevars['NETWORK'], callback)
+    retHosts(makevars['NETWORK'], callback)
 }
 
 
@@ -50,7 +51,7 @@ var createNetwork = function(network, callback) {
 
 }
 
-//returns a list of containers for the given network
+//returns a list of existing containers for the given network
 var retHosts = function(network, callback) {
     var containers = 'docker ps -a --filter network=' + makevars["NETWORK"] + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
     var runner = fexec(containers);
@@ -76,14 +77,15 @@ var retHosts = function(network, callback) {
                 'state': state
             };
         }
-
         callback(existing);
+
+
     });
 }
 
 
 //extract build dependancy order from Dockerfiles 
-var getState = function(dirs, callback) {
+var getDeps = function(dirs, callback) {
     var depends = [];
     for (i in dirs) {
         var dir = dirs[i];
@@ -119,8 +121,6 @@ var processDirs = function(cb) {
                             dirs.push(this.file);
                         }
                         if (files.length === (this.index + 1)) {
-                            //execute callback function on this directory
-                             
                             return cb(dirs);
                         }
                     }.bind({
@@ -138,7 +138,7 @@ var processDirs = function(cb) {
 //execution wrapper
 var fexec = function(cmd, cwd) {
     console.log('cmd: ' + cmd);
-cmd='true';
+    cmd = 'true';
     return (exec(cmd, {
         cwd: cwd
     }));
@@ -147,10 +147,10 @@ cmd='true';
 
 //execute each job and save it to the promis_array
 var runJobs = function(jobs) {
-if(jobs === undefined) {
-return []
-} 
-//console.log(jobs);
+    if (jobs === undefined) {
+        return []
+    }
+    //console.log(jobs);
     var promise_array = Array(jobs.length);
     for (i in jobs) {
         var job = jobs[i];
@@ -164,8 +164,6 @@ return []
                 runner.then(function(result) {
                     var stdout = result.stdout;
                     var stderr = result.stderr;
-                    //console.log(result.childProcess['spawnargs']);
-                    //console.log(result.childProcess['spawnargs']);
                     if (stdout) {
                         console.log('stdout: ', stdout);
                     }
@@ -217,18 +215,55 @@ return []
 
 
 var commander = function(cmd, args, cwd) {
-//skip execution if cmd is not a valid step
-if(steps.indexOf(cmd) >= 0) {
-    if (cmds[cmd] === undefined) {
-        cmds[cmd] = [];
+    //skip execution if cmd is not a valid step
+    if (steps.indexOf(cmd) >= 0) {
+        if (cmds[cmd] === undefined) {
+            cmds[cmd] = [];
+        }
+        cmds[cmd].push({
+            cmd: "docker " + cmd + " " + args,
+            //cmd: "true",
+            cwd: cwd
+        });
+        //}
     }
-    cmds[cmd].push({
-        cmd: "docker " + cmd + " " + args,
-        //cmd: "true",
-        cwd: cwd
-    });
-//}
 }
+
+var doBuild = function(hosts, deps, dirs, running) {
+    var buildArray = Array();
+    for (i in dirs) {
+        var hostData = {}
+        var name = dirs[i];
+        if (deps[name]) {
+            var depsname = deps[name];
+            hostData['require'] = depsname;
+
+        }
+        if (hosts.indexOf(name) >= 0) {
+            buildArray[name] = hostData;
+        }
+    }
+    for (j in buildArray) {
+            buildArray[j]['promises'] = [];
+        if (buildArray[j]['require']) {
+            buildArray[j]['parent'] = doBuild([buildArray[j]['require']], deps, dirs, running);
+
+
+for (k in cmds['build']) {
+//console.log('k',k);
+var builder = cmds['build'][k];
+var cwd = builder['cwd']
+if(cwd == j) {
+console.log(builder)
+builds.append(builder);
+//            buildArray[j]['promises'].push(runJobs([builder]));
+}
+}
+
+console.log(Set(builds));
+        }
+    }
+    return buildArray;
 }
 
 
@@ -243,12 +278,7 @@ initVars(function(running) {
             var tag = 'latest';
             var host = makedir.split("\/").pop();
             var build_args = '-q -t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
-            commander('build',build_args,makedir);
-    //        cmds['build'].push({
-    //            cmd: build,
-    //            cwd: makedir,
-    //            name: host
-    //        });
+            commander('build', build_args, dirs[i]);
             for (varname in makevars) {
                 //check for <anything>_HOST variable
                 var splitted = varname.split('_');
@@ -285,12 +315,11 @@ initVars(function(running) {
         }
 
 
+        deps = getDeps(dirs, function(deps) {
+            var P = doBuild(hosts, deps, dirs, running);
 
-var buildP = runJobs(cmds['build'])
-Promise.each(buildP,function(foo) {
-console.log('foo');
-});
-
+        });
+        var buildP = Array(dirs.length);
         Promise.all(buildP).then(function() {
                 console.log('build done');
 
