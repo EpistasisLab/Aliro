@@ -5,8 +5,13 @@ var path = require("path");
 var fs = require("mz/fs");
 var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child-process-promise').exec;
-//Process variables in Makevars file
 var makevars = {}
+var cmds = {}
+//var steps = ['stop','rm','build','create']
+var steps = ['build']
+
+
+//read the initialization variables from Makevars file
 var initVars = function(callback) {
     fileBuffer = fs.readFileSync(dockerDir + '/Makevars');
     vars_string = fileBuffer.toString();
@@ -20,9 +25,11 @@ var initVars = function(callback) {
             makevars[name] = val;
         }
     }
-    var running = retRunning(makevars['NETWORK'], callback)
+    var running = retHosts(makevars['NETWORK'], callback)
 }
 
+
+//create the specified network if it does not yet exist
 var createNetwork = function(network, callback) {
     exec('docker network inspect ' + network)
         .then(function(result) {
@@ -42,15 +49,15 @@ var createNetwork = function(network, callback) {
 
 }
 
-//returns a list of running containers for the given network
-var retRunning = function(network, callback) {
-    var running_containers = 'docker ps -a --filter network=' + makevars["NETWORK"] + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
-    var runner = fexec(running_containers);
+//returns a list of containers for the given network
+var retHosts = function(network, callback) {
+    var containers = 'docker ps -a --filter network=' + makevars["NETWORK"] + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
+    var runner = fexec(containers);
     runner.then(function(result) {
         var stdout = result.stdout;
         var stderr = result.stderr;
         var list;
-        var running = {}
+        var existing = {}
         if (stdout) {
             //                    console.log('stdout: ', stdout);
             list = stdout.trim().split('\n');
@@ -64,17 +71,15 @@ var retRunning = function(network, callback) {
             var container_id = splitted[1];
             var state = splitted[2].split(" ")[0].toLowerCase();
             console.log(state);
-            running[host] = {
+            existing[host] = {
                 'id': container_id,
                 'state': state
             };
         }
 
-        callback(running);
+        callback(existing);
     });
 }
-
-
 
 
 //extract build dependancy order from Dockerfiles 
@@ -99,8 +104,10 @@ var getState = function(dirs, callback) {
     callback(depends);
 }
 
+
 // container build, run, etc.
-var processContainers = function(cb) {
+var processDirs = function(cb) {
+    
     createNetwork(makevars['NETWORK'], function() {
         fs.readdir(dockerDir, function(err, files) {
             var dirs = [];
@@ -114,6 +121,7 @@ var processContainers = function(cb) {
                         }
                         if (files.length === (this.index + 1)) {
                             //execute callback function on this directory
+                             
                             return cb(dirs);
                         }
                     }.bind({
@@ -127,6 +135,8 @@ var processContainers = function(cb) {
 }
 
 
+
+//execution wrapper
 var fexec = function(cmd, cwd) {
     console.log(cmd);
     return (exec(cmd, {
@@ -136,18 +146,19 @@ var fexec = function(cmd, cwd) {
 
 
 //execute each job and save it to the promis_array
-var runJobs = function(jobs, promise_array) {
+var runJobs = function(jobs) {
+if(jobs === undefined) {
+return []
+} 
+console.log(jobs);
     var promise_array = Array(jobs.length);
-
     for (i in jobs) {
         var job = jobs[i];
         var name = job['name'];
         var depends = job['depends'];
+        //check dependancy order
         if (name) {
             if (!depends) {
-
-
-
                 var runner = fexec(job['cmd'], job['cwd']);
                 promise_array[i] = runner;
                 runner.then(function(result) {
@@ -162,20 +173,16 @@ var runJobs = function(jobs, promise_array) {
                         console.log('stderr: ', stderr);
                     }
                 });
-
-
-
-
+                //if the job depends on another job, wait for that one
             } else {
                 for (j in jobs) {
                     var job2 = jobs[j];
                     if (job2['name'] && job2['name'] == depends) {
                         var runner = fexec(job['cmd'], job['cwd']);
-                        promise_array[i] = runner;
+                        promis_array.push(runner);
                         runner.then(function(result) {
                             var stdout = result.stdout;
                             var stderr = result.stderr;
-                            console.log(result.childProcess['spawnargs']);
                             if (stdout) {
                                 console.log('stdout: ', stdout);
                             }
@@ -191,11 +198,10 @@ var runJobs = function(jobs, promise_array) {
             }
         } else {
             var runner = fexec(job['cmd'], job['cwd']);
-            promise_array[i] = runner;
+            promise_array.push(runner);
             runner.then(function(result) {
                 var stdout = result.stdout;
                 var stderr = result.stderr;
-                console.log(result.childProcess['spawnargs']);
                 if (stdout) {
                     console.log('stdout: ', stdout);
                 }
@@ -210,31 +216,39 @@ var runJobs = function(jobs, promise_array) {
 }
 
 
+var commander = function(cmd, args, cwd) {
+if(steps.indexOf(cmd) >= 0) {
+    if (cmds[cmd] === undefined) {
+        cmds[cmd] = [];
+    }
+    cmds[cmd].push({
+        cmd: "docker " + cmd + " " + args,
+        //cmd: "true",
+        cwd: cwd
+    });
+//}
+}
+}
+
+
 // do it
 initVars(function(running) {
-    console.log(running);
-    processContainers(function(dirs) {
+    processDirs(function(dirs) {
         //Make subdirse
         var buildP = Array(dirs.length);
-        var cmds = {}
-        cmds['create'] = [];
-        cmds['build'] = [];
-        cmds['start'] = [];
-        cmds['stop'] = [];
-        cmds['rm'] = [];
         for (i in dirs) {
             var makedir = dockerDir + '/' + dirs[i];
             //build continers
             var network = 'pennai';
             var tag = 'latest';
             var host = makedir.split("\/").pop();
-            var build = 'true';
-            //var build = 'docker build -q -t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
-            cmds['build'].push({
-                cmd: build,
-                cwd: makedir,
-                name: host
-            });
+            var build_args = '-q -t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
+            commander('build',build_args,makedir);
+    //        cmds['build'].push({
+    //            cmd: build,
+    //            cwd: makedir,
+    //            name: host
+    //        });
             for (varname in makevars) {
                 //check for <anything>_HOST variable
                 var splitted = varname.split('_');
@@ -250,60 +264,39 @@ initVars(function(running) {
                             var port = makevars[portvar];
                             docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
                         }
+
                         if (host in running) {
                             var container_id = running[host]['id']
                             if (running[host]['state'] == 'up') {
-
-                                var stop = "docker stop " + container_id;
-                                cmds['stop'].push({
-                                    cwd: makedir,
-                                    cmd: stop
-                                });
-
+                                commander('stop', container_id);
                             }
-
-
-
-                            var rm = "docker rm " + container_id;
-                            cmds['rm'].push({
-                                cwd: makedir,
-                                cmd: rm
-                            });
-
+                            commander('rm', container_id);
                         }
 
-                        var create = 'docker create -i -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
+
+                        var create_args = '-i -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
                             docker_args + ' --hostname ' + host + ' --name ' + host +
                             ' --net ' + network + ' ' + network + '/' + host;
-                        cmds['create'].push({
-                            cwd: makedir,
-                            cmd: create
-                        });
-
-
-
-
-                        var start = 'docker start ' + host;
-                        cmds['start'].push({
-                            cwd: makedir,
-                            cmd: start,
-                        });
+                        commander('create', create_args, makedir);
+                        commander('start', host);
                     }
                 }
             }
         }
 
+/*
         getState(dirs, function(depends) {
             for (var i = 0; i < cmds['build'].length; i++) {
-                var buildor = cmds['build'][i];
+//                var buildor = cmds['build'][i];
                 var name = buildor['name'];
                 if (depends[name]) {
                     buildor['depends'] = depends[name];
-                    cmds['build'][i] = buildor;
+                    //cmds['build'][i] = buildor;
                 }
             }
             //        runJobs(buildors, buildP);
         });
+*/
 
 
 
@@ -311,11 +304,9 @@ initVars(function(running) {
         Promise.all(buildP).then(function() {
                 console.log('build done');
 
-
                 var stopP = runJobs(cmds['stop']);
                 Promise.all(stopP).then(function() {
                         console.log('all containers stopped');
-
 
                         var removeP = runJobs(cmds['rm']);
                         Promise.all(removeP).then(function() {
