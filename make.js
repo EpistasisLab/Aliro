@@ -10,7 +10,7 @@ var makevars = {}
 var cmds = {}
 //var steps = ['stop','rm','build','create']
 var steps = ['build']
-var hosts = ['paix01', 'lab', 'dbmongo', 'dbredis']
+var hosts = ['paix01', 'lab', 'dbredis']
 
 
 //read the initialization variables from Makevars file
@@ -136,9 +136,11 @@ var processDirs = function(cb) {
 
 
 //execution wrapper
-var fexec = function(cmd, cwd) {
-    console.log('cmd: ' + cmd);
-    cmd = 'true';
+var fexec = function(cmd, dir) {
+    var cwd = dockerDir
+    if (dir) {
+        cwd = cwd + '/' + dir;
+    }
     return (exec(cmd, {
         cwd: cwd
     }));
@@ -243,24 +245,12 @@ var doBuild = function(hosts, deps, dirs, running) {
             buildArray[name] = hostData;
         }
     }
+    var builds = []
     for (j in buildArray) {
-            buildArray[j]['promises'] = [];
         if (buildArray[j]['require']) {
-            buildArray[j]['parent'] = doBuild([buildArray[j]['require']], deps, dirs, running);
-
-
-for (k in cmds['build']) {
-//console.log('k',k);
-var builder = cmds['build'][k];
-var cwd = builder['cwd']
-if(cwd == j) {
-console.log(builder)
-builds.append(builder);
-//            buildArray[j]['promises'].push(runJobs([builder]));
-}
-}
-
-console.log(Set(builds));
+            var h1 = buildArray[j]['require'];
+            var p1 = doBuild([buildArray[j]['require']], deps, dirs, running);
+            buildArray[h1] = p1[h1];
         }
     }
     return buildArray;
@@ -269,6 +259,7 @@ console.log(Set(builds));
 
 // do it
 initVars(function(running) {
+    console.log('processing hosts', hosts);
     processDirs(function(dirs) {
         //Make subdirs
         for (i in dirs) {
@@ -315,10 +306,46 @@ initVars(function(running) {
         }
 
 
+        var getRoot = function(build, deps) {
+            var retArray = []
+            if (build in deps) {
+                retArray = retArray.concat(getRoot(deps[build], deps))
+            } else {
+                retArray.push(build)
+            }
+            return (retArray);
+        }
+
         deps = getDeps(dirs, function(deps) {
-            var P = doBuild(hosts, deps, dirs, running);
+            var Pa = Array();
+            var builds = doBuild(hosts, deps, dirs, running);
+            var roots = [];
+            for (build in builds) {
+                var root = getRoot(build, deps);
+                roots = roots.concat(root);
+            }
+            var rootset = new Set(roots);
+
+            console.log('roots', rootset);
+            var bs = {}
+            for (cmd in cmds['build']) {
+                var index = cmds['build'][cmd]['cwd'];
+                bs[index] = cmds['build'][cmd]
+            }
+            //console.log('bs',bs)
+            //console.log('c',cmds['build'])
+            var ccmds = []
+            for (let item of rootset) {
+                ccmds.push(bs[item])
+            }
+            //console.log(ccmds);
+            var stopP = runJobs(ccmds);
+            //console.log('builds', builds);
 
         });
+
+
+
         var buildP = Array(dirs.length);
         Promise.all(buildP).then(function() {
                 console.log('build done');
