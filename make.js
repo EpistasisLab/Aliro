@@ -4,13 +4,21 @@ var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
 var Promise = require("bluebird");
+var Q = require("q");
 var dockerDir = '/share/devel/Gp/dockers'
-var exec = require('child-process-promise').exec;
+var exec = require('child_process').exec;
+
+
 var makevars = {}
 var cmds = {}
-//var steps = ['stop','rm','build','create']
-var steps = ['build']
-var hosts = ['paix01', 'lab', 'dbredis']
+//var quiet = '-q ';
+var quiet = '';
+var steps = ['stop','rm','build','create']
+//var steps = ['build', 'create']
+var hosts = ['dbmongo','dbredis','lab','machine','paiwww','paix01']
+var debug = false;
+//var debug = true; 
+var allroots = [];
 
 
 //read the initialization variables from Makevars file
@@ -33,21 +41,25 @@ var initVars = function(callback) {
 
 //create the specified network if it does not yet exist
 var createNetwork = function(network, callback) {
-    exec('docker network inspect ' + network)
-        .then(function(result) {
-            callback();
-        })
-        .catch(function(err) {
-            exec('docker network create ' + network)
-                .then(function(result2) {
-                    var stdout = result2.stdout;
-                    var stderr = result2.stderr;
-                    console.log('stdout: ', stdout);
-                    console.log('stderr: ', stderr);
-                    callback();
-                })
+    /*
+        exec('docker network inspect ' + network)
+            .then(function(result) {
+                callback();
+            })
+            .catch(function(err) {
+                exec('docker network create ' + network)
+                    .then(function(result2) {
+                        var stdout = result2.stdout;
+                        var stderr = result2.stderr;
+                        console.log('stdout: ', stdout);
+                        console.log('stderr: ', stderr);
+                        callback();
+                    })
 
-        });
+            });
+    */
+    callback()
+
 
 }
 
@@ -102,13 +114,19 @@ var getDeps = function(dirs, callback) {
                 }
             }
         }
+if(!(dir in depends)){
+depends[dir] = '';
+}
     }
+    for (i in dirs) {
+    }
+
     callback(depends);
 }
 
 
 // container build, run, etc.
-var processDirs = function(cb) {
+var parseDirs = function(cb) {
     createNetwork(makevars['NETWORK'], function() {
         fs.readdir(dockerDir, function(err, files) {
             var dirs = [];
@@ -137,13 +155,33 @@ var processDirs = function(cb) {
 
 //execution wrapper
 var fexec = function(cmd, dir) {
+    if (debug) {
+        console.log('fexec',{cmd,dir}),
+        cmd = 'true';
+    }
     var cwd = dockerDir
     if (dir) {
         cwd = cwd + '/' + dir;
     }
-    return (exec(cmd, {
-        cwd: cwd
-    }));
+
+
+    return new Promise((resolve, reject) => {
+        const child = exec(cmd, {
+                cwd: cwd
+            },
+            (err, stdout, stderr) => err ? reject(err) : resolve({
+                stdout: stdout,
+                stderr: stderr
+            }));
+
+        //if (opts.stdout) {
+        //      child.stdout.pipe(opts.stdout);
+        //}
+        //if (opts.stderr) {
+        //     child.stderr.pipe(opts.stderr);
+        // }
+    });
+
 }
 
 
@@ -212,7 +250,7 @@ var runJobs = function(jobs) {
 
         }
     }
-    return promise_array;
+    return Promise.all(promise_array)
 }
 
 
@@ -224,14 +262,14 @@ var commander = function(cmd, args, cwd) {
         }
         cmds[cmd].push({
             cmd: "docker " + cmd + " " + args,
-            //cmd: "true",
             cwd: cwd
         });
-        //}
     }
 }
 
-var doBuild = function(hosts, deps, dirs, running) {
+
+
+var makeBuildArray = function(hosts, deps, dirs, sentient) {
     var buildArray = Array();
     for (i in dirs) {
         var hostData = {}
@@ -240,41 +278,66 @@ var doBuild = function(hosts, deps, dirs, running) {
             var depsname = deps[name];
             hostData['require'] = depsname;
 
-        }
+        } 
         if (hosts.indexOf(name) >= 0) {
             buildArray[name] = hostData;
+//        } else if (hosts.indexOf(name) >= 0 && buildArray[name] === undefined) {
+//buildArray[name] = {}
+
         }
     }
     var builds = []
     for (j in buildArray) {
         if (buildArray[j]['require']) {
             var h1 = buildArray[j]['require'];
-            var p1 = doBuild([buildArray[j]['require']], deps, dirs, running);
-            buildArray[h1] = p1[h1];
+            var p1 = makeBuildArray([buildArray[j]['require']], deps, dirs, sentient);
+            if (h1 in deps) {
+                buildArray[h1] = p1[h1];
+            } else {
+                //buildArray[h1] = p1[h1];
+            }
         }
     }
+    ///console.log(buildArray);
     return buildArray;
 }
 
 
+
+
+
+var getRoot = function(build, buildArray, deps) {
+    var retArray = []
+    if (build in buildArray && buildArray[build]['require'] !== undefined) {
+        retArray = retArray.concat(getRoot(deps[build], buildArray, deps))
+    } else {
+        retArray.push(build)
+    }
+    return (retArray);
+}
+
+
+
+
+
 // do it
-initVars(function(running) {
+initVars(function(sentient) {
     console.log('processing hosts', hosts);
-    processDirs(function(dirs) {
+    // look for container definitions in dockers directory
+    parseDirs(function(dirs) {
         //Make subdirs
         for (i in dirs) {
-            var makedir = dockerDir + '/' + dirs[i];
             //build continers
             var network = 'pennai';
             var tag = 'latest';
-            var host = makedir.split("\/").pop();
-            var build_args = '-q -t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
-            commander('build', build_args, dirs[i]);
+            var host = dirs[i];
+            var build_args = quiet + '-t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
+            commander('build', build_args, host);
             for (varname in makevars) {
                 //check for <anything>_HOST variable
                 var splitted = varname.split('_');
                 if (splitted[1] == 'HOST') {
-                    if (host == makevars[varname]) {
+                    if (host == makevars[varname] && hosts.indexOf(host) >= 0) {
                         var docker_args = '';
                         for (varname_inner in makevars) {
                             docker_args = docker_args + ' -e ' + varname_inner + '=' +
@@ -285,10 +348,9 @@ initVars(function(running) {
                             var port = makevars[portvar];
                             docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
                         }
-
-                        if (host in running) {
-                            var container_id = running[host]['id']
-                            if (running[host]['state'] == 'up') {
+                        if (host in sentient) {
+                            var container_id = sentient[host]['id']
+                            if (sentient[host]['state'] == 'up') {
                                 commander('stop', container_id);
                             }
                             commander('rm', container_id);
@@ -298,7 +360,7 @@ initVars(function(running) {
                         var create_args = '-i -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
                             docker_args + ' --hostname ' + host + ' --name ' + host +
                             ' --net ' + network + ' ' + network + '/' + host;
-                        commander('create', create_args, makedir);
+                        commander('create', create_args, host);
                         commander('start', host);
                     }
                 }
@@ -306,88 +368,104 @@ initVars(function(running) {
         }
 
 
-        var getRoot = function(build, deps) {
-            var retArray = []
-            if (build in deps) {
-                retArray = retArray.concat(getRoot(deps[build], deps))
-            } else {
-                retArray.push(build)
+        var trimBuildArray = function(buildArray, rootset) {
+            var returnArray = {}
+            var returnable = false;
+            for (h in buildArray) {
+                if (buildArray[h]['require']) {
+                    if (rootset.indexOf(buildArray[h]['require']) >= 0) {
+                        delete buildArray[h]['require'];
+                    } else {
+                    }
+                    returnArray[h] = buildArray[h];
+                }
+                returnable = true;
             }
-            return (retArray);
+            if (!returnable) {
+                returnArray = false;
+            }
+            return (returnArray);
         }
 
-        deps = getDeps(dirs, function(deps) {
-            var Pa = Array();
-            var builds = doBuild(hosts, deps, dirs, running);
-            var roots = [];
-            for (build in builds) {
-                var root = getRoot(build, deps);
-                roots = roots.concat(root);
-            }
-            var rootset = new Set(roots);
 
-            console.log('roots', rootset);
-            var bs = {}
-            for (cmd in cmds['build']) {
-                var index = cmds['build'][cmd]['cwd'];
-                bs[index] = cmds['build'][cmd]
+        getDeps(dirs, function(deps) {
+            var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
+                var roots = [];
+            while (buildArray) {
+            ccmdAr = []
+                for (build in buildArray) {
+                    var root = getRoot(build, buildArray, deps);
+                    roots = roots.concat(root);
+                }
+
+                //list of unique 
+                var rootset = new Set(roots);
+                var bs = {}
+                for (cmd in cmds['build']) {
+                    var index = cmds['build'][cmd]['cwd'];
+                    bs[index] = cmds['build'][cmd]
+                }
+                var ccmds = []
+                for (let item of rootset) {
+                    ccmds.push(bs[item])
+                    allroots.push(item)
+                }
+                buildArray = trimBuildArray(buildArray, allroots);
+                if (ccmds.length > 0) {
+                    ccmdAr.push(ccmds);
+                }
             }
-            //console.log('bs',bs)
-            //console.log('c',cmds['build'])
-            var ccmds = []
-            for (let item of rootset) {
-                ccmds.push(bs[item])
+
+            var chain = Q.when();
+            var ccmd = true;
+            for (var h = 0; h < ccmdAr.length; h++) {
+                chain = chain.then(function(dooq) {
+                    ccmd = ccmdAr.shift();
+                    return runJobs(ccmd);
+                });
             }
-            //console.log(ccmds);
-            var stopP = runJobs(ccmds);
-            //console.log('builds', builds);
+            chain.then(function() {
+                    console.log('build done');
+
+                    var stopP = runJobs(cmds['stop']);
+                    Promise.all(stopP).then(function() {
+                            console.log('stop done');
+
+                            var removeP = runJobs(cmds['rm']);
+                            Promise.all(removeP).then(function() {
+                                    console.log("remove done");
+
+                                    var createP = runJobs(cmds['create']);
+                                    Promise.all(createP).then(function() {
+                                            console.log("create done");
+
+
+                                            var startP = runJobs(cmds['start']);
+                                        })
+                                        .catch((errrrr) => {
+                                            console.log(errrrr);
+                                        });
+
+
+
+
+                                })
+                                .catch((errrr) => {
+                                    console.log(errrr);
+                                });
+
+                        })
+                        .catch((errr) => {
+                            console.log(errr);
+                        });
+
+
+
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
 
         });
-
-
-
-        var buildP = Array(dirs.length);
-        Promise.all(buildP).then(function() {
-                console.log('build done');
-
-                var stopP = runJobs(cmds['stop']);
-                Promise.all(stopP).then(function() {
-                        console.log('stop done');
-
-                        var removeP = runJobs(cmds['rm']);
-                        Promise.all(removeP).then(function() {
-                                console.log("remove done");
-
-                                var createP = runJobs(cmds['create']);
-                                Promise.all(createP).then(function() {
-                                        console.log("create done");
-
-
-                                        var startP = runJobs(cmds['start']);
-                                    })
-                                    .catch((errrrr) => {
-                                        console.log(errrrr);
-                                    });
-
-
-
-
-                            })
-                            .catch((errrr) => {
-                                console.log(errrr);
-                            });
-
-                    })
-                    .catch((errr) => {
-                        console.log(errr);
-                    });
-
-
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
     });
 });
