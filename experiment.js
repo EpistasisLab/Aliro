@@ -1,7 +1,7 @@
 var seedrandom = require('seedrandom');
 var rng = seedrandom('NDE3MjNiYbIyYWE3MTZlZDI3MjFjNTFk');
-console.log(rng());          // Always 0.9282578795792454 
-console.log(rng());          // Always 0.9282578795792454 
+//console.log(rng());          // Always 0.9282578795792454 
+//console.log(rng());          // Always 0.9282578795792454 
 const testFolder = 'machine/datasets/byuser/testuser';
 const fs = require('fs');
 
@@ -24,9 +24,9 @@ function getRandom(arr, n) {
 
 
 fs.readdir(testFolder, (err, files) => {
-console.log(getRandom(files,10))
-  files.forEach(file => {
-//    console.log(file);
+  var random_eleven= getRandom(files,11);
+  random_eleven.forEach(file => {
+    console.log(testFolder + '/' + file+'/metadata.json');
   });
 })
 
