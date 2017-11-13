@@ -1,5 +1,5 @@
 include ../Makevars
-HOST=${WEB_HOST}
+HOST=${PAIWWW_HOST}
 TAG=latest
 DOCKER_ARGS=-i -t -p ${IP}:443:443 --hostname ${HOST} --name ${HOST} --net ${NETWORK}
 

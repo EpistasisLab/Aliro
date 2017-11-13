@@ -1410,13 +1410,13 @@ app.use((err, req, res, next) => {
 /* HTTP server */
 var server = http.createServer(app); // Create HTTP server
 socketServer(server);
-if (!process.env.FGLAB_PORT) {
+if (!process.env.LAB_PORT) {
     console.log("Error: No port specified");
     process.exit(1);
 } else {
     // Listen for connections
-    server.listen(process.env.FGLAB_PORT, () => {
-        console.log("Server listening on port " + process.env.FGLAB_PORT);
+    server.listen(process.env.LAB_PORT, () => {
+        console.log("Server listening on port " + process.env.LAB_PORT);
     });
 }
 

@@ -8,7 +8,7 @@
 3. **Modify Makevars**
         - cd Gp/dockers
         - cp Makevars.example Makevars
-        - be sure that SHARE_PATH and PROJECTS_ROOT are set to the parent directory of Gp.
+        - be sure that SHARE_PATH and PROJECT_ROOT are set to the parent directory of Gp.
 
 4. **Start the network**
         - ./toggle shared
