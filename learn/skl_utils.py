@@ -141,7 +141,12 @@ def generate_results(model, input_file, tmpdir, _id):
 
     # computing cross-validated metrics
     cv_scores = cross_val_score(
-        model, training_features, training_classes, cv=5)
+                                estimator=model,
+                                X=training_features,
+                                y=training_classes,
+                                scoring=SCORERS["balanced_accuracy"],
+                                cv=5
+                                )
 
     # determine if target is binary or multiclass
     class_names = model.classes_
@@ -150,18 +155,27 @@ def generate_results(model, input_file, tmpdir, _id):
     else:
         average = 'binary'
 
+    testing_classes_encoded = np.array(
+                                    [list(model.classes_).index(c)
+                                     for c in testing_classes], dtype=np.int
+                                     )
+    predicted_classes_encoded = np.array(
+                                    [list(model.classes_).index(c)
+                                     for c in predicted_classes], dtype=np.int
+                                     )
+
     # get metrics and plots
     train_score = SCORERS['balanced_accuracy'](
         model, training_features, training_classes)
     test_score = SCORERS['balanced_accuracy'](
         model, testing_features, testing_classes)
-    accuracy_score = balanced_accuracy(testing_classes, predicted_classes)
+    accuracy_score = balanced_accuracy(testing_classes_encoded, predicted_classes_encoded)
     precision_score = metrics.precision_score(
-        testing_classes, predicted_classes, average=average)
+        testing_classes_encoded, predicted_classes_encoded, average=average)
     recall_score = metrics.recall_score(
-        testing_classes, predicted_classes, average=average)
+        testing_classes_encoded, predicted_classes_encoded, average=average)
     f1_score = metrics.f1_score(
-        testing_classes, predicted_classes, average=average)
+        testing_classes_encoded, predicted_classes_encoded, average=average)
     cnf_matrix = metrics.confusion_matrix(
         testing_classes, predicted_classes, labels=class_names)
     cnf_matrix_dict = {
