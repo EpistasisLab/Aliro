@@ -1,13 +1,17 @@
 var Promise = require("bluebird");
 var mongoskin = require("mongoskin");
 var db;
-if (!process.env.MONGODB_URI) {
+var mongouri;
+if(process.env.MONGO_HOST && process.env.MONGO_PORT) {
+mongouri="mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/FGLab";
+} else if (process.env.MONGODB_URI) {
+mongouri=process.env.MONGODB_URI;
+} else {
   console.log("Error: No MongoDB instance specified");
   process.exit(1);
-} else {
-  // Connect to MongoDB
-  db = mongoskin.db(process.env.MONGODB_URI, {native_parser: true});
 }
+  // Connect to MongoDB
+  db = mongoskin.db(mongouri, {native_parser: true});
 
 // Bind collections
 db.bind("projects");
