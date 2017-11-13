@@ -7,15 +7,23 @@ var Promise = require("bluebird");
 var Q = require("q");
 var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child_process').exec;
+var argv = require('minimist')(process.argv.slice(2));
+//run every step by default
+var steps = ['stop', 'rm', 'build', 'create', 'start']
+if (argv['_'].length > 0) {
+    steps = argv['_'];
+}
 
+if (argv['p']) {
+    var parent_db = argv['p'];
+}
 
 var makevars = {}
 var cmds = {}
 //var quiet = '-q ';
 var quiet = '';
-var steps = ['stop','rm','build','create']
 //var steps = ['build', 'create']
-var hosts = ['dbmongo','dbredis','lab','machine','paiwww','paix01']
+var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
 var debug = false;
 //var debug = true; 
 var allroots = [];
@@ -114,12 +122,11 @@ var getDeps = function(dirs, callback) {
                 }
             }
         }
-if(!(dir in depends)){
-depends[dir] = '';
-}
+        if (!(dir in depends)) {
+            depends[dir] = '';
+        }
     }
-    for (i in dirs) {
-    }
+    for (i in dirs) {}
 
     callback(depends);
 }
@@ -156,8 +163,11 @@ var parseDirs = function(cb) {
 //execution wrapper
 var fexec = function(cmd, dir) {
     if (debug) {
-        console.log('fexec',{cmd,dir}),
-        cmd = 'true';
+        console.log('fexec', {
+                cmd,
+                dir
+            }),
+            cmd = 'true';
     }
     var cwd = dockerDir
     if (dir) {
@@ -278,12 +288,9 @@ var makeBuildArray = function(hosts, deps, dirs, sentient) {
             var depsname = deps[name];
             hostData['require'] = depsname;
 
-        } 
+        }
         if (hosts.indexOf(name) >= 0) {
             buildArray[name] = hostData;
-//        } else if (hosts.indexOf(name) >= 0 && buildArray[name] === undefined) {
-//buildArray[name] = {}
-
         }
     }
     var builds = []
@@ -293,19 +300,16 @@ var makeBuildArray = function(hosts, deps, dirs, sentient) {
             var p1 = makeBuildArray([buildArray[j]['require']], deps, dirs, sentient);
             if (h1 in deps) {
                 buildArray[h1] = p1[h1];
-            } else {
-                //buildArray[h1] = p1[h1];
             }
         }
     }
-    ///console.log(buildArray);
     return buildArray;
 }
 
 
 
 
-
+//find the oldest ancestor for this container 
 var getRoot = function(build, buildArray, deps) {
     var retArray = []
     if (build in buildArray && buildArray[build]['require'] !== undefined) {
@@ -315,8 +319,6 @@ var getRoot = function(build, buildArray, deps) {
     }
     return (retArray);
 }
-
-
 
 
 
@@ -375,8 +377,7 @@ initVars(function(sentient) {
                 if (buildArray[h]['require']) {
                     if (rootset.indexOf(buildArray[h]['require']) >= 0) {
                         delete buildArray[h]['require'];
-                    } else {
-                    }
+                    } else {}
                     returnArray[h] = buildArray[h];
                 }
                 returnable = true;
@@ -388,84 +389,89 @@ initVars(function(sentient) {
         }
 
 
-        getDeps(dirs, function(deps) {
-            var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
+        if ('build' in steps) {
+            chain = getDeps(dirs, function(deps) {
+                var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
                 var roots = [];
-            while (buildArray) {
-            ccmdAr = []
-                for (build in buildArray) {
-                    var root = getRoot(build, buildArray, deps);
-                    roots = roots.concat(root);
+                while (buildArray) {
+                    ccmdAr = []
+                    for (build in buildArray) {
+                        var root = getRoot(build, buildArray, deps);
+                        roots = roots.concat(root);
+                    }
+
+                    //list of unique 
+                    var rootset = new Set(roots);
+                    var bs = {}
+                    for (cmd in cmds['build']) {
+                        var index = cmds['build'][cmd]['cwd'];
+                        bs[index] = cmds['build'][cmd]
+                    }
+                    var ccmds = []
+                    for (let item of rootset) {
+                        ccmds.push(bs[item])
+                        allroots.push(item)
+                    }
+                    buildArray = trimBuildArray(buildArray, allroots);
+                    if (ccmds.length > 0) {
+                        ccmdAr.push(ccmds);
+                    }
                 }
 
-                //list of unique 
-                var rootset = new Set(roots);
-                var bs = {}
-                for (cmd in cmds['build']) {
-                    var index = cmds['build'][cmd]['cwd'];
-                    bs[index] = cmds['build'][cmd]
+                var chain = Q.when();
+                var ccmd = true;
+                for (var h = 0; h < ccmdAr.length; h++) {
+                    chain = chain.then(function(dooq) {
+                        ccmd = ccmdAr.shift();
+                        return runJobs(ccmd);
+                    });
                 }
-                var ccmds = []
-                for (let item of rootset) {
-                    ccmds.push(bs[item])
-                    allroots.push(item)
-                }
-                buildArray = trimBuildArray(buildArray, allroots);
-                if (ccmds.length > 0) {
-                    ccmdAr.push(ccmds);
-                }
-            }
-
+                return chain;
+            });
+        } else {
             var chain = Q.when();
-            var ccmd = true;
-            for (var h = 0; h < ccmdAr.length; h++) {
-                chain = chain.then(function(dooq) {
-                    ccmd = ccmdAr.shift();
-                    return runJobs(ccmd);
-                });
-            }
-            chain.then(function() {
-                    console.log('build done');
+        }
+        chain.then(function() {
+                console.log('build done');
 
-                    var stopP = runJobs(cmds['stop']);
-                    Promise.all(stopP).then(function() {
-                            console.log('stop done');
+                var stopP = runJobs(cmds['stop']);
+                Promise.all(stopP).then(function() {
+                        console.log('stop done');
 
-                            var removeP = runJobs(cmds['rm']);
-                            Promise.all(removeP).then(function() {
-                                    console.log("remove done");
+                        var removeP = runJobs(cmds['rm']);
+                        Promise.all(removeP).then(function() {
+                                console.log("remove done");
 
-                                    var createP = runJobs(cmds['create']);
-                                    Promise.all(createP).then(function() {
-                                            console.log("create done");
+                                var createP = runJobs(cmds['create']);
+                                Promise.all(createP).then(function() {
+                                        console.log("create done");
 
 
-                                            var startP = runJobs(cmds['start']);
-                                        })
-                                        .catch((errrrr) => {
-                                            console.log(errrrr);
-                                        });
+                                        var startP = runJobs(cmds['start']);
+                                    })
+                                    .catch((errrrr) => {
+                                        console.log(errrrr);
+                                    });
 
 
 
 
-                                })
-                                .catch((errrr) => {
-                                    console.log(errrr);
-                                });
+                            })
+                            .catch((errrr) => {
+                                console.log(errrr);
+                            });
 
-                        })
-                        .catch((errr) => {
-                            console.log(errr);
-                        });
+                    })
+                    .catch((errr) => {
+                        console.log(errr);
+                    });
 
 
 
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
 
-        });
     });
 });
