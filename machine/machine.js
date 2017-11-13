@@ -33,10 +33,25 @@ app.use(morgan("tiny")); // Log requests
 var specs = {};
 var projects = {};
 var experiments = {};
-
+var laburi;
+var machineuri;
 /* FGLab check */
-if (!process.env.FGLAB_URL) {
+if (process.env.LAB_HOST && process.env.LAB_PORT) {
+laburi = 'http://' + process.env.LAB_HOST + ':' + process.env.LAB_PORT;
+} else if (process.env.LAB_URL) {
+laburi = process.env.LAB_URL;
+} else { 
     console.log("Error: No FGLab address specified");
+    process.exit(1);
+}
+
+/* FGMachine var */
+if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
+machineuri = 'http://' + process.env.MACHINE_HOST + ':' + process.env.MACHINE_PORT;
+} else if (process.env.MACHINE_URL) {
+machineuri = process.env.MACHINE_URL;
+} else { 
+    console.log("Error: No FGMachine address specified");
     process.exit(1);
 }
 
@@ -49,7 +64,7 @@ fs.readFile("specs.json", "utf-8")
     .catch(() => {
         // Otherwise create specs
         specs = {
-            address: process.env.FGMACHINE_URL,
+            address: machineuri,
             hostname: os.hostname(),
             os: {
                 type: os.type(),
@@ -83,7 +98,7 @@ fs.readFile("specs.json", "utf-8")
 
         // Register details
         rp({
-                uri: process.env.FGLAB_URL + "/api/v1/machines",
+                uri: laburi + "/api/v1/machines",
                 method: "POST",
                 json: specs,
                 gzip: true
@@ -96,7 +111,7 @@ fs.readFile("specs.json", "utf-8")
                 specs = body;
                 // Register projects
                 rp({
-                        uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects",
+                        uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
                         method: "POST",
                         json: {
                             projects: projects
@@ -120,7 +135,7 @@ fs.readFile("projects.json", "utf-8")
         projects = JSON.parse(proj || "{}");
         // Register projects
         rp({
-                uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects",
+                uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
                 method: "POST",
                 json: {
                     projects: projects
@@ -144,7 +159,7 @@ chokidar.watch("projects.json").on("change", () => {
             projects = JSON.parse(proj || "{}");
             // Register projects
             rp({
-                    uri: process.env.FGLAB_URL + "/api/v1/machines/" + specs._id + "/projects",
+                    uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
                     method: "POST",
                     json: {
                         projects: projects
@@ -167,8 +182,10 @@ chokidar.watch(datasets.byuser_datasets_path, {
     }
 });
 
+
 /* Global max capacity */
 /* Process Datasets */
+datasets.laburi = laburi
 datasets.scrapeUsers()
 
 var maxCapacity = 1;
@@ -189,10 +206,10 @@ var getCapacity = function(projId) {
 /* Routes */
 // Updates projects.json with new project ID
 app.options("/projects", cors({
-    origin: process.env.FGLAB_URL
+    origin: laburi
 })); // Enable pre-flight request for PUT
 app.put("/projects", jsonParser, cors({
-    origin: process.env.FGLAB_URL
+    origin: laburi
 }), (req, res) => {
     var id = req.body.project_id;
     // Insert project implementation template if new
@@ -289,7 +306,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         .on("error", (er) => {
             // Notify of failure
             rp({
-                uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId,
+                uri: laburi + "/api/v1/experiments/" + experimentId,
                 method: "PUT",
                 json: {
                     _status: "fail"
@@ -302,7 +319,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     maxCapacity -= Number(project.capacity); // Reduce capacity of machine
     rp({
-        uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/started",
+        uri: laburi + "/api/v1/experiments/" + experimentId + "/started",
         method: "PUT",
         data: null
     }); // Set started
@@ -325,7 +342,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     // Results-sending function for JSON
     var sendJSONResults = function(results) {
         return rp({
-            uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId,
+            uri: laburi + "/api/v1/experiments/" + experimentId,
             method: "PUT",
             json: JSON.parse(results),
             gzip: true
@@ -340,7 +357,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         // Add file
         formData.files.push(fs.createReadStream(filename));
         return rp({
-            uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/files",
+            uri: laburi + "/api/v1/experiments/" + experimentId + "/files",
             method: "PUT",
             formData: formData,
             gzip: true
@@ -374,7 +391,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         // Send status
         var status = (exitCode === 0) ? "success" : "fail";
         rp({
-            uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId,
+            uri: laburi + "/api/v1/experiments/" + experimentId,
             method: "PUT",
             json: {
                 _status: status
@@ -382,7 +399,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             gzip: true
         });
         rp({
-            uri: process.env.FGLAB_URL + "/api/v1/experiments/" + experimentId + "/finished",
+            uri: laburi + "/api/v1/experiments/" + experimentId + "/finished",
             method: "PUT",
             data: null
         }); // Set finished
@@ -423,12 +440,12 @@ app.post("/experiments/:id/kill", (req, res) => {
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
-if (!process.env.FGMACHINE_URL) {
+if (!machineuri) {
     console.log("Error: No FGMachine address specified");
     process.exit(1);
 } else {
     // Listen for connections
-    var port = url.parse(process.env.FGMACHINE_URL).port;
+    var port = url.parse(machineuri).port;
     server.listen(port, () => {
         console.log("Server listening on port " + port);
     });
