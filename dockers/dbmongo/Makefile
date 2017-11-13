@@ -1,7 +1,7 @@
 include ../Makevars
 HOST=${MONGO_HOST}
 TAG=latest
-DOCKER_ARGS=-i -t -p ${IP}:${MONGO_PORT}:${MONGO_PORT} -e IFROOT=${PROJECTS_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p ${IP}:${MONGO_PORT}:${MONGO_PORT} -e PROJECT_ROOT=${PROJECT_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${NETWORK}/${HOST}:${TAG} .

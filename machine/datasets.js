@@ -9,6 +9,7 @@ var rp = require("request-promise");
 const md5File = require('md5-file')
 var mime = require('mime');
 var debug = false;
+exports.laburi;
 
 //genForm
 // process parentdir for file, execute callback with results
@@ -123,7 +124,7 @@ var processUserDataset = function(username, dataset_name) {
             }
             formData._metadata = JSON.stringify(metadata);
             var p = rp({
-                    uri: process.env.FGLAB_URL + "/api/v1/datasets/",
+                    uri: exports.laburi + "/api/v1/datasets/",
                     method: "PUT",
                     formData: formData,
                     gzip: true
@@ -165,7 +166,12 @@ var processUserDatasets = function(username) {
 }
 
 exports.scrapeUsers = function() {
-
+if(exports.laburi) {
+console.log(exports.laburi) 
+} else {
+console.log('laburi not defined');
+exit(0);
+}
     if (fs.existsSync(byuser_datasets_path)) {
         fs.readdir(byuser_datasets_path, function(err, users) {
             for (var i = 0; i < users.length; i++) {
@@ -179,7 +185,7 @@ var submitForm = function(formData,metadata) {
             metadata_json = byuser_datasets_path + '/' + username + '/' + dataset_name + '/metadata.json';
             formData._metadata = JSON.stringify(metadata);
             var p = rp({
-                    uri: process.env.FGLAB_URL + "/api/v1/datasets/",
+                    uri: exports.laburi + "/api/v1/datasets/",
                     method: "PUT",
                     formData: formData,
                     gzip: true
