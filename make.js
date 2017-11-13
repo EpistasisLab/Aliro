@@ -10,23 +10,30 @@ var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
 var steps = ['stop', 'rm', 'build', 'create', 'start']
+var makevars = {}
+var cmds = {}
+//suppress stdout for docker build(s) (or not)
+//var quiet = '-q ';
+var quiet = '';
+var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
+var debug = false;
+//var debug = true;
+var allroots = [];
+//process arguments
 if (argv['_'].length > 0) {
     steps = argv['_'];
 }
 
+//which parent db to inherit
 if (argv['p']) {
     var parent_db = argv['p'];
 }
 
-var makevars = {}
-var cmds = {}
-//var quiet = '-q ';
-var quiet = '';
-//var steps = ['build', 'create']
-var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
-var debug = false;
-//var debug = true; 
-var allroots = [];
+//which hosts to process
+if (argv['h']) {
+    hosts = argv['h'].split(',');
+}
+
 
 
 //read the initialization variables from Makevars file
@@ -102,7 +109,6 @@ var retHosts = function(network, callback) {
 
     });
 }
-
 
 //extract build dependancy order from Dockerfiles 
 var getDeps = function(dirs, callback) {
@@ -264,6 +270,7 @@ var runJobs = function(jobs) {
 }
 
 
+//format commands and save to a global var
 var commander = function(cmd, args, cwd) {
     //skip execution if cmd is not a valid step
     if (steps.indexOf(cmd) >= 0) {
@@ -278,7 +285,7 @@ var commander = function(cmd, args, cwd) {
 }
 
 
-
+//construct an array to guide building of containers
 var makeBuildArray = function(hosts, deps, dirs, sentient) {
     var buildArray = Array();
     for (i in dirs) {
@@ -308,7 +315,6 @@ var makeBuildArray = function(hosts, deps, dirs, sentient) {
 
 
 
-
 //find the oldest ancestor for this container 
 var getRoot = function(build, buildArray, deps) {
     var retArray = []
@@ -322,7 +328,7 @@ var getRoot = function(build, buildArray, deps) {
 
 
 
-// do it
+// do it!
 initVars(function(sentient) {
     console.log('processing hosts', hosts);
     // look for container definitions in dockers directory
@@ -359,7 +365,7 @@ initVars(function(sentient) {
                         }
 
 
-                        var create_args = '-i -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
+                        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
                             docker_args + ' --hostname ' + host + ' --name ' + host +
                             ' --net ' + network + ' ' + network + '/' + host;
                         commander('create', create_args, host);
@@ -370,6 +376,7 @@ initVars(function(sentient) {
         }
 
 
+       //clean the build array as things get processed
         var trimBuildArray = function(buildArray, rootset) {
             var returnArray = {}
             var returnable = false;
@@ -389,8 +396,10 @@ initVars(function(sentient) {
         }
 
 
-        if ('build' in steps) {
-            chain = getDeps(dirs, function(deps) {
+            getDeps(dirs, function(deps) {
+                var chain = Q.when();
+                //build the containers if we're supposed to
+                if (steps.indexOf('build') >= 0) {
                 var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
                 var roots = [];
                 while (buildArray) {
@@ -399,7 +408,6 @@ initVars(function(sentient) {
                         var root = getRoot(build, buildArray, deps);
                         roots = roots.concat(root);
                     }
-
                     //list of unique 
                     var rootset = new Set(roots);
                     var bs = {}
@@ -418,7 +426,6 @@ initVars(function(sentient) {
                     }
                 }
 
-                var chain = Q.when();
                 var ccmd = true;
                 for (var h = 0; h < ccmdAr.length; h++) {
                     chain = chain.then(function(dooq) {
@@ -426,35 +433,28 @@ initVars(function(sentient) {
                         return runJobs(ccmd);
                     });
                 }
-                return chain;
-            });
-        } else {
-            var chain = Q.when();
-        }
+}
+        //ontinue processing the chain in the correct order order
         chain.then(function() {
-                console.log('build done');
+                //console.log('build done');
 
                 var stopP = runJobs(cmds['stop']);
                 Promise.all(stopP).then(function() {
-                        console.log('stop done');
+                        //console.log('stop done');
 
                         var removeP = runJobs(cmds['rm']);
                         Promise.all(removeP).then(function() {
-                                console.log("remove done");
+                                //console.log("remove done");
 
                                 var createP = runJobs(cmds['create']);
                                 Promise.all(createP).then(function() {
-                                        console.log("create done");
-
+                                        //console.log("create done");
 
                                         var startP = runJobs(cmds['start']);
                                     })
                                     .catch((errrrr) => {
                                         console.log(errrrr);
                                     });
-
-
-
 
                             })
                             .catch((errrr) => {
@@ -466,11 +466,10 @@ initVars(function(sentient) {
                         console.log(errr);
                     });
 
-
-
             })
             .catch((err) => {
                 console.log(err);
+            });
             });
 
     });
