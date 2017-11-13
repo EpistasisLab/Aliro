@@ -3,7 +3,8 @@
     "mz": "^2.4.0",
     "request-promise": "^3.0.0",
     "child-process-promise": "^2.2.1",
-    "seedrandom": "2.4.3"
+    "seedrandom": "2.4.3",
+    "minimist":"1.2.0 "
   },
   "engines": {
     "node": "6.x"

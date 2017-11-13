@@ -18,3 +18,4 @@ dockers/dbmongo/dump.tgz
 dockers/dbmongo/dump/
 core
 *.tgz
+node_modules
