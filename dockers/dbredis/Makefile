@@ -1,7 +1,7 @@
 include ../Makevars
 HOST=${REDIS_HOST}
 TAG=latest
-DOCKER_ARGS=-i -t -p ${IP}:${REDIS_PORT}:${REDIS_PORT} -e IFROOT=${PROJECTS_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
+DOCKER_ARGS=-i -t -p ${IP}:${REDIS_PORT}:${REDIS_PORT} -e PROJECT_ROOT=${PROJECT_ROOT} -h ${HOST} --name ${HOST} --net=${NETWORK}\
 
 build:
 	docker build -t ${NETWORK}/${HOST}:${TAG} .
