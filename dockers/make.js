@@ -26,7 +26,7 @@ if (argv['_'].length > 0) {
 
 //which parent db to inherit
 if (argv['p']) {
-    var parent_db = argv['p'];
+    makevars['PARENTDB'] = argv['p'];
 }
 
 //which hosts to process
@@ -34,6 +34,9 @@ if (argv['h']) {
     hosts = argv['h'].split(',');
 }
 
+if (argv['d']) {
+    debug = true;
+}
 
 
 //read the initialization variables from Makevars file
@@ -80,8 +83,8 @@ var createNetwork = function(network, callback) {
 
 //returns a list of existing containers for the given network
 var retHosts = function(network, callback) {
-    var containers = 'docker ps -a --filter network=' + makevars["NETWORK"] + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
-    var runner = fexec(containers);
+    var containers = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
+    var runner = fexec(containers,'/',false);
     runner.then(function(result) {
         var stdout = result.stdout;
         var stderr = result.stderr;
@@ -115,26 +118,31 @@ var getDeps = function(dirs, callback) {
     var depends = [];
     for (i in dirs) {
         var dir = dirs[i];
-        fileBuffer = fs.readFileSync(dockerDir + '/' + dir + '/Dockerfile');
-        string = fileBuffer.toString();
-        lines = string.split("\n");
-        for (j in lines) {
-            var line = lines[j]
-            var splitted = line.split(' ');
-            if (splitted[0] == 'FROM') {
-                var requires = splitted[1].split(":")[0].split("/")
-                if (requires[0] == makevars['NETWORK']) {
-                    depends[dir] = requires[1];
-                }
-            }
-        }
-        if (!(dir in depends)) {
-            depends[dir] = '';
-        }
-    }
-    for (i in dirs) {}
+        var is_docker = false;
+var files  = fs.readdirSync(dockerDir + '/' + dir);
+if(files.indexOf('Dockerfile') >= 0) {
 
-    callback(depends);
+                    fileBuffer = fs.readFileSync(dockerDir + '/' + dir + '/Dockerfile');
+                    string = fileBuffer.toString();
+                    lines = string.split("\n");
+                    for (j in lines) {
+                        var line = lines[j]
+                        var splitted = line.split(' ');
+                        if (splitted[0] == 'FROM') {
+                            var requires = splitted[1].split(":")[0].split("/")
+                            if (requires[0] == makevars['NETWORK']) {}
+                        }
+                    }
+                    if (!(dir in depends)) {
+                        depends[dir] = '';
+                    }
+           //     }
+            }
+            for (i in dirs) {}
+    }
+
+            callback(depends);
+//        });
 }
 
 
@@ -166,18 +174,15 @@ var parseDirs = function(cb) {
 
 
 
-//execution wrapper
-var fexec = function(cmd, dir) {
-    if (debug) {
-        console.log('fexec', {
-                cmd,
-                dir
-            }),
-            cmd = 'true';
-    }
+//docker exec wrapper
+var fexec = function(cmd, host, fake) {
     var cwd = dockerDir
-    if (dir) {
-        cwd = cwd + '/' + dir;
+    if (host) {
+        cwd = cwd + '/' + host;
+    }
+    if (fake) {
+        console.log('fexec', {cmd,cwd});
+        cmd = 'true';
     }
 
 
@@ -215,7 +220,7 @@ var runJobs = function(jobs) {
         //check dependancy order
         if (name) {
             if (!depends) {
-                var runner = fexec(job['cmd'], job['cwd']);
+                var runner = fexec(job['cmd'], job['cwd'],debug);
                 promise_array[i] = runner;
                 runner.then(function(result) {
                     var stdout = result.stdout;
@@ -232,7 +237,7 @@ var runJobs = function(jobs) {
                 for (j in jobs) {
                     var job2 = jobs[j];
                     if (job2['name'] && job2['name'] == depends) {
-                        var runner = fexec(job['cmd'], job['cwd']);
+                        var runner = fexec(job['cmd'], job['cwd'],debug);
                         promis_array.push(runner);
                         runner.then(function(result) {
                             var stdout = result.stdout;
@@ -251,7 +256,7 @@ var runJobs = function(jobs) {
 
             }
         } else {
-            var runner = fexec(job['cmd'], job['cwd']);
+            var runner = fexec(job['cmd'], job['cwd'],debug);
             promise_array.push(runner);
             runner.then(function(result) {
                 var stdout = result.stdout;
@@ -337,9 +342,11 @@ initVars(function(sentient) {
         for (i in dirs) {
             //build continers
             var network = 'pennai';
+            var network = makevars['NETWORK'];
+            var registry = makevars['REGISTRY'];
             var tag = 'latest';
             var host = dirs[i];
-            var build_args = quiet + '-t ' + makevars['NETWORK'] + '/' + host + ':' + tag + ' .';
+            var build_args = quiet + '-t ' + network + '/' + host + ':' + tag + ' .';
             commander('build', build_args, host);
             for (varname in makevars) {
                 //check for <anything>_HOST variable
@@ -369,6 +376,17 @@ initVars(function(sentient) {
                             docker_args + ' --hostname ' + host + ' --name ' + host +
                             ' --net ' + network + ' ' + network + '/' + host;
                         commander('create', create_args, host);
+
+                        var tag_args = network + '/' + host + ':' + tag + ' ' + registry + '/' + host + ':' + tag;
+                        commander('tag', tag_args);
+
+                        var push_args = registry + '/' + host + ':' + tag;
+                        commander('push', push_args);
+
+
+
+
+
                         commander('start', host);
                     }
                 }
@@ -376,7 +394,7 @@ initVars(function(sentient) {
         }
 
 
-       //clean the build array as things get processed
+        //clean the build array as things get processed
         var trimBuildArray = function(buildArray, rootset) {
             var returnArray = {}
             var returnable = false;
@@ -396,10 +414,10 @@ initVars(function(sentient) {
         }
 
 
-            getDeps(dirs, function(deps) {
-                var chain = Q.when();
-                //build the containers if we're supposed to
-                if (steps.indexOf('build') >= 0) {
+        getDeps(dirs, function(deps) {
+            var chain = Q.when();
+            //build the containers if we're supposed to
+            if (steps.indexOf('build') >= 0) {
                 var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
                 var roots = [];
                 while (buildArray) {
@@ -433,44 +451,67 @@ initVars(function(sentient) {
                         return runJobs(ccmd);
                     });
                 }
-}
-        //ontinue processing the chain in the correct order order
-        chain.then(function() {
-                //console.log('build done');
+            }
+            //ontinue processing the chain in the correct order order
+            chain.then(function() {
+                    //console.log('build done');
 
-                var stopP = runJobs(cmds['stop']);
-                Promise.all(stopP).then(function() {
-                        //console.log('stop done');
+                    var stopP = runJobs(cmds['stop']);
+                    Promise.all(stopP).then(function() {
+                            //console.log('stop done');
 
-                        var removeP = runJobs(cmds['rm']);
-                        Promise.all(removeP).then(function() {
-                                //console.log("remove done");
+                            var removeP = runJobs(cmds['rm']);
+                            //console.log(cmds['rm']);
+                            Promise.all(removeP).then(function() {
+                                    //console.log("remove done");
 
-                                var createP = runJobs(cmds['create']);
-                                Promise.all(createP).then(function() {
+                                    var createP = runJobs(cmds['create']);
+                                    Promise.all(createP).then(function() {
+                                            //console.log("create done");
+
+
+                                  var tagP = runJobs(cmds['tag']);
+                                Promise.all(tagP).then(function() {
+                                        //console.log("create done");
+                                var pushP = runJobs(cmds['tag']);
+                                Promise.all(pushP).then(function() {
                                         //console.log("create done");
 
-                                        var startP = runJobs(cmds['start']);
-                                    })
-                                    .catch((errrrr) => {
-                                        console.log(errrrr);
+
+
+                                            var startP = runJobs(cmds['start']);
+                                        })
+
+                                    .catch((errrrrrr) => {
+                                        console.log(errrrrrr);
                                     });
+                                    })
+                                    .catch((errrrrr) => {
+                                        console.log(errrrrr);
+                                    });
+                                    })
 
-                            })
-                            .catch((errrr) => {
-                                console.log(errrr);
-                            });
 
-                    })
-                    .catch((errr) => {
-                        console.log(errr);
-                    });
 
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-            });
+                                        .catch((errrrr) => {
+                                            console.log(errrrr);
+                                        });
+
+                                })
+                                .catch((errrr) => {
+                                    console.log(errrr);
+                                });
+
+                        })
+                        .catch((errr) => {
+                            console.log(errr);
+                        });
+
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
 
     });
 });
