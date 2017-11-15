@@ -85,16 +85,11 @@ var createNetwork = function(network, callback) {
 var retHosts = function(network, callback) {
     var containers = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
     var runner = fexec(containers, '/', false);
-    runner.then(function(result) {
-        var stdout = result.stdout;
-        var stderr = result.stderr;
+    runner.then(function(stdout) {
         var list;
         var existing = {}
         if (stdout) {
             list = stdout.trim().split('\n');
-        }
-        if (stderr) {
-            console.log('stderr: ', stderr);
         }
         for (i in list) {
             var splitted = list[i].split(':');
@@ -200,9 +195,7 @@ var fexec = function(cmd, host, fake) {
             console.error(`exec error: ${error}`);
             process.exit();
         } else {
-            console.log('good');
-            console.log(stdout);
-            deferred.resolve('ok');
+            deferred.resolve(stdout);
         }
     })
 
@@ -339,6 +332,7 @@ var getRoot = function(build, buildArray, deps) {
 
 // do it!
 initVars(function(sentient) {
+
     console.log('processing hosts', hosts);
     // look for container definitions in dockers directory
     parseDirs(function(dirs) {
@@ -453,7 +447,7 @@ initVars(function(sentient) {
 
 
                 //where the magic happens
-                return ccmdAr.reduce(function(promise, item) {
+                var chain = ccmdAr.reduce(function(promise, item) {
                     return promise.then(function(result) {
                         return runJobs(item);
                     });
