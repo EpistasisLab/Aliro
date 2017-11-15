@@ -3,8 +3,8 @@ var fs = require('fs');
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var Promise = require("bluebird");
 var Q = require("q");
+var Promise = Q
 var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
@@ -64,7 +64,7 @@ var createNetwork = function(network, callback) {
             .then(function(result) {
                 callback();
             })
-            .catch(function(err) {
+            .catch(function(err {
                 exec('docker network create ' + network)
                     .then(function(result2) {
                         var stdout = result2.stdout;
@@ -91,7 +91,6 @@ var retHosts = function(network, callback) {
         var list;
         var existing = {}
         if (stdout) {
-            //                    console.log('stdout: ', stdout);
             list = stdout.trim().split('\n');
         }
         if (stderr) {
@@ -190,22 +189,24 @@ var fexec = function(cmd, host, fake) {
     }
 
 
-    return new Promise((resolve, reject) => {
-        const child = exec(cmd, {
-                cwd: cwd
-            },
-            (err, stdout, stderr) => err ? reject(err) : resolve({
-                stdout: stdout,
-                stderr: stderr
-            }));
+    var deferred = Q.defer();
+    exec(cmd, {
+        maxBuffer: 1024 * 500,
+        cwd: cwd
+    }, (error, stdout, stderr) => {
+        if (error) {
+            console.log('err');
+            deferred.reject(new Error(error));
+            console.error(`exec error: ${error}`);
+            process.exit();
+        } else {
+            console.log('good');
+            console.log(stdout);
+            deferred.resolve('ok');
+        }
+    })
 
-        //if (opts.stdout) {
-        //      child.stdout.pipe(opts.stdout);
-        //}
-        //if (opts.stderr) {
-        //     child.stderr.pipe(opts.stderr);
-        // }
-    });
+    return deferred.promise;
 
 }
 
@@ -215,7 +216,6 @@ var runJobs = function(jobs) {
     if (jobs === undefined) {
         return []
     }
-    //console.log(jobs);
     var promise_array = Array(jobs.length);
     for (i in jobs) {
         var job = jobs[i];
@@ -229,12 +229,12 @@ var runJobs = function(jobs) {
                 runner.then(function(result) {
                     var stdout = result.stdout;
                     var stderr = result.stderr;
-                    if (stdout) {
-                        console.log('stdout: ', stdout);
-                    }
-                    if (stderr) {
-                        console.log('stderr: ', stderr);
-                    }
+                    //                if (stdout) {
+                    console.log('stdout: ', stdout);
+                    //                }
+                    //                if (stderr) {
+                    console.log('stderr: ', stderr);
+                    //                 }
                 });
                 //if the job depends on another job, wait for that one
             } else {
@@ -275,7 +275,7 @@ var runJobs = function(jobs) {
 
         }
     }
-    return Promise.all(promise_array)
+    return Promise.allSettled(promise_array);
 }
 
 
@@ -416,16 +416,17 @@ initVars(function(sentient) {
             return (returnArray);
         }
 
-        //build containers based on dep
+        //build containers based on deps
         getDeps(dirs, function(deps) {
+            //promises
             var chain = Q.when();
-            //build the containers if we're supposed to
+            //build the containers (if we're supposed to)
             if (steps.indexOf('build') >= 0) {
                 var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
-                console.log('b', buildArray);
-                var roots = [];
+                ccmdAr = []
                 while (buildArray) {
-                    ccmdAr = []
+                    var roots = [];
+                    //ccmdAr = []
                     for (build in buildArray) {
                         var root = getRoot(build, buildArray, deps);
                         roots = roots.concat(root);
@@ -449,13 +450,16 @@ initVars(function(sentient) {
                 }
 
                 var ccmd = true;
-                for (var h = 0; h < ccmdAr.length; h++) {
-                    chain = chain.then(function(dooq) {
-                        ccmd = ccmdAr.shift();
-                        return runJobs(ccmd);
+
+
+                //where the magic happens
+                return ccmdAr.reduce(function(promise, item) {
+                    return promise.then(function(result) {
+                        return runJobs(item);
                     });
-                }
-            }
+                }, Q());
+
+            };
             //ontinue processing the chain in the correct order order
             chain.then(function() {
                     //console.log('build done');
