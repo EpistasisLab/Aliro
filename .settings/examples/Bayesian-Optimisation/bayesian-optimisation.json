@@ -1,0 +1,10 @@
+{
+  "x": {
+    "type": "float",
+    "default": 2
+  },
+  "y": {
+    "type": "float",
+    "default": 7
+  }
+}

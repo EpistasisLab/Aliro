@@ -1,0 +1,213 @@
+/* Author: Douglas A. Augusto */
+
+body  
+{ 
+   padding: 0;
+   margin: 3px; 
+   color: black; 
+   background-color:#BBB8B6;
+   font-family: "Bitstream Vera Sans", sans-serif, Arial, serif;
+   font-size: 10pt;
+}
+a     { text-decoration: none; }
+
+/* Code (verbatim) */
+pre   
+{
+   background-color: #e6e6e6;
+   margin-left: 1em;
+   padding: 8px;
+   font-size: 9pt;
+   border-bottom: 1px solid gray;
+   border-right: 1px solid gray;
+}
+
+table 
+{ 
+   border: thin solid gray; 
+}
+
+th    
+{
+     background-color: #e6e6e6; 
+     font-family: Verdana,Arial,Helvetica,sans-serif; 
+     padding-bottom: .5em; padding-top: .5em;
+}
+
+td    
+{
+     border-style: none;
+     background-color: #ede1e5;
+     padding-left: 1em;
+     padding-right: 1em;
+}
+
+dl    { margin: .5em; }
+
+
+code  { background-color: #d7e2e6; font-size: 9pt; }
+
+hr    { border-style: none; }
+
+a:visited { color: purple; }
+a:hover   { color: white; }
+
+/* left menu */
+div.left {
+   width: 12.6em;
+   float: left;
+   padding-bottom: 2%;
+   text-align: center;
+   border-right: 1px solid #c4dee6; 
+   font-family: Arial,serif;
+}
+
+div.left li 
+{
+   /*display: marker;*/
+   list-style-type: none;
+   marker-offset: 5px;
+}
+div.left ul 
+{
+     padding-left: 8%;
+     padding-top: 2%;
+     text-align: left;
+}
+div.left hr 
+{
+     border-style: solid;
+     width: 85%;
+}
+
+/* Menu items */
+div.left dt    { 
+   text-align: left;
+/*   background-color: #ede1e5;*/
+   border-bottom: 1px solid gray;
+   border-right: 1px solid gray;
+}
+
+/* Latest News, Download, Documentation, Author, etc. */
+div.left dd
+{
+  background-color: #999999;
+}
+
+/* IE bug */
+div.left p
+{
+  background-color: #BBB8B6;
+}
+
+/*div.left a:hover   { color: red; }*/
+
+/* Content */
+div.content 
+{
+   margin: 0;
+   margin-left: 12.8em;
+   text-align: justify;
+   /*padding: 11em .4em 0px .6em;*/
+   padding: 140px .4em 0px .6em;
+}
+
+/* News' headers */
+div.content dt 
+{
+   clear: right;
+   background-color: #999999;
+   font-weight: bold;
+   color: white;
+}
+
+/* bottom section */
+div.right 
+{
+   /*
+   text-align: center;
+   font-size: small;
+   width: 100%;
+   float: right;
+   border-top: 1px dashed gray;
+   */
+}
+
+/* headers (first 3 lines, must use --css-suggar) */
+div.header 
+{
+   font-weight: bold;
+   text-align: center;
+   float: right;
+   width: 100%;
+}
+
+/* "GAFFitter" */
+div.header h1 
+{
+   margin-top: 5px;
+   margin-bottom: 10px;
+   padding-left: 2em;
+   text-align: left;
+   font-family: Verdana, Helvetica, sans-serif, serif;
+   font-variant: small-caps;
+   /*font-size: 24pt;*/
+   font-size: 42px;
+   background-color: #BBB8B6;
+   color: white;
+}
+
+/* "Genetic Algorithm File Fitter" */
+div.header h2 
+{
+   margin: 0;
+   margin-bottom: 15px;
+   background-color: #c4dee6;
+   text-align: center;
+   font-family: Verdana, Helvetica, sans-serif, serif;
+   /* font-size: 20pt;*/
+   font-size: 28px;
+}
+
+/* toc menu */
+div.toc 
+{
+   float:right;
+   border:none;
+   font: 9pt Arial, sans-serif;
+}
+div.toc li 
+{
+   list-style: none; 
+   margin: 0;
+   display: inline;
+}
+div.toc li a 
+{
+   padding: 3px 5px; 
+   border: 1px solid #c4dee6; 
+   background: #999;
+   text-decoration: none;
+}
+div.toc li a:link 
+{
+   color: #fff;
+}
+div.toc li a:visited 
+{
+   color: #fff;
+}
+div.toc li a:hover 
+{
+   background: #ccc;
+   color: #000; 
+   border-color: #000;
+}
+
+#updated 
+{
+   font-size: 9pt;
+   bottom: 0px;
+   position: relative;
+   top: 20px;
+}
