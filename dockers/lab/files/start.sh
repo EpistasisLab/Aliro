@@ -1,5 +1,10 @@
 cd ${PROJECT_ROOT}/Gp/lab
-npm install
+if [ -f '/root/forum' ]; then
+    echo "forum exists."
+else
+    bower install --allow-root
+    touch /root/forum
+fi;
 webpack --watch &
 pm2 start lab.config.js --watch
 bash
