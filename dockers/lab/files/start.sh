@@ -1,4 +1,4 @@
-cd ${PROJECT_ROOT}/Gp/lab
+cd ${PROJECT_ROOT}/lab
 if [ -f '/root/forum' ]; then
     echo "forum exists."
 else
