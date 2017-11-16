@@ -1,0 +1,10 @@
+{
+  "<Project ID>": {
+    "cwd": "./examples/Calinski-Harabasz",
+    "command": "matlab",
+    "args": ["-nodisplay", "-r", "clustering"],
+    "options": "function",
+    "capacity": "0.1",
+    "results": "./examples/Calinski-Harabasz"
+  }
+}
