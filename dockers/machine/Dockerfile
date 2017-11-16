@@ -1,15 +1,13 @@
 #working off of an ubuntu wily rootfs
 FROM pennai/compute:latest
 WORKDIR /opt/
-ADD files/version /tmp
-RUN git clone git@github.com:EpistasisLab/Gp.git
-RUN cd Gp/machine && npm install && npm -g install pm2
-VOLUME /share
-COPY files/env Gp/machine/.env
-COPY files/projects.json Gp/machine/
+COPY files/env pennai/machine/.env
+COPY files/projects.json pennai/machine/
 COPY files/start.sh /root/
 COPY files/entrypoint.sh /root/
 COPY files/get_datasets.sh /root/
+RUN cd pennai/machine && npm install && npm -g install pm2
+VOLUME /share
 EXPOSE 5081
 #need ssh?
 #RUN echo "root:training" | chpasswd
