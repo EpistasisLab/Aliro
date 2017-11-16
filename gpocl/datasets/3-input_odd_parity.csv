@@ -1,0 +1,15 @@
+% One possible solution:
+% Parity = (X2|(!(X0&X1)))&((!(X0|X1))|(X0&X1)|!X2)&X1|(X0|X2) 
+
+% A creative very compact solution found by gpocl:
+% Parity = (X0 == X1) == X2
+
+% In1	In2 In3 Parity
+0,0,0,0
+0,0,1,1
+0,1,0,1
+0,1,1,0
+1,0,0,1
+1,0,1,0
+1,1,0,0
+1,1,1,1

@@ -1,0 +1,32 @@
+{
+    "username": "nulluser",
+    "firstname": "Null",
+    "lastname": "User"
+}
+{
+    "username": "testuser",
+    "firstname": "Test",
+    "lastname": "User",
+    "Roles": ["admin","beginner"],
+    "Datasets": [{
+        "name": "Gametes"
+    }, {
+        "name": "Adults"
+    }, {
+        "name": "Thyroid"
+    }, {
+        "name": "Breast Cancer"
+    }, {
+        "name": "Hypothyroid"
+    }, {
+        "name": "Mushrooms"
+    }],
+    "Algorithms": [{
+        "name": "BernoulliNB",
+        "name": "GaussianNB",
+        "name": "LinearSVC",
+        "name": "LinearSVR",
+        "name": "LogisticRegression",
+        "name": "ElasticNetCV"
+    }]
+}

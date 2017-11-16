@@ -1,0 +1,3 @@
+FGLAB_URL=http://lab:5080
+FGMACHINE_URL=http://machine:5081
+IFROOT=/opt/Gp
