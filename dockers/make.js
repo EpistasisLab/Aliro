@@ -12,10 +12,10 @@ var steps = ['stop', 'rm', 'build', 'create', 'start']
 var makevars = {}
 var cmds = {}
 //suppress stdout for docker build(s) (or not)
-//var quiet = '-q ';
-var quiet = '';
 var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
-var debug = false;
+var dryrun = false;
+var verbose = false;
+var share = false;
 var dockerDir;
 //var debug = true;
 var allroots = [];
@@ -24,20 +24,29 @@ if (argv['_'].length > 0) {
     steps = argv['_'];
 }
 
-//which parent db to inherit
-if (argv['p']) {
-    makevars['PARENTDB'] = argv['p'];
-}
-
-//which hosts to process
-if (argv['h']) {
-    hosts = argv['h'].split(',');
-}
-
+//parent db to inherit
 if (argv['d']) {
-    debug = true;
+    makevars['PARENTDB'] = argv['d'];
 }
 
+//which directories to process
+if (argv['p']) {
+    hosts = argv['p'].split(',');
+}
+
+//show what would run without actually running anything
+if (argv['n']) {
+    dryrun = true;
+}
+
+if (argv['v']) {
+    verbose = true;
+}
+
+//run things from share
+if (argv['s']) {
+    share = true;
+}
 
 //read the initialization variables from Makevars file
 var initVars = function(callback) {
@@ -55,8 +64,13 @@ var initVars = function(callback) {
     }
     var network = makevars['NETWORK'];
     var basedir = makevars['SHARE_PATH'];
+    if (share) {
+        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'];
+    } else {
+        makevars['PROJECT_ROOT'] = '/opt';
+    }
     dockerDir = basedir + '/' + network + '/dockers'
-    retHosts(network, callback)
+    retHosts(network,callback);
 }
 
 
@@ -85,10 +99,31 @@ var createNetwork = function(network, callback) {
 }
 
 //returns a list of existing containers for the given network
-var retHosts = function(network, callback) {
-    var containers = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
-    var runner = fexec(containers, '/', false);
-    runner.then(function(stdout) {
+var retHosts = function(network,callback) {
+    var cmd = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
+    var cwd = dockerDir;
+    if (verbose) {
+        console.log('fexec', {
+            cmd,
+            cwd
+        });
+    }
+    var deferred = Q.defer();
+    var cwd = dockerDir
+    exec(cmd, {
+        maxBuffer: 1024 * 1024,
+        cwd: cwd
+    }, (error, stdout, stderr) => {
+        if (error) {
+            console.log('err');
+            deferred.reject(new Error(error));
+            console.error(`exec error: ${error}`);
+            //process.exit();
+        } else {
+            deferred.resolve(stdout);
+        }
+    })
+    deferred.promise.then(function(stdout) {
         var list;
         var existing = {}
         if (stdout) {
@@ -105,6 +140,9 @@ var retHosts = function(network, callback) {
             };
         }
         callback(existing);
+
+
+
 
 
     });
@@ -173,19 +211,20 @@ var parseDirs = function(cb) {
 
 
 //docker exec wrapper
-var fexec = function(cmd, host, fake) {
+var fexec = function(cmd, host) {
     var cwd = dockerDir
     if (host) {
         cwd = cwd + '/' + host;
     }
-    if (fake) {
+    if (verbose) {
         console.log('fexec', {
             cmd,
             cwd
         });
+    }
+    if (dryrun) {
         cmd = 'true';
     }
-
 
     var deferred = Q.defer();
     //console.log('running',{cmd:cmd,cwd:cwd});
@@ -221,7 +260,7 @@ var runJobs = function(jobs) {
         //check dependancy order
         if (name) {
             if (!depends) {
-                var runner = fexec(job['cmd'], job['cwd'], debug);
+                var runner = fexec(job['cmd'], job['cwd']);
                 promise_array[i] = runner;
                 runner.then(function(result) {
                     var stdout = result.stdout;
@@ -238,7 +277,7 @@ var runJobs = function(jobs) {
                 for (j in jobs) {
                     var job2 = jobs[j];
                     if (job2['name'] && job2['name'] == depends) {
-                        var runner = fexec(job['cmd'], job['cwd'], debug);
+                        var runner = fexec(job['cmd'], job['cwd']);
                         promis_array.push(runner);
                         runner.then(function(result) {
                             var stdout = result.stdout;
@@ -257,7 +296,7 @@ var runJobs = function(jobs) {
 
             }
         } else {
-            var runner = fexec(job['cmd'], job['cwd'], debug);
+            var runner = fexec(job['cmd'], job['cwd']);
             promise_array.push(runner);
             runner.then(function(result) {
                 var stdout = result.stdout;
@@ -346,7 +385,12 @@ initVars(function(sentient) {
             var registry = makevars['REGISTRY'];
             var tag = 'latest';
             var host = dirs[i];
-            var build_args = quiet + '-t ' + network + '/' + host + ':' + tag + ' .';
+            var quiet = '';
+            if(!verbose){
+            quiet = '-q'
+            }
+         
+            var build_args = quiet + ' -t ' + network + '/' + host + ':' + tag + ' .';
             commander('build', build_args, host);
             for (varname in makevars) {
                 //check for <anything>_HOST variable
