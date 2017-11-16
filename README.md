@@ -4,14 +4,13 @@
 
 2. **Install build requirements**
         - docker [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/)
-        - make [http://gnuwin32.sourceforge.net/packages/make.htm](http://gnuwin32.sourceforge.net/packages/make.htm),[https://developer.apple.com/] (https://developer.apple.com),[https://wiki.ubuntu.com/ubuntu-make] (https://wiki.ubuntu.com/ubuntu-make),[https://www.gnu.org/software/make/](https://www.gnu.org/software/make)
+        - nodejs [https://nodejs.org/en/](https://nodejs.org/en/)
+        - make (optional) [http://gnuwin32.sourceforge.net/packages/make.htm](http://gnuwin32.sourceforge.net/packages/make.htm),[https://developer.apple.com/] (https://developer.apple.com),[https://wiki.ubuntu.com/ubuntu-make] (https://wiki.ubuntu.com/ubuntu-make),[https://www.gnu.org/software/make/](https://www.gnu.org/software/make)
 3. **Modify Makevars**
-        - cd Gp/dockers
-        - cp Makevars.example Makevars
-        - be sure that SHARE_PATH and PROJECT_ROOT are set to the parent directory of Gp.
+        - copy the dockers/Makevars.example file to dockers/Makevars and edit to suite your environment
 
 4. **Start the network**
-        - ./toggle shared
+        - run node dockers/make.js.  This may take a very long time the first time!
 
 Fedora/Redhat/Systems with SELinux:
 chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
