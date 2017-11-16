@@ -4,7 +4,7 @@ if [ -f '/root/forum' ]; then
 else
     sleep 2
     if [ -v PARENTDB ]; then
-        dumpdir=$SHARE_PATH"/Gp/forums/"${PARENTDB} 
+        dumpdir=$SHARE_PATH"/forums/"${PARENTDB} 
         cd $dumpdir  && mongorestore dump/
     else
         mongoimport -d FGLab -c projects --file /root/projects.json --type json
