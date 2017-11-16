@@ -7,7 +7,6 @@ RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiver
 RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org  npm git openssh-client htop net-tools iputils-ping --no-install-recommends
 #check if we need to rebuild
 ADD files/version /tmp
-#add Gp sourcecode || not needed if mounting /share
 VOLUME /share
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/

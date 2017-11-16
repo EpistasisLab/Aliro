@@ -5,7 +5,6 @@ var path = require("path");
 var fs = require("mz/fs");
 var Q = require("q");
 var Promise = Q
-var dockerDir = '/share/devel/Gp/dockers'
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
@@ -17,6 +16,7 @@ var cmds = {}
 var quiet = '';
 var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
 var debug = false;
+var dockerDir;
 //var debug = true;
 var allroots = [];
 //process arguments
@@ -41,7 +41,7 @@ if (argv['d']) {
 
 //read the initialization variables from Makevars file
 var initVars = function(callback) {
-    fileBuffer = fs.readFileSync(dockerDir + '/Makevars');
+    fileBuffer = fs.readFileSync('Makevars');
     vars_string = fileBuffer.toString();
     vars_lines = vars_string.split("\n");
     for (i in vars_lines) {
@@ -53,7 +53,10 @@ var initVars = function(callback) {
             makevars[name] = val;
         }
     }
-    retHosts(makevars['NETWORK'], callback)
+    var network = makevars['NETWORK'];
+    var basedir = makevars['SHARE_PATH'];
+    dockerDir = basedir + '/' + network + '/dockers'
+    retHosts(network, callback)
 }
 
 
@@ -185,7 +188,7 @@ var fexec = function(cmd, host, fake) {
 
 
     var deferred = Q.defer();
-console.log('running',{cmd:cmd,cwd:cwd});
+    //console.log('running',{cmd:cmd,cwd:cwd});
     exec(cmd, {
         maxBuffer: 1024 * 1024,
         cwd: cwd
@@ -196,7 +199,6 @@ console.log('running',{cmd:cmd,cwd:cwd});
             console.error(`exec error: ${error}`);
             //process.exit();
         } else {
-console.log(stdout);
             deferred.resolve(stdout);
         }
     })
@@ -340,7 +342,6 @@ initVars(function(sentient) {
     parseDirs(function(dirs) {
         for (i in dirs) {
             //build continers
-            var network = 'pennai';
             var network = makevars['NETWORK'];
             var registry = makevars['REGISTRY'];
             var tag = 'latest';
