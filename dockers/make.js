@@ -185,16 +185,18 @@ var fexec = function(cmd, host, fake) {
 
 
     var deferred = Q.defer();
+console.log('running',{cmd:cmd,cwd:cwd});
     exec(cmd, {
-        maxBuffer: 1024 * 500,
+        maxBuffer: 1024 * 1024,
         cwd: cwd
     }, (error, stdout, stderr) => {
         if (error) {
             console.log('err');
             deferred.reject(new Error(error));
             console.error(`exec error: ${error}`);
-            process.exit();
+            //process.exit();
         } else {
+console.log(stdout);
             deferred.resolve(stdout);
         }
     })
