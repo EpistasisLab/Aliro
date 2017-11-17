@@ -25,3 +25,6 @@ dockers/dbmongo/dump/
 core
 *.tgz
 node_modules
+rec_state.obj
+test_weighted_recommender.py
+
