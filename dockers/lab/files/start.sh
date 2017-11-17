@@ -5,6 +5,10 @@ else
     echo "installing npm, bower and webpack"
     npm install
     npm install -g bower pm2 webpack webpack-dev-server
+fi;
+if [ -d 'bower_components' ]; then
+    echo "bower ready"
+else
     bower install --allow-root
 fi;
 webpack --watch &
