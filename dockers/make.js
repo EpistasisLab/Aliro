@@ -49,6 +49,10 @@ if (argv['s']) {
     share = true;
 }
 
+//IP address
+if (argv['i']) {
+    makevars['IP'] = argv['i'];
+}
 //read the initialization variables from Makevars file
 var initVars = function(callback) {
     fileBuffer = fs.readFileSync('Makevars');
