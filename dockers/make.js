@@ -17,6 +17,7 @@ var dryrun = false;
 var verbose = false;
 var share = false;
 var dockerDir;
+var basedir;
 //var debug = true;
 var allroots = [];
 //process arguments
@@ -63,13 +64,13 @@ var initVars = function(callback) {
         }
     }
     var network = makevars['NETWORK'];
-    var basedir = makevars['SHARE_PATH'];
     if (share) {
-        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'];
+        basedir = makevars['SHARE_PATH'] + '/' + network;
     } else {
-        makevars['PROJECT_ROOT'] = '/opt';
+        basedir = '/opt/' +  network;
     }
-    dockerDir = basedir + '/' + network + '/dockers'
+    dockerDir =  makevars['SHARE_PATH'] + '/' + network + '/dockers'
+    makevars['PROJECT_ROOT'] = basedir;
     retHosts(network,callback);
 }
 
