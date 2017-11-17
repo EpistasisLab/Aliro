@@ -496,6 +496,10 @@ initVars(function(sentient) {
 
                 //where the magic happens
                 var chain = ccmdAr.reduce(function(promise, item) {
+
+if(verbose) {
+console.log('item',item);
+}
                     return promise.then(function(result) {
                         return runJobs(item);
                     });
