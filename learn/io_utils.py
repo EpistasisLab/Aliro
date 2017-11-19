@@ -5,7 +5,7 @@ import os
 import time
 
 lab_host = os.environ['LAB_HOST']
-basedir = os.environ['PROJECT_ROOT'] + '/Gp'
+basedir = os.environ['PROJECT_ROOT']
 http = urllib3.PoolManager()
 
 

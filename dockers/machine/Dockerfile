@@ -2,7 +2,7 @@
 FROM pennai/compute:latest
 WORKDIR /opt/
 COPY files/env pennai/machine/.env
-COPY files/projects.json pennai/machine/
+#COPY files/projects.json pennai/machine/
 COPY files/start.sh /root/
 COPY files/entrypoint.sh /root/
 COPY files/get_datasets.sh /root/
