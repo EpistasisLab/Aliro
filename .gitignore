@@ -13,6 +13,7 @@ dist
 *.swp
 *.pyc
 machine/datasets/byuser/*
+machine/projects.json
 bigfiles/
 dockers/Makevars
 dockers/paiwww/files/certs

@@ -1,7 +1,8 @@
 var seedrandom = require('seedrandom');
 var rng = seedrandom('NDE3MjNiYbIyYWE3MTZlZDI3MjFjNTFk');
-//console.log(rng());          // Always 0.9282578795792454 
-//console.log(rng());          // Always 0.9282578795792454 
+//prime the pump
+console.log(rng());          // Always 0.9282578795792454 
+console.log(rng());          // Always 0.9282578795792454 
 const testFolder = 'machine/datasets/byuser/testuser';
 const fs = require('fs');
 
