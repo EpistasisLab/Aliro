@@ -370,7 +370,8 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     };
 
     // Watch for experiment folder
-    var resultsDir = path.join(project.results, experimentId);
+    var resultsDir = path.join(project_root, project.results, experimentId);
+console.log(resultsDir);
     var watcher = chokidar.watch(resultsDir, {
         awaitWriteFinish: true
     }).on("all", (event, path) => {
