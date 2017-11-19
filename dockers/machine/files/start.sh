@@ -9,5 +9,6 @@ else
     npm install
     npm -g install pm2
 fi;
+
 pm2 start machine.config.js
 bash
