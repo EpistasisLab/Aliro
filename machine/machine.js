@@ -35,7 +35,12 @@ var projects = {};
 var experiments = {};
 var laburi;
 var machineuri;
+var project_root;
 /* FGLab check */
+if (process.env.PROJECT_ROOT) {
+    project_root = process.env.PROJECT_ROOT
+}
+
 if (process.env.LAB_HOST && process.env.LAB_PORT) {
 laburi = 'http://' + process.env.LAB_HOST + ':' + process.env.LAB_PORT;
 } else if (process.env.LAB_URL) {
@@ -223,7 +228,7 @@ app.put("/projects", jsonParser, cors({
             results: "."
         };
         fs.writeFile("projects.json", JSON.stringify(projects, null, "\t"));
-        res.send({
+        res.end({
             msg: "Project ID " + id + " template added - please adjust on " + specs.hostname
         });
 
@@ -300,7 +305,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     //console.log("args")
     //console.log(args)
     var experiment = spawn(project.command, args, {
-            cwd: project.cwd
+            cwd: project_root + '/' + project.cwd
         })
         // Catch spawning errors
         .on("error", (er) => {
