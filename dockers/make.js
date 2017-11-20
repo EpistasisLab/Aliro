@@ -55,7 +55,7 @@ if (argv['i']) {
 }
 //read the initialization variables from Makevars file
 var initVars = function(callback) {
-    fileBuffer = fs.readFileSync('dockers/Makevars');
+    fileBuffer = fs.readFileSync('Makevars');
     vars_string = fileBuffer.toString();
     vars_lines = vars_string.split("\n");
     for (i in vars_lines) {
@@ -241,7 +241,7 @@ var fexec = function(cmd, host) {
             console.log('err');
             deferred.reject(new Error(error));
             console.error(`exec error: ${error}`);
-            //process.exit();
+            process.exit();
         } else {
 if(verbose) {
 console.log(stdout);
