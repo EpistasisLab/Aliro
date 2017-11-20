@@ -42,20 +42,20 @@ if (process.env.PROJECT_ROOT) {
 }
 
 if (process.env.LAB_HOST && process.env.LAB_PORT) {
-laburi = 'http://' + process.env.LAB_HOST + ':' + process.env.LAB_PORT;
+    laburi = 'http://' + process.env.LAB_HOST + ':' + process.env.LAB_PORT;
 } else if (process.env.LAB_URL) {
-laburi = process.env.LAB_URL;
-} else { 
+    laburi = process.env.LAB_URL;
+} else {
     console.log("Error: No FGLab address specified");
     process.exit(1);
 }
 
 /* FGMachine var */
 if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
-machineuri = 'http://' + process.env.MACHINE_HOST + ':' + process.env.MACHINE_PORT;
+    machineuri = 'http://' + process.env.MACHINE_HOST + ':' + process.env.MACHINE_PORT;
 } else if (process.env.MACHINE_URL) {
-machineuri = process.env.MACHINE_URL;
-} else { 
+    machineuri = process.env.MACHINE_URL;
+} else {
     console.log("Error: No FGMachine address specified");
     process.exit(1);
 }
@@ -139,18 +139,20 @@ fs.readFile("projects.json", "utf-8")
         console.log("Loaded projects");
         projects = JSON.parse(proj || "{}");
         // Register projects
-        rp({
-                uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
-                method: "POST",
-                json: {
-                    projects: projects
-                },
-                gzip: true
-            })
-            .then(() => {
-                console.log("Projects registered with FGLab successfully");
-            })
-            .catch(() => {}); // Ignore failure in case machine is not registered
+        if (specs._id !== undefined) {
+            rp({
+                    uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
+                    method: "POST",
+                    json: {
+                        projects: projects
+                    },
+                    gzip: true
+                })
+                .then(() => {
+                    console.log("Projects registered with FGLab successfully");
+                })
+                .catch(() => {}); // Ignore failure in case machine is not registered
+        }
     })
     .catch(() => {
         projects = {};
@@ -371,7 +373,6 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // Watch for experiment folder
     var resultsDir = path.join(project_root, project.results, experimentId);
-console.log(resultsDir);
     var watcher = chokidar.watch(resultsDir, {
         awaitWriteFinish: true
     }).on("all", (event, path) => {
