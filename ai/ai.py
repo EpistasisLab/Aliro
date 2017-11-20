@@ -23,6 +23,17 @@ from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
+class JasonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(JasonEncoder, self).default(obj)
+
 class AI():
     """AI managing agent for Penn AI.
 
@@ -233,7 +244,7 @@ class AI():
             rec_path = '/'.join([self.projects_path,
                         rec_payload['algorithm_id'],
                                       'experiment'])
-            v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
+            v=requests.post(rec_path,data=json.dumps(rec_payload, cls=JasonEncoder),headers=self.header)
             submitresponses = json.loads(v.text)
             #parse json response into named array
             submitstatus={}
