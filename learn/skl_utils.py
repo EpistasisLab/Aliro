@@ -187,8 +187,6 @@ def generate_results(model, input_file, tmpdir, _id):
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-
-
     if(binaryPlots):
         plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
@@ -211,9 +209,8 @@ def generate_results(model, input_file, tmpdir, _id):
         }
         save_json_fmt(outdir=tmpdir, _id=_id,
                       fname="roc_curve.json", content=roc_curve_dict)
-
-    if(binaryPlots):
-       plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
+        if(binaryPlots):
+           plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 
     # save metrics
     metrics_dict = {'_scores': {
