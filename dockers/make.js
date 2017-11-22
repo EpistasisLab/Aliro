@@ -1,4 +1,5 @@
 //creates a network of hosts to serve PennAI
+'use strict';
 var fs = require('fs');
 var os = require("os");
 var path = require("path");
@@ -55,10 +56,10 @@ if (argv['i']) {
 }
 //read the initialization variables from Makevars file
 var initVars = function(callback) {
-    fileBuffer = fs.readFileSync('Makevars');
-    vars_string = fileBuffer.toString();
-    vars_lines = vars_string.split("\n");
-    for (i in vars_lines) {
+    var fileBuffer = fs.readFileSync('Makevars');
+    var vars_string = fileBuffer.toString();
+    var vars_lines = vars_string.split("\n");
+    for (var i in vars_lines) {
         var line = vars_lines[i]
         var spliteded = line.split(':=');
         var name = spliteded[0];
@@ -134,7 +135,8 @@ var retHosts = function(network,callback) {
         if (stdout) {
             list = stdout.trim().split('\n');
         }
-        for (i in list) {
+            console.log(list);
+        for (var i in list) {
             var splitted = list[i].split(':');
             var host = splitted[0];
             var container_id = splitted[1];
@@ -156,16 +158,16 @@ var retHosts = function(network,callback) {
 //extract build dependancy order from Dockerfiles 
 var getDeps = function(dirs, callback) {
     var depends = [];
-    for (i in dirs) {
+    for (var i in dirs) {
         var dir = dirs[i];
         var is_docker = false;
         var files = fs.readdirSync(dockerDir + '/' + dir);
         if (files.indexOf('Dockerfile') >= 0) {
 
-            fileBuffer = fs.readFileSync(dockerDir + '/' + dir + '/Dockerfile');
-            string = fileBuffer.toString();
-            lines = string.split("\n");
-            for (j in lines) {
+            var fileBuffer = fs.readFileSync(dockerDir + '/' + dir + '/Dockerfile');
+            var string = fileBuffer.toString();
+            var lines = string.split("\n");
+            for (var j in lines) {
                 var line = lines[j]
                 var splitted = line.split(' ');
                 if (splitted[0] == 'FROM') {
@@ -261,7 +263,7 @@ var runJobs = function(jobs) {
         return []
     }
     var promise_array = Array(jobs.length);
-    for (i in jobs) {
+    for (var i in jobs) {
         var job = jobs[i];
         var name = job['name'];
         var depends = job['depends'];
@@ -282,7 +284,7 @@ var runJobs = function(jobs) {
                 });
                 //if the job depends on another job, wait for that one
             } else {
-                for (j in jobs) {
+                for (var j in jobs) {
                     var job2 = jobs[j];
                     if (job2['name'] && job2['name'] == depends) {
                         var runner = fexec(job['cmd'], job['cwd']);
@@ -341,7 +343,7 @@ var commander = function(cmd, args, cwd) {
 //construct an array to guide building of containers
 var makeBuildArray = function(hosts, deps, dirs, sentient) {
     var buildArray = Array();
-    for (i in dirs) {
+    for (var i in dirs) {
         var hostData = {}
         var name = dirs[i];
         if (deps[name]) {
@@ -354,7 +356,7 @@ var makeBuildArray = function(hosts, deps, dirs, sentient) {
         }
     }
     var builds = []
-    for (j in buildArray) {
+    for (var j in buildArray) {
         if (buildArray[j]['require']) {
             var h1 = buildArray[j]['require'];
             var p1 = makeBuildArray([buildArray[j]['require']], deps, dirs, sentient);
@@ -387,7 +389,7 @@ initVars(function(sentient) {
     console.log('processing hosts', hosts);
     // look for container definitions in dockers directory
     parseDirs(function(dirs) {
-        for (i in dirs) {
+        for (var i in dirs) {
             //build continers
             var network = makevars['NETWORK'];
             var registry = makevars['REGISTRY'];
@@ -400,13 +402,13 @@ initVars(function(sentient) {
          
             var build_args = quiet + ' -t ' + network + '/' + host + ':' + tag + ' .';
             commander('build', build_args, host);
-            for (varname in makevars) {
+            for (var varname in makevars) {
                 //check for <anything>_HOST variable
                 var splitted = varname.split('_');
                 if (splitted[1] == 'HOST') {
                     if (host == makevars[varname] && hosts.indexOf(host) >= 0) {
                         var docker_args = '';
-                        for (varname_inner in makevars) {
+                        for (var varname_inner in makevars) {
                             docker_args = docker_args + ' -e ' + varname_inner + '=' +
                                 makevars[varname_inner];
                         }
@@ -450,7 +452,7 @@ initVars(function(sentient) {
         var trimBuildArray = function(buildArray, rootset) {
             var returnArray = {}
             var returnable = false;
-            for (h in buildArray) {
+            for (var h in buildArray) {
                 if (buildArray[h]['require']) {
                     if (rootset.indexOf(buildArray[h]['require']) >= 0) {
                         delete buildArray[h]['require'];
@@ -472,18 +474,18 @@ initVars(function(sentient) {
             //build the containers (if we're supposed to)
             if (steps.indexOf('build') >= 0) {
                 var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
-                ccmdAr = []
+                var ccmdAr = []
                 while (buildArray) {
                     var roots = [];
                     //ccmdAr = []
-                    for (build in buildArray) {
+                    for (var build in buildArray) {
                         var root = getRoot(build, buildArray, deps);
                         roots = roots.concat(root);
                     }
                     //list of unique 
                     var rootset = new Set(roots);
                     var bs = {}
-                    for (cmd in cmds['build']) {
+                    for (var cmd in cmds['build']) {
                         var index = cmds['build'][cmd]['cwd'];
                         bs[index] = cmds['build'][cmd]
                     }
