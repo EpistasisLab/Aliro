@@ -8,6 +8,10 @@ from sklearn.model_selection import train_test_split, cross_val_score
 binaryPlots = os.environ['MAKEPLOTS']
 
 
+# if system environment has a random seed
+random_state = 42
+if 'RANDOM_STATE' in os.environ:
+    random_state = int(os.environ['RANDOM_STATE'])
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
@@ -57,7 +61,6 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
     # hard coded values for now (to be added as cmd line args later)
     train_size = 0.75       # default = 0.75
-    random_state = None     # default = None
     target_name = 'class'   # for testing, using 'class'
 
     if target_name not in input_data.dtype.names:
@@ -73,6 +76,9 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
     print('args used in model:', model.get_params())
 
+    # fix random_state
+    if hasattr(model, 'random_state'):
+        setattr(model, 'random_state', random_state)
     # fit model
     model.fit(training_features, training_classes)
 
@@ -118,7 +124,6 @@ def generate_results(model, input_file, tmpdir, _id):
         input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
     # hard coded values for now (to be added as cmd line args later)
     train_size = 0.75		# default = 0.75
-    random_state = 42  # default = None
     target_name = 'class'  # for testing, using 'class'
 
     print(input_data)
@@ -135,6 +140,9 @@ def generate_results(model, input_file, tmpdir, _id):
 
     print('args used in model:', model.get_params())
 
+    # fix random_state
+    if hasattr(model, 'random_state'):
+        setattr(model, 'random_state', random_state)
     # fit model
     model.fit(training_features, training_classes)
 
@@ -299,4 +307,3 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.legend(loc="lower right")
 
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
-
