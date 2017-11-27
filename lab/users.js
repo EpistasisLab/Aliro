@@ -1,5 +1,6 @@
 require("./env"); // Load configuration variables
 var db = require("./db").db;
+var Q = require("q");
 //return a user data
 exports.returnUserData = function(req) {
   var data = {}
@@ -12,10 +13,11 @@ exports.returnUserData = function(req) {
     var apikey = req.body.apikey;
     query = {apikey:apikey}
   } else {
-    var username = 'testuser'; 
-    query = {username:username}
+    query = {};
   }
   if(Object.keys(query).length === 0) {
+//return (new Promise());
+return(Q.when());
     return(false);
   } else {
     return new Promise(function(success, fail) {
