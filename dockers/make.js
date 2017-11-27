@@ -426,7 +426,7 @@ initVars(function(sentient) {
                         }
 
 
-                        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':/share/devel' +
+                        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
                             docker_args + ' --hostname ' + host + ' --name ' + host +
                             ' --net ' + network + ' ' + network + '/' + host;
                         commander('create', create_args, host);
