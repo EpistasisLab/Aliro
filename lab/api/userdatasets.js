@@ -76,6 +76,7 @@ exports.responder = function(req, res) {
         }],
         function(err, users) {
             retArray = []
+if (users) {
             var user = users[0];
             var algorithms = api.convert_to_dict(user['algorithms']);
             var experiments = api.convert_to_dict(user['experiments']);
@@ -99,6 +100,7 @@ exports.responder = function(req, res) {
                 }
                 retArray.push(annotate_dataset(datasets[_id]));
             }
+}
             res.send(retArray);
 
         }

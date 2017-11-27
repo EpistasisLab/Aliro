@@ -23,6 +23,7 @@ from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
+#encoder for numpy in json
 class JasonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -244,7 +245,7 @@ class AI():
             rec_path = '/'.join([self.projects_path,
                         rec_payload['algorithm_id'],
                                       'experiment'])
-            v=requests.post(rec_path,data=json.dumps(rec_payload, cls=JasonEncoder),headers=self.header)
+            v=requests.post(rec_path,data=json.dumps(rec_payload,cls=JasonEncoder),headers=self.header)
             submitresponses = json.loads(v.text)
             #parse json response into named array
             submitstatus={}
@@ -277,6 +278,7 @@ class AI():
                         # 'dataset_name':r['name'],
                         'algorithm_id':alg,
                         # 'ml_name':alg,
+                        'username':self.user,
                         'parameters':modified_params,
                         'ai_score':score,
                         }
@@ -427,6 +429,7 @@ def main():
         print('Saving current AI state and closing....')
     finally:
         # tell queues to exit
+        print("foo")
         q_utils.exitFlag=1
         pennai.save_state()
 
