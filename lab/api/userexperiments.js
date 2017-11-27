@@ -113,6 +113,7 @@ exports.responder = function(req, res) {
             }
         }],
         function(err, users) {
+        if (users) {
             retArray = []
             var user = users[0];
             var algorithms = api.convert_to_dict(user['algorithms']);
@@ -142,6 +143,10 @@ exports.responder = function(req, res) {
             */
             res.send(formatted_experiments);
 
+        } else { 
+            res.send([]);
+        }
+ 
         }
     );
 }

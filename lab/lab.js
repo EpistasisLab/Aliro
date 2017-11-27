@@ -659,12 +659,13 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                     } else {
                         var obj = Object.assign(req.query, req.body);
                         if (obj['parameters']) {
+console.log(obj);
                             old_obj = obj;
                             obj = new Object(obj['parameters']);
                             obj['dataset'] = old_obj['dataset_id'];
                             ai_score = old_obj['ai_score'];
                             dataset = old_obj['dataset_id']
-                            username = 'testuser';
+                            username = old_obs['username'];
                         }
                         if ("dataset" in obj) {
                             dataset = obj['dataset'];
