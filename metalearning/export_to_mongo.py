@@ -50,7 +50,7 @@ for algorithm in algorithms:
 #
 print('loading pmlb results data...')
 #data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
-data = pd.read_csv('sklearn-benchmark5-data-edited.tsv.gz', sep='\t',
+data = pd.read_csv('sklearn-benchmark5-data-short.tsv.gz', sep='\t',
                    names=['dataset',
                          'classifier',
                          'parameters',
