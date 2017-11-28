@@ -553,4 +553,67 @@
         }
     },
     "category": "ML"
+} {
+    "_id": {
+        "$oid": "58535d09a525130034441330"
+    },
+    "name": "PennAIRecommender",
+    "schema": {
+        "n_recommend": {
+            "description": "The number of recommendations to make",
+            "type": "int",
+            "default": 0,
+            "ui": {
+                "style": "radio",
+                "choices": [0, 10, 100, 35626]
+            }
+        },
+        "recommender": {
+            "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.",
+            "type": "string",
+            "default": "random",
+            "ui": {
+                "style": "radio",
+                "choices": ["random", "average", "exhaustive"]
+            }
+        },
+        "inherit": {
+            "description": "Inherit experiments from forum",
+            "type": "string",
+            "default": "fresh",
+            "ui": {
+                "style": "radio",
+                "choices": ["fresh", "false"]
+            }
+        },
+        "dryrun": {
+            "description": "Perform a dry run",
+            "type": "enum",
+            "default": "false",
+            "ui": {
+                "style": "radio",
+                "choices": ["true", "false"]
+            }
+        
+        },
+        "shared": {
+            "description": "Run from shared path instead of /opt",
+            "type": "enum",
+            "default": "false",
+            "ui": {
+                "style": "radio",
+                "choices": ["true", "false"]
+            }
+        },
+        "verbose": {
+            "description": "verbose logging",
+            "type": "enum",
+            "default": "false",
+            "ui": {
+                "style": "radio",
+                "choices": ["true", "false"]
+            }
+         }
+    },
+    "category": "ML"
 }
