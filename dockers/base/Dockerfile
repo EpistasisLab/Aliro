@@ -10,4 +10,4 @@ RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz 
 ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
 ADD files/ssh.tgz /
 WORKDIR /opt/
-RUN git clone -b realnewmake git@github.com:EpistasisLab/penn-ai.git pennai
+RUN git clone git@github.com:EpistasisLab/pennai.git
