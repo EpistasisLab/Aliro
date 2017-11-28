@@ -5,13 +5,19 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
-binaryPlots = os.environ['MAKEPLOTS']
 
+
+
+# if system environment allows to export figures
+figure_export = False
+if 'IMG_OUTPUT' in os.environ:
+    if str(os.environ['IMG_OUTPUT']) == '1':
+        figure_export = True
 
 # if system environment has a random seed
 random_state = 42
 if 'RANDOM_STATE' in os.environ:
-    random_state = int(os.environ['RANDOM_STATE'])
+    random_state = float(os.environ['RANDOM_STATE'])
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
@@ -195,7 +201,8 @@ def generate_results(model, input_file, tmpdir, _id):
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-    if(binaryPlots):
+    #export plot
+    if figure_export:
         plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
     roc_auc_score = 'not supported for multiclass'
@@ -217,7 +224,7 @@ def generate_results(model, input_file, tmpdir, _id):
         }
         save_json_fmt(outdir=tmpdir, _id=_id,
                       fname="roc_curve.json", content=roc_curve_dict)
-        if(binaryPlots):
+        if figure_export:
            plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 
     # save metrics
@@ -292,7 +299,10 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 
 
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
-    fpr, tpr, _ = roc_curve
+    """ 
+    Save ROC Curve.
+    """
+
 
     plt.figure()
     lw = 2
