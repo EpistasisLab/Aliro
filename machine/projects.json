@@ -220,5 +220,16 @@
         "options": "double-dash",
         "capacity": "0.1",
         "results": "learn/RidgeCV/tmp"
+    },
+    "58535d09a525130034441330": {
+        "cwd": "dockers",
+        "command": "node",
+        "args": [
+            "make",
+            "-nv"
+        ],
+        "options": "double-dash",
+        "capacity": "1",
+        "results": "forums"
     }
 }

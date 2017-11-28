@@ -57,6 +57,9 @@ var genForm = function(file, callback) {
             if (filetype == 'text/csv') {
                 file_level_metadata['classlabel'] = 'class';
             }
+else {
+console.log(filetype);
+}
             metadata.files.push(file_level_metadata);
             formData._files.push(fs.createReadStream(filename));
             }
@@ -97,8 +100,9 @@ var processUserDataset = function(username, dataset_name) {
                 'timestamp': Date.now(),
                 'files': []
             }
+if(files) {
             for (var i = 0; i < files.length; i++) {
-                if (files[i] == 'README.MD') {
+                if (files[i].toUpperCase() == 'README.MD') {
                     //todo:parse README
                 } else {
                     var filename = dataset_path + '/' + files[i];
@@ -110,6 +114,7 @@ var processUserDataset = function(username, dataset_name) {
                     } else {
                         filetype = mime.lookup(filename);
                     }
+
                     var file_level_metadata = {
                         'filename': files[i],
                         'checksum': checksum,
@@ -143,6 +148,7 @@ var processUserDataset = function(username, dataset_name) {
                 });
             //console.log(p);
 
+}
         }
     });
     // Add file
