@@ -15,11 +15,15 @@ import pdb
 import time
 import ai.db_utils as db_utils
 import os
+<<<<<<< HEAD
 import ai.q_utils as q_utils
+=======
+>>>>>>> master
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
+<<<<<<< HEAD
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from collections import OrderedDict
 
@@ -35,6 +39,10 @@ class JasonEncoder(json.JSONEncoder):
         else:
             return super(JasonEncoder, self).default(obj)
 
+=======
+from collections import OrderedDict
+
+>>>>>>> master
 class AI():
     """AI managing agent for Penn AI.
 
@@ -59,7 +67,11 @@ class AI():
                     sessions
     """
 
+<<<<<<< HEAD
     def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+=======
+    def __init__(self,rec=None,db_path=os.environ['FGLAB_URL'],
+>>>>>>> master
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
                  verbose=True,warm_start=False, n_recs=1):
@@ -105,10 +117,13 @@ class AI():
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = db_utils.get_ml_id_dict(self.algo_path,self.api_key)
+<<<<<<< HEAD
         # build dictionary of dataset ids to names conversion
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         #each dataset gets its own thread 
         self.dataset_threads = {}
+=======
+>>>>>>> master
 
     def load_state(self):
         """loads pickled score file."""
@@ -169,7 +184,10 @@ class AI():
                 data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
                 tmp = requests.put(data_submit_path,data=json.dumps(payload),
                                       headers=self.header)
+<<<<<<< HEAD
                 q_utils.startQ(self,r['_id'])
+=======
+>>>>>>> master
             return True
 
         return False
@@ -238,6 +256,7 @@ class AI():
         # print('dataframe:\n',self.new_data.head())
         # print('ai:',ai)
 
+<<<<<<< HEAD
     def transfer_rec(self,rec_payload):
             """performs http transfer of recommendation"""
             self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
@@ -304,6 +323,8 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','processed',i,'requests')
 
+=======
+>>>>>>> master
 
     def send_rec(self):
         """Sends recommendation to the API."""
@@ -325,12 +346,27 @@ class AI():
                         'ai_score':score,
                         }
                 if self.verbose:
+<<<<<<< HEAD
+=======
+                    #print(rec_payload)
+>>>>>>> master
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
                 # add static payload
                 rec_payload.update(self.static_payload)
+<<<<<<< HEAD
                 # do http transfer
                 transfer_status = self.transfer_rec(rec_payload)
+=======
+                # submit path is ml_id/experiment
+                rec_path = '/'.join([self.projects_path,
+                                        rec_payload['algorithm_id'],
+                                        'experiment'])
+                # post recommendations
+                #print(rec_path)
+                v=requests.post(rec_path,data=json.dumps(rec_payload),headers=self.header)
+                #print(v)
+>>>>>>> master
 
                 #submit update to dataset to indicate ai:True
             payload= {'ai':'finished'}
@@ -342,10 +378,13 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','processed',i,'requests')
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> master
     def update_recommender(self):
         """Updates recommender based on new results."""
         # update recommender
@@ -387,9 +426,15 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
+<<<<<<< HEAD
                         choices = ['random','average','exhaustive'], 
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+=======
+                        choices = ['random','average'],#'exhaustive'], 
+                        help='Recommender algorithm options.')
+    parser.add_argument('-db_path',action='store',dest='DB_PATH',default=os.environ['FGLAB_URL'],
+>>>>>>> master
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
@@ -406,7 +451,11 @@ def main():
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
                                                 api_key=os.environ['APIKEY']),
             'average': AverageRecommender(),
+<<<<<<< HEAD
             'exhaustive': ExhaustiveRecommender(db_path=args.DB_PATH,api_key=os.environ['APIKEY'])
+=======
+            #'exhaustive': ExhaustiveRecommender()
+>>>>>>> master
             }
     print('=======','Penn AI','=======',sep='\n')
 
@@ -421,16 +470,23 @@ def main():
                 pennai.update_recommender()
             # check for new recommendation requests
             if pennai.check_requests():
+<<<<<<< HEAD
                pennai.process_rec()
                 #pennai.send_rec()
+=======
+                pennai.send_rec()
+>>>>>>> master
             n = n + 1
             sleep(2)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
+<<<<<<< HEAD
         # tell queues to exit
         print("foo")
         q_utils.exitFlag=1
+=======
+>>>>>>> master
         pennai.save_state()
 
 if __name__ == '__main__':
