@@ -392,6 +392,7 @@ def main():
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
+    parser.add_argument('-t',action='store',dest='DATASETS',help='turn on ai for these datasets')
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
@@ -401,6 +402,7 @@ def main():
                         help='Start from last saved session.')
    
     args = parser.parse_args()
+    print(args)
 
     # dictionary of default recommenders to choose from at the command line. 
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
