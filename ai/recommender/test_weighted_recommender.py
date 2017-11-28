@@ -50,4 +50,3 @@ def test_db_grab():
 
 test_ml_p()
 print("evaluate")
-#evaluate_recommender(WeightedRecommender())
