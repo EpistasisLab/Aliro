@@ -4,8 +4,7 @@ var fs = require('fs');
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var Q = require("q");
-var Promise = Q
+var Promise = require("q")
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
@@ -114,7 +113,7 @@ var retHosts = function(network,callback) {
             cwd
         });
     }
-    var deferred = Q.defer();
+    var deferred = Promise.defer();
     var cwd = dockerDir
     exec(cmd, {
         maxBuffer: 1024 * 1024,
@@ -233,7 +232,7 @@ var fexec = function(cmd, host) {
         cmd = 'true';
     }
 
-    var deferred = Q.defer();
+    var deferred = Promise.defer();
     //console.log('running',{cmd:cmd,cwd:cwd});
     exec(cmd, {
         maxBuffer: 1024 * 1024,
@@ -470,7 +469,7 @@ initVars(function(sentient) {
         //build containers based on deps
         getDeps(dirs, function(deps) {
             //promises
-            var chain = Q.when();
+            var chain = Promise.when();
             //build the containers (if we're supposed to)
             if (steps.indexOf('build') >= 0) {
                 var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
@@ -512,7 +511,7 @@ console.log('item',item);
                     return promise.then(function(result) {
                         return runJobs(item);
                     });
-                }, Q());
+                }, Promise());
 
             };
             //ontinue processing the chain in the correct order order
