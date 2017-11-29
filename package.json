@@ -1,11 +1,10 @@
 {
   "dependencies": {
     "mz": "^2.4.0",
-    "request-promise": "^3.0.0",
-    "child-process-promise": "^2.2.1",
+    "aws-sdk": "^2.157",
     "seedrandom": "2.4.3",
-    "minimist":"1.2.0",
-    "q":"1.5.1"
+    "minimist": "1.2.0",
+    "q": "1.5.1"
   },
   "engines": {
     "node": "6.x"
