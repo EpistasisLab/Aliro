@@ -51,10 +51,11 @@ var grouped = groupem(randomized,10);
 
 //  Populate the experiment matrix
 for (group in grouped) {
-var forum = rng().toString(36).substr(2,8).toUpperCase();
+var forum = rng().toString(16).substr(2,8).toLowerCase();
 experiment[forum] = {}
 experiment[forum]['datasets'] = grouped[group]
 //Create directory structure for datasets
+/*
 var dir = 'machine/datasets/byuser/svitale/' + forum
 if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, 0744);
@@ -68,4 +69,6 @@ if (!fs.existsSync(dir)) {
     
 
 }
+*/
 }
+console.log(experiment);
