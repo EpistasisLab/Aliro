@@ -1,6 +1,6 @@
 #starting from the pennai base image (ubuntu wily, utils, certs)
 FROM pennai/base:latest
-RUN cd pennai/lab && npm install && npm install -g bower pm2 webpack webpack-dev-server 
+RUN cd pennai/lab && npm install && npm install -g bower pm2 webpack webpack-dev-server  && bower install --allow-root
 #
 COPY files/start.sh /root/
 COPY files/env /opt/.env
