@@ -62,6 +62,8 @@ for (i in grouped) {
     }
 }
 var grouped = grouped.slice(0, 3)
+
+
 for (i in grouped) {
     var forum = grouped[i]['forum'];
     var num_hosts = 2;
@@ -73,7 +75,9 @@ for (i in grouped) {
     };
     ecs.describeClusters(params, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
-        else console.log(data); // successful response
+        else {
+       // console.log(data); // successful response
+        }
     });
 
     var params = {
@@ -81,8 +85,11 @@ for (i in grouped) {
     };
     ecs.listContainerInstances(params, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
-        else console.log(data); // successful response
+        else {
+       //console.log(data); // successful response
+        }
     });
+    makeForum(forum);
 
 
 
@@ -92,10 +99,6 @@ for (i in grouped) {
     };
 
 
-    ecs.createCluster(params, function(err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else     console.log(data);           // successful response
-    });
 
 
     /*
