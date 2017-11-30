@@ -1,5 +1,5 @@
-var grouped = require('./ranman').retData();
 var AWS = require('aws-sdk');
+var argv = require('minimist')(process.argv.slice(2));
 AWS.config.update({
     region: 'us-east-2'
 });
@@ -8,40 +8,40 @@ var ecs = new AWS.ECS({
 });
 var ec2 = new AWS.EC2();
 
-var makeForum = function(forum) {
+var ranman = require('./ranman').retData();
+var fora = ranman['grouped'];
+var all = ranman['datasets'];
+var action = 'info';
+if (argv['_'] && argv['_'].length > 0) {
+    action = argv['_'];
+}
+
+// format the array returned by randomizer
+
+
+var makeInstances = function(forum) {
     var params = {
-        MaxCount: 1,
-        /* required */
-        MinCount: 1,
-        /* required */
+        MaxCount: 2,
+        MinCount: 2,
         ImageId: 'ami-7f735a1a',
         InstanceType: 't2.medium',
         IamInstanceProfile: {
             Name: "ecsInstanceRole"
         },
-        //  Placement: {
-        //    AvailabilityZone: 'us-east-2',
-        //  },
         SecurityGroups: [
-            //   'STRING_VALUE',
             'ssh', 'backend'
-            /* more items */
         ],
-        //  SubnetId: 'STRING_VALUE',
         TagSpecifications: [{
-                ResourceType: 'instance',
-                Tags: [{
-                    Key: 'forum',
-                    Value: forum
-                }, {
-                    Key: 'Name',
-                    Value: forum
-                }]
-            },
-            /* more items */
-        ],
-        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=" + forum + " >> /etc/ecs/ecs.config\n").toString('base64')
-
+            ResourceType: 'instance',
+            Tags: [{
+                Key: 'forum',
+                Value: forum
+            }, {
+                Key: 'Name',
+                Value: 'i' + forum
+            }]
+        }, ],
+        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + forum + " >> /etc/ecs/ecs.config\n").toString('base64')
     };
     ec2.runInstances(params, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
@@ -50,71 +50,106 @@ var makeForum = function(forum) {
 }
 
 
-
-
-var all;
-// format the array returned by randomizer
-// todo: clean up this mess
-for (i in grouped) {
-    if (grouped[i]['forum'] == 'all') {
-        all = grouped[i]['datasets'];
-        delete(grouped[i]);
-    }
-}
-var grouped = grouped.slice(0, 3)
-
-
-for (i in grouped) {
-    var forum = grouped[i]['forum'];
-    var num_hosts = 2;
-
-
-
+var destroyCluster = function(forum) {
     var params = {
-        clusters: [forum]
+        cluster: 'c' + forum,
+    };
+
+
+    ecs.deleteCluster(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data); // successful response
+    });
+
+
+}
+
+var makeCluster = function(forum) {
+    var params = {
+        clusterName: 'c' + forum,
+    };
+
+
+    ecs.createCluster(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data); // successful response
+    });
+
+
+}
+
+
+
+
+
+var getInfo = function(forum, callback) {
+    var params = {
+        clusters: ['c' + forum]
     };
     ecs.describeClusters(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else {
-       // console.log(data); // successful response
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+            callback(false);
+        } else {
+            data['forum'] = forum;
+            callback(data);
+        }
+    });
+};
+/*
+
+        var params = {
+            //    cluster: forum
+        };
+        ecs.listContainerInstances(params, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else {
+                console.log(data); // successful response
+            }
+        });
+ */
+
+var startTask = function(forum, taskDefinition) {
+    var params = {
+        cluster: 'c' + forum,
+        taskDefinition: taskDefinition
+    };
+    ecs.runTask(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+            // callback(false);
+        } else {
+            data['forum'] = forum;
+            console.log(data);
+            //         callback(data);
         }
     });
 
-    var params = {
-        //    cluster: forum
-    };
-    ecs.listContainerInstances(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else {
-       //console.log(data); // successful response
-        }
+
+}
+
+for (i in fora) {
+    var forum = fora[i]['forum'];
+    getInfo(forum, function(data) {
+        if (data && data['clusters']) {
+            for (j in data['clusters']) {
+                var cluster = data['clusters'][j]
+                if (cluster['status'] && cluster['status'] == 'ACTIVE') {
+                    console.log(data);
+                    console.log(action);
+                    if (action == 'start') {
+                        if (cluster['registeredContainerInstancesCount'] >= 2) {
+                            startTask(data['forum'], 'pilottaskdefinition:2')
+                        } else {
+                            makeInstances(data['forum']);
+                        }
+                    } else if (action == 'stop') {
+                        destroyCluster(data['forum']);
+                    } else {
+                        console.log('dunno');
+                    }
+                }
+            }
+        };
     });
-    makeForum(forum);
-
-
-
-    /*
-    var params = {
-      clusterName: forum,
-    };
-
-
-
-
-    /*
- var params = {
-  cluster: forum, 
-  taskDefinition: "pilottaskdefinition:2"
- };
- ecs.runTask(params, function(err, data) {
-   if (err) console.log(err, err.stack); // an error occurred
-   else     console.log(data);           // successful response
- });
-   */
-    //var stack = awsm.makeStack(forum,num_hosts,function(data) {
-    //var stack = rmStack(forum,function(data) {
-    //var stack = awsm.grokStack(forum,function(data) {
-    //console.log('f',forum)
-    //console.log('d',data);
-    //});
 }
