@@ -15,9 +15,9 @@ if 'IMG_OUTPUT' in os.environ:
         figure_export = True
 
 # if system environment has a random seed
-random_state = 42
-if 'RANDOM_STATE' in os.environ:
-    random_state = float(os.environ['RANDOM_STATE'])
+random_state = None
+if 'RANDOM_SEED' in os.environ:
+    random_state = float(os.environ['RANDOM_SEED'])
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
