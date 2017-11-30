@@ -1,84 +1,19 @@
-var aws = require('aws-sdk');
-aws.config.update({
+var AWS = require('aws-sdk');
+AWS.config.update({
     region: 'us-east-2'
 });
-cloudformation = new aws.CloudFormation();
-var p = {
-    TemplateURL: 'https://s3.us-east-2.amazonaws.com/pennai-docker-files/cluster.json',
-    Parameters: [{
-        "ParameterValue": "",
-        "ParameterKey": "EcsEndpoint"
-    }, {
-        "ParameterValue": "ecsInstanceRole",
-        "ParameterKey": "IamRoleInstanceProfile"
-    }, {
-        "ParameterValue": "80",
-        "ParameterKey": "SecurityIngressFromPort"
-    }, {
-        "ParameterValue": "subnet-6e106707,subnet-6148f51a,subnet-825c91cf",
-        "ParameterKey": "SubnetIds"
-    }, {
-        "ParameterValue": "",
-        "ParameterKey": "SubnetCidr3"
-    }, {
-        "ParameterValue": "",
-        "ParameterKey": "SpotPrice"
-    }, {
-        "ParameterValue": "10.0.1.0/24",
-        "ParameterKey": "SubnetCidr2"
-    }, {
-        "ParameterValue": "10.0.0.0/24",
-        "ParameterKey": "SubnetCidr1"
-    }, {
-        "ParameterValue": "0.0.0.0/0",
-        "ParameterKey": "SecurityIngressCidrIp"
-    }, {
-        "ParameterValue": "10.0.0.0/16",
-        "ParameterKey": "VpcCidr"
-    }, {
-        "ParameterValue": "m4.large",
-        "ParameterKey": "EcsInstanceType"
-    }, {
-        "ParameterValue": "diversified",
-        "ParameterKey": "SpotAllocationStrategy"
-    }, {
-        "ParameterValue": "us-east-2a,us-east-2b,us-east-2c",
-        "ParameterKey": "VpcAvailabilityZones"
-    }, {
-        "ParameterValue": "80",
-        "ParameterKey": "SecurityIngressToPort"
-    }, {
-        "ParameterValue": "22",
-        "ParameterKey": "EbsVolumeSize"
-    }, {
-        "ParameterValue": "sg-8c0e32e5",
-        "ParameterKey": "SecurityGroupId"
-    }, {
-        "ParameterValue": "false",
-        "ParameterKey": "UseSpot"
-    }, {
-        "ParameterValue": "upenn",
-        "ParameterKey": "KeyName"
-    }, {
-        "ParameterValue": "",
-        "ParameterKey": "IamSpotFleetRoleName"
-    }, {
-        "ParameterValue": "vpc-524f2e3b",
-        "ParameterKey": "VpcId"
-    }, {
-        "ParameterValue": "10",
-        "ParameterKey": "AsgMaxSize"
-    }, {
-        "ParameterValue": "gp2",
-        "ParameterKey": "EbsVolumeType"
-    }, {
-        "ParameterValue": "ami-58f5db3d",
-        "ParameterKey": "EcsAmiId"
-    }, {
-        "ParameterValue": "/dev/xvdcz",
-        "ParameterKey": "DeviceName"
-    }]
-};
+
+//launching containers and clusters
+var ecs = new AWS.ECS({
+    apiVersion: '2014-11-13'
+});
+//launching instances that belong to clusters
+var ec2 = new AWS.EC2();
+
+//making stacks - not sure we need this
+cloudformation = new AWS.CloudFormation();
+
+
 exports.makeStack = function(name, size, callback) {
     var params = p;
     params['StackName'] = name;
@@ -98,6 +33,7 @@ exports.makeStack = function(name, size, callback) {
         } else callback(data); // successful response
     });
 }
+
 exports.rmStack = function(name, callback) {
     var params = {}
     params['StackName'] = name;
@@ -108,6 +44,7 @@ exports.rmStack = function(name, callback) {
         } else callback(data); // successful response
     });
 }
+
 exports.grokStack = function(name, callback) {
     var params = {}
     params['StackName'] = name;
@@ -117,4 +54,113 @@ exports.grokStack = function(name, callback) {
             callback(false);
         } else callback(data); // successful response
     });
+}
+
+// make the Instances required to support a forum
+var makeInstances = function(forum) {
+    var params = {
+        MaxCount: 2,
+        MinCount: 2,
+        ImageId: 'ami-7f735a1a',
+        InstanceType: 't2.medium',
+        IamInstanceProfile: {
+            Name: "ecsInstanceRole"
+        },
+        SecurityGroups: [
+            'ssh', 'backend'
+        ],
+        TagSpecifications: [{
+            ResourceType: 'instance',
+            Tags: [{
+                Key: 'forum',
+                Value: forum
+            }, {
+                Key: 'Name',
+                Value: 'i' + forum
+            }]
+        }, ],
+        //set default cluster for fourum
+        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + forum + " >> /etc/ecs/ecs.config\n").toString('base64')
+    };
+    ec2.runInstances(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data); // successful response
+    });
+}
+
+
+//shut down the cluster
+var destroyCluster = function(forum) {
+    var params = {
+        cluster: 'c' + forum,
+    };
+    ecs.deleteCluster(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data); // successful response
+    });
+
+
+}
+
+//
+var makeCluster = function(forum) {
+    var params = {
+        clusterName: 'c' + forum,
+    };
+    ecs.createCluster(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else console.log(data); // successful response
+    });
+}
+
+
+
+
+//
+exports.handleClusters = function(forum, callback) {
+    var params = {
+        clusters: ['c' + forum]
+    };
+    ecs.describeClusters(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+            callback(false);
+        } else {
+            data['forum'] = forum;
+            callback(data);
+        }
+    });
+};
+/*
+
+        var params = {
+            //    cluster: forum
+        };
+        ecs.listContainerInstances(params, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else {
+                console.log(data); // successful response
+            }
+        });
+ */
+
+
+//
+var startTask = function(forum, taskDefinition) {
+    var params = {
+        cluster: 'c' + forum,
+        taskDefinition: taskDefinition
+    };
+    ecs.runTask(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+            // callback(false);
+        } else {
+            data['forum'] = forum;
+            console.log(data);
+            //         callback(data);
+        }
+    });
+
+
 }
