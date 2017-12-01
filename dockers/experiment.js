@@ -76,16 +76,19 @@ for (var i in forums) {
 
         //Start up the resources
         if (action == 'start') {
+            console.log('starting cluster for ' + forum);
             var cpromise;
             var ipromise;
             if (cinfo['cstatus'] == 'ACTIVE') {
-                console.log(forum + 'already runnging')
+                console.log(forum + ' cluster already runnging')
                 cpromise = Promise.when();
             } else {
                 cpromise = awsm.startCluster(forum)
             }
             cpromise.then(function(cluster) {
+                console.log('starting instances for ' + forum);
                 if (cinfo['InstanceIds'].length > 0) {
+                    console.log(forum + ' instances already runnging')
                     ipromise = Promise.when();
                 } else {
                     ipromise = awsm.startInstances(forum)
@@ -102,7 +105,7 @@ for (var i in forums) {
             });
 
 
-            //Stop the resources
+        //Stop the resources
         } else if (action == 'stop') {
             var ipromise;
             var cpromise;
@@ -113,11 +116,18 @@ for (var i in forums) {
                 ipromise = Promise.when();
             }
             ipromise.then(function(instances) {
-                if (cinfo['cstatus'] == 'ACTIVE' && cinfo['InstanceIds'].length == 0) {
-                    cpromise = awsm.stopCluster(forum);
-                } else {
+                console.log('stopping cluster for ' + forum);
+                if (cinfo['cstatus'] == 'ACTIVE') {
+                    if (cinfo['InstanceIds'].length == 0) {
+                        cpromise = awsm.stopCluster(forum);
+                    } else {
+                        console.log(forum + ' has active instances');
+                        cpromise = Promise.when();
+                    } 
+                 } else {
+                    console.log('no running cluster  ' + forum)
                     cpromise = Promise.when();
-                }
+                 }
                 cpromise.then(function(cluster) {}).catch(function(err) {
                     console.log('something went wwwrong')
                     error.log(err);
@@ -136,3 +146,11 @@ for (var i in forums) {
         }
     })
 }
+
+
+
+
+
+
+
+
