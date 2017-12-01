@@ -1,55 +1,52 @@
 'use strict';
-var Promise = require('q');
 //launch a set of clusters to execute randomized workloads 
 //of machine learning experiments
 
+var Promise = require('q');
+
+// cloud functions
 var awsm = require('./awsm');
+
 // randomizing the order of experiments
 var ranman = require('./ranman').retData();
+
 // many forums, one complete list of datasets
-var fora = ranman['grouped'];
+var forums = ranman['grouped'];
 var all = ranman['datasets'];
 
 // handle arguments
-// the default behavior for this script
 var argv = require('minimist')(process.argv.slice(2));
+// the default behavior for this script
 var action = 'info';
 if (argv['_'] && argv['_'].length > 0) {
     action = argv['_'];
 }
 
-// something to hold promises
 // iterate over forums
-for (var i in fora) {
-    awsm.getForum(fora[i]['forum'], function(data) {
+for (var i in forums) {
+    awsm.getForum(forums[i]['forum'], function(data) {
+        var forum = data['forum']
         var instances = data['instances']
         var cluster = data['cluster']
-        if (action == 'info') {
-            //console.log(instances);
+        var cinfo = {
+            cstatus: null,
+            cname: null,
+            //registered instances according to cluster
+            ccount: 0,
+            //
+            InstanceIds: [],
+            istatus: null,
+            //instance count according to ec2
+            icount: 0,
+            //
         }
-        var forum = data['forum']
-        var doStartCluster, doStopCluster, doStartInstances, doStopInstances, doStartTasks, doStopTasks, doStopInstances;
-        var InstanceIds = [];
         if (cluster['clusters'].length > 0) {
             for (var j in cluster['clusters']) {
                 var c = cluster['clusters'][j];
-                if (c['status']) {
-                    console.log(forum, c['status']);
-                    if (c['status'] == 'ACTIVE') {
-                        doStopCluster = true;
-                        if (c['registeredContainerInstancesCount'] >= 2) {
-                            doStartTasks = true;
-                        } else {
-                            doStartInstances = true;
-                        }
-                    } else if (c['status'] == 'INACTIVE') {
-                        doStartCluster = true;
-                    }
-                }
+                cinfo['cstatus'] = c['status'];
+                cinfo['ccount'] = c['registeredContainerInstancesCount'];
+                cinfo['cname'] = c['clusterName'];
             }
-        } else {
-            doStartCluster = true;
-            console.log('no cluster found');
         }
         if (instances && instances['Reservations']) {
             var reservations = instances['Reservations'];
@@ -58,49 +55,84 @@ for (var i in fora) {
                     var instances = reservations[k]['Instances']
                     for (var l in instances) {
                         var instance = instances[l];
-                        var InstanceId = instance['InstanceId']
-                        var tags = instance['Tags']
-                        //make sure the tags match
-                        for (var m in tags) {
-                            var tag = tags[m];
-                            if (tag['Key'] == 'forum' && tag['Value'] == forum && InstanceId.substr(0, 2) == 'i-') {
-                                doStopInstances = true;
-                                InstanceIds.push(InstanceId);
+                        if (instance['State']['Code'] == 16) {
+                            cinfo['istatus'] = 'ACTIVE';
+                            cinfo['icount']++;
+                            var InstanceId = instance['InstanceId']
+                            var tags = instance['Tags']
+                            for (var m in tags) {
+                                var tag = tags[m];
+                                if (tag['Key'] == 'forum' && tag['Value'] == forum && InstanceId.substr(0, 2) == 'i-') {
+                                    cinfo['InstanceIds'].push(InstanceId);
+                                }
+
                             }
                         }
-
-
-
                     }
                 }
             }
-
         }
 
 
+        //Start up the resources
         if (action == 'start') {
-            if (doStartTasks) {
-                awsm.startTasks(forum)
+            var cpromise;
+            var ipromise;
+            if (cinfo['cstatus'] == 'ACTIVE') {
+                console.log(forum + 'already runnging')
+                cpromise = Promise.when();
+            } else {
+                cpromise = awsm.startCluster(forum)
             }
-            if (doStartCluster) {
-                awsm.startCluster(forum);
-            }
-            if (doStartInstances) {
-                awsm.startInstances(forum);
-            };
+            cpromise.then(function(cluster) {
+                if (cinfo['InstanceIds'].length > 0) {
+                    ipromise = Promise.when();
+                } else {
+                    ipromise = awsm.startInstances(forum)
+                }
+                ipromise.then(function(instances) {}).catch(function(err) {
+                    console.log('something went wrong')
+                    error.log(err);
+                    //           process.exit();
+                });
+            }).catch(function(err) {
+                console.log('something went wwrong')
+                error.log(err);
+                //            process.exit();
+            });
+
+
+            //Stop the resources
         } else if (action == 'stop') {
-            if (doStopTasks) {
-                console.log('stopping tasks for ' + forum);
-                //awsm.destroyCluster(data);
-            };
-            if (doStopCluster) {
-                console.log('stopping cluster ' + forum);
-                awsm.stopCluster(forum);
-            };
-            if (doStopInstances && InstanceIds.length > 0) {
-                console.log('stopping instances' + forum + InstanceIds);
-                awsm.stopInstances(InstanceIds, forum);
-            };
+            var ipromise;
+            var cpromise;
+            if (cinfo['InstanceIds'].length > 0) {
+                console.log('stopping' + cinfo['InstanceIds'])
+                ipromise = awsm.stopInstances(cinfo['InstanceIds'])
+            } else {
+                ipromise = Promise.when();
+            }
+            ipromise.then(function(instances) {
+                if (cinfo['cstatus'] == 'ACTIVE' && cinfo['InstanceIds'].length == 0) {
+                    cpromise = awsm.stopCluster(forum);
+                } else {
+                    cpromise = Promise.when();
+                }
+                cpromise.then(function(cluster) {}).catch(function(err) {
+                    console.log('something went wwwrong')
+                    error.log(err);
+                    //            process.exit();
+                });
+            }).catch(function(err) {
+                console.log('something went wwwwrong')
+                error.log(err);
+                //            process.exit();
+            });
+
+
+
+        } else if (action == 'info') {
+            console.log(cinfo);
         }
     })
 }
