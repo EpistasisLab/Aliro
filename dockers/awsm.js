@@ -13,6 +13,7 @@ var ec2 = new AWS.EC2();
 
 // make the Instances required to support a forum
 exports.startInstances = function(forum) {
+    var deferred = Promise.defer();
     var params = {
         MaxCount: 2,
         MinCount: 2,
@@ -37,47 +38,60 @@ exports.startInstances = function(forum) {
         //set default cluster for fourum
         UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + forum + " >> /etc/ecs/ecs.config\n").toString('base64')
     };
-    ec2.runInstances(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else console.log(data); // successful response
+    ec2.runInstances(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            //        data['forum'] = forum;
+            deferred.resolve(data);
+        }
     });
+    return deferred.promise;
 }
 
 
 //shut down the cluster
 exports.stopCluster = function(forum) {
-    console.log('stopping' + forum);
     var deferred = Promise.defer();
+    var clusterName = 'c' + forum
+    console.log('stopping ' + clusterName);
     var params = {
-        cluster: 'c' + forum,
+        cluster: clusterName,
     };
     ecs.deleteCluster(params, (error, data) => {
         if (error) {
             deferred.reject(new Error(error));
             console.error(error);
         } else {
-            data['forum'] = forum;
+            //       data['forum'] = forum;
             deferred.resolve(data);
         }
     });
     return deferred.promise;
-
 }
 
 //
 exports.startCluster = function(forum) {
+    var deferred = Promise.defer();
     var clusterName = 'c' + forum
     console.log("starting " + clusterName)
     var params = {
         clusterName: clusterName,
     };
-    ecs.createCluster(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else console.log(data); // successful response
+    ecs.createCluster(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            //            data['forum'] = forum;
+            deferred.resolve(data);
+        }
     });
+    return deferred.promise;
 }
 
-exports.stopInstances = function(InstanceIds, forum) {
+exports.stopInstances = function(InstanceIds) {
     var deferred = Promise.defer();
     ec2.terminateInstances({
         InstanceIds: InstanceIds
@@ -87,7 +101,7 @@ exports.stopInstances = function(InstanceIds, forum) {
             console.error(error);
         } else {
             //console.log('err');
-            data['forum'] = forum;
+            //            data['forum'] = forum;
             deferred.resolve(data);
         }
     });
@@ -108,7 +122,7 @@ var handleInstances = function(forum) {
             //console.error(error);
         } else {
             //console.log('err');
-            data['forum'] = forum;
+            //            data['forum'] = forum;
             deferred.resolve(data);
         }
     });
