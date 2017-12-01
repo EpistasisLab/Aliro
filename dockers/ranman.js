@@ -48,7 +48,7 @@ exports.retData = function() {
     var grouped = groupem(randomized, 10);
     var experiments = [];
     for (group in grouped) {
-        var forum = rng().toString(16).substr(2, 8).toLowerCase();
+        var forum = rng().toString(16).substr(2, 9).toLowerCase();
         //need to start with a letter
         experiments.push({
             forum: forum,

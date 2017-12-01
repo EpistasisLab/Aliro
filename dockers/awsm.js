@@ -2,6 +2,7 @@ var AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
 });
+var Promise = require('q');
 
 //launching containers and clusters
 var ecs = new AWS.ECS({
@@ -10,54 +11,8 @@ var ecs = new AWS.ECS({
 //launching instances that belong to clusters
 var ec2 = new AWS.EC2();
 
-//making stacks - not sure we need this
-cloudformation = new AWS.CloudFormation();
-
-
-exports.makeStack = function(name, size, callback) {
-    var params = p;
-    params['StackName'] = name;
-
-    params['Parameters'].push({
-        "ParameterValue": name,
-        "ParameterKey": "EcsClusterName"
-    });
-    params['Parameters'].push({
-        "ParameterValue": size.toString(),
-        "ParameterKey": "AsgMaxSize"
-    });
-    cloudformation.createStack(params, function(err, data) {
-        if (err) {
-            console.log(err, err.stack); // an error occurred
-            callback(false);
-        } else callback(data); // successful response
-    });
-}
-
-exports.rmStack = function(name, callback) {
-    var params = {}
-    params['StackName'] = name;
-    cloudformation.deleteStack(params, function(err, data) {
-        if (err) {
-            console.log(err, err.stack); // an error occurred
-            callback(false);
-        } else callback(data); // successful response
-    });
-}
-
-exports.grokStack = function(name, callback) {
-    var params = {}
-    params['StackName'] = name;
-    cloudformation.describeStacks(params, function(err, data) {
-        if (err) {
-            console.log(err, err.stack); // an error occurred
-            callback(false);
-        } else callback(data); // successful response
-    });
-}
-
 // make the Instances required to support a forum
-var makeInstances = function(forum) {
+exports.startInstances = function(forum) {
     var params = {
         MaxCount: 2,
         MinCount: 2,
@@ -90,22 +45,31 @@ var makeInstances = function(forum) {
 
 
 //shut down the cluster
-var destroyCluster = function(forum) {
+exports.stopCluster = function(forum) {
+    console.log('stopping' + forum);
+    var deferred = Promise.defer();
     var params = {
         cluster: 'c' + forum,
     };
-    ecs.deleteCluster(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else console.log(data); // successful response
+    ecs.deleteCluster(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            data['forum'] = forum;
+            deferred.resolve(data);
+        }
     });
-
+    return deferred.promise;
 
 }
 
 //
-var makeCluster = function(forum) {
+exports.startCluster = function(forum) {
+    var clusterName = 'c' + forum
+    console.log("starting " + clusterName)
     var params = {
-        clusterName: 'c' + forum,
+        clusterName: clusterName,
     };
     ecs.createCluster(params, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
@@ -113,36 +77,81 @@ var makeCluster = function(forum) {
     });
 }
 
-
-
-
-//
-exports.handleClusters = function(forum, callback) {
-    var params = {
-        clusters: ['c' + forum]
-    };
-    ecs.describeClusters(params, function(err, data) {
-        if (err) {
-            console.log(err, err.stack); // an error occurred
-            callback(false);
+exports.stopInstances = function(InstanceIds, forum) {
+    var deferred = Promise.defer();
+    ec2.terminateInstances({
+        InstanceIds: InstanceIds
+    }, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
         } else {
+            //console.log('err');
             data['forum'] = forum;
-            callback(data);
+            deferred.resolve(data);
         }
     });
+    return deferred.promise;
 };
-/*
 
-        var params = {
-            //    cluster: forum
-        };
-        ecs.listContainerInstances(params, function(err, data) {
-            if (err) console.log(err, err.stack); // an error occurred
-            else {
-                console.log(data); // successful response
-            }
+var handleInstances = function(forum) {
+    var params = {
+        Filters: [{
+            Name: 'tag:forum',
+            Values: [forum]
+        }]
+    };
+    var deferred = Promise.defer();
+    ec2.describeInstances(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            //console.error(error);
+        } else {
+            //console.log('err');
+            data['forum'] = forum;
+            deferred.resolve(data);
+        }
+    });
+    return deferred.promise;
+};
+
+//
+exports.getForum = function(forum, callback) {
+    handleCluster(forum).then(function(cluster) {
+        handleInstances(forum).then(function(instances) {
+            callback({
+                cluster,
+                instances,
+                forum
+            });
+        }).catch(function(errr) {
+            console.log('something went wwrong')
+            console.log(errr);
+            process.exit();
         });
- */
+    }).catch(function(err) {
+        console.log('something went wrong')
+        console.log(err);
+        process.exit();
+    });
+};
+//
+var handleCluster = function(forum) {
+    var deferred = Promise.defer();
+    ecs.describeClusters({
+        clusters: ['c' + forum]
+    }, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            data['forum'] = forum;
+            deferred.resolve(data);
+
+        }
+    });
+    return deferred.promise;
+};
 
 
 //
@@ -161,6 +170,4 @@ var startTask = function(forum, taskDefinition) {
             //         callback(data);
         }
     });
-
-
 }
