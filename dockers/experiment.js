@@ -1,156 +1,53 @@
 'use strict';
 //launch a set of clusters to execute randomized workloads 
 //of machine learning experiments
-
 var Promise = require('q');
-
 // cloud functions
 var awsm = require('./awsm');
-
 // randomizing the order of experiments
 var ranman = require('./ranman').retData();
-
 // many forums, one complete list of datasets
 var forums = ranman['grouped'];
 var all = ranman['datasets'];
-
 // handle arguments
 var argv = require('minimist')(process.argv.slice(2));
 // the default behavior for this script
 var action = 'info';
 if (argv['_'] && argv['_'].length > 0) {
-    action = argv['_'];
+    action = argv['_'][0];
 }
+
+
 
 // iterate over forums
 for (var i in forums) {
-    awsm.getForum(forums[i]['forum'], function(data) {
-        var forum = data['forum']
-        var instances = data['instances']
-        var cluster = data['cluster']
-        var cinfo = {
-            cstatus: null,
-            cname: null,
-            //registered instances according to cluster
-            ccount: 0,
-            //
-            InstanceIds: [],
-            istatus: null,
-            //instance count according to ec2
-            icount: 0,
-            //
-        }
-        if (cluster['clusters'].length > 0) {
-            for (var j in cluster['clusters']) {
-                var c = cluster['clusters'][j];
-                cinfo['cstatus'] = c['status'];
-                cinfo['ccount'] = c['registeredContainerInstancesCount'];
-                cinfo['cname'] = c['clusterName'];
-            }
-        }
-        if (instances && instances['Reservations']) {
-            var reservations = instances['Reservations'];
-            for (var k in reservations) {
-                if (reservations[k]['Instances']) {
-                    var instances = reservations[k]['Instances']
-                    for (var l in instances) {
-                        var instance = instances[l];
-                        if (instance['State']['Code'] == 16) {
-                            cinfo['istatus'] = 'ACTIVE';
-                            cinfo['icount']++;
-                            var InstanceId = instance['InstanceId']
-                            var tags = instance['Tags']
-                            for (var m in tags) {
-                                var tag = tags[m];
-                                if (tag['Key'] == 'forum' && tag['Value'] == forum && InstanceId.substr(0, 2) == 'i-') {
-                                    cinfo['InstanceIds'].push(InstanceId);
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        //Start up the resources
-        if (action == 'start') {
-            console.log('starting cluster for ' + forum);
-            var cpromise;
-            var ipromise;
-            if (cinfo['cstatus'] == 'ACTIVE') {
-                console.log(forum + ' cluster already runnging')
-                cpromise = Promise.when();
+    var forum = forums[i];
+    var forumName = forum['forumName'];
+    var cloudP, servicesP;
+    if (['start', 'stop', 'info'].indexOf(action) >= 0) {
+        cloudP = awsm.getCloud(forumName, action);
+    } else {
+        cloudP = Promise.when();
+    }
+        cloudP.then(function(cloud) {
+           if (action == 'start') {
+                servicesP = awsm.startTasks(cloud);
+            } else if (action == 'stop') {
+                //servicesP = awsm.stopTasks(cloud);
+                servicesP =  Promise.when();
+            } else if (action == 'info') {
+                //servicesP = awsm.listTasks(cloud);
+                servicesP =  Promise.when();
+                console.log(cloud);
             } else {
-                cpromise = awsm.startCluster(forum)
+                servicesP =  Promise.when();
             }
-            cpromise.then(function(cluster) {
-                console.log('starting instances for ' + forum);
-                if (cinfo['InstanceIds'].length > 0) {
-                    console.log(forum + ' instances already runnging')
-                    ipromise = Promise.when();
-                } else {
-                    ipromise = awsm.startInstances(forum)
-                }
-                ipromise.then(function(instances) {}).catch(function(err) {
-                    console.log('something went wrong')
-                    error.log(err);
-                    //           process.exit();
-                });
+            servicesP.then(function(services) {
+                console.log(cloud);
             }).catch(function(err) {
-                console.log('something went wwrong')
-                error.log(err);
-                //            process.exit();
+                console.log('error', err);
             });
-
-
-        //Stop the resources
-        } else if (action == 'stop') {
-            var ipromise;
-            var cpromise;
-            if (cinfo['InstanceIds'].length > 0) {
-                console.log('stopping' + cinfo['InstanceIds'])
-                ipromise = awsm.stopInstances(cinfo['InstanceIds'])
-            } else {
-                ipromise = Promise.when();
-            }
-            ipromise.then(function(instances) {
-                console.log('stopping cluster for ' + forum);
-                if (cinfo['cstatus'] == 'ACTIVE') {
-                    if (cinfo['InstanceIds'].length == 0) {
-                        cpromise = awsm.stopCluster(forum);
-                    } else {
-                        console.log(forum + ' has active instances');
-                        cpromise = Promise.when();
-                    } 
-                 } else {
-                    console.log('no running cluster  ' + forum)
-                    cpromise = Promise.when();
-                 }
-                cpromise.then(function(cluster) {}).catch(function(err) {
-                    console.log('something went wwwrong')
-                    error.log(err);
-                    //            process.exit();
-                });
-            }).catch(function(err) {
-                console.log('something went wwwwrong')
-                error.log(err);
-                //            process.exit();
-            });
-
-
-
-        } else if (action == 'info') {
-            console.log(cinfo);
-        }
-    })
+        }).catch(function(err) {
+            console.log('error', err);
+        });
 }
-
-
-
-
-
-
-
-

@@ -48,29 +48,29 @@ exports.retData = function() {
     var grouped = groupem(randomized, 10);
     var experiments = [];
     for (group in grouped) {
-        var forum = rng().toString(16).substr(2, 9).toLowerCase();
+        var forumName = rng().toString(16).substr(2, 8).toLowerCase();
         //need to start with a letter
         experiments.push({
-            forum: forum,
+            forumName: forumName,
             datasets: grouped[group]
         })
     }
     experiments.push({
-        forum: 'all',
+        forumName: 'all',
         datasets: datasets
     })
     //where the magic happens.  order by forum name
     var experiments = experiments.sort(function(a, b) {
-        return (a.forum > b.forum) ? 1 : ((b.forum > a.forum) ? -1 : 0);
+        return (a.forumName > b.forumName) ? 1 : ((b.forumName > a.forumName) ? -1 : 0);
     })
     for (i in experiments) {
-        if (experiments[i]['forum'] == 'all') {
+        if (experiments[i]['forumName'] == 'all') {
             all = experiments[i]['datasets'];
             delete(experiments[i]);
         }
     }
     //var grouped = experiments;
-    var grouped = experiments.slice(0, 2)
+    var grouped = experiments.slice(0, 1)
     return ({
         grouped: grouped,
         all: all
