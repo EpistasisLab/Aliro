@@ -23,7 +23,7 @@ if (argv['_'] && argv['_'].length > 0) {
 for (var i in forums) {
     var forum = forums[i];
     var forumName = forum['forumName'];
-    var cloudP, servicesP;
+    var cloudP, tasksP;
     if (['start', 'stop', 'info'].indexOf(action) >= 0) {
         cloudP = awsm.getCloud(forumName, action);
     } else {
@@ -31,19 +31,19 @@ for (var i in forums) {
     }
         cloudP.then(function(cloud) {
            if (action == 'start') {
-                servicesP = awsm.startTasks(cloud);
+                tasksP = awsm.startTasks(cloud);
             } else if (action == 'stop') {
-                //servicesP = awsm.stopTasks(cloud);
-                servicesP =  Promise.when();
+                //tasksP = awsm.stopTasks(cloud);
+                taksP =  Promise.when();
             } else if (action == 'info') {
                 //servicesP = awsm.listTasks(cloud);
-                servicesP =  Promise.when();
+                tasksP =  Promise.when();
                 console.log(cloud);
             } else {
-                servicesP =  Promise.when();
+                tasksP =  Promise.when();
             }
-            servicesP.then(function(services) {
-                console.log(cloud);
+            tasksP.then(function(services) {
+               // console.log(cloud);
             }).catch(function(err) {
                 console.log('error', err);
             });
