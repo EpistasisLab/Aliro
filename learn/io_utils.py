@@ -7,6 +7,8 @@ import time
 lab_host = os.environ['LAB_HOST']
 basedir = os.environ['PROJECT_ROOT']
 http = urllib3.PoolManager()
+cacheinputfiles = True
+cachedir = basedir + '/tmp/'
 
 
 class Experiment:
@@ -71,30 +73,41 @@ def parse_args(params):
 
     return args
 
-
 def get_input_file(_id, tmpdir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
-
     response = http.request('GET', 'http://' + lab_host +
                             ':5080/api/v1/experiments/' + _id)
     jsondata = json.loads(response.data.decode('utf-8'))
     files = jsondata['files']
-    input_file = ''
-    numfiles = 0
-    for file in files:
-        uri = 'http://' + lab_host + ':5080/api/v1/files/' + file['_id']
-        response = http.request('GET', uri)
-        input_file = expdir + file['filename']
-        with open(input_file, 'w') as f:
-            f.write(response.data.decode('utf-8'))
-            numfiles += 1
-
-    if numfiles == 1:
+    if cacheinputfiles:
+        for file in files:
+            cached_file = cachedir + file['_id']
+            if not os.path.exists(cached_file):
+                uri = 'http://' + lab_host + ':5080/api/v1/files/' + file['_id']
+                response = http.request('GET', uri)
+                with open(cached_file, 'w') as f:
+                    f.write(response.data.decode('utf-8'))
+        input_file = expdir + files[0]['filename']
+        cached_file = cachedir + files[0]['_id']
+        os.symlink(cached_file,input_file)
         return input_file
     else:
-        return 0
+        input_file = ''
+        numfiles = 0
+        for file in files:
+            uri = 'http://' + lab_host + ':5080/api/v1/files/' + file['_id']
+            response = http.request('GET', uri)
+            input_file = expdir + file['filename']
+            with open(input_file, 'w') as f:
+                f.write(response.data.decode('utf-8'))
+                numfiles += 1
+
+        if numfiles == 1:
+            return input_file
+        else:
+            return 0
 
 
 def bool_type(val):
