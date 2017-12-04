@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split, cross_val_score
 
 # if system environment allows to export figures
 figure_export = False
-if 'IMG_OUTPUT' in os.environ:
-    if str(os.environ['IMG_OUTPUT']) == '1':
+if 'MAKEPLOTS' in os.environ:
+    if str(os.environ['MAKEPLOTS']) == '1':
         figure_export = True
 
 # if system environment has a random seed
