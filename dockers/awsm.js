@@ -17,7 +17,7 @@ var InstanceType = 't2.medium';
 //
 // make the Instances required to support a forum
 var startInstances = function(cinfo) {
-var services = cinfo['hosts'];
+    var services = cinfo['hosts'];
     var count = 0;
     for (i in services) {
         var service = services[i];
@@ -215,10 +215,26 @@ var getCluster = function(forumName) {
 
 
 //
-exports.startTasks = function(forumName,cloud) {
+exports.startTasks = function(cloud) {
+    for (i in cloud['hosts']) {
+        var host = cloud['hosts'][i];
+        cloud['hosts'][i]['ip'] = cloud['InstanceIps'][i];
+        cloud['hosts'][i]['instance'] = cloud['InstanceIds'][i];
+        ecs.runTask(params, function(err, data) {
+            if (err) {
+                deferred.reject(new Error(err));
+             console.error(err);
+           } else {
+               deferred.resolve(data);
+           }
+        });
+    return deferred.promise;
+        
+    }
+    console.log(cloud);;
     var taskP = Promise.when();
-//console.log('s',services);
-//console.log('c',cloud);
+    //console.log('s',services);
+    //console.log('c',cloud);
     return taskP
 }
 exports.stopServices = function(forumName) {
@@ -267,13 +283,14 @@ exports.getCloud = function(forumName, action) {
                         console.log(forumName + ' instances already running')
                         ipromise = Promise.when();
                     } else {
-//console.log(cinfo);
-console.log(cinfo);
+                        //console.log(cinfo);
+                        //console.log(cinfo);
                         ipromise = startInstances(cinfo)
                     }
                     ipromise.then(function(instances) {
 
-                        deferred.resolve(cluster, instances);
+                        // deferred.resolve(cluster, instances);
+                        deferred.resolve(cinfo);
                     }).catch(function(err) {
                         deferred.reject(new Error(err));
                         console.log('something went wrong')
@@ -310,7 +327,8 @@ console.log(cinfo);
                         cpromise = Promise.when();
                     }
                     cpromise.then(function(cluster) {
-                        deferred.resolve(instances, cluster);
+                        deferred.resolve(cinfo);
+                        //        deferred.resolve(instances, cluster);
                     }).catch(function(err) {
                         console.log('something went wwwrong')
                         deferred.reject(new Error(err));
@@ -361,12 +379,12 @@ var parseForum = function(forumName, cluster, instances) {
         istatus: null,
         //list the required hosts
         hosts: [{
-                name: 'dbmongo'
-            }, {
-                name: 'lab'
-            }, {
-                name: 'paix01'
-            }],
+            name: 'dbmongo'
+        }, {
+            name: 'lab'
+        }, {
+            name: 'paix01'
+        }],
         //instance count according to ec2
         icount: 0,
         //
