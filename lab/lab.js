@@ -665,7 +665,7 @@ console.log(obj);
                             obj['dataset'] = old_obj['dataset_id'];
                             ai_score = old_obj['ai_score'];
                             dataset = old_obj['dataset_id']
-                            username = old_obs['username'];
+                            username = old_obj['username'];
                         }
                         if ("dataset" in obj) {
                             dataset = obj['dataset'];
