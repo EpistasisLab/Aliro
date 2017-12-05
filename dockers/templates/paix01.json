@@ -1,0 +1,32 @@
+{
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "json-file"
+      },
+      "entryPoint": [
+        "/bin/bash",
+        "/root/entrypoint.sh"
+      ],
+      "command": [],
+      "mountPoints": [],
+      "workingDirectory": "/opt",
+      "memoryReservation": 1024,
+      "volumesFrom": [],
+      "image": "035856437156.dkr.ecr.us-east-2.amazonaws.com/paix01:latest",
+      "essential": true,
+      "hostname": "paix01",
+      "name": "paix01"
+    }
+  ],
+  "family": "paix01",
+  "networkMode": "bridge",
+  "volumes": [
+    {
+      "name": "share",
+      "host": {
+        "sourcePath": "/share"
+      }
+    }
+  ]
+}

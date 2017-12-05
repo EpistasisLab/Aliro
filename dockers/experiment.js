@@ -19,6 +19,8 @@ if (argv['_'] && argv['_'].length > 0) {
 
 
 
+
+
 // iterate over forums
 for (var i in forums) {
     var forum = forums[i];
@@ -34,7 +36,7 @@ for (var i in forums) {
                 tasksP = awsm.startTasks(cloud);
             } else if (action == 'stop') {
                 //tasksP = awsm.stopTasks(cloud);
-                taksP =  Promise.when();
+                tasksP =  Promise.when();
             } else if (action == 'info') {
                 //servicesP = awsm.listTasks(cloud);
                 tasksP =  Promise.when();
@@ -43,7 +45,6 @@ for (var i in forums) {
                 tasksP =  Promise.when();
             }
             tasksP.then(function(services) {
-               // console.log(cloud);
             }).catch(function(err) {
                 console.log('error', err);
             });
