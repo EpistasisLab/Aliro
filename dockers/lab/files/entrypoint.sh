@@ -12,4 +12,4 @@ else
     bower install --allow-root
 fi;
 webpack --watch &
-pm2 start lab.config.js --watch
+pm2 start lab.config.js --watch --no-daemon
