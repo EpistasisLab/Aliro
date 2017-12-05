@@ -8,52 +8,7 @@ var Promise = require("q")
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
-var steps = ['rm', 'build', 'tag']
-var makevars = {}
-var cmds = {}
-//suppress stdout for docker build(s) (or not)
-var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
-var dryrun = false;
-var verbose = false;
-var share = false;
-var dockerDir;
-var basedir;
-//var debug = true;
-var allroots = [];
-//process arguments
-if (argv['_'].length > 0) {
-    steps = argv['_'];
-}
 
-//parent db to inherit
-if (argv['d']) {
-    makevars['PARENTDB'] = argv['d'];
-}
-
-//which directories to process
-if (argv['p']) {
-    hosts = argv['p'].split(',');
-}
-
-//show what would run without actually running anything
-if (argv['n']) {
-    dryrun = true;
-}
-
-if (argv['v']) {
-    verbose = true;
-}
-
-//run things from share
-if (argv['s']) {
-    share = true;
-}
-
-//IP address
-if (argv['i']) {
-    makevars['IP'] = argv['i'];
-}
-//read the initialization variables from Makevars file
 var initVars = function(callback) {
     var fileBuffer = fs.readFileSync('Makevars');
     var vars_string = fileBuffer.toString();
@@ -585,5 +540,51 @@ return deferred.promise;
 
 exports.make = make;
 if (require.main === module) {
+var steps = ['stop','rm', 'build', 'tag','create','start']
+var makevars = {}
+var cmds = {}
+//suppress stdout for docker build(s) (or not)
+var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
+var dryrun = false;
+var verbose = false;
+var share = false;
+var dockerDir;
+var basedir;
+//var debug = true;
+var allroots = [];
+//process arguments
+if (argv['_'].length > 0) {
+    steps = argv['_'];
+}
+
+//parent db to inherit
+if (argv['d']) {
+    makevars['PARENTDB'] = argv['d'];
+}
+
+//which directories to process
+if (argv['p']) {
+    hosts = argv['p'].split(',');
+}
+
+//show what would run without actually running anything
+if (argv['n']) {
+    dryrun = true;
+}
+
+if (argv['v']) {
+    verbose = true;
+}
+
+//run things from share
+if (argv['s']) {
+    share = true;
+}
+
+//IP address
+if (argv['i']) {
+    makevars['IP'] = argv['i'];
+}
+
 make()
 }

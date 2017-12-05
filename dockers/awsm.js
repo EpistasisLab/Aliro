@@ -19,7 +19,7 @@ var InstanceType = 'm4.large';
 //
 // make the Instances required to support a forum
 var startInstances = function(cinfo) {
-    var services = cinfo['hosts'];
+    var services = cinfo['services'];
     var count = 0;
     for (i in services) {
         var service = services[i];
@@ -88,6 +88,29 @@ var stopCluster = function(forumName) {
     return deferred.promise;
 }
 
+
+//get container info
+exports.getInstanceId = function(forumName,arn) {
+    var deferred = Promise.defer();
+    var clusterName = 'c' + forumName
+    var params = {
+        cluster: clusterName,
+        containerInstances: [arn]
+    };
+    ecs.describeContainerInstances(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            //       data['forum'] = forum;
+            deferred.resolve(data['containerInstances'][0]);
+        }
+    });
+    return deferred.promise;
+}
+
+
+
 //
 var startCluster = function(forumName) {
     var deferred = Promise.defer();
@@ -146,24 +169,6 @@ var getInstances = function(forumName) {
     return deferred.promise;
 };
 //
-var getContainerInstances = function(forumName) {
-    var deferred = Promise.defer();
-    ecs.listTasks({
-        cluster: 'c' + forumName
-    }, (error, data) => {
-        if (error) {
-            deferred.reject(new Error(error));
-            console.error(error);
-        } else {
-            data['forumName'] = forumName;
-            deferred.resolve(data);
-
-        }
-    });
-    return deferred.promise;
-};
-
-//
 exports.stopTasks = function(forumName) {
     var deferred = Promise.defer();
     ecs.stopTask({
@@ -217,48 +222,52 @@ var getCluster = function(forumName) {
 
 
 //
-exports.startTasks = function(cloud) {
+exports.startTask = function(cloud,host) {
+console.log('starting ', host);
+console.log('cloud ', cloud);
+var extraHosts = []
+for (var i in cloud['services']) {
+var hostname = cloud['services'][i]['name']
+var ipAddress = cloud['Instances'][i]['PrivateIpAddress'];
+extraHosts.push({hostname,ipAddress});
+}
     var makevars = getMakevars();
-    var promise_array = Array(cloud['hosts'].length);
-    for (i in cloud['hosts']) {
-        var deferred = Promise.defer();
-        promise_array[i] = deferred.promise;
-        var host = cloud['hosts'][i]['name'];
-        cloud['hosts'][i]['ip'] = cloud['InstanceIps'][i];
-        cloud['hosts'][i]['instance'] = cloud['InstanceIds'][i];
-        var task_definition = host;
-        var params = {};
-        params['taskDefinition'] = task_definition;
-        params['cluster'] = cloud['cname'];
-        params['overrides'] = { 
-            "containerOverrides": [ 
-             { 
-            //"command": [ "string" ],
+    var deferred = Promise.defer();
+    var params = {
+        'taskDefinition':  host,
+         'cluster': cloud['cname'],
+         'overrides': { 
+         "containerOverrides": [ 
+          { 
             "environment": makevars,
-            "name": host
-             }
-        ],
-        }
-       params['placementConstraints'] =  [
-    {
-      type: 'distinctInstance'
-    }]
+            "name": host,
+          },
+          ],
+          },
+//          'placementConstraints': [
+//              {
+//              type: 'distinctInstance'
+//           }],
+          }
+//if(extraHosts.length > 0){
+//       params["overrides"]["containerOverrides"][0]['extraHosts'] = extraHosts;
+//console.log('p',params);
+//}
 
-        ecs.runTask(params, function(err, data) {
+        ecs.startTask(params, function(err, data) {
             if (err) {
                 deferred.reject(new Error(err));
                 console.error(err);
            } else {
-console.log(data);
+               console.log(data);
                deferred.resolve(data);
            }
         });
         
-    }
-return Promise.allSettled(promise_array);
 
     return deferred.promise;
 }
+
 exports.stopServices = function(forumName) {
     return Promise.when();
 }
@@ -301,7 +310,7 @@ exports.getCloud = function(forumName, action) {
                 }
                 cpromise.then(function(cluster) {
                     console.log('starting instances for ' + forumName);
-                    if (cinfo['InstanceIds'].length > 0) {
+                    if (cinfo['Instances'].length > 0) {
                         console.log(forumName + ' instances already running')
                         ipromise = Promise.when();
                     } else {
@@ -310,6 +319,10 @@ exports.getCloud = function(forumName, action) {
                         ipromise = startInstances(cinfo)
                     }
                     ipromise.then(function(instances) {
+for(i in cinfo['instances']) {
+instanceId = cinfo['instances'][i]['instanceId']
+console.log(instanceId);
+}
 
                         // deferred.resolve(cluster, instances);
                         deferred.resolve(cinfo);
@@ -329,16 +342,25 @@ exports.getCloud = function(forumName, action) {
             } else if (action == 'stop') {
                 var ipromise;
                 var cpromise;
-                if (cinfo['InstanceIds'].length > 0) {
-                    console.log('stopping' + cinfo['InstanceIds'])
-                    ipromise = stopInstances(cinfo['InstanceIds'])
+                if (cinfo['Instances'] !== undefined) {
+                    var InstanceIds = [];
+for(i in cinfo['Instances']) {
+console.log(cinfo['Instances'][i]['InstanceId'])
+InstanceIds.push(cinfo['Instances'][i]['InstanceId'])
+}
+console.log('i',InstanceIds);
+if(InstanceIds.length > 0) {
+                    ipromise = stopInstances(InstanceIds)
+} else {
+                    ipromise = Promise.when();
+}
                 } else {
                     ipromise = Promise.when();
                 }
                 ipromise.then(function(instances) {
                     console.log('stopping cluster for ' + forumName);
                     if (cinfo['cstatus'] == 'ACTIVE') {
-                        if (cinfo['InstanceIds'].length == 0) {
+                        if (cinfo['Instances'] !== undefined) {
                             cpromise = stopCluster(forumName);
                         } else {
                             console.log(forumName + ' has active instances');
@@ -396,19 +418,11 @@ var parseForum = function(forumName, cluster, instances) {
         //registered instances according to cluster
         ccount: 0,
         //
-        InstanceIds: [],
-        InstanceIps: [],
+        Instances: [],
         istatus: null,
         //list the required hosts
-        hosts: [{
-            name: 'dbmongo'
-        }, {
-            name: 'lab'
-        }, {
-            name: 'machine'
-        }, {
-            name: 'paix01'
-        }],
+        hosts: {},
+        services: [{name:'dbmongo'},{name:'lab'},{name:'paix01'}],
         //instance count according to ec2
         icount: 0,
         //
@@ -433,12 +447,12 @@ var parseForum = function(forumName, cluster, instances) {
                         cinfo['icount']++;
                         var InstanceId = instance['InstanceId']
                         var PrivateIpAddress = instance['PrivateIpAddress']
+                        var PublicIpAddress = instance['PublicIpAddress']
                         var tags = instance['Tags']
                         for (var m in tags) {
                             var tag = tags[m];
                             if (tag['Key'] == 'forum' && tag['Value'] == forumName && InstanceId.substr(0, 2) == 'i-') {
-                                cinfo['InstanceIds'].push(InstanceId);
-                                cinfo['InstanceIps'].push(PrivateIpAddress);
+                                cinfo['Instances'][l] = {InstanceId,PrivateIpAddress,PublicIpAddress };
                             }
 
                         }
