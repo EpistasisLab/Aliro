@@ -22,3 +22,4 @@ else
     fi;
     touch /root/forum
 fi;
+bash
