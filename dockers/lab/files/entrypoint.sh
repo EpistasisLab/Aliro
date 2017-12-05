@@ -11,6 +11,5 @@ if [ -d 'bower_components' ]; then
 else
     bower install --allow-root
 fi;
-webpack --watch &
-pm2 start lab.config.js --watch
-bash
+webpack &
+pm2 start lab.config.js --no-daemon

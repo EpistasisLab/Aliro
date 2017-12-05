@@ -1,5 +1,5 @@
-cd ${PROJECT_ROOT}/Gp/machine
-rm -f ${PROJECT_ROOT}/Gp/machine/specs.json
+cd ${PROJECT_ROOT}/pennai/machine
+rm -f ${PROJECT_ROOT}/pennai/machine/specs.json
 #/etc/init.d/ssh start
 #ifconfig eth0
 export IP=`wget -qO- http://instance-data/latest/meta-data/local-ipv4`

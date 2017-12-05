@@ -1,8 +1,4 @@
 mongod -f /etc/mongod.conf &
-if [ -f '/root/forum' ]; then
-    echo "forum exists."
-else
-    sleep 2
     if [ -v PARENTDB ]; then
         dumpdir=${SHARE_PATH}/${NETWORK}/forums/${PARENTDB}
         cd $dumpdir  && mongorestore dump/
@@ -21,5 +17,8 @@ else
         mongo FGLab --eval 'db.projects.createIndex({name: 1})'
     fi;
     touch /root/forum
-fi;
-bash
+while [ ! -f /tmp/die.txt ]
+do
+  sleep 2
+done
+cat /tmp/die.txt

@@ -8,7 +8,7 @@ var Promise = require("q")
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
-var steps = ['stop', 'rm', 'build', 'create', 'start']
+var steps = ['rm', 'build', 'tag']
 var makevars = {}
 var cmds = {}
 //suppress stdout for docker build(s) (or not)
@@ -77,6 +77,7 @@ var initVars = function(callback) {
     makevars['PROJECT_ROOT'] = basedir;
     retHosts(network,callback);
 }
+exports.initVars = initVars;
 
 
 //create the specified network if it does not yet exist
@@ -381,10 +382,9 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-
-// do it!
-initVars(function(sentient) {
-
+var make = function() {
+    var deferred = Promise.defer();
+    initVars(function(sentient) {
     console.log('processing hosts', hosts);
     // look for container definitions in dockers directory
     parseDirs(function(dirs) {
@@ -504,10 +504,9 @@ initVars(function(sentient) {
 
                 //where the magic happens
                 var chain = ccmdAr.reduce(function(promise, item) {
-
-if(verbose) {
-console.log('item',item);
-}
+                    if(verbose) {
+                     console.log('item',item);
+                    }
                     return promise.then(function(result) {
                         return runJobs(item);
                     });
@@ -535,9 +534,11 @@ console.log('item',item);
                                             var tagP = runJobs(cmds['tag']);
                                             Promise.all(tagP).then(function() {
                                                     //console.log("create done");
-                                                    var pushP = runJobs(cmds['tag']);
+                                                    var pushP = runJobs(cmds['push']);
                                                     Promise.all(pushP).then(function() {
                                                             //console.log("create done");
+            //deferred.reject(new Error(error));
+            deferred.resolve(makevars);
 
 
 
@@ -577,3 +578,12 @@ console.log('item',item);
 
     });
 });
+return deferred.promise;
+};
+// do it!
+              // console.log(makeP);
+
+exports.make = make;
+if (require.main === module) {
+make()
+}

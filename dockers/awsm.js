@@ -1,3 +1,5 @@
+'use strict';
+var fs = require('fs');
 var AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
@@ -12,7 +14,7 @@ var ec2 = new AWS.EC2();
 //our default image
 var ImageId = 'ami-7f735a1a';
 //our default instance
-var InstanceType = 't2.medium';
+var InstanceType = 'm4.large';
 //
 //
 // make the Instances required to support a forum
@@ -216,26 +218,46 @@ var getCluster = function(forumName) {
 
 //
 exports.startTasks = function(cloud) {
+    var makevars = getMakevars();
+    var promise_array = Array(cloud['hosts'].length);
     for (i in cloud['hosts']) {
-        var host = cloud['hosts'][i];
+        var deferred = Promise.defer();
+        promise_array[i] = deferred.promise;
+        var host = cloud['hosts'][i]['name'];
         cloud['hosts'][i]['ip'] = cloud['InstanceIps'][i];
         cloud['hosts'][i]['instance'] = cloud['InstanceIds'][i];
+        var task_definition = host;
+        var params = {};
+        params['taskDefinition'] = task_definition;
+        params['cluster'] = cloud['cname'];
+        params['overrides'] = { 
+            "containerOverrides": [ 
+             { 
+            //"command": [ "string" ],
+            "environment": makevars,
+            "name": host
+             }
+        ],
+        }
+       params['placementConstraints'] =  [
+    {
+      type: 'distinctInstance'
+    }]
+
         ecs.runTask(params, function(err, data) {
             if (err) {
                 deferred.reject(new Error(err));
-             console.error(err);
+                console.error(err);
            } else {
+console.log(data);
                deferred.resolve(data);
            }
         });
-    return deferred.promise;
         
     }
-    console.log(cloud);;
-    var taskP = Promise.when();
-    //console.log('s',services);
-    //console.log('c',cloud);
-    return taskP
+return Promise.allSettled(promise_array);
+
+    return deferred.promise;
 }
 exports.stopServices = function(forumName) {
     return Promise.when();
@@ -383,6 +405,8 @@ var parseForum = function(forumName, cluster, instances) {
         }, {
             name: 'lab'
         }, {
+            name: 'machine'
+        }, {
             name: 'paix01'
         }],
         //instance count according to ec2
@@ -425,3 +449,23 @@ var parseForum = function(forumName, cluster, instances) {
     }
     return (cinfo);
 }
+
+
+
+var getMakevars = function() {
+    var makevars =[] 
+    var fileBuffer = fs.readFileSync('Makevars');
+    var vars_string = fileBuffer.toString();
+    var vars_lines = vars_string.split("\n");
+    for (var i in vars_lines) {
+        var line = vars_lines[i]
+        var spliteded = line.split(':=');
+        var name = spliteded[0];
+        var val = spliteded[1];
+        if (name && val) {
+            makevars.push({'name':name,'value':val});
+        }
+    }
+   return makevars;
+}
+
