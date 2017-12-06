@@ -25,49 +25,67 @@ if (argv['_'] && argv['_'].length > 0) {
 for (var i in forums) {
     var forum = forums[i];
     var forumName = forum['forumName'];
-    var cloudP, tasksP, dbP, labP;
-    if (['start', 'stop', 'info'].indexOf(action) >= 0) {
-        cloudP = awsm.getCloud(forumName, action);
-    } else {
-        cloudP = Promise.when();
-    }
-    cloudP.then(function(cloud) {
-        if (action == 'start') {
-            var hostname = 'dbmongo';
-            var tasksP = awsm.startTask(cloud,hostname);
-            tasksP.then(function(task) {
-                //console.log('task', task);
-                var instanceArn = task['tasks'][0]['containerInstanceArn'];
-console.log(instanceArn);
-                // console.log('i', instanceArn);
-                dbP = awsm.getInstanceId(forumName, instanceArn);
-                dbP.then(function(data) {
-//                    cloud['hosts']['dbmongo'] = cloud['InstanceIps'][cloud['InstanceIds'].indexOf(data['ec2InstanceId'])]
-                    labP = awsm.startTask(cloud, 'lab');
-                    labP.then(function(task) {
-                        var instanceArn = task['tasks'][0]['containerInstanceArn'];
-                        labP = awsm.getInstanceId(forumName, instanceArn);
-                    });
-
-
-                }).catch(function(err) {
-                    console.log('e', err);
+    var iP, cP;
+    var cloudP = awsm.getCloud(forumName);
+    cloudP.then(function(finfo) {
+       if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
+        finfo['settled']  = true; 
+       } else {
+        finfo['settled']  = false; 
+       }
+        if (action == 'info') {
+            console.log({finfo})
+        }
+        if (action == 'stop') {
+            if (finfo['instances'].length > 0) {
+                iP = awsm.stopInstances(finfo['instances']);
+            } else {
+                console.log('instances already stopped');
+                iP = Promise.when();
+            }
+            iP.then(function(instances) {
+                if (finfo['ccount'] == 0 && settled) {
+                    cP = awsm.stopCluster(finfo['forumName']);
+                } else {
+                    console.log('waiting for counts to settle');
+                    cP = Promise.when();
+                }
+                cP.then(function(cluster) {
+                    console.log('done')
+                    // console.log('stopped cluster')
                 });
-
-                //console.log(db);
+            });
+        } else if (action == 'start') {
+            if (finfo['cstatus'] != 'ACTIVE') {
+                cP = awsm.startCluster(finfo['forumName']);
+            } else {
+                console.log('cluster already running');
+                cP = Promise.when();
+            }
+            cP.then(function(cluster) {
+                if (finfo['icount'] == 0) {
+                    iP = awsm.startInstances(finfo);
+                } else {
+                    console.log('instances already running');
+                    iP = Promise.when();
+                }
+                iP.then(function(instances) {
+                    //make sure cluster and instances agree on count
+                    if (finfo['settled'] && finfo['services'].length == finfo['instances'].length ) { 
+                        awsm.startTasks(finfo);
+//                        for (i in finfo['services']) {
+//                            finfo['services'][i]['IP'] = finfo['instances'][i]['PrivateIpAddress'];
+//                        }
+                        //                    finfo['ccount']console.log('started instances')
+                    }
+                })
+            }).catch(function(err) {
+                console.log('error', err);
             });
 
-        } else if (action == 'stop') {
-            //tasksP = awsm.stopTasks(cloud);
-            tasksP = Promise.when();
-        } else if (action == 'info') {
-            //servicesP = awsm.listTasks(cloud);
-            tasksP = Promise.when();
-            console.log(cloud);
+
+
         }
-        tasksP.then(function(services) {}).catch(function(err) {
-            console.log('error', err);
-        });
     }).catch(function(err) {
         console.log('error', err);
     });
