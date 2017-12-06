@@ -403,6 +403,8 @@ exports.getCloud = function(forum) {
             }, {
                 name: 'lab'
             }, {
+                name: 'machine'
+            }, {
                 name: 'paix01',
             }],
             makevars: null,
