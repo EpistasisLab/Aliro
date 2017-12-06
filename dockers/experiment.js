@@ -25,7 +25,7 @@ if (argv['_'] && argv['_'].length > 0) {
 for (var i in forums) {
     var forum = forums[i];
     var forumName = forum['forumName'];
-    var iP, cP;
+    var iP, cP, tP;
     var cloudP = awsm.getCloud(forumName);
     cloudP.then(function(finfo) {
        if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
@@ -72,13 +72,18 @@ for (var i in forums) {
                 iP.then(function(instances) {
                     //make sure cluster and instances agree on count
                     if (finfo['settled'] && finfo['services'].length == finfo['instances'].length ) { 
-                        awsm.startTasks(finfo);
-//                        for (i in finfo['services']) {
-//                            finfo['services'][i]['IP'] = finfo['instances'][i]['PrivateIpAddress'];
-//                        }
-                        //                    finfo['ccount']console.log('started instances')
+                        tP = awsm.startTasks(finfo);
+                    } else {
+                        tP = Promise.when();
                     }
-                })
+                    tP.then(function(tasks) {
+ console.log(tasks);
+                    }).catch(function(err) {
+                         console.log('error', err);
+                    });
+            }).catch(function(err) {
+                console.log('error', err);
+            });
             }).catch(function(err) {
                 console.log('error', err);
             });
