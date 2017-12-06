@@ -12,11 +12,16 @@
         {
           "hostPort": 27017,
           "protocol": "tcp",
-          "containerPort":27017 
+          "containerPort":27017
         }
       ],
       "command": [],
-      "mountPoints": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "share",
+          "containerPath": "/share"
+        }
+      ],
       "workingDirectory": "/opt",
       "memoryReservation": 1024,
       "volumesFrom": [],
@@ -27,7 +32,7 @@
     }
   ],
   "family": "dbmongo",
-  "networkMode": "bridge",
+  "networkMode": "host",
   "volumes": [
     {
       "name": "share",

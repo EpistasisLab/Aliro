@@ -16,7 +16,12 @@
         }
       ],
       "command": [],
-      "mountPoints": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "share",
+          "containerPath": "/share"
+        }
+      ],
       "workingDirectory": "/opt",
       "memoryReservation": 1024,
       "volumesFrom": [],
@@ -27,7 +32,7 @@
     }
   ],
   "family": "lab",
-  "networkMode": "bridge",
+  "networkMode": "host",
   "volumes": [
     {
       "name": "share",
