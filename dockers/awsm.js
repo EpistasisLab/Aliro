@@ -156,8 +156,8 @@ exports.startInstances = function(cinfo) {
 
 //
 exports.startTasks = function(cinfo) {
-
     var deferred = Promise.defer();
+    var promise_array = Array(cinfo['services'].length)
     var extraHosts = []
     for (var i in cinfo['services']) {
         var hostname = cinfo['services'][i]['name'];
@@ -177,7 +177,7 @@ exports.startTasks = function(cinfo) {
             'cluster': cinfo['cname'],
             'overrides': {
                 'containerOverrides': [{
-                    'environment': makevars,
+                    'environment': cinfo['makevars'],
                     'name': hostname,
                 }, ],
             },
@@ -187,25 +187,34 @@ exports.startTasks = function(cinfo) {
         //console.log('p',params);
         //}
 
-        /*
-            ecs.startTask(params, function(err, data) {
-                if (err) {
-                    deferred.reject(new Error(err));
-                    console.error(err);
-                } else {
-                    console.log(data);
-                    deferred.resolve(data);
-                }
-            });
-        */
-    }
+//console.log(params);
 
-    return deferred.promise;
+          promis_array[i] = startTask(params);
+} 
+    return Promise.allSettled(promise_array);
+
+}
+
+
+
+
+var startTask = function(params) {
+    var deferred = Promise.defer();
+        var deferred = Promise.defer();
+        ecs.startTask({params}, (error, data) => {
+            if (error) {
+                    deferred.reject(new Error(error));
+                    console.error(error);
+            } else {
+                deferred.resolve(data);
+            }
+        });
+        return deferred.promise;
+
 }
 
 
 exports.getCloud = function(forumName) {
-    //
     var getCluster = function(forumName) {
         var deferred = Promise.defer();
         ecs.describeClusters({
