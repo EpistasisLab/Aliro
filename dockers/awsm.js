@@ -166,7 +166,7 @@ exports.startTasks = function(cinfo) {
             hostname,
             ipAddress
         });
-     }
+    }
     for (var i in cinfo['services']) {
         var hostname = cinfo['services'][i]['name'];
         var ipAddress = cinfo['instances'][i]['PrivateIpAddress'];
@@ -187,10 +187,10 @@ exports.startTasks = function(cinfo) {
         //console.log('p',params);
         //}
 
-//console.log(params);
+        //console.log(params);
 
-          promis_array[i] = startTask(params);
-} 
+        promise_array[i] = startTask(params);
+    }
     return Promise.allSettled(promise_array);
 
 }
@@ -200,16 +200,16 @@ exports.startTasks = function(cinfo) {
 
 var startTask = function(params) {
     var deferred = Promise.defer();
-        var deferred = Promise.defer();
-        ecs.startTask({params}, (error, data) => {
-            if (error) {
-                    deferred.reject(new Error(error));
-                    console.error(error);
-            } else {
-                deferred.resolve(data);
-            }
-        });
-        return deferred.promise;
+    var deferred = Promise.defer();
+    ecs.startTask(params, (error, data) => {
+        if (error) {
+            deferred.reject(new Error(error));
+            console.error(error);
+        } else {
+            deferred.resolve(data);
+        }
+    });
+    return deferred.promise;
 
 }
 
