@@ -6,7 +6,7 @@ COPY files/env pennai/machine/.env
 COPY files/start.sh /root/
 COPY files/entrypoint.sh /root/
 COPY files/get_datasets.sh /root/
-RUN cd pennai/machine && npm install && npm -g install pm2
+RUN cd pennai/ && mkdir tmp && cd machine && npm install && npm -g install pm2
 VOLUME /share
 EXPOSE 5081
 #need ssh?
