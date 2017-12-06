@@ -3,19 +3,6 @@ FROM pennai/base:latest
 WORKDIR /opt/
 #ADD files/intel_opencl.tgz /
 #ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
-RUN apt-get update && apt-get install -y --allow-unauthenticated \
-    mercurial subversion \
-    build-essential cmake lsb-core cpio mesa-common-dev\
-    libglib2.0-0 libxext6 libsm6 libxrender1 \
-    --no-install-recommends
-# Anaconda 5.0.1
-RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh -O ~/anaconda.sh && \
-    /bin/bash ~/anaconda.sh -b -p /opt/conda && \
-    rm ~/anaconda.sh
-
-
 #
 ENV PATH /opt/conda/bin:$PATH
 RUN pip install scikit-mdr
