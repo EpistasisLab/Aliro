@@ -540,7 +540,7 @@ return deferred.promise;
 
 exports.make = make;
 if (require.main === module) {
-var steps = ['stop','rm', 'build', 'tag','create','start']
+var steps = ['stop','rm', 'build', 'tag']
 var makevars = {}
 var cmds = {}
 //suppress stdout for docker build(s) (or not)

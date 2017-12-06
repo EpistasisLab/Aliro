@@ -12,4 +12,9 @@ else
     bower install --allow-root
 fi;
 webpack &
-pm2 start lab.config.js --no-daemon
+pm2 start lab.config.js --watch
+while [ ! -f /tmp/die.txt ]
+do
+  sleep 2
+done
+cat /tmp/die.txt

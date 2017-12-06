@@ -274,7 +274,7 @@ exports.getCloud = function(forum) {
                     var descP = Promise.when();
                 }
                 descP.then(function(description) {
-                    if (description) {
+                    if (description !== undefined) {
                         deferred.resolve(description['tasks']);
                     } else {
                         deferred.resolve([]);
@@ -400,21 +400,10 @@ exports.getCloud = function(forum) {
             hosts: {},
             services: [{
                 name: 'dbmongo',
-                vars: [{
-                    name: 'parentdb',
-                    value: 'init'
-                }]
             }, {
                 name: 'lab'
             }, {
                 name: 'paix01',
-                vars: [{
-                    name: 'includedDatasets',
-                    value: []
-                }, {
-                    name: 'excludedDatasets',
-                    value: []
-                }],
             }],
             makevars: null,
             //
@@ -443,7 +432,7 @@ exports.getCloud = function(forum) {
         }
         for (var i in iinstances) {
             var iinstance = iinstances[i];
-            if (iinstance['State']['Code'] == 16) {
+            if (iinstance['State'] && iinstance['State']['Code'] == 16) {
                 cinfo['istatus'] = 'ACTIVE';
                 cinfo['icount']++;
                 var InstanceId = iinstance['InstanceId']
