@@ -12,6 +12,9 @@ exports.returnUserData = function(req) {
   } else if (req.body && req.body.apikey) {
     var apikey = req.body.apikey;
     query = {apikey:apikey}
+  } else if (req.headers['host'] && req.headers['host'] ==  'localhost:5080') {
+    var username = 'testuser';
+    query = {username:username}
   } else {
     query = {};
   }
