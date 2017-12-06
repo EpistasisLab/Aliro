@@ -8,8 +8,20 @@
         "/bin/bash",
         "/root/entrypoint.sh"
       ],
+      "portMappings": [
+        {
+          "hostPort": 5080,
+          "protocol": "tcp",
+          "containerPort": 5080
+        }
+      ],
       "command": [],
-      "mountPoints": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "share",
+          "containerPath": "/share"
+        }
+      ],
       "workingDirectory": "/opt",
       "memoryReservation": 1024,
       "volumesFrom": [],
@@ -20,7 +32,7 @@
     }
   ],
   "family": "paix01",
-  "networkMode": "bridge",
+  "networkMode": "host",
   "volumes": [
     {
       "name": "share",

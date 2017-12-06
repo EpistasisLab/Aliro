@@ -10,7 +10,7 @@ var make = require('./make');
 var ranman = require('./ranman').retData();
 // many forums, one complete list of datasets
 var forums = ranman['grouped'];
-var all = ranman['datasets'];
+var alldata = ranman['datasets'];
 // handle arguments
 var argv = require('minimist')(process.argv.slice(2));
 // the default behavior for this script
@@ -18,7 +18,16 @@ var action = 'info';
 if (argv['_'] && argv['_'].length > 0) {
     action = argv['_'][0];
 }
+//sync with the filesystem
+var doSync = false
+if (argv['s']) {
+    doSync = true;
+}
 //parent db to inherit
+var ParentForum = 'init';
+if (argv['d']) {
+    ParentForum = argv['d'];
+}
 
 
 // iterate over forums
@@ -26,7 +35,7 @@ for (var i in forums) {
     var forum = forums[i];
     var forumName = forum['forumName'];
     var iP, cP, tP;
-    var cloudP = awsm.getCloud(forumName);
+    var cloudP = awsm.getCloud(forum);
     cloudP.then(function(finfo) {
         if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
             finfo['settled'] = true;
@@ -34,6 +43,9 @@ for (var i in forums) {
             finfo['settled'] = false;
         }
         if (action == 'info') {
+            if (doSync) {
+                awsm.syncForum(finfo);
+            }
             console.log(finfo)
         }
         if (action == 'stop') {
@@ -44,7 +56,7 @@ for (var i in forums) {
                 iP = Promise.when();
             }
             iP.then(function(instances) {
-                if (finfo['ccount'] == 0 && settled) {
+                if (finfo['ccount'] == 0 && finfo['settled']) {
                     cP = awsm.stopCluster(finfo['forumName']);
                 } else {
                     console.log('waiting for counts to settle');
@@ -53,6 +65,8 @@ for (var i in forums) {
                 cP.then(function(cluster) {
                     console.log('done')
                     // console.log('stopped cluster')
+                }).catch(function(err) {
+                    console.log('error', err);
                 });
             });
         } else if (action == 'start') {
@@ -79,6 +93,7 @@ for (var i in forums) {
                     }
                     tP.then(function(tasks) {
                         console.log('done');
+                        awsm.syncForum(finfo)
                         console.log(tasks);
                     }).catch(function(err) {
                         console.log('error', err);
@@ -89,9 +104,6 @@ for (var i in forums) {
             }).catch(function(err) {
                 console.log('error', err);
             });
-
-
-
         }
     }).catch(function(err) {
         console.log('error', err);

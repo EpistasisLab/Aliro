@@ -51,16 +51,11 @@ exports.startCluster = function(forumName) {
             deferred.reject(new Error(error));
             console.error(error);
         } else {
-            //            data['forum'] = forum;
             deferred.resolve(data);
         }
     });
     return deferred.promise;
 }
-
-
-
-
 
 //
 exports.stopInstances = function(instances) {
@@ -76,8 +71,6 @@ exports.stopInstances = function(instances) {
             deferred.reject(new Error(error));
             console.error(error);
         } else {
-            //console.log('err');
-            //            data['forum'] = forum;
             deferred.resolve(data);
         }
     });
@@ -137,7 +130,22 @@ exports.startInstances = function(cinfo) {
 //
 exports.startTasks = function(cinfo) {
     console.log('starting tasks');
-    var deferred = Promise.defer();
+    //we'll use this to interface with the elastic cloud
+    var startTask = function(params) {
+        var deferred = Promise.defer();
+        ecs.startTask(params, (error, data) => {
+            if (error) {
+                deferred.reject(new Error(error));
+                console.error(error);
+            } else {
+                deferred.resolve(data);
+            }
+        });
+        return deferred.promise;
+
+    }
+
+
     var promise_array = Array(cinfo['services'].length)
     var extraHosts = []
     for (var i in cinfo['services']) {
@@ -150,8 +158,7 @@ exports.startTasks = function(cinfo) {
     }
     for (var i in cinfo['services']) {
         var hostname = cinfo['services'][i]['name'];
-        var ipAddress = cinfo['instances'][i]['PrivateIpAddress'];
-        var instanceId = cinfo['instances'][i]['containerInstanceArn'];
+        var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
         var params = {
             'containerInstances': [instanceId],
             'taskDefinition': hostname,
@@ -163,13 +170,6 @@ exports.startTasks = function(cinfo) {
                 }, ],
             },
         }
-        //if(extraHosts.length > 0){
-        //       params["overrides"]["containerOverrides"][0]['extraHosts'] = extraHosts;
-        //console.log('p',params);
-        //}
-
-        //console.log(params);
-
         promise_array[i] = startTask(params);
     }
     return Promise.allSettled(promise_array);
@@ -177,24 +177,9 @@ exports.startTasks = function(cinfo) {
 }
 
 
-
-
-var startTask = function(params) {
-    var deferred = Promise.defer();
-    ecs.startTask(params, (error, data) => {
-        if (error) {
-            deferred.reject(new Error(error));
-            console.error(error);
-        } else {
-            deferred.resolve(data);
-        }
-    });
-    return deferred.promise;
-
-}
-
-
-exports.getCloud = function(forumName) {
+//get all cloud resources for a forum
+exports.getCloud = function(forum) {
+    var forumName = forum['forumName'];
     console.log('getting cloud');
     var getCluster = function(forumName) {
         var deferred = Promise.defer();
@@ -217,7 +202,7 @@ exports.getCloud = function(forumName) {
         return deferred.promise;
     };
 
-    //get container info
+    //ECS (not EC2) container info
     var getEcsInstances = function(forumName) {
         console.log('getting ECS instances');
         var deferred = Promise.defer();
@@ -272,7 +257,7 @@ exports.getCloud = function(forumName) {
 
     //get container info
     var getTasks = function(forumName) {
-        console.log('getting Tasks');
+        console.log('getting tasks');
         var deferred = Promise.defer();
         var clusterName = 'c' + forumName
         var params = {
@@ -321,14 +306,6 @@ exports.getCloud = function(forumName) {
         return deferred.promise;
     }
 
-
-
-
-
-
-
-
-
     var getEc2Instances = function(forumName) {
         console.log('getting EC2 instances');
         var params = {
@@ -368,8 +345,14 @@ exports.getCloud = function(forumName) {
         return deferred.promise;
     };
 
-    var getMakevars = function() {
+    var getMakevars = function(services) {
         var makevars = []
+        var hosts = {}
+        for (var i in services) {
+            var service = services[i];
+            hosts[service['name']] = service.instance['PrivateDnsName']
+
+        }
         var fileBuffer = fs.readFileSync('Makevars');
         var vars_string = fileBuffer.toString();
         var vars_lines = vars_string.split("\n");
@@ -378,6 +361,9 @@ exports.getCloud = function(forumName) {
             var spliteded = line.split(':=');
             var name = spliteded[0];
             var val = spliteded[1];
+            if (name.substr(-5) == '_HOST') {
+                val = hosts[val];
+            }
             if (name && val) {
                 makevars.push({
                     'name': name,
@@ -390,9 +376,12 @@ exports.getCloud = function(forumName) {
     var formatCloud = function(forumName, cluster, iinstances, cinstances, tasks) {
         /*      
          Parse cluster data and store interesting things along with instance stats
+//iinstances accorinding to EC2
+//cinstances accorinding to ECS
         */
         var cinfo = {
             forumName: forumName,
+            //everything is everything
             settled: false,
             //cluster status
             cstatus: null,
@@ -402,24 +391,34 @@ exports.getCloud = function(forumName) {
             ccount: 0,
             //tasks
             tcount: 0,
+            //instance count according to ec2
+            icount: 0,
             //InstanceIds
             instances: [],
             istatus: null,
             //list the required hosts
             hosts: {},
             services: [{
-                name: 'dbmongo'
+                name: 'dbmongo',
+                vars: [{
+                    name: 'parentdb',
+                    value: 'init'
+                }]
             }, {
                 name: 'lab'
             }, {
-                name: 'paix01'
+                name: 'paix01',
+                vars: [{
+                    name: 'includedDatasets',
+                    value: []
+                }, {
+                    name: 'excludedDatasets',
+                    value: []
+                }],
             }],
-            //instance count according to ec2
-            icount: 0,
             makevars: null,
             //
         }
-        cinfo['makevars'] = getMakevars();
         if (cluster['clusters'] && cluster['clusters'].length > 0) {
             for (var i in cluster['clusters']) {
                 var c = cluster['clusters'][i];
@@ -472,6 +471,21 @@ exports.getCloud = function(forumName) {
                 }
             }
         }
+        if (cinfo['services'].length == cinfo['instances'].length && cinfo['ccount'] == cinfo['icount'] && cinfo['tcount'] == 0) {
+            for (var i in cinfo['services']) {
+                cinfo['services'][i]['instance'] = cinfo['instances'][i];
+            }
+            cinfo['makevars'] = getMakevars(cinfo['services']);
+            var datasets = forum['datasets'].join()
+            cinfo['makevars'].push({
+                name: 'forumName',
+                value: forumName
+            });
+            cinfo['makevars'].push({
+                name: 'datasets',
+                value: datasets
+            });
+        }
         return (cinfo);
     }
     var deferred = Promise.defer();
@@ -505,4 +519,16 @@ exports.getCloud = function(forumName) {
         deferred.reject(new Error(err));
     });
     return deferred.promise;
+}
+
+exports.syncForum = function(forum) {
+    console.log('syncing forum');
+    var content = JSON.stringify(forum);
+    fs.writeFile("/tmp/" + forum['forumName'] + ".json", content, 'utf8', function(err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    });
+    console.log(forum);
 }
