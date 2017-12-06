@@ -28,13 +28,13 @@ for (var i in forums) {
     var iP, cP, tP;
     var cloudP = awsm.getCloud(forumName);
     cloudP.then(function(finfo) {
-       if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
-        finfo['settled']  = true; 
-       } else {
-        finfo['settled']  = false; 
-       }
+        if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
+            finfo['settled'] = true;
+        } else {
+            finfo['settled'] = false;
+        }
         if (action == 'info') {
-            console.log({finfo})
+            console.log(finfo)
         }
         if (action == 'stop') {
             if (finfo['instances'].length > 0) {
@@ -71,19 +71,21 @@ for (var i in forums) {
                 }
                 iP.then(function(instances) {
                     //make sure cluster and instances agree on count
-                    if (finfo['settled'] && finfo['services'].length == finfo['instances'].length ) { 
+                    if (finfo['settled'] && finfo['services'].length == finfo['instances'].length) {
+                        // && finfo['tcount'] ==0) {
                         tP = awsm.startTasks(finfo);
                     } else {
                         tP = Promise.when();
                     }
                     tP.then(function(tasks) {
- console.log(tasks);
+                        console.log('done');
+                        console.log(tasks);
                     }).catch(function(err) {
-                         console.log('error', err);
+                        console.log('error', err);
                     });
-            }).catch(function(err) {
-                console.log('error', err);
-            });
+                }).catch(function(err) {
+                    console.log('error', err);
+                });
             }).catch(function(err) {
                 console.log('error', err);
             });
