@@ -128,7 +128,9 @@ fs.readFile("specs.json", "utf-8")
                     });
             })
             .catch((err) => {
-                console.log(err);
+               console.log('catchup: nobody to talk to');
+               console.log(err);
+               process.exit();
             });
     });
 

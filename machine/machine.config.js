@@ -8,6 +8,8 @@ module.exports = {
     // machine application
     {
       name      : "machine",
+      restart_delay: 10000,
+      max_restarts: 10000,
       script    : "machine.js",
       env: {
         COMMON_VARIABLE: "true"
