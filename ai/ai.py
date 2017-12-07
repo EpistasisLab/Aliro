@@ -110,11 +110,13 @@ class AI():
         # toggled datasets
         self.dataset_threads = {}
         # for comma-separated list of datasets in datasets, turn AI request on 
-        for ds in datasets.split(','):
-            payload = {'ai': 'requested'} 
-            data_submit_path = '/'.join([self.submit_path,ds,'ai'])
-            tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                headers=self.header)
+        if datasets:
+            for ds in datasets.split(','):
+                payload = {'ai': 'requested'} 
+                data_submit_path = '/'.join([self.submit_path,ds,'ai'])
+                print('submitting ai requested to ',data_submit_path)
+                tmp = requests.put(data_submit_path,data=json.dumps(payload),
+                    headers=self.header)
 
     def load_state(self):
         """loads pickled score file."""
