@@ -9,7 +9,7 @@ fi
 mongod -f /etc/mongod.conf &
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
-    if [ -d ${SHARE_PATH}/${NETWORK}/forums/${forumName} ]; then
+    if [ -v forumName  && -d ${SHARE_PATH}/${NETWORK}/forums/${forumName}/dump ]; then
         dumpdir=${SHARE_PATH}/${NETWORK}/forums/${forumName}
         cd $dumpdir  && mongorestore dump/
         mongoimport -d FGLab -c users --file /root/users.json --type json
