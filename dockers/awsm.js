@@ -16,6 +16,7 @@ var ImageId = 'ami-7f735a1a';
 //our default instance
 var InstanceType = 'm4.large';
 //
+var basedir = '/share/devel/pennai'
 //
 
 
@@ -128,9 +129,10 @@ exports.startInstances = function(cinfo) {
 }
 
 //
-exports.startTasks = function(cinfo) {
+exports.startTasks = function(cinfo,tasks) {
     console.log('starting tasks');
-    //we'll use this to interface with the elastic cloud
+
+    //interface with the elastic cloud
     var startTask = function(params) {
         var deferred = Promise.defer();
         ecs.startTask(params, (error, data) => {
@@ -147,18 +149,14 @@ exports.startTasks = function(cinfo) {
 
 
     var promise_array = Array(cinfo['services'].length)
-    var extraHosts = []
     for (var i in cinfo['services']) {
         var hostname = cinfo['services'][i]['name'];
-        var ipAddress = cinfo['instances'][i]['PrivateIpAddress'];
-        extraHosts.push({
-            hostname,
-            ipAddress
-        });
-    }
-    for (var i in cinfo['services']) {
-        var hostname = cinfo['services'][i]['name'];
+        if (tasks.length == 0 ||  tasks.indexOf(hostname) >= 0) {
+        if (cinfo['services'][i]['instance'] !== undefined) {
         var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
+        } else {
+        var instanceId = cinfo['instances'][i]['containerInstanceArn'];
+        }
         var params = {
             'containerInstances': [instanceId],
             'taskDefinition': hostname,
@@ -171,6 +169,7 @@ exports.startTasks = function(cinfo) {
             },
         }
         promise_array[i] = startTask(params);
+        }
     }
     return Promise.allSettled(promise_array);
 
@@ -515,7 +514,7 @@ exports.getCloud = function(forum) {
 exports.syncForum = function(forum) {
     console.log('syncing forum');
     var content = JSON.stringify(forum);
-    fs.writeFile("/tmp/" + forum['forumName'] + ".json", content, 'utf8', function(err) {
+    fs.writeFile(basedir + "/forums/" + forum['forumName'] + ".json", content, 'utf8', function(err) {
         if (err) {
             return console.log(err);
         }

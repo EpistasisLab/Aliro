@@ -6,6 +6,8 @@ var Promise = require('q');
 var awsm = require('./awsm');
 // randomizing the order of experiments
 var make = require('./make');
+//make a particular host
+var host = false
 //
 var ranman = require('./ranman').retData();
 // many forums, one complete list of datasets
@@ -22,6 +24,11 @@ if (argv['_'] && argv['_'].length > 0) {
 var doSync = false
 if (argv['s']) {
     doSync = true;
+}
+//specify a particular task/service
+var tasks = []
+if (argv['t']) {
+    tasks = argv['t'].split(',');
 }
 //parent db to inherit
 var ParentForum = 'init';
@@ -87,7 +94,7 @@ for (var i in forums) {
                     //make sure cluster and instances agree on count
                     if (finfo['settled'] && finfo['services'].length == finfo['instances'].length) {
                         // && finfo['tcount'] ==0) {
-                        tP = awsm.startTasks(finfo);
+                        tP = awsm.startTasks(finfo,tasks);
                     } else {
                         tP = Promise.when();
                     }
