@@ -31,11 +31,10 @@ if [ ! -f '/root/forum' ]; then
         mongo FGLab --eval 'db.experiments.createIndex({username: 1})'
         mongo FGLab --eval 'db.experiments.createIndex({_dataset_id: 1})'
         mongo FGLab --eval 'db.projects.createIndex({name: 1})'
-    fi;
+    fi
     touch /root/forum
 fi
 cd ${PROJECT_ROOT}
-#figure out where we are running 
 if [ $ISAWS ]
 then
     while [ ! -f /tmp/die.txt ]
