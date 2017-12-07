@@ -12,16 +12,14 @@ exports.returnUserData = function(req) {
   } else if (req.body && req.body.apikey) {
     var apikey = req.body.apikey;
     query = {apikey:apikey}
-  } else if (req.headers['host'] && req.headers['host'] ==  'localhost:5080') {
+  } else {
     var username = 'testuser';
     query = {username:username}
-  } else {
-    query = {};
   }
   if(Object.keys(query).length === 0) {
 //return (new Promise());
-return(Q.when());
-    return(false);
+    return(Q.when());
+   //// return(false);
   } else {
     return new Promise(function(success, fail) {
         db.users.find(query).limit(1)

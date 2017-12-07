@@ -1,4 +1,14 @@
+#figure out where we are running 
+wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
+if [ $? -eq 0 ]
+then
+    export ISAWS=1
+else
+    export ISAWS=0
+fi
 mongod -f /etc/mongod.conf &
+#check to see if db was loaded
+if [ ! -f '/root/forum' ]; then
     if [ -v PARENTDB ]; then
         dumpdir=${SHARE_PATH}/${NETWORK}/forums/${PARENTDB}
         cd $dumpdir  && mongorestore dump/
@@ -17,8 +27,16 @@ mongod -f /etc/mongod.conf &
         mongo FGLab --eval 'db.projects.createIndex({name: 1})'
     fi;
     touch /root/forum
-while [ ! -f /tmp/die.txt ]
-do
-  sleep 2
-done
-cat /tmp/die.txt
+fi
+cd ${PROJECT_ROOT}
+#figure out where we are running 
+if [ $ISAWS ]
+then
+    while [ ! -f /tmp/die.txt ]
+    do
+      sleep 2
+    done
+    cat /tmp/die.txt
+else
+    bash
+fi
