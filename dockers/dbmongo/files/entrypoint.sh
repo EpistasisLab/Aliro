@@ -9,7 +9,13 @@ fi
 mongod -f /etc/mongod.conf &
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
-    if [ -v PARENTDB ]; then
+    if [ -d ${SHARE_PATH}/${NETWORK}/forums/${forumName} ]
+        dumpdir=${SHARE_PATH}/${NETWORK}/forums/${forumName}
+        cd $dumpdir  && mongorestore dump/
+        mongoimport -d FGLab -c users --file /root/users.json --type json
+        mongo FGLab --eval 'db.users.createIndex({username: 1})'
+        mongo FGLab --eval 'db.users.createIndex({apikey: 1})'
+    elif [ -v PARENTDB ]; then
         dumpdir=${SHARE_PATH}/${NETWORK}/forums/${PARENTDB}
         cd $dumpdir  && mongorestore dump/
         mongoimport -d FGLab -c users --file /root/users.json --type json
