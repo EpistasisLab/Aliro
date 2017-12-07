@@ -22,7 +22,7 @@ fi;
 webpack &
 pm2 start lab.config.js --watch
 #figure out where we are running 
-if [ $ISAWS ]
+if [ ${ISAWS} -eq 1 ]
 then
     while [ ! -f /tmp/die.txt ]
     do

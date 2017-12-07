@@ -7,16 +7,19 @@ else
     export ISAWS=0
 fi
 cd ${PROJECT_ROOT}
-if [ $ISAWS ]
+if [ ${ISAWS} -eq 1 ]
 then
     sleep 60
-    python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER}
+fi
+python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER}
+if [ ${ISAWS} -eq 1 ]
+then
     while [ ! -f /tmp/die.txt ]
     do
+      echo "sleep"
       sleep 2
     done
     cat /tmp/die.txt
 else
-    python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER}
     bash
 fi
