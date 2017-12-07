@@ -23,7 +23,7 @@ else
     npm install
 fi
 pm2 start machine.config.js --watch
-if [ $ISAWS ]
+if [ ${ISAWS} -eq 1 ]
 then
     while [ ! -f /tmp/die.txt ]
     do

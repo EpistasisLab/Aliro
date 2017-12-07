@@ -34,7 +34,7 @@ if [ ! -f '/root/forum' ]; then
     fi
     touch /root/forum
 fi
-if [ $ISAWS ]
+if [ ${ISAWS} -eq 1 ]
 then
     while [ ! -f /tmp/die.txt ]
     do
