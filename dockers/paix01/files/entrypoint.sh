@@ -2,7 +2,8 @@
 cd ${PROJECT_ROOT}
 while [ ! -f /tmp/die.txt ]
     do
-      python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER}
+      env
+      python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u testuser
       echo "sleep"
       sleep 2
     done

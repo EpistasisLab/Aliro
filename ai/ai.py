@@ -62,7 +62,7 @@ class AI():
     def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=False, n_recs=1,datasets=False):
+                 verbose=True,warm_start=False, n_recs=1, datasets=False):
         """initializes AI managing agent."""
         # recommender settings
         self.rec = rec
@@ -109,6 +109,12 @@ class AI():
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         # toggled datasets
         self.dataset_threads = {}
+        # for comma-separated list of datasets in datasets, turn AI request on 
+        for ds in datasets.split(','):
+            payload = {'ai': 'requested'} 
+            data_submit_path = '/'.join([self.submit_path,ds,'ai'])
+            tmp = requests.put(data_submit_path,data=json.dumps(payload),
+                headers=self.header)
 
     def load_state(self):
         """loads pickled score file."""
@@ -258,6 +264,8 @@ class AI():
                 sleep(1);
                 self.transfer_rec(rec_payload)
                 n=n+1
+            elif 'error' in submitstatus:
+                pdb.set_trace()
             if(n>0):
                 print('looped ' + str(n) + 'times')
 
@@ -342,10 +350,6 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','processed',i,'requests')
 
-
-
-
-
     def update_recommender(self):
         """Updates recommender based on new results."""
         # update recommender
@@ -413,7 +417,8 @@ def main():
     print('=======','Penn AI','=======',sep='\n')
 
     pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
-                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START, datasets=args.DATASETS)
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START, 
+                datasets=args.DATASETS)
 
     n = 0;
     try:
