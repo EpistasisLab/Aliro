@@ -10,7 +10,6 @@ VOLUME /share
 COPY files/mongod.conf /etc/
 COPY files/users.json /root/
 COPY files/projects.json /root/
-COPY files/start.sh /root/
 COPY files/entrypoint.sh /root/
 EXPOSE 27017
-CMD ["/bin/bash", "/root/start.sh"]
+CMD ["/bin/bash", "/root/entrypoint.sh"]

@@ -62,7 +62,7 @@ class AI():
     def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=False, n_recs=1):
+                 verbose=True,warm_start=False, n_recs=1,datasets=False):
         """initializes AI managing agent."""
         # recommender settings
         self.rec = rec
@@ -107,7 +107,7 @@ class AI():
         self.ml_id_to_name = db_utils.get_ml_id_dict(self.algo_path,self.api_key)
         # build dictionary of dataset ids to names conversion
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
-        #each dataset gets its own thread 
+        # toggled datasets
         self.dataset_threads = {}
 
     def load_state(self):
@@ -413,7 +413,7 @@ def main():
     print('=======','Penn AI','=======',sep='\n')
 
     pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
-                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START)
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START, datasets=args.DATASETS)
 
     n = 0;
     try:
