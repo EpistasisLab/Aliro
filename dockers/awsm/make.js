@@ -9,35 +9,16 @@ var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
 var dryrun = false;
-var verbose = false;
+var verbose = true;
 var share = false;
 var dockerDir;
 var basedir;
 var allroots = [];
-//process arguments
-//which directories to process
-//show what would run without actually running anything
-if (argv['n']) {
-    dryrun = true;
-}
-
-if (argv['v']) {
-    verbose = true;
-}
-
-//run things from share
-if (argv['s']) {
-    share = true;
-}
-
-//IP address
-if (argv['i']) {
-    makevars['IP'] = argv['i'];
-
-}
-
-var initVars = function(callback) {
-    var makevars = [];
+var makevars;
+var steps = []
+var cmds = {}
+var initVars = function(share, callback) {
+    makevars = [];
     var fileBuffer = fs.readFileSync('./dockers/Makevars');
     var vars_string = fileBuffer.toString();
     var vars_lines = vars_string.split("\n");
@@ -56,6 +37,7 @@ var initVars = function(callback) {
     } else {
         basedir = '/opt/' + network;
     }
+    makevars['PROJECT_ROOT'] = basedir;
     dockerDir = makevars['SHARE_PATH'] + '/' + network + '/dockers'
     retHosts(makevars, callback);
 }
@@ -64,7 +46,6 @@ exports.initVars = initVars;
 
 //create the specified network if it does not yet exist
 var createNetwork = function(network, callback) {
-console.log('dirs');
     /*
         exec('docker network inspect ' + network)
             .then(function(result) {
@@ -89,7 +70,7 @@ console.log('dirs');
 
 //returns a list of existing containers for the given network
 var retHosts = function(makevars, callback) {
-var network = makevars['NETWORK'];
+    var network = makevars['NETWORK'];
     var cmd = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
     var cwd = dockerDir;
     if (verbose) {
@@ -119,7 +100,7 @@ var network = makevars['NETWORK'];
         if (stdout) {
             list = stdout.trim().split('\n');
         }
-        console.log(list);
+        //console.log(list);
         for (var i in list) {
             var splitted = list[i].split(':');
             var host = splitted[0];
@@ -130,7 +111,7 @@ var network = makevars['NETWORK'];
                 'state': state
             };
         }
-        callback(existing,makevars);
+        callback(existing, makevars);
 
 
 
@@ -140,7 +121,7 @@ var network = makevars['NETWORK'];
 }
 
 //extract build dependancy order from Dockerfiles 
-var getDeps = function(dirs, callback) {
+var getDeps = function(makevars, dirs, callback) {
     var depends = [];
     for (var i in dirs) {
         var dir = dirs[i];
@@ -174,8 +155,8 @@ var getDeps = function(dirs, callback) {
 
 
 // container build, run, etc.
-var parseDirs = function(cb) {
-console.log(makevars);
+var parseDirs = function(makevars, cb) {
+    //console.log(makevars);
     createNetwork(makevars['NETWORK'], function() {
         fs.readdir(dockerDir, function(err, files) {
             var dirs = [];
@@ -367,18 +348,33 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-var build = function(forum, services, action) {
+var build = function(forum, services, action, doShared, tasks, verbose) {
     var deferred = Promise.defer();
-    initVars(function(sentient,makevars) {
+    initVars(doShared, function(sentient, makevars) {
+        if (forum && forum['datasets'] !== undefined) {
+            makevars['DATASETS'] = forum['datasets'].join();
+        };
+        if (forum && forum['forumName'] !== undefined) {
+            makevars['FORUM'] = forum['forumName']
+        }
+        if (action == 'build') {
+            steps = ['stop', 'rm', 'build', 'create', 'tag', 'start']
+        } else if (action == 'stop') {
+            steps = ['stop', 'rm']
+        } else if (action == 'start') {
+            steps = ['stop', 'rm', 'build', 'create', 'tag', 'start']
+        }
         var hosts = [];
         for (var i in services) {
             var service = services[i];
             var hostname = service['name']
-            hosts.push(hostname);
+            if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
+                hosts.push(hostname);
+            }
         }
         console.log('processing hosts ' + hosts);
         // look for container definitions in dockers directory
-        parseDirs(function(dirs) {
+        parseDirs(makevars, function(dirs) {
             for (var i in dirs) {
                 //build continers
                 var network = makevars['NETWORK'];
@@ -458,7 +454,7 @@ var build = function(forum, services, action) {
             }
 
             //build containers based on deps
-            getDeps(dirs, function(deps) {
+            getDeps(makevars, dirs, function(deps) {
                 //promises
                 var chain = Promise.when();
                 //build the containers (if we're supposed to)
@@ -566,13 +562,10 @@ var build = function(forum, services, action) {
                         console.log(err);
                     });
             })
-                    .catch((err) => {
-                        console.log(err);
-                    });
 
         }).catch((err) => {
-                        console.log(err);
-                    });
+            console.log(err);
+        });
     });
     return deferred.promise;
 };

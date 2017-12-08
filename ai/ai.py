@@ -111,9 +111,11 @@ class AI():
         self.dataset_threads = {}
         # for comma-separated list of datasets in datasets, turn AI request on 
         if datasets:
+            data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
+            print(data_usersets)
             for ds in datasets.split(','):
                 payload = {'ai': 'requested'} 
-                data_submit_path = '/'.join([self.submit_path,ds,'ai'])
+                data_submit_path = '/'.join([self.submit_path,data_usersets[ds],'ai'])
                 print('submitting ai requested to ',data_submit_path)
                 tmp = requests.put(data_submit_path,data=json.dumps(payload),
                     headers=self.header)

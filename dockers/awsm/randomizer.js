@@ -21,6 +21,7 @@ function randomizer(arr) {
     return arr;
 }
 
+exports.randomizer = randomizer;
 
 // creates numbered sets of {chunksize} from an array
 function groupem(arr, chunksize) {
