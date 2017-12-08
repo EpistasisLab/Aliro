@@ -9,8 +9,8 @@ fi
 mongod -f /etc/mongod.conf &
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
-    if [ -v forumName ] && [ -d ${SHARE_PATH}/${NETWORK}/forums/${forumName}/dump ]; then
-        dumpdir=${SHARE_PATH}/${NETWORK}/forums/${forumName}
+    if [ -v FORUM ] && [ -d ${SHARE_PATH}/${NETWORK}/forums/${FORUM}/dump ]; then
+        dumpdir=${SHARE_PATH}/${NETWORK}/forums/${FORUM}
         cd $dumpdir  && mongorestore dump/
         mongoimport -d FGLab -c users --file /root/users.json --type json
         mongo FGLab --eval 'db.users.createIndex({username: 1})'
@@ -34,11 +34,17 @@ if [ ! -f '/root/forum' ]; then
     fi
     touch /root/forum
 fi
-if [ ${ISAWS} -eq 1 ]
-then
+if [ ${ISAWS} -eq 1 ]  ||  [ -v NOBASH ];then
+    let i=0
     while [ ! -f /tmp/die.txt ]
     do
+      let i++
       sleep 2
+      if [ $i -eq 150 ]
+      then
+          bash /root/sync.sh
+          let i=0
+      fi
     done
     cat /tmp/die.txt
 else

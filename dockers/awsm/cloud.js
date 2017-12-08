@@ -21,7 +21,7 @@ var basedir = '/share/devel/pennai'
 
 
 //shut down the cluster
-exports.stopCluster = function(forumName) {
+var stopCluster = function(forumName) {
     var deferred = Promise.defer();
     var clusterName = 'c' + forumName
     console.log('stopping ' + clusterName);
@@ -30,8 +30,14 @@ exports.stopCluster = function(forumName) {
     };
     ecs.deleteCluster(params, (error, data) => {
         if (error) {
-            deferred.reject(new Error(error));
-            console.error(error);
+                if (error['code']) {
+                    console.log('no clusters because ' + error['code']);
+                    deferred.resolve([]);
+                } else {
+                    deferred.reject(new Error(error));
+                    console.error(error);
+                }
+
         } else {
             //       data['forum'] = forum;
             deferred.resolve(data);
@@ -40,7 +46,7 @@ exports.stopCluster = function(forumName) {
     return deferred.promise;
 }
 //
-exports.startCluster = function(forumName) {
+    var startCluster = function(forumName) {
     var deferred = Promise.defer();
     var clusterName = 'c' + forumName
     console.log("starting " + clusterName)
@@ -59,7 +65,7 @@ exports.startCluster = function(forumName) {
 }
 
 //
-exports.stopInstances = function(instances) {
+var stopInstances = function(instances) {
     var InstanceIds = [];
     for (var i in instances) {
         InstanceIds.push(instances[i]['InstanceId']);
@@ -79,7 +85,7 @@ exports.stopInstances = function(instances) {
 };
 
 // make the Instances required to support a forum
-exports.startInstances = function(cinfo) {
+var startInstances = function(cinfo) {
     var deferred = Promise.defer();
     var services = cinfo['services'];
     var count = 0;
@@ -177,7 +183,7 @@ exports.startTasks = function(cinfo,tasks) {
 
 
 //get all cloud resources for a forum
-exports.cloudMan = function(forum,service_names,action) {
+exports.cloudMan = function(forum,service_names,action, tasks) {
     var forumName = forum['forumName'];
     console.log('getting cloud');
     var getCluster = function(forumName) {
@@ -375,7 +381,7 @@ exports.cloudMan = function(forum,service_names,action) {
             hosts[service['name']] = service.instance['PrivateDnsName']
 
         }
-        var fileBuffer = fs.readFileSync('Makevars');
+        var fileBuffer = fs.readFileSync('./dockers/Makevars');
         var vars_string = fileBuffer.toString();
         var vars_lines = vars_string.split("\n");
         for (var i in vars_lines) {
@@ -503,6 +509,7 @@ exports.cloudMan = function(forum,service_names,action) {
             getEcsInstances(forumName).then(function(ecsinstances) {
                 getTasks(forumName).then(function(tasks) {
                     var cinfo = formatCloud(forumName, cluster, ec2instances, ecsinstances, tasks);
+                    manageCloud(cinfo,action);
                     deferred.resolve(cinfo);
 
                 }).catch(function(err) {
@@ -527,7 +534,7 @@ exports.cloudMan = function(forum,service_names,action) {
     return deferred.promise;
 }
 
-exports.syncForum = function(forum) {
+var syncForum = function(forum) {
     console.log('syncing forum');
     var content = JSON.stringify(forum);
     fs.writeFile(basedir + "/forums/" + forum['forumName'] + ".json", content, 'utf8', function(err) {
@@ -541,31 +548,29 @@ exports.syncForum = function(forum) {
 
 
 
-var finfout = function() {
+var manageCloud = function(finfo,action) {
         if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
             finfo['settled'] = true;
         } else {
             finfo['settled'] = false;
         }
         if (action == 'info') {
-            if (doSync) {
-                syncForum(finfo);
-            }
+            //    syncForum(finfo);
             console.log(finfo)
         }
         if (action == 'stop') {
             if (finfo['instances'].length > 0) {
-                iP = stopInstances(finfo['instances']);
+                var iP = stopInstances(finfo['instances']);
             } else {
                 console.log('instances already stopped');
-                iP = Promise.when();
+                var iP = Promise.when();
             }
             iP.then(function(instances) {
                 if (finfo['ccount'] == 0 && finfo['settled']) {
-                    cP = stopCluster(finfo['forumName']);
+                    var cP = stopCluster(finfo['forumName']);
                 } else {
                     console.log('waiting for counts to settle');
-                    cP = Promise.when();
+                    var cP = Promise.when();
                 }
                 cP.then(function(cluster) {
                     console.log('done')
@@ -576,25 +581,25 @@ var finfout = function() {
             });
         } else if (action == 'start') {
             if (finfo['cstatus'] != 'ACTIVE') {
-                cP = startCluster(finfo['forumName']);
+                var cP = startCluster(finfo['forumName']);
             } else {
                 console.log('cluster already running');
-                cP = Promise.when();
+                var cP = Promise.when();
             }
             cP.then(function(cluster) {
                 if (finfo['icount'] == 0) {
-                    iP = startInstances(finfo);
+                   var iP = startInstances(finfo);
                 } else {
                     console.log('instances already running');
-                    iP = Promise.when();
+                   var iP = Promise.when();
                 }
                 iP.then(function(instances) {
                     //make sure cluster and instances agree on count
                     if (finfo['settled'] && finfo['services'].length == finfo['instances'].length) {
                         // && finfo['tcount'] ==0) {
-                        tP = startTasks(finfo,tasks);
+                        var tP = startTasks(finfo,tasks);
                     } else {
-                        tP = Promise.when();
+                        var tP = Promise.when();
                     }
                     tP.then(function(tasks) {
                         console.log('done');
