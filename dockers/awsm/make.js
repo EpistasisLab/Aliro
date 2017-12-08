@@ -8,9 +8,37 @@ var Promise = require("q")
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
+var dryrun = false;
+var verbose = false;
+var share = false;
+var dockerDir;
+var basedir;
+var allroots = [];
+//process arguments
+//which directories to process
+//show what would run without actually running anything
+if (argv['n']) {
+    dryrun = true;
+}
+
+if (argv['v']) {
+    verbose = true;
+}
+
+//run things from share
+if (argv['s']) {
+    share = true;
+}
+
+//IP address
+if (argv['i']) {
+    makevars['IP'] = argv['i'];
+
+}
 
 var initVars = function(callback) {
-    var fileBuffer = fs.readFileSync('Makevars');
+    var makevars = [];
+    var fileBuffer = fs.readFileSync('./dockers/Makevars');
     var vars_string = fileBuffer.toString();
     var vars_lines = vars_string.split("\n");
     for (var i in vars_lines) {
@@ -26,17 +54,17 @@ var initVars = function(callback) {
     if (share) {
         basedir = makevars['SHARE_PATH'] + '/' + network;
     } else {
-        basedir = '/opt/' +  network;
+        basedir = '/opt/' + network;
     }
-    dockerDir =  makevars['SHARE_PATH'] + '/' + network + '/dockers'
-    makevars['PROJECT_ROOT'] = basedir;
-    retHosts(network,callback);
+    dockerDir = makevars['SHARE_PATH'] + '/' + network + '/dockers'
+    retHosts(makevars, callback);
 }
 exports.initVars = initVars;
 
 
 //create the specified network if it does not yet exist
 var createNetwork = function(network, callback) {
+console.log('dirs');
     /*
         exec('docker network inspect ' + network)
             .then(function(result) {
@@ -60,7 +88,8 @@ var createNetwork = function(network, callback) {
 }
 
 //returns a list of existing containers for the given network
-var retHosts = function(network,callback) {
+var retHosts = function(makevars, callback) {
+var network = makevars['NETWORK'];
     var cmd = 'docker ps -a --filter network=' + network + ' --format \"table {{.Names}}:{{.ID}}:{{.Status}}\" | tail -n +2 | sort'
     var cwd = dockerDir;
     if (verbose) {
@@ -90,7 +119,7 @@ var retHosts = function(network,callback) {
         if (stdout) {
             list = stdout.trim().split('\n');
         }
-            console.log(list);
+        console.log(list);
         for (var i in list) {
             var splitted = list[i].split(':');
             var host = splitted[0];
@@ -101,7 +130,7 @@ var retHosts = function(network,callback) {
                 'state': state
             };
         }
-        callback(existing);
+        callback(existing,makevars);
 
 
 
@@ -146,6 +175,7 @@ var getDeps = function(dirs, callback) {
 
 // container build, run, etc.
 var parseDirs = function(cb) {
+console.log(makevars);
     createNetwork(makevars['NETWORK'], function() {
         fs.readdir(dockerDir, function(err, files) {
             var dirs = [];
@@ -200,9 +230,9 @@ var fexec = function(cmd, host) {
             console.error(`exec error: ${error}`);
             process.exit();
         } else {
-if(verbose) {
-console.log(stdout);
-}
+            if (verbose) {
+                console.log(stdout);
+            }
             deferred.resolve(stdout);
         }
     })
@@ -337,254 +367,216 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-var make = function() {
+var build = function(forum, services, action) {
     var deferred = Promise.defer();
-    initVars(function(sentient) {
-    console.log('processing hosts', hosts);
-    // look for container definitions in dockers directory
-    parseDirs(function(dirs) {
-        for (var i in dirs) {
-            //build continers
-            var network = makevars['NETWORK'];
-            var registry = makevars['REGISTRY'];
-            var tag = 'latest';
-            var host = dirs[i];
-            var quiet = '';
-            if(!verbose){
-            quiet = '-q'
-            }
-         
-            var build_args = quiet + ' -t ' + network + '/' + host + ':' + tag + ' .';
-            commander('build', build_args, host);
-            for (var varname in makevars) {
-                //check for <anything>_HOST variable
-                var splitted = varname.split('_');
-                if (splitted[1] == 'HOST') {
-                    if (host == makevars[varname] && hosts.indexOf(host) >= 0) {
-                        var docker_args = '';
-                        for (var varname_inner in makevars) {
-                            docker_args = docker_args + ' -e ' + varname_inner + '=' +
-                                makevars[varname_inner];
-                        }
-                        var portvar = splitted[0] + '_PORT';
-                        if (makevars[portvar]) {
-                            var port = makevars[portvar];
-                            docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
-                        }
-                        if (host in sentient) {
-                            var container_id = sentient[host]['id']
-                            if (sentient[host]['state'] == 'up') {
-                                commander('stop', container_id);
+    initVars(function(sentient,makevars) {
+        var hosts = [];
+        for (var i in services) {
+            var service = services[i];
+            var hostname = service['name']
+            hosts.push(hostname);
+        }
+        console.log('processing hosts ' + hosts);
+        // look for container definitions in dockers directory
+        parseDirs(function(dirs) {
+            for (var i in dirs) {
+                //build continers
+                var network = makevars['NETWORK'];
+                var registry = makevars['REGISTRY'];
+                var tag = 'latest';
+                var host = dirs[i];
+                var quiet = '';
+                if (!verbose) {
+                    quiet = '-q'
+                }
+
+                var build_args = quiet + ' -t ' + network + '/' + host + ':' + tag + ' .';
+                commander('build', build_args, host);
+                for (var varname in makevars) {
+                    //check for <anything>_HOST variable
+                    var splitted = varname.split('_');
+                    if (splitted[1] == 'HOST') {
+                        if (host == makevars[varname] && hosts.indexOf(host) >= 0) {
+                            var docker_args = '';
+                            for (var varname_inner in makevars) {
+                                docker_args = docker_args + ' -e ' + varname_inner + '=' +
+                                    makevars[varname_inner];
                             }
-                            commander('rm', container_id);
+                            var portvar = splitted[0] + '_PORT';
+                            if (makevars[portvar]) {
+                                var port = makevars[portvar];
+                                docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
+                            }
+                            if (host in sentient) {
+                                var container_id = sentient[host]['id']
+                                if (sentient[host]['state'] == 'up') {
+                                    commander('stop', container_id);
+                                }
+                                commander('rm', container_id);
+                            }
+
+
+                            var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
+                                docker_args + ' --hostname ' + host + ' --name ' + host +
+                                ' --net ' + network + ' ' + network + '/' + host;
+                            commander('create', create_args, host);
+
+                            var tag_args = network + '/' + host + ':' + tag + ' ' + registry + '/' + host + ':' + tag;
+                            commander('tag', tag_args);
+
+                            var push_args = registry + '/' + host + ':' + tag;
+                            commander('push', push_args);
+
+
+
+
+
+                            commander('start', host);
                         }
-
-
-                        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
-                            docker_args + ' --hostname ' + host + ' --name ' + host +
-                            ' --net ' + network + ' ' + network + '/' + host;
-                        commander('create', create_args, host);
-
-                        var tag_args = network + '/' + host + ':' + tag + ' ' + registry + '/' + host + ':' + tag;
-                        commander('tag', tag_args);
-
-                        var push_args = registry + '/' + host + ':' + tag;
-                        commander('push', push_args);
-
-
-
-
-
-                        commander('start', host);
                     }
                 }
             }
-        }
 
 
-        //clean the build array as things get processed
-        var trimBuildArray = function(buildArray, rootset) {
-            var returnArray = {}
-            var returnable = false;
-            for (var h in buildArray) {
-                if (buildArray[h]['require']) {
-                    if (rootset.indexOf(buildArray[h]['require']) >= 0) {
-                        delete buildArray[h]['require'];
-                    } else {}
-                    returnArray[h] = buildArray[h];
+            //clean the build array as things get processed
+            var trimBuildArray = function(buildArray, rootset) {
+                var returnArray = {}
+                var returnable = false;
+                for (var h in buildArray) {
+                    if (buildArray[h]['require']) {
+                        if (rootset.indexOf(buildArray[h]['require']) >= 0) {
+                            delete buildArray[h]['require'];
+                        } else {}
+                        returnArray[h] = buildArray[h];
+                    }
+                    returnable = true;
                 }
-                returnable = true;
-            }
-            if (!returnable) {
-                returnArray = false;
-            }
-            return (returnArray);
-        }
-
-        //build containers based on deps
-        getDeps(dirs, function(deps) {
-            //promises
-            var chain = Promise.when();
-            //build the containers (if we're supposed to)
-            if (steps.indexOf('build') >= 0) {
-                var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
-                var ccmdAr = []
-                while (buildArray) {
-                    var roots = [];
-                    //ccmdAr = []
-                    for (var build in buildArray) {
-                        var root = getRoot(build, buildArray, deps);
-                        roots = roots.concat(root);
-                    }
-                    //list of unique 
-                    var rootset = new Set(roots);
-                    var bs = {}
-                    for (var cmd in cmds['build']) {
-                        var index = cmds['build'][cmd]['cwd'];
-                        bs[index] = cmds['build'][cmd]
-                    }
-                    var ccmds = []
-                    for (let item of rootset) {
-                        ccmds.push(bs[item])
-                        allroots.push(item)
-                    }
-                    buildArray = trimBuildArray(buildArray, allroots);
-                    if (ccmds.length > 0) {
-                        ccmdAr.push(ccmds);
-                    }
+                if (!returnable) {
+                    returnArray = false;
                 }
+                return (returnArray);
+            }
 
-                var ccmd = true;
-
-
-                //where the magic happens
-                var chain = ccmdAr.reduce(function(promise, item) {
-                    if(verbose) {
-                     console.log('item',item);
+            //build containers based on deps
+            getDeps(dirs, function(deps) {
+                //promises
+                var chain = Promise.when();
+                //build the containers (if we're supposed to)
+                if (steps.indexOf('build') >= 0) {
+                    var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
+                    var ccmdAr = []
+                    while (buildArray) {
+                        var roots = [];
+                        //ccmdAr = []
+                        for (var build in buildArray) {
+                            var root = getRoot(build, buildArray, deps);
+                            roots = roots.concat(root);
+                        }
+                        //list of unique 
+                        var rootset = new Set(roots);
+                        var bs = {}
+                        for (var cmd in cmds['build']) {
+                            var index = cmds['build'][cmd]['cwd'];
+                            bs[index] = cmds['build'][cmd]
+                        }
+                        var ccmds = []
+                        for (let item of rootset) {
+                            ccmds.push(bs[item])
+                            allroots.push(item)
+                        }
+                        buildArray = trimBuildArray(buildArray, allroots);
+                        if (ccmds.length > 0) {
+                            ccmdAr.push(ccmds);
+                        }
                     }
-                    return promise.then(function(result) {
-                        return runJobs(item);
-                    });
-                }, Promise());
 
-            };
-            //ontinue processing the chain in the correct order order
-            chain.then(function() {
-                    //console.log('build done');
-
-                    var stopP = runJobs(cmds['stop']);
-                    Promise.all(stopP).then(function() {
-                            //console.log('stop done');
-
-                            var removeP = runJobs(cmds['rm']);
-                            //console.log(cmds['rm']);
-                            Promise.all(removeP).then(function() {
-                                    //console.log("remove done");
-
-                                    var createP = runJobs(cmds['create']);
-                                    Promise.all(createP).then(function() {
-                                            //console.log("create done");
+                    var ccmd = true;
 
 
-                                            var tagP = runJobs(cmds['tag']);
-                                            Promise.all(tagP).then(function() {
-                                                    //console.log("create done");
-                                                    var pushP = runJobs(cmds['push']);
-                                                    Promise.all(pushP).then(function() {
-                                                            //console.log("create done");
-            //deferred.reject(new Error(error));
-            deferred.resolve(makevars);
-
-
-
-                                                            var startP = runJobs(cmds['start']);
-                                                        })
-
-                                                        .catch((errrrrrr) => {
-                                                            console.log(errrrrrr);
-                                                        });
-                                                })
-                                                .catch((errrrrr) => {
-                                                    console.log(errrrrr);
-                                                });
-                                        })
-
-
-
-                                        .catch((errrrr) => {
-                                            console.log(errrrr);
-                                        });
-
-                                })
-                                .catch((errrr) => {
-                                    console.log(errrr);
-                                });
-
-                        })
-                        .catch((errr) => {
-                            console.log(errr);
+                    //where the magic happens
+                    var chain = ccmdAr.reduce(function(promise, item) {
+                        if (verbose) {
+                            console.log('item', item);
+                        }
+                        return promise.then(function(result) {
+                            return runJobs(item);
                         });
+                    }, Promise());
 
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        });
+                };
+                //ontinue processing the chain in the correct order order
+                chain.then(function() {
+                        //console.log('build done');
 
+                        var stopP = runJobs(cmds['stop']);
+                        Promise.all(stopP).then(function() {
+                                //console.log('stop done');
+
+                                var removeP = runJobs(cmds['rm']);
+                                //console.log(cmds['rm']);
+                                Promise.all(removeP).then(function() {
+                                        //console.log("remove done");
+
+                                        var createP = runJobs(cmds['create']);
+                                        Promise.all(createP).then(function() {
+                                                //console.log("create done");
+
+
+                                                var tagP = runJobs(cmds['tag']);
+                                                Promise.all(tagP).then(function() {
+                                                        //console.log("create done");
+                                                        var pushP = runJobs(cmds['push']);
+                                                        Promise.all(pushP).then(function() {
+                                                                //console.log("create done");
+                                                                //deferred.reject(new Error(error));
+                                                                deferred.resolve(makevars);
+
+
+
+                                                                var startP = runJobs(cmds['start']);
+                                                            })
+
+                                                            .catch((errrrrrr) => {
+                                                                console.log(errrrrrr);
+                                                            });
+                                                    })
+                                                    .catch((errrrrr) => {
+                                                        console.log(errrrrr);
+                                                    });
+                                            })
+
+
+
+                                            .catch((errrrr) => {
+                                                console.log(errrrr);
+                                            });
+
+                                    })
+                                    .catch((errrr) => {
+                                        console.log(errrr);
+                                    });
+
+                            })
+                            .catch((errr) => {
+                                console.log(errr);
+                            });
+
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+
+        }).catch((err) => {
+                        console.log(err);
+                    });
     });
-});
-return deferred.promise;
+    return deferred.promise;
 };
 // do it!
-              // console.log(makeP);
+// console.log(makeP);
 
-exports.make = make;
-if (require.main === module) {
-var steps = ['stop','rm', 'build', 'create', 'tag', 'start']
-var makevars = {}
-var cmds = {}
-//suppress stdout for docker build(s) (or not)
-var hosts = ['dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01']
-var dryrun = false;
-var verbose = false;
-var share = false;
-var dockerDir;
-var basedir;
-//var debug = true;
-var allroots = [];
-//process arguments
-if (argv['_'].length > 0) {
-    steps = argv['_'];
-}
-
-//parent db to inherit
-if (argv['d']) {
-    makevars['PARENTDB'] = argv['d'];
-}
-
-//which directories to process
-if (argv['p']) {
-    hosts = argv['p'].split(',');
-}
-
-//show what would run without actually running anything
-if (argv['n']) {
-    dryrun = true;
-}
-
-if (argv['v']) {
-    verbose = true;
-}
-
-//run things from share
-if (argv['s']) {
-    share = true;
-}
-
-//IP address
-if (argv['i']) {
-    makevars['IP'] = argv['i'];
-}
-
-make()
-}
+exports.build = build;

@@ -3,4 +3,3 @@ module.exports = {
   make: require('./make'),
   randomizer: require('./randomizer'),
 }
-
