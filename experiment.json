@@ -1,5 +1,8 @@
 {
 "random_seed":42,
+"services":{
+"name":"lab"
+},
 "global":{
     "NETWORK":"pennai",
     "PROJECT_ROOT":"/opt/pennai",

@@ -1,9 +1,14 @@
 var fs = require('fs');
 var Q = require('q');
+var cloud = require('./cloud');
+var make = require('./make');
+var ranman = require('./ranman');
 module.exports = {
-    cloud: require('./cloud'),
-    make: require('./make'),
-    ranman: require('./ranman'),
+    cloud: cloud,
+    make: make,
+    ranman: ranman,
+    metalMan:make.build,
+    cloudMan:cloud.build,
     syncFile: function(filename, command) {
         var deferred = Q.defer();
         var doer;

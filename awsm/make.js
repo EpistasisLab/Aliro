@@ -348,8 +348,10 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-var build = function(forum, services, action, doShared, tasks, verbose) {
+var build = function(forum, experiment, action, tasks) {
+var services = experiment.services;
     var deferred = Q.defer();
+    var doShared=1;
     initVars(doShared, function(sentient, makevars) {
         if (forum && forum['datasets'] !== undefined) {
             makevars['DATASETS'] = forum['datasets'].join();
@@ -368,9 +370,9 @@ var build = function(forum, services, action, doShared, tasks, verbose) {
         for (var i in services) {
             var service = services[i];
             var hostname = service['name']
-            if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
+         //   if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
                 hosts.push(hostname);
-            }
+          //  }
         }
         console.log('processing hosts ' + hosts);
         // look for container definitions in dockers directory

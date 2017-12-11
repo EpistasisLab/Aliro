@@ -6,10 +6,19 @@
 // and cloud services
 var awsm = require('./awsm');
 var argv = require('minimist')(process.argv.slice(2));
+//the maximum number of forums we can run at once
+var num_forums = 3;
+var action = 'info';
+if (argv['_'].length >0 ) {
+action = argv['_'][0];
+}
+
 //run in the cloud
 var doCloud = true;
-if (argv['c']) {
-    doCloud = false;
+if (!argv['c']) {
+doCloud = false;
+//only one forum at a time on metal
+num_forums=1;
 }
 
 //run from share 
@@ -35,26 +44,21 @@ var exP = awsm.syncFile('experiment.json');
 exP.then(function(experiment) {
 //console.log(experiment);
     var randomized = awsm.ranman.retData(experiment.datasets,experiment.random_seed);
-    console.log(randomized);
-}).catch(function(err) {
-    console.log('something went wrong')
-    deferred.reject(new Error(err));
-})
-var forums = [];
+var forums = randomized.slice(0,num_forums);
+//    console.log(forums);
 for (var i in forums) {
     var forum = forums[i];
-    forum['datasets'] = forum['datasets'].slice(0, 3);
+console.log(forum);
     var forumName = forum['forumName'];
     if (doCloud) {
         console.log({
             action
         });
-        var infP = cloud.cloudMan(forum, services, action, tasks);
+        //infrastructure in the cloud
+        var infP = awsm.cloudMan(forum, experiment, action, tasks);
     } else {
-        services.push({
-            name: 'paiwww'
-        });
-        var infP = make.build(forum, services, action, doShared, tasks);
+        //infrastructure on the metal
+        var infP = awsm.metalMan(forum, experiment, action, tasks);
     }
     infP.then(function(finfo) {
         if (finfo) {
@@ -65,3 +69,8 @@ for (var i in forums) {
     });
     //}
 }
+}).catch(function(err) {
+    console.log('something went wrong')
+console.log(err);
+    deferred.reject(new Error(err));
+})

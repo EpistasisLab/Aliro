@@ -53,24 +53,10 @@ exports.retData = function(datasets, random_seed) {
             datasets: grouped[group]
         })
     }
-    experiments.push({
-        //A complete list of all datasets 
-        forumName: 'all',
-        datasets: datasets
-    })
     //where the magic happens.  order by forum name
     var experiments = experiments.sort(function(a, b) {
         return (a.forumName > b.forumName) ? 1 : ((b.forumName > a.forumName) ? -1 : 0);
     })
-    for (i in experiments) {
-        if (experiments[i]['forumName'] == 'all') {
-            all = experiments[i]['datasets'];
-            delete(experiments[i]);
-        }
-    }
     var grouped = experiments
-    return ({
-        grouped: grouped,
-        all: all
-    });
+    return grouped;
 }
