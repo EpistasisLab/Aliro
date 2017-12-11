@@ -1,49 +1,47 @@
 var seedrandom = require('seedrandom');
 var fs = require('fs');
-var random_seed = 42;
-var rng = seedrandom(random_seed);
-
-// randomize the ordering of an array
-function randomizer(arr) {
-    var currentIndex = arr.length;
-    var randomIndex;
-    var temporyValue;
-    while (0 !== currentIndex) {
-        // Pick remaining element
-        randomIndex = Math.floor(rng() * currentIndex);
-        currentIndex -= 1;
-
-        // swap with current 
-        temporaryValue = arr[currentIndex]
-        arr[currentIndex] = arr[randomIndex];
-        arr[randomIndex] = temporaryValue;
-    }
-    return arr;
-}
-exports.randomizer = randomizer;
-
-// creates numbered sets of {chunksize} from an array
-function groupem(arr, chunksize) {
-    var grouped = {}
-    var len = arr.length;
-    var groupnum = Math.floor(len / chunksize);
-    while (groupnum--) {
-        var group = []
-        grouped[groupnum]
-        var cz = chunksize;
-        var i = 0;
-        while (cz-- > 0) {
-            var val = cz + groupnum * chunksize;
-            group.push(arr[val])
-        }
-        grouped[groupnum] = group;
-    }
-    return grouped;
-}
 
 //returns randomized, ordered list of datasets 
-exports.reData = function(datasets) {
+exports.retData = function(datasets, random_seed) {
+    var rng = seedrandom(random_seed);
     var all;
+    // randomize the ordering of an array
+    function randomizer(arr) {
+        var currentIndex = arr.length;
+        var randomIndex;
+        var temporyValue;
+        while (0 !== currentIndex) {
+            // Pick remaining element
+            randomIndex = Math.floor(rng() * currentIndex);
+            currentIndex -= 1;
+
+            // swap with current 
+            temporaryValue = arr[currentIndex]
+            arr[currentIndex] = arr[randomIndex];
+            arr[randomIndex] = temporaryValue;
+        }
+        return arr;
+    }
+
+    // creates numbered sets of {chunksize} from an array
+    function groupem(arr, chunksize) {
+        var grouped = {}
+        var len = arr.length;
+        var groupnum = Math.floor(len / chunksize);
+        while (groupnum--) {
+            var group = []
+            grouped[groupnum]
+            var cz = chunksize;
+            var i = 0;
+            while (cz-- > 0) {
+                var val = cz + groupnum * chunksize;
+                group.push(arr[val])
+            }
+            grouped[groupnum] = group;
+        }
+        return grouped;
+    }
+
     var randomized = randomizer(datasets);
     var grouped = groupem(randomized, 10);
     var experiments = [];

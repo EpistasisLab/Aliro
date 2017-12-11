@@ -1,22 +1,18 @@
 'use strict';
-//launch a set of clusters to execute randomized workloads 
+// launch a forum or a set of forums
 //of machine learning experiments
 //
 // utility functions and modules for interfacing building containers
 // and cloud services
 var awsm = require('./awsm');
 var argv = require('minimist')(process.argv.slice(2));
-//sync with the filesystem
-if (argv['s']) {
-    doSync = true;
-}
 //run in the cloud
 var doCloud = true;
 if (argv['c']) {
     doCloud = false;
 }
 
-//run from a share (for development)
+//run from share 
 var doShared = false
 if (argv['p']) {
     doShared = true;
@@ -27,17 +23,18 @@ var tasks = []
 if (argv['t']) {
     tasks = argv['t'].split(',');
 }
+
+
 //parent db to inherit
 if (argv['d']) {
     ParentForum = argv['d'];
 }
 
-//the services we'll need for each experiment
-console.log('experiment');
+//load experiment data
 var exP = awsm.syncFile('experiment.json');
 exP.then(function(experiment) {
-    var randomized = awsm.ranman.retData(experiment.datasets);
-
+//console.log(experiment);
+    var randomized = awsm.ranman.retData(experiment.datasets,experiment.random_seed);
     console.log(randomized);
 }).catch(function(err) {
     console.log('something went wrong')
