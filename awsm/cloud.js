@@ -217,7 +217,9 @@ var dryrun = true;
         }
         return makevars;
     }
-    var formatCloud = function(forumName, cluster, iinstances, cinstances, tasks) {
+    var formatCloud = function(experiment, forumName, cluster, iinstances, cinstances, tasks) {
+console.log(forumName);
+console.log(experiment);
         /*      
          Parse cluster data and store interesting things along with instance stats
 //iinstances accorinding to EC2
@@ -242,7 +244,7 @@ var dryrun = true;
             istatus: null,
             //list the required hosts
             hosts: {},
-            services: service_names,
+            services: experiment.services,
             makevars: null,
             //
         }
@@ -553,7 +555,7 @@ exports.startTasks = function(cinfo, tasks) {
 
 
 //get all cloud resources for a forum
-exports.cloudMan = function(forum, service_names, action, tasks) {
+exports.build = function(forum, experiment, action, tasks) {
     var forumName = forum['forumName'];
     console.log('getting cloud');
     var getCluster = function(forumName) {
@@ -587,7 +589,7 @@ exports.cloudMan = function(forum, service_names, action, tasks) {
         getEc2Instances(forumName).then(function(ec2instances) {
             getEcsInstances(forumName).then(function(ecsinstances) {
                 getTasks(forumName).then(function(tasks) {
-                    var cinfo = formatCloud(forumName, cluster, ec2instances, ecsinstances, tasks);
+                    var cinfo = formatCloud(experiment, forumName, cluster, ec2instances, ecsinstances, tasks);
                     manageCloud(cinfo, action);
                     deferred.resolve(cinfo);
 
