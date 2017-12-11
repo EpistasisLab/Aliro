@@ -1,33 +1,15 @@
 'use strict';
 //launch a set of clusters to execute randomized workloads 
 //of machine learning experiments
-var Promise = require('q');
-// container, cloud and randomization modules
+//
+// utility functions and modules for interfacing building containers
+// and cloud services
 var awsm = require('./awsm');
-// functions for interfacing with cloud services
-var cloud = awsm.cloud;
-// randomizer functions
-var ranman = awsm.ranman;
-// build = awsm.build
-var make = awsm.make
-
-var exP = awsm.syncFile('experiment.json');
-console.log(exP)
-exP.then(function(experiment) {
-console.log(experiment);
-});
-//var forums = ranman['grouped'];
-//var alldata = ranman['datasets'];
-
-//var forums = ranman['grouped'];
-//var alldata = ranman['datasets'];
-// handle arguments
-
-    //sync with the filesystem
-    if (argv['s']) {
-        doSync = true;
-    }
-
+var argv = require('minimist')(process.argv.slice(2));
+//sync with the filesystem
+if (argv['s']) {
+    doSync = true;
+}
 //run in the cloud
 var doCloud = true;
 if (argv['c']) {
@@ -51,27 +33,20 @@ if (argv['d']) {
 }
 
 //the services we'll need for each experiment
-var services = [{
-    name: 'dbmongo',
-}, {
-    name: 'lab'
-}, {
-    name: 'machine',
-    num: '51'
-}, {
-    name: 'paix01',
-}];
+console.log('experiment');
+var exP = awsm.syncFile('experiment.json');
+exP.then(function(experiment) {
+    var randomized = awsm.ranman.retData(experiment.datasets);
 
-
-
-
-//first 
-forums = forums.slice(0, 1);
-// iterate over forums
+    console.log(randomized);
+}).catch(function(err) {
+    console.log('something went wrong')
+    deferred.reject(new Error(err));
+})
+var forums = [];
 for (var i in forums) {
     var forum = forums[i];
     forum['datasets'] = forum['datasets'].slice(0, 3);
-    //console.log(forum['datasets']);
     var forumName = forum['forumName'];
     if (doCloud) {
         console.log({

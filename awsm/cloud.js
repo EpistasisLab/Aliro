@@ -4,7 +4,7 @@ var AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
 });
-var Promise = require('q');
+var Q = require('q');
 //launching containers and clusters
 var ecs = new AWS.ECS({
     apiVersion: '2014-11-13'
@@ -24,7 +24,7 @@ var dryrun = true;
     //ECS (not EC2) container info
     var getEcsInstances = function(forumName) {
         console.log('getting ECS instances');
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         var clusterName = 'c' + forumName
         var params = {
             cluster: clusterName,
@@ -43,7 +43,7 @@ var dryrun = true;
                     var containerInstances = data['containerInstanceArns'];
                     var descP = describeEcsInstances(forumName, containerInstances);
                 } else {
-                    var descP = Promise.when()
+                    var descP = Q.when()
                 }
                 descP.then(function(description) {
                     deferred.resolve(description);
@@ -60,7 +60,7 @@ var dryrun = true;
 
     //get container info
     var describeEcsInstances = function(forumName, containerInstances) {
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         var clusterName = 'c' + forumName
         var params = {
             cluster: clusterName,
@@ -88,7 +88,7 @@ var dryrun = true;
     //get container info
     var getTasks = function(forumName) {
         console.log('getting tasks');
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         var clusterName = 'c' + forumName
         var params = {
             cluster: clusterName,
@@ -107,7 +107,7 @@ var dryrun = true;
                 if (data['taskArns'].length > 0) {
                     var descP = describeTasks(forumName, data['taskArns'])
                 } else {
-                    var descP = Promise.when();
+                    var descP = Q.when();
                 }
                 descP.then(function(description) {
                     if (description !== undefined) {
@@ -125,7 +125,7 @@ var dryrun = true;
     }
     //get container info
     var describeTasks = function(forumName, tasks) {
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         var clusterName = 'c' + forumName
         var params = {
             cluster: clusterName,
@@ -157,7 +157,7 @@ var dryrun = true;
                 Values: [forumName]
             }]
         };
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         ec2.describeInstances(params, (error, data) => {
             if (error) {
                 if (error['code']) {
@@ -317,7 +317,7 @@ var dryrun = true;
 
 //shut down the cluster
 var stopCluster = function(forumName) {
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     var clusterName = 'c' + forumName
     console.log('stopping ' + clusterName);
     var params = {
@@ -346,7 +346,7 @@ var stopCluster = function(forumName) {
 }
 //
 var startCluster = function(forumName) {
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     var clusterName = 'c' + forumName
     console.log("starting " + clusterName)
     var params = {
@@ -373,7 +373,7 @@ var stopInstances = function(instances) {
     for (var i in instances) {
         InstanceIds.push(instances[i]['InstanceId']);
     }
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     if (dryrun) {
         deferred.resolve([]);
     } else {
@@ -393,7 +393,7 @@ var stopInstances = function(instances) {
 
 // make the Instances required to support a forum
 var addInstances = function(cinfo, service_name, count) {
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     var services = cinfo['services'];
     var params = {
         MaxCount: count,
@@ -470,7 +470,7 @@ var addInstances = function(cinfo, service_name, count) {
 
 // make the Instances required to support a forum
 var startInstances = function(cinfo) {
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     var services = cinfo['services'];
     var count = 0;
     for (i in services) {
@@ -547,7 +547,7 @@ exports.startTasks = function(cinfo, tasks) {
             promise_array[i] = startTask(params);
         }
     }
-    return Promise.allSettled(promise_array);
+    return Q.allSettled(promise_array);
 
 }
 
@@ -557,7 +557,7 @@ exports.cloudMan = function(forum, service_names, action, tasks) {
     var forumName = forum['forumName'];
     console.log('getting cloud');
     var getCluster = function(forumName) {
-        var deferred = Promise.defer();
+        var deferred = Q.defer();
         ecs.describeClusters({
             clusters: ['c' + forumName]
         }, (error, data) => {
@@ -582,7 +582,7 @@ exports.cloudMan = function(forum, service_names, action, tasks) {
 
 
 
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     getCluster(forumName).then(function(cluster) {
         getEc2Instances(forumName).then(function(ec2instances) {
             getEcsInstances(forumName).then(function(ecsinstances) {
@@ -642,14 +642,14 @@ var manageCloud = function(finfo, action) {
             var iP = stopInstances(finfo['instances']);
         } else {
             console.log('instances already stopped');
-            var iP = Promise.when();
+            var iP = Q.when();
         }
         iP.then(function(instances) {
             if (finfo['ccount'] == 0 && finfo['settled']) {
                 var cP = stopCluster(finfo['forumName']);
             } else {
                 console.log('waiting for counts to settle');
-                var cP = Promise.when();
+                var cP = Q.when();
             }
             cP.then(function(cluster) {
                 console.log('done')
@@ -663,14 +663,14 @@ var manageCloud = function(finfo, action) {
             var cP = startCluster(finfo['forumName']);
         } else {
             console.log('cluster already running');
-            var cP = Promise.when();
+            var cP = Q.when();
         }
         cP.then(function(cluster) {
             if (finfo['icount'] == 0) {
                 var iP = startInstances(finfo);
             } else {
                 console.log('instances already running');
-                var iP = Promise.when();
+                var iP = Q.when();
             }
             iP.then(function(instances) {
                 //make sure cluster and instances agree on count
@@ -678,7 +678,7 @@ var manageCloud = function(finfo, action) {
                     // && finfo['tcount'] ==0) {
                     var tP = startTasks(finfo, tasks);
                 } else {
-                    var tP = Promise.when();
+                    var tP = Q.when();
                 }
                 tP.then(function(tasks) {
                     console.log('done');
