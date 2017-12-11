@@ -1,10 +1,10 @@
-//creates a network of hosts to serve PennAI
+//create a network
 'use strict';
 var fs = require('fs');
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var Promise = require("q")
+var Q = require("q")
 var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
@@ -79,7 +79,7 @@ var retHosts = function(makevars, callback) {
             cwd
         });
     }
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     var cwd = dockerDir
     exec(cmd, {
         maxBuffer: 1024 * 1024,
@@ -199,7 +199,7 @@ var fexec = function(cmd, host) {
         cmd = 'true';
     }
 
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     //console.log('running',{cmd:cmd,cwd:cwd});
     exec(cmd, {
         maxBuffer: 1024 * 1024,
@@ -287,7 +287,7 @@ var runJobs = function(jobs) {
 
         }
     }
-    return Promise.allSettled(promise_array);
+    return Q.allSettled(promise_array);
 }
 
 
@@ -349,7 +349,7 @@ var getRoot = function(build, buildArray, deps) {
 
 
 var build = function(forum, services, action, doShared, tasks, verbose) {
-    var deferred = Promise.defer();
+    var deferred = Q.defer();
     initVars(doShared, function(sentient, makevars) {
         if (forum && forum['datasets'] !== undefined) {
             makevars['DATASETS'] = forum['datasets'].join();
@@ -422,18 +422,11 @@ var build = function(forum, services, action, doShared, tasks, verbose) {
 
                             var push_args = registry + '/' + host + ':' + tag;
                             commander('push', push_args);
-
-
-
-
-
                             commander('start', host);
                         }
                     }
                 }
             }
-
-
             //clean the build array as things get processed
             var trimBuildArray = function(buildArray, rootset) {
                 var returnArray = {}
@@ -456,7 +449,7 @@ var build = function(forum, services, action, doShared, tasks, verbose) {
             //build containers based on deps
             getDeps(makevars, dirs, function(deps) {
                 //promises
-                var chain = Promise.when();
+                var chain = Q.when();
                 //build the containers (if we're supposed to)
                 if (steps.indexOf('build') >= 0) {
                     var buildArray = makeBuildArray(hosts, deps, dirs, sentient);
@@ -497,61 +490,47 @@ var build = function(forum, services, action, doShared, tasks, verbose) {
                         return promise.then(function(result) {
                             return runJobs(item);
                         });
-                    }, Promise());
+                    }, Q());
 
                 };
-                //ontinue processing the chain in the correct order order
+                //ontinue processing the chain in the correct order
                 chain.then(function() {
                         //console.log('build done');
-
                         var stopP = runJobs(cmds['stop']);
-                        Promise.all(stopP).then(function() {
+                        Q.all(stopP).then(function() {
                                 //console.log('stop done');
-
                                 var removeP = runJobs(cmds['rm']);
                                 //console.log(cmds['rm']);
-                                Promise.all(removeP).then(function() {
+                                Q.all(removeP).then(function() {
                                         //console.log("remove done");
-
                                         var createP = runJobs(cmds['create']);
-                                        Promise.all(createP).then(function() {
+                                        Q.all(createP).then(function() {
                                                 //console.log("create done");
-
-
                                                 var tagP = runJobs(cmds['tag']);
-                                                Promise.all(tagP).then(function() {
+                                                Q.all(tagP).then(function() {
                                                         //console.log("create done");
                                                         var pushP = runJobs(cmds['push']);
-                                                        Promise.all(pushP).then(function() {
-                                                                //console.log("create done");
+                                                        Q.all(pushP).then(function() {
+                                                                //console.log("push done");
                                                                 //deferred.reject(new Error(error));
                                                                 deferred.resolve(makevars);
-
-
-
                                                                 var startP = runJobs(cmds['start']);
                                                             })
-
-                                                            .catch((errrrrrr) => {
-                                                                console.log(errrrrrr);
+                                                            .catch((err) => {
+                                                                console.log(err);
                                                             });
                                                     })
-                                                    .catch((errrrrr) => {
-                                                        console.log(errrrrr);
+                                                    .catch((err) => {
+                                                        console.log(err);
                                                     });
                                             })
-
-
-
-                                            .catch((errrrr) => {
-                                                console.log(errrrr);
+                                            .catch((err) => {
+                                                console.log(err);
                                             });
-
                                     })
                                     .catch((errrr) => {
                                         console.log(errrr);
                                     });
-
                             })
                             .catch((errr) => {
                                 console.log(errr);
@@ -562,14 +541,10 @@ var build = function(forum, services, action, doShared, tasks, verbose) {
                         console.log(err);
                     });
             })
-
         }).catch((err) => {
             console.log(err);
         });
     });
     return deferred.promise;
 };
-// do it!
-// console.log(makeP);
-
 exports.build = build;

@@ -1,22 +1,28 @@
 var fs = require('fs');
+var Q = require('q');
 module.exports = {
-  cloud: require('./cloud'),
-  make: require('./make'),
-  randomizer: require('./randomizer'),
-  syncFile:function(filename, command) {
-    var fileP = Promise.defer();
-    var doer;
-    if (command == 'write') {
-        doer = fs.writeFile;
-    } else {
-        doer = fs.readFile;
+    cloud: require('./cloud'),
+    make: require('./make'),
+    ranman: require('./ranman'),
+    syncFile: function(filename, command) {
+        var deferred = Q.defer();
+        var doer;
+        if (command == 'write') {
+            doer = fs.writeFile;
+        } else {
+            doer = fs.readFile;
+        }
+        var P = doer(filename, 'utf8', (error, data) => {
+            if (error) {
+                deferred.reject(new Error(error));
+
+            } else {
+                obj = JSON.parse(data);
+                deferred.resolve(obj);
+
+            }
+        });
+        return deferred.promise;
     }
-    var P = doer(filename, 'utf8', function(err, data) {
-        if (err) throw err;
-        obj = JSON.parse(data);
-        fileP.resolve(obj);
-    });
-    return fileP;
-}
 
 }
