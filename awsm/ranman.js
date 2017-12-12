@@ -2,7 +2,10 @@ var seedrandom = require('seedrandom');
 var fs = require('fs');
 
 //returns randomized, ordered list of datasets 
-exports.retRandomized = function(datasets, random_seed, set_size) {
+exports.retRandomized = function(experiment) {
+    var datasets = experiment.datasets;
+    var random_seed = experiment.random_seed;
+    var set_size = set_size;
     var rng = seedrandom(random_seed);
     var all;
     // randomize the ordering of an array
@@ -45,6 +48,7 @@ exports.retRandomized = function(datasets, random_seed, set_size) {
     var randomized = randomizer(datasets);
     var grouped = groupem(randomized, set_size);
     var experiments = [];
+
     for (group in grouped) {
         //forumName: 8 digit hex code for a group of datasets
         var forumName = rng().toString(16).substr(2, 8).toLowerCase();

@@ -44,38 +44,37 @@ var exP = awsm.syncFile('experiment.json');
 exP.then(function(experiment) {
     //console.log(experiment);
     //randomize the order of datasets and split them into groups of set_size
-    var randomized = awsm.ranman.retRandomized(experiment.datasets, experiment.random_seed, set_size);
+    var randomized = awsm.ranman.retRandomized(experiment);
     var forums = randomized.slice(0, num_forums);
-    var cloud = awsm.cloud.handleCloud(experiment,action);
-    console.log(cloud);
-    
+    var cloud = awsm.cloud.handleCloud(experiment, action);
 
-//    console.log(forums);
-for (var i in forums) {
-    var forum = forums[i];
-    var forumName = forum['forumName'];
-    var build;
-    var options = {};
-    options['action'] = action;
-    options['tasks'] = tasks;
-    options['shared'] = doShared;
-    options['verbose'] = verbose;
-    if (doCloud) {
-        build = awsm.cloudMan
-    } else {
-        build = awsm.metalMan
-    }
-    var infP = build(forum, experiment, options);
-    infP.then(function(finfo) {
-        if (finfo) {
-            //                console.log(finfo);
-            //console.log(finfo);
+
+    //    console.log(forums);
+    for (var i in forums) {
+        var forum = forums[i];
+        var forumName = forum['forumName'];
+        var build;
+        var options = {};
+        options['action'] = action;
+        options['tasks'] = tasks;
+        options['shared'] = doShared;
+        options['verbose'] = verbose;
+        if (doCloud) {
+            build = awsm.cloudMan
+        } else {
+            build = awsm.metalMan
         }
-    }).catch(function(err) {
-        console.log('error', err);
-    });
-    //}
-}
+        var infP = build(forum, experiment, options);
+        infP.then(function(finfo) {
+            if (finfo) {
+                //                console.log(finfo);
+                //console.log(finfo);
+            }
+        }).catch(function(err) {
+            console.log('error', err);
+        });
+        //}
+    }
 }).catch(function(err) {
     console.log('something went wrong')
     console.log(err);
