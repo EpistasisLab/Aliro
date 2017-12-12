@@ -8,17 +8,18 @@ var awsm = require('./awsm');
 var argv = require('minimist')(process.argv.slice(2));
 //the maximum number of forums we can run at once
 var num_forums = 3;
+var set_size = 10;
 var action = 'info';
-if (argv['_'].length >0 ) {
-action = argv['_'][0];
+if (argv['_'].length > 0) {
+    action = argv['_'][0];
 }
 
 //run in the cloud
 var doCloud = true;
 if (!argv['c']) {
-doCloud = false;
-//only one forum at a time on metal
-num_forums=1;
+    doCloud = false;
+    //only one forum at a time on metal
+    num_forums = 1;
 }
 
 //run from share 
@@ -33,35 +34,41 @@ if (argv['t']) {
     tasks = argv['t'].split(',');
 }
 
-
-//parent db to inherit
-if (argv['d']) {
-    ParentForum = argv['d'];
+//be verbose
+var verbose = false;
+if (argv['v']) {
+    verbose = true;
 }
-
 //load experiment data
 var exP = awsm.syncFile('experiment.json');
 exP.then(function(experiment) {
-//console.log(experiment);
-    var randomized = awsm.ranman.retData(experiment.datasets,experiment.random_seed);
-var forums = randomized.slice(0,num_forums);
+    //console.log(experiment);
+    //randomize the order of datasets and split them into groups of set_size
+    var randomized = awsm.ranman.retRandomized(experiment.datasets, experiment.random_seed, set_size);
+    var forums = randomized.slice(0, num_forums);
+    var cloud = awsm.cloud.handleCloud(experiment,action);
+    console.log(cloud);
+    
+
 //    console.log(forums);
 for (var i in forums) {
     var forum = forums[i];
-console.log(forum);
     var forumName = forum['forumName'];
+    var build;
+    var options = {};
+    options['action'] = action;
+    options['tasks'] = tasks;
+    options['shared'] = doShared;
+    options['verbose'] = verbose;
     if (doCloud) {
-        console.log({
-            action
-        });
-        //infrastructure in the cloud
-        var infP = awsm.cloudMan(forum, experiment, action, tasks);
+        build = awsm.cloudMan
     } else {
-        //infrastructure on the metal
-        var infP = awsm.metalMan(forum, experiment, action, tasks);
+        build = awsm.metalMan
     }
+    var infP = build(forum, experiment, options);
     infP.then(function(finfo) {
         if (finfo) {
+            //                console.log(finfo);
             //console.log(finfo);
         }
     }).catch(function(err) {
@@ -71,6 +78,6 @@ console.log(forum);
 }
 }).catch(function(err) {
     console.log('something went wrong')
-console.log(err);
+    console.log(err);
     deferred.reject(new Error(err));
 })
