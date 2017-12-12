@@ -254,7 +254,7 @@ var runJobs = function(jobs) {
                     var job2 = jobs[j];
                     if (job2['name'] && job2['name'] == depends) {
                         var runner = fexec(job['cmd'], job['cwd']);
-                        promis_array.push(runner);
+                        promise_array.push(runner);
                         runner.then(function(result) {
                             var stdout = result.stdout;
                             var stderr = result.stderr;

@@ -13,79 +13,102 @@ var ecs = new AWS.ECS({
 var ec2 = new AWS.EC2();
 var ecr = new AWS.ECR();
 var efs = new AWS.EFS();
-//our default image
-var ImageId = 'ami-7f735a1a';
-//our default instance
-var InstanceType = 'm4.large';
-//
-var basedir = '/share/devel/pennai'
-//
-
 var dryrun = false;
 
 
 exports.handleCloud = function(experiment, request) {
-  var action_dict = {'init':'create','destroy':'delete'};
-  var action = 'info';
-  if(action_dict[request] !== undefined) {
-      action = action_dict[request];
-  }
-
-console.log(action);
-
- var reposP =  handleRepos(experiment,action);
- var shareP =  handleShare(experiment,action);
-
-
+    var action_dict = {
+        'init': 'create',
+        'destroy': 'delete'
+    };
+    var action = 'info';
+    if (action_dict[request] !== undefined) {
+        action = action_dict[request];
+    }
+    handleShare(experiment, action).then(function(share) {
+        console.log({
+            share
+        });
+    }).catch(function(error) {
+        console.error(error);
+    });
 }
 
-//create share
+//create share a share if action=='create' and share does not exist
+//delete a share if action=='delete' and share exist
+//otherwise return the id
 var handleShare = function(experiment, action) {
     var deferred = Q.defer();
-    var params = {};
-    var promis_array = []
+    var params = {
+        "CreationToken": "PennAI"
+    };
+    var promise_array = []
     efs.describeFileSystems(params, (error, data) => {
         if (error) {
-            if (error['code']) {
-                console.log('no ecs mount targets because ' + error['code']);
-                deferred.resolve([]);
-            } else {
-                deferred.reject(new Error(error));
-                console.error(error);
-            }
+            deferred.reject(new Error(error));
+            console.error(error);
         } else {
-console.log(data);
-/*
-            var repos = {};
-            if (data['repositories'] !== undefined) {
-                var services = experiment.services;
-                for (var j in data['repositories']) {
-                    repos[data['repositories'][j]['repositoryName']] = data['repositories'][j];
+            var FileSystemId;
+            if (data['FileSystems'] && data['FileSystems'].length > 0) {
+                for (var i in data['FileSystems']) {
+                    var fileSystem = data['FileSystems'][i];
+                    FileSystemId = fileSystem['FileSystemId'];
                 }
             }
-            for (var i in services) {
-                var service = services[i];
-                if (repos[service.name] !== undefined && action == 'delete') {
-                    promis_array.push(deleteRepo(service));
-                } else if (action == 'create') {
-                    promis_array.push(createRepo(service));
-                }
+            if (FileSystemId == undefined && action == 'create') {
+                var shareP = createShare(params)
+            } else if (FileSystemId !== undefined && action == 'delete') {
+                var shareP = deleteShare({FileSystemId})
+            } else {
+                var shareP = Q.when();
             }
-*/
+            deferred.resolve(FileSystemId);
         }
     });
-//    if (action == 'create' || action == 'delete') {
-//        return (deferred.resolve(Q.allSettled(promis_array)));
-//    } else {
-        return (deferred.promis);
-//    }
+    return deferred.promise;
+}
+var createShare = function(params) {
+    var deferred = Q.defer();
+    efs.createFileSystem(params, (error, data) => {
+    if (error) {
+        console.error(error);
+        deferred.reject(new Error(error));
+    } else {
+var FileSystemId = data['FileSystemId'];
+        var targetP = createTarget({FileSystemId});
+
+        deferred.resolve(data);
+    }
+    });
+}
+var deleteShare = function(params) {
+    var deferred = Q.defer();
+    efs.deleteFileSystem(params, (error, data) => {
+    if (error) {
+        console.error(error);
+        deferred.reject(new Error(error));
+    } else {
+        deferred.resolve(data);
+    }
+    });
+}
+var createTarget = function(params) {
+    var deferred = Q.defer();
+    efs.createMountTarget(params, (error, data) => {
+    if (error) {
+        console.error(error);
+        deferred.reject(new Error(error));
+    } else {
+        deferred.resolve(data);
+    }
+    });
 }
 
 //create repository
 var handleRepos = function(experiment, action) {
     var deferred = Q.defer();
     var params = {};
-    var promis_array = []
+    var promise_array = []
     ecr.describeRepositories(params, (error, data) => {
         if (error) {
             if (error['code']) {
@@ -106,17 +129,17 @@ var handleRepos = function(experiment, action) {
             for (var i in services) {
                 var service = services[i];
                 if (repos[service.name] !== undefined && action == 'delete') {
-                    promis_array.push(deleteRepo(service));
+                    promise_array.push(deleteRepo(service));
                 } else if (action == 'create') {
-                    promis_array.push(createRepo(service));
+                    promise_array.push(createRepo(service));
                 }
             }
         }
     });
     if (action == 'create' || action == 'delete') {
-        return (deferred.resolve(Q.allSettled(promis_array)));
+        return (deferred.resolve(Q.allSettled(promise_array)));
     } else {
-        return (deferred.promis);
+        return (deferred.promise);
     }
 }
 
@@ -144,7 +167,7 @@ var deleteRepo = function(service) {
             deferred.resolve(data);
         }
     });
-    return deferred.promis
+    return deferred.promise
 }
 
 
@@ -767,20 +790,6 @@ exports.build = function(forum, experiment, action, tasks) {
     });
     return deferred.promise;
 }
-
-var syncForum = function(forum) {
-    console.log('syncing forum');
-    var content = JSON.stringify(forum);
-    fs.writeFile(basedir + "/forums/" + forum['forumName'] + ".json", content, 'utf8', function(err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("The file was saved!");
-    });
-    console.log(forum);
-}
-
-
 
 var manageCloud = function(finfo, action) {
     if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
