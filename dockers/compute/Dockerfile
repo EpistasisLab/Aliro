@@ -7,4 +7,5 @@ RUN pip install scikit-mdr
 RUN pip install deap
 RUN pip install requests_toolbelt
 RUN pip install urllib3
+RUN pip install eli5
 RUN conda install scikit-learn pymongo tqdm

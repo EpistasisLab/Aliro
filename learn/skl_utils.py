@@ -5,6 +5,8 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.utils import safe_sqr
+from eli5.sklearn import PermutationImportance
 
 
 
@@ -95,6 +97,9 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
     cv_scores = cross_val_score(
         model, training_features, training_classes, cv=5)
 
+    # exporting/computing importance score
+    compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state)
+
     # get metrics and plots
     train_score = model.score(training_features, training_classes)
     test_score = model.score(testing_features, testing_classes)
@@ -163,6 +168,9 @@ def generate_results(model, input_file, tmpdir, _id):
                                 scoring=SCORERS["balanced_accuracy"],
                                 cv=5
                                 )
+
+    # exporting/computing importance score
+    compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state)
 
     # determine if target is binary or multiclass
     class_names = model.classes_
@@ -248,6 +256,30 @@ def generate_results(model, input_file, tmpdir, _id):
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=predicted_classes_list)
 
+def compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state):
+    # exporting/computing importance score
+    if hasattr(model, 'coef_'):
+        coefs = model.coef_
+    else:
+        coefs = getattr(model, 'feature_importances_', None)
+    if coefs is None:
+        perm = PermutationImportance(
+                                    estimator=model,
+                                    n_iter=5,
+                                    random_state=random_state,
+                                    refit=False
+                                    )
+        perm.fit(training_features, training_classes)
+        coefs = perm.feature_importances_
+
+    if coefs.ndim > 1:
+        coefs = safe_sqr(coefs).sum(axis=0)
+    feature_importances = {
+        'feature_importances': coefs.tolist()
+    }
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="feature_importances.json", content=feature_importances)
 
 def save_json_fmt(outdir, _id, fname, content):
     """
@@ -299,7 +331,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 
 
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
-    """ 
+    """
     Save ROC Curve.
     """
 

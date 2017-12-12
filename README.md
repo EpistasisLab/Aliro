@@ -45,7 +45,7 @@ recommendations using:
 
 **Container Based Install**
 1. **Check out the project**
-        - Clone the repository from  <b>git@github.com:EpistasisLab/Gp.git</b>
+        - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
 
 2. **Install build requirements**
         - docker [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/)
@@ -62,7 +62,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 
 **Host Based Install**
 1. **Check out the project**
-        - Clone the repository from  <b>git@github.com:EpistasisLab/Gp.git</b>
+        - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
 2. **Perform Local Install**
 	- Install MongoDB
 	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
