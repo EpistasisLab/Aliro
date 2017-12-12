@@ -9,7 +9,7 @@ var exec = require('child_process').exec;
 var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
 var dryrun = false;
-var verbose = true;
+var verbose;
 var share = false;
 var dockerDir;
 var basedir;
@@ -348,11 +348,13 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-var build = function(forum, experiment, action, tasks) {
-var services = experiment.services;
+var build = function(forum, experiment, options) {
+    verbose = options['verbose']
+    var services = experiment.services;
+    var action = options.action;
+    var tasks = options.tasks;
     var deferred = Q.defer();
-    var doShared=1;
-    initVars(doShared, function(sentient, makevars) {
+    initVars(options['shared'], function(sentient, makevars) {
         if (forum && forum['datasets'] !== undefined) {
             makevars['DATASETS'] = forum['datasets'].join();
         };
@@ -360,19 +362,19 @@ var services = experiment.services;
             makevars['FORUM'] = forum['forumName']
         }
         if (action == 'build') {
-            steps = ['stop', 'rm', 'build', 'create', 'tag', 'start']
+            steps = ['stop', 'rm', 'build', 'create', 'tag']
         } else if (action == 'stop') {
-            steps = ['stop', 'rm']
+            steps = ['stop']
         } else if (action == 'start') {
-            steps = ['stop', 'rm', 'build', 'create', 'tag', 'start']
+            steps = ['start']
         }
         var hosts = [];
         for (var i in services) {
             var service = services[i];
             var hostname = service['name']
-         //   if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
-                hosts.push(hostname);
-          //  }
+            //   if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
+            hosts.push(hostname);
+            //  }
         }
         console.log('processing hosts ' + hosts);
         // look for container definitions in dockers directory
