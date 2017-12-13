@@ -5,7 +5,7 @@ var fs = require('fs');
 exports.retRandomized = function(experiment) {
     var datasets = experiment.datasets;
     var random_seed = experiment.random_seed;
-    var set_size = set_size;
+    var set_size = experiment.set_size;
     var rng = seedrandom(random_seed);
     var all;
     // randomize the ordering of an array

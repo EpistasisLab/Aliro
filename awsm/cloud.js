@@ -18,267 +18,47 @@ var cloudformation = new AWS.CloudFormation();
 var dryrun = false;
 
 
-exports.handleCloud = function(experiment, action) {
-
-if(action == 'init') {
-
-
-var params = {
-  StackName: 'PennAI', /* required */
-//  OnFailure: 'DELETE',
-  TemplateBody: JSON.stringify(experiment.cloud)
-};
-cloudformation.createStack(params, function(err, data) {
-  if (err) console.log(err, err.stack); // an error occurred
-  else     console.log(data);           // successful response
-});
-
-
-
-} else if (action == 'destroy') {
-var params = {
-  StackName: 'PennAI', /* required */
-};
-cloudformation.deleteStack(params, function(err, data) {
-  if (err) console.log(err, err.stack); // an error occurred
-  else     console.log(data);           // successful response
-});
-
-
-} else {
-
-
-
-
-var params = {
-//  StackName: 'PennAI', /* required */
-};
-cloudformation.describeStacks(params, function(err, data) {
-  if (err) console.log(err, err.stack); // an error occurred
-  else     console.log(data);           // successful response
-});
-
-
-
-
-}
-
-
-
-
-}
-
-
-
-var template = {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Metadata": {
-        "AWS::CloudFormation::Designer": {
-            "2f6d5226-4069-4eec-adb6-1bb3764d558d": {
-                "size": {
-                    "width": 140,
-                    "height": 140
-                },
-                "position": {
-                    "x": 680,
-                    "y": 40
-                },
-                "z": 0,
-                "embeds": [],
-                "dependson": [
-                    "85776337-9b8a-422e-83bb-b810f6483d43"
-                ]
-            },
-            "64891889-2e68-437d-8fca-e94826cb78ef": {
-                "size": {
-                    "width": 140,
-                    "height": 140
-                },
-                "position": {
-                    "x": 920,
-                    "y": 90
-                },
-                "z": 0,
-                "embeds": [],
-                "dependson": [
-                    "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                ]
-            },
-            "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae": {
-                "size": {
-                    "width": 60,
-                    "height": 60
-                },
-                "position": {
-                    "x": 420,
-                    "y": 200
-                },
-                "z": 0,
-                "embeds": []
-            },
-            "60efa927-7a34-49fa-81cd-c4113e4d5b42": {
-                "size": {
-                    "width": 60,
-                    "height": 60
-                },
-                "position": {
-                    "x": 450,
-                    "y": 60
-                },
-                "z": 0,
-                "embeds": [],
-                "dependson": [
-                    "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae",
-                    "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                ]
-            },
-            "8dbb318d-9121-49c9-b3a6-41dd7ff13453": {
-                "source": {
-                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
-                },
-                "target": {
-                    "id": "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae"
-                },
-                "z": 1
-            },
-            "85776337-9b8a-422e-83bb-b810f6483d43": {
-                "size": {
-                    "width": 60,
-                    "height": 60
-                },
-                "position": {
-                    "x": 630,
-                    "y": 230
-                },
-                "z": 0,
-                "embeds": []
-            },
-            "03d5d5d9-478b-4b1d-a490-ecabe4fec7d1": {
-                "source": {
-                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                },
-                "target": {
-                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
-                },
-                "z": 2
-            },
-            "f8e575f7-3cfe-4161-aef7-5e3d23819bd7": {
-                "source": {
-                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
-                },
-                "target": {
-                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                },
-                "z": 11
-            },
-            "59bdb95e-fb54-4c3c-891c-b1340ead6b02": {
-                "source": {
-                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                },
-                "target": {
-                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
-                },
-                "z": 12
-            },
-            "4e75854a-974b-4d8d-a14e-c0a8a03be257": {
-                "source": {
-                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
-                },
-                "target": {
-                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                },
-                "z": 11
-            },
-            "bd945e94-703e-453f-bde8-8eee83e58cdc": {
-                "size": {
-                    "width": 140,
-                    "height": 140
-                },
-                "position": {
-                    "x": 1130,
-                    "y": 120
-                },
-                "z": 0,
-                "embeds": []
-            },
-            "6749915a-62b3-4586-95ec-d8a6b76faa20": {
-                "source": {
-                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
-                },
-                "target": {
-                    "id": "b6c426e9-a830-4d51-9f22-db37b254ac7c"
-                },
-                "z": 12
-            }
-        }
-    },
-    "Resources": {
-        "EC2VPCO4Y5": {
-            "Type": "AWS::EC2::VPC",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
-                }
-            },
-            "DependsOn": [
-                "EC2SCB2X5QW"
-            ]
-        },
-        "EC2SCTXN": {
-            "Type": "AWS::EC2::Subnet",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
-                }
-            },
-            "DependsOn": [
-                "EC2VPCO4Y5"
-            ]
-        },
-        "EFSFS3UA1C": {
-            "Type": "AWS::EFS::FileSystem",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae"
-                }
-            }
-        },
-        "EFSMT4L9ZV": {
-            "Type": "AWS::EFS::MountTarget",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
-                }
-            },
-            "DependsOn": [
-                "EFSFS3UA1C",
-                "EC2VPCO4Y5"
-            ]
-        },
-        "EC2SCB2X5QW": {
-            "Type": "AWS::EC2::SubnetCidrBlock",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
-                }
-            }
-        },
-        "EC2S1NP3S": {
-            "Type": "AWS::EC2::Subnet",
-            "Properties": {},
-            "Metadata": {
-                "AWS::CloudFormation::Designer": {
-                    "id": "bd945e94-703e-453f-bde8-8eee83e58cdc"
-                }
-            }
+exports.handleCloud = function(experiment, action, doCloud) {
+    if (!doCloud) {
+        return Q.when();
+    } else {
+        var deferred = Q.defer();
+        //create top level cloudformation stack
+        if (action == 'init') {
+            var params = {
+                StackName: 'PennAI',
+                /* required */
+                //  OnFailure: 'DELETE',
+                TemplateBody: JSON.stringify(experiment.cloudBase)
+            };
+            cloudformation.createStack(params, function(err, data) {
+                if (err) deferred.reject(err); // an error occurred
+                else deferred.resolve(data); // successful response
+            });
+        } else if (action == 'destroy') {
+            var params = {
+                StackName: 'PennAI',
+                /* required */
+            };
+            cloudformation.deleteStack(params, function(err, data) {
+                if (err) deferred.reject(err); // an error occurred
+                else deferred.resolve(data); // successful response
+            });
+        } else {
+            var params = {
+                StackName: 'PennAI',
+                /* required */
+            };
+            cloudformation.describeStackResources(params, function(err, data) {
+                if (err) deferred.reject(err); // an error occurred
+                else deferred.resolve(data); // successful response
+            });
         }
     }
+    return deferred.promise
+
 }
+
 
 
 //create repository
@@ -477,6 +257,23 @@ var getTasks = function(forumName) {
     return deferred.promise;
 }
 //get container info
+var startTask = function(params) {
+    var deferred = Q.defer();
+    ecs.startTask(params, (error, data) => {
+        if (error) {
+            if (error['code']) {
+                console.log('no tasks because' + error['code']);
+                deferred.resolve([]);
+            } else {
+                deferred.reject(new Error(error));
+                console.error(error);
+            }
+        } else {
+            deferred.resolve(data);
+        }
+    });
+    return deferred.promise;
+}
 var describeTasks = function(forumName, tasks) {
     var deferred = Q.defer();
     var clusterName = 'c' + forumName
@@ -522,7 +319,7 @@ var getEc2Instances = function(forumName) {
         } else {
             var instances = [];
             if (data['Reservations']) {
-                for (i in data['Reservations']) {
+                for (var i in data['Reservations']) {
                     var Instances = data['Reservations'][i]['Instances']
                     for (var j in Instances) {
                         instances.push(Instances[j]);
@@ -570,14 +367,8 @@ var getMakevars = function(services) {
     }
     return makevars;
 }
-var formatCloud = function(experiment, forumName, cluster, iinstances, cinstances, tasks) {
-    //console.log(forumName);
-    //console.log(experiment);
-    /*      
-         Parse cluster data and store interesting things along with instance stats
-//iinstances accorinding to EC2
-//cinstances accorinding to ECS
-        */
+var formatCloud = function(experiment, forumName, cluster, iinstances, cinstances, tasks, cloudResources) {
+    //cinstances accorinding to ECS
     var cinfo = {
         forumName: forumName,
         //everything is everything
@@ -657,7 +448,7 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
             cinfo['services'][i]['instance'] = cinfo['instances'][i];
         }
         cinfo['makevars'] = getMakevars(cinfo['services']);
-        var datasets = forum['datasets'].join()
+        var datasets = experiment['datasets'].join()
         cinfo['makevars'].push({
             name: 'forumName',
             value: forumName
@@ -753,7 +544,7 @@ var addInstances = function(cinfo, service_name, count) {
     var params = {
         MaxCount: count,
         MinCount: count,
-        ImageId: ImageId,
+        ImageId: "ami-58f5db3d",
         InstanceType: InstanceType,
         IamInstanceProfile: {
             Name: "ecsInstanceRole"
@@ -828,7 +619,7 @@ var startInstances = function(cinfo) {
     var deferred = Q.defer();
     var services = cinfo['services'];
     var count = 0;
-    for (i in services) {
+    for (var i in services) {
         var service = services[i];
         if (service['num'] !== undefined) {
             count = count + service['num'];
@@ -840,8 +631,8 @@ var startInstances = function(cinfo) {
     var params = {
         MaxCount: count,
         MinCount: count,
-        ImageId: ImageId,
-        InstanceType: InstanceType,
+        ImageId: "ami-58f5db3d",
+        InstanceType: "m4.large",
         IamInstanceProfile: {
             Name: "ecsInstanceRole"
         },
@@ -877,38 +668,40 @@ var startInstances = function(cinfo) {
     return deferred.promise;
 }
 
-exports.startTasks = function(cinfo, tasks) {
+var startTasks = function(cinfo) {
     console.log('starting tasks');
     var promise_array = Array(cinfo['services'].length)
     for (var i in cinfo['services']) {
         var hostname = cinfo['services'][i]['name'];
-        if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
-            if (cinfo['services'][i]['instance'] !== undefined) {
-                var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
-            } else {
-                var instanceId = cinfo['instances'][i]['containerInstanceArn'];
-            }
-            var params = {
-                'containerInstances': [instanceId],
-                'taskDefinition': hostname,
-                'cluster': cinfo['cname'],
-                'overrides': {
-                    'containerOverrides': [{
-                        'environment': cinfo['makevars'],
-                        'name': hostname,
-                    }, ],
-                },
-            }
-            promise_array[i] = startTask(params);
+        if (cinfo['services'][i]['instance'] !== undefined) {
+            var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
+        } else {
+            var instanceId = cinfo['instances'][i]['containerInstanceArn'];
         }
+        var params = {
+            'containerInstances': [instanceId],
+            'taskDefinition': hostname,
+            'cluster': cinfo['cname'],
+            'overrides': {
+                'containerOverrides': [{
+                    'environment': cinfo['makevars'],
+                    'name': hostname,
+                }, ],
+            },
+        }
+        promise_array[i] = startTask(params);
     }
     return Q.allSettled(promise_array);
+
+
+
 
 }
 
 
 //get all cloud resources for a forum
-exports.build = function(forum, experiment, action, tasks) {
+exports.build = function(forum, experiment, options, cloudResources) {
+    var action = options['action']
     var forumName = forum['forumName'];
     console.log('getting cloud');
     var getCluster = function(forumName) {
@@ -942,7 +735,7 @@ exports.build = function(forum, experiment, action, tasks) {
         getEc2Instances(forumName).then(function(ec2instances) {
             getEcsInstances(forumName).then(function(ecsinstances) {
                 getTasks(forumName).then(function(tasks) {
-                    var cinfo = formatCloud(experiment, forumName, cluster, ec2instances, ecsinstances, tasks);
+                    var cinfo = formatCloud(experiment, forumName, cluster, ec2instances, ecsinstances, tasks, cloudResources);
                     manageCloud(cinfo, action);
                     deferred.resolve(cinfo);
 
@@ -1017,7 +810,7 @@ var manageCloud = function(finfo, action) {
                 //make sure cluster and instances agree on count
                 if (finfo['settled'] && finfo['services'].length == finfo['instances'].length) {
                     // && finfo['tcount'] ==0) {
-                    var tP = startTasks(finfo, tasks);
+                    var tP = startTasks(finfo);
                 } else {
                     var tP = Q.when();
                 }
