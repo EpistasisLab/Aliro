@@ -1,5 +1,6 @@
 'use strict';
 var fs = require('fs');
+var awsm = require('./');
 var AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
@@ -13,96 +14,272 @@ var ecs = new AWS.ECS({
 var ec2 = new AWS.EC2();
 var ecr = new AWS.ECR();
 var efs = new AWS.EFS();
+var cloudformation = new AWS.CloudFormation();
 var dryrun = false;
 
 
-exports.handleCloud = function(experiment, request) {
-    var action_dict = {
-        'init': 'create',
-        'destroy': 'delete'
-    };
-    var action = 'info';
-    if (action_dict[request] !== undefined) {
-        action = action_dict[request];
-    }
-    handleShare(experiment, action).then(function(share) {
-        console.log({
-            share
-        });
-    }).catch(function(error) {
-        console.error(error);
-    });
+exports.handleCloud = function(experiment, action) {
+
+if(action == 'init') {
+
+
+var params = {
+  StackName: 'PennAI', /* required */
+//  OnFailure: 'DELETE',
+  TemplateBody: JSON.stringify(experiment.cloud)
+};
+cloudformation.createStack(params, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else     console.log(data);           // successful response
+});
+
+
+
+} else if (action == 'destroy') {
+var params = {
+  StackName: 'PennAI', /* required */
+};
+cloudformation.deleteStack(params, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else     console.log(data);           // successful response
+});
+
+
+} else {
+
+
+
+
+var params = {
+//  StackName: 'PennAI', /* required */
+};
+cloudformation.describeStacks(params, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else     console.log(data);           // successful response
+});
+
+
+
+
 }
 
-//create share a share if action=='create' and share does not exist
-//delete a share if action=='delete' and share exist
-//otherwise return the id
-var handleShare = function(experiment, action) {
-    var deferred = Q.defer();
-    var params = {
-        "CreationToken": "PennAI"
-    };
-    var promise_array = []
-    efs.describeFileSystems(params, (error, data) => {
-        if (error) {
-            deferred.reject(new Error(error));
-            console.error(error);
-        } else {
-            var FileSystemId;
-            if (data['FileSystems'] && data['FileSystems'].length > 0) {
-                for (var i in data['FileSystems']) {
-                    var fileSystem = data['FileSystems'][i];
-                    FileSystemId = fileSystem['FileSystemId'];
+
+
+
+}
+
+
+
+var template = {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "2f6d5226-4069-4eec-adb6-1bb3764d558d": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 680,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "85776337-9b8a-422e-83bb-b810f6483d43"
+                ]
+            },
+            "64891889-2e68-437d-8fca-e94826cb78ef": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 920,
+                    "y": 90
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                ]
+            },
+            "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 200
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "60efa927-7a34-49fa-81cd-c4113e4d5b42": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 450,
+                    "y": 60
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae",
+                    "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                ]
+            },
+            "8dbb318d-9121-49c9-b3a6-41dd7ff13453": {
+                "source": {
+                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
+                },
+                "target": {
+                    "id": "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae"
+                },
+                "z": 1
+            },
+            "85776337-9b8a-422e-83bb-b810f6483d43": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 630,
+                    "y": 230
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "03d5d5d9-478b-4b1d-a490-ecabe4fec7d1": {
+                "source": {
+                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                },
+                "target": {
+                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
+                },
+                "z": 2
+            },
+            "f8e575f7-3cfe-4161-aef7-5e3d23819bd7": {
+                "source": {
+                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
+                },
+                "target": {
+                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                },
+                "z": 11
+            },
+            "59bdb95e-fb54-4c3c-891c-b1340ead6b02": {
+                "source": {
+                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                },
+                "target": {
+                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
+                },
+                "z": 12
+            },
+            "4e75854a-974b-4d8d-a14e-c0a8a03be257": {
+                "source": {
+                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
+                },
+                "target": {
+                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                },
+                "z": 11
+            },
+            "bd945e94-703e-453f-bde8-8eee83e58cdc": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 1130,
+                    "y": 120
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "6749915a-62b3-4586-95ec-d8a6b76faa20": {
+                "source": {
+                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
+                },
+                "target": {
+                    "id": "b6c426e9-a830-4d51-9f22-db37b254ac7c"
+                },
+                "z": 12
+            }
+        }
+    },
+    "Resources": {
+        "EC2VPCO4Y5": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "2f6d5226-4069-4eec-adb6-1bb3764d558d"
+                }
+            },
+            "DependsOn": [
+                "EC2SCB2X5QW"
+            ]
+        },
+        "EC2SCTXN": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "64891889-2e68-437d-8fca-e94826cb78ef"
+                }
+            },
+            "DependsOn": [
+                "EC2VPCO4Y5"
+            ]
+        },
+        "EFSFS3UA1C": {
+            "Type": "AWS::EFS::FileSystem",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "df78aa2b-8d0d-47cf-b307-2ecfca9a5dae"
                 }
             }
-            if (FileSystemId == undefined && action == 'create') {
-                var shareP = createShare(params)
-            } else if (FileSystemId !== undefined && action == 'delete') {
-                var shareP = deleteShare({FileSystemId})
-            } else {
-                var shareP = Q.when();
+        },
+        "EFSMT4L9ZV": {
+            "Type": "AWS::EFS::MountTarget",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "60efa927-7a34-49fa-81cd-c4113e4d5b42"
+                }
+            },
+            "DependsOn": [
+                "EFSFS3UA1C",
+                "EC2VPCO4Y5"
+            ]
+        },
+        "EC2SCB2X5QW": {
+            "Type": "AWS::EC2::SubnetCidrBlock",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "85776337-9b8a-422e-83bb-b810f6483d43"
+                }
             }
-            deferred.resolve(FileSystemId);
+        },
+        "EC2S1NP3S": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "bd945e94-703e-453f-bde8-8eee83e58cdc"
+                }
+            }
         }
-    });
-    return deferred.promise;
+    }
 }
-var createShare = function(params) {
-    var deferred = Q.defer();
-    efs.createFileSystem(params, (error, data) => {
-    if (error) {
-        console.error(error);
-        deferred.reject(new Error(error));
-    } else {
-var FileSystemId = data['FileSystemId'];
-        var targetP = createTarget({FileSystemId});
 
-        deferred.resolve(data);
-    }
-    });
-}
-var deleteShare = function(params) {
-    var deferred = Q.defer();
-    efs.deleteFileSystem(params, (error, data) => {
-    if (error) {
-        console.error(error);
-        deferred.reject(new Error(error));
-    } else {
-        deferred.resolve(data);
-    }
-    });
-}
-var createTarget = function(params) {
-    var deferred = Q.defer();
-    efs.createMountTarget(params, (error, data) => {
-    if (error) {
-        console.error(error);
-        deferred.reject(new Error(error));
-    } else {
-        deferred.resolve(data);
-    }
-    });
-}
 
 //create repository
 var handleRepos = function(experiment, action) {
