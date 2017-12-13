@@ -18,11 +18,11 @@ var makevars;
 var steps = []
 var cmds = {}
 var initVars = function(experiment, callback) {
-var shared = experiment.doShare
+    var shared = experiment.doShare
     makevars = experiment.global;
     for (var i in makevars) {
-var name = i;
-var val = makevars[i];
+        var name = i;
+        var val = makevars[i];
         if (name && val) {
             makevars[name] = val;
         }

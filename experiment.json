@@ -51,13 +51,23 @@
                         "Type": "AWS::EC2::VPC",
                         "Properties": {
                             "CidrBlock": "172.20.0.0/16"
-                        },
-                        "Metadata": {}
+                        }
                     },
-                    "Subnet": {
+                    "Private": {
                         "Type": "AWS::EC2::Subnet",
                         "Properties": {
                             "CidrBlock": "172.20.16.1/20",
+                            "MapPublicIpOnLaunch": true,
+                            "VpcId": {
+                                "Ref": "VPC"
+                            }
+                        }
+                    },
+                    "Public": {
+                        "Type": "AWS::EC2::Subnet",
+                        "Properties": {
+                            "CidrBlock": "172.20.32.1/20",
+                            "MapPublicIpOnLaunch": true,
                             "VpcId": {
                                 "Ref": "VPC"
                             }
@@ -74,7 +84,7 @@
                                 "Ref": "FileSystem"
                             },
                             "SubnetId": {
-                                "Ref": "Subnet"
+                                "Ref": "Private"
                             },
                             "SecurityGroups": [{
                                 "Ref": "SecurityGroup"
