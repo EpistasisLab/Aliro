@@ -72,7 +72,6 @@ exP.then(function(experiment) {
 
                 if (finfo) {
 
-//console.log({finfo});
 }
             }).catch(function(err) {
                 console.log('error', err);
