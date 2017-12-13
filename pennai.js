@@ -14,13 +14,9 @@ if (argv['_'].length > 0) {
 
 //run in the cloud
 var doCloud = true;
-/*
-if (!argv['c']) {
-    doCloud = false;
-    //only one forum at a time on metal
-    num_forums = 1;
-}
-*/
+//if (!argv['c']) {
+//    doCloud = false;
+//}
 
 //run from share 
 var doShared = false
