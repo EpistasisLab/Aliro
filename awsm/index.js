@@ -7,8 +7,13 @@ module.exports = {
     cloud: cloud,
     make: make,
     ranman: ranman,
-    metalMan:make.build,
-    cloudMan:cloud.build,
+    build: function(forum, experiment) {
+        if (forum.doCloud) {
+            return (cloud.build(forum, experiment))
+        } else {
+            return (make.build(forum, experiment))
+        }
+    },
     syncFile: function(filename, command) {
         var deferred = Q.defer();
         var doer;
