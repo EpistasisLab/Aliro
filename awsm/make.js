@@ -345,7 +345,7 @@ var getRoot = function(build, buildArray, deps) {
 
 
 var build = function(forum, experiment) {
-    var verbose = forum.verbose;
+    verbose = forum.verbose;
     var services = experiment.services;
     var action = forum.action;
     var tasks = [];
