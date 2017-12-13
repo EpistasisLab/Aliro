@@ -21,6 +21,9 @@ random_state = None
 if 'RANDOM_SEED' in os.environ:
     random_state = int(os.environ['RANDOM_SEED'])
 
+#max numbers of bar in importance_score plots
+max_bar_num = 10
+
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
     Balanced accuracy computes each class' accuracy on a per-class basis using a
@@ -75,6 +78,8 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
         raise ValueError(
             'The provided data file does not seem to have a target column.')
 
+    feature_names = np.array([x for x in input_data.dtype.names if x != target_name])
+
     features = np.delete(input_data.view(np.float64).reshape(input_data.size, -1),
                          input_data.dtype.names.index(target_name), axis=1)
 
@@ -98,7 +103,19 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
         model, training_features, training_classes, cv=5)
 
     # exporting/computing importance score
-    compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state)
+    coefs = compute_imp_score(model, training_features, training_classes, random_state)
+
+    feature_importances = {
+        'feature_names': feature_names,
+        'feature_importances': coefs.tolist()
+    }
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="feature_importances.json", content=feature_importances)
+
+    if figure_export:
+        plot_imp_score(tmpdir, _id, coefs, feature_names)
+
 
     # get metrics and plots
     train_score = model.score(training_features, training_classes)
@@ -142,6 +159,8 @@ def generate_results(model, input_file, tmpdir, _id):
         raise ValueError(
             'The provided data file does not seem to have a target column.')
 
+    feature_names = np.array([x for x in input_data.dtype.names if x != target_name])
+
     features = np.delete(input_data.view(np.float64).reshape(input_data.size, -1),
                          input_data.dtype.names.index(target_name), axis=1)
 
@@ -170,7 +189,18 @@ def generate_results(model, input_file, tmpdir, _id):
                                 )
 
     # exporting/computing importance score
-    compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state)
+    coefs = compute_imp_score(model, training_features, training_classes, random_state)
+
+    feature_importances = {
+        'feature_names': feature_names.tolist(),
+        'feature_importances': coefs.tolist()
+    }
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="feature_importances.json", content=feature_importances)
+
+    if figure_export:
+        plot_imp_score(tmpdir, _id, coefs, feature_names)
 
     # determine if target is binary or multiclass
     class_names = model.classes_
@@ -256,7 +286,7 @@ def generate_results(model, input_file, tmpdir, _id):
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=predicted_classes_list)
 
-def compute_imp_score(model, training_features, training_classes, tmpdir, _id, random_state):
+def compute_imp_score(model, training_features, training_classes, random_state):
     # exporting/computing importance score
     if hasattr(model, 'coef_'):
         coefs = model.coef_
@@ -274,12 +304,9 @@ def compute_imp_score(model, training_features, training_classes, tmpdir, _id, r
 
     if coefs.ndim > 1:
         coefs = safe_sqr(coefs).sum(axis=0)
-    feature_importances = {
-        'feature_importances': coefs.tolist()
-    }
 
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="feature_importances.json", content=feature_importances)
+    return coefs
+
 
 def save_json_fmt(outdir, _id, fname, content):
     """
@@ -349,3 +376,16 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.legend(loc="lower right")
 
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+
+def plot_imp_score(tmpdir, _id, coefs, feature_names):
+    # plot bar charts for top 10 importanct features
+    num_bar = min(max_bar_num, len(coefs))
+    indices = np.argsort(coefs)[-num_bar:]
+    plt.figure()
+    plt.title("Feature importances")
+    plt.barh(range(num_bar), importances[indices],
+           color="r", align="center")
+    plt.yticks(range(num_bar), feature_names[indices])
+    plt.ylim([-1, num_bar])
+
+    plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
