@@ -17,7 +17,8 @@ var allroots = [];
 var makevars;
 var steps = []
 var cmds = {}
-var initVars = function(share, callback) {
+var initVars = function(experiment, callback) {
+var shared = experiment.doShare
     makevars = [];
     var fileBuffer = fs.readFileSync('./dockers/Makevars');
     var vars_string = fileBuffer.toString();
@@ -348,13 +349,12 @@ var getRoot = function(build, buildArray, deps) {
 }
 
 
-var build = function(forum, experiment, options) {
-    verbose = options['verbose']
+var build = function(forum, experiment) {
     var services = experiment.services;
-    var action = options.action;
-    var tasks = options.tasks;
+    var action = forum.action;
+    var tasks = [];
     var deferred = Q.defer();
-    initVars(options['shared'], function(sentient, makevars) {
+    initVars(experiment, function(sentient, makevars) {
         if (forum && forum['datasets'] !== undefined) {
             makevars['DATASETS'] = forum['datasets'].join();
         };

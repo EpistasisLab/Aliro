@@ -24,18 +24,18 @@ exports.handleCloud = function(experiment, action, doCloud) {
     } else {
         var deferred = Q.defer();
         //create top level cloudformation stack
-        if (action == 'init') {
+        if (action == 'cloudinit') {
             var params = {
                 StackName: 'PennAI',
                 /* required */
                 //  OnFailure: 'DELETE',
-                TemplateBody: JSON.stringify(experiment.cloudBase)
+                TemplateBody: JSON.stringify(experiment.aws.stacks.base)
             };
             cloudformation.createStack(params, function(err, data) {
                 if (err) deferred.reject(err); // an error occurred
                 else deferred.resolve(data); // successful response
             });
-        } else if (action == 'destroy') {
+        } else if (action == 'clouddestroy') {
             var params = {
                 StackName: 'PennAI',
                 /* required */
@@ -54,8 +54,9 @@ exports.handleCloud = function(experiment, action, doCloud) {
                 else deferred.resolve(data); // successful response
             });
         }
+        return deferred.promise
     }
-    return deferred.promise
+
 
 }
 
@@ -388,13 +389,16 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
         istatus: null,
         //list the required hosts
         hosts: {},
+        ImageId: experiment.aws.ImageId,
+        InstanceType: experiment.aws.InstanceType,
+        KeyName: experiment.aws.KeyName,
         services: experiment.services,
         makevars: null,
         //
     }
     for (var i in cloudResources) {
-cinfo[i] = cloudResources[i];
-   }
+        cinfo[i] = cloudResources[i];
+    }
     if (cluster['clusters'] && cluster['clusters'].length > 0) {
         for (var i in cluster['clusters']) {
             var c = cluster['clusters'][i];
@@ -465,7 +469,8 @@ cinfo[i] = cloudResources[i];
 }
 
 //shut down the cluster
-var stopCluster = function(forumName) {
+var stopCluster = function(cinfo) {
+    var forumName = cinfo['forumName'];
     var deferred = Q.defer();
     var clusterName = 'c' + forumName
     console.log('stopping ' + clusterName);
@@ -494,7 +499,8 @@ var stopCluster = function(forumName) {
     return deferred.promise;
 }
 //
-var startCluster = function(forumName) {
+var startCluster = function(cinfo) {
+    var forumName = cinfo['forumName'];
     var deferred = Q.defer();
     var clusterName = 'c' + forumName
     console.log("starting " + clusterName)
@@ -541,85 +547,6 @@ var stopInstances = function(instances) {
 };
 
 // make the Instances required to support a forum
-var addInstances = function(cinfo, service_name, count) {
-console.log(cinfo);
-    var deferred = Q.defer();
-    var services = cinfo['services'];
-    var params = {
-        MaxCount: count,
-        MinCount: count,
-        ImageId: "ami-58f5db3d",
-        InstanceType: InstanceType,
-        IamInstanceProfile: {
-            Name: "ecsInstanceRole"
-        },
-        SecurityGroups: [
-            'ssh', 'backend'
-        ],
-        TagSpecifications: [{
-            ResourceType: 'instance',
-            Tags: [{
-                Key: 'forum',
-                Value: cinfo['forumName']
-            }, {
-                Key: 'servicename',
-                Value: service_name
-            }, {
-                Key: 'Name',
-                Value: 'i' + cinfo['forumName']
-            }]
-        }, ],
-        //set default cluster for fourum
-//        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
-        UserData: new Buffer("#!/bin/bash\necho fs-e624c99f.efs.us-east-2.amazonaws.com:/  /share/    nfs     nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0 >> /etc/fstab\n").toString('base64')
-    };
-    if (dryrun) {
-        deferred.resolve([]);
-    } else {
-        ec2.runInstances(params, (error, data) => {
-            if (error) {
-                deferred.reject(new Error(error));
-                console.error(error);
-            } else {
-
-
-
-                var promise_array = Array();
-                for (var i = 0; i < count; i++) {
-                    var hostname = task + '_' + i;
-                    if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
-                        if (cinfo['services'][i]['instance'] !== undefined) {
-                            var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
-                        } else {
-                            var instanceId = cinfo['instances'][i]['containerInstanceArn'];
-                        }
-                        var params = {
-                            'containerInstances': [instanceId],
-                            'taskDefinition': hostname,
-                            'cluster': cinfo['cname'],
-                            'overrides': {
-                                'containerOverrides': [{
-                                    'environment': cinfo['makevars'],
-                                    'name': hostname,
-                                }, ],
-                            },
-                        }
-                        promise_array[i] = startTask(params);
-                    }
-                }
-                //   return Promise.allSettled(promise_array);
-
-
-
-                //        data['forum'] = forum;
-                //            deferred.resolve(data);
-            }
-        });
-    }
-    return deferred.promise;
-}
-
-// make the Instances required to support a forum
 var startInstances = function(cinfo) {
     var deferred = Q.defer();
     var services = cinfo['services'];
@@ -633,20 +560,21 @@ var startInstances = function(cinfo) {
         }
 
     }
-console.log(cinfo);
+    console.log({
+        cinfo
+    });
     var params = {
         MaxCount: count,
         MinCount: count,
-        ImageId: "ami-58f5db3d",
-        InstanceType: "m4.large",
-        SubnetId: cinfo['Subnet'],
-        KeyName: "upenn",
+        ImageId: cinfo['ImageId'],
+        //SecurityGroups: [cinfo['SecurityGroup']],
+        //SecurityGroups: cinfo['SecurityGroup'],
+        //      SubnetId: cinfo['Subnet'],
+        InstanceType: cinfo['InstanceType'],
+        KeyName: cinfo['KeyName'],
         IamInstanceProfile: {
             Name: "ecsInstanceRole"
         },
-        SecurityGroups: [
-            cinfo['SecurityGroup'],
-        ],
         TagSpecifications: [{
             ResourceType: 'instance',
             Tags: [{
@@ -656,7 +584,7 @@ console.log(cinfo);
                 Key: 'Name',
                 Value: 'i' + cinfo['forumName']
             }]
-        }, ],
+        }],
         //set default cluster for fourum
         UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
     };
@@ -708,11 +636,10 @@ var startTasks = function(cinfo) {
 
 
 //get all cloud resources for a forum
-exports.build = function(forum, experiment, options) {
-var cloudResources = options['cloudResources'];
-    var action = options['action']
-    var forumName = forum['forumName'];
-    console.log('getting cloud');
+exports.build = function(forum, experiment) {
+    var action = forum.action;
+    var cloudResources = forum['cloudResources'];
+    var forumName = forum['forumName']
     var getCluster = function(forumName) {
         var deferred = Q.defer();
         ecs.describeClusters({
@@ -744,7 +671,8 @@ var cloudResources = options['cloudResources'];
         getEc2Instances(forumName).then(function(ec2instances) {
             getEcsInstances(forumName).then(function(ecsinstances) {
                 getTasks(forumName).then(function(tasks) {
-console.log(cloudResources);
+                    //            console.log(cloudResources);
+                    //merge cloud data
                     var cinfo = formatCloud(experiment, forumName, cluster, ec2instances, ecsinstances, tasks, cloudResources);
                     manageCloud(cinfo, action);
                     deferred.resolve(cinfo);
@@ -771,26 +699,28 @@ console.log(cloudResources);
     return deferred.promise;
 }
 
-var manageCloud = function(finfo, action) {
-    if (finfo['instances'].length == finfo['ccount'] && finfo['ccount'] == finfo['icount']) {
-        finfo['settled'] = true;
+var manageCloud = function(cinfo, action) {
+    //things are settled when ec2 and ecs counts are the same
+    if (cinfo['instances'].length == cinfo['ccount'] && cinfo['ccount'] == cinfo['icount']) {
+        cinfo['settled'] = true;
     } else {
-        finfo['settled'] = false;
+        cinfo['settled'] = false;
     }
     if (action == 'info') {
-        //    syncForum(finfo);
-        console.log(finfo)
+        console.log({
+            cinfo
+        })
     }
     if (action == 'stop') {
-        if (finfo['instances'].length > 0) {
-            var iP = stopInstances(finfo['instances']);
+        if (cinfo['instances'].length > 0) {
+            var iP = stopInstances(cinfo['instances']);
         } else {
             console.log('instances already stopped');
             var iP = Q.when();
         }
         iP.then(function(instances) {
-            if (finfo['ccount'] == 0 && finfo['settled']) {
-                var cP = stopCluster(finfo['forumName']);
+            if (cinfo['ccount'] == 0 && cinfo['settled']) {
+                var cP = stopCluster(cinfo);
             } else {
                 console.log('waiting for counts to settle');
                 var cP = Q.when();
@@ -803,31 +733,31 @@ var manageCloud = function(finfo, action) {
             });
         });
     } else if (action == 'start') {
-        if (finfo['cstatus'] != 'ACTIVE') {
-            var cP = startCluster(finfo['forumName']);
+        if (cinfo['cstatus'] != 'ACTIVE') {
+            var cP = startCluster(cinfo);
         } else {
             console.log('cluster already running');
             var cP = Q.when();
         }
         cP.then(function(cluster) {
-            if (finfo['icount'] == 0) {
-                var iP = startInstances(finfo);
+            if (cinfo['icount'] == 0) {
+                var iP = startInstances(cinfo);
             } else {
                 console.log('instances already running');
                 var iP = Q.when();
             }
             iP.then(function(instances) {
                 //make sure cluster and instances agree on count
-                if (finfo['settled'] && finfo['services'].length == finfo['instances'].length) {
-                    // && finfo['tcount'] ==0) {
-                    var tP = startTasks(finfo);
+                if (cinfo['settled'] && cinfo['services'].length == cinfo['instances'].length) {
+                    // && cinfo['tcount'] ==0) {
+                    var tP = startTasks(cinfo);
                 } else {
                     var tP = Q.when();
                 }
                 tP.then(function(tasks) {
                     console.log('done');
-                   // syncForum(finfo)
-                    console.log(tasks);
+                    // syncForum(cinfo)
+                    //console.log(tasks);
                 }).catch(function(err) {
                     console.log('error', err);
                 });
