@@ -506,6 +506,7 @@ var startCluster = function(cinfo) {
     console.log("starting " + clusterName)
     var params = {
         clusterName: clusterName,
+        ec2Attributes:{SubnetId:cinfo['Subnet']},
     };
     if (dryrun) {
         deferred.resolve([]);

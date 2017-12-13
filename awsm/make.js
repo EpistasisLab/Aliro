@@ -19,15 +19,10 @@ var steps = []
 var cmds = {}
 var initVars = function(experiment, callback) {
 var shared = experiment.doShare
-    makevars = [];
-    var fileBuffer = fs.readFileSync('./dockers/Makevars');
-    var vars_string = fileBuffer.toString();
-    var vars_lines = vars_string.split("\n");
-    for (var i in vars_lines) {
-        var line = vars_lines[i]
-        var spliteded = line.split(':=');
-        var name = spliteded[0];
-        var val = spliteded[1];
+    makevars = experiment.global;
+    for (var i in makevars) {
+var name = i;
+var val = makevars[i];
         if (name && val) {
             makevars[name] = val;
         }
@@ -350,6 +345,7 @@ var getRoot = function(build, buildArray, deps) {
 
 
 var build = function(forum, experiment) {
+    var verbose = forum.verbose;
     var services = experiment.services;
     var action = forum.action;
     var tasks = [];
