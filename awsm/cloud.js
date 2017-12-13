@@ -480,6 +480,7 @@ var stopCluster = function(cinfo) {
     if (dryrun) {
         deferred.resolve([]);
     } else {
+        console.log('delete')
         ecs.deleteCluster(params, (error, data) => {
             if (error) {
                 if (error['code']) {
@@ -506,7 +507,6 @@ var startCluster = function(cinfo) {
     console.log("starting " + clusterName)
     var params = {
         clusterName: clusterName,
-        ec2Attributes:{SubnetId:cinfo['Subnet']},
     };
     if (dryrun) {
         deferred.resolve([]);
@@ -569,9 +569,8 @@ var startInstances = function(cinfo) {
         MinCount: count,
         ImageId: cinfo['ImageId'],
         SecurityGroupIds: [cinfo['SecurityGroup']],
-        SubnetId: cinfo['Subnet'],
-        //SecurityGroups: cinfo['SecurityGroup'],
-        //      SubnetId: cinfo['Subnet'],
+        SubnetId: cinfo['Private'],
+        //:[cinfo['SecurityGroup']],
         InstanceType: cinfo['InstanceType'],
         KeyName: cinfo['KeyName'],
         IamInstanceProfile: {
