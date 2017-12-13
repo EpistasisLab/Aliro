@@ -392,6 +392,9 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
         makevars: null,
         //
     }
+    for (var i in cloudResources) {
+cinfo[i] = cloudResources[i];
+   }
     if (cluster['clusters'] && cluster['clusters'].length > 0) {
         for (var i in cluster['clusters']) {
             var c = cluster['clusters'][i];
@@ -539,6 +542,7 @@ var stopInstances = function(instances) {
 
 // make the Instances required to support a forum
 var addInstances = function(cinfo, service_name, count) {
+console.log(cinfo);
     var deferred = Q.defer();
     var services = cinfo['services'];
     var params = {
@@ -566,7 +570,8 @@ var addInstances = function(cinfo, service_name, count) {
             }]
         }, ],
         //set default cluster for fourum
-        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
+//        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
+        UserData: new Buffer("#!/bin/bash\necho fs-e624c99f.efs.us-east-2.amazonaws.com:/  /share/    nfs     nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0 >> /etc/fstab\n").toString('base64')
     };
     if (dryrun) {
         deferred.resolve([]);
@@ -628,16 +633,19 @@ var startInstances = function(cinfo) {
         }
 
     }
+console.log(cinfo);
     var params = {
         MaxCount: count,
         MinCount: count,
         ImageId: "ami-58f5db3d",
         InstanceType: "m4.large",
+        SubnetId: cinfo['Subnet'],
+        KeyName: "upenn",
         IamInstanceProfile: {
             Name: "ecsInstanceRole"
         },
         SecurityGroups: [
-            'ssh', 'backend'
+            cinfo['SecurityGroup'],
         ],
         TagSpecifications: [{
             ResourceType: 'instance',
@@ -700,7 +708,8 @@ var startTasks = function(cinfo) {
 
 
 //get all cloud resources for a forum
-exports.build = function(forum, experiment, options, cloudResources) {
+exports.build = function(forum, experiment, options) {
+var cloudResources = options['cloudResources'];
     var action = options['action']
     var forumName = forum['forumName'];
     console.log('getting cloud');
@@ -735,6 +744,7 @@ exports.build = function(forum, experiment, options, cloudResources) {
         getEc2Instances(forumName).then(function(ec2instances) {
             getEcsInstances(forumName).then(function(ecsinstances) {
                 getTasks(forumName).then(function(tasks) {
+console.log(cloudResources);
                     var cinfo = formatCloud(experiment, forumName, cluster, ec2instances, ecsinstances, tasks, cloudResources);
                     manageCloud(cinfo, action);
                     deferred.resolve(cinfo);
@@ -816,7 +826,7 @@ var manageCloud = function(finfo, action) {
                 }
                 tP.then(function(tasks) {
                     console.log('done');
-                    syncForum(finfo)
+                   // syncForum(finfo)
                     console.log(tasks);
                 }).catch(function(err) {
                     console.log('error', err);
