@@ -568,6 +568,7 @@ var startInstances = function(cinfo) {
         MinCount: count,
         ImageId: cinfo['ImageId'],
         SecurityGroupIds: [cinfo['SecurityGroup']],
+        SubnetId: cinfo['Subnet'],
         //SecurityGroups: cinfo['SecurityGroup'],
         //      SubnetId: cinfo['Subnet'],
         InstanceType: cinfo['InstanceType'],
