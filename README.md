@@ -49,6 +49,7 @@ recommendations using:
   - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
   - switch to awsm branch
   ```shell
+  git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
   git checkout awsm
   ```
