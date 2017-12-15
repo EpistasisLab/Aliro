@@ -44,7 +44,15 @@ exP.then(function(experiment) {
     var forums = randomized.slice(0, experiment.max_forums);
     //get cloud resources
     var cloud = awsm.cloud.handleCloud(experiment, action, doCloud);
-    cloud.then(function(cf) {
+    cloud.then(function(c) {
+       if(c !== undefined) {
+        var cf = c[0].value
+        var repos = c[1].value
+        for (var i in experiment.services) {
+            var service_name = experiment.services[i]['name'];
+            if (repos[service_name] !== undefined && repos[service_name]['repositoryUri'] !== undefined)
+                experiment.services[i]['repositoryUri'] = repos[service_name]['repositoryUri'];
+        }
         var cloudResources = {}
         if (cf !== undefined && cf['StackResources'] !== undefined) {
 
@@ -53,9 +61,14 @@ exP.then(function(experiment) {
                 var resource = resources[i];
                 var LogicalResourceId = resource['LogicalResourceId']
                 var PhysicalResourceId = resource['PhysicalResourceId']
-                cloudResources[LogicalResourceId] = PhysicalResourceId;
+                if (resource['ResourceStatus'] == 'CREATE_COMPLETE') {
+                    cloudResources[LogicalResourceId] = PhysicalResourceId;
+                } else {
+                    cloudResources[LogicalResourceId] = null;
+                }
             }
         }
+}
         //    console.log(forums);
         for (var i in forums) {
             var forum = forums[i];
@@ -69,7 +82,6 @@ exP.then(function(experiment) {
             forum['cloudResources'] = cloudResources;
             var infP = awsm.build(forum, experiment);
             infP.then(function(finfo) {
-
                 if (finfo) {
 
                 }
@@ -81,7 +93,11 @@ exP.then(function(experiment) {
 
             //}
         }
-    });
+    }).catch(function(err) {
+        console.log('something went wrong')
+        console.log(err);
+        deferred.reject(new Error(err));
+    })
 }).catch(function(err) {
     console.log('something went wrong')
     console.log(err);
