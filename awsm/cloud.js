@@ -517,8 +517,13 @@ var startCluster = function(cinfo) {
     } else {
         ecs.createCluster(params, (error, data) => {
             if (error) {
-                deferred.reject(new Error(error));
-                console.error(error);
+                if (error['code']) {
+                    console.log('can not create cluster because ' + error['code']);
+                    deferred.resolve([]);
+                } else {
+                    console.error(error);
+                    deferred.reject(new Error(error));
+                };
             } else {
                 deferred.resolve(data);
             }
@@ -554,62 +559,63 @@ var stopInstances = function(instances) {
 // make the Instances required to support a forum
 var startInstances = function(cinfo) {
     var services = cinfo['services'];
-    var count = 0;
     var promise_array = Array(services.length);
     for (var i in services) {
         //build instance request
-var deferred = Q.defer();
+        var deferred = Q.defer();
         promise_array[i] = deferred;
         var service = services[i];
-       if (service['num'] !== undefined) {
-            count = service['num'];
+        if (service['num'] !== undefined) {
+            console.log(service);
+            var count = service['num'];
         } else {
-            count = 1;
+            var count = 1;
         }
         var name = service['name']
 
-    var params = {
-        MaxCount: count,
-        MinCount: count,
-        ImageId: cinfo['ImageId'],
-        SecurityGroupIds: [cinfo['SecurityGroup']],
-        SubnetId: cinfo['Subnet'],
-        InstanceType: cinfo['InstanceType'],
-        KeyName: cinfo['KeyName'],
-        IamInstanceProfile: {
-            Name: "ecsInstanceRole"
-        },
-        TagSpecifications: [{
-            ResourceType: 'instance',
-            Tags: [{
-                Key: 'forum',
-                Value: cinfo['forumName']
-            }, {
-                Key: 'Name',
-                Value: 'i' + cinfo['forumName']
-            }, {
-                Key: 'service',
-                Value: name
-            }]
-        }],
-        //set default cluster for fourum
-        UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
-    };
-    if (dryrun) {
-        deferred.resolve([]);
-    } else {
-        ec2.runInstances(params, (error, data) => {
-            if (error) {
-                deferred.reject(new Error(error));
-                console.error(error);
-            } else {
-                //        data['forum'] = forum;
-                deferred.resolve(data);
-            }
-        });
+        var params = {
+            MaxCount: count,
+            MinCount: count,
+            ImageId: cinfo['ImageId'],
+            SecurityGroupIds: [cinfo['SecurityGroup']],
+            SubnetId: cinfo['Subnet'],
+            InstanceType: cinfo['InstanceType'],
+            KeyName: cinfo['KeyName'],
+            IamInstanceProfile: {
+                Name: "ecsInstanceRole"
+            },
+            TagSpecifications: [{
+                ResourceType: 'instance',
+                Tags: [{
+                    Key: 'forum',
+                    Value: cinfo['forumName']
+                }, {
+                    Key: 'Name',
+                    Value: 'i' + cinfo['forumName']
+                }, {
+                    Key: 'service',
+                    Value: name
+                }]
+            }],
+            //set default cluster for fourum
+            UserData: new Buffer("#!/bin/bash\necho ECS_CLUSTER=c" + cinfo['forumName'] + " >> /etc/ecs/ecs.config\n").toString('base64')
+        };
+        if (dryrun) {
+            deferred.resolve([]);
+        } else {
+            ec2.runInstances(params, (error, data) => {
+                if (error) {
+                    deferred.reject(new Error(error));
+                    //console.error(error);
+                    console.log(params);
+                } else {
+                    //        data['forum'] = forum;
+                    deferred.resolve(data);
+                }
+            });
+        }
     }
-}
-return Q.allSettled(promise_array);
+    return Q.allSettled(promise_array);
 }
 
 var startTasks = function(cinfo) {
