@@ -16,6 +16,7 @@ var ecr = new AWS.ECR();
 var efs = new AWS.EFS();
 var cloudformation = new AWS.CloudFormation();
 var dryrun = false;
+var verbose = false;
 
 
 exports.handleCloud = function(experiment, action, doCloud) {
@@ -73,6 +74,54 @@ exports.handleCloud = function(experiment, action, doCloud) {
 
 
 //create repositories
+exports.handleTaskDefinitions = function(experiment, action) {
+    var listP = Q.defer();
+    var params = {};
+    var promise_array = []
+    var services = experiment.services;
+    ecs.listTaskDefinitions(params, (error, data) => {
+        if (error) {
+            if (error['code']) {
+                console.log('no tasks because ' + error['code']);
+                listP.resolve([]);
+            } else {
+                listP.reject(new Error(error));
+                console.error(error);
+            }
+        } else {
+            for (var i in services) {
+                var service = services[i];
+                for (var j in data.taskDefinitionArns) {
+                    var taskDefinitionArn = data.taskDefinitionArns[j]
+                    if (service.name == taskDefinitionArn.split(":")[5].split("/")[1]) {
+                        services[i].taskDefinitionArn = taskDefinitionArn;
+                    }
+                }
+                services[i].ImageId = experiment.aws.ImageId;
+            }
+            for (var i in services) {
+                var service = services[i];
+
+                if (services[i].taskDefinitionArn === undefined) {
+                    promise_array.push(createTaskDefinition(service));
+                } else {
+                    console.log(services[i]);
+                }
+                //console.log(services);
+            }
+        }
+        //if (repos[service.name] !== undefined && action == 'clouddestroy') {
+        //        promise_array.push(createTaskDefinition(service));
+        //        } else if (action == 'cloudinit') {
+        //             promise_array.push(createRepo(service));
+        //         }
+        // }
+        //   deferred.resolve(repos);
+        //}
+    });
+    return Q.allSettled(promise_array);
+}
+//create repositories
 var handleRepos = function(experiment, action) {
     var deferred = Q.defer();
     var params = {};
@@ -107,6 +156,11 @@ var handleRepos = function(experiment, action) {
     });
     return (deferred.promise);
 }
+
+
+
+
+
 
 //delete a container repo
 var deleteRepo = function(service) {
@@ -151,11 +205,64 @@ var createRepo = function(service) {
         }
     });
 
-
-
 }
 
+var createTaskDefinition = function(service) {
+    console.log('registering taskdef');
+    console.log(service);
+    //console.log(service);
+    var deferred = Q.defer();
+    var params = {
+        "containerDefinitions": [{
+            "logConfiguration": {
+                "logDriver": "json-file"
+            },
+            "entryPoint": [
+                "/bin/bash",
+                "/root/entrypoint.sh"
+            ],
+            "command": [],
+            "mountPoints": [{
+                "sourceVolume": "share",
+                "containerPath": "/share"
+            }],
+            "workingDirectory": "/opt",
+            "memoryReservation": 1024,
+            "volumesFrom": [],
+            "image": service.ImageId,
+            "essential": true,
+            "hostname": service.name,
+            "name": service.name
+        }],
+        "family": service.name,
+        "networkMode": "host",
+        "volumes": [{
+            "name": "share",
+            "host": {
+                "sourcePath": "/share"
+            }
+        }]
+    }
+    if (service.portMappings !== undefined) {
+        params.containerDefinitions.push(service.portMappings)
+    }
+    ecs.registerTaskDefinition(params, (error, data) => {
+        if (error) {
+            if (error['code']) {
+                console.log('could not create taskdef because ' + error['code']);
+                console.log(service);
+                console.log(error);
+                process.exit();
+                deferred.resolve([]);
+            } else {
+                deferred.reject(new Error(error));
+            }
+        } else {
+            deferred.resolve(data);
+        }
+    });
 
+}
 
 
 //ECS (not EC2) container info
@@ -424,10 +531,13 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
             var PrivateDnsName = iinstance['PrivateDnsName']
             var tags = iinstance['Tags']
             var tagsmatch = false;
+            var serviceName;
             for (var m in tags) {
                 var tag = tags[m];
                 if (tag['Key'] == 'forum' && tag['Value'] == forumName && InstanceId.substr(0, 2) == 'i-') {
                     tagsmatch = true;
+                } else if (tag['Key'] == 'service') {
+                    serviceName = tag['Value'];
                 }
 
             }
@@ -437,7 +547,8 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
                     InstanceId,
                     PrivateIpAddress,
                     PublicIpAddress,
-                    PrivateDnsName
+                    PrivateDnsName,
+                    serviceName
                 });
             }
         }
@@ -566,7 +677,6 @@ var startInstances = function(cinfo) {
         promise_array[i] = deferred;
         var service = services[i];
         if (service['num'] !== undefined) {
-            console.log(service);
             var count = service['num'];
         } else {
             var count = 1;
@@ -606,8 +716,8 @@ var startInstances = function(cinfo) {
             ec2.runInstances(params, (error, data) => {
                 if (error) {
                     deferred.reject(new Error(error));
-                    //console.error(error);
-                    console.log(params);
+                    console.error(error);
+                    //console.log(params);
                 } else {
                     //        data['forum'] = forum;
                     deferred.resolve(data);
@@ -620,18 +730,23 @@ var startInstances = function(cinfo) {
 
 var startTasks = function(cinfo) {
     console.log('starting tasks');
-    var promise_array = Array(cinfo['services'].length)
-    for (var i in cinfo['services']) {
-        var hostname = cinfo['services'][i]['name'];
-        if (cinfo['services'][i]['instance'] !== undefined) {
-            var instanceId = cinfo['services'][i]['instance']['containerInstanceArn'];
-        } else {
-            var instanceId = cinfo['instances'][i]['containerInstanceArn'];
+    var promise_array = Array(cinfo.services.length)
+    for (var i in cinfo.services) {
+        var service = cinfo.services[i];
+        var instanceIds = [];
+        var hostname = service.name
+        for (var j in cinfo.instances) {
+
+            var cfinstance = cinfo.instances[j];
+            instanceIds.push(cfinstance.containerInstanceArn)
         }
-        console.log(cinfo);
+        //if (service.instance !== undefined) {
+        //    var instanceIds = service.instance.containerInstanceArn;
+        // }
+        //console.log(cinfo);
         var params = {
-            'containerInstances': [instanceId],
-            'taskDefinition': hostname,
+            'containerInstances': instanceIds,
+            'taskDefinition': service.taskDefinitionArn,
             'cluster': cinfo['cname'],
             'overrides': {
                 'containerOverrides': [{
@@ -640,9 +755,11 @@ var startTasks = function(cinfo) {
                 }, ],
             },
         }
-        console.log({
-            params
-        });
+        if (verbose) {
+            console.log({
+                params
+            });
+        }
         promise_array[i] = startTask(params);
     }
     return Q.allSettled(promise_array);
@@ -766,7 +883,7 @@ var manageCloud = function(cinfo, action) {
             }
             iP.then(function(instances) {
                 //make sure cluster and instances agree on count
-                if (cinfo['settled'] && cinfo['services'].length == cinfo['instances'].length) {
+                if (cinfo['settled'] && cinfo['services'].length > 1) {
                     // && cinfo['tcount'] ==0) {
                     var tP = startTasks(cinfo);
                 } else {

@@ -3,7 +3,13 @@
     "set_size": 10,
     "random_seed": 42,
     "services": [{
-        "name": "dbmongo"
+        "name": "dbmongo",
+        "portMappings": [
+        {
+          "hostPort": 27017,
+          "protocol": "tcp",
+          "containerPort":27017
+        }]
     }, {
         "name": "lab"
     }, {

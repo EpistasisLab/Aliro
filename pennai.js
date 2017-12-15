@@ -72,6 +72,11 @@ exP.then(function(experiment) {
                     }
                 }
             }
+experiment.cloudResources = cloudResources;
+var TaskP = awsm.cloud.handleTaskDefinitions(experiment,action);
+
+
+
         }
         //    console.log(forums);
         for (var i in forums) {
