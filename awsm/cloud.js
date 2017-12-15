@@ -553,28 +553,27 @@ var stopInstances = function(instances) {
 
 // make the Instances required to support a forum
 var startInstances = function(cinfo) {
-    var deferred = Q.defer();
     var services = cinfo['services'];
     var count = 0;
+    var promise_array = Array(services.length);
     for (var i in services) {
+        //build instance request
+var deferred = Q.defer();
+        promise_array[i] = deferred;
         var service = services[i];
-        if (service['num'] !== undefined) {
-            count = count + service['num'];
+       if (service['num'] !== undefined) {
+            count = service['num'];
         } else {
-            count++
+            count = 1;
         }
+        var name = service['name']
 
-    }
-    console.log({
-        cinfo
-    });
     var params = {
         MaxCount: count,
         MinCount: count,
         ImageId: cinfo['ImageId'],
         SecurityGroupIds: [cinfo['SecurityGroup']],
         SubnetId: cinfo['Subnet'],
-        //:[cinfo['SecurityGroup']],
         InstanceType: cinfo['InstanceType'],
         KeyName: cinfo['KeyName'],
         IamInstanceProfile: {
@@ -588,6 +587,9 @@ var startInstances = function(cinfo) {
             }, {
                 Key: 'Name',
                 Value: 'i' + cinfo['forumName']
+            }, {
+                Key: 'service',
+                Value: name
             }]
         }],
         //set default cluster for fourum
@@ -606,7 +608,8 @@ var startInstances = function(cinfo) {
             }
         });
     }
-    return deferred.promise;
+}
+return Q.allSettled(promise_array);
 }
 
 var startTasks = function(cinfo) {
