@@ -310,26 +310,36 @@ var hostCommand = function(forum, experiment) {
         makevars['FORUM'] = forum['forumName']
     }
     if (action == 'build') {
-        steps = ['stop', 'rm', 'build', 'create', 'tag']
+        steps = ['stop', 'rm', 'build', 'create']
     } else if (action == 'stop') {
         steps = ['stop']
     } else if (action == 'start') {
         steps = ['start']
+    } else if (action == 'push') {
+        steps = ['tag','push']
     }
     var hosts = [];
+    var repos = {};
     for (var i in services) {
         var service = services[i];
         var hostname = service['name']
         if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
             hosts.push(hostname);
         }
+        if (service['repositoryUri'] !== undefined) {
+            repos[hostname] = service['repositoryUri'];
+        }
     }
     console.log('processing hosts ' + hosts);
     // look for container definitions in dockers directory
     for (var i in all) {
+        var requested = false;
+        var host = all[i];
+        if (hosts.indexOf(host) >= 0) {
+            requested = true;
+        }
         //build continers
         var tag = 'latest';
-        var host = all[i];
         var quiet = '';
         if (!verbose) {
             quiet = '-q'
@@ -355,30 +365,34 @@ var hostCommand = function(forum, experiment) {
                 }
             }
         }
-        if (forum.sentient[host]) {
-            var container_id = forum.sentient[host]['id']
-            if (forum.sentient[host]['state'] == 'up') {
-                commander('stop', container_id);
+
+
+        if (requested) {
+
+            if (forum.sentient[host]) {
+                var container_id = forum.sentient[host]['id']
+                if (forum.sentient[host]['state'] == 'up') {
+                    commander('stop', container_id);
+                }
+                commander('rm', container_id);
             }
-            commander('rm', container_id);
+
+            var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
+                docker_args + ' --hostname ' + host + ' --name ' + host +
+                ' --net ' + network + ' ' + network + '/' + host;
+            commander('create', create_args, host);
+
+            if (repos[host] !== undefined ) {
+    var tag_args = network + '/' + host + ':' + tag + ' ' + repos[host] + ':' + tag;
+                commander('tag', tag_args)
+
+
+
+                var push_args = repos[host] + ':' + tag;
+                commander('push', push_args);
+            }
+            commander('start', host);
         }
-
-
-        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
-            docker_args + ' --hostname ' + host + ' --name ' + host +
-            ' --net ' + network + ' ' + network + '/' + host;
-        commander('create', create_args, host);
-
-        if (registry !== undefined) {
-            var tag_args = network + '/' + host + ':' + tag + ' ' + registry + '/' + host + ':' + tag;
-            commander('tag', tag_args)
-
-
-
-            var push_args = registry + '/' + host + ':' + tag;
-            commander('push', push_args);
-        }
-        commander('start', host);
     }
     var dockerDir = '/share/devel/pennai/dockers'
     var deps = getDeps(dockerDir, all, network)
@@ -395,9 +409,6 @@ var hostCommand = function(forum, experiment) {
                 var root = getRoot(build, buildArray, deps);
                 roots = roots.concat(root);
             }
-            console.log({
-                roots
-            });
             //list of unique 
             var rootset = new Set(roots);
             var bs = {}
@@ -427,47 +438,49 @@ var hostCommand = function(forum, experiment) {
                 return runJobs(item);
             });
         }, Q());
-
-        //continue processing the chain in the correct order
-        chain.then(function() {
-                var stopP = runJobs(cmds['stop']);
-                Q.all(stopP).then(function() {
-                        var removeP = runJobs(cmds['rm']);
-                        Q.all(removeP).then(function() {
-                                var createP = runJobs(cmds['create']);
-                                Q.all(createP).then(function() {
-                                        var tagP = runJobs(cmds['tag']);
-                                        Q.all(tagP).then(function() {
-                                                var pushP = runJobs(cmds['push']);
-                                                Q.all(pushP).then(function() {
-                                                        deferred.resolve(makevars);
-                                                        var startP = runJobs(cmds['start']);
-                                                    })
-                                                    .catch((err) => {
-                                                        console.log(err);
-                                                    });
-                                            })
-                                            .catch((err) => {
-                                                console.log(err);
-                                            });
-                                    })
-                                    .catch((err) => {
-                                        console.log(err);
-                                    });
-                            })
-                            .catch((errrr) => {
-                                console.log(errrr);
-                            });
-                    })
-                    .catch((errr) => {
-                        console.log(errr);
-                    });
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+    } else {
+        var chain = Q.when();
     }
+
+    //continue processing the chain in the correct order
+    chain.then(function() {
+            var stopP = runJobs(cmds['stop']);
+            Q.all(stopP).then(function() {
+                    var removeP = runJobs(cmds['rm']);
+                    Q.all(removeP).then(function() {
+                            var createP = runJobs(cmds['create']);
+                            Q.all(createP).then(function() {
+                                    var tagP = runJobs(cmds['tag']);
+                                    Q.all(tagP).then(function() {
+                                            var pushP = runJobs(cmds['push']);
+                                            Q.all(pushP).then(function() {
+                                                    deferred.resolve(makevars);
+                                                    var startP = runJobs(cmds['start']);
+                                                })
+                                                .catch((err) => {
+                                                    console.log(err);
+                                                });
+                                        })
+                                        .catch((err) => {
+                                            console.log(err);
+                                        });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                });
+                        })
+                        .catch((errrr) => {
+                            console.log(errrr);
+                        });
+                })
+                .catch((errr) => {
+                    console.log(errr);
+                });
+
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 };
 
 //clean the build array as things get processed
