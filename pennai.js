@@ -45,30 +45,34 @@ exP.then(function(experiment) {
     //get cloud resources
     var cloud = awsm.cloud.handleCloud(experiment, action, doCloud);
     cloud.then(function(c) {
-       if(c !== undefined) {
-        var cf = c[0].value
-        var repos = c[1].value
-        for (var i in experiment.services) {
-            var service_name = experiment.services[i]['name'];
-            if (repos[service_name] !== undefined && repos[service_name]['repositoryUri'] !== undefined)
-                experiment.services[i]['repositoryUri'] = repos[service_name]['repositoryUri'];
-        }
-        var cloudResources = {}
-        if (cf !== undefined && cf['StackResources'] !== undefined) {
+        if (c !== undefined) {
+            var cf = c[0].value
+            var repos = c[1].value
+            for (var i in experiment.services) {
+                var service_name = experiment.services[i]['name'];
+                if (repos[service_name] !== undefined && repos[service_name]['repositoryUri'] !== undefined)
+                    experiment.services[i]['repositoryUri'] = repos[service_name]['repositoryUri'];
+                if (repos[experiment.services[i].name] !== undefined) {
+                    experiment.services[i].repositoryUri = repos[experiment.services[i].name].repositoryUri;
+                }
 
-            var resources = cf['StackResources'];
-            for (var i in resources) {
-                var resource = resources[i];
-                var LogicalResourceId = resource['LogicalResourceId']
-                var PhysicalResourceId = resource['PhysicalResourceId']
-                if (resource['ResourceStatus'] == 'CREATE_COMPLETE') {
-                    cloudResources[LogicalResourceId] = PhysicalResourceId;
-                } else {
-                    cloudResources[LogicalResourceId] = null;
+            }
+            var cloudResources = {}
+            if (cf !== undefined && cf['StackResources'] !== undefined) {
+
+                var resources = cf['StackResources'];
+                for (var i in resources) {
+                    var resource = resources[i];
+                    var LogicalResourceId = resource['LogicalResourceId']
+                    var PhysicalResourceId = resource['PhysicalResourceId']
+                    if (resource['ResourceStatus'] == 'CREATE_COMPLETE') {
+                        cloudResources[LogicalResourceId] = PhysicalResourceId;
+                    } else {
+                        cloudResources[LogicalResourceId] = null;
+                    }
                 }
             }
         }
-}
         //    console.log(forums);
         for (var i in forums) {
             var forum = forums[i];
@@ -80,6 +84,7 @@ exP.then(function(experiment) {
             forum['doCloud'] = doCloud;
             forum['verbose'] = verbose;
             forum['cloudResources'] = cloudResources;
+            if (repos !== undefined) {}
             var infP = awsm.build(forum, experiment);
             infP.then(function(finfo) {
                 if (finfo) {

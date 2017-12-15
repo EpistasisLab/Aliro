@@ -19,7 +19,7 @@ var dryrun = false;
 
 
 exports.handleCloud = function(experiment, action, doCloud) {
-    if (!doCloud) {
+    if (!doCloud && action !== 'push') {
         return Q.when();
     } else {
         var reposP = handleRepos(experiment, action);
