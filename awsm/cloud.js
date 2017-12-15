@@ -22,9 +22,11 @@ exports.handleCloud = function(experiment, action, doCloud) {
     if (!doCloud) {
         return Q.when();
     } else {
-        var deferred = Q.defer();
+        var reposP = handleRepos(experiment, action);
+        var cfP = Q.defer();
         //create top level cloudformation stack
         if (action == 'cloudinit') {
+            console.log('creating cloud stack');
             var params = {
                 StackName: 'PennAI',
                 /* required */
@@ -32,17 +34,18 @@ exports.handleCloud = function(experiment, action, doCloud) {
                 TemplateBody: JSON.stringify(experiment.aws.stacks.base)
             };
             cloudformation.createStack(params, function(err, data) {
-                if (err) deferred.reject(err); // an error occurred
-                else deferred.resolve(data); // successful response
+                if (err) console.log(err); // an error occurred
+                else cfP.resolve(data); // successful response
             });
         } else if (action == 'clouddestroy') {
+            console.log('destroying cloud stack');
             var params = {
                 StackName: 'PennAI',
                 /* required */
             };
             cloudformation.deleteStack(params, function(err, data) {
-                if (err) deferred.reject(err); // an error occurred
-                else deferred.resolve(data); // successful response
+                if (err) cfP.reject(err); // an error occurred
+                else cfP.resolve(data); // successful response
             });
         } else {
             var params = {
@@ -50,11 +53,18 @@ exports.handleCloud = function(experiment, action, doCloud) {
                 /* required */
             };
             cloudformation.describeStackResources(params, function(err, data) {
-                if (err) deferred.reject(err); // an error occurred
-                else deferred.resolve(data); // successful response
+                if (err) {
+                    if (err['code'] && err['code'] == 'ValidationError') {
+                        cfP.resolve([]);
+                    } else {
+                        cfP.reject(err); // an error occurred
+                    }
+                } else {
+                    cfP.resolve(data); // successful response
+                }
             });
         }
-        return deferred.promise
+        return Q.allSettled([cfP.promise, reposP]);
     }
 
 
@@ -62,7 +72,7 @@ exports.handleCloud = function(experiment, action, doCloud) {
 
 
 
-//create repository
+//create repositories
 var handleRepos = function(experiment, action) {
     var deferred = Q.defer();
     var params = {};
@@ -70,7 +80,7 @@ var handleRepos = function(experiment, action) {
     ecr.describeRepositories(params, (error, data) => {
         if (error) {
             if (error['code']) {
-                console.log('no ecs instances because ' + error['code']);
+                console.log('no repos because ' + error['code']);
                 deferred.resolve([]);
             } else {
                 deferred.reject(new Error(error));
@@ -86,26 +96,19 @@ var handleRepos = function(experiment, action) {
             }
             for (var i in services) {
                 var service = services[i];
-                if (repos[service.name] !== undefined && action == 'delete') {
+                if (repos[service.name] !== undefined && action == 'clouddestroy') {
                     promise_array.push(deleteRepo(service));
-                } else if (action == 'create') {
+                } else if (action == 'cloudinit') {
                     promise_array.push(createRepo(service));
                 }
             }
+            deferred.resolve(repos);
         }
     });
-    if (action == 'create' || action == 'delete') {
-        return (deferred.resolve(Q.allSettled(promise_array)));
-    } else {
-        return (deferred.promise);
-    }
+    return (deferred.promise);
 }
 
-
-
-
-
-
+//delete a container repo
 var deleteRepo = function(service) {
     console.log('deleting repo');
     var deferred = Q.defer();
@@ -263,12 +266,11 @@ var startTask = function(params) {
     ecs.startTask(params, (error, data) => {
         if (error) {
             if (error['code']) {
-                console.log('no tasks because' + error['code']);
-                deferred.resolve([]);
-            } else {
-                deferred.reject(new Error(error));
-                console.error(error);
+                console.log('no starttasks because' + error['code']);
             }
+            console.log(error);
+            deferred.reject(new Error(error));
+            console.error(error);
         } else {
             deferred.resolve(data);
         }
@@ -339,34 +341,24 @@ var getEc2Instances = function(forumName) {
     return deferred.promise;
 };
 
-//TODO: DELETE THIS HORRIBLE IDEA
-var getMakevars = function(services) {
-    var makevars = []
+var setHosts = function(services) {
     var hosts = {}
     for (var i in services) {
         var service = services[i];
         hosts[service['name']] = service.instance['PrivateDnsName']
-
+        /*
+                if (name.substr(-5) == '_HOST') {
+                    val = hosts[val];
+                }
+                if (name && val) {
+                    makevars.push({
+                        'name': name,
+                        'value': val
+                    });
+                }
+        */
     }
-    var fileBuffer = fs.readFileSync('./dockers/Makevars');
-    var vars_string = fileBuffer.toString();
-    var vars_lines = vars_string.split("\n");
-    for (var i in vars_lines) {
-        var line = vars_lines[i]
-        var spliteded = line.split(':=');
-        var name = spliteded[0];
-        var val = spliteded[1];
-        if (name.substr(-5) == '_HOST') {
-            val = hosts[val];
-        }
-        if (name && val) {
-            makevars.push({
-                'name': name,
-                'value': val
-            });
-        }
-    }
-    return makevars;
+    return hosts;
 }
 var formatCloud = function(experiment, forumName, cluster, iinstances, cinstances, tasks, cloudResources) {
     //cinstances accorinding to ECS
@@ -393,7 +385,7 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
         InstanceType: experiment.aws.InstanceType,
         KeyName: experiment.aws.KeyName,
         services: experiment.services,
-        makevars: null,
+        makevars: [],
         //
     }
     for (var i in cloudResources) {
@@ -454,7 +446,19 @@ var formatCloud = function(experiment, forumName, cluster, iinstances, cinstance
         for (var i in cinfo['services']) {
             cinfo['services'][i]['instance'] = cinfo['instances'][i];
         }
-        cinfo['makevars'] = getMakevars(cinfo['services']);
+        for (var i in experiment.global) {
+            var name = i;
+            var value = experiment.global[i];
+            if (name && value) {
+
+                cinfo['makevars'].push({
+                    name: name,
+                    value: value
+                });
+
+
+            }
+        }
         var datasets = experiment['datasets'].join()
         cinfo['makevars'].push({
             name: 'forumName',
@@ -569,7 +573,7 @@ var startInstances = function(cinfo) {
         MinCount: count,
         ImageId: cinfo['ImageId'],
         SecurityGroupIds: [cinfo['SecurityGroup']],
-        SubnetId: cinfo['Private'],
+        SubnetId: cinfo['Subnet'],
         //:[cinfo['SecurityGroup']],
         InstanceType: cinfo['InstanceType'],
         KeyName: cinfo['KeyName'],
@@ -615,6 +619,7 @@ var startTasks = function(cinfo) {
         } else {
             var instanceId = cinfo['instances'][i]['containerInstanceArn'];
         }
+        console.log(cinfo);
         var params = {
             'containerInstances': [instanceId],
             'taskDefinition': hostname,
@@ -626,6 +631,9 @@ var startTasks = function(cinfo) {
                 }, ],
             },
         }
+        console.log({
+            params
+        });
         promise_array[i] = startTask(params);
     }
     return Q.allSettled(promise_array);
