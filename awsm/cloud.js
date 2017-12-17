@@ -1,6 +1,6 @@
 'use strict';
+const util = require('util')
 var fs = require('fs');
-var awsm = require('./');
 var AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-2'
@@ -97,27 +97,17 @@ exports.handleTaskDefinitions = function(experiment, action) {
                         services[i].taskDefinitionArn = taskDefinitionArn;
                     }
                 }
-                services[i].ImageId = experiment.aws.ImageId;
             }
             for (var i in services) {
                 var service = services[i];
 
-                if (services[i].taskDefinitionArn === undefined) {
+                if (service.taskDefinitionArn === undefined && action == 'cloudinit') {
                     promise_array.push(createTaskDefinition(service));
-                } else {
-                    console.log(services[i]);
+                } else if (service.taskDefinitionArn !== undefined && action == 'clouddestroy') {
+                    promise_array.push(deleteTaskDefinition(service));
                 }
-                //console.log(services);
             }
         }
-        //if (repos[service.name] !== undefined && action == 'clouddestroy') {
-        //        promise_array.push(createTaskDefinition(service));
-        //        } else if (action == 'cloudinit') {
-        //             promise_array.push(createRepo(service));
-        //         }
-        // }
-        //   deferred.resolve(repos);
-        //}
     });
     return Q.allSettled(promise_array);
 }
@@ -207,60 +197,86 @@ var createRepo = function(service) {
 
 }
 
+var deleteTaskDefinition = function(service) {
+    console.log('deleting taskdef');
+    var taskDefinitionArn = service.taskDefinitionArn;
+    var deferred = Q.defer();
+        ecs.deregisterTaskDefinition({taskDefinition:taskDefinitionArn}, (error, data) => {
+            if (error) {
+                if (error['code']) {
+                    console.log('could not delete taskdef because ' + error['code']);
+                    console.log(error);
+                    process.exit();
+                    deferred.resolve([]);
+                } else {
+                    deferred.reject(new Error(error));
+                }
+            } else {
+                deferred.resolve(data);
+            }
+        });
+return deferred.promise;
+
+}
+
 var createTaskDefinition = function(service) {
     console.log('registering taskdef');
-    console.log(service);
+    var image = service.repositoryUri + ':latest';
     //console.log(service);
     var deferred = Q.defer();
-    var params = {
-        "containerDefinitions": [{
-            "logConfiguration": {
-                "logDriver": "json-file"
-            },
-            "entryPoint": [
-                "/bin/bash",
-                "/root/entrypoint.sh"
+    if (service.name) {
+        var params = {
+            containerDefinitions: [{
+                    name: service.name,
+                    image: image,
+                    hostname: service.name,
+                    essential: true,
+                    mountPoints: [{
+                        sourceVolume: "share",
+                        containerPath: "/share"
+                    }],
+                    volumesFrom: [],
+                    workingDirectory: "/opt",
+                    memoryReservation: 1024,
+
+                }
+
             ],
-            "command": [],
-            "mountPoints": [{
-                "sourceVolume": "share",
-                "containerPath": "/share"
-            }],
-            "workingDirectory": "/opt",
-            "memoryReservation": 1024,
-            "volumesFrom": [],
-            "image": service.ImageId,
-            "essential": true,
-            "hostname": service.name,
-            "name": service.name
-        }],
-        "family": service.name,
-        "networkMode": "host",
-        "volumes": [{
-            "name": "share",
-            "host": {
-                "sourcePath": "/share"
-            }
-        }]
-    }
-    if (service.portMappings !== undefined) {
-        params.containerDefinitions.push(service.portMappings)
-    }
-    ecs.registerTaskDefinition(params, (error, data) => {
-        if (error) {
-            if (error['code']) {
-                console.log('could not create taskdef because ' + error['code']);
-                console.log(service);
-                console.log(error);
-                process.exit();
-                deferred.resolve([]);
-            } else {
-                deferred.reject(new Error(error));
-            }
-        } else {
-            deferred.resolve(data);
+            family: service.name,
+            networkMode: "host",
+            volumes: [{
+                name: "share",
+                host: {
+                    sourcePath: "/share"
+                }
+            }]
+
         }
-    });
+        if (service.portMappings !== undefined) {
+            var portMappings = service.portMappings;
+            params.containerDefinitions.push({
+                portMappings
+            })
+        }
+        console.log(util.inspect(params, {
+            showHidden: false,
+            depth: null
+        }))
+        ecs.registerTaskDefinition(params, (error, data) => {
+            if (error) {
+                if (error['code']) {
+                    console.log('could not create taskdef because ' + error['code']);
+                    console.log(error);
+                    process.exit();
+                    deferred.resolve([]);
+                } else {
+                    deferred.reject(new Error(error));
+                }
+            } else {
+                deferred.resolve(data);
+            }
+        });
+    }
 
 }
 
@@ -842,9 +858,7 @@ var manageCloud = function(cinfo, action) {
         cinfo['settled'] = false;
     }
     if (action == 'info') {
-        console.log({
-            cinfo
-        })
+            inspect(cinfo);
     }
     if (action == 'stop') {
         if (cinfo['instances'].length > 0) {
@@ -903,4 +917,10 @@ var manageCloud = function(cinfo, action) {
             console.log('error', err);
         });
     }
+}
+var inspect=function(object) {
+    console.log(util.inspect(object, {
+        showHidden: false,
+        depth: null
+    }))
 }
