@@ -40,7 +40,7 @@ var exP = awsm.syncFile('experiment.json');
 exP.then(function(experiment) {
     //console.log(experiment);
     var randomized = awsm.ranman.retRandomized(experiment);
-    //break it down to just the first bit
+    //subset the first max_forums
     var forums = randomized.slice(0, experiment.max_forums);
     //get cloud resources
     var cloud = awsm.cloud.handleCloud(experiment, action, doCloud);
@@ -72,8 +72,8 @@ exP.then(function(experiment) {
                     }
                 }
             }
-experiment.cloudResources = cloudResources;
-var TaskP = awsm.cloud.handleTaskDefinitions(experiment,action);
+            experiment.cloudResources = cloudResources;
+            var TaskP = awsm.cloud.handleTaskDefinitions(experiment, action);
 
 
 
