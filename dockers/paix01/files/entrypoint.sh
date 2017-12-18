@@ -1,4 +1,3 @@
-#figure out where we are running 
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 if [ $? -eq 0 ]
 then
@@ -12,10 +11,11 @@ then
 while [ ! -f /tmp/die.txt ]
     do
       env
-      python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER} 
+      python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER}  -t ${DATASETS}
       echo "sleep"
       sleep 2
     done
 else
+      python -m ai.ai -rec ${RECOMMENDER} -v -n ${NUMRECOMMEND} -u ${PAIX_USER} -t ${DATASETS}
     bash
 fi

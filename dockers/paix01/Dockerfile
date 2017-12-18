@@ -1,4 +1,3 @@
-#working off of an ubuntu wily rootfs
 FROM pennai/compute:latest
 VOLUME /share
 COPY files/entrypoint.sh /root/
