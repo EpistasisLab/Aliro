@@ -14,7 +14,7 @@
     "global": {
         "NETWORK": "pennai",
         "PROJECT_ROOT": "/opt/pennai",
-        "SHARE_PATH": "/share/devel",
+        "SHARE_PATH": "/home/bill/Dropbox/PostDoc/code/",
         "CAPACITY": "1",
         "PAIX_HOST": "paix01",
         "PAIX_USER": "testuser",
