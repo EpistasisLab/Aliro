@@ -246,7 +246,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -274,7 +274,7 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
@@ -283,7 +283,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -503,7 +503,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 500]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -594,7 +594,7 @@
                 "style": "radio",
                 "choices": ["true", "false"]
             }
-        
+
         },
         "shared": {
             "description": "Run from shared path instead of /opt",
