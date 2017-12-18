@@ -13,6 +13,7 @@ ml_ids = {
         'KNeighborsRegressor':'58535a05a525130034441321',
         'LassoLarsCV':'58535a5aa525130034441322',
         'LinearSVC':'5817a73538215335404348ee',
+        'SVC': 'XXXXXXXXXXXXXXXXX',
         'LinearSVR':'58535b31a525130034441326',
         'LogisticRegression':'5817ad7f3821533540434948',
         'MDR.js':'57c5a83f4b09d40023ee4f6e',

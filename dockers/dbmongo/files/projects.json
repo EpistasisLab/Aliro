@@ -456,6 +456,50 @@
         }
     },
     "category": "ML"
+}{
+    "_id": {
+        "$oid": "XXXXXXXXXXXXXXXXX"
+    },
+    "name": "SVC",
+    "schema": {
+        "penalty": {
+            "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
+            "type": "string",
+            "default": "l2",
+            "ui": {
+                "style": "radio",
+                "choices": ["l1", "l2"]
+            }
+        },
+        "kernel": {
+            "description": "Specifies the kernel type to be used in the algorithm",
+            "type": "string",
+            "default": 0.0001,
+            "ui": {
+                "style": "radio",
+                "choices": ["poly", "rbf"]
+            }
+        },
+        "tol": {
+            "description": "Tolerance for stopping criteria.",
+            "type": "float",
+            "default": 0.0001,
+            "ui": {
+                "style": "radio",
+                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1]
+            }
+        },
+        "C": {
+            "description": "Penalty parameter C of the error term.",
+            "type": "float",
+            "default": 1,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+            }
+        }
+    },
+    "category": "ML"
 } {
     "_id": {
         "$oid": "5817ad7f3821533540434948"
