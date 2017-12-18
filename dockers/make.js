@@ -436,6 +436,7 @@ var make = function() {
                         var root = getRoot(build, buildArray, deps);
                         roots = roots.concat(root);
                     }
+console.log(roots);
                     //list of unique 
                     var rootset = new Set(roots);
                     var bs = {}
