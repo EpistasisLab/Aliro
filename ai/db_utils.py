@@ -9,16 +9,8 @@ import json
 import requests
 import itertools as it
 
-def get_all_ml_p_from_db(path,key):
-    """ Returns a list of ml and parameter options from the server."""
-
-    # get json from server
-    # filter on username (given in dataset)
-    payload = {'apikey':key,'username':'testuser'}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    print('r:',r)
-    response = json.loads(r.text)
-    algorithms = response[0]['algorithms']
+def get_all_ml_p(algorithms):
+    """Reads json-formatted algorithms dictionary and returns Recommender formatting"""
     result = [] # returned value 
     good_def = True # checks that json for ML is in good form
     
@@ -50,12 +42,52 @@ def get_all_ml_p_from_db(path,key):
         else:
             print('warning: ', x['name'], 'was skipped')
         good_def = True
-        
+    return result
+
+def get_all_ml_p_from_db(path,key):
+    """ Returns a list of ml and parameter options from the server."""
+
+    # get json from server
+    # filter on username (given in dataset)
+    payload = {'apikey':key,'username':'testuser'}
+    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    print('r:',r)
+    response = json.loads(r.text)
+    algorithms = response[0]['algorithms']
+    
+    result = get_all_ml_p(algorithms)
+
     # convert to dataframe, making sure there are no duplicates    
     all_ml_p = pd.DataFrame(result).drop_duplicates()
     
     print(len(all_ml_p),' ml-parameter options loaded')    
     
+    return all_ml_p
+
+def get_all_ml_p_from_file(path):
+    """Retrun a list of ml and parameter options from a json file"""
+    # read file 
+    data = open(path)
+    response = json.load(data)
+    algorithms = response[0]['algorithms']
+    result = get_all_ml_p(algorithms)
+
+    # convert to dataframe, making sure there are no duplicates    
+    all_ml_p = pd.DataFrame(result).drop_duplicates()
+    
+    print(len(all_ml_p),' ml-parameter options loaded')    
+    
+    return all_ml_p
+def get_all_ml_p_from_pmlb(csv_file):
+    """Return a pandas dataframe of algorithms and parameters from a pmlb file"""
+    df = pd.read_csv(csv_file,sep='\t',compression='gzip')
+    result = []
+    for alg, grp in df.groupby('algorithm'):
+        for params, pgrp in grp.groupby('parameters'):
+            result.append({'algorithm':alg,'parameters':params})
+    
+    all_ml_p = pd.DataFrame(result).drop_duplicates()
+    print(len(all_ml_p),' ml-parameter options loaded')
     return all_ml_p
 
 def get_random_ml_p_from_db(path,key):

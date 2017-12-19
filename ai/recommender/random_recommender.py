@@ -5,7 +5,7 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
-from ..db_utils import get_all_ml_p_from_db  
+from ..db_utils import get_all_ml_p_from_db, get_all_ml_p_from_file, get_all_ml_p_from_pmlb
 
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
@@ -25,7 +25,8 @@ class RandomRecommender(BaseRecommender):
     """
 
 
-    def __init__(self, ml_type='classifier', metric=None, db_path='', api_key='' ):
+    def __init__(self, ml_type='classifier',metric=None,db_path=None, api_key='',json_file=None,
+            pmlb_file=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -41,7 +42,15 @@ class RandomRecommender(BaseRecommender):
         self.db_path = db_path
         self.api_key = api_key
         #self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
-        self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
+        if self.db_path:
+            self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
+        elif json_file:
+            self.ml_p = get_all_ml_p_from_file(json_file)
+        elif pmlb_file:
+            self.ml_p = get_all_ml_p_from_pmlb(pmlb_file)
+        else:
+            raise AttributeError('Random recommender needs ML choices to make recs. db_path and'
+                                 'file_path are both empty.')
         #self.ml_p = all_ml_p['algorithm'].values + '|' + all_ml_p['parameters'].values 
         
         # number of datasets trained on so far
