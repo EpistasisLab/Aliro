@@ -58,8 +58,8 @@
         "MONGO_PORT": "27017",
         "REDIS_HOST": "dbredis",
         "REDIS_PORT": "6379",
-        "RECOMMENDER": "exhaustive",
-        "NUMRECOMMEND": "1240",
+        "RECOMMENDER": "random",
+        "NUMRECOMMEND": "0",
         "IP": "127.0.0.67",
         "APIKEY": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
         "RANDOM_SEED": "42"
