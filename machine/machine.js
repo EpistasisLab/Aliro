@@ -461,7 +461,7 @@ var getProjects = function() {
                         cwd: cwd,
                         args: ["main.py"],
                         options: "double-dash",
-                        capacity: "0.1",
+                        capacity: "1",
                         results: cwd + "/tmp"
                     }
                     project_list.push(project);
