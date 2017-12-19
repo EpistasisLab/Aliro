@@ -10,6 +10,20 @@
             "containerPort": "27017"
         }]
     }, {
+        "name": "paiwww",
+        "portMappings": [{
+            "hostPort": "443",
+            "protocol": "tcp",
+            "containerPort": "443"
+        }]
+    }, {
+        "name": "dbredis",
+        "portMappings": [{
+            "hostPort": "6379",
+            "protocol": "tcp",
+            "containerPort": "6379"
+        }]
+    }, {
         "name": "lab",
         "portMappings": [{
             "hostPort": "5080",
@@ -28,7 +42,6 @@
     }],
     "global": {
         "NETWORK": "pennai",
-        "PROJECT_ROOT": "/opt/pennai",
         "SHARE_PATH": "/share/devel",
         "CAPACITY": "1",
         "PAIX_HOST": "paix01",
@@ -37,11 +50,13 @@
         "PAIWWW_PORT": "443",
         "LAB_HOST": "lab",
         "LAB_PORT": "5080",
-        "PARENTDB": "init",
         "MACHINE_HOST": "machine",
         "MACHINE_PORT": "5081",
+        "MAKEPLOTS": "1",
         "MONGO_HOST": "dbmongo",
         "MONGO_PORT": "27017",
+        "REDIS_HOST": "dbredis",
+        "REDIS_PORT": "6379",
         "RECOMMENDER": "exhaustive",
         "NUMRECOMMEND": "35626",
         "IP": "127.0.0.67",

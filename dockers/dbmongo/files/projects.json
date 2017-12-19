@@ -1,7 +1,4 @@
 {
-    "_id": {
-        "$oid": "57bf24e1548cd20008bc71df"
-    },
     "name": "gpocl",
     "schema": {
         "population-size": {
@@ -26,9 +23,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "57c5a83f4b09d40023ee4f6e"
-    },
     "name": "MDR.js",
     "schema": {
         "default-label": {
@@ -46,9 +40,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "57ffd3c1fa76cb0022258722"
-    },
     "name": "deapGP",
     "schema": {
         "population_size": {
@@ -84,9 +75,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "581bf1dead150d002327b898"
-    },
     "name": "metaGA",
     "schema": {
         "max_ll_pop": {
@@ -122,9 +110,6 @@
     },
     "category": "AI"
 } {
-    "_id": {
-        "$oid": "5813bdaec1321420f8bbcc7f"
-    },
     "name": "BernoulliNB",
     "schema": {
         "alpha": {
@@ -157,16 +142,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5813bdb8c1321420f8bbcc80"
-    },
-    "name": "GaussianNB",
-    "schema": {},
-    "category": "ML"
-} {
-    "_id": {
-        "$oid": "5813bdc4c1321420f8bbcc81"
-    },
     "name": "MultinomialNB",
     "schema": {
         "alpha": {
@@ -190,9 +165,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5817660338215335404347c7"
-    },
     "name": "DecisionTreeClassifier",
     "schema": {
         "criterion": {
@@ -235,9 +207,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "581791063821533540434826"
-    },
     "name": "ExtraTreesClassifier",
     "schema": {
         "n_estimators": {
@@ -298,9 +267,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "581796a43821533540434890"
-    },
     "name": "GradientBoostingClassifier",
     "schema": {
         "n_estimators": {
@@ -369,9 +335,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5817a21138215335404348cd"
-    },
     "name": "KNeighborsClassifier",
     "schema": {
         "n_neighbors": {
@@ -404,9 +367,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5817a73538215335404348ee"
-    },
     "name": "LinearSVC",
     "schema": {
         "penalty": {
@@ -456,10 +416,7 @@
         }
     },
     "category": "ML"
-}{
-    "_id": {
-        "$oid": "XXXXXXXXXXXXXXXXX"
-    },
+} {
     "name": "SVC",
     "schema": {
         "penalty": {
@@ -501,9 +458,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5817ad7f3821533540434948"
-    },
     "name": "LogisticRegression",
     "schema": {
         "penalty": {
@@ -536,9 +490,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "5817af52382153354043496e"
-    },
     "name": "RandomForestClassifier",
     "schema": {
         "n_estimators": {
@@ -598,9 +549,6 @@
     },
     "category": "ML"
 } {
-    "_id": {
-        "$oid": "58535d09a525130034441330"
-    },
     "name": "PennAIRecommender",
     "schema": {
         "n_recommend": {
@@ -609,7 +557,7 @@
             "default": 0,
             "ui": {
                 "style": "radio",
-                "choices": [0, 10, 100, 35626]
+                "choices": [0, 10, 100]
             }
         },
         "recommender": {

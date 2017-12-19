@@ -17,6 +17,7 @@ var socketServer = require("./socketServer").socketServer;
 var publishTo = require("./redis-pubsub").publishTo;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
+var Q = require("q");
 var users = require("./users");
 var fs = require("fs");
 /* App instantiation */
@@ -551,92 +552,92 @@ var retPrevExp = function(projId, options, datasetId) {
         _dataset_id: db.toObjectID(datasetId),
         _project_id: db.toObjectID(projId),
         _options: options,
-        _status : "success"
+        _status: "success"
     }).toArrayAsync(); // Get project names
 }
 
 var submitJob = (projId, options, files, datasetId, username) => {
     //check for duplicate experiments
-                return new Promise((resolve, reject) => {
-                    db.machines.find({}, {
-                            address: 1
-                        }).toArrayAsync() // Get machine hostnames
-                        .then((machines) => {
-                            var macsP = Array(machines.length);
-                            // Check machine capacities
-                            for (var i = 0; i < machines.length; i++) {
-                                macsP[i] = rp({
-                                    uri: machines[i].address + "/projects/" + projId + "/capacity",
-                                    method: "GET",
-                                    data: null
-                                });
-                            }
+    return new Promise((resolve, reject) => {
+        db.machines.find({}, {
+                address: 1
+            }).toArrayAsync() // Get machine hostnames
+            .then((machines) => {
+                var macsP = Array(machines.length);
+                // Check machine capacities
+                for (var i = 0; i < machines.length; i++) {
+                    macsP[i] = rp({
+                        uri: machines[i].address + "/projects/" + projId + "/capacity",
+                        method: "GET",
+                        data: null
+                    });
+                }
 
-                            // Loop over reponses
+                // Loop over reponses
 
-                            Promise.any(macsP)
-                                // First machine with capacity, so use
-                                .then((availableMac) => {
-                                    availableMac = JSON.parse(availableMac);
+                Promise.any(macsP)
+                    // First machine with capacity, so use
+                    .then((availableMac) => {
+                        availableMac = JSON.parse(availableMac);
 
-                                    // Create experiment
-                                    db.experiments.insertAsync({
-                                            _options: options,
-                                            _dataset_id: db.toObjectID(datasetId),
-                                            _project_id: db.toObjectID(projId),
-                                            _machine_id: db.toObjectID(availableMac._id),
-                                            username: username,
-                                            files: [],
-                                            _status: "running"
-                                        }, {})
-                                        .then((exp) => {
-                                            options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+                        // Create experiment
+                        db.experiments.insertAsync({
+                                _options: options,
+                                _dataset_id: db.toObjectID(datasetId),
+                                _project_id: db.toObjectID(projId),
+                                _machine_id: db.toObjectID(availableMac._id),
+                                username: username,
+                                files: [],
+                                _status: "running"
+                            }, {})
+                            .then((exp) => {
+                                options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
-                                            if (datasetId == "") {
-                                                var filesP = processFiles(exp.ops[0], files); // Add files to project
-                                            } else {
-                                                var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
-                                            }
-                                            // Wait for file upload to complete
-                                            Promise.all(filesP)
-                                                .then(() => {
-                                                    // Send project
-                                                    rp({
-                                                            uri: availableMac.address + "/projects/" + projId,
-                                                            method: "POST",
-                                                            json: options,
-                                                            gzip: true
-                                                        })
-                                                        .then((body) => {
-                                                            resolve(body);
-                                                        })
-                                                        .catch(() => {
-                                                            db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                                                            reject({
-                                                                error: "Experiment failed to run"
-                                                            });
-                                                        });
-                                                })
-                                                .catch((err) => {
-                                                    reject(err);
+                                if (datasetId == "") {
+                                    var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                } else {
+                                    var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
+                                }
+                                // Wait for file upload to complete
+                                Promise.all(filesP)
+                                    .then(() => {
+                                        // Send project
+                                        rp({
+                                                uri: availableMac.address + "/projects/" + projId,
+                                                method: "POST",
+                                                json: options,
+                                                gzip: true
+                                            })
+                                            .then((body) => {
+                                                resolve(body);
+                                            })
+                                            .catch(() => {
+                                                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+                                                reject({
+                                                    error: "Experiment failed to run"
                                                 });
-                                        })
-                                        .catch((err) => {
-                                            reject(err);
-                                        });
-                                })
-                                // No machines responded, therefore fail
-                                .catch(() => {
-                                    reject({
-                                        error: "No machine capacity available"
+                                            });
+                                    })
+                                    .catch((err) => {
+                                        reject(err);
                                     });
-                                });
-                        })
-                        .catch((err) => {
-                            reject(err);
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
+                    })
+                    // No machines responded, therefore fail
+                    .catch(() => {
+                        reject({
+                            error: "No machine capacity available"
                         });
-                });
-            //};
+                    });
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+    //};
 };
 
 // Constructs an experiment
@@ -659,7 +660,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                     } else {
                         var obj = Object.assign(req.query, req.body);
                         if (obj['parameters']) {
-console.log(obj);
+                            console.log(obj);
                             old_obj = obj;
                             obj = new Object(obj['parameters']);
                             obj['dataset'] = old_obj['dataset_id'];
@@ -1133,10 +1134,37 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
 
 // Registers machine projects
 app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
-    db.machines.findByIdAsync(req.params.id)
-        .then((result) => {
+
+
+    var projP = db.projects.find({}, {
+        name: 1,
+        category: 1
+    }).sort({
+        name: 1
+    }).toArrayAsync(); // Get project names
+
+
+
+    var macP = db.machines.findByIdAsync(req.params.id);
+    Q.allSettled([macP, projP]).then((result) => {
+            var machines = result[0].value;
+            var project_records = result[1].value;
+            var project_caps = req.body.projects
+            var projects = {};
+            for (var i in project_records) {
+                var project_record = project_records[i];
+console.log(project_record);
+                for (var j in project_caps) {
+                    var project_cap = project_caps[j];
+if(project_record['name'] == project_cap['name']) {
+                    projects[project_record['_id']] = project_cap;
+}
+//console.log(project_cap);
+                };
+            }
+
             // Fail if machine does not exist
-            if (result === null) {
+            if (machines === null) {
                 res.status(404);
                 return res.send({
                     error: "Machine ID " + req.params.id + " does not exist"
@@ -1144,12 +1172,15 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
             }
             // Register projects otherwise
             db.machines.updateByIdAsync(req.params.id, {
-                    $set: req.body
+                    $set: {
+                        projects
+                    }
                 })
                 .then((result) => {
                     // Update returns the count of affected objects
-                    res.send((result === 1) ? {
-                        msg: "success"
+                    res.send((result.n === 1) ? {
+                        msg: "success",
+                        projects: projects,
                     } : {
                         msg: "error"
                     });
@@ -1159,6 +1190,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
                 });
         })
         .catch((err) => {
+            console.log(Err);
             next(err);
         });
 });

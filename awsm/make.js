@@ -290,11 +290,11 @@ exports.build = function(forum, experiment) {
     //sentients are containers that exist or have existed
     contP.then(function(sentient) {
         forum.sentient = sentient;
-        hostCommand(forum, experiment);
+        hostCommander(forum, experiment);
     });
     return deferred.promise
 }
-var hostCommand = function(forum, experiment) {
+var hostCommander = function(forum, experiment) {
     var deferred = Q.defer();
     var services = experiment.services;
     var action = forum.action;
@@ -302,6 +302,12 @@ var hostCommand = function(forum, experiment) {
     var tasks = [];
     var makevars = experiment.global;
     var network = makevars.NETWORK;
+    if (forum.doShared !== undefined && forum.doShared) {
+        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'] + '/' + network;
+    } else {
+        makevars['PROJECT_ROOT'] = '/opt/' + network;
+    }
+console.log(makevars);
     var registry;
     if (forum && forum['datasets'] !== undefined) {
         makevars['DATASETS'] = forum['datasets'].join();
@@ -309,15 +315,15 @@ var hostCommand = function(forum, experiment) {
     if (forum && forum['forumName'] !== undefined) {
         makevars['FORUM'] = forum['forumName']
     }
-    if (action == 'build') {
-        steps = ['stop', 'rm', 'build', 'create']
-    } else if (action == 'stop') {
-        steps = ['stop']
-    } else if (action == 'start') {
-        steps = ['start']
-    } else if (action == 'push') {
-        steps = ['tag','push']
-    }
+    if (action == 'rebuild') {
+        steps = ['stop', 'rm', 'build', 'create', 'start','tag','push']
+    } else if (action == 'reload') {
+        steps = ['stop', 'rm', 'build', 'create', 'start']
+    } else if (action == 'restart') {
+        steps = ['stop','start']
+    } else {
+        steps = [action]
+    };
     var hosts = [];
     var repos = {};
     for (var i in services) {
