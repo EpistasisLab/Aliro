@@ -20,16 +20,9 @@ if (argv['c'] || action == 'cloudinit' || action == 'clouddestroy') {
 
 //run from share 
 var doShared = false
-if (argv['p']) {
+if (argv['s']) {
     doShared = true;
 }
-
-//specify a particular task/service/host
-var tasks = []
-if (argv['t']) {
-    tasks = argv['t'].split(',');
-}
-
 //be verbose
 var verbose = false;
 if (argv['v']) {

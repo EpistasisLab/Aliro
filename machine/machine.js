@@ -21,6 +21,7 @@ var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
 
+var Q = require('q');
 
 /* App instantiation */
 var app = express();
@@ -59,6 +60,8 @@ if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     console.log("Error: No FGMachine address specified");
     process.exit(1);
 }
+
+
 
 /* Machine specifications */
 // Attempt to read existing specs
@@ -114,74 +117,29 @@ fs.readFile("specs.json", "utf-8")
                 fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
                 // Reload specs with _id (prior to adding projects)
                 specs = body;
+                project_list = getProjects();
                 // Register projects
                 rp({
                         uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
                         method: "POST",
                         json: {
-                            projects: projects
+                            projects: project_list
                         },
                         gzip: true
                     })
-                    .then(() => {
+                    .then((msg) => {
                         console.log("Projects registered with FGLab successfully");
+                        if (msg.projects !== undefined) {
+                            projects = msg.projects;
+                        }
                     });
             })
             .catch((err) => {
-               console.log('catchup: nobody to talk to');
-               console.log(err);
-               process.exit();
+                console.log('catchup: nobody to talk to');
+                console.log(err);
+                process.exit();
             });
     });
-
-/* Project specifications */
-// Attempt to read existing projects
-fs.readFile("projects.json", "utf-8")
-    .then((proj) => {
-        console.log("Loaded projects");
-        projects = JSON.parse(proj || "{}");
-        // Register projects
-        if (specs._id !== undefined) {
-            rp({
-                    uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
-                    method: "POST",
-                    json: {
-                        projects: projects
-                    },
-                    gzip: true
-                })
-                .then(() => {
-                    console.log("Projects registered with FGLab successfully");
-                })
-                .catch(() => {}); // Ignore failure in case machine is not registered
-        }
-    })
-    .catch(() => {
-        projects = {};
-    });
-
-// Reload projects on change
-chokidar.watch("projects.json").on("change", () => {
-    fs.readFile("projects.json", "utf-8")
-        .then((proj) => {
-            console.log("Reloaded projects");
-            projects = JSON.parse(proj || "{}");
-            // Register projects
-            rp({
-                    uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
-                    method: "POST",
-                    json: {
-                        projects: projects
-                    },
-                    gzip: true
-                })
-                .then(() => {
-                    console.log("Projects registered with FGLab successfully");
-                })
-                .catch(() => {}); // Ignore failure in case machine is not registered
-        });
-});
-
 chokidar.watch(datasets.byuser_datasets_path, {
     awaitWriteFinish: true,
     ignored: /metadata/,
@@ -217,31 +175,6 @@ var getCapacity = function(projId) {
 app.options("/projects", cors({
     origin: laburi
 })); // Enable pre-flight request for PUT
-app.put("/projects", jsonParser, cors({
-    origin: laburi
-}), (req, res) => {
-    var id = req.body.project_id;
-    // Insert project implementation template if new
-    if (!projects[id]) {
-        projects[id] = {
-            cwd: ".",
-            command: "<command>",
-            args: ["<arg>"],
-            options: "<options>",
-            capacity: 1,
-            results: "."
-        };
-        fs.writeFile("projects.json", JSON.stringify(projects, null, "\t"));
-        res.end({
-            msg: "Project ID " + id + " template added - please adjust on " + specs.hostname
-        });
-
-    } else {
-        res.send({
-            msg: "Project ID " + id + " already exists"
-        });
-    }
-});
 
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
@@ -500,3 +433,41 @@ wss.on("connection", (ws) => {
         mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
     });
 });
+
+
+
+//Generate a list of projects that we'll use for execution
+var getProjects = function() {
+    var deferred = Q.defer();
+    var project_list = [];
+    var learnpath = project_root + '/learn';
+    var deferred = Q.defer;
+    //get a list of folders in the learn directory
+    var dirs = fs.readdirSync(learnpath)
+    //dirs.forEach(dir => {
+    for (var i in dirs) {
+        var dir = dirs[i];
+        if (fs.statSync(learnpath + '/' + dir).isDirectory()) {
+            var project_folder = learnpath + '/' + dir;
+            var project_subs = fs.readdirSync(project_folder);
+            if (project_subs !== undefined) {
+                if (project_subs.indexOf('main.py') >= 0) {
+                    if (project_subs.indexOf('tmp') == -1) fs.mkdirSync(project_folder + '/tmp', 0744);
+
+                    var cwd = "learn/" + dir
+                    var project = {
+                        name: dir,
+                        command: "python",
+                        cwd: cwd,
+                        args: ["main.py"],
+                        options: "double-dash",
+                        capacity: "0.1",
+                        results: cwd + "/tmp"
+                    }
+                    project_list.push(project);
+                }
+            }
+        }
+    }
+    return (project_list);
+}
