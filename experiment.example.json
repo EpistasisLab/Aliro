@@ -58,7 +58,7 @@
         "REDIS_HOST": "dbredis",
         "REDIS_PORT": "6379",
         "RECOMMENDER": "exhaustive",
-        "NUMRECOMMEND": "35626",
+        "NUMRECOMMEND": "1240",
         "IP": "127.0.0.67",
         "APIKEY": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
         "RANDOM_SEED": "42"
