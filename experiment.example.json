@@ -42,6 +42,7 @@
     }],
     "global": {
         "NETWORK": "pennai",
+        "PARENTDB": "demo",
         "SHARE_PATH": "/share/devel",
         "CAPACITY": "1",
         "PAIX_HOST": "paix01",

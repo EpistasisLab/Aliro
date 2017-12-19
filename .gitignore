@@ -15,4 +15,3 @@ tmp/
 *.tgz
 node_modules
 rec_state.obj
-forums/
