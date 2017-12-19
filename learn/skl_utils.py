@@ -384,7 +384,6 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.figure()
     plt.title("Feature importances")
     plt.barh(range(num_bar), coefs[indices], color="r", align="center")
-    plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
 
