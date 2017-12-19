@@ -361,8 +361,8 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     """
     Save ROC Curve.
     """
-
-
+    
+    fpr, tpr, _ = roc_curve
     plt.figure()
     lw = 2
     plt.plot(fpr, tpr, color='darkorange',
