@@ -8,6 +8,7 @@ build
 .bash_history
 *.swp
 machine/datasets/byuser/*
+tmp/
 dockers/Makevars
 dockers/paiwww/files/certs
 dockers/paiwww/files/htpasswd
