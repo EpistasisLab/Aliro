@@ -122,7 +122,7 @@ var getDeps = function(dockerDir, dirs, network) {
 
 //exec wrapper with dryrun
 var fexec = function(cmd, host) {
-    var cwd = '/share/devel/pennai/dockers'
+    var cwd = 'dockers'
     if (host) {
         cwd = cwd + '/' + host;
     }
@@ -400,7 +400,7 @@ console.log(makevars);
             commander('start', host);
         }
     }
-    var dockerDir = '/share/devel/pennai/dockers'
+    var dockerDir = 'dockers'
     var deps = getDeps(dockerDir, all, network)
     //promises
     var chain = Q.when();
