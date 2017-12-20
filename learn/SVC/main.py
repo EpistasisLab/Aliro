@@ -16,6 +16,5 @@ from skl_utils import generate_results
 if __name__ == "__main__":
     exp = Experiment('SVC')
     args, input_file = exp.get_input()
-    model = SVC(penalty=args['penalty'], kernel=args['kernel'],
-                tol=args['tol'], C=args['C'])
+    model = SVC(kernel=args['kernel'], tol=args['tol'], C=args['C'])
     generate_results(model, input_file, exp.tmpdir, args['_id'])

@@ -142,6 +142,10 @@
     },
     "category": "ML"
 } {
+    "name": "GaussianNB",
+    "schema": {},
+    "category": "ML"
+} {
     "name": "MultinomialNB",
     "schema": {
         "alpha": {
@@ -183,7 +187,7 @@
             "default": "None",
             "ui": {
                 "style": "radio",
-                "choices": [2, 4, 6, 8]
+                "choices": [1, 3, 5, 7, 9, "None"]
             }
         },
         "min_samples_split": {
@@ -192,7 +196,7 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [2, 5, 10, 15, 20]
             }
         },
         "min_samples_leaf": {
@@ -201,7 +205,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [1, 5, 10, 15, 20]
             }
         }
     },
@@ -215,7 +219,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [10, 100, 500, 1000]
             }
         },
         "criterion": {
@@ -243,7 +247,7 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [2, 5, 10, 15, 20]
             }
         },
         "min_samples_leaf": {
@@ -252,7 +256,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [1, 5, 10, 15, 20]
             }
         },
         "bootstrap": {
@@ -275,7 +279,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [10, 100, 250]
             }
         },
         "learning_rate": {
@@ -284,7 +288,7 @@
             "default": 0.1,
             "ui": {
                 "style": "radio",
-                "choices": [0.01, 0.1, 1]
+                "choices": [0.001, 0.01, 0.1, 0.5, 1]
             }
         },
         "max_depth": {
@@ -293,7 +297,7 @@
             "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10]
+                "choices": [1, 3, 5, 7, 9, "None"]
             }
         },
         "min_samples_split": {
@@ -302,7 +306,7 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [2, 5, 10, 15, 20]
             }
         },
         "min_samples_leaf": {
@@ -311,7 +315,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [1, 5, 10, 15, 20]
             }
         },
         "subsample": {
@@ -320,7 +324,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.5, 1]
+                "choices": [0.05, 0.25, 0.5, 0.75, 1]
             }
         },
         "max_features": {
@@ -329,7 +333,7 @@
             "default": "None",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["sqrt", "log2", "None"]
             }
         }
     },
@@ -417,47 +421,6 @@
     },
     "category": "ML"
 } {
-    "name": "SVC",
-    "schema": {
-        "penalty": {
-            "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
-            "type": "string",
-            "default": "l2",
-            "ui": {
-                "style": "radio",
-                "choices": ["l1", "l2"]
-            }
-        },
-        "kernel": {
-            "description": "Specifies the kernel type to be used in the algorithm",
-            "type": "string",
-            "default": "rbf",
-            "ui": {
-                "style": "radio",
-                "choices": ["poly", "rbf"]
-            }
-        },
-        "tol": {
-            "description": "Tolerance for stopping criteria.",
-            "type": "float",
-            "default": 0.0001,
-            "ui": {
-                "style": "radio",
-                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1]
-            }
-        },
-        "C": {
-            "description": "Penalty parameter C of the error term.",
-            "type": "float",
-            "default": 1,
-            "ui": {
-                "style": "radio",
-                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
-            }
-        }
-    },
-    "category": "ML"
-} {
     "name": "LogisticRegression",
     "schema": {
         "penalty": {
@@ -498,7 +461,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [10, 100, 500, 1000]
             }
         },
         "criterion": {
@@ -516,7 +479,7 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["sqrt", "log2", "None"]
             }
         },
         "min_samples_split": {
@@ -525,7 +488,7 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [2, 5, 10, 15, 20]
             }
         },
         "min_samples_leaf": {
@@ -534,7 +497,7 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [1, 5, 10, 15, 20]
             }
         },
         "bootstrap": {
@@ -557,7 +520,7 @@
             "default": 0,
             "ui": {
                 "style": "radio",
-                "choices": [0, 10, 100]
+                "choices": [0, 10, 100, 35626]
             }
         },
         "recommender": {
@@ -606,6 +569,38 @@
                 "choices": ["true", "false"]
             }
          }
+    },
+    "category": "ML"
+} {
+    "name": "SVC",
+    "schema": {
+        "kernel": {
+            "description": "Specifies the kernel type to be used in the algorithm",
+            "type": "string",
+            "default": "rbf",
+            "ui": {
+                "style": "radio",
+                "choices": ["poly", "rbf"]
+            }
+        },
+        "tol": {
+            "description": "Tolerance for stopping criteria.",
+            "type": "float",
+            "default": 0.0001,
+            "ui": {
+                "style": "radio",
+                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1]
+            }
+        },
+        "C": {
+            "description": "Penalty parameter C of the error term.",
+            "type": "float",
+            "default": 1,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+            }
+        }
     },
     "category": "ML"
 }
