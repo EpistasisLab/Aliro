@@ -12,6 +12,11 @@ if (argv['_'].length > 0) {
     action = argv['_'][0];
 }
 
+var ip = '127.0.0.1';
+if (argv['i']) {
+    ip = argv['i'];
+}
+
 //run in the cloud
 var doCloud = false
 if (argv['c'] || action == 'cloudinit' || action == 'clouddestroy') {
@@ -77,6 +82,7 @@ exP.then(function(experiment) {
             var forumName = forum['forumName'];
             var build;
             var options = {};
+            forum['ip'] = ip;
             forum['action'] = action;
             forum['doShared'] = doShared;
             forum['doCloud'] = doCloud;

@@ -2,8 +2,8 @@ var Promise = require("bluebird");
 var mongoskin = require("mongoskin");
 var db;
 var mongouri;
-if(process.env.MONGO_HOST && process.env.MONGO_PORT) {
-mongouri="mongodb://"+process.env.MONGO_HOST+":"+process.env.MONGO_PORT+"/FGLab";
+if(process.env.DBMONGO_HOST && process.env.DBMONGO_PORT) {
+mongouri="mongodb://"+process.env.DBMONGO_HOST+":"+process.env.DBMONGO_PORT+"/FGLab";
 } else if (process.env.MONGODB_URI) {
 mongouri=process.env.MONGODB_URI;
 } else {

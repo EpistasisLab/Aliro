@@ -10,35 +10,20 @@ var argv = require('minimist')(process.argv.slice(2));
 //run every step by default
 var dryrun = false;
 var verbose;
+// execute code from the shared volume instead of /opt
 var share = false;
-var dockerDir;
-var basedir;
+//where containers are stored
 var allroots = [];
 //makevars will be passed to hosts as global env variables
 var makevars = [];
+//which parts of the build process we're going to run
 var steps = [];
+//array of commands for different steps
 var cmds = {};
+//the hosts we're interested in building
 var hosts = []
-/*
-    var shared = experiment.doShare
-    makevars = experiment.global;
-    for (var i in makevars) {
-        var name = i;
-        var val = makevars[i];
-        if (name && val) {
-            makevars[name] = val;
-        }
-    }
-    var network = makevars['NETWORK'];
-    if (share) {
-        basedir = makevars['SHARE_PATH'] + '/' + network;
-    } else {
-        basedir = '/opt/' + network;
-    }
-    makevars['PROJECT_ROOT'] = basedir;
-    dockerDir = makevars['SHARE_PATH'] + '/' + network + '/dockers'
-    retHosts(makevars, callback);
-*/
+//listen here by default
+var dockerDir = 'dockers';
 
 //returns a list of existing containers for the given network
 var retContainers = function(network) {
@@ -83,16 +68,16 @@ var retContainers = function(network) {
     })
     return deferred.promise;
 }
-//extract build dependancy order from Dockerfiles 
-var getDeps = function(dockerDir, dirs, network) {
-    var depends = [];
-    for (var i in dirs) {
-        var dir = dirs[i];
-        var is_docker = false;
-        var files = fs.readdirSync(dockerDir + '/' + dir);
-        if (files.indexOf('Dockerfile') >= 0) {
 
-            var fileBuffer = fs.readFileSync(dockerDir + '/' + dir + '/Dockerfile');
+//extract build dependency order from Dockerfiles
+var getDeps = function(network) {
+    var depends = {}
+    var dirs = fs.readdirSync('dockers');
+    for (var i in dirs) {
+        var dir = dockerDir + '/' + dirs[i];
+        var is_docker = false;
+        if (fs.lstatSync(dir).isDirectory() && fs.readdirSync(dir).indexOf('Dockerfile') >= 0) {
+            var fileBuffer = fs.readFileSync(dir + '/Dockerfile');
             var string = fileBuffer.toString();
             var lines = string.split("\n");
             for (var j in lines) {
@@ -100,10 +85,8 @@ var getDeps = function(dockerDir, dirs, network) {
                 var splitted = line.split(' ');
                 if (splitted[0] == 'FROM') {
                     var requires = splitted[1].split(":")[0].split("/")
-
                     if (requires[0] == network) {
                         depends[dir] = requires[1]
-
                     }
                 }
             }
@@ -111,9 +94,8 @@ var getDeps = function(dockerDir, dirs, network) {
                 depends[dir] = '';
             }
         }
-
-
     }
+
     return (depends);
 }
 
@@ -294,119 +276,101 @@ exports.build = function(forum, experiment) {
     });
     return deferred.promise
 }
+
 var hostCommander = function(forum, experiment) {
     var deferred = Q.defer();
     var services = experiment.services;
     var action = forum.action;
-    var all = ['base', 'compute', 'dbmongo', 'dbredis', 'lab', 'machine', 'paiwww', 'paix01'];
-    var tasks = [];
     var makevars = experiment.global;
     var network = makevars.NETWORK;
+    var deps = getDeps(network);
+    var dockers = [];
+    for (i in deps) {
+        dockers.push(i.split('/')[1])
+    }
     if (forum.doShared !== undefined && forum.doShared) {
         makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'] + '/' + network;
     } else {
         makevars['PROJECT_ROOT'] = '/opt/' + network;
     }
-console.log(makevars);
-    var registry;
-    if (forum && forum['datasets'] !== undefined) {
-        makevars['DATASETS'] = forum['datasets'].join();
-    };
-    if (forum && forum['forumName'] !== undefined) {
-        makevars['FORUM'] = forum['forumName']
-    }
     if (action == 'rebuild') {
-        steps = ['stop', 'rm', 'build', 'create', 'start','tag','push']
+        steps = ['stop', 'rm', 'build', 'create', 'start', 'tag', 'push']
     } else if (action == 'reload') {
         steps = ['stop', 'rm', 'build', 'create', 'start']
     } else if (action == 'restart') {
-        steps = ['stop','start']
+        steps = ['stop', 'start']
     } else {
         steps = [action]
     };
-    var hosts = [];
+    for (var i in dockers) {
+        //available containers that are required for this network
+        var container_name = dockers[i];
+        //build continers
+        var quiet = '';
+        if (!verbose) {
+            quiet = '-q'
+        }
+        var build_args = quiet + ' -t ' + network + '/' + container_name + ':latest  .';
+        commander('build', build_args, container_name);
+    }
     var repos = {};
     for (var i in services) {
         var service = services[i];
-        var hostname = service['name']
-        if (tasks.length == 0 || tasks.indexOf(hostname) >= 0) {
-            hosts.push(hostname);
+        hosts.push(service.name);
+        var hostvar = service.name.toUpperCase() + '_HOST';
+        makevars[hostvar] = service.name;
+        if (service.portMappings !== undefined) {
+            var portvar = service.name.toUpperCase() + '_PORT';
+            makevars[portvar] = service.portMappings[0].containerPort
         }
         if (service['repositoryUri'] !== undefined) {
             repos[hostname] = service['repositoryUri'];
         }
     }
-    console.log('processing hosts ' + hosts);
-    // look for container definitions in dockers directory
-    for (var i in all) {
-        var requested = false;
-        var host = all[i];
-        if (hosts.indexOf(host) >= 0) {
-            requested = true;
+
+    for (var i in services) {
+        var service = services[i];
+        console.log('processing ' + service.name);
+        var docker_args = ''
+        for (var varname_inner in makevars) {
+            docker_args = docker_args + ' -e ' + varname_inner + '=' +
+                makevars[varname_inner];
         }
-        //build continers
-        var tag = 'latest';
-        var quiet = '';
-        if (!verbose) {
-            quiet = '-q'
+        if (service.portMappings !== undefined) {
+            docker_args = docker_args + ' -p ' + forum.ip + ':' + service.portMappings[0].hostPort + ':' + service.portMappings[0].containerPort;
         }
-        var build_args = quiet + ' -t ' + network + '/' + host + ':' + tag + ' .';
-        commander('build', build_args, host);
-        //process makevars for this host
-        for (var varname in makevars) {
-            //check for <anything>_HOST variable
-            var splitted = varname.split('_');
-            if (splitted[1] == 'HOST') {
-                if (host == makevars[varname] && hosts.indexOf(host) >= 0) {
-                    var docker_args = '';
-                    for (var varname_inner in makevars) {
-                        docker_args = docker_args + ' -e ' + varname_inner + '=' +
-                            makevars[varname_inner];
-                    }
-                    var portvar = splitted[0] + '_PORT';
-                    if (makevars[portvar]) {
-                        var port = makevars[portvar];
-                        docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + port + ':' + port;
-                    }
-                }
+
+
+
+        if (forum.sentient[service.name]) {
+            var container_id = forum.sentient[service.name]['id']
+            if (forum.sentient[service.name]['state'] == 'up') {
+                commander('stop', container_id);
             }
+            commander('rm', container_id);
         }
 
+        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
+            docker_args + ' --hostname ' + service.name + ' --name ' + service.name +
+            ' --net ' + network + ' ' + network + '/' + service.name;
+        commander('create', create_args, service.name);
 
-        if (requested) {
-
-            if (forum.sentient[host]) {
-                var container_id = forum.sentient[host]['id']
-                if (forum.sentient[host]['state'] == 'up') {
-                    commander('stop', container_id);
-                }
-                commander('rm', container_id);
-            }
-
-            var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['SHARE_PATH'] +
-                docker_args + ' --hostname ' + host + ' --name ' + host +
-                ' --net ' + network + ' ' + network + '/' + host;
-            commander('create', create_args, host);
-
-            if (repos[host] !== undefined ) {
-    var tag_args = network + '/' + host + ':' + tag + ' ' + repos[host] + ':' + tag;
-                commander('tag', tag_args)
+        if (repos[service.name] !== undefined) {
+            var tag_args = network + '/' + service.name + ':' + tag + ' ' + repos[service.name] + ':' + tag;
+            commander('tag', tag_args)
 
 
 
-                var push_args = repos[host] + ':' + tag;
-                commander('push', push_args);
-            }
-            commander('start', host);
+            var push_args = repos[service.name] + ':' + tag;
+            commander('push', push_args);
         }
+        commander('start', service.name);
     }
-    var dockerDir = 'dockers'
-    var deps = getDeps(dockerDir, all, network)
     //promises
     var chain = Q.when();
     //build the containers (if we're supposed to)
     if (steps.indexOf('build') >= 0) {
-        var buildArray = makeBuildArray(hosts, deps, all, forum.sentient);
+        var buildArray = makeBuildArray(hosts, deps, dockers, forum.sentient);
         var ccmdAr = []
         while (buildArray) {
             var roots = [];
@@ -442,11 +406,12 @@ console.log(makevars);
             }
             return promise.then(function(result) {
                 return runJobs(item);
-            });
+            }).catch(function(error) {});;
         }, Q());
     } else {
         var chain = Q.when();
     }
+    console.log('s', cmds['start']);
 
     //continue processing the chain in the correct order
     chain.then(function() {
