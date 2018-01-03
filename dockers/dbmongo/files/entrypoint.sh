@@ -12,11 +12,11 @@ fi
 mongod -f /etc/mongod.conf &
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
-    if [ -v FORUM ] && [ -d ${SHARE_PATH}/${NETWORK}/forums/${FORUM}/dump ]; then
-        dumpdir=${SHARE_PATH}/${NETWORK}/forums/${FORUM}
+    if [ -v FORUM ] && [ -d ${SHARE_PATH}/forums/${FORUM}/dump ]; then
+        dumpdir=${SHARE_PATH}/forums/${FORUM}
         cd $dumpdir  && mongorestore dump/
     elif [ -v PARENTDB ]; then
-        dumpdir=${SHARE_PATH}/${NETWORK}/forums/${PARENTDB}
+        dumpdir=${SHARE_PATH}/forums/${PARENTDB}
         cd $dumpdir  && mongorestore dump/
     else
         mongoimport -d FGLab -c users --file /root/users.json --type json
