@@ -51,7 +51,6 @@ recommendations using:
   ```shell
   git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
-  git checkout awsm
   ```
 
 2. **Install build requirements**
@@ -75,6 +74,7 @@ recommendations using:
   ```shell
   docker network create pennai
   # build pennai locally
+  npm install
   node pennai build
   # start pennai
   node pennai start
