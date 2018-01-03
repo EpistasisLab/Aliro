@@ -271,6 +271,9 @@ exports.build = function(forum, experiment) {
     var contP = retContainers(experiment.global.NETWORK);
     //sentients are containers that exist or have existed
     contP.then(function(sentient) {
+    if(experiment.global.SHARE_PATH === undefined) {
+        experiment.global.SHARE_PATH = process.cwd();
+    }
         forum.sentient = sentient;
         hostCommander(forum, experiment);
     });
@@ -289,7 +292,7 @@ var hostCommander = function(forum, experiment) {
         dockers.push(i.split('/')[1])
     }
     if (forum.doShared !== undefined && forum.doShared) {
-        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'] + '/' + network;
+        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'];
     } else {
         makevars['PROJECT_ROOT'] = '/opt/' + network;
     }
