@@ -283,7 +283,7 @@ var hostCommander = function(forum, experiment) {
     var makevars = experiment.global;
     var network = makevars.NETWORK;
     if (forum.doShared !== undefined && forum.doShared) {
-        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'] + '/' + network;
+        makevars['PROJECT_ROOT'] = makevars['SHARE_PATH'];
     } else {
         makevars['PROJECT_ROOT'] = '/opt/' + network;
     }
