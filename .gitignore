@@ -9,8 +9,6 @@ build
 *.swp
 machine/datasets/byuser/*
 experiment.json
-dockers/paiwww/files/certs
-dockers/paiwww/files/htpasswd
 tmp/
 *.tgz
 node_modules
