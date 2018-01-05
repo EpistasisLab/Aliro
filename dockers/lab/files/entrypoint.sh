@@ -20,6 +20,10 @@ else
     bower install --allow-root
 fi;
 webpack &
+if [ -f '.env' ]; then
+    touch .env
+fi;
+
 pm2 start lab.config.js --watch
 #figure out where we are running 
 if [ ${ISAWS} -eq 1 ]
