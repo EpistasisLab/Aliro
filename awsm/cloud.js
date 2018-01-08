@@ -20,7 +20,7 @@ var verbose = false;
 
 
 exports.handleCloud = function(experiment, action, doCloud) {
-    if (!doCloud && action !== 'push') {
+    if (!doCloud && action !== 'push' && action !== 'tag') {
         return Q.when();
     } else {
         var reposP = handleRepos(experiment, action);
