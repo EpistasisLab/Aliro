@@ -24,7 +24,8 @@ var cmds = {};
 var hosts = []
 //listen here by default
 var dockerDir = 'dockers';
-
+// tag version
+var tag = 'latest';
 //returns a list of existing containers for the given network
 var retContainers = function(network) {
     var deferred = Q.defer();
@@ -253,7 +254,7 @@ var makeBuildArray = function(hosts, deps, dirs, sentient) {
 
 
 
-//find root for this container 
+//find root for this container
 var getRoot = function(build, buildArray, deps) {
     var retArray = []
     if (build in buildArray && buildArray[build]['require'] !== undefined) {
@@ -328,7 +329,7 @@ var hostCommander = function(forum, experiment) {
             makevars[portvar] = service.portMappings[0].containerPort
         }
         if (service['repositoryUri'] !== undefined) {
-            repos[hostname] = service['repositoryUri'];
+            repos[service.name] = service['repositoryUri'];
         }
     }
 
@@ -358,11 +359,9 @@ var hostCommander = function(forum, experiment) {
             docker_args + ' --hostname ' + service.name + ' --name ' + service.name +
             ' --net ' + network + ' ' + network + '/' + service.name;
         commander('create', create_args, service.name);
-
         if (repos[service.name] !== undefined) {
             var tag_args = network + '/' + service.name + ':' + tag + ' ' + repos[service.name] + ':' + tag;
             commander('tag', tag_args)
-
 
 
             var push_args = repos[service.name] + ':' + tag;
@@ -383,7 +382,7 @@ var hostCommander = function(forum, experiment) {
                 var root = getRoot(build, buildArray, deps);
                 roots = roots.concat(root);
             }
-            //list of unique 
+            //list of unique
             var rootset = new Set(roots);
             var bs = {}
             for (var cmd in cmds['build']) {
