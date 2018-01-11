@@ -21,7 +21,7 @@ function Root({ store }) {
           <Route path="experiments" component={Experiments} />
           <Route path="builder" component={Builder} />
           <Route path="results/:id" component={Results} />
-          {/*<Route path="admin" component={Admin} />*/}
+          <Route path="admin" component={Admin} />
           <Route path="*" component={NotFound} />
         </Route>
       </Router>
