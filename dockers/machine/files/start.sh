@@ -9,7 +9,7 @@ if [ ! -d 'node_modules' ]; then
     echo "installing npm, bower and webpack"
     npm install
     npm -g install pm2
-fi;
+fi
 sleep 5
 pm2 start machine.config.js
 bash

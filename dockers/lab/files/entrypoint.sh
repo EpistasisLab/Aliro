@@ -1,4 +1,4 @@
-#figure out where we are running 
+#figure out where we are running
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 if [ $? -eq 0 ]
 then
@@ -25,7 +25,7 @@ if [ -f '.env' ]; then
 fi;
 
 pm2 start lab.config.js --watch
-#figure out where we are running 
+#figure out where we are running
 if [ ${ISAWS} -eq 1 ]
 then
     while [ ! -f /tmp/die.txt ]

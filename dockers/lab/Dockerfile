@@ -3,4 +3,5 @@ RUN cd pennai/lab && npm install && npm install -g bower pm2 webpack webpack-dev
 COPY files/entrypoint.sh /root/
 COPY files/env /opt/.env
 EXPOSE 5080
-CMD ["/bin/bash", "/root/entrypoint.sh"]
+RUN dos2unix /root/entrypoint.sh
+ENTRYPOINT ["/root/entrypoint.sh"]
