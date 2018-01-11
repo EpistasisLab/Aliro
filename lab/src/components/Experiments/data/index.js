@@ -1,16 +1,16 @@
 import { List, Map } from 'immutable';
 import { combineReducers } from 'redux-immutable';
 import { createSelector } from 'reselect';
-import { 
-  EXPERIMENTS_FETCH_REQUEST, 
-  EXPERIMENTS_FETCH_SUCCESS, 
+import {
+  EXPERIMENTS_FETCH_REQUEST,
+  EXPERIMENTS_FETCH_SUCCESS,
   EXPERIMENTS_FETCH_FAILURE,
   EXPERIMENT_ADD,
   EXPERIMENT_UPDATE
 } from './actions';
 import { formatDataset, formatAlgorithm } from '../../../utils/formatter';
 
-const getById = (state) => 
+const getById = (state) =>
   state.getIn(['experiments', 'byId']);
 
 const byId = (state = Map(), action) => {
@@ -32,8 +32,8 @@ const byId = (state = Map(), action) => {
   }
 };
 
-const getAllIds = (state) => 
-  state.getIn(['experiments', 'allIds']); 
+const getAllIds = (state) =>
+  state.getIn(['experiments', 'allIds']);
 
 const allIds = (state = List(), action) => {
   switch(action.type) {
@@ -43,13 +43,13 @@ const allIds = (state = List(), action) => {
     }
     case EXPERIMENT_ADD:
       //return state.push(action.experiment._id);
-      return state
+      return state;
     default:
       return state;
   }
 };
 
-export const getIsFetching = (state) => 
+export const getIsFetching = (state) =>
   state.getIn(['experiments', 'isFetching']);
 
 const isFetching = (state = false, action) => {
@@ -58,7 +58,7 @@ const isFetching = (state = false, action) => {
       return true;
     case EXPERIMENTS_FETCH_SUCCESS:
     case EXPERIMENTS_FETCH_FAILURE:
-      return false;   
+      return false;
     default:
       return state;
   }
@@ -75,7 +75,7 @@ const errorMessage = (state = null, action) => {
     case EXPERIMENTS_FETCH_SUCCESS:
       return null;
     default:
-      return state; 
+      return state;
   }
 };
 
@@ -91,7 +91,7 @@ export default experiments;
 // transform selectors
 const getAllExperiments = createSelector(
   [getAllIds, getById],
-  (allIds, byId) => 
+  (allIds, byId) =>
     allIds.sort().reverse().map(id => byId.get(id))
 );
 
@@ -121,9 +121,9 @@ export const getFilters = createSelector(
         if(!filters[filter.key].values.includes(exp.getIn(filter.valuePath))) {
           filters[filter.key].values.push(exp.getIn(filter.valuePath));
 
-          filters[filter.key].options.push({ 
-            text: formatOptionText(filter.key, exp.getIn(filter.textPath)), 
-            value: exp.getIn(filter.valuePath) 
+          filters[filter.key].options.push({
+            text: formatOptionText(filter.key, exp.getIn(filter.textPath)),
+            value: exp.getIn(filter.valuePath)
           });
         }
       });
