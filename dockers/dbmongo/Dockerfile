@@ -12,5 +12,8 @@ COPY files/users.json /root/
 COPY files/projects.json /root/
 COPY files/entrypoint.sh /root/
 COPY files/sync.sh /root/
+RUN dos2unix /root/entrypoint.sh /root/sync.sh
+RUN dos2unix /root/users.json /root/projects.json
+RUN dos2unix /etc/mongod.conf
 EXPOSE 27017
 CMD ["/bin/bash", "/root/entrypoint.sh"]
