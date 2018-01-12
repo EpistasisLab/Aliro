@@ -13,16 +13,20 @@ else
     echo "installing npm, bower and webpack"
     npm install
     npm install -g bower pm2 webpack webpack-dev-server
-fi;
+fi
 if [ -d 'bower_components' ]; then
     echo "bower ready"
 else
     bower install --allow-root
-fi;
+fi
 webpack &
 if [ -f '.env' ]; then
     touch .env
-fi;
+fi
+
+if [ -d "../tmp" ]; then
+    mkdir ../tmp
+fi
 
 pm2 start lab.config.js --watch
 #figure out where we are running
