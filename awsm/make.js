@@ -293,13 +293,17 @@ var hostCommander = function(forum, experiment) {
     for (i in deps) {
         dockers.push(i.split('/')[1])
     }
+
     makevars['SHARE_PATH'] = makevars['SHARE_PATH'].replace(/\\/g,'/')
+    makevars['OLD_SHARE_PATH'] = makevars['SHARE_PATH']
     var unix_path = makevars['SHARE_PATH'].replace(':' ,'')
     if (unix_path.charAt(0) !== '/'){
       unix_path = '/' + unix_path;
       console.log(unix_path);
     }
     makevars['UNIX_PATH'] = unix_path
+
+    makevars['SHARE_PATH'] = unix_path
     if (forum.doShared !== undefined && forum.doShared) {
         makevars['PROJECT_ROOT'] = makevars['UNIX_PATH'];
     } else {
@@ -362,7 +366,7 @@ var hostCommander = function(forum, experiment) {
             commander('rm', container_id);
         }
 
-        var create_args = '-i -t -v ' + makevars['SHARE_PATH'] + ':' + makevars['UNIX_PATH'] +
+        var create_args = '-i -t -v ' + makevars['OLD_SHARE_PATH'] + ':' + makevars['UNIX_PATH'] +
             docker_args + ' --hostname ' + service.name + ' --name ' + service.name +
             ' --net ' + network + ' ' + network + '/' + service.name;
         commander('create', create_args, service.name);
