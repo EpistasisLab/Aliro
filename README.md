@@ -1,15 +1,15 @@
 # Penn AI
-Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs. 
+Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
 ## workflow
- - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds. 
- - when a new experiment is found, it is used to update the recommender. 
- - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user. 
+ - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds.
+ - when a new experiment is found, it is used to update the recommender.
+ - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user.
 ### Recommender
 ```python
 pennai = Recommender(method='ml_p',ml_type='classifier')
 # data: a dataframe of results from database
 pennai.update(results_data)
-``` 
+```
  - given a new modeling task, the AI recommends an ML method with parameter values (P)
 ```python
 # dataset_metafeatures: an optional set of metafeatures of the dataset to assist in recommendations
@@ -25,8 +25,8 @@ ai.send_rec()
 pennai.update(new_results_data)
 ```
 ## overall tasks
- - [x] build dataframe `results_data` from MongoDB results. 
- - [x] make method to post job submissions 
+ - [x] build dataframe `results_data` from MongoDB results.
+ - [x] make method to post job submissions
  - [ ] recommendation shows up in launch page
 
 ## recommender tasks
@@ -34,7 +34,7 @@ pennai.update(new_results_data)
 - [x] direct acess to MongDB results for checking what has been run
 
 recommendations using:
- - [x] ml + p 
+ - [x] ml + p
  - [ ] ml + p + mf
  - [ ] ml + p + mf, per model basis
  - [ ] incorporating expert knowledge rules
@@ -47,10 +47,11 @@ recommendations using:
 1. **Check out the project**
 
   - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  - switch to awsm branch
+  - switch to pennai_build_test branch
   ```shell
   git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
+  git checkout pennai_build_test
   ```
 
 2. **Install build requirements**
@@ -62,29 +63,32 @@ recommendations using:
 3. **Modify Makevars** (optional)
 
   - copy the dockers/Makevars.example file to dockers/Makevars and edit to suite your environment
- 
-4. **Modify `experiment.json`**
 
-  - edit "SHARE_PATH" and "IP" in `experiment.json`
-    - "SHARE_PATH" to directory of pennai repository  
+4. **Copy `experiment.json`**
+
+  ```
+  cp .\experiment.example.json .\experiment.json
+  mkdir tmp # need this tmp folder for saving result
+  ```
 
 5. **Start the network**
 
   - run node pennai.  This may take a very long time the first time!
   ```shell
   docker network create pennai
-  # build pennai locally
+  # build pennai locally and start
   npm install
-  node pennai build
-  # start pennai
-  node pennai start
+  node pennai rebuild -sv
   ```
-        
+
+6. **Test the lab**
+	- Connect to:
+    	- http://localhost:5080/
 
 Fedora/Redhat/Systems with SELinux:
 chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 
-**Host Based Install**
+**Host Based Install (Deprecated)**
 1. **Check out the project**
         - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
 2. **Perform Local Install**

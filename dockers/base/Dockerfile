@@ -6,10 +6,10 @@ ADD files/rootfs.tgz /
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN apt-get update && apt-get install -y \
     vim git openssh-client openssh-server htop net-tools iputils-ping xz-utils \
-    wget screen ngrep ca-cacert \ 
+    wget screen ngrep ca-cacert \
     mercurial subversion \
     build-essential cmake lsb-core cpio mesa-common-dev \
-    libglib2.0-0 libxext6 libsm6 libxrender1 \
+    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends
 #nodejs
 RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \

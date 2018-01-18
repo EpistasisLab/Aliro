@@ -65,12 +65,13 @@ RUN set -ex; \
 	rm -r /usr/src/redis; \
 	\
 	apt-get purge -y --auto-remove $buildDeps
-
+RUN apt-get update && apt-get install -y --allow-unauthenticated --no-install-recommends dos2unix
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 WORKDIR /data
 
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN dos2unix /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
