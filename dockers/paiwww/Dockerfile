@@ -4,7 +4,7 @@ ADD files/rootfs.tgz /
 #ssh key is set to the deploy key for this app in gitlab
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		net-tools iputils-ping telnet ngrep\
+		net-tools iputils-ping telnet ngrep dos2unix\
 		vim npm git wget openssh-client net-tools iputils-ping apache2 \
 	&& rm -r /var/lib/apt/lists/*
 RUN mkdir /files
@@ -23,6 +23,7 @@ ADD files/start.sh /files/start.sh
 ADD files/001-pennai.conf /etc/apache2/sites-enabled/
 ADD files/htpasswd /etc/apache2/htpasswd
 ADD files/certs/* /usr/lib/ssl/private/
-
+COPY files/start.sh /root/
+RUN dos2unix /root/start.sh
 EXPOSE 443
-CMD ["/bin/bash", "/files/start.sh"]
+CMD ["/bin/bash", "/root/start.sh"]

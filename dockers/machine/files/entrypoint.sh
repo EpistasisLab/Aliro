@@ -1,4 +1,4 @@
-#figure out where we are running 
+#figure out where we are running
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 if [ $? -eq 0 ]
 then

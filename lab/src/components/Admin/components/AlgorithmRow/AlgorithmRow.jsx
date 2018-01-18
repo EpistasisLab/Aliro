@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table, Header, Dropdown, Button } from 'semantic-ui-react';
 import { formatAlgorithm } from '../../../../utils/formatter';
@@ -34,7 +34,7 @@ class AlgorithmRow extends React.Component {
 
   onUpdateCategory() {
     this.props.updateCategory(this.props.algorithm.get('_id'), this.state.currentCategory);
-  };
+  }
 
   render() {
     const { algorithm } = this.props;
@@ -42,7 +42,7 @@ class AlgorithmRow extends React.Component {
       <Table.Row>
         <Table.Cell width={5}>
           <Header
-            inverted 
+            inverted
             size="small"
             content={formatAlgorithm(algorithm.get('name'))}
             subheader={`#${algorithm.get('_id')}`}
@@ -59,9 +59,9 @@ class AlgorithmRow extends React.Component {
               onChange={this.onChangeCategory}
               className="icon partial"
             />
-            <Button 
-              inverted 
-              color="blue" 
+            <Button
+              inverted
+              color="blue"
               content="Save"
               onClick={this.onUpdateCategory}
               disabled={this.getCanUpdateCategory()}
@@ -70,10 +70,10 @@ class AlgorithmRow extends React.Component {
           </Button.Group>
         </Table.Cell>
         <Table.Cell width={5}>
-          
+
         </Table.Cell>
         <Table.Cell width={1}>
-          
+
         </Table.Cell>
       </Table.Row>
     );
