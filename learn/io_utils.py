@@ -80,6 +80,10 @@ def get_input_file(_id, tmpdir):
     response = http.request('GET', 'http://' + lab_host +
                             ':5080/api/v1/experiments/' + _id)
     jsondata = json.loads(response.data.decode('utf-8'))
+    #files = jsondata['files']
+    _dataset_id = jsondata['_dataset_id']
+    response = http.request('GET', 'http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
+    jsondata = json.loads(response.data.decode('utf-8'))
     files = jsondata['files']
     if cacheinputfiles:
         for file in files:
