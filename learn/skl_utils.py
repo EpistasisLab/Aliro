@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import json
@@ -7,6 +8,7 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.utils import safe_sqr
 from eli5.sklearn import PermutationImportance
+from sklearn.preprocessing import LabelEncoder
 
 
 
@@ -67,24 +69,23 @@ SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
 def generate_results_regressor(model, input_file, tmpdir, _id):
-    input_data = np.recfromcsv(
-        input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
+    input_data = pd.read_csv(
+        input_file, sep='\t')
 
     # hard coded values for now (to be added as cmd line args later)
     train_size = 0.75       # default = 0.75
     target_name = 'class'   # for testing, using 'class'
 
-    if target_name not in input_data.dtype.names:
+    if target_name not in input_data.columns.values:
         raise ValueError(
             'The provided data file does not seem to have a target column.')
 
-    feature_names = np.array([x for x in input_data.dtype.names if x != target_name])
+    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
-    features = np.delete(input_data.view(np.float64).reshape(input_data.size, -1),
-                         input_data.dtype.names.index(target_name), axis=1)
+    features = input_data.drop(target_name, axis=1).values
 
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, input_data[target_name], train_size=train_size,
+        train_test_split(features, input_data[target_name].values, train_size=train_size,
                          random_state=random_state, stratify=input_data[target_name])
 
     print('args used in model:', model.get_params())
@@ -148,24 +149,24 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
 def generate_results(model, input_file, tmpdir, _id):
     print('loading..')
-    input_data = np.recfromcsv(
-        input_file, delimiter='\t', dtype=np.float64, case_sensitive=True)
-    # hard coded values for now (to be added as cmd line args later)
-    train_size = 0.75		# default = 0.75
-    target_name = 'class'  # for testing, using 'class'
+    input_data = pd.read_csv(
+        input_file, sep='\t')
 
-    print(input_data)
-    if target_name not in input_data.dtype.names:
+    # hard coded values for now (to be added as cmd line args later)
+    train_size = 0.75       # default = 0.75
+    target_name = 'class'   # for testing, using 'class'
+
+    if target_name not in input_data.columns.values:
         raise ValueError(
             'The provided data file does not seem to have a target column.')
 
-    feature_names = np.array([x for x in input_data.dtype.names if x != target_name])
+    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
-    features = np.delete(input_data.view(np.float64).reshape(input_data.size, -1),
-                         input_data.dtype.names.index(target_name), axis=1)
+    features = input_data.drop(target_name, axis=1).values
+    classes = LabelEncoder().fit_transform(input_data[target_name].values)
 
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, input_data[target_name], train_size=train_size,
+        train_test_split(features, classes, train_size=train_size,
                          random_state=random_state, stratify=input_data[target_name])
 
     print('args used in model:', model.get_params())
@@ -361,7 +362,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     """
     Save ROC Curve.
     """
-    
+
     fpr, tpr, _ = roc_curve
     plt.figure()
     lw = 2
