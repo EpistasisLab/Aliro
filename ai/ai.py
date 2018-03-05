@@ -264,7 +264,7 @@ class AI():
                     submitstatus[submiti] = submitresponses[submiti]
             #look for errors and resubmit
             if('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
-                print('slow it down pal')
+                print('slow it down pal', submitstatus['error'])
                 sleep(1);
                 self.transfer_rec(rec_payload)
                 n=n+1
@@ -404,7 +404,7 @@ def main():
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
-    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=False,
+    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=True,
                         help='Print out more messages.')
     parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
                         help='Start from last saved session.')
