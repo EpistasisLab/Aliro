@@ -13,7 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 
 
 # if system environment allows to export figures
-figure_export = False
+figure_export = True
 if 'MAKEPLOTS' in os.environ:
     if str(os.environ['MAKEPLOTS']) == '1':
         figure_export = True
@@ -149,25 +149,47 @@ def generate_results_regressor(model, input_file, tmpdir, _id):
 
 def generate_results(model, input_file, tmpdir, _id):
     print('loading..')
-    input_data = pd.read_csv(
-        input_file, sep='\t')
-
-    # hard coded values for now (to be added as cmd line args later)
-    train_size = 0.75       # default = 0.75
     target_name = 'class'   # for testing, using 'class'
+    if isinstance(input_file, str):
+        input_data = pd.read_csv(
+            input_file, sep='\t')
 
-    if target_name not in input_data.columns.values:
-        raise ValueError(
-            'The provided data file does not seem to have a target column.')
+        # hard coded values for now (to be added as cmd line args later)
+        train_size = 0.75       # default = 0.75
 
-    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
+        if target_name not in input_data.columns.values:
+            raise ValueError(
+                'The provided data file does not seem to have a target column.')
 
-    features = input_data.drop(target_name, axis=1).values
-    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+        feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
-    training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, classes, train_size=train_size,
-                         random_state=random_state, stratify=input_data[target_name])
+        features = input_data.drop(target_name, axis=1).values
+        classes = LabelEncoder().fit_transform(input_data[target_name].values)
+
+        training_features, testing_features, training_classes, testing_classes = \
+            train_test_split(features, classes, train_size=train_size,
+                             random_state=random_state, stratify=input_data[target_name])
+    else:
+        for inputf in input_file:
+            if inputf.count('train'):
+                training_data = pd.read_csv(inputf, sep='\t')
+            elif inputf.count('test'):
+                testing_data = pd.read_csv(inputf, sep='\t')
+
+        feature_names = np.array([x for x in training_data.columns.values if x != target_name])
+
+        training_features = training_data.drop(target_name, axis=1).values
+        testing_features = testing_data.drop(target_name, axis=1).values
+
+        training_labels = training_data[target_name].values
+        testing_labels = testing_data[target_name].values
+
+        le = LabelEncoder()
+        le.fit(training_labels)
+
+        training_classes = le.transform(training_labels)
+        testing_classes = le.transform(testing_labels)
+
 
     print('args used in model:', model.get_params())
 
