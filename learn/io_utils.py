@@ -93,9 +93,17 @@ def get_input_file(_id, tmpdir):
                 response = http.request('GET', uri)
                 with open(cached_file, 'w') as f:
                     f.write(response.data.decode('utf-8'))
-        input_file = expdir + files[0]['filename']
-        cached_file = cachedir + files[0]['_id']
-        os.symlink(cached_file,input_file)
+        if len(files) == 1:
+            input_file = expdir + files[0]['filename']
+            cached_file = cachedir + files[0]['_id']
+            os.symlink(cached_file,input_file)
+        else:
+            input_file = []
+            for file in files:
+                input_f = expdir + file['filename']
+                cached_file = cachedir + file['_id']
+                os.symlink(cached_file,input_f)
+                input_file.append(input_f)
         return input_file
     else:
         input_file = ''
