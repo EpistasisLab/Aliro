@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from './data/actions';
-import { 
-  getAllDatasets, 
-  getIsFetching, 
-  getErrorMessage 
+import {
+  getAllDatasets,
+  getIsFetching,
+  getErrorMessage
 } from './data';
 import SceneHeader from '../SceneHeader';
 import Datasets from './Datasets';
@@ -36,6 +36,6 @@ DatasetsContainer.propTypes = {
 };
 
 export default connect(
-  mapStateToProps, 
+  mapStateToProps,
   actions
 )(DatasetsContainer);
