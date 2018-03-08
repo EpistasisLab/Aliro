@@ -4,6 +4,8 @@
   "description": "your friendly machine learning assistant",
   "main": "lab.js",
   "scripts": {
+    "build-dev": "webpack --watch",
+    "build": "webpack",
     "start": "node lab.js",
     "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\"",
     "postinstall": "bower install --allow-root",

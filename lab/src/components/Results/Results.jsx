@@ -6,6 +6,7 @@ import AlgorithmDetails from './components/AlgorithmDetails';
 import RunDetails from './components/RunDetails';
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
+import ImportanceScore from './components/ImportanceScore';
 import Score from './components/Score';
 import { Header, Grid, Loader } from 'semantic-ui-react';
 
@@ -18,8 +19,8 @@ function Results({
 }) {
   if(errorMessage === 'Failed to fetch') {
     return (
-      <FetchError 
-        message="The specified experiment does not exist." 
+      <FetchError
+        message="The specified experiment does not exist."
       />
     );
   } else if(errorMessage && !results.size) {
@@ -40,13 +41,15 @@ function Results({
   }
 
   // check if files are available
-  let confusionMatrix, rocCurve;
+  let confusionMatrix, rocCurve, importanceScore;
   results.get('experiment_files').forEach(file => {
     const filename = file.get('filename');
     if(filename.includes('confusion_matrix')) {
       confusionMatrix = file;
     } else if(filename.includes('roc_curve')) {
       rocCurve = file;
+    } else if(filename.includes('imp_score')) {
+      importanceScore = file;
     }
   });
 
@@ -63,6 +66,7 @@ function Results({
             finishTime={results.get('finished')}
             launchedBy={results.get('launched_by')}
           />
+          <ImportanceScore file={importanceScore} />
         </Grid.Column>
         <Grid.Column>
           <ConfusionMatrix file={confusionMatrix} />
