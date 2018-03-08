@@ -404,10 +404,10 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     # plot bar charts for top 10 importanct features
     num_bar = min(max_bar_num, len(coefs))
     indices = np.argsort(coefs)[-num_bar:]
-    plt.figure()
+    h=plt.figure()
     plt.title("Feature importances")
     plt.barh(range(num_bar), coefs[indices], color="r", align="center")
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
-
+    h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
