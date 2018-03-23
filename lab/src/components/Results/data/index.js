@@ -8,8 +8,9 @@ import {
 } from './actions';
 import confusionMatrix from '../components/ConfusionMatrix/data';
 import rocCurve from '../components/ROCCurve/data';
+import importanceScore from '../components/ImportanceScore/data';
 
-export const getResults = (state) => 
+export const getResults = (state) =>
   state.getIn(['results', 'data']);
 
 const data = (state = Map(), action) => {
@@ -17,13 +18,13 @@ const data = (state = Map(), action) => {
     case RESULTS_FETCH_SUCCESS:
       return state.merge(action.response[0]);
     case RESULTS_CLEAR:
-      return Map(); 
+      return Map();
     default:
       return state;
   }
 };
 
-export const getIsFetching = (state) => 
+export const getIsFetching = (state) =>
   state.getIn(['results', 'isFetching']);
 
 const isFetching = (state = false, action) => {
@@ -33,7 +34,7 @@ const isFetching = (state = false, action) => {
     case RESULTS_FETCH_SUCCESS:
     case RESULTS_FETCH_FAILURE:
     case RESULTS_CLEAR:
-      return false; 
+      return false;
     default:
       return state;
   }
@@ -51,7 +52,7 @@ const errorMessage = (state = null, action) => {
     case RESULTS_CLEAR:
       return null;
     default:
-      return state; 
+      return state;
   }
 };
 
@@ -60,7 +61,8 @@ const results = combineReducers({
   isFetching,
   errorMessage,
   confusionMatrix,
-  rocCurve
+  rocCurve,
+  importanceScore
 });
 
 export default results;
