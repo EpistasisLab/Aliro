@@ -353,7 +353,7 @@ var hostCommander = function(forum, experiment) {
                 makevars[varname_inner];
         }
         if (service.portMappings !== undefined) {
-            docker_args = docker_args + ' -p ' + forum.ip + ':' + service.portMappings[0].hostPort + ':' + service.portMappings[0].containerPort;
+            docker_args = docker_args + ' -p ' + makevars['IP'] + ':' + service.portMappings[0].hostPort + ':' + service.portMappings[0].containerPort;
         }
 
 
