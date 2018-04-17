@@ -64,11 +64,13 @@ recommendations using:
 
   - copy the dockers/Makevars.example file to dockers/Makevars and edit to suite your environment
 
-4. **Copy `experiment.json`**
+4. **Copy/Edit `experiment.json`**
 
   ```
   cp .\experiment.example.json .\experiment.json
+  #Change "IP:127.0.0.1" to your IP address in experiment.json for export ports for external access (Note: you need set up your firewalls for security on those ports)
   mkdir tmp # need this tmp folder for saving result
+  
   ```
 
 5. **Start the network**
