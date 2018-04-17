@@ -8,6 +8,7 @@
         "CAPACITY": "1",
         "RECOMMENDER": "random",
         "NUMRECOMMEND": "0",
+        "IP":"127.0.0.1",
         "APIKEY": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
         "PAIX_USER": "testuser",
         "RANDOM_SEED": "42"
