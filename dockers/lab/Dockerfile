@@ -109,8 +109,6 @@ COPY files/dbredis-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/dbredis-entrypoint.sh
 CMD ["/bin/bash", "/usr/local/bin/dbredis-entrypoint.sh"]
 
-CMD ["redis-server"]
+CMD ["redis-server","--daemonize","yes"]
 RUN dos2unix /root/entrypoint.sh
 ENTRYPOINT ["/root/entrypoint.sh"]
-
-CMD ["redis-server"]
