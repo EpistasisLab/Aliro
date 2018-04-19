@@ -1,5 +1,5 @@
 #we started out with nothing
-FROM scratch
+FROM debian:jessie-slim
 #ubuntu wily rootfs
 ADD files/rootfs.tgz /
 #ssh key is set to the deploy key for this app in gitlab
