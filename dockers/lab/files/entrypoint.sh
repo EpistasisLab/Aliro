@@ -15,7 +15,7 @@ if [ -d 'node_modules' ]; then
 else
     echo "installing npm dependencies and pm2"
     npm install
-    npm install -g pm2 
+    npm install -g pm2
 fi
 
 if [ -d "../tmp" ]; then
@@ -23,6 +23,7 @@ if [ -d "../tmp" ]; then
 fi
 
 pm2 start lab.config.js --watch
+
 #figure out where we are running
 if [ ${ISAWS} -eq 1 ]
 then
