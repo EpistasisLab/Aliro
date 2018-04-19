@@ -21,20 +21,6 @@
             "containerPort": "27017"
         }]
     }, {
-        "name": "paiwww",
-        "portMappings": [{
-            "hostPort": "443",
-            "protocol": "tcp",
-            "containerPort": "443"
-        }]
-    }, {
-        "name": "dbredis",
-        "portMappings": [{
-            "hostPort": "6379",
-            "protocol": "tcp",
-            "containerPort": "6379"
-        }]
-    }, {
         "name": "lab",
         "portMappings": [{
             "hostPort": "5080",
