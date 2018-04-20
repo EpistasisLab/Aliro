@@ -70,7 +70,7 @@ recommendations using:
   cp .\experiment.example.json .\experiment.json
   #Change "IP:127.0.0.1" to your IP address in experiment.json for export ports for external access (Note: you need set up your firewalls for security on those ports)
   mkdir tmp # need this tmp folder for saving result
-  
+
   ```
 
 5. **Start the network**
@@ -81,6 +81,13 @@ recommendations using:
   # build pennai locally and start
   npm install
   node pennai rebuild -sv
+  ```
+
+  - start AI function (need refine)
+  ```
+  docker attach lab
+  cd $PROJECT_ROOT/
+  python -m ai.ai -v -n 2
   ```
 
 6. **Test the lab**
