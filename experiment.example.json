@@ -34,8 +34,6 @@
             "protocol": "tcp",
             "containerPort": "5081"
         }]
-    }, {
-        "name": "paix01"
     }],
 
 

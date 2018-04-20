@@ -1,4 +1,4 @@
-FROM pennai/compute:latest
+FROM pennai/base:latest
 WORKDIR /opt/
 COPY files/env pennai/machine/.env
 RUN cd pennai/ && mkdir tmp && cd machine && npm install && npm -g install pm2
