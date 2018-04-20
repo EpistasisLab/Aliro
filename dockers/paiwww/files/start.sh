@@ -1,2 +1,0 @@
-apachectl start
-bash
