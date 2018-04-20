@@ -27,5 +27,15 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     wget --quiet https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh -O ~/anaconda.sh && \
     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
     rm ~/anaconda.sh
+# set up anaconda environment
+ENV PATH /opt/conda/bin:$PATH
+RUN pip install scikit-mdr
+RUN pip install deap
+RUN pip install requests_toolbelt
+RUN pip install urllib3
+RUN pip install eli5
+RUN conda install scikit-learn pymongo tqdm
+WORKDIR /opt/
+
 ADD files/version /
 RUN git clone git@github.com:EpistasisLab/pennai.git
