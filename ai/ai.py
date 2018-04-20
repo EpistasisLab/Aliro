@@ -109,12 +109,12 @@ class AI():
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         # toggled datasets
         self.dataset_threads = {}
-        # for comma-separated list of datasets in datasets, turn AI request on 
+        # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
             data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
             print(data_usersets)
             for ds in datasets.split(','):
-                payload = {'ai': 'requested'} 
+                payload = {'ai': 'requested'}
                 data_submit_path = '/'.join([self.submit_path,data_usersets[ds],'ai'])
                 print('submitting ai requested to ',data_submit_path)
                 tmp = requests.put(data_submit_path,data=json.dumps(payload),
@@ -151,10 +151,10 @@ class AI():
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
-        
+
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
-        
+
         if self.continous:
             payload = {'ai':['requested','finished']}
         else:
@@ -190,7 +190,7 @@ class AI():
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
-        
+
         # get new results
         payload = {'date_start':self.last_update,'has_scores':True}
         payload.update(self.static_payload)
@@ -281,7 +281,7 @@ class AI():
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-            self.rec.last_n = 0 
+            self.rec.last_n = 0
             for alg,params,score in zip(ml,p,ai_scores):
                 # turn params into a dictionary
                 modified_params = eval(params)
@@ -297,7 +297,7 @@ class AI():
                 if self.verbose:
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                
+
                 # add static payload
                 rec_payload.update(self.static_payload)
                 # do http transfer
@@ -324,7 +324,7 @@ class AI():
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-            
+
             for alg,params,score in zip(ml,p,ai_scores):
                 # turn params into a dictionary
                 modified_params = eval(params)
@@ -395,7 +395,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive'], 
+                        choices = ['random','average','exhaustive'],
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
@@ -408,20 +408,20 @@ def main():
                         help='Print out more messages.')
     parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
                         help='Start from last saved session.')
-   
+
     args = parser.parse_args()
     print(args)
 
-    # dictionary of default recommenders to choose from at the command line. 
+    # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
                                                 api_key=os.environ['APIKEY']),
             'average': AverageRecommender(),
             'exhaustive': ExhaustiveRecommender(db_path=args.DB_PATH,api_key=os.environ['APIKEY'])
             }
-    print('=======','Penn AI','=======',sep='\n')
+    print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
-                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START, 
+    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER,
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS)
 
     n = 0;
