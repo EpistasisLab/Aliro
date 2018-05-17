@@ -15,14 +15,27 @@ if [ -d 'node_modules' ]; then
 else
     echo "unzipping npm dependencies and then installing pm2"
     tar -zvxf /root/node_modules.tar.gz node_modules
-    tar -zvxf /root/bower_components.tar.gz bower_components
-    tar -zvxf /root/www.tar.gz www
-    #npm run build
     touch .env
     npm install -g pm2
 fi
 
-if [ -d "../tmp" ]; then
+if [ -d 'bower_components' ]; then
+    echo "bower_components ready"
+else
+    echo "unzipping bower_components"
+    tar -zvxf /root/bower_components.tar.gz bower_components
+
+fi
+
+if [ -d 'www' ]; then
+    echo "www ready"
+else
+    echo "unzipping www"
+    tar -zvxf /root/www.tar.gz www
+
+fi
+
+if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
 
