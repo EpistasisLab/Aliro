@@ -13,8 +13,12 @@ cd ${PROJECT_ROOT}/lab
 if [ -d 'node_modules' ]; then
     echo "npm ready"
 else
-    echo "installing npm dependencies and pm2"
-    npm install
+    echo "unzipping npm dependencies and then installing pm2"
+    tar -zvxf /root/node_modules.tar.gz node_modules
+    tar -zvxf /root/bower_components.tar.gz bower_components
+    tar -zvxf /root/www.tar.gz www
+    #npm run build
+    touch .env
     npm install -g pm2
 fi
 
