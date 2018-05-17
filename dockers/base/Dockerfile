@@ -20,8 +20,8 @@ ADD files/ssh.tgz /
 WORKDIR /opt/
 #ADD files/intel_opencl.tgz /
 #ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
-# Anaconda 5.0.1
-#conda
+
+
 # Anaconda 5.0.1
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     wget --quiet https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh -O ~/anaconda.sh && \
