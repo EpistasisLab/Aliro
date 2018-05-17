@@ -24,7 +24,7 @@ if [ -d 'bower_components' ]; then
 else
     echo "unzipping bower_components"
     tar -zvxf /root/bower_components.tar.gz bower_components
-    npm install -g pm2
+
 fi
 
 if [ -d 'www' ]; then
@@ -38,7 +38,7 @@ fi
 if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
-
+npm install -g pm2
 pm2 start lab.config.js --watch
 
 #figure out where we are running
