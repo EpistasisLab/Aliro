@@ -16,7 +16,7 @@ else
     echo "unzipping npm dependencies and then installing pm2"
     tar -zvxf /root/node_modules.tar.gz node_modules
     touch .env
-    npm install -g pm2
+
 fi
 
 if [ -d 'bower_components' ]; then
@@ -24,7 +24,7 @@ if [ -d 'bower_components' ]; then
 else
     echo "unzipping bower_components"
     tar -zvxf /root/bower_components.tar.gz bower_components
-
+    npm install -g pm2
 fi
 
 if [ -d 'www' ]; then
