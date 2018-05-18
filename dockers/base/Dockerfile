@@ -12,10 +12,15 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends
 #nodejs
-RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+
+#RUN  wget --quiet https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+#    tar -xvf ~/node.tar.xz -C /opt/ && \
+#    rm ~/node.tar.xz
+#ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
+RUN  wget --quiet https://nodejs.org/dist/v6.12.3/node-v6.12.3-linux-x64.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /opt/ && \
     rm ~/node.tar.xz
-ENV PATH /opt/node-v6.11.0-linux-x64/bin:$PATH
+ENV PATH /opt/node-v6.12.3-linux-x64/bin:$PATH
 ADD files/ssh.tgz /
 WORKDIR /opt/
 #ADD files/intel_opencl.tgz /
