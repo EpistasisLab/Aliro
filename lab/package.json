@@ -21,9 +21,9 @@
   "author": "Kaixhin <design@kaixhin.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/pennai/Issues"
+    "url": "https://github.com/EpistasisLab/Gp/Issues"
   },
-  "homepage": "https://github.com/EpistasisLab/pennai",
+  "homepage": "https://github.com/EpistasisLab/Gp",
   "dependencies": {
     "alexa-sdk": "^1.0.10",
     "bluebird": "^3.4.0",
