@@ -21,16 +21,16 @@
   "author": "Kaixhin <design@kaixhin.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/Gp/Issues"
+    "url": "https://github.com/EpistasisLab/pennai/Issues"
   },
-  "homepage": "https://github.com/EpistasisLab/Gp",
+  "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
     "alexa-sdk": "^1.0.10",
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "bower": "^1.7.9",
     "c3": "^0.4.11",
-    "compression": "^1.6.2",
+    "compression": "^1.7.2",
     "continuation-local-storage": "^3.1.7",
     "dotenv": "^2.0.0",
     "draft-js": "^0.10.1",
@@ -38,12 +38,12 @@
     "express": "^4.13.4",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
-    "kerberos": "0.0.21",
-    "lodash": "^4.13.0",
+    "kerberos": "0.0.23",
+    "lodash": "^4.17.5",
     "moment": "2.18.1",
-    "mongodb": "^2.1.19",
+    "mongodb": "^2.2.35",
     "mongoskin": "^2.1.0",
-    "morgan": "^1.7.0",
+    "morgan": "^1.9.0",
     "multer": "^1.1.0",
     "prop-types": "^15.5.10",
     "react": "^15.4.2",
@@ -87,17 +87,18 @@
     "eslint-loader": "^1.9.0",
     "eslint-plugin-react": "^7.1.0",
     "gulp": "^3.9.1",
-    "gulp-bump": "^2.1.0",
-    "gulp-conventional-changelog": "^1.1.0",
-    "gulp-git": "^1.7.1",
-    "gulp-util": "^3.0.7",
+    "gulp-bump": "^2.9.0",
+    "gulp-conventional-changelog": "^1.1.18",
+    "gulp-git": "^2.5.2",
+    "gulp-util": "^3.0.8",
     "jsdom": "^9.10.0",
     "minimist": "^1.2.0",
     "mocha": "^3.2.0",
     "redux-logger": "^3.0.6",
     "run-sequence": "^1.2.0",
     "rxjs": "^5.0.1",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "webpack-cli": "^2.1.3"
   },
   "engines": {
     "node": "6.x"
@@ -109,6 +110,7 @@
     ]
   },
   "cacheDirectories": [
-    "node_modules"
+    "node_modules",
+    "bower_components"
   ]
 }
