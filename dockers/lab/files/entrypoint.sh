@@ -27,7 +27,7 @@ if [ -d 'www' ]; then
 else
     echo "unzipping www"
     tar -zvxf /root/www.tar.gz www
-
+    npm run build
 fi
 
 if [ ! -d "../tmp" ]; then

@@ -69,7 +69,10 @@ recommendations using:
   ```
   cp .\experiment.example.json .\experiment.json
   #Change "IP:127.0.0.1" to your IP address in experiment.json for export ports for external access (Note: you need set up your firewalls for security on those ports)
-  mkdir tmp # need this tmp folder for saving result
+
+  # unzip datasets and ssh key
+  tar -zvxf secret.tgz
+
 
   ```
 
