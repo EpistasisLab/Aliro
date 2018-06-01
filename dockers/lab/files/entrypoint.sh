@@ -22,18 +22,10 @@ else
 
 fi
 
-if [ -d 'www' ]; then
-    echo "www ready"
-else
-    echo "unzipping www"
-    tar -zvxf /root/www.tar.gz www
-    npm run build
-fi
-
 if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
-
+npm run build
 pm2 start lab.config.js --watch
 
 #figure out where we are running
