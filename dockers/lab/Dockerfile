@@ -1,11 +1,9 @@
 FROM pennai/base:latest
 
-# TODO - instead of cloning the project, either copy or clone only what is needed
 WORKDIR /opt/
-RUN git clone git@github.com:EpistasisLab/pennai.git
 
 ## FGLab server
-RUN cd pennai/lab && npm install && npm install -g bower pm2 webpack webpack-dev-server  && bower install --allow-root
+
 COPY files/entrypoint.sh /root/
 COPY files/env /opt/.env
 RUN dos2unix /root/entrypoint.sh
@@ -103,7 +101,7 @@ COPY files/htpasswd /etc/apache2/htpasswd
 COPY files/certs/* /usr/lib/ssl/private/
 
 
-# paiwww 
+# paiwww
 COPY files/start.sh /root/
 RUN dos2unix /root/start.sh
 CMD ["/bin/bash", "/root/start.sh"]

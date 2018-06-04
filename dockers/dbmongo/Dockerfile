@@ -2,10 +2,6 @@
 FROM pennai/base:latest
 
 WORKDIR /opt/
-# TODO - instead of cloning the project, either copy or clone only what is needed
-RUN git clone git@github.com:EpistasisLab/pennai.git
-
-#ssh key is set to the deploy key for this app in gitlab
 
 #add repo for mongodb
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6

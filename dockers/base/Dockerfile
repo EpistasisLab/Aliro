@@ -19,13 +19,9 @@ RUN  wget --quiet https://nodejs.org/dist/v6.12.3/node-v6.12.3-linux-x64.tar.xz 
     tar -xvf ~/node.tar.xz -C /opt/ && \
     rm ~/node.tar.xz
 ENV PATH /opt/node-v6.12.3-linux-x64/bin:$PATH
-ADD files/ssh.tgz /
 
-# opencl - TODO - is this not used? can it be removed?
-#WORKDIR /opt/
-#ADD files/intel_opencl.tgz /
-#ADD files/intel_opencl.conf /opencl_runtime_16.1.1_x64_ubuntu_6.4.0.25/
-
+# remove ssh key (it is not safe)
+# ADD files/ssh.tgz /
 
 # Anaconda 5.0.1
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -41,6 +37,11 @@ RUN pip install requests_toolbelt
 RUN pip install urllib3
 RUN pip install eli5
 RUN conda install scikit-learn pymongo tqdm
+
+COPY files/pennai.tar.gz /opt/
 WORKDIR /opt/
+
+RUN  tar -xzvf /opt/pennai.tar.gz && \
+    rm /opt/pennai.tar.gz
 
 COPY files/version /
