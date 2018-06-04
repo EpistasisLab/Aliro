@@ -16,16 +16,14 @@ else
     echo "unzipping npm dependencies and then installing pm2"
     tar -zvxf /root/node_modules.tar.gz node_modules
     npm install
-    #npm install semantic-ui-css --save
-    sudo npm install -g pm2
-    touch .env
-
 fi
 
 if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
 npm run build
+npm install -g pm2
+touch .env
 pm2 start lab.config.js --watch
 
 #figure out where we are running
