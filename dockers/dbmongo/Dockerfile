@@ -1,6 +1,8 @@
 #working off of an ubuntu wily rootfs
 FROM pennai/base:latest
 
+WORKDIR /opt/
+
 #add repo for mongodb
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
