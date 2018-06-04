@@ -7,7 +7,6 @@ build
 *.class
 .bash_history
 *.swp
-machine/datasets/byuser/*
 experiment.json
 tmp/
 *.tgz
