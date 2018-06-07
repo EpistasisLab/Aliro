@@ -1,4 +1,7 @@
 {
+  "name": "PennAIDockerDeploy",
+  "description": "Used for deploying PennAI docker containers with node via awsm.  An alternative to using docker-compose.",
+
   "dependencies": {
     "mz": "^2.4.0",
     "aws-sdk": "^2.157",

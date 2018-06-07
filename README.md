@@ -51,7 +51,7 @@ recommendations using:
   ```shell
   git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
-  git checkout pennai_build_test
+  git checkout pennai_lite
   ```
 
 2. **Install build requirements**
@@ -96,6 +96,11 @@ recommendations using:
 
 Fedora/Redhat/Systems with SELinux:
 chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
+
+7. **Stop the network and docker containers**
+  ```
+  node pennai stop
+  ```
 
 **Host Based Install (Deprecated)**
 1. **Check out the project**

@@ -15,7 +15,7 @@ setup(
     author='William La Cava',
     author_email='lacava@upenn.edu',
     packages=find_packages(),
-    url='https://github.com/epistasislab/penn-ai',
+    url='https://github.com/epistasislab/pennai',
     # download_url='https://github.com/lacava/few/releases/tag/'+package_version,
     license='GNU/GPLv3',
     entry_points={'console_scripts': ['few=few:main', ]},
