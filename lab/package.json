@@ -8,8 +8,6 @@
     "build": "webpack",
     "start": "node lab.js",
     "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\"",
-    "postinstall": "bower install --allow-root",
-    "update": "git pull && npm install"
   },
   "repository": {
     "type": "git",
@@ -18,12 +16,12 @@
   "keywords": [
     "machine learning"
   ],
-  "author": "Kaixhin <design@kaixhin.com>",
+  "author": "University of Pennsylvania",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/Gp/Issues"
+    "url": "https://github.com/EpistasisLab/pennai/Issues"
   },
-  "homepage": "https://github.com/EpistasisLab/Gp",
+  "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
     "alexa-sdk": "^1.0.10",
     "bluebird": "^3.4.0",
