@@ -1,9 +1,14 @@
 'use strict';
-// launch a forum or a set of forums
-//of machine learning experiments
-//
-// utility functions and modules for interfacing building containers
-// and cloud services
+/**
+* launch a forum or a set of forums of machine learning experiments,
+* utility functions and modules for interfacing building containers and cloud services
+*
+* Local container operations:
+*   'node pennai rebuild -sv'  
+*   'node pennai start -sv' 
+*   'node pennai stop' 
+*/
+
 var awsm = require('./awsm');
 var argv = require('minimist')(process.argv.slice(2));
 //the maximum number of forums we can run at once

@@ -7,7 +7,7 @@
     "build-dev": "webpack --watch",
     "build": "webpack",
     "start": "node lab.js",
-    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\"",
+    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\""
   },
   "repository": {
     "type": "git",
