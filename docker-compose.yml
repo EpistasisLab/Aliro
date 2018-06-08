@@ -4,6 +4,7 @@ services:
   lab:
     build: dockers/lab
     tty: true
+    stdin_open: true
     volumes: 
       - "./:/appsrc"
     ports:
@@ -14,6 +15,7 @@ services:
   machine:
     build: dockers/machine
     tty: true
+    stdin_open: true
     volumes: 
       - "./:/appsrc"
     ports: 
@@ -23,6 +25,7 @@ services:
   dbmongo:
     build: dockers/dbmongo
     tty: true
+    stdin_open: true
     volumes: 
       - "./:/appsrc"
     ports:  
