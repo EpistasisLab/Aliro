@@ -5,7 +5,12 @@ services:
   tester:
     build: ./tests/integration
     #command: bash
-    command: npm test
+    #command: npm test
+    command: ["./wait-for-it.sh", "-t", "80", "lab:5080", "--", "npm", "test"]
+    depends_on: 
+      - lab
+      - machine
+      - dbmongo
     tty: true
     stdin_open: true
 

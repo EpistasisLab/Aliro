@@ -5,4 +5,4 @@
 
 import { get } from './util/apiHelper';
 
-export const fetchDatasets = () => get('api/userdatasets');
+export const fetchDatasets = () => get('http://lab:5080/api/userdatasets');

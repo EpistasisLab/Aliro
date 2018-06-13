@@ -8,6 +8,6 @@ import * as labApi from './labApi';
 // just try to get some data
 it('integration fetchDatasets', () => {
   expect.assertions(1);
-  return labApi.fetchDatasets().then(data => expect(data).toBeTruthy());
-  //return expect(labApi.fetchDatasets()).resolves.toBeTruthy();
+  //return labApi.fetchDatasets().then(data => expect(data).toBeTruthy());
+  return expect(labApi.fetchDatasets()).resolves.greaterThan(50);
 });
