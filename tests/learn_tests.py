@@ -3,7 +3,7 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-from learn.skl_utils import generate_results
+from learn.skl_utils import generate_results, generate_export_codes
 import json
 
 # test input file for classification
@@ -34,6 +34,7 @@ def test_generate_results_1():
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     rmtree(tmpdir)
 
 
@@ -56,6 +57,7 @@ def test_generate_results_2():
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     rmtree(tmpdir)
 
 
@@ -79,6 +81,7 @@ def test_generate_results_3():
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     rmtree(tmpdir)
 
 
@@ -102,4 +105,29 @@ def test_generate_results_4():
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     rmtree(tmpdir)
+
+
+def test_generate_export_codes():
+    """Test generate_export_codes can generate scripts as execpted."""
+    test_clf = DecisionTreeClassifier(random_state=42)
+    pipeline_text = generate_export_codes(test_clf)
+
+    expected_text = """import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree.tree import DecisionTreeClassifier
+
+# NOTE: Make sure that the target (y) is labeled 'target' in the data file
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+features = input_data.drop('target', axis=1).values
+training_features, testing_features, training_target, testing_target = \\
+            train_test_split(features, tpot_data['target'].values, random_state=42)
+
+model=DecisionTreeClassifier(class_weight=None, criterion=gini, max_depth=None, max_features=None, max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None, min_samples_leaf=1, min_samples_split=2, min_weight_fraction_leaf=0.0, presort=False, random_state=42, splitter=best)
+model.fit(training_features, training_target)
+results = model.predict(testing_features)
+"""
+
+    assert pipeline_text==expected_text
