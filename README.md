@@ -133,5 +133,5 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
   -  need install nose via `pip install nose`
 
       ```
-      nosetest -s -v tests\learn_tests.py
+      nosetests -s -v tests\learn_tests.py
       ```
