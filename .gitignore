@@ -8,9 +8,10 @@ build
 .bash_history
 *.swp
 experiment.json
-tmp/
+*tmp/
 *.tgz
 node_modules
 rec_state.obj
 *.pem
 htpasswd
+desktop.ini

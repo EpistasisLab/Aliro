@@ -68,94 +68,22 @@ SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
-def generate_results_regressor(model, input_file, tmpdir, _id):
-    input_data = pd.read_csv(
-        input_file, sep='\t')
+def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='classification', figure_export=figure_export):
+    """generate reaults for apply a model on a datasetself.
+    model: a machine learning model with scikit-learn API
+    input_file: input file in csv format
+    target_name: string target name in input file
+    tmpdir: template folder PATH
+    _id: experiment id
+    mode: 'classification' or 'regression'
+    figure_export: Ture or False for exporting figures
 
-    # hard coded values for now (to be added as cmd line args later)
-    train_size = 0.75       # default = 0.75
-    target_name = 'class'   # for testing, using 'class'
-
-    if target_name not in input_data.columns.values:
-        raise ValueError(
-            'The provided data file does not seem to have a target column.')
-
-    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
-
-    features = input_data.drop(target_name, axis=1).values
-
-    training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, input_data[target_name].values, train_size=train_size,
-                         random_state=random_state, stratify=input_data[target_name])
-
-    print('args used in model:', model.get_params())
-
-    # fix random_state
-    if hasattr(model, 'random_state'):
-        setattr(model, 'random_state', random_state)
-    # fit model
-    model.fit(training_features, training_classes)
-
-    # get predicted classes
-    predicted_classes = model.predict(testing_features)
-
-    # computing cross-validated metrics
-    cv_scores = cross_val_score(
-        model, training_features, training_classes, cv=5)
-
-    # exporting/computing importance score
-    coefs = compute_imp_score(model, training_features, training_classes, random_state)
-
-    feature_importances = {
-        'feature_names': feature_names,
-        'feature_importances': coefs.tolist()
-    }
-
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="feature_importances.json", content=feature_importances)
-
-    if figure_export:
-        plot_imp_score(tmpdir, _id, coefs, feature_names)
-
-
-    # get metrics and plots
-    train_score = model.score(training_features, training_classes)
-    test_score = model.score(testing_features, testing_classes)
-    r2_score = metrics.r2_score(testing_classes, predicted_classes)
-    mean_squared_error = metrics.mean_squared_error(
-        testing_classes, predicted_classes)
-
-    # scatter plot of predicted vs true target values
-
-    # save metrics
-    metrics_dict = {'_scores': {
-        'train_score': train_score,
-        'test_score': test_score,
-        'r2_score': r2_score,
-        'mean_squared_error': mean_squared_error,
-        'cv_scores_mean': cv_scores.mean(),
-        'cv_scores_std': cv_scores.std(),
-        'cv_scores': cv_scores.tolist()
-    }
-    }
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="value.json", content=metrics_dict)
-
-    # save predicted values, what format should this be in? pickle? add id here too
-    predicted_classes_list = predicted_classes.tolist()
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.json", content=predicted_classes_list)
-
-
-def generate_results(model, input_file, tmpdir, _id):
+    """
     print('loading..')
-    target_name = 'class'   # for testing, using 'class'
     if isinstance(input_file, str):
         input_data = pd.read_csv(
             input_file, sep='\t')
 
-        # hard coded values for now (to be added as cmd line args later)
-        train_size = 0.75       # default = 0.75
 
         if target_name not in input_data.columns.values:
             raise ValueError(
@@ -164,11 +92,13 @@ def generate_results(model, input_file, tmpdir, _id):
         feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
         features = input_data.drop(target_name, axis=1).values
-        classes = LabelEncoder().fit_transform(input_data[target_name].values)
+        if mode == 'classification':
+            classes = LabelEncoder().fit_transform(input_data[target_name].values)
+        elif mode == 'regression':
+            classes = input_data[target_name].values
 
         training_features, testing_features, training_classes, testing_classes = \
-            train_test_split(features, classes, train_size=train_size,
-                             random_state=random_state, stratify=input_data[target_name])
+            train_test_split(features, classes, random_state=random_state, stratify=input_data[target_name])
     else:
         for inputf in input_file:
             if inputf.count('train'):
@@ -196,6 +126,11 @@ def generate_results(model, input_file, tmpdir, _id):
     # fix random_state
     if hasattr(model, 'random_state'):
         setattr(model, 'random_state', random_state)
+
+    pipeline_text = generate_export_codes(model)
+    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text)
+    export_scripts.close()
     # fit model
     model.fit(training_features, training_classes)
 
@@ -225,83 +160,106 @@ def generate_results(model, input_file, tmpdir, _id):
     if figure_export:
         plot_imp_score(tmpdir, _id, coefs, feature_names)
 
-    # determine if target is binary or multiclass
-    class_names = model.classes_
-    if(len(class_names) > 2):
-        average = 'macro'
-    else:
-        average = 'binary'
+    if mode == 'classification':
+        # determine if target is binary or multiclass
+        class_names = model.classes_
+        if(len(class_names) > 2):
+            average = 'macro'
+        else:
+            average = 'binary'
 
-    testing_classes_encoded = np.array(
-                                    [list(model.classes_).index(c)
-                                     for c in testing_classes], dtype=np.int
-                                     )
-    predicted_classes_encoded = np.array(
-                                    [list(model.classes_).index(c)
-                                     for c in predicted_classes], dtype=np.int
-                                     )
+        testing_classes_encoded = np.array(
+                                        [list(model.classes_).index(c)
+                                         for c in testing_classes], dtype=np.int
+                                         )
+        predicted_classes_encoded = np.array(
+                                        [list(model.classes_).index(c)
+                                         for c in predicted_classes], dtype=np.int
+                                         )
 
-    # get metrics and plots
-    train_score = SCORERS['balanced_accuracy'](
-        model, training_features, training_classes)
-    test_score = SCORERS['balanced_accuracy'](
-        model, testing_features, testing_classes)
-    accuracy_score = balanced_accuracy(testing_classes_encoded, predicted_classes_encoded)
-    precision_score = metrics.precision_score(
-        testing_classes_encoded, predicted_classes_encoded, average=average)
-    recall_score = metrics.recall_score(
-        testing_classes_encoded, predicted_classes_encoded, average=average)
-    f1_score = metrics.f1_score(
-        testing_classes_encoded, predicted_classes_encoded, average=average)
-    cnf_matrix = metrics.confusion_matrix(
-        testing_classes, predicted_classes, labels=class_names)
-    cnf_matrix_dict = {
-        'cnf_matrix': cnf_matrix.tolist(),
-        'class_names': class_names.tolist()
-    }
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="cnf_matrix.json", content=cnf_matrix_dict)
-
-    #export plot
-    if figure_export:
-        plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
-
-    roc_auc_score = 'not supported for multiclass'
-    if(average == 'binary'):
-        # choose correct scoring function based on model
-        try:
-            proba_estimates = model.predict_proba(testing_features)[:, 1];
-        except AttributeError:
-            proba_estimates = model.decision_function(testing_features)
-
-        roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
-        roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
-
-        fpr, tpr, _ = roc_curve
-        roc_curve_dict = {
-            'fpr': fpr.tolist(),
-            'tpr': tpr.tolist(),
-            'roc_auc_score': roc_auc_score
+        # get metrics and plots
+        train_score = SCORERS['balanced_accuracy'](
+            model, training_features, training_classes)
+        test_score = SCORERS['balanced_accuracy'](
+            model, testing_features, testing_classes)
+        accuracy_score = balanced_accuracy(testing_classes_encoded, predicted_classes_encoded)
+        precision_score = metrics.precision_score(
+            testing_classes_encoded, predicted_classes_encoded, average=average)
+        recall_score = metrics.recall_score(
+            testing_classes_encoded, predicted_classes_encoded, average=average)
+        f1_score = metrics.f1_score(
+            testing_classes_encoded, predicted_classes_encoded, average=average)
+        cnf_matrix = metrics.confusion_matrix(
+            testing_classes, predicted_classes, labels=class_names)
+        cnf_matrix_dict = {
+            'cnf_matrix': cnf_matrix.tolist(),
+            'class_names': class_names.tolist()
         }
         save_json_fmt(outdir=tmpdir, _id=_id,
-                      fname="roc_curve.json", content=roc_curve_dict)
-        if figure_export:
-           plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
+                      fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-    # save metrics
-    metrics_dict = {'_scores': {
-        'train_score': train_score,
-        'test_score': test_score,
-        'accuracy_score': accuracy_score,
-        'precision_score': precision_score,
-        'recall_score': recall_score,
-        'f1_score': f1_score,
-        'roc_auc_score': roc_auc_score,
-        'cv_scores_mean': cv_scores.mean(),
-        'cv_scores_std': cv_scores.std(),
-        'cv_scores': cv_scores.tolist()
-    }
-    }
+        #export plot
+        if figure_export:
+            plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
+
+        roc_auc_score = 'not supported for multiclass'
+        if(average == 'binary'):
+            # choose correct scoring function based on model
+            try:
+                proba_estimates = model.predict_proba(testing_features)[:, 1];
+            except AttributeError:
+                proba_estimates = model.decision_function(testing_features)
+
+            roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
+            roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
+
+            fpr, tpr, _ = roc_curve
+            roc_curve_dict = {
+                'fpr': fpr.tolist(),
+                'tpr': tpr.tolist(),
+                'roc_auc_score': roc_auc_score
+            }
+            save_json_fmt(outdir=tmpdir, _id=_id,
+                          fname="roc_curve.json", content=roc_curve_dict)
+            if figure_export:
+               plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
+
+        # save metrics
+        metrics_dict = {'_scores': {
+            'train_score': train_score,
+            'test_score': test_score,
+            'accuracy_score': accuracy_score,
+            'precision_score': precision_score,
+            'recall_score': recall_score,
+            'f1_score': f1_score,
+            'roc_auc_score': roc_auc_score,
+            'cv_scores_mean': cv_scores.mean(),
+            'cv_scores_std': cv_scores.std(),
+            'cv_scores': cv_scores.tolist()
+        }
+        }
+    elif mode == 'regression':
+        # get metrics and plots
+        train_score = model.score(training_features, training_classes)
+        test_score = model.score(testing_features, testing_classes)
+        r2_score = metrics.r2_score(testing_classes, predicted_classes)
+        mean_squared_error = metrics.mean_squared_error(
+            testing_classes, predicted_classes)
+
+        # scatter plot of predicted vs true target values
+
+        # save metrics
+        metrics_dict = {'_scores': {
+            'train_score': train_score,
+            'test_score': test_score,
+            'r2_score': r2_score,
+            'mean_squared_error': mean_squared_error,
+            'cv_scores_mean': cv_scores.mean(),
+            'cv_scores_std': cv_scores.std(),
+            'cv_scores': cv_scores.tolist()
+        }
+        }
+
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="value.json", content=metrics_dict)
 
@@ -411,3 +369,48 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+
+def generate_export_codes(model):
+    """Generate all library import calls for use in stand alone python scripts.
+    Parameters
+    ----------
+    model: scikit-learn estimator
+    Returns
+    -------
+    pipeline_text: String
+       The Python code that imports all required library used in the current
+       optimized pipeline
+    """
+    pipeline_text = 'import numpy as np\nimport pandas as pd\n'
+
+    # Always start with these imports
+    pipeline_imports = {
+        'sklearn.model_selection': ['train_test_split'],
+    }
+    model_import_path = str(model.__class__).split('\'')[1].split('.')
+    op_name = model_import_path[-1]
+    pipeline_imports[".".join(model_import_path[:-1])] = [op_name]
+    params = model.get_params()
+
+    # Build import string
+    for key in sorted(pipeline_imports.keys()):
+        module_list = ', '.join(sorted(pipeline_imports[key]))
+        pipeline_text += 'from {} import {}\n'.format(key, module_list)
+
+    pipeline_text += """
+# NOTE: Make sure that the target (y) is labeled 'target' in the data file
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+features = input_data.drop('target', axis=1).values
+training_features, testing_features, training_target, testing_target = \\
+            train_test_split(features, tpot_data['target'].values, random_state=42)
+"""
+    op_arguments = ['{}={}'.format(key, params[key]) for key in sorted(params.keys())]
+
+    pipeline_text += "\nmodel={}({})".format(op_name, ", ".join(op_arguments))
+
+    pipeline_text += """
+model.fit(training_features, training_target)
+results = model.predict(testing_features)
+"""
+
+    return pipeline_text
