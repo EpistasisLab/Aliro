@@ -4,6 +4,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from learn.skl_utils import generate_results
+import json
 
 # test input file for classification
 test_clf_input = "tests/iris.tsv"
@@ -22,7 +23,12 @@ def test_generate_results_1():
     os.mkdir(outdir)
     generate_results(model=test_clf, input_file=test_clf_input,
                     tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=True)
-    assert os.path.isfile('{}/value.json'.format(outdir))
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['train_score'] > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
@@ -39,7 +45,12 @@ def test_generate_results_2():
     os.mkdir(outdir)
     generate_results(model=test_clf, input_file=test_clf_input,
                     tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=False)
-    assert os.path.isfile('{}/value.json'.format(outdir))
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['train_score'] > 0.9
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
@@ -57,7 +68,12 @@ def test_generate_results_3():
     generate_results(model=test_reg, input_file=test_reg_input,
                     tmpdir=tmpdir, _id=_id, target_name='target',
                     mode='regression', figure_export=True)
-    assert os.path.isfile('{}/value.json'.format(outdir))
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['r2_score'] > 0
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
@@ -75,7 +91,12 @@ def test_generate_results_4():
     generate_results(model=test_reg, input_file=test_reg_input,
                     tmpdir=tmpdir, _id=_id, target_name='target',
                     mode='regression', figure_export=False)
-    assert os.path.isfile('{}/value.json'.format(outdir))
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['r2_score'] > 0
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
