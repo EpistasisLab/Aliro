@@ -126,6 +126,11 @@ def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='
     # fix random_state
     if hasattr(model, 'random_state'):
         setattr(model, 'random_state', random_state)
+
+    pipeline_text = generate_export_codes(model)
+    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text)
+    export_scripts.close()
     # fit model
     model.fit(training_features, training_classes)
 
@@ -364,3 +369,48 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+
+def generate_export_codes(model):
+    """Generate all library import calls for use in stand alone python scripts.
+    Parameters
+    ----------
+    model: scikit-learn estimator
+    Returns
+    -------
+    pipeline_text: String
+       The Python code that imports all required library used in the current
+       optimized pipeline
+    """
+    pipeline_text = 'import numpy as np\nimport pandas as pd\n'
+
+    # Always start with these imports
+    pipeline_imports = {
+        'sklearn.model_selection': ['train_test_split'],
+    }
+    model_import_path = str(model.__class__).split('\'')[1].split('.')
+    op_name = model_import_path[-1]
+    pipeline_imports[".".join(model_import_path[:-1])] = [op_name]
+    params = model.get_params()
+
+    # Build import string
+    for key in sorted(pipeline_imports.keys()):
+        module_list = ', '.join(sorted(pipeline_imports[key]))
+        pipeline_text += 'from {} import {}\n'.format(key, module_list)
+
+    pipeline_text += """
+# NOTE: Make sure that the target (y) is labeled 'target' in the data file
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+features = input_data.drop('target', axis=1).values
+training_features, testing_features, training_target, testing_target = \\
+            train_test_split(features, tpot_data['target'].values, random_state=42)
+"""
+    op_arguments = ['{}={}'.format(key, params[key]) for key in sorted(params.keys())]
+
+    pipeline_text += "\nmodel={}({})".format(op_name, ", ".join(op_arguments))
+
+    pipeline_text += """
+model.fit(training_features, training_target)
+results = model.predict(testing_features)
+"""
+
+    return pipeline_text
