@@ -68,17 +68,18 @@ SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
-def generate_results(model, input_file, tmpdir, _id, mode='classification'):
+def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='classification', figure_export=figure_export):
     """generate reaults for apply a model on a datasetself.
     model: a machine learning model with scikit-learn API
     input_file: input file in csv format
+    target_name: string target name in input file
     tmpdir: template folder PATH
     _id: experiment id
     mode: 'classification' or 'regression'
+    figure_export: Ture or False for exporting figures
 
     """
     print('loading..')
-    target_name = 'class'   # for testing, using 'class'
     if isinstance(input_file, str):
         input_data = pd.read_csv(
             input_file, sep='\t')
@@ -93,7 +94,7 @@ def generate_results(model, input_file, tmpdir, _id, mode='classification'):
         features = input_data.drop(target_name, axis=1).values
         if mode == 'classification':
             classes = LabelEncoder().fit_transform(input_data[target_name].values)
-        elif mode == 'regression'::
+        elif mode == 'regression':
             classes = input_data[target_name].values
 
         training_features, testing_features, training_classes, testing_classes = \
