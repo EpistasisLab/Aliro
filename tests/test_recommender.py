@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
+from ai.recommender.average_recommender import AverageRecommender
 #from ai.ai import AI
 import pdb
 
@@ -76,6 +77,6 @@ def test_db_grab():
     pennai= AI()
     pennai.db_to_results_data()
 
-test_rand_rec()
 test_ave_rec()
+test_rand_rec()
 test_n_recs()
