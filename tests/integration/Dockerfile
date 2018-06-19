@@ -6,6 +6,7 @@ COPY wait-for-it.sh .
 # RUN npm install --save es6-promise isomorphic-fetch
 # RUN npm install --save-dev typescript jest ts-jest @types/jest
 # RUN npm install --save-dev babel-jest babel-preset-react react-test-renderer babel-preset-es2015
+# RUN npm install --save-dev babel-jest babel-preset-react react-test-renderer babel-preset-env 
 RUN npm install 
 RUN apt-get update && apt-get install -y vim
 COPY jest .
