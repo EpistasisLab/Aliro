@@ -69,7 +69,10 @@ SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
-def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='classification', figure_export=figure_export, random_state = random_state):
+def generate_results(model, input_file,
+    tmpdir, _id, target_name='class',
+    mode='classification', figure_export=figure_export,
+    random_state=random_state):
     """generate reaults for apply a model on a datasetself.
     model: a machine learning model with scikit-learn API
     input_file: input file in csv format
