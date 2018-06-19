@@ -9,7 +9,6 @@ build
 *.swp
 experiment.json
 *tmp/
-*.tgz
 node_modules
 rec_state.obj
 *.pem
