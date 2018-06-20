@@ -12,4 +12,5 @@ if [ ! -d 'node_modules' ]; then
 fi
 sleep 5
 pm2 start machine.config.js
-bash
+pm2 logs
+#bash

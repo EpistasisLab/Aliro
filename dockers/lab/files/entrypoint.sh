@@ -14,7 +14,7 @@ if [ -d 'node_modules' ]; then
     echo "npm ready"
 else
     echo "unzipping npm dependencies"
-    tar -zxf /root/node_modules.tar.gz node_modules
+    tar -zvxf /root/node_modules.tar.gz node_modules
     echo "unzipping complete"
     npm install
 fi
