@@ -174,7 +174,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- <b>FGLAB_URL=http://localhost:5080</b>
 	- <b>FGMACHINE_URL=http://localhost:5081</b>
     - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
-	- Run <i>npm install<i>
+	- Run <i>npm install</i>
 	- Create a .env file with the following contents:
     	- <b>FGLAB_URL=http://localhost:5080</b>
     	- <b>FGMACHINE_URL=http://localhost:5081</b>
