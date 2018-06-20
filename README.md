@@ -165,7 +165,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
 	- Run <i>mongorestore</i> to populate the mongo database
 	- Change directories to <b>/share/devel/Gp/lab</b>
-	- Run <i>npm install<i>
+	- Run <i>npm install</i>
 	- Create a .env file with the following contents:
     	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
     	- <b>FGLAB_PORT=5080</b>
