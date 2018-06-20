@@ -70,7 +70,7 @@ recommendations using:
 #### Running ####
 1. **Start the network and service containers**
 - `docker-compose up` to create and start containers, `docker-compose up -d` to run in the background
-	- Known issue:  When starting from a fresh clone of the repo, it takes a while for the lab container to initially unzip the node_modules directory, and it takes a while for the initial datasets.  See #46
+	- Known issue:  When starting from a fresh clone of the repo, it takes a while for the lab container to initially unzip the node_modules directory, and it takes a while for the initial datasets.  See [#46](https://github.com/EpistasisLab/pennai/issues/46)
 
 2. **Start the AI service (optional)**
   - SSH into the lab container and start the AI service
