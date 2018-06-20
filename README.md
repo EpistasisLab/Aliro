@@ -183,9 +183,20 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- Connect to:
     	- http://localhost:5080/
 
+## Testing ##
+
+### Integration ###
+To run the integration tests, from the root app directory run: `docker-compose -p integration-tests up --abort-on-container-exit`
+
+This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
+
+See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
+
+### Unit ###
 **Unit tests for python codes**
   -  need install nose via `pip install nose`
 
       ```
       nosetests -s -v tests\learn_tests.py
       ```
+     
