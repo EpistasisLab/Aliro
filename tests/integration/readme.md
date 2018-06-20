@@ -2,7 +2,7 @@ First pass at integration tests and a docker test integration test runner.
 
 To run the integration tests, from the root app directory run:
 `
-docker-compose -p integration-tests up --abort-on-container-exit
+docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit
 `
 
 This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the test suites and exit.
