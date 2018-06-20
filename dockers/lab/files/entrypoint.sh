@@ -13,8 +13,9 @@ cd ${PROJECT_ROOT}/lab
 if [ -d 'node_modules' ]; then
     echo "npm ready"
 else
-    echo "unzipping npm dependencies and then installing pm2"
-    tar -zvxf /root/node_modules.tar.gz node_modules
+    echo "unzipping npm dependencies"
+    tar -zxf /root/node_modules.tar.gz node_modules
+    echo "unzipping complete"
     npm install
 fi
 
