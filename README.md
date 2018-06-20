@@ -165,7 +165,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
 	- Run <i>mongorestore</i> to populate the mongo database
 	- Change directories to <b>/share/devel/Gp/lab</b>
-	- Run <i>npm install<i>
+	- Run <i>npm install</i>
 	- Create a .env file with the following contents:
     	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
     	- <b>FGLAB_PORT=5080</b>
@@ -174,7 +174,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- <b>FGLAB_URL=http://localhost:5080</b>
 	- <b>FGMACHINE_URL=http://localhost:5081</b>
     - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
-	- Run <i>npm install<i>
+	- Run <i>npm install</i>
 	- Create a .env file with the following contents:
     	- <b>FGLAB_URL=http://localhost:5080</b>
     	- <b>FGMACHINE_URL=http://localhost:5081</b>
@@ -183,9 +183,20 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- Connect to:
     	- http://localhost:5080/
 
+## Testing ##
+
+### Integration ###
+To run the integration tests, from the root app directory run: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
+
+This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
+
+See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
+
+### Unit ###
 **Unit tests for python codes**
   -  need install nose via `pip install nose`
 
       ```
       nosetests -s -v tests\learn_tests.py
       ```
+     
