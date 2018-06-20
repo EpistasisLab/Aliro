@@ -102,7 +102,7 @@ CMD ["/bin/bash", "/root/start.sh"]
 
 # dbredis
 COPY files/dbredis-entrypoint.sh /usr/local/bin/
-ADD files/node_modules.tar.gz /root/
+COPY files/node_modules.tar.gz /root/
 RUN dos2unix /usr/local/bin/dbredis-entrypoint.sh
 CMD ["/bin/bash", "/usr/local/bin/dbredis-entrypoint.sh"]
 CMD ["redis-server","--daemonize","yes"]
