@@ -186,7 +186,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 ## Testing ##
 
 ### Integration ###
-To run the integration tests, from the root app directory run: `docker-compose -p integration-tests up --abort-on-container-exit`
+To run the integration tests, from the root app directory run: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
 
 This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
 
