@@ -37,11 +37,6 @@ app.use(express.static(path.join(__dirname, "public"), {
     index: false,
     maxAge: '1d'
 })); // Static directory
-app.use("/bower_components", express.static(path.join(__dirname, "bower_components"), {
-    index: false,
-    maxAge: '1d'
-})); // Bower components
-app.set("view engine", "jade"); // Jade template engine
 app.set('appPath', path.join(path.normalize(__dirname), '/www'));
 app.use(express.static(app.get('appPath')));
 app.use(morgan("tiny")); // Log requests
