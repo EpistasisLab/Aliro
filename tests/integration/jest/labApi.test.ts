@@ -60,7 +60,7 @@ it('integration run simple experiment on adult', async () => {
 
 	// submit simple experiment
 	let parms = new Map([
-		["dataset", algoId],
+		["dataset", adultId],
 		["criterion", "gini"],
 		["max_depth", 3],
 		["min_samples_split", 2],
@@ -73,7 +73,7 @@ it('integration run simple experiment on adult', async () => {
 		console.log("submitExperiment exception")
 		var json = await e.response.json() // get the specific error description
 		expect(json).toBeFalsy()
-		expect(e).toBeFasly() // break even if no message body returned
+		expect(e).toBeFalsy() // break even if no message body returned
 	}
 
 	// should finish within 20 seconds
