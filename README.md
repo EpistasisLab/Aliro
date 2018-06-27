@@ -61,7 +61,7 @@ recommendations using:
 
 3. **Build the base image**
   - It will take several minutes for the image to be built the first time this run.
-  - `docker build .\dockers\base -t pennai/base:latest`  
+  - `docker build ./dockers/base -t pennai/base:latest`  
 
 4. **Build the service containers**
   - It will take several minutes for the images to be built the first time this run.
