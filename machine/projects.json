@@ -16,210 +16,210 @@
         "results": "./examples/MDR"
     },
     "58535d64a52513003444132a": {
-        "cwd": "learn/deap-GP-SymbReg",
+        "cwd": "machine/learn/deap-GP-SymbReg",
         "command": "python",
         "args": ["main.py"],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/deap-GP-SymbReg/tmp/"
+        "results": "machine/learn/deap-GP-SymbReg/tmp/"
     },
     "58535b8fa525130034441327": {
-        "cwd": "learn/Meta-GA",
+        "cwd": "machine/learn/Meta-GA",
         "command": "python",
         "args": ["main.py"],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/Meta-GA/tmp/"
+        "results": "machine/learn/Meta-GA/tmp/"
     },
     "5813bdaec1321420f8bbcc7f": {
-        "cwd": "learn/BernoulliNB",
+        "cwd": "machine/learn/BernoulliNB",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/BernoulliNB/tmp"
+        "results": "machine/learn/BernoulliNB/tmp"
     },
     "5813bdb8c1321420f8bbcc80": {
-        "cwd": "learn/GaussianNB",
+        "cwd": "machine/learn/GaussianNB",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/GaussianNB/tmp"
+        "results": "machine/learn/GaussianNB/tmp"
     },
     "5813bdc4c1321420f8bbcc81": {
-        "cwd": "learn/MultinomialNB",
+        "cwd": "machine/learn/MultinomialNB",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/MultinomialNB/tmp"
+        "results": "machine/learn/MultinomialNB/tmp"
     },
     "5817660338215335404347c7": {
-        "cwd": "learn/DecisionTreeClassifier",
+        "cwd": "machine/learn/DecisionTreeClassifier",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/DecisionTreeClassifier/tmp"
+        "results": "machine/learn/DecisionTreeClassifier/tmp"
     },
     "5853571ca52513003444131b": {
-        "cwd": "learn/DecisionTreeRegressor",
+        "cwd": "machine/learn/DecisionTreeRegressor",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/DecisionTreeRegressor/tmp"
+        "results": "machine/learn/DecisionTreeRegressor/tmp"
     },
     "58535850a52513003444131e": {
-        "cwd": "learn/ElasticNetCV",
+        "cwd": "machine/learn/ElasticNetCV",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/ElasticNetCV/tmp"
+        "results": "machine/learn/ElasticNetCV/tmp"
     },
     "585358eba52513003444131f": {
-        "cwd": "learn/ExtraTreesRegressor",
+        "cwd": "machine/learn/ExtraTreesRegressor",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/ExtraTreesRegressor/tmp"
+        "results": "machine/learn/ExtraTreesRegressor/tmp"
     },
     "581791063821533540434826": {
-        "cwd": "learn/ExtraTreesClassifier",
+        "cwd": "machine/learn/ExtraTreesClassifier",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/ExtraTreesClassifier/tmp"
+        "results": "machine/learn/ExtraTreesClassifier/tmp"
     },
     "58535984a525130034441320": {
-        "cwd": "learn/GradientBoostingRegressor",
+        "cwd": "machine/learn/GradientBoostingRegressor",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/GradientBoostingRegressor/tmp"
+        "results": "machine/learn/GradientBoostingRegressor/tmp"
     },
     "581796a43821533540434890": {
-        "cwd": "learn/GradientBoostingClassifier",
+        "cwd": "machine/learn/GradientBoostingClassifier",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/GradientBoostingClassifier/tmp"
+        "results": "machine/learn/GradientBoostingClassifier/tmp"
     },
     "5817a21138215335404348cd": {
-        "cwd": "learn/KNeighborsClassifier",
+        "cwd": "machine/learn/KNeighborsClassifier",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/KNeighborsClassifier/tmp"
+        "results": "machine/learn/KNeighborsClassifier/tmp"
     },
     "58535a05a525130034441321": {
-        "cwd": "learn/KNeighborsRegressor",
+        "cwd": "machine/learn/KNeighborsRegressor",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/KNeighborsRegressor/tmp"
+        "results": "machine/learn/KNeighborsRegressor/tmp"
     },
     "58535a5aa525130034441322": {
-        "cwd": "learn/LassoLarsCV",
+        "cwd": "machine/learn/LassoLarsCV",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/LassoLarsCV/tmp"
+        "results": "machine/learn/LassoLarsCV/tmp"
     },
     "5817a73538215335404348ee": {
-        "cwd": "learn/LinearSVC",
+        "cwd": "machine/learn/LinearSVC",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/LinearSVC/tmp"
+        "results": "machine/learn/LinearSVC/tmp"
     },
     "58535b31a525130034441326": {
-        "cwd": "learn/LinearSVR",
+        "cwd": "machine/learn/LinearSVR",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/LinearSVR/tmp"
+        "results": "machine/learn/LinearSVR/tmp"
     },
     "5817ad7f3821533540434948": {
-        "cwd": "learn/LogisticRegression",
+        "cwd": "machine/learn/LogisticRegression",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/LogisticRegression/tmp"
+        "results": "machine/learn/LogisticRegression/tmp"
     },
     "5817af52382153354043496e": {
-        "cwd": "learn/RandomForestClassifier",
+        "cwd": "machine/learn/RandomForestClassifier",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/RandomForestClassifier/tmp"
+        "results": "machine/learn/RandomForestClassifier/tmp"
     },
     "58535c7ea525130034441328": {
-        "cwd": "learn/RandomForestRegressor",
+        "cwd": "machine/learn/RandomForestRegressor",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/RandomForestRegressor/tmp"
+        "results": "machine/learn/RandomForestRegressor/tmp"
     },
     "58535d09a525130034441329": {
-        "cwd": "learn/RidgeCV",
+        "cwd": "machine/learn/RidgeCV",
         "command": "python",
         "args": [
             "main.py"
         ],
         "options": "double-dash",
         "capacity": "0.1",
-        "results": "learn/RidgeCV/tmp"
+        "results": "machine/learn/RidgeCV/tmp"
     },
     "58535d09a525130034441330": {
         "cwd": "dockers",
