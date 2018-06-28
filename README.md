@@ -97,10 +97,40 @@ recommendations using:
 Fedora/Redhat/Systems with SELinux:
 chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 
-7. **Stop the network and docker containers**
-  ```
-  node pennai stop
-  ```
+7. **Log and error information**
+	- Check if all the dockers container are running.
+		```
+		docker ps
+		```
+		- stdout example
+		```
+		CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS
+              NAMES
+		d4ad130c87eb        pennai/dbmongo      "/bin/bash /root/ent…"   2 hours ago         Up 2 hours          127.0.0.1:27017->27017/tcp   dbmongo
+		65b8514e5f6d        515f2d36a67d        "/root/entrypoint.sh"    2 hours ago         Up 2 hours          127.0.0.1:5080->5080/tcp     lab
+		91141272ac16        pennai/dbredis      "docker-entrypoint.s…"   2 hours ago         Up 2 hours          127.0.0.1:6379->6379/tcp     dbredis
+		b966455ea8e0        pennai/machine      "/bin/bash /root/sta…"   2 hours ago         Up 2 hours          127.0.0.1:5081->5081/tcp     machine
+		76e967cad1ab        pennai/paix01       "/bin/bash /root/ent…"   2 hours ago         Up 2 hours					paix01
+		d1b4276df651        pennai/paiwww       "/bin/bash /root/sta…"   2 hours ago         Up 2 hours          127.0.0.1:443->443/tcp       paiwww
+		```
+	- If the machine is not working or experiments failed:
+		```
+		docker attach machine
+		cd ~\.pm2\logs # check log files of stdout and stderr 
+		```
+	- If the website is not accessible and `pm2` is running
+		```
+		docker attach lab
+		cd ~\.pm2\logs # check log files of stdout and stderr
+		```
+	- If the website is not accessiable and `pm2` is not running
+		```
+		docker attach lab
+		# Check PROJECT_ROOT
+		cd $PROJECT_ROOT
+		# make sure there are .env file are node_modules folder
+		# if not, check the commands in dockers\lab\files\entrypoint.sh for reruning initial steps for error messages.
+		```
 
 **Host Based Install (Deprecated)**
 1. **Check out the project**
