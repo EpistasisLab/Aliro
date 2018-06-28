@@ -13,8 +13,9 @@ cd ${PROJECT_ROOT}/lab
 if [ -d 'node_modules' ]; then
     echo "npm ready"
 else
-    echo "unzipping npm dependencies and then installing pm2"
+    echo "unzipping npm dependencies"
     tar -zvxf /root/node_modules.tar.gz node_modules
+    echo "unzipping complete"
     npm install
 fi
 
@@ -22,8 +23,8 @@ if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
 npm run build
-npm install -g pm2
-touch .env
+#npm install -g pm2
+#touch .env
 pm2 start lab.config.js --watch
 
 #figure out where we are running
@@ -35,5 +36,6 @@ then
     done
     cat /tmp/die.txt
 else
-    bash
+    #bash
+    pm2 logs
 fi
