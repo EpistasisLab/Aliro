@@ -128,10 +128,3 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 3. **Test the lab**
 	- Connect to:
     	- http://localhost:5080/
-
-**Unit tests for python codes**
-  -  need install nose via `pip install nose`
-
-      ```
-      nosetests -s -v tests\learn_tests.py
-      ```
