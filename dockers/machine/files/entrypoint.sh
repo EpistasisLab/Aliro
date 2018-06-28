@@ -16,12 +16,17 @@ then
     export IP=`wget -qO- http://instance-data/latest/meta-data/local-ipv4`
     export MACHINE_URL=http://${IP}:${MACHINE_PORT}
 fi
-if [ -d 'node_modules' ]; then
+
+if [ -d 'node_modules/.staging' ]; then
+    echo "npm partially installed, node_modules/.staging exists. Continuing install..."
+    npm install
+elif [ -d 'node_modules' ]; then
     echo "npm ready"
 else
-    echo "installing npm, bower and webpack"
+    echo "installing npm"
     npm install
 fi
+
 pm2 start machine.config.js --watch
 if [ ${ISAWS} -eq 1 ]
 then

@@ -2,12 +2,6 @@ FROM pennai/base:latest
 
 WORKDIR /opt/
 
-## FGLab server
-
-COPY files/entrypoint.sh /root/
-COPY files/env /opt/.env
-RUN dos2unix /root/entrypoint.sh
-
 ## Redis and Webserver
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r redis && useradd -r -g redis redis
@@ -108,10 +102,18 @@ CMD ["/bin/bash", "/root/start.sh"]
 
 # dbredis
 COPY files/dbredis-entrypoint.sh /usr/local/bin/
-ADD files/node_modules.tar.gz /root/
+COPY files/node_modules.tar.gz /root/
 RUN dos2unix /usr/local/bin/dbredis-entrypoint.sh
 CMD ["/bin/bash", "/usr/local/bin/dbredis-entrypoint.sh"]
 CMD ["redis-server","--daemonize","yes"]
+
+## FGLab server
+COPY files/entrypoint.sh /root/
+COPY files/env /opt/.env
+RUN dos2unix /root/entrypoint.sh
+
+WORKDIR /root/
+RUN npm install -g pm2
 
 EXPOSE 443
 EXPOSE 5080
