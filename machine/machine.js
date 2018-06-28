@@ -440,7 +440,7 @@ wss.on("connection", (ws) => {
 var getProjects = function() {
     var deferred = Q.defer();
     var project_list = [];
-    var learnpath = project_root + 'machine/learn';
+    var learnpath = project_root + '/machine/learn';
     var deferred = Q.defer;
     //get a list of folders in the learn directory
     var dirs = fs.readdirSync(learnpath)
