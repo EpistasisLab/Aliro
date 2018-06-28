@@ -6,10 +6,23 @@ if [ ! -f '/root/forum' ]; then
     for metadata in `find ${PROJECT_ROOT}/machine/datasets/ | grep metadata`;do rm -f $metadata;done
 fi
 if [ ! -d 'node_modules' ]; then
-    echo "installing npm, bower and webpack"
+    echo "installing npm"
     npm install
-    npm -g install pm2
 fi
+
+
+if [ -d 'node_modules/.staging' ]; then
+    echo "npm partially installed, node_modules/.staging exists. Continuing install..."
+    npm install
+elif [ ! -d 'node_modules' ]; then
+    echo "installing npm"
+    npm install
+else
+    echo "npm ready"
+fi
+
+
 sleep 5
 pm2 start machine.config.js
-bash
+pm2 logs
+#bash

@@ -4,11 +4,8 @@ import fetch from 'isomorphic-fetch';
 export const get = (route) => {
   return fetch(route, {
     credentials: 'include'
-  })
-    .then(response => {
-      if(response.status >= 400) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }  
+  }).then(checkStatus)
+    .then(response => { 
       return response.json();
     })
     .then(json => json);
@@ -17,11 +14,8 @@ export const get = (route) => {
 export const getFile = (route) => {
   return fetch(route, {
     credentials: 'include'
-  })
-    .then(response => {
-      if(response.status >= 400) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }  
+  }).then(checkStatus)
+    .then(response => { 
       return response.blob();
     })
     .then(json => json);
@@ -38,11 +32,8 @@ export const post = (route, body) => {
     mode: 'cors',
     cache: 'default',
     body: JSON.stringify(body)
-  })
+  }).then(checkStatus)
     .then(response => {
-      if(response.status >= 400) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }
       return response.json();
     })
     .then(json => json);
@@ -59,12 +50,20 @@ export const put = (route, body) => {
     mode: 'cors',
     cache: 'default',
     body: JSON.stringify(body)
-  })
+  }).then(checkStatus)
     .then(response => {
-      if(response.status >= 400) {
-        throw new Error(`${response.status}: ${response.statusText}`);
-      }
       return response.json();
     })
     .then(json => json);
+};
+
+
+function checkStatus(response) {
+  if (response.status >= 400) {
+    var error = new Error(`${response.status}: ${response.statusText}`);
+    error.response = response;
+    throw error;
+  } else {
+    return response
+  }
 };
