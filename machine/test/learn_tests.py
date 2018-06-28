@@ -173,7 +173,7 @@ input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.f
 model = joblib.load({})
 # Applcation 1: cross validation of fitted model
 testing_features = input_data.drop('TARGET', axis=1).values
-testing_target = tpot_data['TARGET'].values
+testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
