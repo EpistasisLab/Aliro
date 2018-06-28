@@ -6,7 +6,7 @@ services:
     build: ./tests/integration
     #command: bash
     #command: npm test
-    command: ["./wait-for-it.sh", "-t", "200", "lab:5080", "--", "npm", "test"]
+    command: ["/opt/wait-for-it.sh", "-t", "200", "lab:5080", "--", "npm", "test"]
     depends_on: 
       - lab
       - machine

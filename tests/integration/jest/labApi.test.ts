@@ -40,12 +40,12 @@ it('integration fetchAlgorithms', () => {
 
 
 it('integration run simple experiment on adult', async () => {
- 	expect.assertions(5);
- 	console.log('integration runExperiment on adult')
+ 	//expect.assertions(5);
+ 	//console.log('integration runExperiment on adult')
 
  	// get adult
  	var datasets = await labApi.fetchDatasets();
- 	expect(datasets.length).toBeGreaterThan(50);
+ 	expect(datasets.length).toBeGreaterThan(1);
  	var adultId = datasets.find(function(element) {return element.name == 'adult';})._id;
  	expect(adultId).toBeTruthy();
 
@@ -59,16 +59,23 @@ it('integration run simple experiment on adult', async () => {
 	//await labApi.fetchExperiments().resolves.toBeFalsy()
 
 	// submit simple experiment
-	var parms = {
-		"dataset": algoId,
-		"criterion": "gini",
-		"max_depth": 3,
-		"min_samples_split": 2,
-		"min_samples_leaf": 1
+	let parms = new Map([
+		["dataset", adultId],
+		["criterion", "gini"],
+		["max_depth", 3],
+		["min_samples_split", 2],
+		["min_samples_leaf", 1]
+	]);
+
+	try {
+		await labApi.submitExperiment(algoId, parms)
+	} catch (e) {
+		console.log("submitExperiment exception")
+		var json = await e.response.json() // get the specific error description
+		expect(json).toBeFalsy()
+		expect(e).toBeFalsy() // break even if no message body returned
 	}
 
-	await labApi.submitExperiment(algoId, parms)
-
 	// should finish within 20 seconds
-	await labApi.fetchExperiments().resolves.toBeTruthy()
+	//await labApi.fetchExperiments().resolves.toBeTruthy()
 });

@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.utils import safe_sqr
 from eli5.sklearn import PermutationImportance
 from sklearn.preprocessing import LabelEncoder
+from sklearn.externals import joblib
 
 
 
@@ -68,7 +69,10 @@ SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
-def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='classification', figure_export=figure_export):
+def generate_results(model, input_file,
+    tmpdir, _id, target_name='class',
+    mode='classification', figure_export=figure_export,
+    random_state=random_state):
     """generate reaults for apply a model on a datasetself.
     model: a machine learning model with scikit-learn API
     input_file: input file in csv format
@@ -77,6 +81,7 @@ def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='
     _id: experiment id
     mode: 'classification' or 'regression'
     figure_export: Ture or False for exporting figures
+    random_state: random seed
 
     """
     print('loading..')
@@ -127,12 +132,16 @@ def generate_results(model, input_file, tmpdir, _id, target_name='class', mode='
     if hasattr(model, 'random_state'):
         setattr(model, 'random_state', random_state)
 
-    pipeline_text = generate_export_codes(model)
+
+    # fit model
+    model.fit(training_features, training_classes)
+    # dump fitted module as pickle file
+    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
+    joblib.dump(model, pickle_file)
+    pipeline_text = generate_export_codes(pickle_file)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
     export_scripts.close()
-    # fit model
-    model.fit(training_features, training_classes)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
@@ -370,11 +379,11 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
 
-def generate_export_codes(model):
+def generate_export_codes(pickle_file):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
-    model: scikit-learn estimator
+    pickle_file: a pickle file for a fitted scikit-learn estimator
     Returns
     -------
     pipeline_text: String
@@ -387,10 +396,7 @@ def generate_export_codes(model):
     pipeline_imports = {
         'sklearn.model_selection': ['train_test_split'],
     }
-    model_import_path = str(model.__class__).split('\'')[1].split('.')
-    op_name = model_import_path[-1]
-    pipeline_imports[".".join(model_import_path[:-1])] = [op_name]
-    params = model.get_params()
+
 
     # Build import string
     for key in sorted(pipeline_imports.keys()):
@@ -398,19 +404,21 @@ def generate_export_codes(model):
         pipeline_text += 'from {} import {}\n'.format(key, module_list)
 
     pipeline_text += """
-# NOTE: Make sure that the target (y) is labeled 'target' in the data file
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-features = input_data.drop('target', axis=1).values
-training_features, testing_features, training_target, testing_target = \\
-            train_test_split(features, tpot_data['target'].values, random_state=42)
 """
-    op_arguments = ['{}={}'.format(key, params[key]) for key in sorted(params.keys())]
-
-    pipeline_text += "\nmodel={}({})".format(op_name, ", ".join(op_arguments))
-
     pipeline_text += """
-model.fit(training_features, training_target)
-results = model.predict(testing_features)
+# load fitted model
+model = joblib.load({})""".format(pickle_file)
+    pipeline_text += """
+# Applcation 1: cross validation of fitted model
+testing_features = input_data.drop('TARGET', axis=1).values
+testing_target = input_data['TARGET'].values
+# Get holdout score for fitted model
+print(model.score(testing_features, testing_target))
+
+# Applcation 2: predict outcome by fitted model
+predict_target = model.predict(input_data.values)
 """
 
     return pipeline_text
