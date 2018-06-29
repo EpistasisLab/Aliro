@@ -92,7 +92,7 @@ var processUserDataset = function(username, dataset_name) {
         // if metadata exists, ignore
         var metadata_json = dataset_path + '/metadata.json'
         if (fs.existsSync(metadata_json) && !debug) {
-            console.log('exists')
+            //console.log('exists')
         } else {
             metadata = {
                 'name': dataset_name,
@@ -100,7 +100,7 @@ var processUserDataset = function(username, dataset_name) {
                 'timestamp': Date.now(),
                 'files': []
             }
-if(files) {
+        if(files) {
             for (var i = 0; i < files.length; i++) {
                 if (files[i].toUpperCase() == 'README.MD') {
                     //todo:parse README
