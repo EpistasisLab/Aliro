@@ -14,3 +14,4 @@ rec_state.obj
 *.pem
 htpasswd
 desktop.ini
+machine/datasets/**/metadata.json
