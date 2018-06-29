@@ -5,11 +5,6 @@ if [ ! -f '/root/forum' ]; then
     rm -f ${PROJECT_ROOT}/machine/specs.json
     for metadata in `find ${PROJECT_ROOT}/machine/datasets/ | grep metadata`;do rm -f $metadata;done
 fi
-if [ ! -d 'node_modules' ]; then
-    echo "installing npm"
-    npm install
-fi
-
 
 if [ -d 'node_modules/.staging' ]; then
     echo "npm partially installed, node_modules/.staging exists. Continuing install..."
