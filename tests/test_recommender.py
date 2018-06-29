@@ -36,7 +36,7 @@ def test_ave_rec():
     # del pennai
 
     # test updating scores
-    epochs = 100
+    epochs = 5 
     datlen = int(data.shape[0] / float(epochs))
     pennai = AverageRecommender()
     n_recs = 1
@@ -46,13 +46,16 @@ def test_ave_rec():
         ml, p, scores = pennai.recommend(n_recs=n_recs)
         print(str(n), ': ml:', ml,', p:', p, 'scores=', scores)
 
+# @mock.patch('requests.post',autospec=True)
 def test_rand_rec():
     """Rand recommender updates and recommends without error"""
 
     # test updating scores
-    epochs = 100
+    epochs = 5
     datlen = int(data.shape[0] / float(epochs))
-    pennai = RandomRecommender()
+    # set up mock ml_p for random recommender
+    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
+    pennai = RandomRecommender(ml_p=ml_p)
     n_recs = 1
     for n in np.arange(epochs):
         new_data = data.iloc[n * datlen:(n + 1) * datlen]
@@ -62,8 +65,13 @@ def test_rand_rec():
 
 def test_n_recs():
     """Recommender returns correct number of recommendations"""
+
+    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
     for recommender in [AverageRecommender, RandomRecommender]:
-        pennai = recommender()
+        if recommender is RandomRecommender:
+            pennai = recommender(ml_p=ml_p)
+        else:
+            pennai = recommender()
         pennai.update(data)
         # test updating scores
         for n_recs in np.arange(10):
@@ -72,11 +80,11 @@ def test_n_recs():
             assert(len(p)==n_recs)
             assert(len(scores)==n_recs)
 
-def test_db_grab():
-    """loading database grabs right info"""
-    pennai= AI()
-    pennai.db_to_results_data()
+# def test_db_grab():
+#     """loading database grabs right info"""
+#     pennai= AI()
+#     pennai.db_to_results_data()
 
-test_ave_rec()
-test_rand_rec()
-test_n_recs()
+# test_ave_rec()
+# test_rand_rec()
+# test_n_recs()

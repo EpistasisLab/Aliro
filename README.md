@@ -227,6 +227,7 @@ See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/test
   -  need install nose via `pip install nose`
 
       ```
-      nosetests -s -v tests\learn_tests.py
+      nosetests -s -v tests/learn_tests.py # tests sklearn
+      nosetests -s -v tests/test_recommender.py # tests recommender
       ```
      
