@@ -221,8 +221,7 @@ To run the integration tests, from the root app directory run: `docker-compose -
 This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
 
 See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
-<<<<<<< HEAD
-=======
+
 
 ### Unit ###
 **Unit tests for python codes**
@@ -233,4 +232,4 @@ See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/test
       nosetests -s -v tests/test_recommender.py # tests recommender
       ```
      
->>>>>>> pennai_lite
+
