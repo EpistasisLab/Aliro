@@ -305,17 +305,6 @@ body {
     float: right;
 }
 
-.react-draggable {
-    cursor: move;
-}
-
-.navbar > .react-draggable {
-    position: absolute;
-    right: 1em;
-    bottom: 1em;
-    z-index: 100;
-}
-
 @media (max-width: 321px) {
 
 }
