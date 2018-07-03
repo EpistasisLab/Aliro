@@ -17,6 +17,15 @@
       "jsx",
       "json",
       "node"
+    ],
+    "reporters": [
+      "default",
+      ["./node_modules/jest-html-reporter", {
+          "pageTitle": "Jest Integration Test Suite",
+          "includeFailureMsg": true,
+          "includeConsoleLog": true,
+          "outputPath": "/results/test-report.html"
+      }]
     ]
   },
   "babel": {
@@ -31,6 +40,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "jest": "^23.1.0",
+    "jest-html-reporter": "^2.4.1",
     "react-test-renderer": "^16.4.0",
     "ts-jest": "^22.4.6",
     "typescript": "^2.9.1"

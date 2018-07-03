@@ -15,3 +15,4 @@ rec_state.obj
 htpasswd
 desktop.ini
 machine/datasets/**/metadata.json
+tests/integration/results/*
