@@ -11,6 +11,8 @@ services:
       - "443:443"
       - "5080:5080"
     env_file: common.env
+    depends_on: 
+      - dbmongo
 
   machine:
     build: dockers/machine
@@ -21,6 +23,9 @@ services:
     ports: 
       - "5081:5081"
     env_file: common.env
+    depends_on: 
+      - lab
+      - dbmongo
 
   dbmongo:
     build: dockers/dbmongo

@@ -17,7 +17,9 @@ else
 fi
 
 
-sleep 5
-pm2 start machine.config.js
+echo "waiting for lab to be responsive..."
+/root/wait-for-it.sh -t 200 lab:5080 -- pm2 start machine.config.js
+
+#pm2 start machine.config.js
 pm2 logs
 #bash
