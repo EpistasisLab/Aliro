@@ -8,9 +8,11 @@ build
 .bash_history
 *.swp
 experiment.json
+metadata.json
 *tmp/
 node_modules
 rec_state.obj
 *.pem
 htpasswd
 desktop.ini
+metadata.json
