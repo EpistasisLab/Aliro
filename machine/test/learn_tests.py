@@ -3,7 +3,7 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-from learn.skl_utils import generate_results, generate_export_codes, SCORERS
+from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -16,8 +16,8 @@ test_clf_input = "test/iris.tsv"
 # test inputfile for regression
 test_reg_input = "test/1027_ESL.tsv"
 
-test_clf = DecisionTreeClassifier(random_state=42)
-test_reg = DecisionTreeRegressor(random_state=42)
+test_clf = DecisionTreeClassifier()
+test_reg = DecisionTreeRegressor()
 
 def test_generate_results_1():
     """Test generate results can produce right outputs in classification mode."""
@@ -138,6 +138,16 @@ def test_generate_results_4():
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
     rmtree(tmpdir)
+
+
+def test_setup_model_params():
+    """Test setup_model_params update parameter in a scikit-learn model"""
+    new_model = setup_model_params(test_clf, 'random_state', 32)
+    new_model = setup_model_params(new_model, 'class_weight', 'balanced')
+    params = new_model.get_params()
+
+    assert params['random_state'] == 32
+    assert params['class_weight'] == 'balanced'
 
 
 def test_generate_export_codes():

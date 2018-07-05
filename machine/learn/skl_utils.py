@@ -126,15 +126,15 @@ def generate_results(model, input_file,
         testing_classes = le.transform(testing_labels)
 
 
-    print('args used in model:', model.get_params())
+
 
     # fix random_state
-    if hasattr(model, 'random_state'):
-        setattr(model, 'random_state', random_state)
+    model = setup_model_params(model, 'random_state', random_state)
     # set class_weight
-    if hasattr(model, 'class_weight'):
-        setattr(model, 'class_weight', 'balanced')
+    model = setup_model_params(model, 'class_weight', 'balanced')
 
+    print('args used in model:', model.get_params())
+    
     # fit model
     model.fit(training_features, training_classes)
     # dump fitted module as pickle file
@@ -277,6 +277,24 @@ def generate_results(model, input_file,
     predicted_classes_list = predicted_classes.tolist()
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=predicted_classes_list)
+
+
+def setup_model_params(model, parameter_name, value):
+    """setup parameter in a model.
+
+    model: a scikit-learn model
+    parameter_name: string, parameter name in the scikit-learn model
+    value: value for this parameter
+
+    return:
+    model: a new scikit-learn model with a updated parameter
+    """
+    # fix random_state
+    if hasattr(model, parameter_name):
+        setattr(model, parameter_name, value)
+    return model
+
+
 
 def compute_imp_score(model, training_features, training_classes, random_state):
     # exporting/computing importance score
