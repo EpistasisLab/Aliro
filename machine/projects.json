@@ -1,36 +1,4 @@
 {
-    "57bf24e1548cd20008bc71df": {
-        "cwd": "gpocl/build",
-        "command": "./gpocl",
-        "args": ["../datasets/gei.csv"],
-        "capacity": "0.1",
-        "options": "double-dash-noequals",
-        "results": "./examples/GP"
-    },
-    "57c5a83f4b09d40023ee4f6e": {
-        "cwd": "mdr/bin",
-        "command": "/opt/conda/bin/python",
-        "args": ["process.py"],
-        "capacity": "0.1",
-        "options": "double-dash",
-        "results": "./examples/MDR"
-    },
-    "58535d64a52513003444132a": {
-        "cwd": "machine/learn/deap-GP-SymbReg",
-        "command": "python",
-        "args": ["main.py"],
-        "options": "double-dash",
-        "capacity": "0.1",
-        "results": "machine/learn/deap-GP-SymbReg/tmp/"
-    },
-    "58535b8fa525130034441327": {
-        "cwd": "machine/learn/Meta-GA",
-        "command": "python",
-        "args": ["main.py"],
-        "options": "double-dash",
-        "capacity": "0.1",
-        "results": "machine/learn/Meta-GA/tmp/"
-    },
     "5813bdaec1321420f8bbcc7f": {
         "cwd": "machine/learn/BernoulliNB",
         "command": "python",

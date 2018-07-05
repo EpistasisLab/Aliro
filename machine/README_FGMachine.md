@@ -5,8 +5,6 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 [![Docker Stars](https://img.shields.io/docker/stars/kaixhin/fgmachine.svg)](https://hub.docker.com/r/kaixhin/fgmachine/)
 
-# ![FGMachine](public/images/fgmachine-logo.png)
-
 ### **Quickstart: https://kaixhin.github.io/FGLab/**
 
 FGLab is a machine learning dashboard, designed to make prototyping experiments easier. Experiment details and results are sent to a database, which allows analytics to be performed after their completion. The server is [FGLab](https://github.com/Kaixhin/FGLab), and the clients are FGMachines.
@@ -81,7 +79,7 @@ FGMachine automatically reloads the `projects.json` file when it is changed.
 
 ### Experiments
 
-Results and custom data must be saved as files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. For an example that uses the following features, see [rand.js](test/rand.js). 
+Results and custom data must be saved as files into a subfolder in the specified results directory, where the name of the subfolder is the experiment ID, e.g. `/data/mnist/55e069f9cf4e1fe075b76b95`. For an example that uses the following features, see [rand.js](test/rand.js).
 
 Non-JSON files are uploaded to MongoDB [GridFS](http://docs.mongodb.org/manual/core/gridfs/) via FGLab, which allows them to be downloaded later in their native format. Images and videos are automatically displayed on the experiment page, allowing plots to be created by the machine learning code. JSON files are automatically parsed, with fields being added to the experiment object. An example, `notes.json`, may look like this:
 
