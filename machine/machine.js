@@ -132,6 +132,7 @@ fs.readFile("specs.json", "utf-8")
                         if (msg.projects !== undefined) {
                             projects = msg.projects;
                         }
+                        //console.log("projects: ", projects)
                     });
             })
             .catch((err) => {
@@ -160,6 +161,7 @@ if (process.env.CAPACITY) {
     maxCapacity = process.env.CAPACITY;
 }
 console.log("capacity is", maxCapacity)
+//console.log("projects: ", projects)
 
 
 var getCapacity = function(projId) {
@@ -179,7 +181,12 @@ app.options("/projects", cors({
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
     var capacity = getCapacity(req.params.id);
-    if (capacity === 0) {
+    if(typeof projects[req.params.id] === 'undefined') {
+        res.status(501);
+        res.send({
+            error: "Project '" + req.params.id + "' does not exist"
+        });
+    } else if (capacity === 0) {
         res.status(501);
         res.send({
             error: "No capacity available"
@@ -196,7 +203,12 @@ app.get("/projects/:id/capacity", (req, res) => {
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available
-    if (getCapacity(req.params.id) === 0) {
+    if(typeof projects[req.params.id] === 'undefined') {
+        res.status(501);
+        res.send({
+            error: "Project '" + req.params.id + "' does not exist"
+        });
+    } else if (getCapacity(req.params.id) === 0) {
         res.status(501);
         return res.send({
             error: "No capacity available"

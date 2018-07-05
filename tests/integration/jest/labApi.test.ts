@@ -55,7 +55,7 @@ it('integration run simple experiment on adult', async () => {
  	var algoId = algorithms.find(function(element) {return element.name == 'DecisionTreeClassifier';})._id;
  	expect(algoId).toBeTruthy();
 
- 	// no pending or finished experiments on adult
+ 	// no experiments
 	//await labApi.fetchExperiments().resolves.toBeFalsy()
 
 	// submit simple experiment
@@ -64,11 +64,11 @@ it('integration run simple experiment on adult', async () => {
 		["criterion", "gini"],
 		["max_depth", 3],
 		["min_samples_split", 2],
-		["min_samples_leaf", 1]
+		["min_samples_leaf", 1],
 	]);
 
 	try {
-		await labApi.submitExperiment(algoId, parms)
+		var submitResult = await labApi.submitExperiment(algoId, parms)
 	} catch (e) {
 		console.log("submitExperiment exception")
 		var json = await e.response.json() // get the specific error description
@@ -76,6 +76,19 @@ it('integration run simple experiment on adult', async () => {
 		expect(e).toBeFalsy() // break even if no message body returned
 	}
 
-	// should finish within 20 seconds
-	//await labApi.fetchExperiments().resolves.toBeTruthy()
+	expect(submitResult).toBeTruthy()
+	console.log("SubmitResult: ", submitResult)
+
+	// wait for the process to finish runing
+	var experimentResults = await labApi.fetchExperiment(submitResult._id)
+	console.log("experimentResults: ", experimentResults)
+	expect(experimentResults._status).toBeTruthy()
+
+	while (experimentResults._status === ('running')) {
+		setTimeout(function(){}, 30)
+		experimentResults = await labApi.fetchExperiment(submitResult._id)
+		console.log("experimentResults: ", experimentResults)
+	}
+
+	expect(experimentResults._status).toEqual('success')
 });
