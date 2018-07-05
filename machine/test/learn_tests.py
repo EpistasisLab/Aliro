@@ -11,10 +11,10 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 # test input file for classification
-test_clf_input = "tests/iris.tsv"
+test_clf_input = "test/iris.tsv"
 
 # test inputfile for regression
-test_reg_input = "tests/1027_ESL.tsv"
+test_reg_input = "test/1027_ESL.tsv"
 
 test_clf = DecisionTreeClassifier(random_state=42)
 test_reg = DecisionTreeRegressor(random_state=42)

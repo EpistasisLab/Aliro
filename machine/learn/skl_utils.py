@@ -131,7 +131,9 @@ def generate_results(model, input_file,
     # fix random_state
     if hasattr(model, 'random_state'):
         setattr(model, 'random_state', random_state)
-
+    # set class_weight
+    if hasattr(model, 'class_weight'):
+        setattr(model, 'class_weight', 'balanced')
 
     # fit model
     model.fit(training_features, training_classes)
