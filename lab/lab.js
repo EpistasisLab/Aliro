@@ -32,8 +32,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(compression()); // Compress all Express requests
-app.use(favicon(path.join(__dirname, "public/favicon.ico"))); // Deal with favicon requests
-app.use(express.static(path.join(__dirname, "public"), {
+app.use(favicon(path.join(__dirname, "www/favicon.ico"))); // Deal with favicon requests
+app.use(express.static(path.join(__dirname, "www"), {
     index: false,
     maxAge: '1d'
 })); // Static directory
