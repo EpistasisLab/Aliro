@@ -85,9 +85,9 @@ it('integration run simple experiment on adult', async () => {
 	expect(experimentResults._status).toBeTruthy()
 
 	while (experimentResults._status === ('running')) {
-		setTimeout(function(){}, 30)
+		setTimeout(function(){}, 300)
 		experimentResults = await labApi.fetchExperiment(submitResult._id)
-		console.log("experimentResults: ", experimentResults)
+		//console.log("experimentResults: ", experimentResults)
 	}
 
 	expect(experimentResults._status).toEqual('success')
