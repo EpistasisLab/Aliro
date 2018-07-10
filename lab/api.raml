@@ -267,6 +267,37 @@ mediaType: application/json
                   }
                 }
               }
+    /projects:
+      post:
+
+        description: Registers machine projects
+        body:
+          application/json:
+            example:
+              {
+              [ { name: 'BernoulliNB',
+                      command: 'python',
+                      cwd: 'machine/learn/BernoulliNB',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/BernoulliNB/tmp' },
+                    { name: 'DecisionTreeClassifier',
+                      command: 'python',
+                      cwd: 'machine/learn/DecisionTreeClassifier',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/DecisionTreeClassifier/tmp' },
+                    { name: 'DecisionTreeRegressor',
+                      command: 'python',
+                      cwd: 'machine/learn/DecisionTreeRegressor',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/DecisionTreeRegressor/tmp' }
+              ]
+              }
 /files:
   /{fileId}:
     get:
