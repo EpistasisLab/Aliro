@@ -6,7 +6,7 @@
 import * as labApi from './labApi';
 
 
-it('integration fetchDatasets', () => {
+it('lab fetchDatasets', () => {
 	expect.assertions(2);
 	return labApi.fetchDatasets().then((data) => {
 		//console.log("fetchDatasets: ");
@@ -20,7 +20,7 @@ it('integration fetchDatasets', () => {
 	});
 });
 
-it('integration fetchMachines', () => {
+it('lab fetchMachines', () => {
  	expect.assertions(1);
  	return labApi.fetchMachines().then((data) => {
  		//console.log("fetchMachines: ");
@@ -29,7 +29,7 @@ it('integration fetchMachines', () => {
 	});
 };
 
-it('integration fetchAlgorithms', () => {
+it('lab fetchAlgorithms', () => {
  	expect.assertions(1);
  	return labApi.fetchAlgorithms().then((data) => {
  		//console.log("fetchAlgorithms: ");
@@ -39,7 +39,7 @@ it('integration fetchAlgorithms', () => {
 };
 
 
-it('integration run simple experiment on adult', async () => {
+it('lab run simple experiment on adult', async () => {
  	//expect.assertions(5);
  	//console.log('integration runExperiment on adult')
 
@@ -60,7 +60,7 @@ it('integration run simple experiment on adult', async () => {
 
 	// submit simple experiment
 	let parms = new Map([
-		["dataset", adultId],
+		["dataset_id", adultId],
 		["criterion", "gini"],
 		["max_depth", 3],
 		["min_samples_split", 2],
@@ -84,11 +84,12 @@ it('integration run simple experiment on adult', async () => {
 	console.log("experimentResults: ", experimentResults)
 	expect(experimentResults._status).toBeTruthy()
 
+/*
 	while (experimentResults._status === ('running')) {
-		setTimeout(function(){}, 300)
+		setTimeout(function(){}, 10000)
 		experimentResults = await labApi.fetchExperiment(submitResult._id)
 		//console.log("experimentResults: ", experimentResults)
 	}
-
+*/
 	expect(experimentResults._status).toEqual('success')
 });

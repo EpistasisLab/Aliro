@@ -28,6 +28,7 @@ class Experiment:
 
 def get_input(schema, tmpdir):
     args = parse_args(get_params(schema))
+    assert args['_id']
     input_file = get_input_file(args['_id'], tmpdir)
     if 'input_file' in args and input_file == 0:
         input_file = args['input_file']
@@ -82,6 +83,9 @@ def get_input_file(_id, tmpdir):
     jsondata = json.loads(response.data.decode('utf-8'))
     #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
+    if (_dataset_id is None): 
+        raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
+
     response = http.request('GET', 'http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.data.decode('utf-8'))
     files = jsondata['files']
