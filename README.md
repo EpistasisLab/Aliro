@@ -170,7 +170,7 @@ chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
 	- If the machine is not working or experiments failed:
 		```
 		docker attach machine
-		cd ~\.pm2\logs # check log files of stdout and stderr 
+		cd ~\.pm2\logs # check log files of stdout and stderr
 		```
 	- If the website is not accessible and `pm2` is running
 		```
@@ -228,7 +228,5 @@ See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/test
   -  need install nose via `pip install nose`
 
       ```
-      nosetests -s -v tests/test_recommender.py # tests recommender
+      nosetests -s -v ai/tests/test_recommender.py # tests recommender
       ```
-     
-
