@@ -1,4 +1,3 @@
-require("./env"); // Load configuration variables
 var Promise = require("bluebird");
 var db = require("./db").db;
 exports.validateParams = function(projId, options, datasetId, callback) {

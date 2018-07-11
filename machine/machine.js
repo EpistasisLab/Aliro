@@ -199,6 +199,14 @@ app.get("/projects/:id/capacity", (req, res) => {
     }
 });
 
+/** 
+* Get current projects 
+* Used for debugging to make sure machine state is in sync with lab state
+*/
+app.get("/projects", (req, res) => {
+    res.send(projects);
+});
+
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available

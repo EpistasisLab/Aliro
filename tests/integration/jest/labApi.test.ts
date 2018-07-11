@@ -9,22 +9,17 @@ import * as labApi from './labApi';
 it('lab fetchDatasets', () => {
 	expect.assertions(2);
 	return labApi.fetchDatasets().then((data) => {
-		//console.log("fetchDatasets: ");
- 		//console.log(data);
 		expect(data.length).toBeGreaterThan(50);
 		var adult = data.find(function(element) {
 		  return element.name == 'adult';
 		});
 		expect(adult).toBeTruthy();
- 		//console.log(adult);
 	});
 });
 
 it('lab fetchMachines', () => {
  	expect.assertions(1);
  	return labApi.fetchMachines().then((data) => {
- 		//console.log("fetchMachines: ");
- 		//console.log(data);
   		expect(data.length).toEqual(1);
 	});
 };
@@ -32,24 +27,20 @@ it('lab fetchMachines', () => {
 it('lab fetchAlgorithms', () => {
  	expect.assertions(1);
  	return labApi.fetchAlgorithms().then((data) => {
- 		//console.log("fetchAlgorithms: ");
- 		//console.log(data);
   		expect(data.length).toBeGreaterThan(10);
 	});
 };
 
 
-it('lab run simple experiment on adult', async () => {
- 	//expect.assertions(5);
- 	//console.log('integration runExperiment on adult')
+it('lab run dt experiment on adult', async () => {
 
- 	// get adult
+ 	// get adult dataset
  	var datasets = await labApi.fetchDatasets();
  	expect(datasets.length).toBeGreaterThan(1);
  	var adultId = datasets.find(function(element) {return element.name == 'adult';})._id;
  	expect(adultId).toBeTruthy();
 
- 	// get algorithm
+ 	// get decision tree algorithm
  	var algorithms = await labApi.fetchAlgorithms();
  	expect(algorithms.length).toBeGreaterThan(10);
  	var algoId = algorithms.find(function(element) {return element.name == 'DecisionTreeClassifier';})._id;
@@ -59,13 +50,13 @@ it('lab run simple experiment on adult', async () => {
 	//await labApi.fetchExperiments().resolves.toBeFalsy()
 
 	// submit simple experiment
-	let parms = new Map([
-		["dataset_id", adultId],
-		["criterion", "gini"],
-		["max_depth", 3],
-		["min_samples_split", 2],
-		["min_samples_leaf", 1],
-	]);
+	let parms = {
+		"dataset": adultId,
+		"criterion": "gini",
+		"max_depth": 3,
+		"min_samples_split": 2,
+		"min_samples_leaf": 1,
+	};
 
 	try {
 		var submitResult = await labApi.submitExperiment(algoId, parms)
