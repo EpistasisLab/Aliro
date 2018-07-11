@@ -46,6 +46,9 @@
     "typescript": "^2.9.1"
   },
   "dependencies": {
+    "bluebird": "^3.4.0",
+    "mongodb": "^2.1.19",
+    "mongoskin": "^2.1.0",
     "es6-promise": "^4.2.4",
     "isomorphic-fetch": "^2.2.1"
   }

@@ -1,4 +1,3 @@
-require("./env"); // Load configuration variables
 var db = require("./db").db;
 var Q = require("q");
 //return a user data

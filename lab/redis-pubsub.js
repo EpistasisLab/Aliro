@@ -1,4 +1,3 @@
-require("./env");
 var redis = require("redis");
 var channels = require("./redis-channels");
 var users = require("./users");
