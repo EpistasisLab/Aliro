@@ -3,14 +3,7 @@ var mongoskin = require("mongoskin");
 var db;
 var mongouri;
 
-if(process.env.DBMONGO_HOST && process.env.DBMONGO_PORT) {
-	mongouri="mongodb://"+process.env.DBMONGO_HOST+":"+process.env.DBMONGO_PORT+"/FGLab";
-} else if (process.env.MONGODB_URI) {
-	mongouri=process.env.MONGODB_URI;
-} else {
-  console.log("Error: No MongoDB instance specified");
-  process.exit(1);
-}
+mongouri="mongodb://dbmongo:27017/FGLab";
 
 // Connect to MongoDB
 db = mongoskin.db(mongouri, {native_parser: true});
