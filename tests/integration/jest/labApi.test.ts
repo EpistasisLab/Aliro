@@ -32,7 +32,9 @@ it('lab fetchAlgorithms', () => {
 };
 
 
-it('lab run dt experiment on adult', async () => {
+//it('lab run dt experiment on adult', async () => {
+it('lab start dt experiment on adult', async () => {	
+	console.log('lab start dt experiment on adult')
 
  	// get adult dataset
  	var datasets = await labApi.fetchDatasets();
@@ -70,17 +72,19 @@ it('lab run dt experiment on adult', async () => {
 	expect(submitResult).toBeTruthy()
 	console.log("SubmitResult: ", submitResult)
 
-	// wait for the process to finish runing
+	// expect that the experiment started running
 	var experimentResults = await labApi.fetchExperiment(submitResult._id)
 	console.log("experimentResults: ", experimentResults)
 	expect(experimentResults._status).toBeTruthy()
+	expect(experimentResults._status).toEqual('running')
 
 /*
+	// wait for the experiment to finish runing
 	while (experimentResults._status === ('running')) {
 		setTimeout(function(){}, 10000)
 		experimentResults = await labApi.fetchExperiment(submitResult._id)
 		//console.log("experimentResults: ", experimentResults)
 	}
 */
-	expect(experimentResults._status).toEqual('success')
+	//expect(experimentResults._status).toEqual('success')
 });
