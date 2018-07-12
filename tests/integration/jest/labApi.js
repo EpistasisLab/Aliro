@@ -1,6 +1,5 @@
 /**
-* First pass at integrations tests that run against the lab container api through an external context
-*
+* Api interfact to a lab instance
 */
 
 import { get, post } from './util/apiHelper';

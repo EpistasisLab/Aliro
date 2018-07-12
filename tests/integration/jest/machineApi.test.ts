@@ -1,5 +1,5 @@
 /**
-* First pass at integrations tests that run against the lab container api through an external context
+* Integration tests against a machine instance
 *
 */
 
@@ -56,8 +56,9 @@ it('machine projectIds match db machine.project ids', async () => {
 	console.log('machine projectIds match db machine.project ids')
 	
 	//---get machine server projects state
+	let servMachineProjects : Object
 	try {
-		var machineProjects = await machineApi.fetchProjects()
+		servMachineProjects = await machineApi.fetchProjects()
 	} catch (e) {
 		var json = await e.response.json() // get the specific error description
 		expect(json).toBeFalsy()
@@ -69,27 +70,44 @@ it('machine projectIds match db machine.project ids', async () => {
 
   	// db.machine.projects
   	res = await db.machines.find({"address":"http://machine:5081"}, {projects: 1}).toArrayAsync();
-  	console.log("db.machines.res: ", res)
+  	//console.log("db.machines.res: ", res)
   	expect(res.length).toEqual(1)
-  	var dbMachineProjects = res[0].projects
+  	let dbMachineProjects : Object = res[0].projects
 
   	// db.projects
-  	var dbProjects = await db.projects.find({}, {}).toArrayAsync();
-  	console.log("db.projects res: ", res)
+  	let dbProjectsList : Object[] = await db.projects.find({}, {name: 1}).toArrayAsync();
+  	//console.log("db.projects res: ", res)
 
-  	console.log("machineProjects:", machineProjects)
+  	console.log("servMachineProjects:", servMachineProjects)
   	console.log("dbMachineProjects:", dbMachineProjects)
-  	console.log("dbProjects:", dbProjects)
+  	console.log("dbProjectsList:", dbProjectsList)
 
   	//---check server state against database state
-  	expect(Object.keys(machineProjects).length).toBeGreaterThan(10)
+  	expect(Object.keys(servMachineProjects).length).toBeGreaterThan(10)
   	expect(Object.keys(dbMachineProjects).length).toBeGreaterThan(10)
-  	expect(Object.keys(dbProjects).length).toBeGreaterThan(10)
+  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(10)
 
-  	// TODO - check that db.machine.projects is a subset of machineProjects, check that ids match
-  	// TODO - check that machineProjects is a subset of db.projects and that ids match
-  	// TODO - check that db.machine.projects is a subset of db.projects and that ids match
+  	// check that dbMachineProjects is a subset of servMachineProjects by id
+  	for (let dbMacProjId of Object.keys(dbMachineProjects)) {
+  		let dbMacProjSpec = dbMachineProjects[dbMacProjId]
 
+  		// db.machine.projects is a subset of the projects defined on the server
+		expect(servMachineProjects).toHaveProperty(dbMacProjId)
+
+  		let serverProjSpec = servMachineProjects[dbMacProjId] 
+		expect(dbMacProjSpec.name).toEqual(serverProjSpec.name)
+
+		// db.machine.projects is a subset of the projects defined in db.projects
+		// TODO: this should work??
+		//expect(dbProjectsList).toContainEqual({_id: dbMacProjId, name: dbMacProjSpec.name})
+
+		/*
+		console.log("dbMacProjId: ", dbMacProjId)
+  		console.log("serverProjSpec: ", serverProjSpec)
+  		console.log("dbMacProjSpec: ", dbMacProjSpec)
+  		console.log("dbProjExpected: ", dbProjExpected)
+		*/
+  	}
 };
 
 

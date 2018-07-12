@@ -20,24 +20,27 @@
     ],
     "reporters": [
       "default",
-      ["./node_modules/jest-html-reporter", {
+      [
+        "./node_modules/jest-html-reporter",
+        {
           "pageTitle": "Jest Integration Test Suite",
           "includeFailureMsg": true,
           "includeConsoleLog": true,
           "outputPath": "/results/test-report.html"
-      }]
+        }
+      ]
     ]
   },
   "babel": {
     "presets": [
-      "es2015",
+      "env",
       "react"
     ]
   },
   "devDependencies": {
     "@types/jest": "^23.0.2",
     "babel-jest": "^23.0.1",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "jest": "^23.1.0",
     "jest-html-reporter": "^2.4.1",
