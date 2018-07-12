@@ -1,5 +1,5 @@
 /**
-* First pass at integrations tests that run against the lab container api through an external context
+* Integration tests against a lab instance
 *
 */
 
@@ -33,7 +33,7 @@ it('lab fetchAlgorithms', () => {
 
 
 //it('lab run dt experiment on adult', async () => {
-it.skip('lab start dt experiment on adult', async () => {	
+it('lab start dt experiment on adult', async () => {	
 	console.log('lab start dt experiment on adult')
 
  	// get adult dataset
