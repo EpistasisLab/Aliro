@@ -33,7 +33,7 @@ it('lab fetchAlgorithms', () => {
 
 
 //it('lab run dt experiment on adult', async () => {
-it('lab start dt experiment on adult', async () => {	
+it.skip('lab start dt experiment on adult', async () => {	
 	console.log('lab start dt experiment on adult')
 
  	// get adult dataset
