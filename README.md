@@ -1,5 +1,6 @@
 # Penn AI
-Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
+A data science assistant for generating useful results from large and complex data problems.
+
 
 ## Setup and Deployment
 ### Container Based Install ([Docker-Compose](https://docs.docker.com/compose/))
@@ -58,7 +59,7 @@ Engine for reading in modeling results, updating knowledge base, and making reco
 - `docker-compose build lab --no-cache` - rebuild the image for the lab services without using the cache.
 - `docker rm $(docker ps -a -q)` - remove all docker containers
 - `docker rmi $(docker images -q)` - remove all docker images
-- `docker attach pennai_lab_1` to gain ssh access to the a running container
+- `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
 
 
 ### Host Based Install (Deprecated)
@@ -125,6 +126,7 @@ Coming soon.
 
 
 ## AI Recommender Details
+Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
 
 ### Workflow
  - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds.
