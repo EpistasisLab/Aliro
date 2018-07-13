@@ -29,7 +29,7 @@ function ExperimentsTableBody({
       case 'pending': 
         return <Icon inverted color="yellow" name="clock" />;
       case 'running':
-        return <Icon inverted color="blue" name="refresh" />;
+        return <Icon inverted loading color="blue" name="refresh" />;
       case 'success': 
         return <Icon inverted color="green" name="check" />;
       case 'cancelled':

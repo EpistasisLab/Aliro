@@ -14,7 +14,7 @@ var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
 var socketServer = require("./socketServer").socketServer;
-var publishTo = require("./redis-pubsub").publishTo;
+var emitEvent = require("./socketServer").emitEvent;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
 var Q = require("q");
@@ -219,7 +219,7 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             }
         })
         .then((result) => {
-            publishTo('toggledAI', req);
+            emitEvent('aiToggled', req);
 
             res.send({
                 message: "AI toggled for " + req.params.id
@@ -337,9 +337,9 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
         .then((result) => {
             if (req.params.collection === 'experiments') {
                 if (req.body._scores) {
-                    publishTo('finishedExperiment', req);
+                    emitEvent('expUpdated', req);
                 } else if (req.body._status === 'fail') {
-                    publishTo('failedExperiment', req);
+                    emitEvent('expUpdated', req);
                 }
             }
 
@@ -810,7 +810,7 @@ app.put("/api/v1/experiments/:id/started", (req, res, next) => {
             }
         })
         .then((result) => {
-            publishTo('startedExperiment', req);
+            emitEvent('expStarted', req);
 
             // Update returns the count of affected objects
             res.send((result === 1) ? {

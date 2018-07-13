@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from 'react-dom';
-import configureStore from './config/configureStore';
-import configureSocket from './config/configureSocket';
+import configStore from './config/configStore';
+import configSocket from './config/configSocket';
 import Root from './components/Root';
 
-const store = configureStore();
-configureSocket(store);
+const store = configStore();
+configSocket(store);
 
 render(
   <Root store={store} />,

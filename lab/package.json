@@ -47,7 +47,6 @@
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.7",
     "react-router": "^3.0.2",
-    "redis": "^2.7.1",
     "redux": "^3.6.0",
     "redux-immutable": "^4.0.0",
     "redux-thunk": "^2.2.0",
@@ -57,7 +56,6 @@
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "socketio-auth": "^0.1.0",
     "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
