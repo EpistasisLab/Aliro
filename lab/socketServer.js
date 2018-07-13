@@ -1,36 +1,56 @@
-var socket = require('socket.io');
-var auth = require('socketio-auth');
+var FGLAB_URL = 'http://localhost:5080'; // switch to direct db access instead 
+var rp = require('request-promise'); // will be unnecessary after switch to db access
 
-var connections = [];
+var sockets = [];
 
 function socketServer(server) {
-	var io = socket(server);
+	var io = require('socket.io')(server);
 
-	auth(io, {
-	  authenticate: function (socket, data, callback) {
-	    socket.client.userid = data.userid;
-	    connections.push(socket);
-	 
-	   	return callback(null, true);
-	  }
-	});
+	io.on('connection', socket => { 
+		sockets.push(socket);
 
-	io.on('connection', socket => {
-	 
 		socket.on('disconnect', () => {
-		  var index = connections.indexOf(socket);
-		  connections.splice(index, 1);
+		  var index = sockets.indexOf(socket);
+		  sockets.splice(index, 1);
 		});
-
 	});
 }
 
-function getSockets() {
-	return connections;
+function emitEvent(event, req) {
+	switch(event) {
+		case 'aiToggled':
+			return sockets.forEach(socket => 
+				socket.emit('updateAIToggle', JSON.stringify({ _id: req.params.id, nextAIState: req.body.ai }))
+			);
+		case 'expStarted':
+			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
+		  	.then(experiment => {
+		    	sockets.forEach(socket => socket.emit('addExperiment', experiment));
+
+		    	rp(FGLAB_URL + "/api/userdatasets/" + JSON.parse(experiment)[0].dataset_id)
+				  	.then(dataset => {
+				    	sockets.forEach(socket => socket.emit('updateDataset', dataset));
+				    })
+				    .catch(() => {}); // Ignore failures
+		    })
+		    .catch(() => {}); // Ignore failures
+		case 'expUpdated':
+			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
+		  	.then(experiment => {
+		    	sockets.forEach(socket => socket.emit('updateExperiment', experiment));
+
+		    	rp(FGLAB_URL + "/api/userdatasets/" + JSON.parse(experiment)[0].dataset_id)
+				  	.then(dataset => {
+				    	sockets.forEach(socket => socket.emit('updateDataset', dataset));
+				    })
+				    .catch(() => {}); // Ignore failures
+		    })
+		    .catch(() => {}); // Ignore failures
+	}
 }
 
 module.exports = {
 	socketServer: socketServer,
-	getSockets: getSockets
+	emitEvent: emitEvent
 };
 

@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 import { combineReducers } from 'redux-immutable';
 import { createSelector } from 'reselect';
 import {
@@ -23,10 +23,9 @@ const byId = (state = Map(), action) => {
       return state.merge(newExperiments);
     }
     case EXPERIMENT_ADD:
+      return state.set(action.experiment._id, fromJS(action.experiment));
     case EXPERIMENT_UPDATE:
-      //console.log(action);
-      //return state.mergeIn([action.experiment._id], action.experiment);
-      return state;
+      return state.mergeIn([action.experiment._id], action.experiment);
     default:
       return state;
   }
@@ -42,8 +41,7 @@ const allIds = (state = List(), action) => {
       return state.merge(newExperiments);
     }
     case EXPERIMENT_ADD:
-      //return state.push(action.experiment._id);
-      return state;
+      return state.push(action.experiment._id);
     default:
       return state;
   }

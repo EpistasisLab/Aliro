@@ -1,13 +1,11 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import { socketMiddleware } from './configureSocket';
 import { createLogger } from 'redux-logger';
 import pennaiApp from '../reducer';
 
-const configureStore = () => {
+const configStore = () => {
   const middlewares = [
-    thunk, // lets us dispatch() functions
-    socketMiddleware
+    thunk // lets us dispatch() functions
   ];
 
   // middleware for development environment
@@ -28,4 +26,4 @@ const configureStore = () => {
   return store;
 };
 
-export default configureStore;
+export default configStore;
