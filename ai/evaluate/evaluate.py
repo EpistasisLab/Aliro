@@ -23,7 +23,7 @@ def evaluate_recommender(recommender, score_diff=0.01, metric='accuracy'):
         Returns the average number of recommendations it took for the recommender to recommend
         an algorithm + parameter that solved each dataset for each of the datasets in PMLB.
     """
-    pmlb_data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz',
+    pmlb_data = pd.read_csv('ai/metalearning/sklearn-benchmark5-data-short.tsv.gz',
                        compression='gzip', sep='\t',
                        names=['dataset',
                               'algorithm',

@@ -24,6 +24,7 @@ export const getFile = (route) => {
 export const post = (route, body) => {
   let myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
+  let myBody = JSON.stringify(body)
 
   return fetch(route, {
     method: 'POST',
@@ -31,7 +32,7 @@ export const post = (route, body) => {
     headers: myHeaders,
     mode: 'cors',
     cache: 'default',
-    body: JSON.stringify(body)
+    body: myBody
   }).then(checkStatus)
     .then(response => {
       return response.json();

@@ -1,9 +1,140 @@
 # Penn AI
+A data science assistant for generating useful results from large and complex data problems.
+
+
+## Setup and Deployment
+### Container Based Install ([Docker-Compose](https://docs.docker.com/compose/))
+#### Installation ####
+1. **Check out the project**
+
+  - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
+  - Switch to pennai_lite branch
+  ```shell
+  git clone git@github.com:EpistasisLab/pennai.git
+  cd pennai
+  git checkout pennai_lite
+  ```
+
+2. **Install build requirements**
+  - Docker 
+  	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
+	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - Python and nose test runner (optional, needed to run unit tests) 
+  	- [Python 3.* ](https://www.python.org/downloads/)
+  	- install [nose](https://pypi.org/project/nose/) via `pip install nose`
+  - nodejs (optional, can be helpful for local development)
+  	- [https://nodejs.org/en/](https://nodejs.org/en/)
+
+3. **Build the base image**
+  - It will take several minutes for the image to be built the first time this run.
+  - `docker build ./dockers/base -t pennai/base:latest`  
+
+4. **Build the service containers**
+  - It will take several minutes for the images to be built the first time this run.
+  - `docker-compose build`
+
+#### Running ####
+1. **Start the network and service containers**
+- `docker-compose up` to create and start containers, `docker-compose up -d` to run in the background
+	- Known issue:  If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.
+
+2. **Connect to the lab container and start the AI service (optional, and this will soon be unnecessary as the AI will be started automatically)**
+  - Attach to the lab container with bash and start the AI service
+  ```
+  docker exec -it "pennai_lab_1" /bin/bash 
+  cd $PROJECT_ROOT/
+  python -m ai.ai -v -n 2
+  ```
+  - Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
+  - Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
+
+3. **Connect to the website**
+	- Connect to <http://localhost:5080/> to access the website
+
+4. **Stop the containers**
+  - `docker-compose stop` to stop the containers
+  - `docker-compose down` to stop and remove containers and network
+
+#### Useful dev docker commands and info ####
+- `docker-compose build` - rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
+	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild as per step 3.
+- `docker-compose build lab --no-cache` - rebuild the image for the lab services without using the cache.
+- `docker rm $(docker ps -a -q)` - remove all docker containers
+- `docker rmi $(docker images -q)` - remove all docker images
+- `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
+
+
+### Host Based Install (Deprecated)
+1. **Check out the project**
+        - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
+2. **Perform Local Install**
+	- Install MongoDB
+	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
+	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
+	- Run <i>mongorestore</i> to populate the mongo database
+	- Change directories to <b>/share/devel/Gp/lab</b>
+	- Run <i>npm install</i>
+	- Create a .env file with the following contents:
+    	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
+    	- <b>FGLAB_PORT=5080</b>
+	- Change directories to <b>/share/devel/Gp/machine</b>
+	- Create a file called '.env' with the following contents:
+	- <b>FGLAB_URL=http://localhost:5080</b>
+	- <b>FGMACHINE_URL=http://localhost:5081</b>
+    - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
+	- Run <i>npm install</i>
+	- Create a .env file with the following contents:
+    	- <b>FGLAB_URL=http://localhost:5080</b>
+    	- <b>FGMACHINE_URL=http://localhost:5081</b>
+
+3. **Test the lab**
+	- Connect to:
+    	- http://localhost:5080/
+
+## Testing ##
+
+### Integration ###
+To run the integration tests, from the root app directory run: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
+
+This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
+
+The results will be in the folder `.\tests\integration\results`
+
+See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
+
+
+### Unit ###
+#### AI ####
+**Unit tests for python codes**
+  -  need install nose via `pip install nose`
+
+      ```
+      nosetests -s -v ai/tests/test_recommender.py # tests recommender
+      ```
+
+#### Machine ####
+  -  need install nose via `pip install nose`
+
+      ```
+      # run under dir of machine
+      nosetests -s -v test\learn_tests.py
+      ```
+      
+See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/machine/README.md) for details.
+
+#### Lab ####
+Coming soon.
+
+
+
+## AI Recommender Details
 Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
-## workflow
+
+### Workflow
  - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds.
  - when a new experiment is found, it is used to update the recommender.
  - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user.
+ 
 ### Recommender
 ```python
 pennai = Recommender(method='ml_p',ml_type='classifier')
@@ -40,195 +171,3 @@ recommendations using:
  - [ ] incorporating expert knowledge rules
  - [ ] analyze which metafeatures are important
  - [x] make method to submit jobs (`submit(dataset,ml,p)`)
-
-
-## Deployment
-### Container Based Install ([Docker-Compose](https://docs.docker.com/compose/))
-#### Installation ####
-1. **Check out the project**
-
-  - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  - Switch to pennai_lite branch
-  ```shell
-  git clone git@github.com:EpistasisLab/pennai.git
-  cd pennai
-  git checkout pennai_lite
-  ```
-
-2. **Install build requirements**
-  - docker [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/), [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - nodejs [https://nodejs.org/en/](https://nodejs.org/en/)
-
-3. **Build the base image**
-  - It will take several minutes for the image to be built the first time this run.
-  - `docker build ./dockers/base -t pennai/base:latest`  
-
-4. **Build the service containers**
-  - It will take several minutes for the images to be built the first time this run.
-  - `docker-compose build`
-
-#### Running ####
-1. **Start the network and service containers**
-- `docker-compose up` to create and start containers, `docker-compose up -d` to run in the background
-	- Known issue:  When starting from a fresh clone of the repo, it takes a while for the lab container to initially unzip the node_modules directory, and it takes a while for the initial datasets.  See [#46](https://github.com/EpistasisLab/pennai/issues/46)
-
-2. **Start the AI service (optional)**
-  - SSH into the lab container and start the AI service
-  ```
-  docker attach pennai_lab_1
-  cd $PROJECT_ROOT/
-  python -m ai.ai -v -n 2
-  ```
-  - Note: if `docker attach pennai_lab_1`, use `docker container ps` to get the name of the lab container
-
-3. **Connect to the website**
-	- Connect to <http://localhost:5080/> to access the website
-
-4. **Stop the containers**
-  - `docker-compose stop` to stop the containers
-  - `docker-compose down` to stop and remove containers
-
-#### Useful dev docker commands and info ####
-- `docker-compose build` - rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
-	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild as per step 3.
-- `docker-compose build lab --no-cache` - rebuild the image for the lab services without using the cache.
-- `docker rm $(docker ps -a -q)` - remove all docker containers
-- `docker rmi $(docker images -q)` - remove all docker images
-- `docker attach pennai_lab_1` to gain ssh access to the a running container
-
-
-### Container Based Install (Deprecated; node scripts in /awsm, will be removed if docker-compose is confirmed to work on multiple systems)
-1. **Check out the project**
-
-  - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  - switch to pennai_build_test branch
-  ```shell
-  git clone git@github.com:EpistasisLab/pennai.git
-  cd pennai
-  git checkout pennai_lite
-  ```
-
-2. **Install build requirements**
-
-  - docker [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/)
-  - nodejs [https://nodejs.org/en/](https://nodejs.org/en/)
-  - make (optional) [http://gnuwin32.sourceforge.net/packages/make.htm](http://gnuwin32.sourceforge.net/packages/make.htm),[https://developer.apple.com/] (https://developer.apple.com),[https://wiki.ubuntu.com/ubuntu-make] (https://wiki.ubuntu.com/ubuntu-make),[https://www.gnu.org/software/make/](https://www.gnu.org/software/make)
-
-3. **Modify Makevars** (optional)
-
-  - copy the dockers/Makevars.example file to dockers/Makevars and edit to suite your environment
-
-4. **Copy/Edit `experiment.json`**
-
-  ```
-  cp .\experiment.example.json .\experiment.json
-  #Change "IP:127.0.0.1" to your IP address in experiment.json for export ports for external access (Note: you need set up your firewalls for security on those ports)
-
-
-  ```
-
-5. **Start the network**
-
-  - run node pennai.  This may take a very long time the first time!
-  ```shell
-  docker network create pennai
-  # build pennai locally and start
-  npm install
-  node pennai rebuild -sv
-  ```
-
-  - start AI function (need refine)
-  ```
-  docker attach lab
-  cd $PROJECT_ROOT/
-  python -m ai.ai -v -n 2
-  ```
-
-6. **Test the lab**
-	- Connect to:
-    	- http://localhost:5080/
-
-Fedora/Redhat/Systems with SELinux:
-chcon -Rt svirt_sandbox_file_t ${SHARE_PATH}
-
-7. **Log and error information**
-	- Check if all the dockers container are running.
-		```
-		docker ps
-		```
-		- stdout example
-		```
-		CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS
-              NAMES
-		d4ad130c87eb        pennai/dbmongo      "/bin/bash /root/ent…"   2 hours ago         Up 2 hours          127.0.0.1:27017->27017/tcp   dbmongo
-		65b8514e5f6d        515f2d36a67d        "/root/entrypoint.sh"    2 hours ago         Up 2 hours          127.0.0.1:5080->5080/tcp     lab
-		91141272ac16        pennai/dbredis      "docker-entrypoint.s…"   2 hours ago         Up 2 hours          127.0.0.1:6379->6379/tcp     dbredis
-		b966455ea8e0        pennai/machine      "/bin/bash /root/sta…"   2 hours ago         Up 2 hours          127.0.0.1:5081->5081/tcp     machine
-		76e967cad1ab        pennai/paix01       "/bin/bash /root/ent…"   2 hours ago         Up 2 hours					paix01
-		d1b4276df651        pennai/paiwww       "/bin/bash /root/sta…"   2 hours ago         Up 2 hours          127.0.0.1:443->443/tcp       paiwww
-		```
-	- If the machine is not working or experiments failed:
-		```
-		docker attach machine
-		cd ~\.pm2\logs # check log files of stdout and stderr 
-		```
-	- If the website is not accessible and `pm2` is running
-		```
-		docker attach lab
-		cd ~\.pm2\logs # check log files of stdout and stderr
-		```
-	- If the website is not accessiable and `pm2` is not running
-		```
-		docker attach lab
-		# Check PROJECT_ROOT
-		cd $PROJECT_ROOT
-		# make sure there are .env file are node_modules folder
-		# if not, check the commands in dockers\lab\files\entrypoint.sh for reruning initial steps for error messages.
-		```
-
-### Host Based Install (Deprecated)
-1. **Check out the project**
-        - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-2. **Perform Local Install**
-	- Install MongoDB
-	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
-	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
-	- Run <i>mongorestore</i> to populate the mongo database
-	- Change directories to <b>/share/devel/Gp/lab</b>
-	- Run <i>npm install</i>
-	- Create a .env file with the following contents:
-    	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
-    	- <b>FGLAB_PORT=5080</b>
-	- Change directories to <b>/share/devel/Gp/machine</b>
-	- Create a file called '.env' with the following contents:
-	- <b>FGLAB_URL=http://localhost:5080</b>
-	- <b>FGMACHINE_URL=http://localhost:5081</b>
-    - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
-	- Run <i>npm install</i>
-	- Create a .env file with the following contents:
-    	- <b>FGLAB_URL=http://localhost:5080</b>
-    	- <b>FGMACHINE_URL=http://localhost:5081</b>
-
-3. **Test the lab**
-	- Connect to:
-    	- http://localhost:5080/
-
-## Testing ##
-
-### Integration ###
-To run the integration tests, from the root app directory run: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
-
-This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
-
-See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
-
-
-### Unit ###
-**Unit tests for python codes**
-  -  need install nose via `pip install nose`
-
-      ```
-      nosetests -s -v tests/test_recommender.py # tests recommender
-      ```
-     
-
