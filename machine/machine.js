@@ -21,7 +21,6 @@ var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
 
-var Q = require('q');
 
 /* App instantiation */
 var app = express();
@@ -198,6 +197,14 @@ app.get("/projects/:id/capacity", (req, res) => {
             _id: specs._id
         });
     }
+});
+
+/** 
+* Get current projects 
+* Used for debugging to make sure machine state is in sync with lab state
+*/
+app.get("/projects", (req, res) => {
+    res.send(projects);
 });
 
 // Starts experiment
@@ -450,10 +457,9 @@ wss.on("connection", (ws) => {
 
 //Generate a list of projects that we'll use for execution
 var getProjects = function() {
-    var deferred = Q.defer();
     var project_list = [];
     var learnpath = project_root + '/machine/learn';
-    var deferred = Q.defer;
+
     //get a list of folders in the learn directory
     var dirs = fs.readdirSync(learnpath)
     //dirs.forEach(dir => {

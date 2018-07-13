@@ -1,5 +1,4 @@
 /* Modules */
-require("./env"); // Load configuration variables
 var http = require("http");
 var path = require("path");
 var EventEmitter = require("events").EventEmitter;
@@ -552,14 +551,38 @@ var retPrevExp = function(projId, options, datasetId) {
 }
 
 var submitJob = (projId, options, files, datasetId, username) => {
+    //console.log("submitJob (", projId, options, files, datasetId, username, ")");
+
     //check for duplicate experiments
     return new Promise((resolve, reject) => {
-        db.machines.find({}, {
+
+        //if ((!datasetId || datasetId == undefined || datasetId == "") && (dataset['files'] === undefined || dataset['files'].length == 0)){
+        if (!datasetId || datasetId == undefined || datasetId == "") {
+            reject({
+                error: "Experiment failed to run: datasetId not defined"
+            });
+            return;
+        }
+
+        // find machines that could potentally handle the project
+        db.machines.find({
+            //_project_id: db.toObjectID(projId)
+            }, {
                 address: 1
             }).toArrayAsync() // Get machine hostnames
             .then((machines) => {
-                var macsP = Array(machines.length);
+                console.log("===machines: ", machines)
+                console.log("===machines.projects: ", machines.projects)
+
+                if (machines.length == 0) {
+                    reject({
+                        error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
+                    });
+                    return;
+                }
+
                 // Check machine capacities
+                var macsP = Array(machines.length);
                 for (var i = 0; i < machines.length; i++) {
                     macsP[i] = rp({
                         uri: machines[i].address + "/projects/" + projId + "/capacity",
@@ -569,7 +592,6 @@ var submitJob = (projId, options, files, datasetId, username) => {
                 }
 
                 // Loop over reponses
-
                 Promise.any(macsP)
                     // First machine with capacity, so use
                     .then((availableMac) => {
@@ -640,6 +662,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
     var projId = req.params.id;
     var dataset;
     var ai_score;
+
     users.returnUserData(req)
         .then((user) => {
             var username = user['username'];
@@ -654,8 +677,8 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                         });
                     } else {
                         var obj = Object.assign(req.query, req.body);
+
                         if (obj['parameters']) {
-                            console.log(obj);
                             old_obj = obj;
                             obj = new Object(obj['parameters']);
                             obj['dataset'] = old_obj['dataset_id'];
@@ -668,6 +691,13 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                             delete obj['dataset'];
                         }
                         var files = req.files;
+
+                        if (dataset === undefined) {
+                            res.status(500);
+                            res.send({
+                                error: "Parameter body.'dataset' or param.'dataset_id' must be defined"
+                            });
+                        }
 
                         // Validate
                         var validation = optionChecker(project.schema, obj, dataset);
@@ -686,13 +716,20 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                                     if (err.error === "No machine capacity available") {
                                         res.status(501);
                                         res.send(err);
-                                    } else if (err.error === "Experiment failed to run") {
+                                    } else if ((err.error !== undefined) && err.error.startsWith("Experiment failed to run")) {
                                         res.status(500);
                                         res.send(err);
-                                    } else {
-                                        next(err);
+                                    }
+                                     else {
+                                        //next(err);
+                                        res.status(500);
+                                        res.send({
+                                            error: "Experiment failed to run: unknown error from submitJob()"
+                                        });
                                     }
                                 });
+
+                                        
                         }
                     }
                 })
@@ -953,7 +990,8 @@ var linkDataset = function(experiment, datasetId) {
             files: 1
         })
         .then((dataset) => {
-            if (dataset['files'] !== undefined) {
+            if (dataset && (dataset['files'] !== undefined)) {
+            //if (dataset['files'] !== undefined) {
                 untrimmed = dataset['files'];
                 //sort and trim to get latest unique files
                 sorted = sortObjArray(sortObjArray(untrimmed, 'filename'), 'timestamp');
@@ -1127,6 +1165,32 @@ app.delete("/api/v1/projects/:id/experiments/files", (req, res, next) => {
         });
 });
 
+
+/*
+// Registers machine projects
+app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
+  db.machines.findByIdAsync(req.params.id)
+  .then((result) => {
+    // Fail if machine does not exist
+    if (result === null) {
+      res.status(404);
+      return res.send({error: "Machine ID " + req.params.id + " does not exist"});
+    }
+    // Register projects otherwise
+    db.machines.updateByIdAsync(req.params.id, {$set: req.body})
+    .then((result) => {
+      // Update returns the count of affected objects
+      res.send((result === 1) ? {msg: "success"} : {msg: "error"});
+    })
+    .catch((err) => {
+      next(err);
+    });
+  })
+  .catch((err) => {
+    next(err);
+  });
+});
+*/
 // Registers machine projects
 app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
@@ -1138,56 +1202,64 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
         name: 1
     }).toArrayAsync(); // Get project names
 
-
-
     var macP = db.machines.findByIdAsync(req.params.id);
-    Q.allSettled([macP, projP]).then((result) => {
-            var machines = result[0].value;
-            var project_records = result[1].value;
-            var project_caps = req.body.projects
-            var projects = {};
-            for (var i in project_records) {
-                var project_record = project_records[i];
-console.log(project_record);
-                for (var j in project_caps) {
-                    var project_cap = project_caps[j];
-if(project_record['name'] == project_cap['name']) {
-                    projects[project_record['_id']] = project_cap;
-}
-//console.log(project_cap);
-                };
-            }
 
-            // Fail if machine does not exist
-            if (machines === null) {
-                res.status(404);
-                return res.send({
-                    error: "Machine ID " + req.params.id + " does not exist"
+    Q.allSettled([macP, projP]).then((result) => {
+
+        //console.log("/api/v1/machines/:id/projects")
+
+        var machines = result[0].value;
+        var project_records = result[1].value;
+        var project_caps = req.body.projects
+        var projects = {};
+
+        //console.log("project_records", project_records)
+        //console.log("project_caps", project_caps)
+
+        for (var i in project_records) {
+            var project_record = project_records[i];
+            //console.log(project_record);
+            for (var j in project_caps) {
+                var project_cap = project_caps[j];
+                if(project_record['name'] == project_cap['name']) {
+                    projects[project_record['_id']] = project_cap;
+                }
+                //console.log(project_cap);
+            };
+        }
+
+        console.log("Registering projects:", projects)
+
+        // Fail if machine does not exist
+        if (machines === null) {
+            res.status(404);
+            return res.send({
+                error: "Machine ID " + req.params.id + " does not exist"
+            });
+        }
+        // Register projects otherwise
+        db.machines.updateByIdAsync(req.params.id, {
+                $set: {
+                    projects
+                }
+            })
+            .then((result) => {
+                // Update returns the count of affected objects
+                res.send((result.n === 1) ? {
+                    msg: "success",
+                    projects: projects,
+                } : {
+                    msg: "error"
                 });
-            }
-            // Register projects otherwise
-            db.machines.updateByIdAsync(req.params.id, {
-                    $set: {
-                        projects
-                    }
-                })
-                .then((result) => {
-                    // Update returns the count of affected objects
-                    res.send((result.n === 1) ? {
-                        msg: "success",
-                        projects: projects,
-                    } : {
-                        msg: "error"
-                    });
-                })
-                .catch((err) => {
-                    next(err);
-                });
-        })
-        .catch((err) => {
-            console.log(Err);
-            next(err);
-        });
+            })
+            .catch((err) => {
+                next(err);
+            });
+    })
+    .catch((err) => {
+        console.log(Err);
+        next(err);
+    });
 });
 
 /* Rendering Routes */

@@ -6,10 +6,10 @@ docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit
 `
 
 This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the test suites and exit.
+The results will be in the folder `.\tests\integration\results`
 
 todo:
- 
-- export results to a shared volume
+
 - customize the initial state
 
 ## Node/Jest ##
