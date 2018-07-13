@@ -5,3 +5,5 @@ A good starting point it so implement metafeatures described in Alexandros Kalou
 
 
 
+**to do list**
+- not sure if `get_meta_features_pmlb.py` and `get_metafeatures.py` can be removed. (asked Bill, wait for reply)
