@@ -9,7 +9,7 @@ def test_ml_p():
     """Recommender returns a valid recommendation for sklearn data"""
 
     print('loading pmlb results data...')
-    data = pd.read_csv('metalearning/sklearn-benchmark5-data-short.tsv.gz',
+    data = pd.read_csv('ai/metalearning/sklearn-benchmark5-data-short.tsv.gz',
                        compression='gzip', sep='\t',
                        names=['dataset',
                               'classifier',
