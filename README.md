@@ -16,8 +16,10 @@ A data science assistant for generating useful results from large and complex da
   ```
 
 2. **Install build requirements**
-  - Docker [step one from the official Docker website](https://docs.docker.com/engine/getstarted/step_one/), [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-    - Python and nose test runner (optional, needed to run unit tests) 
+  - Docker 
+  	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
+	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - Python and nose test runner (optional, needed to run unit tests) 
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) via `pip install nose`
   - nodejs (optional, can be helpful for local development)
@@ -43,7 +45,7 @@ A data science assistant for generating useful results from large and complex da
   cd $PROJECT_ROOT/
   python -m ai.ai -v -n 2
   ```
-  - Note: if `docker attach pennai_lab_1`, use `docker container ps` to get the name of the lab container
+  - Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
   - Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 
 3. **Connect to the website**
