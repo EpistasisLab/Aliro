@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from learn.io_utils import Experiment
+from learn.io_utils import Experiment, get_input, get_params
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -29,6 +29,14 @@ def test_Experiment_init():
     assert exp.basedir == '../'
     assert exp.schema == '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
     assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('../', 'SVC')
+
+
+def test_get_params():
+    """Test get_params return correct parameters"""
+    test_schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
+    params = get_params(test_schema)
+    assert 'kernel' in params
+    assert 'tol' in params
 
 
 def test_generate_results_1():
