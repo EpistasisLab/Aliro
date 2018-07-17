@@ -4,6 +4,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
+from learn.io_utils import Experiment
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -18,6 +19,17 @@ test_reg_input = "test/1027_ESL.tsv"
 
 test_clf = DecisionTreeClassifier()
 test_reg = DecisionTreeRegressor()
+
+
+def test_Experiment():
+    """Test Experiment class has correct attribute."""
+    exp = Experiment(method_name='SVC', basedir='./')
+
+    assert exp.method_name == 'SVC'
+    assert exp.basedir == './'
+    assert exp.schema == '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('./', 'SVC')
+    assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('./', 'SVC')
+
 
 def test_generate_results_1():
     """Test generate results can produce right outputs in classification mode."""
