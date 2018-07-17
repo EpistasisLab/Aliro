@@ -1,7 +1,0 @@
-{
-  "penalty": {
-    "type": "enum-radio",
-    "values": ["l1","l2"],
-    "default": "l2"
-  }
-}
