@@ -21,14 +21,14 @@ test_clf = DecisionTreeClassifier()
 test_reg = DecisionTreeRegressor()
 
 
-def test_Experiment():
+def test_Experiment_init():
     """Test Experiment class has correct attribute."""
-    exp = Experiment(method_name='SVC', basedir='./')
+    exp = Experiment(method_name='SVC', basedir='../')
 
     assert exp.method_name == 'SVC'
-    assert exp.basedir == './'
-    assert exp.schema == '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('./', 'SVC')
-    assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('./', 'SVC')
+    assert exp.basedir == '../'
+    assert exp.schema == '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
+    assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('../', 'SVC')
 
 
 def test_generate_results_1():
