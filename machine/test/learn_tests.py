@@ -35,6 +35,7 @@ def test_get_params():
     """Test get_params return correct parameters"""
     test_schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
     params = get_params(test_schema)
+
     assert 'kernel' in params
     assert 'tol' in params
 
