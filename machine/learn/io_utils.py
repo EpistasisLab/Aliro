@@ -4,23 +4,30 @@ import json
 import os
 import time
 
-lab_host = os.environ['LAB_HOST']
-basedir = os.environ['PROJECT_ROOT']
+try:
+    lab_host = os.environ['LAB_HOST']
+    basedir = os.environ['PROJECT_ROOT']
+except:
+    lab_host = 'lab'
+    basedir = '/appsrc'
 http = urllib3.PoolManager()
 cacheinputfiles = True
 cachedir = basedir + '/tmp/'
 
 
 class Experiment:
+    def __init__(self, method_name, basedir=basedir):
+        """
+        method_name: ML Algorithm
+        basedir: basedir for this project
+        """
+        self.method_name = method_name
+        self.basedir = basedir
+        self.build_paths()
 
-    def __init__(self, method_name):
-        self.build_paths(method_name)
-
-    def build_paths(self, method_name):
-        self.schema = basedir + '/lab/examples/Algorithms/' + \
-            method_name + '/' + method_name + '.json'
-        self.basedir = basedir + '/machine/learn/' + method_name + '/'
-        self.tmpdir = self.basedir + 'tmp/'
+    def build_paths(self):
+        self.schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format(self.basedir, self.method_name)
+        self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
 
     def get_input(self):
         return get_input(self.schema, self.tmpdir)
@@ -83,7 +90,7 @@ def get_input_file(_id, tmpdir):
     jsondata = json.loads(response.data.decode('utf-8'))
     #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
-    if (_dataset_id is None): 
+    if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
 
     response = http.request('GET', 'http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
@@ -106,7 +113,7 @@ def get_input_file(_id, tmpdir):
             for file in files:
                 input_f = expdir + file['filename']
                 cached_file = cachedir + file['_id']
-                os.symlink(cached_file,input_f)
+                os.symlink(cached_file, input_f)
                 input_file.append(input_f)
         return input_file
     else:
