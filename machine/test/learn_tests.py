@@ -4,12 +4,16 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from learn.io_utils import Experiment, get_input, get_params
+from learn.io_utils import Experiment, get_input, get_params, get_input_file
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import requests
+import unittest
+from unittest import mock
+from urllib3_mock import Responses
 
 # test input file for classification
 test_clf_input = "test/iris.tsv"
@@ -20,6 +24,55 @@ test_reg_input = "test/1027_ESL.tsv"
 test_clf = DecisionTreeClassifier()
 test_reg = DecisionTreeRegressor()
 
+
+# This method will be used by the mock to replace requests.get
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    if args[0] == 'http://lab:5080/api/v1/experiments/test_id':
+        return MockResponse({"files": "test_file_id"}, 200)
+    elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
+        return MockResponse({"test_file_id": test_clf_input}, 200)
+
+    return MockResponse(None, 404)
+
+class MyGreatClassTestCase(unittest.TestCase):
+    # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_file(self, mock_get):
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id'
+        cachedir = tmpdir + _id
+        os.mkdir(cachedir)
+        # Assert requests.get calls
+        input_file = get_input_file(_id, cachedir)
+        rmtree(tmpdir)
+"""
+
+responses = Responses('requests.get')
+@responses.activate
+def test_get_input_file():
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    cachedir = tmpdir + _id
+    os.mkdir(cachedir)
+    url1 = 'http://lab:5080/api/v1/experiments/test_id'
+    url2 = 'http://lab:5080/api/v1/files/test_file_id'
+
+    responses.add('GET', url1,
+                  body={"files": "test_file_id"}, status=404, content_type='application/json')
+    responses.add('GET', url2,
+                  body={"test_file_id": test_clf_input}, status=404, content_type='application/json')
+    # Assert requests.get calls
+    input_file = get_input_file(_id, cachedir)
+    rmtree(tmpdir)
+"""
 
 def test_Experiment_init():
     """Test Experiment class has correct attribute."""
