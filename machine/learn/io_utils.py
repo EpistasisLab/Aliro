@@ -3,13 +3,14 @@ import urllib3
 import json
 import os
 import time
+import requests
 
 try:
     lab_host = os.environ['LAB_HOST']
     basedir = os.environ['PROJECT_ROOT']
 except:
     lab_host = 'lab'
-    basedir = '/appsrc'
+    basedir = '../'
 http = urllib3.PoolManager()
 cacheinputfiles = True
 cachedir = basedir + '/tmp/'
@@ -81,19 +82,22 @@ def parse_args(params):
 
     return args
 
-def get_input_file(_id, tmpdir):
+def get_input_file(_id, tmpdir, cachedir=cachedir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
-    response = http.request('GET', 'http://' + lab_host +
+
+    response = requests.get('http://' + lab_host +
                             ':5080/api/v1/experiments/' + _id)
+    print(response.json)
     jsondata = json.loads(response.data.decode('utf-8'))
+    #print(jsondata)
     #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
     if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
 
-    response = http.request('GET', 'http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
+    response = requests.get('http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.data.decode('utf-8'))
     files = jsondata['files']
     if cacheinputfiles:
@@ -101,7 +105,7 @@ def get_input_file(_id, tmpdir):
             cached_file = cachedir + file['_id']
             if not os.path.exists(cached_file):
                 uri = 'http://' + lab_host + ':5080/api/v1/files/' + file['_id']
-                response = http.request('GET', uri)
+                response = requests.get(uri)
                 with open(cached_file, 'w') as f:
                     f.write(response.data.decode('utf-8'))
         if len(files) == 1:
