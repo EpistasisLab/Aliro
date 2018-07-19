@@ -87,40 +87,26 @@ def get_input_file(_id, tmpdir, cachedir=cachedir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
-<<<<<<< HEAD
 
-    response = requests.get('http://' + lab_host +
-                            ':5080/api/v1/experiments/' + _id)
-    print(response.json)
-    jsondata = json.loads(response.data.decode('utf-8'))
-    #print(jsondata)
-=======
     response = requests.get('http://' + LAB_HOST +
                             ':' + LAB_PORT + '/api/v1/experiments/' + _id)
     jsondata = json.loads(response.text)
->>>>>>> master
+
     #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
     if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
 
-<<<<<<< HEAD
-    response = requests.get('http://' + lab_host +':5080/api/v1/datasets/' + _dataset_id)
-    jsondata = json.loads(response.data.decode('utf-8'))
-=======
+
     response = requests.get('http://' + LAB_HOST +':' + LAB_PORT + '/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.text)
->>>>>>> master
     files = jsondata['files']
     if cacheinputfiles:
         for file in files:
             cached_file = cachedir + file['_id']
             if not os.path.exists(cached_file):
-<<<<<<< HEAD
-                uri = 'http://' + lab_host + ':5080/api/v1/files/' + file['_id']
-=======
                 uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
->>>>>>> master
+
                 response = requests.get(uri)
                 with open(cached_file, 'w') as f:
                     f.write(response.text)
