@@ -1,4 +1,8 @@
 import os
+# mock os.environ in unittest
+os.environ['LAB_HOST'] = 'lab'
+os.environ['LAB_PORT'] = '5080'
+os.environ['PROJECT_ROOT'] = '..'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
@@ -13,7 +17,6 @@ import pandas as pd
 import requests
 import unittest
 from unittest import mock
-from urllib3_mock import Responses
 
 # test input file for classification
 test_clf_input = "test/iris.tsv"
@@ -31,48 +34,36 @@ def mocked_requests_get(*args, **kwargs):
         def __init__(self, json_data, status_code):
             self.json_data = json_data
             self.status_code = status_code
+            self.text = json.dumps(json_data)
 
         def json(self):
             return self.json_data
 
     if args[0] == 'http://lab:5080/api/v1/experiments/test_id':
-        return MockResponse({"files": "test_file_id"}, 200)
+        return MockResponse({"_dataset_id": "test_dataset_id"}, 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
+        return MockResponse({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}]}, 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
-        return MockResponse({"test_file_id": test_clf_input}, 200)
+        return MockResponse(open(test_clf_input).read(), 200)
 
     return MockResponse(None, 404)
 
-class MyGreatClassTestCase(unittest.TestCase):
+class APITESTCLASS(unittest.TestCase):
     # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_file(self, mock_get):
         tmpdir = mkdtemp() + '/'
         _id = 'test_id'
-        cachedir = tmpdir + _id
+        cachedir = tmpdir + _id + '/'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
         os.mkdir(cachedir)
         # Assert requests.get calls
-        input_file = get_input_file(_id, cachedir)
+        input_file = get_input_file(_id, tmpdir=tmpdir, cachedir=cachedir)
+        exp_input_file = cachedir + 'test_clf_input'
+        assert exp_input_file == input_file
         rmtree(tmpdir)
-"""
 
-responses = Responses('requests.get')
-@responses.activate
-def test_get_input_file():
-    tmpdir = mkdtemp() + '/'
-    _id = 'test_id'
-    cachedir = tmpdir + _id
-    os.mkdir(cachedir)
-    url1 = 'http://lab:5080/api/v1/experiments/test_id'
-    url2 = 'http://lab:5080/api/v1/files/test_file_id'
-
-    responses.add('GET', url1,
-                  body={"files": "test_file_id"}, status=404, content_type='application/json')
-    responses.add('GET', url2,
-                  body={"test_file_id": test_clf_input}, status=404, content_type='application/json')
-    # Assert requests.get calls
-    input_file = get_input_file(_id, cachedir)
-    rmtree(tmpdir)
-"""
 
 def test_Experiment_init():
     """Test Experiment class has correct attribute."""
