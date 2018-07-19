@@ -5,14 +5,10 @@ import os
 import time
 import requests
 
-try:
-    LAB_HOST = os.environ['LAB_HOST']
-    LAB_PORT = os.environ['LAB_PORT']
-    basedir = os.environ['PROJECT_ROOT']
-except:
-    LAB_HOST = 'lab'
-    LAB_PORT = '5080'
-    basedir = '../'
+
+LAB_HOST = os.environ['LAB_HOST']
+LAB_PORT = os.environ['LAB_PORT']
+basedir = os.environ['PROJECT_ROOT']
 cacheinputfiles = True
 cachedir = basedir + '/tmp/'
 
@@ -87,7 +83,6 @@ def get_input_file(_id, tmpdir, cachedir=cachedir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
-
     response = requests.get('http://' + LAB_HOST +
                             ':' + LAB_PORT + '/api/v1/experiments/' + _id)
     jsondata = json.loads(response.text)
