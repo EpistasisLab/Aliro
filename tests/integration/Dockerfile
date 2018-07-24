@@ -10,7 +10,7 @@ RUN npm install
 RUN apt-get update && apt-get install -y vim dos2unix
 COPY wait-for-it.sh /opt
 RUN dos2unix /opt/wait-for-it.sh
-RUN ["chmod", "+x", "/root/wait-for-it.sh"]
+RUN ["chmod", "+x", "/opt/wait-for-it.sh"]
 COPY entrypoint.sh /root
 RUN dos2unix /root/entrypoint.sh
 COPY jest .
