@@ -8,11 +8,9 @@ A data science assistant for generating useful results from large and complex da
 1. **Check out the project**
 
   - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  - Switch to pennai_lite branch
   ```shell
   git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
-  git checkout pennai_lite
   ```
 
 2. **Install build requirements**
