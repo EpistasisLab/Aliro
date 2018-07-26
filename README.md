@@ -110,6 +110,13 @@ See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/test
       nosetests -s -v ai/tests/test_recommender.py # tests recommender
       ```
 
+#### Metafeatures ####
+**Unit tests for python codes**
+      ```
+      cd .\ai\metalearning
+      python tests_dataset_describe.py
+      ```
+
 #### Machine ####
   -  need install nose via `pip install nose`
 
