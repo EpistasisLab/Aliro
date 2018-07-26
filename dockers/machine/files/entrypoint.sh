@@ -20,11 +20,13 @@ fi
 if [ -d 'node_modules/.staging' ]; then
     echo "npm partially installed, node_modules/.staging exists. Continuing install..."
     npm install
+    echo "npm install complete"
 elif [ -d 'node_modules' ]; then
     echo "npm ready"
 else
     echo "installing npm"
     npm install
+    echo "npm install complete"
 fi
 
 pm2 start machine.config.js --watch

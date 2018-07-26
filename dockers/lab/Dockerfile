@@ -26,10 +26,12 @@ COPY files/htpasswd /etc/apache2/htpasswd
 COPY files/certs/* /usr/lib/ssl/private/
 
 
+WORKDIR /root/
+RUN npm install -g pm2
+
 # Webserver - paiwww
 COPY files/start.sh /root/
 RUN dos2unix /root/start.sh
-CMD ["/bin/bash", "/root/start.sh"]
 
 ## node modules as a zip for speed
 COPY files/node_modules.tar.gz /root/
@@ -39,8 +41,8 @@ COPY files/entrypoint.sh /root/
 COPY files/env /opt/.env
 RUN dos2unix /root/entrypoint.sh
 
-WORKDIR /root/
-RUN npm install -g pm2
+# Start the webserver
+CMD ["/bin/bash", "/root/start.sh"]
 
 EXPOSE 443
 EXPOSE 5080
