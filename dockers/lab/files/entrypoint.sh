@@ -14,9 +14,11 @@ if [ -d 'node_modules' ]; then
     echo "npm ready"
 else
     echo "unzipping npm dependencies"
-    tar -zvxf /root/node_modules.tar.gz node_modules
+    tar -zxf /root/node_modules.tar.gz node_modules --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
     echo "unzipping complete"
+    echo "npm install"
     npm install
+    echo "npm install complete"
 fi
 
 if [ ! -d "../tmp" ]; then
