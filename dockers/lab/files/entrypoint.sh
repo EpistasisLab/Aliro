@@ -1,12 +1,6 @@
 #!/bin/bash
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
-if [ $? -eq 0 ]
-then
-    export ISAWS=1
-else
-    export ISAWS=0
-fi
 
 cd ${PROJECT_ROOT}/lab
 
@@ -24,20 +18,26 @@ fi
 if [ ! -d "../tmp" ]; then
     mkdir ../tmp
 fi
+
 npm run build
-#npm install -g pm2
-#touch .env
 pm2 start lab.config.js --watch
 
-#figure out where we are running
-if [ ${ISAWS} -eq 1 ]
-then
-    while [ ! -f /tmp/die.txt ]
-    do
-      sleep 2
-    done
-    cat /tmp/die.txt
+#start pennai
+if [ ${AI_AUTOSTART} -eq 1 ]; then
+    echo "autostarting ai..."
+
+    echo "waiting for lab to be responsive..."
+    /root/wait-for-it.sh -t 200 lab:5080 
+
+    cd $PROJECT_ROOT/
+    python -m ai.ai -v -n ${AI_NUMRECOMMEND} -rec ${AI_RECOMMENDER}
+    #python -m ai.ai -n 2
+    #pm2 start python -- -m ai.ai -n 2
 else
-    #bash
-    pm2 logs
+    echo "not autostarting ai..."
 fi
+
+
+#final command
+## bash
+pm2 logs
