@@ -33,6 +33,11 @@ RUN npm install -g pm2
 COPY files/start.sh /root/
 RUN dos2unix /root/start.sh
 
+## Utility script, used when starting ai
+COPY files/wait-for-it.sh /root/
+RUN dos2unix /root/wait-for-it.sh
+RUN ["chmod", "+x", "/root/wait-for-it.sh"]
+
 ## node modules as a zip for speed
 COPY files/node_modules.tar.gz /root/
 
