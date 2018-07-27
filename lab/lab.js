@@ -1530,6 +1530,8 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err); // Delegate to Express' default error handling
     }
+    console.log("Unhandled error from request " + req + ": ")
+    console.log("Error: " + err)
     res.status(500);
     res.send("Error: " + err);
 });
