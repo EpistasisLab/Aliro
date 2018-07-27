@@ -340,7 +340,6 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             } else {
                 // Store filenames for other files
                 filesP.push(sendFileResults(path));
-                filesP.push(sendFileResults(path));
             }
         }
     });
