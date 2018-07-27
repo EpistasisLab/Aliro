@@ -69,7 +69,6 @@
     "chai-immutable": "^1.6.0",
     "conventional-github-releaser": "^1.1.2",
     "conventional-recommended-bump": "^0.2.1",
-    "dotenv-webpack": "^1.5.4",
     "eslint": "^4.2.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.9.0",
