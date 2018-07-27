@@ -37,8 +37,10 @@ A data science assistant for generating useful results from large and complex da
 	- Note: The first time the the containers are run, it will take several minutes for lab and machine to run 'npm-install', and it may take several more minutes for the inital datasets to be loaded.  The inital 'npm-install' step can be bypassed if node is installed on the host machine by running `npm install` in the lab and machine directories.
 	- Known issue:  If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.
 
-2. Starting the AI service
+2. **Starting the AI service**
+
 a. **Automatic Start**
+
 The AI will be automatically started by setting the 'AI_AUTOSTART' value to 1 in common.env
 
 b. **Mannual Start**
