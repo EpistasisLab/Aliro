@@ -24,37 +24,50 @@ function delay(ms) {
 
 
 //it('lab run dt experiment on adult', async () => {
-it.skip('lab start dt experiment on adult', async () => {	
+it('lab start dt experiment on adult', async () => {	
 	console.log('lab start dt experiment on adult')
 
- 	// get adult dataset
+	jest.setTimeout(10000)
+/*
+	let algoName = 'DecisionTreeClassifier'
+	let algoParms = {
+		"criterion": "gini",
+		"max_depth": 1,
+		"min_samples_split": 2,
+		"min_samples_leaf": 1,
+	};
+*/
+	let algoName = 'LogisticRegression'
+	let algoParms = {
+		"penalty": "l1",
+		"C": 1.0,
+		"dual": false,
+	};
+
+	let datasetName = 'adult'
+
+	//-------------------
+ 	// get dataset
  	var datasets = await labApi.fetchDatasets();
  	expect(datasets.length).toBeGreaterThan(1);
- 	var adultId = datasets.find(function(element) {return element.name == 'adult';})._id;
- 	expect(adultId).toBeTruthy();
+ 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
+ 	expect(datasetId).toBeTruthy();
 
- 	// get decision tree algorithm
+ 	// get algorithm
  	var algorithms = await labApi.fetchAlgorithms();
  	expect(algorithms.length).toBeGreaterThan(10);
- 	var algoId = algorithms.find(function(element) {return element.name == 'DecisionTreeClassifier';})._id;
+ 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
  	expect(algoId).toBeTruthy();
+
+ 	algoParms.dataset = datasetId
 
  	// no experiments
 	var experiments = await labApi.fetchExperiments()
 	expect(experiments).toHaveLength(0)
 
 	// submit simple experiment
-	let parms = {
-		"dataset": adultId,
-		"criterion": "gini",
-		"max_depth": 1,
-		"min_samples_split": 2,
-		"min_samples_leaf": 1,
-	};
-
-
 	try {
-		var submitResult = await labApi.submitExperiment(algoId, parms)
+		var submitResult = await labApi.submitExperiment(algoId, algoParms)
 	} catch (e) {
 		console.log("submitExperiment exception")
 		var json = await e.response.json() // get the specific error description
@@ -79,12 +92,17 @@ it.skip('lab start dt experiment on adult', async () => {
 		delay(10000)
 		count = count + 1
 		experimentResults = await labApi.fetchExperiment(submitResult._id)
-		//console.log("experimentResults: ", experimentResults)
+		console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
 	}
 	console.log("finished timeout...")
 
+	// try to ping machine
+	var machineData = await machineApi.fetchProjects()
+	expect(Object.keys(machineData).length).toBeGreaterThan(10)
+	console.log("successfully pinged machine")
+
 	// hacky, lab seems to need some time before it is responsive again?
-	//delay(50000)
+	//delay(105000)
 
 	// check that the expected results are there
 	//var experimentResults = await labApi.fetchExperiment(submitResult._id)
@@ -98,5 +116,4 @@ it.skip('lab start dt experiment on adult', async () => {
 
 	var script = await labApi.fetchExperimentScript(submitResult._id)
 	expect(script).toBeTruthy()
-
 });
