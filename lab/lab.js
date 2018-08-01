@@ -628,7 +628,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
                                 if (datasetId == "") {
-                                    var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                    var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
                                 } else {
                                     var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
                                 }
@@ -900,7 +900,7 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
         });
 });
 
-var processFiles = function(experiment, files) {
+var processExperimentFiles = function(experiment, files) {
     var filesP = [];
     if (files !== undefined) {
         filesP = Array(files.length);
@@ -1099,7 +1099,7 @@ app.put("/api/v1/experiments/:id/files", upload.array("files"), (req, res, next)
         .then((experiment) => {
 
             // Process files
-            var filesP = processFiles(experiment, req.files);
+            var filesP = processExperimentFiles(experiment, req.files);
 
             // Check file promises
             Promise.all(filesP)

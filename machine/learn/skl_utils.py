@@ -274,9 +274,9 @@ def generate_results(model, input_file,
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="value.json", content=metrics_dict)
 
-    predicted_classes_list = predicted_classes.tolist()
+    prediction_dict = { 'prediction_values' : predicted_classes.tolist() }
     save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="prediction_values.json", content=predicted_classes_list)
+                  fname="prediction_values.json", content=prediction_dict)
 
 
 def setup_model_params(model, parameter_name, value):
