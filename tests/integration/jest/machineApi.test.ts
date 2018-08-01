@@ -53,7 +53,7 @@ it('bad machine does not exist in db by address', async () => {
 };
 
 it('machine projectIds match db machine.project ids', async () => {
-	console.log('machine projectIds match db machine.project ids')
+	//console.log('machine projectIds match db machine.project ids')
 	
 	//---get machine server projects state
 	let servMachineProjects : Object
@@ -78,9 +78,9 @@ it('machine projectIds match db machine.project ids', async () => {
   	let dbProjectsList : Object[] = await db.projects.find({}, {name: 1}).toArrayAsync();
   	//console.log("db.projects res: ", res)
 
-  	console.log("servMachineProjects:", servMachineProjects)
-  	console.log("dbMachineProjects:", dbMachineProjects)
-  	console.log("dbProjectsList:", dbProjectsList)
+  	//console.log("servMachineProjects:", servMachineProjects)
+  	//console.log("dbMachineProjects:", dbMachineProjects)
+  	//console.log("dbProjectsList:", dbProjectsList)
 
   	//---check server state against database state
   	expect(Object.keys(servMachineProjects).length).toBeGreaterThan(10)
