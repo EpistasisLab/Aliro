@@ -417,6 +417,55 @@ app.get("/api/v1/experiments/:id", (req, res, next) => {
         });
 });
 
+app.get("/api/v1/experiments/:id/model", (req, res, next) => {
+    let filePrefix = "model_"
+    db.experiments.findByIdAsync(req.params.id, {"files": 1})
+        .then((result) => {
+            if(result === null) {
+                res.status(400);
+                res.send({ error: "Experiment " + req.params.id + " does not exist"});
+                return;
+            }
+            for(let i=0; i<result.files.length; i++){
+                if(result.files[i].filename.includes(filePrefix)) {
+                    res.send(result.files[i])
+                    return;
+                }
+            }
+            res.status(400);
+            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
+            return;
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+app.get("/api/v1/experiments/:id/script", (req, res, next) => {
+    let filePrefix = "scripts_"
+    db.experiments.findByIdAsync(req.params.id, {"files": 1})
+        .then((result) => {
+            if(result === null) {
+                res.status(400);
+                res.send({ error: "Experiment " + req.params.id + " does not exist"});
+                return;
+            }
+            for(let i=0; i<result.files.length; i++){
+                if(result.files[i].filename.includes(filePrefix)) {
+                    res.send(result.files[i])
+                    return;
+                }
+            }
+            res.status(400);
+            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
+            return;
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+
 // Return all experiments for a project
 app.get("/api/v1/projects/:id/experiments", (req, res, next) => {
     db.experiments.find({
