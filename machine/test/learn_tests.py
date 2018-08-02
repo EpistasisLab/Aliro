@@ -8,7 +8,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from learn.io_utils import Experiment, get_input, get_params, get_input_file
+from learn.io_utils import Experiment, get_input, get_params, get_input_data
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -48,21 +48,21 @@ def mocked_requests_get(*args, **kwargs):
 
     return MockResponse(None, 404)
 
+
 class APITESTCLASS(unittest.TestCase):
     # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_get_input_file(self, mock_get):
+    def test_get_input_data(self, mock_get):
         tmpdir = mkdtemp() + '/'
         _id = 'test_id'
-        cachedir = tmpdir + _id + '/'
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
-        os.mkdir(cachedir)
         # Assert requests.get calls
-        input_file = get_input_file(_id, tmpdir=tmpdir, cachedir=cachedir)
-        exp_input_file = cachedir + 'test_clf_input'
-        assert exp_input_file == input_file
+        input_data = get_input_data(_id, tmpdir=tmpdir)
+        exp_input_data = pd.read_csv(test_clf_input, sep='\t')
         rmtree(tmpdir)
+        assert exp_input_data.equals(input_data)
+
 
 
 def test_Experiment_init():

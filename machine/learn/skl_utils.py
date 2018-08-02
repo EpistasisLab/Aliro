@@ -104,7 +104,7 @@ def generate_results(model, input_file,
 
         training_features, testing_features, training_classes, testing_classes = \
             train_test_split(features, classes, random_state=random_state, stratify=input_data[target_name])
-    else:
+    else: # two files for cross-validation
         for inputf in input_file:
             if inputf.count('train'):
                 training_data = pd.read_csv(inputf, sep='\t')
@@ -134,7 +134,7 @@ def generate_results(model, input_file,
     model = setup_model_params(model, 'class_weight', 'balanced')
 
     print('args used in model:', model.get_params())
-    
+
     # fit model
     model.fit(training_features, training_classes)
     # dump fitted module as pickle file
