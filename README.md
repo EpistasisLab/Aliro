@@ -8,18 +8,16 @@ A data science assistant for generating useful results from large and complex da
 1. **Check out the project**
 
   - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  - Switch to pennai_lite branch
   ```shell
   git clone git@github.com:EpistasisLab/pennai.git
   cd pennai
-  git checkout pennai_lite
   ```
 
 2. **Install build requirements**
   - Docker 
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - Python and nose test runner (optional, needed to run unit tests) 
+  - Python and nose test runner (optional, needed only to run unit tests) 
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) via `pip install nose`
   - nodejs (optional, can be helpful for local development)
@@ -36,10 +34,18 @@ A data science assistant for generating useful results from large and complex da
 #### Running ####
 1. **Start the network and service containers**
 - `docker-compose up` to create and start containers, `docker-compose up -d` to run in the background
+	- Note: The first time the the containers are run, it will take several minutes for lab and machine to run 'npm-install', and it may take several more minutes for the inital datasets to be loaded.  The inital 'npm-install' step can be bypassed if node is installed on the host machine by running `npm install` in the lab and machine directories.
 	- Known issue:  If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.
 
-2. **Connect to the lab container and start the AI service (optional, and this will soon be unnecessary as the AI will be started automatically)**
-  - Attach to the lab container with bash and start the AI service
+2. **Starting the AI service**
+
+a. **Automatic Start**
+
+The AI will be automatically started by setting the 'AI_AUTOSTART' value to 1 in common.env
+
+b. **Mannual Start**
+  - Attach to the lab container with bash and start the AI service:
+  
   ```
   docker exec -it "pennai_lab_1" /bin/bash 
   cd $PROJECT_ROOT/
@@ -50,6 +56,8 @@ A data science assistant for generating useful results from large and complex da
 
 3. **Connect to the website**
 	- Connect to <http://localhost:5080/> to access the website
+	- You should see ~50 datasets, starting with 'Adult'.
+	- Known issue: If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.  Try stopping the contaners, then running `docker-compose down` followed by `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 4. **Stop the containers**
   - `docker-compose stop` to stop the containers
@@ -110,6 +118,14 @@ See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/test
 
       ```
       nosetests -s -v ai/tests/test_recommender.py # tests recommender
+      ```
+
+#### Metafeatures ####
+**Unit tests for python codes**
+
+      ```
+      cd .\ai\metalearning
+      python tests_dataset_describe.py
       ```
 
 #### Machine ####

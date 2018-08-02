@@ -16,6 +16,7 @@ var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
+var generateFeatures = require("./metafeatureGenerator").generateFeatures;
 var Q = require("q");
 var users = require("./users");
 var fs = require("fs");
@@ -125,6 +126,13 @@ app.get("/api/v1/files/:id", (req, res, next) => {
     });
 });
 
+// Get file metafeatures
+app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
+    var metafeatures = db.datasets.findByIdAsync(req.params.id, {metafeatures: 1})
+    res.send(metafeatures)
+});
+
+
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {
     req.responder = require("./api/default").responder;
@@ -168,14 +176,23 @@ app.post("/api/v1/projects", (req, res, next) => {
 
 
 
-//adds datasets
+/**
+* Add datasets to the database.
+* 
+* @param _files - dataset files
+* @param _metadata - json
+*    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
+*    name - file name
+*    username - owner of the dataset
+*
+*/
 app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
     if (metadata['dataset_id'] !== undefined) {
         dataset_id = metadata['dataset_id'];
-        var filesP = processDataset(req.files, dataset_id);
+        var filesP = processDataset(req.files, dataset_id);        
         Promise.all(filesP)
             .then((results) => {
                 res.send({
@@ -1012,7 +1029,10 @@ var linkDataset = function(experiment, datasetId) {
     return filesP;
 };
 
-//process files for a dataset
+/**
+* process files for a dataset
+*
+*/
 var processDataset = function(files, dataset_id) {
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
@@ -1021,6 +1041,13 @@ var processDataset = function(files, dataset_id) {
     files.forEach(function(fileObj, i) {
         fileId = new db.ObjectID();
         metadata = []
+        var metafeatures = generateFeatures(fileObj)
+        //console.log("===metafeatures:===")
+        //console.log(metafeatures)
+
+        db.datasets.updateByIdAsync(dataset_id, {$set : {metafeatures: metafeatures}})
+        console.log("setting metafeatures for dataset " + dataset_id)
+
         var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
             metadata: {
                 contentType: fileObj.mimetype
@@ -1503,6 +1530,8 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err); // Delegate to Express' default error handling
     }
+    console.log("Unhandled error from request " + req + ": ")
+    console.log("Error: " + err)
     res.status(500);
     res.send("Error: " + err);
 });

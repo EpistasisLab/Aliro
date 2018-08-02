@@ -333,13 +333,14 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         if (event === "add" || event === "change") {
             if (path.match(/\.json$/)) {
                 // Process JSON files
+                console.log('pushing ' + path);
                 filesP.push(fs.readFile(path, "utf-8").then(sendJSONResults));
                 //ugly hack to prevent input files from getting uploaded
             } else if (path.match(/\.csv$/)) {
                 console.log('ignoring ' + path);
             } else {
                 // Store filenames for other files
-                filesP.push(sendFileResults(path));
+                console.log('pushing ' + path);
                 filesP.push(sendFileResults(path));
             }
         }
