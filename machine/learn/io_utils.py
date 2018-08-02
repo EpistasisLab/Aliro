@@ -4,13 +4,12 @@ import json
 import os
 import time
 import requests
-
+import pandas as pd
+from io import StringIO
 
 LAB_HOST = os.environ['LAB_HOST']
 LAB_PORT = os.environ['LAB_PORT']
 basedir = os.environ['PROJECT_ROOT']
-cacheinputfiles = True
-cachedir = basedir + '/tmp/'
 
 
 class Experiment:
@@ -34,7 +33,7 @@ class Experiment:
 def get_input(schema, tmpdir):
     args = parse_args(get_params(schema))
     assert args['_id']
-    input_file = get_input_file(args['_id'], tmpdir)
+    input_file = get_input_data(args['_id'], tmpdir)
     if 'input_file' in args and input_file == 0:
         input_file = args['input_file']
     return (args, input_file)
@@ -79,7 +78,7 @@ def parse_args(params):
 
     return args
 
-def get_input_file(_id, tmpdir, cachedir=cachedir):
+def get_input_data(_id, tmpdir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
@@ -92,46 +91,19 @@ def get_input_file(_id, tmpdir, cachedir=cachedir):
     if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
 
-
     response = requests.get('http://' + LAB_HOST +':' + LAB_PORT + '/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.text)
     files = jsondata['files']
-    if cacheinputfiles:
-        for file in files:
-            cached_file = cachedir + file['_id']
-            if not os.path.exists(cached_file):
-                uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-
-                response = requests.get(uri)
-                with open(cached_file, 'w') as f:
-                    f.write(response.text)
-        if len(files) == 1:
-            input_file = expdir + files[0]['filename']
-            cached_file = cachedir + files[0]['_id']
-            os.symlink(cached_file,input_file)
-        else:
-            input_file = []
-            for file in files:
-                input_f = expdir + file['filename']
-                cached_file = cachedir + file['_id']
-                os.symlink(cached_file, input_f)
-                input_file.append(input_f)
-        return input_file
-    else:
-        input_file = ''
-        numfiles = 0
+    if len(files) == 1: # only 1 file
+        uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
+        response_str = json.loads(requests.get(uri).text)
+        input_data = pd.read_csv(StringIO(response_str), sep='\t')
+    else: # two files for cross-validation
         for file in files:
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
             response = requests.get(uri)
-            input_file = expdir + file['filename']
-            with open(input_file, 'w') as f:
-                f.write(response.text)
-                numfiles += 1
 
-        if numfiles == 1:
-            return input_file
-        else:
-            return 0
+    return input_data
 
 
 def bool_type(val):
@@ -143,7 +115,6 @@ def bool_type(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 # this shouldn't be for all int types --> change later
-
 
 def int_or_none(val):
     if(val.lower() == 'none'):
