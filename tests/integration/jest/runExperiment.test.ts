@@ -23,9 +23,8 @@ function delay(ms) {
 }
 
 
-//it('lab run dt experiment on adult', async () => {
-it('lab start dt experiment on adult', async () => {	
-	console.log('lab start dt experiment on adult')
+it.skip('lab run dt experiment on adult', async () => {	
+	console.log('lab run dt experiment on adult')
 
 	jest.setTimeout(10000)
 /*
