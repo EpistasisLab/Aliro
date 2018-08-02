@@ -33,10 +33,8 @@ class Experiment:
 def get_input(schema, tmpdir):
     args = parse_args(get_params(schema))
     assert args['_id']
-    input_file = get_input_data(args['_id'], tmpdir)
-    if 'input_file' in args and input_file == 0:
-        input_file = args['input_file']
-    return (args, input_file)
+    input_data = get_input_data(args['_id'], tmpdir)
+    return (args, input_data)
 
 
 def save_output(tmpdir, _id, output):
@@ -67,8 +65,6 @@ def parse_args(params):
         parser.add_argument(arg, action='store', dest=arg_dest,
                             default=arg_default, type=arg_type, help=arg_help)
 
-    parser.add_argument('--input_file', action='store', dest='input_file',
-                        default=None, type=str, help="input file from command line")
     parser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
 
@@ -99,9 +95,11 @@ def get_input_data(_id, tmpdir):
         response_str = json.loads(requests.get(uri).text)
         input_data = pd.read_csv(StringIO(response_str), sep='\t')
     else: # two files for cross-validation
-        for file in files:
+        input_data = []
+        for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            response = requests.get(uri)
+            response_str = json.loads(requests.get(uri).text)
+            input_data.append(pd.read_csv(StringIO(response_str), sep='\t'))
 
     return input_data
 

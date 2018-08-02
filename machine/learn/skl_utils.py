@@ -69,13 +69,13 @@ SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
 
-def generate_results(model, input_file,
+def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
     random_state=random_state):
     """generate reaults for apply a model on a datasetself.
     model: a machine learning model with scikit-learn API
-    input_file: input file in csv format
+    input_data: pandas.Dataframe
     target_name: string target name in input file
     tmpdir: template folder PATH
     _id: experiment id
@@ -85,11 +85,7 @@ def generate_results(model, input_file,
 
     """
     print('loading..')
-    if isinstance(input_file, str):
-        input_data = pd.read_csv(
-            input_file, sep='\t')
-
-
+    if isinstance(input_data, pd.DataFrame):
         if target_name not in input_data.columns.values:
             raise ValueError(
                 'The provided data file does not seem to have a target column.')
@@ -105,11 +101,8 @@ def generate_results(model, input_file,
         training_features, testing_features, training_classes, testing_classes = \
             train_test_split(features, classes, random_state=random_state, stratify=input_data[target_name])
     else: # two files for cross-validation
-        for inputf in input_file:
-            if inputf.count('train'):
-                training_data = pd.read_csv(inputf, sep='\t')
-            elif inputf.count('test'):
-                testing_data = pd.read_csv(inputf, sep='\t')
+        training_data = input_data[0]
+        testing_data = input_data[1]
 
         feature_names = np.array([x for x in training_data.columns.values if x != target_name])
 

@@ -20,9 +20,10 @@ from unittest import mock
 
 # test input file for classification
 test_clf_input = "test/iris.tsv"
-
+test_clf_input_df = pd.read_csv(test_clf_input, sep='\t')
 # test inputfile for regression
 test_reg_input = "test/1027_ESL.tsv"
+test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 test_clf = DecisionTreeClassifier()
 test_reg = DecisionTreeRegressor()
@@ -41,18 +42,25 @@ def mocked_requests_get(*args, **kwargs):
 
     if args[0] == 'http://lab:5080/api/v1/experiments/test_id':
         return MockResponse({"_dataset_id": "test_dataset_id"}, 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id2':
+        return MockResponse({"_dataset_id": "test_dataset_id2"}, 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
         return MockResponse({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}]}, 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
+        return MockResponse({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}, {'_id': 'test_file_id2', 'filename': 'test_reg_input'}]}, 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input).read(), 200)
-
-    return MockResponse(None, 404)
+    elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
+        return MockResponse(open(test_reg_input).read(), 200)
+    else:
+        return MockResponse(None, 404)
 
 
 class APITESTCLASS(unittest.TestCase):
     # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data(self, mock_get):
+        """Test get_input_data function return one input dataset"""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id'
         LAB_PORT = '5080'
@@ -62,6 +70,21 @@ class APITESTCLASS(unittest.TestCase):
         exp_input_data = pd.read_csv(test_clf_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_2(self, mock_get):
+        """Test get_input_data function return a list of input dataset for cross-validataion"""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id2'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        input_data = get_input_data(_id, tmpdir=tmpdir)
+        exp_input_data1 = pd.read_csv(test_clf_input, sep='\t')
+        exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
+        rmtree(tmpdir)
+        assert exp_input_data1.equals(input_data[0])
+        assert exp_input_data2.equals(input_data[1])
 
 
 
@@ -90,7 +113,7 @@ def test_generate_results_1():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_clf, input_file=test_clf_input,
+    generate_results(model=test_clf, input_data=test_clf_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
@@ -116,7 +139,7 @@ def test_generate_results_2():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_clf, input_file=test_clf_input,
+    generate_results(model=test_clf, input_data=test_clf_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=False, random_state=42)
 
     input_data = pd.read_csv(
@@ -157,7 +180,7 @@ def test_generate_results_3():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_reg, input_file=test_reg_input,
+    generate_results(model=test_reg, input_data=test_reg_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='target',
                     mode='regression', figure_export=True)
 
@@ -184,7 +207,7 @@ def test_generate_results_4():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_reg, input_file=test_reg_input,
+    generate_results(model=test_reg, input_data=test_reg_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='target',
                     mode='regression', figure_export=False)
 
