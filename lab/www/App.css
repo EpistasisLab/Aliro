@@ -271,10 +271,27 @@ body {
     margin-top: -2rem;
     margin-bottom: 2rem;
 }
+.pennai .admin-scene {
+    margin-bottom: 2em;
+}
 
-.pennai .admin-scene .table-container {
-    margin-bottom: 2rem;
-    border: 1px solid #555;;
+.pennai .admin-scene p,
+.pennai .admin-scene span {
+    color: #fff;
+}
+
+.pennai .admin-scene .panel-header {
+    background: #545454 linear-gradient(transparent,rgba(0,0,0,.05));
+}
+
+.pennai .admin-scene .panel-header .ui.header {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+.pennai .admin-scene .muted {
+    color: rgba(255,255,255,.7);
+    font-style: italic;
 }
 
 .c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {

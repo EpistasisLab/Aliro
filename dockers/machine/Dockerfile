@@ -12,6 +12,7 @@ COPY files/wait-for-it.sh /root/
 RUN dos2unix /root/wait-for-it.sh
 RUN dos2unix /root/entrypoint.sh
 RUN dos2unix /root/start.sh
+RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 VOLUME /share
 EXPOSE 5081
