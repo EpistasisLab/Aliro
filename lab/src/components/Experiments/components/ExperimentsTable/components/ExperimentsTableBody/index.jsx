@@ -60,6 +60,32 @@ function ExperimentsTableBody({
     }
   };
 
+  const downloadModel = (id) => {
+    fetch(`/api/v1/experiments/${id}/model`)
+      .then(response => {
+        if(response.status >= 400) {
+          throw new Error(`${response.status}: ${response.statusText}`);
+        }  
+        return response.json();
+      })
+      .then(json => {
+        window.location = `/api/v1/files/${json._id}`;
+      });
+  };
+
+  const downloadScript = (id) => {
+    fetch(`/api/v1/experiments/${id}/script`)
+      .then(response => {
+        if(response.status >= 400) {
+          throw new Error(`${response.status}: ${response.statusText}`);
+        }  
+        return response.json();
+      })
+      .then(json => {
+        window.location = `/api/v1/files/${json._id}`;
+      });
+  };
+
   return (
     <Table.Body>
       {experiments.map(experiment => {
@@ -117,7 +143,25 @@ function ExperimentsTableBody({
                 icon={<Icon inverted color="grey" size="large" name="caret down" />}
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item icon="download" text="Download results" />
+                  {experiment.status === "running" &&
+                    <Dropdown.Item icon="download" text="Kill experiment" />
+                  }
+                  {experiment.status === "success" &&
+                    [
+                      <Dropdown.Item 
+                        key="model" 
+                        icon="download" 
+                        text="Download model"
+                        onClick={() => downloadModel(experiment._id)}
+                      />,
+                      <Dropdown.Item 
+                        key="script" 
+                        icon="download" 
+                        text="Download script"
+                        onClick={() => downloadScript(experiment._id)}
+                      />
+                    ]
+                  }
                 </Dropdown.Menu>
               </Dropdown>
             </Table.Cell>
