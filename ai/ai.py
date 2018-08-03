@@ -109,6 +109,17 @@ class AI():
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         # toggled datasets
         self.dataset_threads = {}
+
+        # verbosity...
+        print("paths:")
+        print("self.db_path: ", self.db_path)
+        print("self.exp_path: ", self.exp_path)
+        print("self.data_path: ", self.data_path)
+        print("self.projects_path: ", self.projects_path)
+        print("self.status_path: ", self.status_path)
+        print("self.submit_path: ", self.submit_path)
+        print("self.algo_path: ", self.algo_path)
+
         # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
             data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
@@ -195,6 +206,7 @@ class AI():
         payload = {'date_start':self.last_update,'has_scores':True}
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
+        print("requesting from : ", self.exp_path)
         req = urllib.request.Request(self.exp_path, data=params,
                                    headers=self.header)
         r = urllib.request.urlopen(req)
