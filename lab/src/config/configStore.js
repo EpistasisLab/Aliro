@@ -1,29 +1,17 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger';
-import pennaiApp from '../reducer';
+import data from '../data';
 
 const configStore = () => {
-  const middlewares = [
-    thunk // lets us dispatch() functions
-  ];
+  const middleware = [thunk];
 
-  // middleware for development environment
   if(process.env.NODE_ENV === 'development') {
-    const logger = createLogger({
-      collapsed: true,
-      stateTransformer: state => state.toJS()
-    });
-
-    middlewares.push(logger);
+    const logger = createLogger({ collapsed: true });
+    middleware.push(logger);
   }
 
-  const store = createStore(
-    pennaiApp,
-    applyMiddleware(...middlewares)
-  );
-
-  return store;
+  return createStore(data, applyMiddleware(...middleware));
 };
 
 export default configStore;

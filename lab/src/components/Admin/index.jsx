@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../data/machines/actions';
-import { Header, Segment, Grid, Table, Icon } from 'semantic-ui-react';
+import * as actions from 'data/machines/actions';
+import ProjectModal from './components/ProjectModal';
+import { Header, Segment, Grid, Table, Modal, Icon } from 'semantic-ui-react';
 
 class Admin extends Component {
   constructor(props) {
     super(props); 
-    this.state = { status: {} };
+    this.state = { 
+      status: {},
+      activeProject: null
+    };
+    this.handleOpenProject = this.handleOpenProject.bind(this);
+    this.handleCloseProject = this.handleCloseProject.bind(this);
   }
 
   componentDidMount() {
@@ -29,12 +35,29 @@ class Admin extends Component {
     }
   }
 
+  handleOpenProject(e, id) {
+    e.preventDefault(); // prevent link from firing, it's only for styling
+    fetch(`/api/v1/projects/${id}`)
+      .then(response => {
+        if(response.status >= 400) {
+          throw new Error(`${response.status}: ${response.statusText}`);
+        }  
+        return response.json();
+      })
+      .then(project => this.setState({ activeProject: project }));
+  }
+
+  handleCloseProject() {
+    this.setState({ activeProject: null });
+  }
+
   render() {
-    const { status } = this.state;
+    const { status, activeProject } = this.state;
     const { machines } = this.props;
 
     return (
       <div className="admin-scene">
+        <ProjectModal project={activeProject} handleClose={this.handleCloseProject} />
         <div className="scene-header">
           <Header inverted size="huge" content="Admin" />
         </div>
@@ -102,10 +125,12 @@ class Admin extends Component {
                     <Table inverted attached="bottom">
                       <Table.Body>
                         {Object.entries(m.projects).map(([key, value]) =>
-                          <Table.Row key={key}>
-                            <Table.Cell>
-                              <span>{value.name}</span><br />
-                              <span className="muted">{key}</span>
+                          <Table.Row key={key} onClick={(e) => this.handleOpenProject(e, key)}>
+                            <Table.Cell selectable>
+                              <a href="#">
+                                <span>{value.name}</span><br />
+                                <span className="muted">{key}</span>
+                              </a>
                             </Table.Cell>
                           </Table.Row>
                         )}  
@@ -123,7 +148,7 @@ class Admin extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  machines: state.get('machines')
+  machines: state.machines
 });
 
 export { Admin };

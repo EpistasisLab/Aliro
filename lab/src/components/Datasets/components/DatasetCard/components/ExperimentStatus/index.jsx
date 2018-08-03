@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table, Header, Label } from 'semantic-ui-react';
 
 function ExperimentStatus({ filter, experiments, notifications }) {
@@ -20,8 +18,8 @@ function ExperimentStatus({ filter, experiments, notifications }) {
           <Table.Cell selectable textAlign="center">
             <a href={filterLink + 'pending'}>
               <Header inverted size="tiny">
-                {experiments.get('pending')}<br />
-                {`experiment${experiments.get('pending') === 1 ? '' : 's'}`}<br />
+                {experiments.pending}<br />
+                {`experiment${experiments.pending === 1 ? '' : 's'}`}<br />
                 {'pending'}
               </Header>
             </a>  
@@ -29,8 +27,8 @@ function ExperimentStatus({ filter, experiments, notifications }) {
           <Table.Cell selectable textAlign="center">
             <a href={filterLink + 'running'}>
               <Header inverted size="tiny">
-                {experiments.get('running')}<br />
-                {`experiment${experiments.get('running') === 1 ? '' : 's'}`}<br />
+                {experiments.running}<br />
+                {`experiment${experiments.running === 1 ? '' : 's'}`}<br />
                 {'running'}
               </Header>
             </a>  
@@ -38,24 +36,24 @@ function ExperimentStatus({ filter, experiments, notifications }) {
           <Table.Cell selectable textAlign="center">
             <a href={filterLink + 'success'}>
               <Header inverted size="tiny">
-                {experiments.get('finished')}<br />
-                {`result${experiments.get('finished') === 1 ? '' : 's'}`}<br />
+                {experiments.finished}<br />
+                {`result${experiments.finished === 1 ? '' : 's'}`}<br />
               </Header>
             </a>
-            {notifications.get('error') > 0 &&
+            {notifications.error > 0 &&
               <Label 
                 color="red" 
                 size="tiny"
                 floating
-                content={`${notifications.get('error')} error${experiments.get('error') === 1 ? '' : 's'}`}
+                content={`${notifications.error} error${experiments.error === 1 ? '' : 's'}`}
               />
             }
-            {!notifications.get('error') && notifications.get('new') > 0 &&
+            {!notifications.error && notifications.new > 0 &&
               <Label 
                 color="green" 
                 size="tiny"
                 floating
-                content={`${notifications.get('new')} new`}
+                content={`${notifications.new} new`}
               />
             }   
           </Table.Cell>
@@ -64,11 +62,5 @@ function ExperimentStatus({ filter, experiments, notifications }) {
     </Table>
   );
 }
-
-ExperimentStatus.propTypes = {
-  filter: PropTypes.string.isRequired,
-  experiments: ImmutablePropTypes.map.isRequired,
-  notifications: ImmutablePropTypes.map.isRequired
-};
 
 export default ExperimentStatus;

@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table } from 'semantic-ui-react';
 import { formatAlgorithm, formatParam } from '../../../../../../utils/formatter';
 
@@ -65,7 +63,7 @@ function ExperimentsTableHeader({
           {'Dataset'}
         </Table.HeaderCell>
         <Table.HeaderCell 
-          colSpan={shouldDisplayParams && orderedParamKeys.size}
+          colSpan={shouldDisplayParams && orderedParamKeys.length}
           sorted={shouldDisplayParams ? null : getIsSorted('algorithm')}
           onClick={shouldDisplayParams ? null : () => onSort('algorithm')}
         >
@@ -94,14 +92,5 @@ function ExperimentsTableHeader({
     </Table.Header>
   );
 }
-
-ExperimentsTableHeader.propTypes = {
-  selectedAlgorithm: PropTypes.string.isRequired,
-  shouldDisplayQuality: PropTypes.bool.isRequired,
-  shouldDisplayParams: PropTypes.bool.isRequired,
-  orderedParamKeys: ImmutablePropTypes.seq.isRequired,
-  sort: PropTypes.object.isRequired,
-  updateQuery: PropTypes.func.isRequired
-};
 
 export default ExperimentsTableHeader;

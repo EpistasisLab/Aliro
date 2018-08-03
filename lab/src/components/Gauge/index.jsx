@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import c3 from 'c3';
 
 class Gauge extends Component {
@@ -50,12 +49,6 @@ class Gauge extends Component {
     );
   }
 }
-
-Gauge.propTypes = {
-  value: PropTypes.number.isRequired,
-  chartKey: PropTypes.string.isRequired,
-  chartColor: PropTypes.string
-};
 
 Gauge.defaultProps = {
   chartColor: '#60B044'

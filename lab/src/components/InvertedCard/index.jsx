@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Segment, Header, Popup, Button } from 'semantic-ui-react';
 
 function InvertedCard({ 
@@ -36,13 +35,5 @@ function InvertedCard({
     </div>
   );
 }
-
-InvertedCard.propTypes = {
-  header: PropTypes.string.isRequired,
-  tooltip: PropTypes.string,
-  options: PropTypes.element, 
-  content: PropTypes.element,
-  footer: PropTypes.element
-};
 
 export default InvertedCard;
