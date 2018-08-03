@@ -1,37 +1,45 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import * as actions from './data/actions';
-import { 
-  getPreferences,
-  getIsFetching,
-  getErrorMessage
-} from './data';
-import App from './App';
+import * as actions from 'data/preferences/actions';
+import Navbar from './Navbar';
+import FetchError from '../FetchError';
+import { Container, Loader } from 'semantic-ui-react';
 
-class AppContainer extends Component {
+class App extends Component {
   componentDidMount() {
     this.props.fetchPreferences();
   }
 
   render() {
+    const { preferences, fetchPreferences, children } = this.props;
+
+    if(preferences.isFetching) {
+      return (
+        <Loader active inverted size="large" content="Retrieving your preferences..." />
+      );
+    }
+
+    if(preferences.error) {
+      return (
+        <FetchError 
+          message={preferences.error}
+          onRetry={() => fetchPreferences()}
+        />
+      );
+    }
+
     return (
-      <App {...this.props} />
+      <Container fluid className="app pennai">
+        <Navbar preferences={preferences.data} />
+        {children}
+      </Container>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  preferences: getPreferences(state),
-  isFetching: getIsFetching(state),
-  errorMessage: getErrorMessage(state)
+  preferences: state.preferences
 });
 
-AppContainer.propTypes = {
-  fetchPreferences: PropTypes.func.isRequired
-};
-
-export default connect(
-  mapStateToProps, 
-  actions
-)(AppContainer);
+export { App };
+export default connect(mapStateToProps, actions)(App);

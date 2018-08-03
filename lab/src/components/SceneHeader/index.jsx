@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Header, Button } from 'semantic-ui-react';
 
 function SceneHeader({
@@ -30,13 +29,5 @@ function SceneHeader({
     </div>
   );
 }
-
-SceneHeader.propTypes = {
-  header: PropTypes.string.isRequired,
-  subheader: PropTypes.string,
-  btnText: PropTypes.string,
-  btnIcon: PropTypes.string,
-  //btnAction: PropTypes.func
-};
 
 export default SceneHeader;

@@ -1,8 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Table, Icon, Popup, Dropdown } from 'semantic-ui-react';
-import { formatTime, formatDataset, formatAlgorithm } from '../../../../../../utils/formatter';
+import { formatTime, formatDataset, formatAlgorithm } from 'utils/formatter';
 
 function ExperimentsTableBody({
   experiments,
@@ -12,8 +10,8 @@ function ExperimentsTableBody({
   orderedParamKeys
 }) {
   const getExperimentLink = (experiment) => {
-    const status = experiment.get('status');
-    const id = experiment.get('_id');
+    const status = experiment.status;
+    const id = experiment._id;
 
     if(status === 'suggested' || status === 'pending') {
       return `/#/builder?experiment=${id}`;
@@ -42,7 +40,7 @@ function ExperimentsTableBody({
   };
 
   const renderAwardPopup = (experiment) => {
-    switch(experiment.get('award')) {
+    switch(experiment.award) {
       case 'best_overall':
         return (
           <Popup
@@ -54,7 +52,7 @@ function ExperimentsTableBody({
         return (
           <Popup
             trigger={<Icon inverted color="grey" size="large" name="trophy" className="float-right" />}
-            content={`Best result for this dataset with ${formatAlgorithm(experiment.get('algorithm'))}`}
+            content={`Best result for this dataset with ${formatAlgorithm(experiment.algorithm)}`}
           />
         );
       default:
@@ -68,26 +66,26 @@ function ExperimentsTableBody({
         const experimentLink = getExperimentLink(experiment);
         return (
           <Table.Row 
-            key={experiment.get('_id')}
-            className={experiment.get('notification')}
+            key={experiment._id}
+            className={experiment.notification}
           >
             <Table.Cell selectable>
               <a href={experimentLink}>
-                {renderStatusIcon(experiment.get('status'))} 
-                {formatTime(experiment.get('started'))}
+                {renderStatusIcon(experiment.status)} 
+                {formatTime(experiment.started)}
               </a>  
             </Table.Cell>
             {shouldDisplayQuality ? (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.get('quality_metric').toFixed(2)}
+                  {experiment.quality_metric.toFixed(2)}
                 </a>  
               </Table.Cell>
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.getIn(['scores', 'accuracy_score']) ? 
-                    experiment.getIn(['scores', 'accuracy_score']).toFixed(2) : '-'
+                  {experiment.scores.accuracy_score ? 
+                    experiment.scores.accuracy_score.toFixed(2) : '-'
                   }
                   {shouldDisplayAwards && renderAwardPopup(experiment)}
                 </a>  
@@ -95,21 +93,21 @@ function ExperimentsTableBody({
             )}
             <Table.Cell selectable>
               <a href={experimentLink}>
-                {formatDataset(experiment.get('dataset_name'))}
+                {formatDataset(experiment.dataset_name)}
               </a>  
             </Table.Cell>
             {shouldDisplayParams ? (
               orderedParamKeys.map((key) => (
                 <Table.Cell key={[experiment._id, key]} selectable>
                   <a href={experimentLink}>
-                    {experiment.getIn(['params', key]).toString() || '-'}
+                    {experiment.params[key].toString() || '-'}
                   </a>
                 </Table.Cell>
               ))
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {formatAlgorithm(experiment.get('algorithm'))}
+                  {formatAlgorithm(experiment.algorithm)}
                 </a>  
               </Table.Cell> 
             )}
@@ -129,13 +127,5 @@ function ExperimentsTableBody({
     </Table.Body>
   );
 }
-
-ExperimentsTableBody.propTypes = {
-  experiments: ImmutablePropTypes.list.isRequired,
-  shouldDisplayQuality: PropTypes.bool.isRequired,
-  shouldDisplayAwards: PropTypes.bool.isRequired,
-  shouldDisplayParams: PropTypes.bool.isRequired,
-  orderedParamKeys: ImmutablePropTypes.seq.isRequired
-};
 
 export default ExperimentsTableBody;

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Header, Button } from 'semantic-ui-react';
 
 function FetchError({ message, onRetry }) {
@@ -24,10 +23,5 @@ function FetchError({ message, onRetry }) {
     </div>
   );
 }
-
-FetchError.propTypes = {
-  message: PropTypes.string.isRequired,
-  onRetry: PropTypes.func
-};
 
 export default FetchError;
