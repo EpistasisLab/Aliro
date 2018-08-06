@@ -60,6 +60,17 @@ function ExperimentsTableBody({
     }
   };
 
+  const cancelExperiment = (id) => {
+    const host_url = `${window.location.protocol}//${window.location.hostname}`;
+    fetch(`${host_url}:5081/experiments/${id}/kill`, { method: 'POST' })
+      .then(response => {
+        if(response.status >= 400) {
+          throw new Error(`${response.status}: ${response.statusText}`);
+        }  
+        return response.json();
+      });
+  };
+
   const downloadModel = (id) => {
     fetch(`/api/v1/experiments/${id}/model`)
       .then(response => {
@@ -141,12 +152,17 @@ function ExperimentsTableBody({
               <Dropdown 
                 pointing="top right" 
                 icon={<Icon inverted color="grey" size="large" name="caret down" />}
+                disabled={experiment.status === 'fail'}
               >
                 <Dropdown.Menu>
-                  {experiment.status === "running" &&
-                    <Dropdown.Item icon="download" text="Kill experiment" />
+                  {experiment.status === 'running' &&
+                    <Dropdown.Item 
+                      icon="cancel" 
+                      text="Cancel experiment"
+                      onClick={() => cancelExperiment(experiment._id)}
+                    />
                   }
-                  {experiment.status === "success" &&
+                  {experiment.status === 'success' &&
                     [
                       <Dropdown.Item 
                         key="model" 
