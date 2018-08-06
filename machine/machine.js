@@ -408,6 +408,7 @@ app.post("/experiments/:id/kill", (req, res) => {
             console.log("killing experiment")
         }
     }
+    else { console.log("experiment process does not exist") }
     res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
     res.send(JSON.stringify({
         status: "killed"
