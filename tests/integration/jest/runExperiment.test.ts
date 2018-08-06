@@ -6,6 +6,7 @@
 import * as labApi from './labApi';
 import * as machineApi from './machineApi';
 import * as dbBuilder from "./util/db";
+import * as util from "./util/testUtils";
 
 /*
 const db = dbBuilder.openDbConnection();
@@ -15,12 +16,6 @@ afterAll(() => {
   db.close();
 });
 */
-
-// hacky delay
-function delay(ms) {
-   ms += new Date().getTime();
-   while (new Date() < ms){}
-}
 
 
 it.skip('lab run dt experiment on adult', async () => {	
@@ -88,7 +83,7 @@ it.skip('lab run dt experiment on adult', async () => {
 	var count = 0
 	console.log("starting timeout...")
 	while (experimentResults._status === ('running') && count < 4) {
-		delay(10000)
+		util.delay(10000)
 		count = count + 1
 		experimentResults = await labApi.fetchExperiment(submitResult._id)
 		console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -101,7 +96,7 @@ it.skip('lab run dt experiment on adult', async () => {
 	console.log("successfully pinged machine")
 
 	// hacky, lab seems to need some time before it is responsive again?
-	//delay(105000)
+	//util.delay(105000)
 
 	// check that the expected results are there
 	//var experimentResults = await labApi.fetchExperiment(submitResult._id)

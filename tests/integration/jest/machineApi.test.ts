@@ -4,7 +4,9 @@
 */
 
 import * as machineApi from './machineApi';
+import * as labApi from './labApi';
 import * as dbBuilder from "./util/db";
+import * as util from "./util/testUtils";
 
 
 const db = dbBuilder.openDbConnection();
@@ -50,6 +52,71 @@ it('bad machine does not exist in db by address', async () => {
     }).toArrayAsync();
 
     expect(dbMachine.length).toEqual(0)
+};
+
+it.skip('kill experiment', async () => {
+	let algoName = 'LogisticRegression'
+	let algoParms = {
+		"penalty": "l1",
+		"C": 1.0,
+		"dual": false,
+	};
+
+	let datasetName = 'adult'
+
+	//-------------------
+ 	// get dataset
+ 	var datasets = await labApi.fetchDatasets();
+ 	expect(datasets.length).toBeGreaterThan(1);
+ 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
+ 	expect(datasetId).toBeTruthy();
+
+ 	// get algorithm
+ 	var algorithms = await labApi.fetchAlgorithms();
+ 	expect(algorithms.length).toBeGreaterThan(10);
+ 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
+ 	expect(algoId).toBeTruthy();
+
+ 	algoParms.dataset = datasetId
+
+ 	// no experiments
+	var experiments = await labApi.fetchExperiments()
+	expect(experiments).toHaveLength(0)
+
+	var capRes = await machineApi.fetchCapacity(algoId)
+	expect(capRes.capacity).toEqual(1)
+
+	// submit simple experiment
+	try {
+		var submitResult = await labApi.submitExperiment(algoId, algoParms)
+	} catch (e) {
+		console.log("submitExperiment exception")
+		var json = await e.response.json() // get the specific error description
+		expect(json).toBeFalsy()
+		expect(e).toBeFalsy() // break even if no message body returned
+	}
+
+	expect(submitResult).toBeTruthy()
+
+	// expect that the experiment started running
+	var experimentResults = await labApi.fetchExperiment(submitResult._id)
+	expect(experimentResults._status).toEqual('running')
+
+	//var capRes = await machineApi.fetchCapacity(algoId)
+	//expect(capRes.capacity).toEqual(0)
+
+	// kill experiment
+	var killResult = machineApi.killExperiment(submitResult._id)
+	expect(killResult)
+
+	//util.delay(5000)
+
+	// expect that the experiment started canceled
+	//var capRes = await machineApi.fetchCapacity(algoId)
+	//expect(capRes.capacity).toEqual(1)
+
+	var experimentResults = await labApi.fetchExperiment(submitResult._id)
+	expect(experimentResults._status).toEqual('cancelled')
 };
 
 it('machine projectIds match db machine.project ids', async () => {
