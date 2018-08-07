@@ -8,6 +8,9 @@ export const get = (route) => {
     .then(response => { 
       return response.json();
     })
+    .catch((err) => {
+           throw(`Error: ${err}, Route: ${route}`);
+    })
     .then(json => json);
 };
 
@@ -17,6 +20,9 @@ export const getFile = (route) => {
   }).then(checkStatus)
     .then(response => { 
       return response.blob();
+    })
+    .catch((err) => {
+           throw(`Error: ${err}, Route: ${route}`);
     })
     .then(json => json);
 };
@@ -37,6 +43,9 @@ export const post = (route, body) => {
     .then(response => {
       return response.json();
     })
+    .catch((err) => {
+           throw(`Error: ${err}, Route: ${route}`);
+    })
     .then(json => json);
 };
 
@@ -54,6 +63,9 @@ export const put = (route, body) => {
   }).then(checkStatus)
     .then(response => {
       return response.json();
+    })
+    .catch((err) => {
+           throw(`Error: ${err}, Route: ${route}`);
     })
     .then(json => json);
 };

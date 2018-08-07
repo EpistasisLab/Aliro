@@ -207,6 +207,7 @@ app.get("/projects", (req, res) => {
     res.send(projects);
 });
 
+
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available
@@ -351,7 +352,13 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         maxCapacity += Number(project.capacity); // Add back capacity
 
         // Send status
-        var status = (exitCode === 0) ? "success" : "fail";
+        var status
+        if (exitCode === 0) { status = "success" }
+        else if (experiment.killed) { status = "cancelled" }
+        else { status = "fail"}
+
+        //console.log(`Exit code: ${exitCode}, status: ${status}`)
+
         rp({
             uri: laburi + "/api/v1/experiments/" + experimentId,
             method: "PUT",
@@ -391,9 +398,17 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
 // Kills experiment
 app.post("/experiments/:id/kill", (req, res) => {
+    console.log(`/experiments/${req.params.id}/kill`)
     if (experiments[req.params.id]) {
-        experiments[req.params.id].kill();
+        if (experiments[req.params.id].killed) {
+            console.log("experiment already killed")
+        }
+        else {
+            experiments[req.params.id].kill();
+            console.log("killing experiment")
+        }
     }
+    else { console.log("experiment process does not exist") }
     res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
     res.send(JSON.stringify({
         status: "killed"

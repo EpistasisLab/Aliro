@@ -1,46 +1,57 @@
+require('es6-promise').polyfill();
+import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import { connect } from 'react-redux';
-import * as actions from './data/actions';
-import { 
-  getConfusionMatrix, 
-  getIsFetching, 
-  getErrorMessage
-} from './data';
-import ConfusionMatrix from './ConfusionMatrix';
+import InvertedCard from '../../../InvertedCard';
+import { Header, Image, Loader } from 'semantic-ui-react';
 
-class ConfusionMatrixContainer extends Component {
-  componentWillMount() {
-    this.props.clearConfusionMatrix();
+class ConfusionMatrix extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { image_url: null };
   }
 
   componentDidMount() {
-    if(this.props.file) {
-      this.props.fetchConfusionMatrix(this.props.file.get('_id'));
+    const { file } = this.props;
+
+    if(file) {
+      fetch(`/api/v1/files/${file._id}`)
+        .then(response => {
+          if(response.status >= 400) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+          }  
+          return response.blob();
+        })
+        .then(blob => {
+          this.setState({ 
+            image_url: URL.createObjectURL(blob) 
+          });
+        });
     }
   }
 
   render() {
+    const { file } = this.props;
+    const { image_url } = this.state;
+
+    if(!file) {
+      return (
+        <Header inverted size="tiny" content="Confusion matrix is not available." />
+      );
+    }
+
+    if(!image_url) {
+      return (
+        <Loader active inverted inline="centered" content="Retrieving confusion matrix..." />
+      );
+    }
+
     return (
-      <ConfusionMatrix {...this.props} />
+      <InvertedCard
+        header="Confusion Matrix"
+        content={<Image src={image_url} />}
+      />
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  confusionMatrix: getConfusionMatrix(state),
-  isFetching: getIsFetching(state),
-  errorMessage: getErrorMessage(state)
-});
-
-ConfusionMatrixContainer.propTypes = {
-  file: ImmutablePropTypes.map,
-  clearConfusionMatrix: PropTypes.func.isRequired,
-  fetchConfusionMatrix: PropTypes.func.isRequired
-};
-
-export default connect(
-  mapStateToProps, 
-  actions
-)(ConfusionMatrixContainer);
+export default ConfusionMatrix;

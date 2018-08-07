@@ -417,6 +417,55 @@ app.get("/api/v1/experiments/:id", (req, res, next) => {
         });
 });
 
+app.get("/api/v1/experiments/:id/model", (req, res, next) => {
+    let filePrefix = "model_"
+    db.experiments.findByIdAsync(req.params.id, {"files": 1})
+        .then((result) => {
+            if(result === null) {
+                res.status(400);
+                res.send({ error: "Experiment " + req.params.id + " does not exist"});
+                return;
+            }
+            for(let i=0; i<result.files.length; i++){
+                if(result.files[i].filename.includes(filePrefix)) {
+                    res.send(result.files[i])
+                    return;
+                }
+            }
+            res.status(400);
+            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
+            return;
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+app.get("/api/v1/experiments/:id/script", (req, res, next) => {
+    let filePrefix = "scripts_"
+    db.experiments.findByIdAsync(req.params.id, {"files": 1})
+        .then((result) => {
+            if(result === null) {
+                res.status(400);
+                res.send({ error: "Experiment " + req.params.id + " does not exist"});
+                return;
+            }
+            for(let i=0; i<result.files.length; i++){
+                if(result.files[i].filename.includes(filePrefix)) {
+                    res.send(result.files[i])
+                    return;
+                }
+            }
+            res.status(400);
+            res.send({error: "'" + filePrefix + "' file for experiment " + req.params.id + " does not exist"});
+            return;
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+
 // Return all experiments for a project
 app.get("/api/v1/projects/:id/experiments", (req, res, next) => {
     db.experiments.find({
@@ -628,7 +677,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                 options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
                                 if (datasetId == "") {
-                                    var filesP = processFiles(exp.ops[0], files); // Add files to project
+                                    var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
                                 } else {
                                     var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
                                 }
@@ -900,7 +949,7 @@ app.put("/api/v1/experiments/:id/finished", (req, res, next) => {
         });
 });
 
-var processFiles = function(experiment, files) {
+var processExperimentFiles = function(experiment, files) {
     var filesP = [];
     if (files !== undefined) {
         filesP = Array(files.length);
@@ -1099,7 +1148,7 @@ app.put("/api/v1/experiments/:id/files", upload.array("files"), (req, res, next)
         .then((experiment) => {
 
             // Process files
-            var filesP = processFiles(experiment, req.files);
+            var filesP = processExperimentFiles(experiment, req.files);
 
             // Check file promises
             Promise.all(filesP)

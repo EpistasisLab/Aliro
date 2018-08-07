@@ -1,5 +1,4 @@
 import React from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import MediaQuery from 'react-responsive';
 import DeviceWatcher from '../../../utils/device-watcher';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
@@ -11,7 +10,7 @@ function Navbar({ preferences }) {
       <Menu.Item>
         <Icon name="user" />
         <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
-          {preferences.get('username')} <Icon name="caret down" />
+          {preferences.username} <Icon name="caret down" />
         </MediaQuery>
       </Menu.Item>
     );
@@ -25,7 +24,7 @@ function Navbar({ preferences }) {
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
         <Menu.Item name="Your friendly AI assistant" />
       </MediaQuery>
-      {preferences.size > 0 &&
+      {preferences &&
         <Menu.Menu position="right">
           <Link to="datasets" className="link" activeClassName="active"> 
             <Menu.Item name="Datasets">
@@ -62,9 +61,5 @@ function Navbar({ preferences }) {
     </Menu>
   );
 }
-
-Navbar.propTypes = {
-  preferences: ImmutablePropTypes.map
-};
 
 export default Navbar;

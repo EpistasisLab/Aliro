@@ -1,46 +1,55 @@
+require('es6-promise').polyfill();
+import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import { connect } from 'react-redux';
-import * as actions from './data/actions';
-import { 
-  getROCCurve, 
-  getIsFetching, 
-  getErrorMessage
-} from './data';
-import ROCCurve from './ROCCurve';
+import InvertedCard from '../../../InvertedCard';
+import { Header, Image, Loader } from 'semantic-ui-react';
 
-class ROCCurveContainer extends Component {
-  componentWillMount() {
-    this.props.clearROCCurve();
+class ROCCurve extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { image_url: null };
   }
 
   componentDidMount() {
-    if(this.props.file) {
-      this.props.fetchROCCurve(this.props.file.get('_id'));
+    const { file } = this.props;
+
+    if(file) {
+      fetch(`/api/v1/files/${file._id}`)
+        .then(response => {
+          if(response.status >= 400) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+          }  
+          return response.blob();
+        })
+        .then(blob => this.setState({ 
+          image_url: URL.createObjectURL(blob) 
+        }));
     }
   }
 
   render() {
+    const { file } = this.props;
+    const { image_url } = this.state;
+
+    if(!file) {
+      return (
+        <Header inverted size="tiny" content="ROC curve is not available." />
+      );
+    }
+
+    if(!image_url) {
+      return (
+        <Loader active inverted inline="centered" content="Retrieving ROC curve..." />
+      );
+    }
+
     return (
-      <ROCCurve {...this.props} />
+      <InvertedCard
+        header="ROC Curve"
+        content={<Image src={image_url} />}
+      />
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  rocCurve: getROCCurve(state),
-  isFetching: getIsFetching(state),
-  errorMessage: getErrorMessage(state)
-});
-
-ROCCurveContainer.propTypes = {
-  file: ImmutablePropTypes.map,
-  clearROCCurve: PropTypes.func.isRequired,
-  fetchROCCurve: PropTypes.func.isRequired
-};
-
-export default connect(
-  mapStateToProps, 
-  actions
-)(ROCCurveContainer);
+export default ROCCurve;

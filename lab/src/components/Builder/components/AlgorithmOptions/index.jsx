@@ -1,8 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Grid, Segment, Header, Button } from 'semantic-ui-react';
-import { formatAlgorithm } from '../../../../utils/formatter';
+import { formatAlgorithm } from 'utils/formatter';
 
 function AlgorithmOptions({
   algorithms,
@@ -10,7 +8,7 @@ function AlgorithmOptions({
   setCurrentAlgorithm
 }) {
   const getIsActive = (algorithm) => {
-    return currentAlgorithm && (algorithm.get('_id') === currentAlgorithm.get('_id'));
+    return currentAlgorithm && (algorithm._id === currentAlgorithm._id);
   };
 
   return (
@@ -26,7 +24,7 @@ function AlgorithmOptions({
       <Segment inverted attached="bottom">  
         <Grid columns={3} stackable className="compressed">
           {algorithms && algorithms.map(algorithm => (
-            <Grid.Column key={algorithm.get('_id')}>
+            <Grid.Column key={algorithm._id}>
               <Button
                 inverted 
                 color="orange"
@@ -35,9 +33,9 @@ function AlgorithmOptions({
                 active={getIsActive(algorithm)}
                 onClick={() => setCurrentAlgorithm(algorithm)}
               >
-                {formatAlgorithm(algorithm.get('name'))}
+                {formatAlgorithm(algorithm.name)}
                 <div className="param-count">
-                  {`${algorithm.get('schema').size} parameters`}
+                  {`${Object.keys(algorithm.schema).length} parameters`}
                 </div>
               </Button>
             </Grid.Column>
@@ -47,11 +45,5 @@ function AlgorithmOptions({
     </Grid.Column>
   );
 }
-
-AlgorithmOptions.propTypes = {
-  algorithms: ImmutablePropTypes.list,
-  currentAlgorithm: ImmutablePropTypes.map.isRequired,
-  setCurrentAlgorithm: PropTypes.func.isRequired
-};
 
 export default AlgorithmOptions;

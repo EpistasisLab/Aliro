@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Segment, Header, Progress } from 'semantic-ui-react';
 import { formatAlgorithm } from '../../../../../../utils/formatter';
 
@@ -13,9 +11,9 @@ function BestResult({ result, hasMetadata }) {
     return 'No results yet, build a new experiment to start.';
   };
 
-  const getResultLink = () => `/#/results/${result.get('_id')}`;
+  const getResultLink = () => `/#/results/${result._id}`;
 
-  const getPercent = () => (result.get('accuracy_score') * 100).toFixed(2);
+  const getPercent = () => (result.accuracy_score * 100).toFixed(2);
 
   if(!result) {
     return (
@@ -35,8 +33,8 @@ function BestResult({ result, hasMetadata }) {
       <Header inverted size="small">
         {'Best Result'}
         <Header.Subheader>
-          <div>{formatAlgorithm(result.get('algorithm'))}</div>
-          <span>{`#${result.get('_id')}`}</span>
+          <div>{formatAlgorithm(result.algorithm)}</div>
+          <span>{`#${result._id}`}</span>
         </Header.Subheader>
       </Header>
       <Progress 
@@ -48,10 +46,5 @@ function BestResult({ result, hasMetadata }) {
     </Segment>
   );
 }
-
-BestResult.propTypes = {
-  result: ImmutablePropTypes.map,
-  hasMetadata: PropTypes.bool.isRequired
-};
 
 export default BestResult;

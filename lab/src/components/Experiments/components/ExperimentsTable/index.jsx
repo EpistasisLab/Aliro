@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import ExperimentsTableHeader from './components/ExperimentsTableHeader';
 import ExperimentsTableBody from './components/ExperimentsTableBody';
 import { Table } from 'semantic-ui-react';
@@ -17,15 +15,15 @@ function ExperimentsTable({
 
   const selectedAlgorithm = filters.algorithm.selected;
 
-  const currentParameters = experiments.first().get('params');
+  const currentParameters = experiments[0].params;
 
   const shouldDisplayQuality = selectedStatus === 'suggested';
 
   const shouldDisplayAwards = selectedDataset !== 'all';
 
-  const shouldDisplayParams = selectedAlgorithm !== 'all' && currentParameters.size > 0;
+  const shouldDisplayParams = selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0;
 
-  const orderedParamKeys = currentParameters.keySeq().sort();
+  const orderedParamKeys = Object.keys(currentParameters).sort();
 
   return (
     <div className="table-container">
@@ -58,12 +56,5 @@ function ExperimentsTable({
     </div>  
   );
 }
-
-ExperimentsTable.propTypes = {
-  experiments: ImmutablePropTypes.list.isRequired,
-  filters: PropTypes.object.isRequired,
-  sort: PropTypes.object.isRequired,
-  updateQuery: PropTypes.func.isRequired
-};
 
 export default ExperimentsTable;
