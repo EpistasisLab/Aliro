@@ -112,13 +112,13 @@ class AI():
 
         # verbosity...
         print("paths:")
-        print("self.db_path: %s", self.db_path)
-        print("self.exp_path: %s", self.exp_path)
-        print("self.data_path: %s", self.data_path)
-        print("self.projects_path: %s", self.projects_path)
-        print("self.status_path: %s", self.status_path)
-        print("self.submit_path: %s", self.submit_path)
-        print("self.algo_path: %s", self.algo_path)
+        print("self.db_path: ", self.db_path)
+        print("self.exp_path: ", self.exp_path)
+        print("self.data_path: ", self.data_path)
+        print("self.projects_path: ", self.projects_path)
+        print("self.status_path: ", self.status_path)
+        print("self.submit_path: ", self.submit_path)
+        print("self.algo_path: ", self.algo_path)
 
         # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
@@ -206,7 +206,7 @@ class AI():
         payload = {'date_start':self.last_update,'has_scores':True}
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
-        print("requesting from : %s", self.exp_path)
+        print("requesting from : ", self.exp_path)
         req = urllib.request.Request(self.exp_path, data=params,
                                    headers=self.header)
         r = urllib.request.urlopen(req)

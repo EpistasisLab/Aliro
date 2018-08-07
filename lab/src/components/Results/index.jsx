@@ -1,63 +1,116 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
-import * as actions from './data/actions';
-import { 
-  getResults, 
-  getIsFetching, 
-  getErrorMessage
-} from './data';
+import * as actions from 'data/experiments/selected/actions';
 import SceneHeader from '../SceneHeader';
-import Results from './Results';
-import { formatDataset } from '../../utils/formatter';
+import FetchError from '../FetchError';
+import AlgorithmDetails from './components/AlgorithmDetails';
+import RunDetails from './components/RunDetails';
+import ConfusionMatrix from './components/ConfusionMatrix';
+import ROCCurve from './components/ROCCurve';
+import ImportanceScore from './components/ImportanceScore';
+import Score from './components/Score';
+import { Header, Grid, Loader } from 'semantic-ui-react';
+import { formatDataset } from 'utils/formatter';
 
-class ResultsContainer extends Component {
-  componentWillMount() {
-    this.props.clearResults();
-  }
-
+class Results extends Component {
   componentDidMount() {
-    this.props.fetchResults(this.props.params.id);
+    this.props.fetchExperiment(this.props.params.id);
   }
 
-  getSceneHeader() {
-    const { results } = this.props;
-    if(results.size) {
-      return {
-        header: `Results: ${formatDataset(results.get('dataset_name'))}`,
-        subheader: `Experiment: #${results.get('_id')}`
-      };
-    }
-
-    return { header: 'Results' };
+  componentWillUnmount() {
+    this.props.clearExperiment();
   }
 
   render() {
-    const sceneHeader = this.getSceneHeader();
+    const { experiment, fetchExperiment } = this.props;
+    
+    if(experiment.isFetching || !experiment.data) {
+      return (
+        <Loader active inverted size="large" content="Retrieving results..." />
+      );
+    }
+
+    if(experiment.error === 'Failed to fetch') {
+      return (
+        <FetchError
+          message="The specified experiment does not exist."
+        />
+      );
+    } else if(experiment.error) {
+      return (
+        <FetchError 
+          message={experiment.error}
+          onRetry={() => fetchExperiment()}
+        />
+      );
+    }
+
+    let confusionMatrix, rocCurve, importanceScore;
+    experiment.data.experiment_files.forEach(file => {
+      const filename = file.filename;
+      if(filename.includes('confusion_matrix')) {
+        confusionMatrix = file;
+      } else if(filename.includes('roc_curve')) {
+        rocCurve = file;
+      } else if(filename.includes('imp_score')) {
+        importanceScore = file;
+      }
+    });
+
     return (
       <div>
-        <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
-        <Results {...this.props} />
+        <SceneHeader 
+          header={`Results: ${formatDataset(experiment.data.dataset_name)}`} 
+          subheader={`Experiment: #${experiment.data._id}`}
+        />
+        <Grid columns={3} stackable>
+          <Grid.Row>
+            <Grid.Column>
+              <AlgorithmDetails
+                algorithm={experiment.data.algorithm}
+                params={experiment.data.params}
+              />
+              <RunDetails
+                startTime={experiment.data.started}
+                finishTime={experiment.data.finished}
+                launchedBy={experiment.data.launched_by}
+              />
+              <ImportanceScore file={importanceScore} />
+            </Grid.Column>
+            <Grid.Column>
+              <ConfusionMatrix file={confusionMatrix} />
+              <ROCCurve file={rocCurve} />
+            </Grid.Column>
+            <Grid.Column>
+              <Score
+                scoreName="Training Accuracy"
+                scoreValue={experiment.data.scores.train_score}
+                chartKey="training"
+                chartColor="#7D5BA6"
+              />
+              <Score
+                scoreName="Testing Accuracy"
+                scoreValue={experiment.data.scores.test_score}
+                chartKey="testing"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="AUC"
+                scoreValue={experiment.data.scores.roc_auc_score}
+                chartKey="auc"
+                chartColor="#59ABE3"
+              />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  results: getResults(state),
-  isFetching: getIsFetching(state),
-  errorMessage: getErrorMessage(state)
+  experiment: state.experiments.selected
 });
 
-ResultsContainer.propTypes = {
-  results: ImmutablePropTypes.map.isRequired,
-  clearResults: PropTypes.func.isRequired,
-  fetchResults: PropTypes.func.isRequired,
-  params: PropTypes.shape({ id: PropTypes.string }).isRequired
-};
-
-export default connect(
-  mapStateToProps, 
-  actions
-)(ResultsContainer);
+export { Results };
+export default connect(mapStateToProps, actions)(Results);

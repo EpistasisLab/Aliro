@@ -1,19 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
 
 function DatasetActions({ dataset, toggleAI }) {
   const onToggleAI = () => {
-    const aiState = dataset.get('ai');
+    const aiState = dataset.ai;
     const aiNextState = aiState === 'off' ? 'requested' : 'off';
 
-    toggleAI(dataset.get('_id'), aiNextState);
+    toggleAI(dataset._id, aiNextState);
   };
 
-  const hasMetadata = dataset.get('has_metadata');
+  const hasMetadata = dataset.has_metadata;
 
-  const aiState = dataset.get('ai');
+  const aiState = dataset.ai;
 
   const aiLabelText = 'AI';
 
@@ -23,7 +21,7 @@ function DatasetActions({ dataset, toggleAI }) {
 
   const aiIsChecked = aiState === 'off' ? false : true;
 
-  const aiIsToggling = dataset.get('isTogglingAI');
+  const aiIsToggling = dataset.isTogglingAI;
 
   const aiPopupContent = `AI ${aiState}`;
 
@@ -61,10 +59,5 @@ function DatasetActions({ dataset, toggleAI }) {
     </span>
   );
 }
-
-DatasetActions.propTypes = {
-  dataset: ImmutablePropTypes.map.isRequired,
-  toggleAI: PropTypes.func.isRequired
-};
 
 export default DatasetActions;

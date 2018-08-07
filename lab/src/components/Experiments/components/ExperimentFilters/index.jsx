@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form, Dropdown, Header } from 'semantic-ui-react';
 
 function ExperimentFilters({ 
@@ -58,12 +57,5 @@ function ExperimentFilters({
     </span>  
   );
 }
-
-ExperimentFilters.propTypes = {
-  filters: PropTypes.object.isRequired,
-  resultCount: PropTypes.number.isRequired,
-  updateQuery: PropTypes.func.isRequired,
-  resetQuery: PropTypes.func.isRequired
-};
 
 export default ExperimentFilters;

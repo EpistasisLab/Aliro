@@ -18,3 +18,6 @@ export const fetchAlgorithms = () => get('http://lab:5080/api/projects');
 
 export const submitExperiment = (algorithm, params) => 
   post(`http://lab:5080/api/v1/projects/${algorithm}/experiment`, params);
+
+export const fetchExperimentModel = (id) => get(`http://lab:5080/api/v1/experiments/${id}/model`);
+export const fetchExperimentScript = (id) => get(`http://lab:5080/api/v1/experiments/${id}/script`);

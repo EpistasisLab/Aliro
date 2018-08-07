@@ -1,21 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Grid, Segment, Header, Popup, Icon, Button } from 'semantic-ui-react';
-import { formatParam } from '../../../../utils/formatter';
+import { formatParam } from 'utils/formatter';
 
 function ParameterOptions({ 
   params,
   currentParams,
   setParamValue
 }) {
-  const calcCols = (choices) => choices.size > 2 ? 2 : 1;
+  const calcCols = (choices) => choices.length > 2 ? 2 : 1;
 
-  const isActive = (param, value) => value === currentParams.get(param);
+  const isActive = (param, value) => value === currentParams[param];
 
   return (
     <Grid.Row>
-      {params && params.entrySeq().map(([param, info]) => (
+      {params && Object.entries(params).map(([param, info]) => (
         <Grid.Column 
           key={param} 
           mobile={16} 
@@ -37,19 +35,19 @@ function ParameterOptions({
                   className="info-icon float-right"
                 />
               }
-              content={info.get('description')}
+              content={info.description}
             />
             <Header 
               as="h2"
               inverted 
               color="blue"
-              content={formatParam(info.get('alias') || param)}
+              content={formatParam(info.alias || param)}
               className="param-name"
             />
           </Segment>  
           <Segment inverted attached="bottom">
-            <Grid columns={calcCols(info.getIn(['ui', 'choices']))} className="compressed">
-              {info.getIn(['ui', 'choices']).map(value => (
+            <Grid columns={calcCols(info.ui.choices)} className="compressed">
+              {info.ui.choices.map(value => (
                 <Grid.Column key={value}>
                   <Button
                     inverted 
@@ -68,11 +66,5 @@ function ParameterOptions({
     </Grid.Row>
   );
 }
-
-ParameterOptions.propTypes = {
-  params: ImmutablePropTypes.map,
-  currentParams: ImmutablePropTypes.map.isRequired,
-  setParamValue: PropTypes.func.isRequired
-};
 
 export default ParameterOptions;

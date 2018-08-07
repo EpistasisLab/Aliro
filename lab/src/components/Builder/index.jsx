@@ -1,114 +1,120 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
-import * as actions from './data/actions';
-import { 
-  getDataset, 
-  getExperiment,
-  getIsFetching, 
-  getErrorMessage,
-  getDefaultAlgorithms,
-  getCurrentAlgorithm,
-  getCurrentParams,
-  getIsSubmitting
-} from './data';
-import { getPreferences } from '../App/data';
+import * as actions from 'data/builder/actions';
 import SceneHeader from '../SceneHeader';
-import Builder from './Builder';
-import { formatDataset } from '../../utils/formatter';
+import NotFound from '../NotFound';
+import FetchError from '../FetchError';
+import AlgorithmOptions from './components/AlgorithmOptions';
+import ParameterOptions from './components/ParameterOptions';
+import { Grid, Button, Icon, Loader } from 'semantic-ui-react';
+import { formatDataset } from 'utils/formatter';
+import { hashHistory } from 'react-router';
 
-class BuilderContainer extends Component {
+class Builder extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.handleSubmitExperiment = this.handleSubmitExperiment.bind(this);
+    this.handleResetExperiment = this.handleResetExperiment.bind(this);
+  }
+
   componentDidMount() {
-    const { query } = this.props.location;
     const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
-
-    if(defaultAlgorithms) {
-      setCurrentAlgorithm(defaultAlgorithms.first());
-    }
-
-    if(query.dataset) {
-      this.props.fetchDataset(query.dataset);
-      // get next recommended
-    } else if(query.experiment) {
-      this.props.fetchExperiment(query.experiment);
-      // set params
-    } else {
-      // must include one or the other
+    setCurrentAlgorithm(defaultAlgorithms[0]);
+    
+    if(!this.props.dataset) {
+      fetch(`/api/datasets/${this.props.location.query.dataset}`)
+        .then(response => {
+          if(response.status >= 400) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+          }  
+          return response.json();
+        })
+        .then(dataset => this.setState({ dataset: dataset[0] }));
     } 
   }
 
-  componentDidUpdate(prevProps) {
-    const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
+  handleSubmitExperiment() {
+    const dataset = this.props.dataset || this.state.dataset;
+    const { currentAlgorithm, currentParams, submitExperiment } = this.props;
+    const validParams = Object.assign({}, currentParams, {
+      dataset: dataset._id
+    });
 
-    if(defaultAlgorithms !== prevProps.defaultAlgorithms) {
-      setCurrentAlgorithm(defaultAlgorithms.first());
-    }
+    submitExperiment(
+      currentAlgorithm._id, 
+      validParams
+    ).then(() => hashHistory.push('/experiments')); // redirect to experiments page
   }
 
-  getSceneHeader() {
-    const { dataset, experiment } = this.props;
-    const { query } = this.props.location;
+  handleResetExperiment() {
+    const { currentAlgorithm, setCurrentAlgorithm } = this.props;
+    setCurrentAlgorithm(currentAlgorithm);
+  }
 
-    if(dataset.size) {
-      return {
-        header: `Build New Experiment: ${formatDataset(dataset.get('name'))}`
-      };
-    } else if(experiment.size) {
-      return {
-        header: `Review Experiment: ${formatDataset(dataset.get('name'))}`,
-        subheader: `Experiment: #${experiment.get('_id')}`
-      };
-    } else if(query.dataset) {
-      return {
-        header: 'Build New Experiment'
-      };
-    } else if(query.experiment) {
-      return {
-        header: 'Review Experiment'
-      };
-    }
-
-    return {};
+  componentWillUnmount() {
+    const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
+    setCurrentAlgorithm(defaultAlgorithms[0]);
   }
 
   render() {
-    const sceneHeader = this.getSceneHeader();
+    const dataset = this.props.dataset || this.state.dataset;
+    const { 
+      defaultAlgorithms, 
+      currentAlgorithm, 
+      currentParams,
+      isSubmitting,
+      setCurrentAlgorithm,
+      setParamValue, 
+    } = this.props;
     return (
       <div className="builder-scene">
-        {sceneHeader.header &&
-          <SceneHeader header={sceneHeader.header} subheader={sceneHeader.subheader} />
-        }
-        <Builder {...this.props} />
+        <SceneHeader 
+          header={
+            'Build New Experiment' + `${dataset ? `: ${formatDataset(dataset.name)}` : '' }`
+          } 
+        />
+        <Grid stretched>
+          <AlgorithmOptions
+            algorithms={defaultAlgorithms}
+            currentAlgorithm={currentAlgorithm}
+            setCurrentAlgorithm={setCurrentAlgorithm}
+          />
+          <ParameterOptions
+            params={currentAlgorithm.schema}
+            currentParams={currentParams}
+            setParamValue={setParamValue}
+          />
+        </Grid>
+        <div className="builder-btns">
+          <Button 
+            color="blue"
+            size="large"
+            content="Launch Experiment"
+            icon={isSubmitting ? <Icon loading name="spinner" /> : null}
+            disabled={isSubmitting}
+            onClick={this.handleSubmitExperiment}
+          />
+          <Button 
+            color="grey"
+            size="large"
+            content="Reset"
+            disabled={isSubmitting}
+            onClick={this.handleResetExperiment}
+          />
+        </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  dataset: getDataset(state),
-  experiment: getExperiment(state),
-  isFetching: getIsFetching(state),
-  errorMessage: getErrorMessage(state),
-  defaultAlgorithms: getDefaultAlgorithms(
-    getPreferences(state)
-  ),
-  currentAlgorithm: getCurrentAlgorithm(state),
-  currentParams: getCurrentParams(state),
-  isSubmitting: getIsSubmitting(state)
+const mapStateToProps = (state, props) => ({
+  dataset: state.datasets.byId[props.location.query.dataset],
+  defaultAlgorithms: state.preferences.data.algorithms,
+  currentAlgorithm: state.builder.currentAlgorithm,
+  currentParams: state.builder.currentParams,
+  isSubmitting: state.builder.isSubmitting
 });
 
-BuilderContainer.propTypes = {
-  dataset: ImmutablePropTypes.map,
-  experiment: ImmutablePropTypes.map,
-  defaultAlgorithms: ImmutablePropTypes.list,
-  setCurrentAlgorithm: PropTypes.func.isRequired,
-  fetchDataset: PropTypes.func.isRequired,
-  fetchExperiment: PropTypes.func.isRequired,
-  location: PropTypes.shape({ query: PropTypes.object }).isRequired
-};
-
-export default connect(
-  mapStateToProps, 
-  actions
-)(BuilderContainer);
+export { Builder };
+export default connect(mapStateToProps, actions)(Builder);
