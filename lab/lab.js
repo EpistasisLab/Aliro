@@ -354,7 +354,7 @@ app.put("/api/v1/:collection/:id", jsonParser, (req, res, next) => {
             if (req.params.collection === 'experiments') {
                 if (req.body._scores) {
                     emitEvent('expUpdated', req);
-                } else if (req.body._status === 'fail') {
+                } else if (req.body._status != 'running') {
                     emitEvent('expUpdated', req);
                 }
             }
