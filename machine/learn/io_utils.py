@@ -92,14 +92,12 @@ def get_input_data(_id, tmpdir):
     files = jsondata['files']
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
-        response_str = json.loads(requests.get(uri).text)
-        input_data = pd.read_csv(StringIO(response_str), sep='\t')
+        input_data = pd.read_csv(StringIO(requests.get(uri).text), sep='\t')
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            response_str = json.loads(requests.get(uri).text)
-            input_data.append(pd.read_csv(StringIO(response_str), sep='\t'))
+            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep='\t'))
 
     return input_data
 

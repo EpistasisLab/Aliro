@@ -35,19 +35,19 @@ def mocked_requests_get(*args, **kwargs):
         def __init__(self, json_data, status_code):
             self.json_data = json_data
             self.status_code = status_code
-            self.text = json.dumps(json_data)
+            self.text = json_data
 
         def json(self):
             return self.json_data
 
     if args[0] == 'http://lab:5080/api/v1/experiments/test_id':
-        return MockResponse({"_dataset_id": "test_dataset_id"}, 200)
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id2':
-        return MockResponse({"_dataset_id": "test_dataset_id2"}, 200)
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id2"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
-        return MockResponse({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}]}, 200)
+        return MockResponse(json.dumps({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
-        return MockResponse({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}, {'_id': 'test_file_id2', 'filename': 'test_reg_input'}]}, 200)
+        return MockResponse(json.dumps({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}, {'_id': 'test_file_id2', 'filename': 'test_reg_input'}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':

@@ -29,10 +29,6 @@ else
     sha1sum /root/node_modules.tar.gz > node_modules_entrypoint_check.sha1
 fi
 
-if [ ! -d "../tmp" ]; then
-    mkdir ../tmp
-fi
-
 npm run build
 pm2 start lab.config.js --watch
 
@@ -41,7 +37,7 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "autostarting ai..."
 
     echo "waiting for lab to be responsive..."
-    /root/wait-for-it.sh -t 200 lab:5080 
+    /root/wait-for-it.sh -t 200 lab:5080
 
     cd $PROJECT_ROOT/
     python -m ai.ai -v -n ${AI_NUMRECOMMEND} -rec ${AI_RECOMMENDER}
