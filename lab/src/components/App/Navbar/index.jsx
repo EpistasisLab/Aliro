@@ -46,6 +46,12 @@ function Navbar({ preferences }) {
             <Dropdown.Menu>
               <Dropdown.Item 
                 as={Link} 
+                to="admin"
+                icon="wrench" 
+                text="Admin" 
+              />
+              {/*<Dropdown.Item 
+                as={Link} 
                 to="settings"
                 icon="setting" 
                 text="Settings" 
@@ -53,7 +59,7 @@ function Navbar({ preferences }) {
               <Dropdown.Item
                 icon="sign out" 
                 text="Sign out" 
-              />
+              />*/}
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Menu>
