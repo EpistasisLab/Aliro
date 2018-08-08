@@ -50,12 +50,12 @@ function DatasetActions({ dataset, toggleAI }) {
           />
         </span> 
       }
-      <Dropdown pointing="top right" icon={dropdownIcon}>
+      {/*<Dropdown pointing="top right" icon={dropdownIcon}>
         <Dropdown.Menu>
           <Dropdown.Item icon="file" text="Replace file" />
           <Dropdown.Item icon="trash" text="Delete" />
         </Dropdown.Menu>
-      </Dropdown>
+      </Dropdown>*/}
     </span>
   );
 }
