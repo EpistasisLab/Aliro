@@ -30,14 +30,11 @@ export const toggleAI = (id, nextAIState) => (dispatch) => {
   );
 };
 
-export const updateAI= (id, nextAIState) => {
-  console.log("UPDAING");
-  return {
+export const updateAI= (id, nextAIState) => ({
   type: AI_UPDATE,
   id,
   nextAIState
-};
-};
+});
 
 export const updateDataset = (dataset) => ({
   type: DATASET_UPDATE,

@@ -17,6 +17,8 @@ function socketServer(server) {
 }
 
 function emitEvent(event, req) {
+	console.log(`serverSocket.emitEvent('${event}', '${req}')`)
+
 	switch(event) {
 		case 'aiToggled':
 			return sockets.forEach(socket => 
@@ -31,9 +33,9 @@ function emitEvent(event, req) {
 				  	.then(dataset => {
 				    	sockets.forEach(socket => socket.emit('updateDataset', dataset));
 				    })
-				    .catch(() => {}); // Ignore failures
+				    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		    })
-		    .catch(() => {}); // Ignore failures
+		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		case 'expUpdated':
 			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
 		  	.then(experiment => {
@@ -43,9 +45,9 @@ function emitEvent(event, req) {
 				  	.then(dataset => {
 				    	sockets.forEach(socket => socket.emit('updateDataset', dataset));
 				    })
-				    .catch(() => {}); // Ignore failures
+				    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		    })
-		    .catch(() => {}); // Ignore failures
+		    .catch(() => {console.log(`Error: ${err}`)}); // Ignore failures
 	}
 }
 

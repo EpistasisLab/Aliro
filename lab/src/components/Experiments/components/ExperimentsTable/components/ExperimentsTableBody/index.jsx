@@ -23,17 +23,59 @@ function ExperimentsTableBody({
   const renderStatusIcon = (status) => {
     switch(status) {
       case 'suggested': 
-        return <Icon inverted color="purple" name="android" />;
-      case 'pending': 
-        return <Icon inverted color="yellow" name="clock" />;
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Suggested"
+            trigger={<Icon inverted color="purple" name="android" />}
+          />
+        );
+      case 'pending':
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Pending" 
+            trigger={<Icon inverted color="yellow" name="clock" />}
+          />
+        );
       case 'running':
-        return <Icon inverted loading color="blue" name="refresh" />;
-      case 'success': 
-        return <Icon inverted color="green" name="check" />;
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Running"
+            trigger={<Icon inverted loading color="blue" name="refresh" />}
+          />
+        );
+      case 'success':
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Success"
+            trigger={<Icon inverted color="green" name="check" />}
+          />
+        );
       case 'cancelled':
-        return <Icon inverted color="red" name="ban" />;
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Cancelled"
+            trigger={<Icon inverted color="red" name="ban" />}
+          />
+        );
       case 'fail':
-        return <Icon inverted color="red" name="warning sign" />;
+        return (
+          <Popup
+            size="tiny"
+            position="top center"
+            content="Failed"
+            trigger={<Icon inverted color="red" name="warning sign" />}
+          />
+        );
       default: 
         return;
     }

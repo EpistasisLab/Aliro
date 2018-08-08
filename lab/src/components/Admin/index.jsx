@@ -9,6 +9,7 @@ class Admin extends Component {
     super(props); 
     this.state = { 
       status: {},
+      sockets: {},
       activeProject: null
     };
     this.handleOpenProject = this.handleOpenProject.bind(this);
@@ -25,6 +26,7 @@ class Admin extends Component {
         let host = m.address.replace(/^http/, 'ws');
         let ws = new WebSocket(host); // Attempt to connect
         this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "grey" }) });
+        //this.setState({ sockets: Object.assign({}, this.state.sockets, { [m._id]: ws }) });
 
         ws.onopen = (event) =>
           this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "green" }) });
@@ -34,6 +36,13 @@ class Admin extends Component {
       });
     }
   }
+
+  /* componentWillUnmount() {
+    const { sockets } = this.state;
+    for(var key in sockets) {
+      sockets[key].close();
+    }
+  } */
 
   handleOpenProject(e, id) {
     e.preventDefault(); // prevent link from firing, it's only for styling
