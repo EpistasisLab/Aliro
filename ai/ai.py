@@ -447,7 +447,7 @@ def main():
                pennai.process_rec()
                 #pennai.send_rec()
             n = n + 1
-            sleep(2)
+            sleep(4)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
