@@ -43,6 +43,11 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "waiting for lab to be responsive..."
     /root/wait-for-it.sh -t 200 lab:5080 
 
+    echo "sleep..."
+    sleep 20s
+    echo "starting ai..."
+    echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER}
+
     cd $PROJECT_ROOT/
     python -m ai.ai -v -n ${AI_NUMRECOMMEND} -rec ${AI_RECOMMENDER}
     #python -m ai.ai -n 2
