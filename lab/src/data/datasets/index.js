@@ -21,13 +21,16 @@ const byId = (state = {}, action) => {
         map[d._id] = d;
         return map;
       }, {});
+    case DATASET_UPDATE:
+      return Object.assign({}, state, {
+        [action.dataset._id]: dataset(state[action.dataset._id], action)
+      });   
     case TOGGLE_AI_REQUEST:
     case TOGGLE_AI_SUCCESS:
     case TOGGLE_AI_FAILURE:
     case AI_UPDATE:
-    case DATASET_UPDATE:
       return Object.assign({}, state, {
-        [action.dataset._id]: dataset(state[action.dataset._id], action)
+        [action.id]: dataset(state[action.id], action)
       });
     default:
       return state;
