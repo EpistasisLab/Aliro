@@ -15,6 +15,6 @@ from skl_utils import generate_results_regressor
 
 if __name__ == "__main__":
     exp = Experiment('ElasticNetCV')
-    args, input_file = exp.get_input()
+    args, input_data = exp.get_input()
     model = ElasticNetCV(l1_ratio=args['l1_ratio'], tol=args['tol'])
-    generate_results_regressor(model, input_file, exp.tmpdir, args['_id'])
+    generate_results_regressor(model, input_data, exp.tmpdir, args['_id'])
