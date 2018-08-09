@@ -1,4 +1,4 @@
-
+var spawn = require("child_process").spawn;
 
 /**
 * Generate metafeatures for a given data file
