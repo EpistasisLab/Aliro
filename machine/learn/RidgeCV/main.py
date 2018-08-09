@@ -15,6 +15,6 @@ from skl_utils import generate_results_regressor
 
 if __name__ == "__main__":
     exp = Experiment('RidgeCV')
-    args, input_file = exp.get_input()
+    args, input_data = exp.get_input()
     model = RidgeCV()
-    generate_results_regressor(model, input_file, exp.tmpdir, args['_id'])
+    generate_results_regressor(model, input_data, exp.tmpdir, args['_id'])

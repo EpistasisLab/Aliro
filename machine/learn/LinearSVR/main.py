@@ -15,7 +15,7 @@ from skl_utils import generate_results_regressor
 
 if __name__ == "__main__":
     exp = Experiment('LinearSVR')
-    args, input_file = exp.get_input()
+    args, input_data = exp.get_input()
     model = LinearSVR(loss=args['loss'], dual=args['dual'],
                       tol=args['tol'], C=args['C'], epsilon=args['epsilon'])
-    generate_results_regressor(model, input_file, exp.tmpdir, args['_id'])
+    generate_results_regressor(model, input_data, exp.tmpdir, args['_id'])

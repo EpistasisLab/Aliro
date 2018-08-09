@@ -29,10 +29,6 @@ else
     sha1sum /root/node_modules.tar.gz > node_modules_entrypoint_check.sha1
 fi
 
-if [ ! -d "../tmp" ]; then
-    mkdir ../tmp
-fi
-
 npm run build
 pm2 start lab.config.js --watch
 
