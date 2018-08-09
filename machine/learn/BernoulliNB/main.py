@@ -15,7 +15,7 @@ from skl_utils import generate_results
 
 if __name__ == "__main__":
     exp = Experiment('BernoulliNB')
-    args, input_file = exp.get_input()
+    args, input_data = exp.get_input()
     model = BernoulliNB(
         alpha=args['alpha'], binarize=args['binarize'], fit_prior=args['fit_prior'])
-    generate_results(model, input_file, exp.tmpdir, args['_id'])
+    generate_results(model, input_data, exp.tmpdir, args['_id'])
