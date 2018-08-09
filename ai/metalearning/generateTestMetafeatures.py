@@ -14,6 +14,8 @@ Return static set of metafeatures, used for testing.
 from collections import OrderedDict
 import json
 import sys
+import random
+from time import sleep
 
 
 def getMetafeatures():
@@ -71,6 +73,9 @@ def getMetafeatures():
 
 
 def main():
+	#simulate random processing time...
+	sleep(random.randint(1, 5))
+
 	featureDict = getMetafeatures()
 	print(json.dumps(featureDict))
 	sys.stdout.flush()

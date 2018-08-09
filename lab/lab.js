@@ -1090,12 +1090,15 @@ var processDataset = function(files, dataset_id) {
     files.forEach(function(fileObj, i) {
         fileId = new db.ObjectID();
         metadata = []
-        var metafeatures = generateFeatures(fileObj)
-        //console.log("===metafeatures:===")
-        //console.log(metafeatures)
 
-        db.datasets.updateByIdAsync(dataset_id, {$set : {metafeatures: metafeatures}})
-        console.log("setting metafeatures for dataset " + dataset_id)
+        var mfRes = generateFeatures(fileObj)
+        if (mfRes.success) {
+            db.datasets.updateByIdAsync(dataset_id, {$set : {metafeatures: mfRes.data}})
+            console.log("setting metafeatures for dataset " + dataset_id)
+        }
+        else {
+            console.log(`Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`)
+        }
 
         var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
             metadata: {

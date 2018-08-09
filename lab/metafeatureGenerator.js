@@ -1,58 +1,75 @@
 var spawn = require("child_process").spawn;
+var spawnSync = require("child_process").spawnSync;
 
 /**
-* Generate metafeatures for a given data file
-* For now, return dummy data
+* Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
+* For now, generate the process synchronously.
+*
+* Calling a test python method that returns a static set of JSON data after a random wait of up to 5s.
+* 
+*
+* @param fileObj
+* @return Map - {success: Boolean, 
+*				 data: (if success) JSON
+*				 error: (if falure) String}
 */
-function generateFeatures(file) {
-    return {
-		"class_prob_max" : 0.760718234,
-		"class_prob_mean" : 0.5,
-		"class_prob_median" : 0.5,
-		"class_prob_min" : 0.239281766,
-		"class_prob_std" : 0.368711263,
-		"corr_with_dependent_abs_25p" : null,
-		"corr_with_dependent_abs_75p" : null,
-		"corr_with_dependent_abs_kurtosis" : null,
-		"corr_with_dependent_abs_max" : null,
-		"corr_with_dependent_abs_mean" : null,
-		"corr_with_dependent_abs_median" : null,
-		"corr_with_dependent_abs_min" : null,
-		"corr_with_dependent_abs_skew" : null,
-		"corr_with_dependent_abs_std" : null,
-		"diversity_fraction" : 0.866843729,
-		"entropy_dependent" : 0.550250619,
-		"kurtosis_kurtosis" : 4.713303895,
-		"kurtosis_max" : 152.6930963,
-		"kurtosis_mean" : 36.30641616,
-		"kurtosis_median" : 6.057848212,
-		"kurtosis_min" : -0.184268741,
-		"kurtosis_skew" : 2.1613243,
-		"kurtosis_std" : 58.60105231,
-		"n_categorical" : 9,
-		"n_classes" : 2,
-		"n_columns" : 15,
-		"n_numerical" : 5,
-		"n_rows" : 48842,
-		"pca_fraction_95" : 0.008196721,
-		"ratio_rowcol" : 3256.133333,
-		"skew_kurtosis" : 2.452186933,
-		"skew_max" : 11.894659,
-		"skew_mean" : 3.739937941,
-		"skew_median" : 1.438891879,
-		"skew_min" : 0.238749657,
-		"skew_skew" : 1.643260735,
-		"skew_std" : 4.355885528,
-		"symbols_kurtosis" : 4.785618776,
-		"symbols_max" : 42,
-		"symbols_mean" : 13.11111111,
-		"symbols_min" : 2,
-		"symbols_skew" : 2.017283225,
-		"symbols_std" : 11.98378534,
-		"symbols_sum" : 118,
-		"dataset" : "adult"
-    }
-};
+function generateFeatures(fileObj) {
+	var args = ['-m', 'ai.metalearning.generateTestMetafeatures']
+
+
+/*
+	// async
+    var metafeatureProc = spawn('python', 
+    	args, {
+            cwd: process.env.PROJECT_ROOT + '/ai/metalearning/generateTestMetafeatures.py'
+    })
+    .on("error", (err) => {
+    	console.log(`unable to spawn generateFeatures process: ${err}`)
+    })
+
+    metafeatureProc.stdout.on('data', (data) => {
+    	metafeatureJson = data
+	})
+
+	metafeatureProc.on('close', (code) => {
+	  console.log(`child process exited with code ${code}`);
+	});
+*/
+
+	var metafeatureProcObj = spawnSync('python', 
+    	args, {
+            cwd: process.env.PROJECT_ROOT
+    })
+	/*
+	console.log(`generateFeatures returned ${metafeatureProcObj}`)
+	console.log(`generateFeatures.output ${metafeatureProcObj.output}`)
+	console.log(`generateFeatures.stdout ${metafeatureProcObj.stdout}`)
+	console.log(`generateFeatures.stderr ${metafeatureProcObj.stderr}`)
+	console.log(`generateFeatures.status ${metafeatureProcObj.status}`)
+	console.log(`generateFeatures.error ${metafeatureProcObj.error}`)
+	*/
+
+	if (metafeatureProcObj.error != null) {
+		var error = `Error: unable to spawn generateFeatures process: ${err}`
+		console.log(error)
+		return {success:false, error:error}
+	}
+	else if(metafeatureProcObj.status != 0) {
+		var error = `Error, generateFeatures process exited with status ${metafeatureProcObj.status}, stderr: '${metafeatureProcObj.stderr}'`
+		console.log(error)
+		return {success:false, error:error}
+	}
+	else { 
+		try { var data = JSON.parse(metafeatureProcObj.stdout) }
+		catch (err) {
+			var error = `Error, generateFeatures process exited properly with status ${metafeatureProcObj.status}, but unable to parse stdout as JSON.  stdout: ${metafeatureProcObj.stdout}, err: ${err}`
+			console.log(error)
+			return {success:false, error:error}
+		} 
+		return {success:true, data:data}
+	}
+}
+
 
 module.exports = {
 	generateFeatures: generateFeatures
