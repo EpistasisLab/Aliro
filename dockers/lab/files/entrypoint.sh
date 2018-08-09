@@ -41,10 +41,13 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "autostarting ai..."
 
     echo "waiting for lab to be responsive..."
-    /root/wait-for-it.sh -t 200 lab:5080 
+    /root/wait-for-it.sh -t 300 ${LAB_HOST}:${LAB_PORT} -- echo "lab wait over"
+
+    echo "waiting for machine to be responsive..."
+    /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
 
     echo "sleep..."
-    sleep 20s
+    sleep 10s
     echo "starting ai..."
     echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER}
 
