@@ -17,20 +17,21 @@ if [ -d 'node_modules' ]; then
         echo "npm install complete"
 
         #echo "unzipping npm dependencies again"
-        #tar -zxf /root/node_modules.tar.gz node_modules --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
+        #tar -zxf /root/node_modules.tar.gz --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
         #echo "unzipping complete"
 
         sha1sum /root/node_modules.tar.gz > node_modules_entrypoint_check.sha1
     fi
 else
     echo "unzipping npm dependencies"
-    tar -zxf /root/node_modules.tar.gz node_modules --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
-    echo "unzipping complete"
-    sha1sum /root/node_modules.tar.gz > node_modules_entrypoint_check.sha1
-fi
+    tar -zxf /root/node_modules.tar.gz --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
+    if [ $? != 0 ]; then
+        echo "error extracting /root/node_modules.tar.gz, exiting"
+        exit 1
+    fi
 
-if [ ! -d "../tmp" ]; then
-    mkdir ../tmp
+    echo "unzipping complete"
+    sha1sum /root/node_modules.tar.gz > ${PROJECT_ROOT}/lab/node_modules_entrypoint_check.sha1
 fi
 
 npm run build
