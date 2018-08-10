@@ -277,13 +277,15 @@ class AI():
             #look for errors and resubmit
             if('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
-                sleep(1);
+                sleep(3);
                 self.transfer_rec(rec_payload)
                 n=n+1
             elif 'error' in submitstatus:
+                print('unrecoverable error during transfer_rec ' + rec_path)
+                print(submitstatus['error'])
                 pdb.set_trace()
             if(n>0):
-                print('looped ' + str(n) + 'times')
+                print('looped ' + str(n) + 'times') 
 
 
     def process_rec(self):
@@ -329,6 +331,7 @@ class AI():
                   ':','processed',i,'requests')
 
 
+    #h note - this seems to be deprecated
     def send_rec(self):
         """Sends recommendation to the API."""
         i = 0
