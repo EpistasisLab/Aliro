@@ -10,7 +10,9 @@ services:
     ports:
       - "443:443"
       - "5080:5080"
-    env_file: common.env
+    env_file: 
+      - ./config/common.env
+      - ./config/ai.env
     depends_on: 
       - dbmongo
 
@@ -22,7 +24,7 @@ services:
       - "./:/appsrc"
     ports: 
       - "5081:5081"
-    env_file: common.env
+    env_file: ./config/common.env
     depends_on: 
       - lab
       - dbmongo
@@ -35,4 +37,4 @@ services:
       - "./:/appsrc"
     ports:  
       - "27017:27017"
-    env_file: common.env
+    env_file: ./config/common.env
