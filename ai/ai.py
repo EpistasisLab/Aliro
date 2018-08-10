@@ -288,6 +288,18 @@ class AI():
                 print('looped ' + str(n) + 'times') 
 
 
+    def set_ai_status(self, datasetId, aiStatus):
+        """set the ai status for the given dataset"""
+        payload= {'ai':aiStatus}
+        data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
+        try:
+            tmp = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
+        except:
+            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
+            raise
+
+
+
     def process_rec(self):
         """Sends recommendation to the API."""
         i = 0
@@ -321,7 +333,8 @@ class AI():
                 #sleep(1)
 
                 #submit update to dataset to indicate ai:True
-            payload= {'ai':'finished'}
+            #payload= {'ai':'finished'} # h note - re-enable this once the queuing functionaity has been moved to lab server
+            payload= {'ai':'queuing'}
             data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
