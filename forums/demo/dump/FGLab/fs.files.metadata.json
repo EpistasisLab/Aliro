@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"FGLab.fs.files"},{"v":1,"key":{"filename":1},"name":"filename_1","ns":"FGLab.fs.files"}]}
