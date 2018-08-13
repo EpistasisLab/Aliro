@@ -66,6 +66,7 @@ body {
 }
 
 .pennai .dataset-card .ai-label.on,
+.pennai .dataset-card .ai-label.queuing,
 .pennai .dataset-card .ai-label.requested {
     color: rgba(255,255,255,.95);
 }
@@ -88,6 +89,11 @@ body {
 .pennai .dataset-card .ai-switch.requested.ui.toggle.checkbox label:before {
     background-color: #FBBD08 !important;
 }
+
+.pennai .dataset-card .ai-switch.active.ui.toggle.checkbox label:before {
+    background-color: #16ab39 !important;
+}
+
 
 .pennai .dataset-card .ai-switch.ui.toggle.checkbox input:checked~label:after {
     left: 1.15rem;
