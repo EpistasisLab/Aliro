@@ -2,22 +2,12 @@
 A data science assistant for generating useful results from large and complex data problems.
 
 
-## Setup and Deployment
-### Container Based Install ([Docker-Compose](https://docs.docker.com/compose/))
-#### Installation ####
-1. **Check out the project**
 
-  - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-  ```shell
-  git clone git@github.com:EpistasisLab/pennai.git
-  cd pennai
-  ```
+## Installation
+PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)). 
 
-2. **Create a local ai configuration file**
-Copy `config\ai.env-template` to `config\ai.env`.
-
-3. **Install build requirements**
-  - Docker 
+1. Install build requirements:
+  - Docker (Version 1.13.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
   - Python and nose test runner (optional, needed only to run unit tests) 
@@ -26,167 +16,80 @@ Copy `config\ai.env-template` to `config\ai.env`.
   - nodejs (optional, can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
 
-4. **Build the base image**
-  - It will take several minutes for the image to be built the first time this run.
-  - `docker build ./dockers/base -t pennai/base:latest`  
+2. Clone the PennAI project using `git clone git@github.com:EpistasisLab/pennai.git`
 
-5. **Build the service containers**
-  - It will take several minutes for the images to be built the first time this run.
-  - `docker-compose build`
 
-#### Running ####
-1. **Start the network and service containers**
-- `docker-compose up` to create and start containers, `docker-compose up -d` to run in the background
-	- Note: The first time the the containers are run, it will take several minutes for lab and machine to run 'npm-install', and it may take several more minutes for the inital datasets to be loaded.  The inital 'npm-install' step can be bypassed if node is installed on the host machine by running `npm install` in the lab and machine directories.
-	- Known issue:  If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.
+3. Set up your local PennAI configuration. From the pennai directory, copy `config\ai.env-template` to `config\ai.env`.
 
-2. **Starting the AI service**
 
-a. **Automatic Start**
+4. Build the base docker image by running `docker build ./dockers/base -t pennai/base:latest` from the pennai directory.  It will take several minutes for the image to be built the first time this run.  
 
-The AI will be automatically started by setting the 'AI_AUTOSTART' value to 1 in common.env
+5. Build the service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
 
-b. **Mannual Start**
-  - Attach to the lab container with bash and start the AI service:
+## Usage
+### Starting and Stopping ###
+To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
+
+- Note: The first time the the containers are run it will take several minutes for lab and machine instances to install the necessary npm packages. This initial step can be bypassed if node is installed by running `npm install` from the the `pennai\lab` and `pennai\machine` directories.
+
+- Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again the webserver will start but no experiments will be able to be run.  Try stopping the containers, then running `docker-compose down` followed by `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
+
+### Analyzing Data ###
+Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with ~50 test datasets, starting with 'Allbp'.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
+
+From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page. 
+
+
+## Developer Info
+- Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
+	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild as per step 3.
+- Use `docker-compose build lab --no-cache` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
+- Use `docker rm $(docker ps -a -q)` to remove all docker containers
+- Use `docker rmi $(docker images -q)` to remove all docker images
+- Use `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
+- To manually start the AI service, attach to the lab container with bash and start the AI service:
   
   ```
   docker exec -it "pennai_lab_1" /bin/bash 
   cd $PROJECT_ROOT/
   python -m ai.ai -v -n 2
   ```
-  - Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
-  - Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
-
-3. **Connect to the website**
-	- Connect to <http://localhost:5080/> to access the website
-	- You should see ~50 datasets, starting with 'Adult'.
-	- Known issue: If docker-compose was previously running and `docker-compose down` was not run, the machine state will be out of sync with the database and experiments will not be able to be run.  Try stopping the contaners, then running `docker-compose down` followed by `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
-
-4. **Stop the containers**
-  - `docker-compose stop` to stop the containers
-  - `docker-compose down` to stop and remove containers and network
-
-#### Useful dev docker commands and info ####
-- `docker-compose build` - rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
-	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild as per step 3.
-- `docker-compose build lab --no-cache` - rebuild the image for the lab services without using the cache.
-- `docker rm $(docker ps -a -q)` - remove all docker containers
-- `docker rmi $(docker images -q)` - remove all docker images
-- `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
+  -- Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
+  -- Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 
 
-### Host Based Install (Deprecated)
-1. **Check out the project**
-        - Clone the repository from  <b>git@github.com:EpistasisLab/pennai.git</b>
-2. **Perform Local Install**
-	- Install MongoDB
-	- Change directories to <b>/share/devel/Gp/dockers/lab/files</b>
-	- Extract the contents of mongodump.tgz into /share/devel/Gp/dockers/lab/files/dump
-	- Run <i>mongorestore</i> to populate the mongo database
-	- Change directories to <b>/share/devel/Gp/lab</b>
-	- Run <i>npm install</i>
-	- Create a .env file with the following contents:
-    	- <b>MONGODB_URI=mongodb://127.0.0.1:27017/FGLab</b>
-    	- <b>FGLAB_PORT=5080</b>
-	- Change directories to <b>/share/devel/Gp/machine</b>
-	- Create a file called '.env' with the following contents:
-	- <b>FGLAB_URL=http://localhost:5080</b>
-	- <b>FGMACHINE_URL=http://localhost:5081</b>
-    - copy /share/devel/Gp/dockers/machine/files/projects.json to /share/devel/Gp/machine
-	- Run <i>npm install</i>
-	- Create a .env file with the following contents:
-    	- <b>FGLAB_URL=http://localhost:5080</b>
-    	- <b>FGMACHINE_URL=http://localhost:5081</b>
+## Tests
 
-3. **Test the lab**
-	- Connect to:
-    	- http://localhost:5080/
-
-## Testing ##
-
-### Integration ###
-To run the integration tests, from the root app directory run: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
-
-This will spin up lab, machine, and dbmongo containers as well as an integration test container that will run the Jest test suites and exit.
-
-The results will be in the folder `.\tests\integration\results`
-
-See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
+### Integration 
+- Type: Docker, runs [Jest](https://jestjs.io/)
+- Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
+- Results: The results will be in the folder `.\tests\integration\results`
+Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
 
 
-### Unit ###
-#### AI ####
-**Unit tests for python codes**
-  -  need install nose via `pip install nose`
-
+### Unit
+#### AI
+- Type: Python [nose](https://pypi.org/project/nose/)
+- Prereqs: install nose `pip install nose`
+- Usage:
       ```
       nosetests -s -v ai/tests/test_recommender.py # tests recommender
       ```
 
-#### Metafeatures ####
-**Unit tests for python codes**
-
+#### Metafeatures 
+- Type: Python
+- Usage:
       ```
       cd .\ai\metalearning
       python tests_dataset_describe.py
       ```
 
-#### Machine ####
-  -  need install nose via `pip install nose`
-
+#### Machine
+- Type: Python [nose](https://pypi.org/project/nose/)
+- Prereqs: install nose `pip install nose`
+- Run:
       ```
-      # run under dir of machine
+      cd machine
       nosetests -s -v test\learn_tests.py
       ```
-      
-See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/machine/README.md) for details.
-
-#### Lab ####
-Coming soon.
-
-
-
-## AI Recommender Details
-Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
-
-### Workflow
- - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds.
- - when a new experiment is found, it is used to update the recommender.
- - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user.
- 
-### Recommender
-```python
-pennai = Recommender(method='ml_p',ml_type='classifier')
-# data: a dataframe of results from database
-pennai.update(results_data)
-```
- - given a new modeling task, the AI recommends an ML method with parameter values (P)
-```python
-# dataset_metafeatures: an optional set of metafeatures of the dataset to assist in recommendations
-ml,p = pennai.recommend(dataset_metafeatures=None)
-```
- - the ML+P recommendation is run on the dataset using the AI system
-
-```python
-ai.send_rec()
-```
- - the results are used to update the recommender
-```python
-pennai.update(new_results_data)
-```
-## overall tasks
- - [x] build dataframe `results_data` from MongoDB results.
- - [x] make method to post job submissions
- - [ ] recommendation shows up in launch page
-
-## recommender tasks
-- [x] filter recommendations for what has already been run
-- [x] direct acess to MongDB results for checking what has been run
-
-recommendations using:
- - [x] ml + p
- - [ ] ml + p + mf
- - [ ] ml + p + mf, per model basis
- - [ ] incorporating expert knowledge rules
- - [ ] analyze which metafeatures are important
- - [x] make method to submit jobs (`submit(dataset,ml,p)`)
+- Docs: See [Machine docs](https://github.com/EpistasisLab/pennai/blob/master/machine/README.md) for details.
