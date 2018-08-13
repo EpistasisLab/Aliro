@@ -50,6 +50,9 @@ const error = (state = null, action) => {
   switch(action.type) {
     case SUBMIT_EXPERIMENT_FAILURE:
       return action.payload;
+    case SUBMIT_EXPERIMENT_REQUEST:
+    case SUBMIT_EXPERIMENT_SUCCESS:
+      return null;
     default:
       return state;  
   }

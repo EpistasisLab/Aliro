@@ -6,14 +6,14 @@ import NotFound from '../NotFound';
 import FetchError from '../FetchError';
 import AlgorithmOptions from './components/AlgorithmOptions';
 import ParameterOptions from './components/ParameterOptions';
-import { Grid, Button, Icon, Loader } from 'semantic-ui-react';
+import { Grid, Button, Icon, Popup, Loader } from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 import { hashHistory } from 'react-router';
 
 class Builder extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { dataset: null };
     this.handleSubmitExperiment = this.handleSubmitExperiment.bind(this);
     this.handleResetExperiment = this.handleResetExperiment.bind(this);
   }
@@ -34,6 +34,13 @@ class Builder extends Component {
     } 
   }
 
+  componentDidUpdate(prevProps) {
+    // if finished submitting and no error, redirect
+    if(prevProps.isSubmitting && !this.props.isSubmitting && !this.props.error) {
+      hashHistory.push('/experiments'); // redirect to experiments page
+    }
+  }
+
   handleSubmitExperiment() {
     const dataset = this.props.dataset || this.state.dataset;
     const { currentAlgorithm, currentParams, submitExperiment } = this.props;
@@ -41,10 +48,7 @@ class Builder extends Component {
       dataset: dataset._id
     });
 
-    submitExperiment(
-      currentAlgorithm._id, 
-      validParams
-    ).then(() => hashHistory.push('/experiments')); // redirect to experiments page
+    submitExperiment(currentAlgorithm._id, validParams);
   }
 
   handleResetExperiment() {
@@ -64,8 +68,9 @@ class Builder extends Component {
       currentAlgorithm, 
       currentParams,
       isSubmitting,
+      error,
       setCurrentAlgorithm,
-      setParamValue, 
+      setParamValue
     } = this.props;
     return (
       <div className="builder-scene">
@@ -87,13 +92,20 @@ class Builder extends Component {
           />
         </Grid>
         <div className="builder-btns">
-          <Button 
-            color="blue"
-            size="large"
-            content="Launch Experiment"
-            icon={isSubmitting ? <Icon loading name="spinner" /> : null}
-            disabled={isSubmitting}
-            onClick={this.handleSubmitExperiment}
+          <Popup
+            header="Error submitting experiment:"
+            content={error}
+            open={error ? true : false}
+            trigger={
+              <Button 
+                color="blue"
+                size="large"
+                content="Launch Experiment"
+                icon={isSubmitting ? <Icon loading name="spinner" /> : null}
+                disabled={isSubmitting}
+                onClick={this.handleSubmitExperiment}
+              />
+            }
           />
           <Button 
             color="grey"
@@ -113,7 +125,8 @@ const mapStateToProps = (state, props) => ({
   defaultAlgorithms: state.preferences.data.algorithms,
   currentAlgorithm: state.builder.currentAlgorithm,
   currentParams: state.builder.currentParams,
-  isSubmitting: state.builder.isSubmitting
+  isSubmitting: state.builder.isSubmitting,
+  error: state.builder.error
 });
 
 export { Builder };
