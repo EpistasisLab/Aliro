@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from 'data/machines/actions';
 import ProjectModal from './components/ProjectModal';
-import { Header, Segment, Grid, Table, Modal, Icon } from 'semantic-ui-react';
+import { Header, Segment, Grid, Table, Modal, Popup, Icon } from 'semantic-ui-react';
 
 class Admin extends Component {
   constructor(props) {
@@ -23,16 +23,16 @@ class Admin extends Component {
   componentDidUpdate(prevProps) {
     if(this.props.machines !== prevProps.machines) {
       this.props.machines.list.forEach(m => {
-        let host = m.address.replace(/^http/, 'ws');
-        let ws = new WebSocket(host); // Attempt to connect
+        //let host = m.address.replace(/^http/, 'ws');
+        //let ws = new WebSocket(host); // Attempt to connect
         this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "grey" }) });
         //this.setState({ sockets: Object.assign({}, this.state.sockets, { [m._id]: ws }) });
 
-        ws.onopen = (event) =>
+        /*ws.onopen = (event) =>
           this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "green" }) });
 
         ws.onclose = (event) =>
-          this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "red" }) });
+          this.setState({ status: Object.assign({}, this.state.status, { [m._id]: "red" }) });*/
       });
     }
   }
@@ -78,7 +78,12 @@ class Admin extends Component {
               <span className="muted">{m._id}</span>
               <span className="float-right">
                 <span className="muted">Status: </span>
-                <Icon inverted name="circle" color={status[m._id]} />
+                <Popup
+                  size="tiny"
+                  position="top center"
+                  content="Unknown"
+                  trigger={<Icon link inverted name="circle" color={status[m._id]} />}
+                />
               </span>
             </Segment>
             <Segment inverted attached="bottom">

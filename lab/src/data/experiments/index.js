@@ -64,7 +64,7 @@ export const getFilters = createSelector(
   [getExperiments, getQuery],
   (experiments, query) => {
     const filterKeys = [
-      { key: 'status', textPath: ['status'], valuePath: ['status'] },
+      //{ key: 'status', textPath: ['status'], valuePath: ['status'] },
       { key: 'dataset', textPath: ['dataset_name'], valuePath: ['dataset_id'] },
       { key: 'algorithm', textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
     ];
@@ -106,6 +106,12 @@ export const getFilters = createSelector(
       filters[filter.key].selected = filters[filter.key].values.includes(query[filter.key]) ? query[filter.key] : 'all';
     });
 
+    // manually build status options (temporary until better solution)
+    const statusOptions = ['all', 'pending', 'running', 'completed', 'success', 'cancelled', 'fail'];
+    filters.status = {};
+    filters.status.options = statusOptions.map(option => ({ text: option, value: option }));
+    filters.status.selected = query.status || 'all';
+
     return filters;
   }
 );
@@ -145,8 +151,9 @@ export const getVisibleExperiments = createSelector(
 const filterBy = (filters) => (experiment) => {
   const { status, dataset, algorithm } = filters;
 
+  // status category 'completed' includes 'success', 'cancelled', and 'fail'
   return (
-    (status.selected === 'all' || status.selected === experiment.status) &&
+    (status.selected === 'all' || status.selected === experiment.status || status.selected === 'completed' && ['success', 'cancelled', 'fail'].includes(experiment.status)) &&
     (dataset.selected === 'all' || dataset.selected === experiment.dataset_id) &&
     (algorithm.selected === 'all' || algorithm.selected === experiment.algorithm)
   );
