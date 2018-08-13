@@ -41,6 +41,12 @@ class Builder extends Component {
     }
   }
 
+  componentWillUnmount() {
+    const { defaultAlgorithms, setCurrentAlgorithm, clearError } = this.props;
+    setCurrentAlgorithm(defaultAlgorithms[0]);
+    clearError();
+  }
+
   handleSubmitExperiment() {
     const dataset = this.props.dataset || this.state.dataset;
     const { currentAlgorithm, currentParams, submitExperiment } = this.props;
@@ -54,11 +60,6 @@ class Builder extends Component {
   handleResetExperiment() {
     const { currentAlgorithm, setCurrentAlgorithm } = this.props;
     setCurrentAlgorithm(currentAlgorithm);
-  }
-
-  componentWillUnmount() {
-    const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
-    setCurrentAlgorithm(defaultAlgorithms[0]);
   }
 
   render() {
