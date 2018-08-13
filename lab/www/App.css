@@ -51,6 +51,10 @@ body {
 }
 
 .pennai .dataset-card .ui.header.title {
+    max-width: 75%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     display: inline-block;
     margin-bottom: 0;
 }
