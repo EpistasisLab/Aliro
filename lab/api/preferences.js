@@ -53,7 +53,7 @@ exports.responder = function(req, res) {
                     $first: '$lastname'
                 },
                 algorithms: {
-                    $addToSet: "$algorithms"
+                    $push: "$algorithms"
                 },
             }
         }],

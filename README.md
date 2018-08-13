@@ -13,7 +13,10 @@ A data science assistant for generating useful results from large and complex da
   cd pennai
   ```
 
-2. **Install build requirements**
+2. **Create a local ai configuration file**
+Copy `config\ai.env-template` to `config\ai.env`.
+
+3. **Install build requirements**
   - Docker 
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
@@ -23,11 +26,11 @@ A data science assistant for generating useful results from large and complex da
   - nodejs (optional, can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
 
-3. **Build the base image**
+4. **Build the base image**
   - It will take several minutes for the image to be built the first time this run.
   - `docker build ./dockers/base -t pennai/base:latest`  
 
-4. **Build the service containers**
+5. **Build the service containers**
   - It will take several minutes for the images to be built the first time this run.
   - `docker-compose build`
 

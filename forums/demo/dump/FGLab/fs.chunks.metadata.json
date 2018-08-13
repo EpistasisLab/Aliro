@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"FGLab.fs.chunks"},{"v":1,"unique":true,"key":{"files_id":1,"n":1},"name":"files_id_1_n_1","ns":"FGLab.fs.chunks"}]}

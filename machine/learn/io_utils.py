@@ -3,24 +3,28 @@ import requests
 import json
 import os
 import time
+import requests
+import pandas as pd
+from io import StringIO
 
 LAB_HOST = os.environ['LAB_HOST']
 LAB_PORT = os.environ['LAB_PORT']
 basedir = os.environ['PROJECT_ROOT']
-cacheinputfiles = True
-cachedir = basedir + '/tmp/'
 
 
 class Experiment:
+    def __init__(self, method_name, basedir=basedir):
+        """
+        method_name: ML Algorithm
+        basedir: basedir for this project
+        """
+        self.method_name = method_name
+        self.basedir = basedir
+        self.build_paths()
 
-    def __init__(self, method_name):
-        self.build_paths(method_name)
-
-    def build_paths(self, method_name):
-        self.schema = basedir + '/lab/examples/Algorithms/' + \
-            method_name + '/' + method_name + '.json'
-        self.basedir = basedir + '/machine/learn/' + method_name + '/'
-        self.tmpdir = self.basedir + 'tmp/'
+    def build_paths(self):
+        self.schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format(self.basedir, self.method_name)
+        self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
 
     def get_input(self):
         return get_input(self.schema, self.tmpdir)
@@ -29,10 +33,8 @@ class Experiment:
 def get_input(schema, tmpdir):
     args = parse_args(get_params(schema))
     assert args['_id']
-    input_file = get_input_file(args['_id'], tmpdir)
-    if 'input_file' in args and input_file == 0:
-        input_file = args['input_file']
-    return (args, input_file)
+    input_data = get_input_data(args['_id'], tmpdir)
+    return (args, input_data)
 
 
 def save_output(tmpdir, _id, output):
@@ -63,8 +65,6 @@ def parse_args(params):
         parser.add_argument(arg, action='store', dest=arg_dest,
                             default=arg_default, type=arg_type, help=arg_help)
 
-    parser.add_argument('--input_file', action='store', dest='input_file',
-                        default=None, type=str, help="input file from command line")
     parser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
 
@@ -74,56 +74,32 @@ def parse_args(params):
 
     return args
 
-def get_input_file(_id, tmpdir):
+def get_input_data(_id, tmpdir):
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
     response = requests.get('http://' + LAB_HOST +
                             ':' + LAB_PORT + '/api/v1/experiments/' + _id)
     jsondata = json.loads(response.text)
+
     #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
-    if (_dataset_id is None): 
+    if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
 
     response = requests.get('http://' + LAB_HOST +':' + LAB_PORT + '/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.text)
     files = jsondata['files']
-    if cacheinputfiles:
-        for file in files:
-            cached_file = cachedir + file['_id']
-            if not os.path.exists(cached_file):
-                uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-                response = requests.get(uri)
-                with open(cached_file, 'w') as f:
-                    f.write(response.text)
-        if len(files) == 1:
-            input_file = expdir + files[0]['filename']
-            cached_file = cachedir + files[0]['_id']
-            os.symlink(cached_file,input_file)
-        else:
-            input_file = []
-            for file in files:
-                input_f = expdir + file['filename']
-                cached_file = cachedir + file['_id']
-                os.symlink(cached_file,input_f)
-                input_file.append(input_f)
-        return input_file
-    else:
-        input_file = ''
-        numfiles = 0
-        for file in files:
+    if len(files) == 1: # only 1 file
+        uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
+        input_data = pd.read_csv(StringIO(requests.get(uri).text), sep='\t')
+    else: # two files for cross-validation
+        input_data = []
+        for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            response = requests.get(uri)
-            input_file = expdir + file['filename']
-            with open(input_file, 'w') as f:
-                f.write(response.text)
-                numfiles += 1
+            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep='\t'))
 
-        if numfiles == 1:
-            return input_file
-        else:
-            return 0
+    return input_data
 
 
 def bool_type(val):
@@ -135,7 +111,6 @@ def bool_type(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 # this shouldn't be for all int types --> change later
-
 
 def int_or_none(val):
     if(val.lower() == 'none'):
