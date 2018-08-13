@@ -41,6 +41,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 
 
 ## Developer Info
+- To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
 	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild as per step 3.
 - Use `docker-compose build lab --no-cache` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
@@ -72,24 +73,24 @@ Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lit
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
-      ```
-      nosetests -s -v ai/tests/test_recommender.py # tests recommender
-      ```
+	```
+	nosetests -s -v ai/tests/test_recommender.py # tests recommender
+	```
 
 #### Metafeatures 
 - Type: Python
 - Usage:
-      ```
-      cd .\ai\metalearning
-      python tests_dataset_describe.py
-      ```
+	```
+	cd .\ai\metalearning
+	python tests_dataset_describe.py
+	```
 
 #### Machine
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
-- Run:
-      ```
-      cd machine
-      nosetests -s -v test\learn_tests.py
-      ```
+- Usage:
+	```
+	cd machine
+	nosetests -s -v test\learn_tests.py
+	```
 - Docs: See [Machine docs](https://github.com/EpistasisLab/pennai/blob/master/machine/README.md) for details.
