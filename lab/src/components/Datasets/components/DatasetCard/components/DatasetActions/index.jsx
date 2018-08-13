@@ -17,7 +17,7 @@ function DatasetActions({ dataset, toggleAI }) {
 
   const aiLabelClass = `ai-label ${aiState}`;
 
-  const aiToggleClass = `ai-switch ${aiState === 'requested' ? 'requested' : '' }`;
+  const aiToggleClass = `ai-switch ${(aiState === 'on' || aiState === 'queuing') ? 'active' : aiState }`;
 
   const aiIsChecked = aiState === 'off' ? false : true;
 
