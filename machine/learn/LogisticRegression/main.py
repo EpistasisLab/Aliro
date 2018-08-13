@@ -15,7 +15,7 @@ from skl_utils import generate_results
 
 if __name__ == "__main__":
     exp = Experiment('LogisticRegression')
-    args, input_file = exp.get_input()
+    args, input_data = exp.get_input()
     model = LogisticRegression(
         penalty=args['penalty'], C=args['C'], dual=args['dual'])
-    generate_results(model, input_file, exp.tmpdir, args['_id'])
+    generate_results(model, input_data, exp.tmpdir, args['_id'])

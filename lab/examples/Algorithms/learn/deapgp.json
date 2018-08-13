@@ -1,7 +1,0 @@
-{
-  "criterion": {
-    "type": "enum-radio",
-    "values": ["foo","bar"],
-    "default": "foo"
-  }
-}

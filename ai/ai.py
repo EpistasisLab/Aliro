@@ -262,28 +262,18 @@ class AI():
 
     def transfer_rec(self,rec_payload):
             """performs http transfer of recommendation"""
-            self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-            n=0
-            rec_path = '/'.join([self.projects_path,
-                        rec_payload['algorithm_id'],
-                                      'experiment'])
-            v=requests.post(rec_path,data=json.dumps(rec_payload,cls=JasonEncoder),headers=self.header)
-            submitresponses = json.loads(v.text)
-            #parse json response into named array
-            submitstatus={}
-            if len(submitresponses) > 0:
-                for submiti in submitresponses:
-                    submitstatus[submiti] = submitresponses[submiti]
-            #look for errors and resubmit
-            if('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
+            experimentData = json.dumps(rec_payload,cls=JasonEncoder)
+            submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+
+            while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
-                sleep(1);
-                self.transfer_rec(rec_payload)
-                n=n+1
-            elif 'error' in submitstatus:
+                sleep(3)
+                submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+
+            if 'error' in submitstatus:
+                print('unrecoverable error during transfer_rec ' + rec_path)
+                print(submitstatus['error'])
                 pdb.set_trace()
-            if(n>0):
-                print('looped ' + str(n) + 'times')
 
 
     def process_rec(self):
@@ -319,7 +309,8 @@ class AI():
                 #sleep(1)
 
                 #submit update to dataset to indicate ai:True
-            payload= {'ai':'finished'}
+            #payload= {'ai':'finished'} # h note - re-enable this once the queuing functionaity has been moved to lab server
+            payload= {'ai':'queuing'}
             data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
@@ -329,6 +320,7 @@ class AI():
                   ':','processed',i,'requests')
 
 
+    #h note - this seems to be deprecated
     def send_rec(self):
         """Sends recommendation to the API."""
         i = 0
@@ -396,6 +388,38 @@ class AI():
                 self.metric
         """
 
+    #################
+    # Utility methods
+    #################
+    def post_experiment(self, algorithmId, experimentData):
+        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
+        rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
+        
+        try:
+            res=requests.post(rec_path,data=experimentData,headers=self.header)
+        except:
+            print("Unexpected error in post_experiment for path '", rec_path, "':", sys.exc_info()[0])
+            raise
+
+        submitresponses = json.loads(res.text)
+
+        #parse json response into named array
+        submitstatus={}
+        if len(submitresponses) > 0:
+            for submiti in submitresponses:
+                submitstatus[submiti] = submitresponses[submiti]
+
+        return submitstatus
+
+    def set_ai_status(self, datasetId, aiStatus):
+        """set the ai status for the given dataset"""
+        payload= {'ai':aiStatus}
+        data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
+        try:
+            tmp = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
+        except:
+            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
+            raise
 
 ####################################################################### Manager
 import argparse
@@ -447,7 +471,7 @@ def main():
                pennai.process_rec()
                 #pennai.send_rec()
             n = n + 1
-            sleep(2)
+            sleep(4)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
