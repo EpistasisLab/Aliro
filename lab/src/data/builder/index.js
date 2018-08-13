@@ -4,7 +4,8 @@ import {
   SUBMIT_EXPERIMENT_SUCCESS,
   SUBMIT_EXPERIMENT_FAILURE,
   SET_CURRENT_ALGORITHM,
-  SET_PARAM_VALUE
+  SET_PARAM_VALUE,
+  CLEAR_ERROR
 } from './actions';
 
 const currentAlgorithm = (state = {}, action) => {
@@ -52,6 +53,7 @@ const error = (state = null, action) => {
       return action.payload;
     case SUBMIT_EXPERIMENT_REQUEST:
     case SUBMIT_EXPERIMENT_SUCCESS:
+    case CLEAR_ERROR:
       return null;
     default:
       return state;  
