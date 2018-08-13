@@ -34,10 +34,11 @@ function ExperimentStatus({ filter, experiments, notifications }) {
             </a>  
           </Table.Cell>
           <Table.Cell selectable textAlign="center">
-            <a href={filterLink + 'success'}>
+            <a href={filterLink + 'completed'}>
               <Header inverted size="tiny">
                 {experiments.finished}<br />
-                {`result${experiments.finished === 1 ? '' : 's'}`}<br />
+                {`experiment${experiments.finished === 1 ? '' : 's'}`}<br />
+                {'completed'}
               </Header>
             </a>
             {notifications.error > 0 &&
