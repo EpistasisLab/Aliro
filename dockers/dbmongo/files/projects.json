@@ -57,7 +57,7 @@
         }
     },
     "category": "ML"
-}  {
+} {
     "name": "DecisionTreeClassifier",
     "schema": {
         "criterion": {
