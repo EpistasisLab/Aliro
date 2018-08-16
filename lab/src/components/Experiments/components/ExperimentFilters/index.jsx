@@ -3,7 +3,7 @@ import { Form, Dropdown, Header } from 'semantic-ui-react';
 
 function ExperimentFilters({ 
   filters,
-  resultCount,
+  displayCount,
   updateQuery, 
   resetQuery 
 }) {
@@ -50,7 +50,7 @@ function ExperimentFilters({
             className="reset"
           />
           <div className="experiment-count float-right">
-            <Header inverted size="small" content={`${resultCount} result${resultCount === 1 ? '' : 's'}`} />
+            <Header inverted size="small" content={`${displayCount} experiment${displayCount === 1 ? '' : 's'}`} />
           </div>
         </Form.Group>
       </Form>
