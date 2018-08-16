@@ -3,17 +3,18 @@ Script to get metafeatures for all datasets stored in the ../data folder.
 Dumps all the results in a csv called data_metafeatures.csv
 """
 
-from glob import glob
 import pandas as pd
-
 from dataset_describe import Dataset
 from collections import OrderedDict
+import argparse
+import json
+import sys
 
-
-def get_metafeatures(df):
-    dataset = Dataset(df, dependent_col = 'class', prediction_type='classification')
+def get_metafeatures(df, target_field):
+    """Calls metafeature generating methods from dataset_describe"""
+    dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
    
-    meta_features = OrderedDict()
+    meta_features = OrderedDict() 
     for i in dir(dataset):
         result = getattr(dataset, i)
         if not i.startswith('__') and not i.startswith('_') and hasattr(result, '__call__'):
@@ -23,22 +24,21 @@ def get_metafeatures(df):
 
 def main():
     meta_features_all = []
-    for i,dataset in enumerate(glob('../data/*')):
-        # Read the data set into memory
-        print('Processing {0}'.format(dataset))
-        if "cifar" in dataset:
-	    print("skipping:", dataset)
-	    continue
-	input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
-        meta_features = get_metafeatures(input_data)
-        meta_features['dataset'] = dataset
-        meta_features_all.append(meta_features)
-        
-        # For testing purposes.
-        #if i == 15:
-        #    pd.DataFrame(meta_features_all).to_csv('data_metafeatures.csv')
-        #    break
-    pd.DataFrame(meta_features_all).to_csv('data_metafeatures.csv')
+    parser = argparse.ArgumentParser(description="Generates metadata.json file given a dataseet", add_help=False)
+    parser.add_argument('INPUT_FILE', type=str, help='Data file to analyze.')    
+    parser.add_argument('-target', action='store', dest='TARGET', type=str, default='class',
+                        help='Name of target column')
+    args = parser.parse_args()
+
+    dataset = args.INPUT_FILE
+    # Read the data set into memory
+    input_data = pd.read_csv(dataset, sep=None, engine='python')
+    meta_features = get_metafeatures(input_data, args.TARGET)
+    
+    meta_json = json.dumps(meta_features) #, ensure_ascii=False)    
+
+    print(meta_json)
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     main()

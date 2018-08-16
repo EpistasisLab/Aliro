@@ -439,6 +439,8 @@ var wsErrHandler = function() {};
 
 // Call on connection from new client
 wss.on("connection", (ws) => {
+    console.log(`wss.connection: ${ws}`)
+    
     // Listeners
     var sendStdout = function(data) {
         ws.send(JSON.stringify({

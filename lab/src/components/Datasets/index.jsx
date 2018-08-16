@@ -33,7 +33,8 @@ class Datasets extends Component {
 
     return (
       <div>
-        <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />
+        <SceneHeader header="Datasets" />
+        {/*<SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />*/}
         {datasets.length > 0 ? (
           <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
             {datasets.map(dataset => (

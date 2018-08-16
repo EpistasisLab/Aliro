@@ -46,7 +46,8 @@ class Dataset:
     def _set_dependent_col(self, dependent_col):
         """ if nothing given, set the last column in the frame as
         the dependent column."""
-
+        # print('dependent_col:',dependent_col)
+        # print(self.df.columns.tolist())
         if dependent_col == None:
             self.dependent_col = self.df.columns.tolist()[-1]
         elif dependent_col in self.df.columns.tolist():
@@ -344,7 +345,6 @@ class Dataset:
         column using categorical_cols info.
         """
 
-
         if self.symbol_counts_dict == None:
             self.symbol_counts_dict = {}
             for column in self.categorical_cols:
@@ -363,7 +363,7 @@ class Dataset:
             return np.nan
         symbol_counts = list(symbol_counts_dict.values())
 
-        return np.nanmean(symbol_counts)
+        return int(np.nanmean(symbol_counts))
 
 
     def symbols_std(self):
@@ -385,7 +385,7 @@ class Dataset:
             return np.nan
         symbol_counts = list(symbol_counts_dict.values())
 
-        return np.min(symbol_counts)   
+        return int(np.min(symbol_counts))
 
     def symbols_max(self):
         """ Average symbols per columns """
@@ -396,7 +396,7 @@ class Dataset:
             return np.nan
         symbol_counts = list(symbol_counts_dict.values())
 
-        return np.max(symbol_counts)
+        return int(np.max(symbol_counts))
 
     def symbols_sum(self):
         """ Sum of symbols per column """
@@ -407,7 +407,7 @@ class Dataset:
 
         symbol_counts = list(symbol_counts_dict.values())
 
-        return np.sum(symbol_counts)  
+        return int(np.sum(symbol_counts))
 
     def symbols_skew(self):
         from scipy.stats import skew
@@ -462,7 +462,7 @@ class Dataset:
         
         kurtosisses = list(kurtosis_dict.values())
 
-        return np.nanmean(kurtosisses)
+        return float(np.nanmean(kurtosisses))
 
     def kurtosis_median(self):
         """ Median kurtosis per columns """
@@ -574,7 +574,7 @@ class Dataset:
         
         skews = list(skew_dict.values())
 
-        return np.nanmean(skews)
+        return float(np.nanmean(skews))
 
 
 
