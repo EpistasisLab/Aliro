@@ -4,7 +4,7 @@ import * as actions from 'data/datasets/dataset/actions';
 import DatasetActions from './components/DatasetActions';
 import BestResult from './components/BestResult';
 import ExperimentStatus from './components/ExperimentStatus';
-import { Grid, Segment, Header, Button, Message } from 'semantic-ui-react';
+import { Grid, Segment, Header, Button, Popup, Message } from 'semantic-ui-react';
 import { formatDataset } from '../../../../utils/formatter';
 
 const DatasetCard = ({ dataset, toggleAI }) => {
@@ -14,13 +14,20 @@ const DatasetCard = ({ dataset, toggleAI }) => {
   return (
     <Grid.Column className="dataset-card">
       <Segment inverted attached="top" className="panel-header">
-        <Header 
-          as="a"
-          inverted 
-          size="large"
+        <Popup
+          size="tiny"
+          position="right center"
           content={formatDataset(dataset.name)}
-          href={datasetLink}
-          className="title"
+          trigger={
+            <Header 
+              as="a"
+              inverted
+              size="large"
+              content={formatDataset(dataset.name)}
+              href={datasetLink}
+              className="title"
+            />
+          }
         />
         <span className="float-right">
           <DatasetActions
