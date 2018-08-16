@@ -13,6 +13,7 @@ class datasetThread (threading.Thread):
    def __init__(self, threadID, p):
       threading.Thread.__init__(self)
       self.threadID = threadID
+      self.datasetId = threadID
       self.name = p.user_datasets[threadID]
       self.workQueue = queue.Queue()
       self.queueLock = threading.Lock()
@@ -38,11 +39,17 @@ def startQ(self,d):
 def process_data(self):
    while not exitFlag:
        self.queueLock.acquire()
+       workDone = False
        if not self.workQueue.empty():
+         workDone = True
          data = self.workQueue.get()
          self.p.transfer_rec(data)
          if(self.workQueue.qsize() % 10 == 0):
-           print(str(self.workQueue.qsize()) + ' Jobs in queue for ' + self.name);
+           print(str(self.workQueue.qsize()) + ' Jobs in queue for ' + self.name)
+       #hacky way to know if the queue has just cleared
+       if self.workQueue.empty() and workDone:
+        print(str(self.workQueue.qsize()) + ' Jobs in queue for ' + self.name + ', marking ai as finished.')
+        self.p.set_ai_status(self.datasetId, 'finished')
        self.queueLock.release()
 
  

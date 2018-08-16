@@ -69,7 +69,7 @@ class Experiments extends Component {
           <Segment inverted attached="top">
             <ExperimentFilters
               filters={filters}
-              resultCount={experiments.list.length}
+              displayCount={experiments.list.length}
               updateQuery={this.updateQuery}
               resetQuery={this.resetQuery}
             />
