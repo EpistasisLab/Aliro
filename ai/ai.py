@@ -271,7 +271,7 @@ class AI():
                 submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
 
             if 'error' in submitstatus:
-                print('unrecoverable error during transfer_rec ' + rec_path)
+                print('unrecoverable error during transfer_rec '  )
                 print(submitstatus['error'])
                 pdb.set_trace()
 
@@ -472,6 +472,7 @@ def main():
                 #pennai.send_rec()
             n = n + 1
             sleep(4)
+
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
