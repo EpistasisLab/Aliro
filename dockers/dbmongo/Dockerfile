@@ -1,6 +1,3 @@
-#working off of an ubuntu wily rootfs
-#FROM pennai/base:latest
-
 #we started out with nothing
 FROM debian:jessie-slim
 
