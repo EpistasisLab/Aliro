@@ -16,7 +16,7 @@ import json
 import sys
 import random
 from time import sleep
-
+import argparse
 
 def getMetafeatures():
 
@@ -73,8 +73,19 @@ def getMetafeatures():
 
 
 def main():
+	parser = argparse.ArgumentParser(description="Generates metadata.json file given a dataseet", add_help=False)
+	parser.add_argument('INPUT_FILE', type=str, help='Data file to analyze.')    
+	parser.add_argument('-target', action='store', dest='TARGET', type=str, default='class',
+                        help='Name of target column')
+	args = parser.parse_args()
+
+	dataset = args.INPUT_FILE
+	#print("---python----")
+	#print("input file: ")
+	#print(dataset) 
+
 	#simulate random processing time...
-	sleep(random.randint(1, 5))
+	sleep(random.randint(0,1))
 
 	featureDict = getMetafeatures()
 	print(json.dumps(featureDict))

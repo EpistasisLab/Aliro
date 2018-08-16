@@ -14,8 +14,12 @@ var spawnSync = require("child_process").spawnSync;
 *				 error: (if falure) String}
 */
 function generateFeatures(fileObj) {
-	var args = ['-m', 'ai.metalearning.generateTestMetafeatures']
+	// hack for now
+	var filepath = process.env.PROJECT_ROOT + '/machine/datasets/byuser/testuser/' + fileObj.originalname.slice(0, -4) + "/" + fileObj.originalname
+	console.log(`filepath: ${filepath}`)
 
+	//var args = ['-m', 'ai.metalearning.generateTestMetafeatures', filepath]
+	var args = ['ai/metalearning/get_metafeatures.py', filepath]
 
 /*
 	// async

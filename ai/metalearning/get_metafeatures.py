@@ -7,8 +7,8 @@ import pandas as pd
 from dataset_describe import Dataset
 from collections import OrderedDict
 import argparse
-import json
 import sys
+import simplejson
 
 def get_metafeatures(df, target_field):
     """Calls metafeature generating methods from dataset_describe"""
@@ -35,7 +35,7 @@ def main():
     input_data = pd.read_csv(dataset, sep=None, engine='python')
     meta_features = get_metafeatures(input_data, args.TARGET)
     
-    meta_json = json.dumps(meta_features) #, ensure_ascii=False)    
+    meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
     sys.stdout.flush()
