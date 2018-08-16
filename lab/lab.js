@@ -1590,6 +1590,7 @@ app.use((err, req, res, next) => {
 
 /* HTTP server */
 var server = http.createServer(app); // Create HTTP server
+
 socketServer(server);
 if (!process.env.LAB_PORT) {
     console.log("Error: No port specified");
@@ -1602,22 +1603,26 @@ if (!process.env.LAB_PORT) {
 }
 
 /* WebSocket server */
+/*
 // Add websocket server
 var wss = new WebSocketServer({
     server: server
 });
 // Catches errors to prevent FGMachine crashing if browser disconnect undetected
-var wsErrHandler = function() {};
+var wsErrHandler = function() {
+    console.log(`wsErrHandler`)
+};
 
 // Call on connection from new client
 wss.on("connection", (ws) => {
     // Print received messages
     ws.on("message", (message) => {
-        console.log(message);
+        console.log(`wss: message: ${message}`);
     });
 
     // Perform clean up if necessary
     ws.on("close", () => {
-        //console.log("Client closed connection");
+        console.log("wss: Client closed connection");
     });
 });
+*/

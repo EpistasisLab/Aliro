@@ -42,15 +42,23 @@ function Navbar({ preferences }) {
               </MediaQuery>
             </Menu.Item>
           </Link>
-          <Dropdown trigger={getUserTrigger()} icon={null}>
+          <Link to="admin" className="link" activeClassName="active"> 
+            <Menu.Item name="Admin">
+              <Icon name="wrench" />
+              <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
+                {'Admin'}
+              </MediaQuery>
+            </Menu.Item>
+          </Link>
+          <Menu.Item>
+            <Icon name="user" />
+            <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
+              {preferences.username}
+            </MediaQuery>
+          </Menu.Item>
+          {/*<Dropdown trigger={getUserTrigger()} icon={null}>
             <Dropdown.Menu>
               <Dropdown.Item 
-                as={Link} 
-                to="admin"
-                icon="wrench" 
-                text="Admin" 
-              />
-              {/*<Dropdown.Item 
                 as={Link} 
                 to="settings"
                 icon="setting" 
@@ -59,9 +67,9 @@ function Navbar({ preferences }) {
               <Dropdown.Item
                 icon="sign out" 
                 text="Sign out" 
-              />*/}
+              />
             </Dropdown.Menu>
-          </Dropdown>
+          </Dropdown>*/}
         </Menu.Menu>
       }
     </Menu>

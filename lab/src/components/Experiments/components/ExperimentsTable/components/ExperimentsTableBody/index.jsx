@@ -194,7 +194,7 @@ function ExperimentsTableBody({
               <Dropdown 
                 pointing="top right" 
                 icon={<Icon inverted color="grey" size="large" name="caret down" />}
-                disabled={experiment.status === 'fail'}
+                disabled={['cancelled', 'fail'].includes(experiment.status)}
               >
                 <Dropdown.Menu>
                   {experiment.status === 'running' &&
