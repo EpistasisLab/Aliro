@@ -57,7 +57,7 @@
         }
     },
     "category": "ML"
-} {
+}  {
     "name": "DecisionTreeClassifier",
     "schema": {
         "criterion": {
@@ -73,28 +73,28 @@
         "max_depth": {
             "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
             "type": "int",
-            "default": "None",
+            "default": "2",
             "ui": {
                 "style": "radio",
-                "choices": [1, 3, 5, 7, 9, "None"]
+                "choices": [2, 4, 6, 8]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         }
     },
@@ -108,7 +108,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -133,19 +133,19 @@
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -168,7 +168,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 250]
+                "choices": [100, 250]
             }
         },
         "learning_rate": {
@@ -177,34 +177,34 @@
             "default": 0.1,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 0.5, 1]
+                "choices": [0.01, 0.1, 1]
             }
         },
         "max_depth": {
             "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
             "type": "int",
-            "default": 3,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [1, 3, 5, 7, 9, "None"]
+                "choices": [1, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "subsample": {
@@ -213,16 +213,16 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.05, 0.25, 0.5, 0.75, 1]
+                "choices": [0.5, 1]
             }
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
             "type": "string",
-            "default": "None",
+            "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["sqrt", "log2"]
             }
         }
     },
@@ -350,7 +350,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -368,25 +368,25 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["sqrt", "log2"]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "bootstrap": {
