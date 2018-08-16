@@ -7,11 +7,14 @@ function socketServer(server) {
 	var io = require('socket.io')(server);
 
 	io.on('connection', socket => { 
+		console.log('socket.io connection')
 		sockets.push(socket);
 
 		socket.on('disconnect', () => {
+		  console.log('socket.io disconnect')
 		  var index = sockets.indexOf(socket);
 		  sockets.splice(index, 1);
+		  console.log('socket.io splice')
 		});
 	});
 }

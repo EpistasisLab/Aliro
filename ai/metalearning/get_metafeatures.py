@@ -34,7 +34,6 @@ def main():
     args = parser.parse_args()
 
     meta_features = get_metafeatures(args.INPUT_FILE, args.TARGET)
-    
     meta_json = json.dumps(meta_features) #, ensure_ascii=False)    
 
     print(meta_json)
