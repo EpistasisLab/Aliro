@@ -17,6 +17,7 @@ import pandas as pd
 import requests
 import unittest
 from unittest import mock
+from io import StringIO
 
 # test input file for classification
 test_clf_input = "test/iris.tsv"
@@ -52,6 +53,43 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(open(test_clf_input).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
         return MockResponse(open(test_reg_input).read(), 200)
+    elif args[0] == 'http://lab:5080/api/v1/projects':
+        json_data = [{
+            "name": "SVC",
+            "param_type": {
+                "kernel": {
+                    "type": "string",
+                    "default": "rbf"
+                },
+                "tol": {
+                    "type": "float",
+                    "default": 0.0001
+                },
+                "C": {
+                    "type": "float",
+                    "default": 1.0
+                }
+            },
+            "category": "ML"
+        },
+        {"name": "SVC",
+        "param_type": {
+            "kernel": {
+                "type": "string",
+                "default": "rbf"
+            },
+            "tol": {
+                "type": "float",
+                "default": 0.0001
+            },
+            "C": {
+                "type": "float",
+                "default": 1.0
+            }
+        },
+        "category": "ML"
+        }]
+        return MockResponse(json.dumps(json_data), 200)
     else:
         return MockResponse(None, 404)
 
@@ -86,25 +124,25 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_params(self, mock_get):
+        """Test get_params return correct parameters"""
+        params = get_params('SVC')
+
+        assert 'kernel' in params
+        assert 'tol' in params
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_Experiment_init(self, mock_get):
+        """Test Experiment class has correct attribute."""
+        exp = Experiment(method_name='SVC', basedir='../')
+
+        assert exp.method_name == 'SVC'
+        assert exp.basedir == '../'
+        assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('../', 'SVC')
 
 
-def test_Experiment_init():
-    """Test Experiment class has correct attribute."""
-    exp = Experiment(method_name='SVC', basedir='../')
 
-    assert exp.method_name == 'SVC'
-    assert exp.basedir == '../'
-    assert exp.schema == '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
-    assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('../', 'SVC')
-
-
-def test_get_params():
-    """Test get_params return correct parameters"""
-    test_schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format('../', 'SVC')
-    params = get_params(test_schema)
-
-    assert 'kernel' in params
-    assert 'tol' in params
 
 
 def test_generate_results_1():
