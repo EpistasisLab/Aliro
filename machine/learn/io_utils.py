@@ -49,6 +49,7 @@ def get_params(method_name):
     for pdict in jsondata:
         if pdict['name'] == method_name:
             params = pdict['param_type']
+            break
     return params
 
 
