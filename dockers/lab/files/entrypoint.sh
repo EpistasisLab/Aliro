@@ -48,7 +48,7 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
 
     echo "sleep..."
-    sleep 10s
+    sleep 30s
     echo "starting ai..."
     echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER}
 

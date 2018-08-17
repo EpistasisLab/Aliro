@@ -4,8 +4,6 @@ var spawnSync = require("child_process").spawnSync;
 /**
 * Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
 * For now, generate the process synchronously.
-*
-* Calling a test python method that returns a static set of JSON data after a random wait of up to 5s.
 * 
 *
 * @param fileObj
@@ -18,7 +16,6 @@ function generateFeatures(fileObj) {
 	var filepath = process.env.PROJECT_ROOT + '/machine/datasets/byuser/testuser/' + fileObj.originalname.slice(0, -4) + "/" + fileObj.originalname
 	console.log(`filepath: ${filepath}`)
 
-	//var args = ['-m', 'ai.metalearning.generateTestMetafeatures', filepath]
 	var args = ['ai/metalearning/get_metafeatures.py', filepath]
 
 /*
