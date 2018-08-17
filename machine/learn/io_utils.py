@@ -23,15 +23,14 @@ class Experiment:
         self.build_paths()
 
     def build_paths(self):
-        self.schema = '{0}/lab/examples/Algorithms/{1}/{1}.json'.format(self.basedir, self.method_name)
         self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
 
     def get_input(self):
-        return get_input(self.schema, self.tmpdir)
+        return get_input(self.method_name, self.tmpdir)
 
 
-def get_input(schema, tmpdir):
-    args = parse_args(get_params(schema))
+def get_input(method_name, tmpdir):
+    args = parse_args(get_params(method_name))
     assert args['_id']
     input_data = get_input_data(args['_id'], tmpdir)
     return (args, input_data)
@@ -43,11 +42,13 @@ def save_output(tmpdir, _id, output):
         json.dump({'_scores': output}, outfile)
 
 
-def get_params(schema):
+def get_params(method_name):
     params = {}
-    with open(schema, 'rb') as f:
-        params = json.loads(f.read().decode('utf-8'))
-
+    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects/'
+    jsondata = json.loads(requests.get(uri).text)
+    for pdict in jsondata:
+        if pdict['name'] == method_name:
+            params = pdict['schema']
     return params
 
 
