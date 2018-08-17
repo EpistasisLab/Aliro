@@ -29,10 +29,25 @@
             }
         }
     },
+    "param_type":  {
+    	"alpha": {
+    		"type": "float",
+    		"default": 1.0,
+    	},
+    	"binarize": {
+        "type": "float",
+    		"default": 0.0,
+    	},
+    	"fit_prior": {
+    		"type": "bool",
+    		"default": true
+    		}
+	  },
     "category": "ML"
 } {
     "name": "GaussianNB",
     "schema": {},
+    "param_type": {},
     "category": "ML"
 } {
     "name": "MultinomialNB",
@@ -40,10 +55,10 @@
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
             "type": "float",
-            "default": 1,
+            "default": 1.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 1, 10, 100]
+                "choices": [0.001, 0.01, 0.1, 1.0, 10, 100]
             }
         },
         "fit_prior": {
@@ -56,6 +71,16 @@
             }
         }
     },
+    "param_type":  {
+      	"alpha": {
+      		"type": "float",
+      		"default": 1.0,
+      	},
+      	"fit_prior": {
+      		"type": "bool",
+      		"default": true
+      		}
+  	},
     "category": "ML"
 } {
     "name": "DecisionTreeClassifier",
@@ -73,7 +98,7 @@
         "max_depth": {
             "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
             "type": "int",
-            "default": "2",
+            "default": 2,
             "ui": {
                 "style": "radio",
                 "choices": [2, 4, 6, 8]
@@ -98,6 +123,24 @@
             }
         }
     },
+    "param_type":  {
+        "criterion": {
+            "type": "string",
+            "default": "gini"
+        },
+        "max_depth": {
+            "type": "int",
+            "default": 2
+        },
+        "min_samples_split": {
+            "type": "int",
+            "default": 5
+        },
+        "min_samples_leaf": {
+            "type": "int",
+            "default": 5
+        }
+  	},
     "category": "ML"
 } {
     "name": "ExtraTreesClassifier",
@@ -156,6 +199,32 @@
                 "style": "radio",
                 "choices": ["true", "false"]
             }
+        }
+    },
+    "param_type": {
+        "n_estimators": {
+            "type": "int",
+            "default": 100
+        },
+        "criterion": {
+            "type": "string",
+            "default": "gini"
+        },
+        "max_features": {
+            "type": "string",
+            "default": "sqrt"
+        },
+        "min_samples_split": {
+            "type": "int",
+            "default": 5
+        },
+        "min_samples_leaf": {
+            "type": "int",
+            "default": 5
+        },
+        "bootstrap": {
+            "type": "bool",
+            "default": false,
         }
     },
     "category": "ML"
@@ -226,6 +295,36 @@
             }
         }
     },
+    "param_type": {
+    	"n_estimators": {
+    		"type": "int",
+    		"default": 100
+    	},
+    	"learning_rate": {
+    		"type": "float",
+    		"default": 0.1
+    	},
+    	"max_depth": {
+    		"type": "int",
+    		"default": 3
+    	},
+    	"min_samples_split": {
+    		"type": "int",
+    		"default": 2
+    	},
+    	"min_samples_leaf": {
+    		"type": "int",
+    		"default": 1
+    	},
+    	"subsample": {
+    		"type": "float",
+    		"default": 1.0
+    	},
+    	"max_features": {
+    		"type": "string",
+    		"default": "sqrt"
+    	}
+    },
     "category": "ML"
 } {
     "name": "KNeighborsClassifier",
@@ -257,6 +356,20 @@
                 "choices": [1, 2]
             }
         }
+    },
+    "param_type": {
+      	"n_neighbors": {
+        		"type": "int",
+      		  "default": 5
+      	},
+      	"weights": {
+      		"type": "string",
+      		"default": "uniform"
+      	},
+      	"p": {
+      		"type": "int",
+      		"default": 2
+      	}
     },
     "category": "ML"
 } {
@@ -308,6 +421,29 @@
             }
         }
     },
+    "param_type": {
+    	"penalty": {
+    		"type": "string",
+    		"default": "l2",
+    	},
+    	"loss": {
+    		"type": "string",
+    		"default": "squared_hinge"
+    		}
+    	},
+    	"dual": {
+    		"type": "bool",
+    		"default": true
+    	},
+    	"tol": {
+    		"type": "float",
+    		"default": 0.0001
+    	},
+    	"C": {
+    		"type": "float",
+    		"default": 1.0
+    	}
+    },
     "category": "ML"
 } {
     "name": "LogisticRegression",
@@ -324,7 +460,7 @@
         "C": {
             "description": "Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.",
             "type": "float",
-            "default": 1,
+            "default": 1.0,
             "ui": {
                 "style": "radio",
                 "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
@@ -339,6 +475,20 @@
                 "choices": ["true", "false"]
             }
         }
+    },
+    "param_type": {
+    	"penalty": {
+    		"type": "string",
+    		"default": "l2",
+    	},
+    	"dual": {
+    		"type": "bool",
+    		"default": true
+    	},
+    	"C": {
+    		"type": "float",
+    		"default": 1.0
+    	}
     },
     "category": "ML"
 } {
@@ -399,6 +549,32 @@
             }
         }
     },
+    "param_type": {
+    	"n_estimators": {
+    		"type": "int",
+    		"default": 100
+    	},
+      "criterion": {
+          "type": "string",
+          "default": "gini"
+      },
+      "max_features": {
+        "type": "string",
+        "default": "sqrt"
+      },
+    	"min_samples_split": {
+    		"type": "int",
+    		"default": 5
+    	},
+    	"min_samples_leaf": {
+    		"type": "int",
+    		"default": 5
+    	},
+      "bootstrap": {
+          "type": "bool",
+          "default": false,
+      }
+    },
     "category": "ML"
 } {
     "name": "SVC",
@@ -429,6 +605,20 @@
                 "style": "radio",
                 "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
             }
+        }
+    },
+    "param_type": {
+        "kernel": {
+            "type": "string",
+            "default": "rbf"
+        },
+        "tol": {
+            "type": "float",
+            "default": 0.0001
+        },
+        "C": {
+            "type": "float",
+            "default": 1.0
         }
     },
     "category": "ML"
