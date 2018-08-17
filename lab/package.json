@@ -4,14 +4,11 @@
   "description": "your friendly machine learning assistant",
   "main": "lab.js",
   "scripts": {
-    "build-dev": "webpack --watch",
-    "build": "webpack",
-    "start": "node lab.js",
-    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\""
+    "start": "node lab.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kaixhin/FGLab.git"
+    "url": "https://github.com/EpistasisLab/pennai"
   },
   "keywords": [
     "machine learning"
@@ -25,69 +22,32 @@
   "dependencies": {
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
-    "c3": "^0.4.11",
     "compression": "^1.6.2",
     "dotenv": "^2.0.0",
-    "es6-promise": "^4.1.0",
     "express": "^4.13.4",
-    "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.10",
-    "moment": "^2.22.2",
     "mongodb": "^2.1.19",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
-    "react": "^15.4.2",
-    "react-addons-test-utils": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-redux": "^5.0.2",
-    "react-responsive": "^1.2.7",
-    "react-router": "^3.0.2",
-    "redux": "^3.6.0",
-    "redux-thunk": "^2.2.0",
     "request-promise": "^3.0.0",
-    "reselect": "^3.0.1",
-    "semantic-ui-react": "^0.78.2",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
-    "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "chai": "^3.5.0",
-    "chai-immutable": "^1.6.0",
     "conventional-github-releaser": "^1.1.2",
     "conventional-recommended-bump": "^0.2.1",
-    "eslint": "^4.2.0",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.9.0",
-    "eslint-plugin-react": "^7.1.0",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.1.0",
     "gulp-conventional-changelog": "^1.1.0",
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
-    "jsdom": "^9.10.0",
     "minimist": "^1.2.0",
-    "mocha": "^3.2.0",
-    "redux-logger": "^3.0.6",
-    "run-sequence": "^1.2.0",
-    "webpack": "^2.2.1"
+    "run-sequence": "^1.2.0"
   },
   "engines": {
     "node": "6.x"
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react"
-    ]
   },
   "cacheDirectories": [
     "node_modules"
