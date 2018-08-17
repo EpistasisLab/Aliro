@@ -227,7 +227,7 @@ class AI():
             return True
 
         return False
-
+    
     def process_new_results(self,data):
         """Returns a dataframe of new results from the DB"""
         # clean up response
