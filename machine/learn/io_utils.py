@@ -44,7 +44,7 @@ def save_output(tmpdir, _id, output):
 
 def get_params(method_name):
     params = {}
-    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects/'
+    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
     jsondata = json.loads(requests.get(uri).text)
     for pdict in jsondata:
         if pdict['name'] == method_name:
