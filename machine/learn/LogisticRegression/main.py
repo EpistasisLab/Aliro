@@ -16,10 +16,6 @@ from skl_utils import generate_results
 if __name__ == "__main__":
     exp = Experiment('LogisticRegression')
     args, input_data = exp.get_input()
-    if args['dual'] == 'false':
-        dual = False
-    else:
-        dual = True
     model = LogisticRegression(
-        penalty=args['penalty'], C=args['C'], dual=dual, solver='saga')
+        penalty=args['penalty'], C=args['C'], dual=bool(args['dual']), solver='saga')
     generate_results(model, input_data, exp.tmpdir, args['_id'])
