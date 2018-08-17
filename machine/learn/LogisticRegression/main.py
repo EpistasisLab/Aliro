@@ -17,5 +17,5 @@ if __name__ == "__main__":
     exp = Experiment('LogisticRegression')
     args, input_data = exp.get_input()
     model = LogisticRegression(
-        penalty=args['penalty'], C=args['C'], dual=args['dual'], solver='saga')
+        penalty=args['penalty'], C=args['C'], dual=args['dual'])
     generate_results(model, input_data, exp.tmpdir, args['_id'])
