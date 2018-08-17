@@ -1,4 +1,5 @@
 /* Modules */
+var fs = require("fs");
 var http = require("http");
 var path = require("path");
 var EventEmitter = require("events").EventEmitter;
@@ -12,34 +13,27 @@ var favicon = require("serve-favicon");
 var morgan = require("morgan");
 var rp = require("request-promise");
 var Promise = require("bluebird");
-var socketServer = require("./socketServer").socketServer;
-var emitEvent = require("./socketServer").emitEvent;
 var WebSocketServer = require("ws").Server;
 var db = require("./db").db;
+var users = require("./users");
+var socketServer = require("./socketServer").socketServer;
+var emitEvent = require("./socketServer").emitEvent;
 var generateFeatures = require("./metafeatureGenerator").generateFeatures;
 var Q = require("q");
-var users = require("./users");
-var fs = require("fs");
+
 /* App instantiation */
 var app = express();
-var jsonParser = bodyParser.json({
-    limit: '100mb'
-}); // Parses application/json
+var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
 //app.set('superSecret',config.secret);
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-app.use(bodyParser.json());
 app.use(compression()); // Compress all Express requests
-app.use(favicon(path.join(__dirname, "www/favicon.ico"))); // Deal with favicon requests
-app.use(express.static(path.join(__dirname, "www"), {
-    index: false,
-    maxAge: '1d'
-})); // Static directory
-app.set('appPath', path.join(path.normalize(__dirname), '/www'));
-app.use(express.static(app.get('appPath')));
+app.use(favicon(path.join(__dirname, "webapp/dist/favicon.ico"))); // Deal with favicon requests
+app.use(express.static(path.join(__dirname, "webapp/dist"), {index: false, maxAge: '1d'})); // Static directory
 app.use(morgan("tiny")); // Log requests
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
+app.use(express.static(app.get('appPath')));
 
 /* API */
 
@@ -1342,7 +1336,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
 // React app
 /*app.get('/*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'www', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'webapp', dist', 'index.html'));
 });*/
 
 // List projects and machines on homepage
