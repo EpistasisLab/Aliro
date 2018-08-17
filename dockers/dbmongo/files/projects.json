@@ -1,5 +1,6 @@
 {
     "name": "BernoulliNB",
+    "description": "Naive Bayes classifier for multivariate Bernoulli models.",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -32,11 +33,11 @@
     "param_type":  {
     	"alpha": {
     		"type": "float",
-    		"default": 1.0,
+    		"default": 1.0
     	},
     	"binarize": {
         "type": "float",
-    		"default": 0.0,
+    		"default": 0.0
     	},
     	"fit_prior": {
     		"type": "bool",
@@ -46,11 +47,13 @@
     "category": "ML"
 } {
     "name": "GaussianNB",
+    "description": "Gaussian Naive Bayes",
     "schema": {},
     "param_type": {},
     "category": "ML"
 } {
     "name": "MultinomialNB",
+    "description": "Naive Bayes classifier for multinomial models.",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -84,6 +87,7 @@
     "category": "ML"
 } {
     "name": "DecisionTreeClassifier",
+    "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
@@ -144,6 +148,7 @@
     "category": "ML"
 } {
     "name": "ExtraTreesClassifier",
+    "description": "Extremely Randomized Trees",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -230,6 +235,7 @@
     "category": "ML"
 } {
     "name": "GradientBoostingClassifier",
+    "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -328,6 +334,7 @@
     "category": "ML"
 } {
     "name": "KNeighborsClassifier",
+    "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
     "schema": {
         "n_neighbors": {
             "description": "Number of neighbors to use by default for k_neighbors queries.",
@@ -374,6 +381,7 @@
     "category": "ML"
 } {
     "name": "LinearSVC",
+    "description": "Linear Support Vector Classification.",
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -447,6 +455,7 @@
     "category": "ML"
 } {
     "name": "LogisticRegression",
+    "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
     "schema": {
         "penalty": {
             "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
@@ -493,6 +502,7 @@
     "category": "ML"
 } {
     "name": "RandomForestClassifier",
+    "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -578,6 +588,7 @@
     "category": "ML"
 } {
     "name": "SVC",
+    "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
     "schema": {
         "kernel": {
             "description": "Specifies the kernel type to be used in the algorithm",
