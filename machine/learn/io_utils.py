@@ -61,10 +61,9 @@ def parse_args(params):
         arg_dest = key
         arg_default = val['default']
         arg_type = get_type(val['type'])
-        arg_help = val['description']
 
         parser.add_argument(arg, action='store', dest=arg_dest,
-                            default=arg_default, type=arg_type, help=arg_help)
+                            default=arg_default, type=arg_type)
 
     parser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
