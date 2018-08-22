@@ -1,42 +1,27 @@
-#figure out where we are running
-wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
-if [ $? -eq 0 ]
-then
-    export ISAWS=1
-else
-    export ISAWS=0
-fi
+#    #clear out metadata and start from scratch
 cd ${PROJECT_ROOT}/machine
-if [ -f '/root/forum' ]; then
-    rm -f ${PROJECT_ROOT}/pennai/machine/specs.json
+if [ ! -f '/root/forum' ]; then
     touch /root/forum
-fi
-if [ $ISAWS ]
-then
-    export IP=`wget -qO- http://instance-data/latest/meta-data/local-ipv4`
-    export MACHINE_URL=http://${IP}:${MACHINE_PORT}
+    rm -f ${PROJECT_ROOT}/machine/specs.json
+    for metadata in `find ${PROJECT_ROOT}/machine/datasets/ | grep metadata`;do rm -f $metadata;done
 fi
 
-if [ -d 'node_modules/.staging' ]; then
-    echo "npm partially installed, node_modules/.staging exists. Continuing install..."
-    npm install
-    echo "npm install complete"
-elif [ -d 'node_modules' ]; then
-    echo "npm ready"
-else
-    echo "installing npm"
-    npm install
-    echo "npm install complete"
-fi
 
-pm2 start machine.config.js --watch
-if [ ${ISAWS} -eq 1 ]
-then
-    while [ ! -f /tmp/die.txt ]
-    do
-      sleep 2
-    done
-    cat /tmp/die.txt
-else
-    bash
-fi
+## if [ -d 'node_modules/.staging' ]; then
+##     echo "npm partially installed, node_modules/.staging exists. Continuing install..."
+##     npm install
+## elif [ ! -d 'node_modules' ]; then
+##     echo "installing npm"
+##     npm install
+##     echo "npm install complete"
+## else
+##     echo "npm ready"
+## fi
+
+
+echo "waiting for lab to be responsive..."
+/root/wait-for-it.sh -t 600 ${LAB_HOST}:${LAB_PORT} -- pm2 start machine.config.js
+
+#pm2 start machine.config.js
+pm2 logs
+#bash
