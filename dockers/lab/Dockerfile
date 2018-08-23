@@ -19,6 +19,9 @@ RUN cp  /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
+## ai/metalearning
+RUN pip install simplejson
+
 VOLUME /share
 
 COPY files/001-pennai.conf /etc/apache2/sites-enabled/
