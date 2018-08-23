@@ -1,6 +1,6 @@
 """
-Script to get metafeatures for all datasets stored in the ../data folder.
-Dumps all the results in a csv called data_metafeatures.csv
+Script to get metafeatures for a dataset passed at the command line.
+Dumps the results into json. 
 """
 
 import pandas as pd
