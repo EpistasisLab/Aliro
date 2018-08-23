@@ -19,6 +19,12 @@ RUN cp  /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled
 RUN cp  /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
+# install node_modules to an anon volume
+WORKDIR /appsrc/lab
+COPY files/package.json /appsrs/lab/
+RUN dos2unix /appsrs/lab/package.json
+RUN npm install
+
 ## ai/metalearning
 RUN pip install simplejson
 
