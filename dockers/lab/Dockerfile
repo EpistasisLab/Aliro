@@ -1,8 +1,8 @@
 FROM pennai/base:latest
 
 WORKDIR /opt/
-#ARG docker_filepath=dockers/lab/files
-ARG docker_filepath=files
+ARG docker_filepath=dockers/lab/files
+#ARG docker_filepath=files
 
 ## Webserver
 RUN apt-get update \
@@ -22,7 +22,20 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
 
-## ai/metalearning
+# install lab/webapp/node_modules to an anon volume
+WORKDIR /appsrc/lab/webapp
+COPY lab/webapp/package.json /appsrc/lab/webapp/
+RUN dos2unix /appsrc/lab/webapp/package.json
+RUN npm install --silent --progress=false
+
+# install lab/node_modules to an anon volume
+WORKDIR /appsrc/lab
+COPY lab/package.json /appsrc/lab/
+COPY lab/package-lock.json /appsrc/lab/
+RUN dos2unix /appsrc/lab/package.json
+RUN npm install --silent --progress=false
+
+## ai/metalearning python packages
 RUN pip install simplejson
 
 VOLUME /share
@@ -43,7 +56,7 @@ COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 ## node modules as a zip for speed
-COPY ${docker_filepath}/node_modules.tar.gz /root/
+#COPY ${docker_filepath}/node_modules.tar.gz /root/
 
 ## FGLab server
 COPY ${docker_filepath}/entrypoint.sh /root/
