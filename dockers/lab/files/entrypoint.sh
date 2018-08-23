@@ -3,38 +3,27 @@ wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
 
 cd ${PROJECT_ROOT}/lab
-
-# unzip /root/node_modules.tar.gz if the node_modules directory does not exist or if the file has changed
 if [ -d 'node_modules' ]; then
-    sha1sum -c node_modules_entrypoint_check.sha1
-    if [ $? == 0 ]; then
-        echo "npm ready"
-    else
-        ## install is faster because it is only getting the diffs, but requires net access
-        echo "/root/node_modules.tar.gz out of date, running npm install to get differing packages and updating node_modules_entrypoint_check.sha1"
-        npm install
-        npm prune
-        echo "npm install complete"
-
-        #echo "unzipping npm dependencies again"
-        #tar -zxf /root/node_modules.tar.gz --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
-        #echo "unzipping complete"
-
-        sha1sum /root/node_modules.tar.gz > node_modules_entrypoint_check.sha1
-    fi
+    echo "/lab npm ready"
 else
-    echo "unzipping npm dependencies"
-    tar -zxf /root/node_modules.tar.gz --checkpoint=100 --checkpoint-action="echo=Hit %s checkpoint #%u"
-    if [ $? != 0 ]; then
-        echo "error extracting /root/node_modules.tar.gz, exiting"
-        exit 1
-    fi
-
-    echo "unzipping complete"
-    sha1sum /root/node_modules.tar.gz > ${PROJECT_ROOT}/lab/node_modules_entrypoint_check.sha1
+    echo "/lab installing npm dependencies"
+    npm install
+    echo "/lab install complete"
 fi
 
+cd ${PROJECT_ROOT}/lab/webapp
+if [ -d 'node_modules' ]; then
+    echo "/lab/webapp npm ready"
+else
+    echo "/lab/webapp installing npm dependencies"
+    npm install
+    echo "/lab/webapp install complete"
+fi
+
+cd ${PROJECT_ROOT}/lab/webapp
 npm run build
+
+cd ${PROJECT_ROOT}/lab
 pm2 start lab.config.js --watch
 
 #start pennai
