@@ -1,116 +1,6 @@
 {
-    "name": "gpocl",
-    "schema": {
-        "population-size": {
-            "description": "number of individuals",
-            "type": "float",
-            "values": [10, 100, 1000],
-            "default": 100,
-            "ui": {
-                "style": "radio",
-                "choices": [10, 100, 100]
-            }
-        },
-        "generations": {
-            "description": "number of generations, n\u003e0 [default = 1000]",
-            "type": "float",
-            "default": 100,
-            "ui": {
-                "style": "radio",
-                "choices": [10, 100, 1000]
-            }
-        }
-    },
-    "category": "ML"
-} {
-    "name": "MDR.js",
-    "schema": {
-        "default-label": {
-            "description": "Default Label",
-            "type": "enum-radio",
-            "values": [0, 1],
-            "default": 0
-        },
-        "tie-break": {
-            "description": "Tie Break",
-            "type": "enum-radio",
-            "values": [0, 1],
-            "default": 1
-        }
-    },
-    "category": "ML"
-} {
-    "name": "deapGP",
-    "schema": {
-        "population_size": {
-            "description": "number of individuals (default = 100)",
-            "type": "int",
-            "default": 100
-        },
-        "generations": {
-            "description": "number of generations, n\u003e0 [default = 20]",
-            "type": "int",
-            "default": 20
-        },
-        "crossover_rate": {
-            "description": "crossover rate, 0.0\u003c=f\u003c=1.0, [default = 0.1]",
-            "type": "float",
-            "default": 0.1
-        },
-        "mutation_rate": {
-            "description": " mutation rate, 0.0\u003c=f\u003c=1.0, [default = 0.05]",
-            "type": "float",
-            "default": 0.05
-        },
-        "tournsize": {
-            "description": "selection pressure (tournament size), n\u003e=1 [default = 3]",
-            "type": "int",
-            "default": 3
-        },
-        "random_state": {
-            "description": "random seed [default = 42]",
-            "type": "int",
-            "default": 42
-        }
-    },
-    "category": "ML"
-} {
-    "name": "metaGA",
-    "schema": {
-        "max_ll_pop": {
-            "description": "max_lower_number of individuals (default = 100)",
-            "type": "int",
-            "default": 100
-        },
-        "max_ll_gen": {
-            "description": "number of generations, n\u003e0 [default = 20]",
-            "type": "int",
-            "default": 20
-        },
-        "method": {
-            "description": "crossover rate, 0.0\u003c=f\u003c=1.0, [default = 0.1]",
-            "type": "string",
-            "default": "SymbReg"
-        },
-        "meta_pop": {
-            "description": "number of individuals in meta populations, n\u003e=1 [default = 20]",
-            "type": "int",
-            "default": 20
-        },
-        "meta_gen": {
-            "description": "number of meta generations, n\u003e=1 [default = 5]",
-            "type": "int",
-            "default": 5
-        },
-        "random_state": {
-            "description": "random seed [default = 42]",
-            "type": "int",
-            "default": 42
-        }
-    },
-    "category": "AI"
-} {
     "name": "BernoulliNB",
+    "description": "Naive Bayes classifier for multivariate Bernoulli models.",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -140,21 +30,38 @@
             }
         }
     },
+    "param_type":  {
+    	"alpha": {
+    		"type": "float",
+    		"default": 1.0
+    	},
+    	"binarize": {
+        "type": "float",
+    		"default": 0.0
+    	},
+    	"fit_prior": {
+    		"type": "bool",
+    		"default": true
+    		}
+	  },
     "category": "ML"
 } {
     "name": "GaussianNB",
+    "description": "Gaussian Naive Bayes",
     "schema": {},
+    "param_type": {},
     "category": "ML"
 } {
     "name": "MultinomialNB",
+    "description": "Naive Bayes classifier for multinomial models.",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
             "type": "float",
-            "default": 1,
+            "default": 1.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 1, 10, 100]
+                "choices": [0.001, 0.01, 0.1, 1.0, 10, 100]
             }
         },
         "fit_prior": {
@@ -167,9 +74,20 @@
             }
         }
     },
+    "param_type":  {
+      	"alpha": {
+      		"type": "float",
+      		"default": 1.0
+      	},
+      	"fit_prior": {
+      		"type": "bool",
+      		"default": true
+      		}
+  	},
     "category": "ML"
 } {
     "name": "DecisionTreeClassifier",
+    "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
@@ -184,34 +102,53 @@
         "max_depth": {
             "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
             "type": "int",
-            "default": "None",
+            "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [1, 3, 5, 7, 9, "None"]
+                "choices": [2, 4, 6, 8]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         }
     },
+    "param_type":  {
+        "criterion": {
+            "type": "string",
+            "default": "gini"
+        },
+        "max_depth": {
+            "type": "int",
+            "default": 2
+        },
+        "min_samples_split": {
+            "type": "int",
+            "default": 5
+        },
+        "min_samples_leaf": {
+            "type": "int",
+            "default": 5
+        }
+  	},
     "category": "ML"
 } {
     "name": "ExtraTreesClassifier",
+    "description": "Extremely Randomized Trees",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -219,7 +156,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -244,19 +181,19 @@
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -269,9 +206,36 @@
             }
         }
     },
+    "param_type": {
+        "n_estimators": {
+            "type": "int",
+            "default": 100
+        },
+        "criterion": {
+            "type": "string",
+            "default": "gini"
+        },
+        "max_features": {
+            "type": "string",
+            "default": "sqrt"
+        },
+        "min_samples_split": {
+            "type": "int",
+            "default": 5
+        },
+        "min_samples_leaf": {
+            "type": "int",
+            "default": 5
+        },
+        "bootstrap": {
+            "type": "bool",
+            "default": false
+        }
+    },
     "category": "ML"
 } {
     "name": "GradientBoostingClassifier",
+    "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -279,7 +243,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 250]
+                "choices": [100, 250]
             }
         },
         "learning_rate": {
@@ -288,34 +252,34 @@
             "default": 0.1,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 0.5, 1]
+                "choices": [0.01, 0.1, 1]
             }
         },
         "max_depth": {
             "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
             "type": "int",
-            "default": 3,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [1, 3, 5, 7, 9, "None"]
+                "choices": [1, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "subsample": {
@@ -324,22 +288,53 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.05, 0.25, 0.5, 0.75, 1]
+                "choices": [0.5, 1]
             }
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
             "type": "string",
-            "default": "None",
+            "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["sqrt", "log2"]
             }
         }
+    },
+    "param_type": {
+    	"n_estimators": {
+    		"type": "int",
+    		"default": 100
+    	},
+    	"learning_rate": {
+    		"type": "float",
+    		"default": 0.1
+    	},
+    	"max_depth": {
+    		"type": "int",
+    		"default": 3
+    	},
+    	"min_samples_split": {
+    		"type": "int",
+    		"default": 2
+    	},
+    	"min_samples_leaf": {
+    		"type": "int",
+    		"default": 1
+    	},
+    	"subsample": {
+    		"type": "float",
+    		"default": 1.0
+    	},
+    	"max_features": {
+    		"type": "string",
+    		"default": "sqrt"
+    	}
     },
     "category": "ML"
 } {
     "name": "KNeighborsClassifier",
+    "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
     "schema": {
         "n_neighbors": {
             "description": "Number of neighbors to use by default for k_neighbors queries.",
@@ -369,9 +364,24 @@
             }
         }
     },
+    "param_type": {
+      	"n_neighbors": {
+        		"type": "int",
+      		  "default": 5
+      	},
+      	"weights": {
+      		"type": "string",
+      		"default": "uniform"
+      	},
+      	"p": {
+      		"type": "int",
+      		"default": 2
+      	}
+    },
     "category": "ML"
 } {
     "name": "LinearSVC",
+    "description": "Linear Support Vector Classification.",
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -419,9 +429,32 @@
             }
         }
     },
+    "param_type": {
+    	"penalty": {
+    		"type": "string",
+    		"default": "l2"
+    	},
+    	"loss": {
+    		"type": "string",
+    		"default": "squared_hinge"
+      },
+    	"dual": {
+    		"type": "bool",
+    		"default": true
+    	},
+    	"tol": {
+    		"type": "float",
+    		"default": 0.0001
+    	},
+    	"C": {
+    		"type": "float",
+    		"default": 1.0
+    	}
+    },
     "category": "ML"
 } {
     "name": "LogisticRegression",
+    "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
     "schema": {
         "penalty": {
             "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
@@ -435,7 +468,7 @@
         "C": {
             "description": "Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.",
             "type": "float",
-            "default": 1,
+            "default": 1.0,
             "ui": {
                 "style": "radio",
                 "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
@@ -451,9 +484,24 @@
             }
         }
     },
+    "param_type": {
+    	"penalty": {
+    		"type": "string",
+    		"default": "l2"
+    	},
+    	"dual": {
+    		"type": "bool",
+    		"default": true
+    	},
+    	"C": {
+    		"type": "float",
+    		"default": 1.0
+    	}
+    },
     "category": "ML"
 } {
     "name": "RandomForestClassifier",
+    "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -461,7 +509,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [10, 100, 500, 1000]
+                "choices": [100, 250]
             }
         },
         "criterion": {
@@ -479,25 +527,25 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["sqrt", "log2"]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": "int",
-            "default": 2,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": "int",
-            "default": 1,
+            "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10, 15, 20]
+                "choices": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -510,69 +558,36 @@
             }
         }
     },
-    "category": "ML"
-} {
-    "name": "PennAIRecommender",
-    "schema": {
-        "n_recommend": {
-            "description": "The number of recommendations to make",
-            "type": "int",
-            "default": 0,
-            "ui": {
-                "style": "radio",
-                "choices": [0, 10, 100, 35626]
-            }
-        },
-        "recommender": {
-            "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.",
-            "type": "string",
-            "default": "random",
-            "ui": {
-                "style": "radio",
-                "choices": ["random", "average", "exhaustive"]
-            }
-        },
-        "inherit": {
-            "description": "Inherit experiments from forum",
-            "type": "string",
-            "default": "fresh",
-            "ui": {
-                "style": "radio",
-                "choices": ["fresh", "false"]
-            }
-        },
-        "dryrun": {
-            "description": "Perform a dry run",
-            "type": "enum",
-            "default": "false",
-            "ui": {
-                "style": "radio",
-                "choices": ["true", "false"]
-            }
-
-        },
-        "shared": {
-            "description": "Run from shared path instead of /opt",
-            "type": "enum",
-            "default": "false",
-            "ui": {
-                "style": "radio",
-                "choices": ["true", "false"]
-            }
-        },
-        "verbose": {
-            "description": "verbose logging",
-            "type": "enum",
-            "default": "false",
-            "ui": {
-                "style": "radio",
-                "choices": ["true", "false"]
-            }
-         }
+    "param_type": {
+    	"n_estimators": {
+    		"type": "int",
+    		"default": 100
+    	},
+      "criterion": {
+          "type": "string",
+          "default": "gini"
+      },
+      "max_features": {
+        "type": "string",
+        "default": "sqrt"
+      },
+    	"min_samples_split": {
+    		"type": "int",
+    		"default": 5
+    	},
+    	"min_samples_leaf": {
+    		"type": "int",
+    		"default": 5
+    	},
+      "bootstrap": {
+          "type": "bool",
+          "default": false
+      }
     },
     "category": "ML"
 } {
     "name": "SVC",
+    "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
     "schema": {
         "kernel": {
             "description": "Specifies the kernel type to be used in the algorithm",
@@ -600,6 +615,20 @@
                 "style": "radio",
                 "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
             }
+        }
+    },
+    "param_type": {
+        "kernel": {
+            "type": "string",
+            "default": "rbf"
+        },
+        "tol": {
+            "type": "float",
+            "default": 0.0001
+        },
+        "C": {
+            "type": "float",
+            "default": 1.0
         }
     },
     "category": "ML"

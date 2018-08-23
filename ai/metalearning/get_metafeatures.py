@@ -7,8 +7,8 @@ import pandas as pd
 from .dataset_describe import Dataset
 from collections import OrderedDict
 import argparse
-import json
 import sys
+import simplejson
 
 def get_metafeatures(input_file, target_field):
     """Calls metafeature generating methods from dataset_describe"""

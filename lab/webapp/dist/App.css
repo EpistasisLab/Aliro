@@ -1,0 +1,381 @@
+body {
+    margin: 0;
+    padding: 2rem;
+    padding-top: 4.5rem;
+    background-color: #1B1C1D;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.pennai .scene-header .ui.header {
+    display: inline-block;
+    margin-right: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.pennai .scene-header .ui.button {
+    vertical-align: middle;
+    margin-bottom: 0.9rem;
+}
+
+.pennai .inverted-card {
+    margin-bottom: 2rem;
+}
+
+.pennai .inverted-card .ui.top.attached.segment {
+    max-height: 57px;
+}
+
+.pennai .inverted-card .ui.segment {
+    background-color: rgba(255,255,255,.08);
+}
+
+/* remove this */
+.pennai .ui.segment {
+    background-color: rgba(255,255,255,.08);
+}
+
+.pennai .dataset-card .ui.error.message {
+    background-color: rgba(255,255,255,.08);
+    border: 1px solid #555;
+    box-shadow: none;
+}
+
+.pennai .dataset-card .ui.error.message .icon {
+    color: #ff695e;
+    font-size: 1rem;
+}
+
+.pennai .dataset-card .panel-header {
+    max-height: 57px;
+}
+
+.pennai .dataset-card .ui.header.title {
+    max-width: 75%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.pennai .dataset-card .ui.header.title:hover {
+    text-decoration: underline
+}
+
+.pennai .dataset-card .ai-label {
+    font-size: 1.1em;
+    margin-right: 0.7rem;
+    vertical-align: middle;
+}
+
+.pennai .dataset-card .ai-label.on,
+.pennai .dataset-card .ai-label.queuing,
+.pennai .dataset-card .ai-label.requested {
+    color: rgba(255,255,255,.95);
+}
+
+.pennai .dataset-card .ai-label.off {
+    color: rgba(255,255,255,.55);
+}
+
+.pennai .dataset-card .ai-switch.ui.toggle {
+    width: 2.5rem;
+    margin-right: 0.75rem;
+    vertical-align: middle;
+}
+
+.pennai .dataset-card .ai-switch.ui.toggle.checkbox label:before {
+    width: 2.5rem;
+    background: rgba(255,255,255,.35);
+}
+
+.pennai .dataset-card .ai-switch.requested.ui.toggle.checkbox label:before {
+    background-color: #FBBD08 !important;
+}
+
+.pennai .dataset-card .ai-switch.active.ui.toggle.checkbox label:before {
+    background-color: #16ab39 !important;
+}
+
+
+.pennai .dataset-card .ai-switch.ui.toggle.checkbox input:checked~label:after {
+    left: 1.15rem;
+}
+
+.pennai .dataset-card .panel-body {
+    min-height: 132px;
+}
+
+.pennai .dataset-card .best-result.ui.segment:hover {
+    background: rgba(255,255,255,.12);
+}
+
+.pennai .dataset-card .best-result .ui.progress {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.pennai .dataset-card .best-result .ui.progress.accuracy-score .bar {
+    background-color: #A333C8;
+}
+
+.pennai .dataset-card .best-result .ui.progress .bar .progress {
+    right: 0;
+    left: 0.5rem;
+}
+
+.pennai .dataset-card .best-result .ui.progress .bar .progress::after {
+    margin-left: 0.4rem;
+    content: "accuracy";
+}
+
+.pennai .dataset-card .experiments.table {
+    background-color: rgba(255,255,255,.08);
+    border: 1px solid #555;
+    border-collapse: collapse;
+}
+
+.pennai .dataset-card .experiments.table td {
+    position: relative;
+}
+
+.pennai .dataset-card .experiments.table .ui.floating.label {
+    margin-left: -5.25em !important;
+}
+
+.pennai .dataset-card .ui.red.label {
+    background-color: #ff5144 !important;
+}
+
+.pennai .experiments-scene .filters .fields {
+    margin-bottom: 0;
+}
+
+.pennai .experiments-scene .filters .fields .filter {
+   margin-right: 1rem;
+   margin-top: 0.15rem;
+}
+
+.pennai .experiments-scene .filters .item,
+.pennai .experiments-scene .filters .text {
+    text-transform: capitalize;
+}
+
+.pennai .experiments-scene .experiment-count {
+   padding-top: 0.25rem;
+   padding-left: 0.5rem;
+}
+
+.pennai .experiments-scene .ui.bottom.segment {
+    margin-bottom: 2rem;
+}
+
+.pennai .table-container {
+    width: 100%;
+    margin: 0;
+    //overflow-x: scroll;
+    //overflow-y: visible;
+}
+
+.pennai .table-container .table {
+    min-width: 650px;
+}
+
+.pennai .table-container .ui.table thead th {
+    padding: .3rem .78571429em;
+}
+
+.pennai .table-container .ui.table th {
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .table-container .ui.inverted.table tbody tr td.selectable:hover {
+    background-color: transparent !important;
+}
+
+.pennai .table-container .ui.table tbody tr td.selectable>a:not(.ui) {
+     padding: 0 .78571429em;
+}
+
+.pennai .experiments-scene .ui.table th .alg-name {
+    margin-left: 0.5rem;
+}
+
+/*.pennai .experiments-scene .ui.table tr.new {
+    box-shadow: none;
+    background-color: rgba(46,204,64,.3) !important;
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .experiments-scene .ui.table tr.new:hover {
+    background: rgba(46,204,64,.4) !important;
+    color: #fff !important;
+}
+
+.pennai .experiments-scene .ui.table tr.error {
+    box-shadow: none;
+    background-color: rgba(255,105,94,.35) !important;
+    color: rgba(255,255,255,.9) !important;
+}
+
+.pennai .experiments-scene .ui.table tr.error:hover {
+    background: rgba(255,105,94,.45) !important;
+    color: #fff !important;
+}*/
+
+.pennai .experiments-scene .ui.table tr.new {
+    border-left: 7px solid #2ECC40;
+}
+
+.pennai .experiments-scene .ui.table tr.error {
+    background-color: transparent !important;
+    color: rgba(255,255,255,.9) !important;
+    border-left: 7px solid #FF695E;
+}
+
+.pennai .builder-scene .page-title {
+    margin-bottom: 1rem;
+}
+
+.pennai .builder-scene .panel-header {
+    max-height: 57px;
+}
+
+.pennai .builder-scene .dataset-btn {
+   cursor: initial;
+}
+
+.pennai .builder-scene .dataset-btn:active {
+   background-color: #ff7701 !important;
+}
+
+.pennai .builder-scene .param-count {
+    font-size: 0.90rem;
+    margin-top: 0.5rem;
+}
+
+.pennai .builder-scene .param-name {
+   margin-top: -0.35rem;
+}
+
+.pennai .builder-scene .info-icon {
+   margin-top: 0.15rem;
+   cursor: pointer;
+}
+
+.pennai .builder-scene .ui.compressed.grid>.column:not(.row) {
+    padding-bottom: 0 !important;
+    padding-right: 0 !important;
+}
+
+.pennai .builder-scene .ui.grid {
+    padding-bottom: 1rem;
+    padding-right: 1rem;
+}
+
+.pennai .builder-scene .ui.stretched.grid>.row>.column {
+    padding-bottom: 2rem !important;
+}
+
+.pennai .builder-scene .builder-btns {
+    margin-top: -2rem;
+    margin-bottom: 2rem;
+}
+.pennai .admin-scene {
+    margin-bottom: 2em;
+}
+
+.pennai .admin-scene p,
+.pennai .admin-scene span {
+    color: #fff;
+}
+
+.pennai .admin-scene .panel-header {
+    background: #545454 linear-gradient(transparent,rgba(0,0,0,.05));
+}
+
+.pennai .admin-scene .panel-header .ui.header {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+.pennai .admin-scene .muted {
+    color: rgba(255,255,255,.7);
+    font-style: italic;
+}
+
+.c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
+    font-size: 0.8rem;
+}
+
+.pennai .ui.menu .link.active > .item {
+    background-color: rgba(0,0,0,.1)!important;
+}
+
+.pennai .ui.menu .link:not(.active) > .item:hover {
+    background-color: rgba(255,255,255,.08)!important;
+}
+
+.pennai .ui.partial.dropdown {
+    width: 75%;
+}
+
+.gauge {
+    fill: #fff;
+}
+
+pre.schema {
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  margin-top: 0;
+}
+
+/*.ui.button {
+    margin: 0 1em 1em 0;
+}*/
+
+.float-right {
+    float: right;
+}
+
+@media (max-width: 321px) {
+
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        padding-top: 4.5rem;
+    }
+}
+
+/*@media (min-width: 140rem) {
+    body {
+        line-height: calc(1.5 * 2.5);
+        padding: calc(1rem * 10);
+    }
+
+    h1.ui.header {
+        font-size: calc(2rem * 2.5); 
+    }
+
+    h1.ui.header .sub.header {
+        font-size: calc(1.14285714rem * 2.5);
+    }
+
+    .ui.button {
+        font-size: calc(1rem * 2.5); 
+    }
+
+    .ui.inverted.segment {
+        border-width: calc(0.063rem * 5) !important;
+    }
+
+    .ui.segment.square > .content {
+        padding: calc(1rem * 2.5);
+    }
+}*/
