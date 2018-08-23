@@ -39,6 +39,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 
 
 ## Developer Info
+- To get the cpu and memory status of the running containers use `docker stats`
 - To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
 	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild with `docker build ./dockers/base -t pennai/base:latest`.

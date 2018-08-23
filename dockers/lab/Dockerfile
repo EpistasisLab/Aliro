@@ -2,7 +2,6 @@ FROM pennai/base:latest
 
 WORKDIR /opt/
 ARG docker_filepath=dockers/lab/files
-#ARG docker_filepath=files
 
 ## Webserver
 RUN apt-get update \
@@ -46,7 +45,6 @@ COPY ${docker_filepath}/certs/* /usr/lib/ssl/private/
 
 
 WORKDIR /root/
-RUN npm install -g pm2
 
 # Webserver - paiwww
 COPY ${docker_filepath}/start.sh /root/

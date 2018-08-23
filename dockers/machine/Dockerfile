@@ -1,10 +1,6 @@
 FROM pennai/base:latest
 
-WORKDIR /opt/
 ARG docker_filepath=dockers/machine/files
-
-COPY ${docker_filepath}/env pennai/machine/.env
-RUN cd pennai/ && mkdir tmp && cd machine && npm -g install pm2
 
 # install node_modules to an anon volume
 WORKDIR /appsrc/machine
