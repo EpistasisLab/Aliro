@@ -30,8 +30,6 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 ### Starting and Stopping ###
 To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
 
-- Note: The first time the the containers are run it will take several minutes for lab and machine instances to install the necessary nodejs packages. This initial step can be bypassed if node is installed by running `npm install` from the the `pennai\lab` and `pennai\machine` directories.
-
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 ### Analyzing Data ###

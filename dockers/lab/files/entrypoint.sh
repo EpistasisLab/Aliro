@@ -2,23 +2,23 @@
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
 
-cd ${PROJECT_ROOT}/lab
-if [ -d 'node_modules' ]; then
-    echo "/lab npm ready"
-else
-    echo "/lab installing npm dependencies"
-    npm install
-    echo "/lab install complete"
-fi
-
-cd ${PROJECT_ROOT}/lab/webapp
-if [ -d 'node_modules' ]; then
-    echo "/lab/webapp npm ready"
-else
-    echo "/lab/webapp installing npm dependencies"
-    npm install
-    echo "/lab/webapp install complete"
-fi
+## cd ${PROJECT_ROOT}/lab
+## if [ -d 'node_modules' ]; then
+##     echo "/lab npm ready"
+## else
+##     echo "/lab installing npm dependencies"
+##     npm install
+##     echo "/lab install complete"
+## fi
+## 
+## cd ${PROJECT_ROOT}/lab/webapp
+## if [ -d 'node_modules' ]; then
+##     echo "/lab/webapp npm ready"
+## else
+##     echo "/lab/webapp installing npm dependencies"
+##     npm install
+##     echo "/lab/webapp install complete"
+## fi
 
 cd ${PROJECT_ROOT}/lab/webapp
 npm run build
