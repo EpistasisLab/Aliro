@@ -17,11 +17,14 @@ services:
       - dbmongo
 
   machine:
-    build: dockers/machine
+    build: 
+      context: .
+      dockerfile: dockers/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes: 
       - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
     ports: 
       - "5081:5081"
     env_file: ./config/common.env
