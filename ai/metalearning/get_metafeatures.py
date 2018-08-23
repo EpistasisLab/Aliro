@@ -4,7 +4,7 @@ Dumps the results into json.
 """
 
 import pandas as pd
-from .dataset_describe import Dataset
+from dataset_describe import Dataset
 from collections import OrderedDict
 import argparse
 import sys
@@ -34,7 +34,7 @@ def main():
     args = parser.parse_args()
 
     meta_features = get_metafeatures(args.INPUT_FILE, args.TARGET)
-    meta_json = json.dumps(meta_features) #, ensure_ascii=False)    
+    meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
     sys.stdout.flush()
