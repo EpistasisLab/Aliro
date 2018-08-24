@@ -166,7 +166,7 @@ class MetaRecommender(BaseRecommender):
             
             data = json.loads(r.read().decode(r.info().get_param('charset')
                                       or 'utf-8'))[0]
-        except e:
+        except Exception as e:
             print('exception when grabbing metafeature data for',d)
             raise e
         
