@@ -21,6 +21,7 @@ RUN cp  /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
 ## ai/metalearning
 RUN pip install simplejson
+RUN pip install xgboost
 
 VOLUME /share
 

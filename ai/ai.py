@@ -21,6 +21,7 @@ from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
+from ai.recommender.meta_recommender import MetaRecommender
 from collections import OrderedDict
 
 #encoder for numpy in json
@@ -101,6 +102,7 @@ class AI():
         self.load_options()
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
+        # default to random recommender
         if not rec:
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
         # build dictionary of ml ids to names conversion
@@ -144,7 +146,7 @@ class AI():
                   print('loaded previous state from ',self.last_update)
 
     def load_options(self):
-        """Returns true if new AI request has been submitted by user."""
+        """Loads UI options."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','loading options...')
         v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
@@ -197,7 +199,7 @@ class AI():
 
     def check_results(self):
         """Returns true if new results have been posted since the previous
-        time step."""
+        time step. Processes them if so."""
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
@@ -225,7 +227,7 @@ class AI():
             return True
 
         return False
-
+    
     def process_new_results(self,data):
         """Returns a dataframe of new results from the DB"""
         # clean up response
@@ -248,6 +250,7 @@ class AI():
                       '_scores' if '_scores' not in d.keys() else '',
                       '_dataset_id' if '_dataset_id' not in d.keys() else '')
               #print(d)
+        # if metarecommender, grab 
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
           self.new_data = new_data
@@ -277,7 +280,7 @@ class AI():
 
 
     def process_rec(self):
-        """Sends recommendation to the API."""
+        """Generates recommendation and sends it to the API."""
         i = 0
         for r in self.request_queue:
             dataset = r['name']
@@ -315,10 +318,6 @@ class AI():
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
             i += 1
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':','processed',i,'requests')
-
 
     #h note - this seems to be deprecated
     def send_rec(self):
@@ -354,9 +353,6 @@ class AI():
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
             i += 1
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':','processed',i,'requests')
 
     def update_recommender(self):
         """Updates recommender based on new results."""
@@ -431,7 +427,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive'],
+                        choices = ['random','average','exhaustive','meta'],
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
@@ -444,19 +440,26 @@ def main():
                         help='Print out more messages.')
     parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
                         help='Start from last saved session.')
+    parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
+                        help='Time to wait for pinging the server for results/ recommendation requests')
 
     args = parser.parse_args()
     print(args)
+    db_args={}
 
     # dictionary of default recommenders to choose from at the command line.
-    name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
-                                                api_key=os.environ['APIKEY']),
-            'average': AverageRecommender(),
-            'exhaustive': ExhaustiveRecommender(db_path=args.DB_PATH,api_key=os.environ['APIKEY'])
+    name_to_rec = {'random': RandomRecommender,
+            'average': AverageRecommender,
+            'exhaustive': ExhaustiveRecommender,
+            'meta': MetaRecommender,
             }
+    
+    if args.REC in ['random','exhaustive','meta']:
+        db_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
+
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**db_args),db_path=args.DB_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS)
 
@@ -471,8 +474,7 @@ def main():
                pennai.process_rec()
                 #pennai.send_rec()
             n = n + 1
-            sleep(4)
-
+            sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:
