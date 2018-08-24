@@ -18,8 +18,8 @@ afterAll(() => {
 */
 
 
-it.skip('lab run dt experiment on adult', async () => {	
-	console.log('lab run dt experiment on adult')
+it.skip('lab run dt experiment on banana', async () => {	
+	console.log('lab run dt experiment on banana')
 
 	jest.setTimeout(10000)
 /*
@@ -38,7 +38,7 @@ it.skip('lab run dt experiment on adult', async () => {
 		"dual": false,
 	};
 
-	let datasetName = 'adult'
+	let datasetName = 'banana'
 
 	//-------------------
  	// get dataset

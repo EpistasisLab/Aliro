@@ -62,7 +62,7 @@ it.skip('kill experiment', async () => {
 		"dual": false,
 	};
 
-	let datasetName = 'adult'
+	let datasetName = 'banana'
 
 	//-------------------
  	// get dataset
