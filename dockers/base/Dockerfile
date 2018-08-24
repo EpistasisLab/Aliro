@@ -25,15 +25,16 @@ RUN npm install -g pm2
 # remove ssh key (it is not safe)
 # ADD files/ssh.tgz /
 
-# Anaconda 5.0.1
+# Miniconda 4.5.4
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh -O ~/anaconda.sh && \
-    /bin/bash ~/anaconda.sh -b -p /opt/conda && \
-    rm ~/anaconda.sh
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh
 
-# set up anaconda environment
+
+# set up conda environment
 ENV PATH /opt/conda/bin:$PATH
-RUN pip install scikit-mdr deap requests_toolbelt eli5
-RUN conda install scikit-learn pymongo tqdm
+RUN pip install requests_toolbelt eli5
+RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
 
 COPY files/version /
