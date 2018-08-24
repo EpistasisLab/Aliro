@@ -36,6 +36,7 @@ RUN npm install --silent --progress=false
 
 ## ai/metalearning python packages
 RUN pip install simplejson
+RUN pip install xgboost
 
 VOLUME /share
 
