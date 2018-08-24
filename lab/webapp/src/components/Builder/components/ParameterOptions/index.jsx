@@ -1,8 +1,8 @@
 import React from 'react';
-import { Grid, Segment, Header, Popup, Icon, Button } from 'semantic-ui-react';
+import { Grid, Segment, Header, Popup, Button, Icon } from 'semantic-ui-react';
 import { formatParam } from 'utils/formatter';
 
-function ParameterOptions({ 
+function ParameterOptions({
   params,
   currentParams,
   setParamValue
@@ -14,20 +14,22 @@ function ParameterOptions({
   return (
     <Grid.Row>
       {params && Object.entries(params).map(([param, info]) => (
-        <Grid.Column 
-          key={param} 
-          mobile={16} 
-          tablet={8} 
-          computer={8} 
-          widescreen={8} 
+        <Grid.Column
+          key={param}
+          mobile={16}
+          tablet={8}
+          computer={8}
+          widescreen={8}
           largeScreen={8}
         >
           <Segment inverted attached="top" className="panel-header">
-            <Popup 
-              size="large"
+            <Popup
               on="click"
+              position="top center"
+              header={formatParam(info.alias || param)}
+              content={info.description}
               trigger={
-                <Icon 
+                <Icon
                   inverted
                   size="large"
                   color="blue"
@@ -35,31 +37,30 @@ function ParameterOptions({
                   className="info-icon float-right"
                 />
               }
-              content={info.description}
             />
-            <Header 
+            <Header
               as="h2"
-              inverted 
+              inverted
               color="blue"
               content={formatParam(info.alias || param)}
               className="param-name"
             />
-          </Segment>  
+          </Segment>
           <Segment inverted attached="bottom">
             <Grid columns={calcCols(info.ui.choices)} className="compressed">
               {info.ui.choices.map(value => (
                 <Grid.Column key={value}>
                   <Button
-                    inverted 
+                    inverted
                     color="blue"
                     fluid
-                    content={value.toString()} 
+                    content={value.toString()}
                     active={isActive(param, value)}
-                    onClick={() => setParamValue(param, value)} 
+                    onClick={() => setParamValue(param, value)}
                   />
                 </Grid.Column>
               ))}
-            </Grid> 
+            </Grid>
           </Segment>
         </Grid.Column>
       ))}
