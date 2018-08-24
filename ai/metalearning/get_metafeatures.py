@@ -1,6 +1,6 @@
 """
-Script to get metafeatures for all datasets stored in the ../data folder.
-Dumps all the results in a csv called data_metafeatures.csv
+Script to get metafeatures for a dataset passed at the command line.
+Dumps the results into json. 
 """
 
 import pandas as pd
@@ -10,8 +10,11 @@ import argparse
 import sys
 import simplejson
 
-def get_metafeatures(df, target_field):
+def get_metafeatures(input_file, target_field):
     """Calls metafeature generating methods from dataset_describe"""
+    # Read the data set into memory
+    df = pd.read_csv(input_file, sep=None, engine='python')
+   
     dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
    
     meta_features = OrderedDict() 
@@ -30,11 +33,7 @@ def main():
                         help='Name of target column')
     args = parser.parse_args()
 
-    dataset = args.INPUT_FILE
-    # Read the data set into memory
-    input_data = pd.read_csv(dataset, sep=None, engine='python')
-    meta_features = get_metafeatures(input_data, args.TARGET)
-    
+    meta_features = get_metafeatures(args.INPUT_FILE, args.TARGET)
     meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
