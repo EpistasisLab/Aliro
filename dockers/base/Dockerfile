@@ -20,6 +20,8 @@ RUN  wget --quiet https://nodejs.org/dist/v6.12.3/node-v6.12.3-linux-x64.tar.xz 
     rm ~/node.tar.xz
 ENV PATH /opt/node-v6.12.3-linux-x64/bin:$PATH
 
+RUN npm install -g pm2
+
 # remove ssh key (it is not safe)
 # ADD files/ssh.tgz /
 
@@ -32,14 +34,7 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
-RUN pip install requests_toolbelt
-RUN pip install eli5
+RUN pip install requests_toolbelt eli5
 RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
-
-COPY files/pennai.tar.gz /opt/
-WORKDIR /opt/
-
-RUN  tar -xzvf /opt/pennai.tar.gz && \
-    rm /opt/pennai.tar.gz
 
 COPY files/version /

@@ -1,0 +1,16 @@
+# Ignore everything
+**
+
+# Allow files and directories
+!**/package.json
+!**/package-lock.json
+!/dockers/dbmongo/files/**
+!/dockers/lab/files/**
+!/dockers/machine/files/**
+
+# Ignore unnecessary files inside allowed directories
+# This should go after the allowed directories
+**/*~
+**/*.log
+**/.DS_Store
+**/Thumbs.db
