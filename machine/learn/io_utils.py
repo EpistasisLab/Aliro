@@ -48,7 +48,7 @@ def get_params(method_name):
     jsondata = json.loads(requests.get(uri).text)
     for pdict in jsondata:
         if pdict['name'] == method_name:
-            params = pdict['param_type']
+            params = pdict['schema']
             break
     return params
 
