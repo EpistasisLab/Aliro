@@ -1,25 +1,6 @@
 #!/bin/bash
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
-
-cd ${PROJECT_ROOT}/lab
-if [ -d 'node_modules' ]; then
-    echo "/lab npm ready"
-else
-    echo "/lab installing npm dependencies"
-    npm install
-    echo "/lab install complete"
-fi
-
-cd ${PROJECT_ROOT}/lab/webapp
-if [ -d 'node_modules' ]; then
-    echo "/lab/webapp npm ready"
-else
-    echo "/lab/webapp installing npm dependencies"
-    npm install
-    echo "/lab/webapp install complete"
-fi
-
 cd ${PROJECT_ROOT}/lab/webapp
 npm run build
 
@@ -37,7 +18,7 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
 
     echo "sleep..."
-    sleep 30s
+    sleep 40s
     echo "starting ai..."
     echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER}
 

@@ -2,11 +2,15 @@ version: '3'
 
 services: 
   lab:
-    build: dockers/lab
+    build: 
+      context: .
+      dockerfile: dockers/lab/Dockerfile
     tty: true
     stdin_open: true
     volumes: 
       - "./:/appsrc"
+      - "/appsrc/lab/webapp/node_modules"
+      - "/appsrc/lab/node_modules"
     ports:
       - "443:443"
       - "5080:5080"
@@ -17,11 +21,14 @@ services:
       - dbmongo
 
   machine:
-    build: dockers/machine
+    build: 
+      context: .
+      dockerfile: dockers/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes: 
       - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
     ports: 
       - "5081:5081"
     env_file: ./config/common.env
