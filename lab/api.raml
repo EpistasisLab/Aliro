@@ -179,6 +179,46 @@ mediaType: application/json
                   "value" :12.87494045337280
                 }
               }
+    /model:
+      get:
+        description: Retrieve the trained python model produced by a specific experiment by ID
+        responses:
+          200:
+            body:
+              binary/octet-stream:
+              example: |
+                {
+                  "_id": "5b634f2a36e5380032a7c55b",
+                  "filename": "model_5b634f2236e5380032a7c55a.pkl",
+                  "mimetype": "application/octet-stream",
+                  "timestamp": 1533234986515
+                }
+          400:
+            body:
+              example: |
+              {
+                "error": "'model_' file for experiment 5b634c99093afb003174b306 does not exist"
+              }
+    /script:
+      get:
+        description: Retrieve the python script used to run the model produced by a specific experiment by ID
+        responses:
+          200:
+            body:
+              binary/octet-stream:
+              example: |
+                {
+                  "_id": "5b634f2a36e5380032a7c55b",
+                  "filename": "script_5b634f2236e5380032a7c55a.python",
+                  "mimetype": "application/octet-stream",
+                  "timestamp": 1533234986515
+                }
+          400:
+            body:
+              example: |
+              {
+                "error": "'script_' file for experiment 5b634c99093afb003174b306 does not exist"
+              }
 /machines:
   get:
     description: Retrieve all machines
@@ -266,6 +306,37 @@ mediaType: application/json
                     "results": "/home/user/FGMachine/test/experiments"
                   }
                 }
+              }
+    /projects:
+      post:
+
+        description: Registers machine projects
+        body:
+          application/json:
+            example:
+              {
+              [ { name: 'BernoulliNB',
+                      command: 'python',
+                      cwd: 'machine/learn/BernoulliNB',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/BernoulliNB/tmp' },
+                    { name: 'DecisionTreeClassifier',
+                      command: 'python',
+                      cwd: 'machine/learn/DecisionTreeClassifier',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/DecisionTreeClassifier/tmp' },
+                    { name: 'DecisionTreeRegressor',
+                      command: 'python',
+                      cwd: 'machine/learn/DecisionTreeRegressor',
+                      args: [Object],
+                      options: 'double-dash',
+                      capacity: '1',
+                      results: 'machine/learn/DecisionTreeRegressor/tmp' }
+              ]
               }
 /files:
   /{fileId}:

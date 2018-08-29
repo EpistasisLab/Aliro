@@ -4,110 +4,54 @@
   "description": "your friendly machine learning assistant",
   "main": "lab.js",
   "scripts": {
-    "start": "node lab.js",
-    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js \"src/**/*@(spec.js|spec.jsx)\"",
-    "postinstall": "bower install --allow-root",
-    "update": "git pull && npm install"
+    "start": "node lab.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kaixhin/FGLab.git"
+    "url": "https://github.com/EpistasisLab/pennai"
   },
   "keywords": [
     "machine learning"
   ],
-  "author": "Kaixhin <design@kaixhin.com>",
+  "author": "University of Pennsylvania",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/Gp/Issues"
+    "url": "https://github.com/EpistasisLab/pennai/Issues"
   },
-  "homepage": "https://github.com/EpistasisLab/Gp",
+  "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
-    "alexa-sdk": "^1.0.10",
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
-    "bower": "^1.7.9",
-    "c3": "^0.4.11",
     "compression": "^1.6.2",
-    "continuation-local-storage": "^3.1.7",
     "dotenv": "^2.0.0",
-    "draft-js": "^0.10.1",
-    "es6-promise": "^4.1.0",
     "express": "^4.13.4",
-    "immutable": "^3.8.1",
-    "isomorphic-fetch": "^2.2.1",
-    "kerberos": "0.0.21",
-    "lodash": "^4.13.0",
-    "moment": "2.18.1",
+    "lodash": "^4.17.10",
     "mongodb": "^2.1.19",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
-    "prop-types": "^15.5.10",
-    "react": "^15.4.2",
-    "react-addons-test-utils": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-draggable": "^2.2.3",
-    "react-immutable-proptypes": "^2.1.0",
-    "react-moment-proptypes": "^1.5.0",
-    "react-redux": "^5.0.2",
-    "react-responsive": "^1.2.7",
-    "react-router": "^3.0.2",
-    "react-socket-io": "0.2.4",
-    "redis": "^2.7.1",
-    "redux": "^3.6.0",
-    "redux-immutable": "^4.0.0",
-    "redux-thunk": "^2.2.0",
     "request-promise": "^3.0.0",
-    "reselect": "^3.0.1",
-    "semantic-ui-react": "^0.64.7",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
-    "socketio-auth": "^0.1.0",
-    "twix": "^1.1.5",
     "ws": "^1.1.0"
   },
   "devDependencies": {
-    "angular-cli": "*",
-    "babel-core": "^6.22.1",
-    "babel-loader": "^6.2.10",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.22.0",
-    "chai": "^3.5.0",
-    "chai-immutable": "^1.6.0",
+    "@types/node": "^10.5.7",
     "conventional-github-releaser": "^1.1.2",
     "conventional-recommended-bump": "^0.2.1",
-    "dotenv-webpack": "^1.5.4",
-    "eslint": "^4.2.0",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.9.0",
-    "eslint-plugin-react": "^7.1.0",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.1.0",
     "gulp-conventional-changelog": "^1.1.0",
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
-    "jsdom": "^9.10.0",
     "minimist": "^1.2.0",
-    "mocha": "^3.2.0",
-    "redux-logger": "^3.0.6",
     "run-sequence": "^1.2.0",
-    "rxjs": "^5.0.1",
-    "webpack": "^2.2.1"
+    "typescript": "^3.0.1"
   },
   "engines": {
     "node": "6.x"
   },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react"
-    ]
-  },
   "cacheDirectories": [
-    "node_modules",
-    "bower_components"
+    "node_modules"
   ]
 }

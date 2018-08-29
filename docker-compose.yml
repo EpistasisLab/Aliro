@@ -1,0 +1,40 @@
+version: '3'
+
+services: 
+  lab:
+    build: dockers/lab
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports:
+      - "443:443"
+      - "5080:5080"
+    env_file: 
+      - ./config/common.env
+      - ./config/ai.env
+    depends_on: 
+      - dbmongo
+
+  machine:
+    build: dockers/machine
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports: 
+      - "5081:5081"
+    env_file: ./config/common.env
+    depends_on: 
+      - lab
+      - dbmongo
+
+  dbmongo:
+    build: dockers/dbmongo
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports:  
+      - "27017:27017"
+    env_file: ./config/common.env

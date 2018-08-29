@@ -25,8 +25,8 @@ class RandomRecommender(BaseRecommender):
     """
 
 
-    def __init__(self, ml_type='classifier',metric=None,db_path=None, api_key='',json_file=None,
-            pmlb_file=None):
+    def __init__(self, ml_type='classifier', metric=None, db_path='', api_key='',
+                 ml_p=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -41,24 +41,12 @@ class RandomRecommender(BaseRecommender):
         # ml p options
         self.db_path = db_path
         self.api_key = api_key
-        #self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/projects']),api_key)
-        if self.db_path:
+        if ml_p is None:
+            # pull algorithm/parameter combinations from the server. 
             self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
-        elif json_file:
-            self.ml_p = get_all_ml_p_from_file(json_file)
-        elif pmlb_file:
-            self.ml_p = get_all_ml_p_from_pmlb(pmlb_file)
         else:
-            raise AttributeError('Random recommender needs ML choices to make recs. db_path and'
-                                 'file_path are both empty.')
-        #self.ml_p = all_ml_p['algorithm'].values + '|' + all_ml_p['parameters'].values 
+            self.ml_p = ml_p
         
-        # number of datasets trained on so far
-        #self.w = 0
-
-        # pull algorithm/parameter combinations from the server. 
-        #self.ml_p = self.get_ml_p()
-
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
         self.trained_dataset_models = set()
