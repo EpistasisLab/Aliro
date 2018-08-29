@@ -15,9 +15,9 @@ const DatasetCard = ({ dataset, toggleAI }) => {
     <Grid.Column className="dataset-card">
       <Segment inverted attached="top" className="panel-header">
         <Popup
-          size="tiny"
           position="right center"
-          content={formatDataset(dataset.name)}
+          header={formatDataset(dataset.name)}
+          content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}`}
           trigger={
             <Header 
               as="a"

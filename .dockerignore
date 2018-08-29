@@ -2,6 +2,12 @@
 **
 
 # Allow files and directories
+!/lab/webapp/package.json
+!/lab/webapp/package-lock.json
+!/lab/package.json
+!/lab/package-lock.json
+!/machine/package.json
+!/machine/package-lock.json
 !**/package.json
 !**/package-lock.json
 !/dockers/dbmongo/files/**

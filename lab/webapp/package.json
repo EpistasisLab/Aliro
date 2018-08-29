@@ -2,16 +2,15 @@
   "name": "pennai-webapp",
   "version": "1.0.0",
   "scripts": {
-  	"build": "webpack",
-  	"build-dev": "webpack --watch"
+    "build": "webpack",
+    "build-dev": "webpack --watch"
   },
   "dependencies": {
-  	"c3": "^0.4.11",
-  	"es6-promise": "^4.1.0",
-  	"isomorphic-fetch": "^2.2.1",
-  	"moment": "^2.22.2",
-  	"react": "^15.4.2",
-    "react-addons-test-utils": "^15.4.2",
+    "c3": "^0.4.11",
+    "es6-promise": "^4.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "moment": "^2.22.2",
+    "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.7",
@@ -24,7 +23,7 @@
     "twix": "^1.1.5"
   },
   "devDependencies": {
-  	"babel-core": "^6.26.3",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
