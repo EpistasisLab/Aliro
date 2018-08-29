@@ -1,0 +1,54 @@
+version: '3'
+
+services: 
+
+  tester:
+    build: ./tests/integration
+    #command: bash
+    #command: npm test
+    #See <https://github.com/vishnubob/wait-for-it>
+    #command: ["/opt/wait-for-it.sh", "-t", "200", "lab:5080", "--", "npm", "test"]
+    depends_on: 
+      - lab
+      - machine
+      - dbmongo
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./tests/integration/results:/results"
+
+  lab:
+    build: ./dockers/lab
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports:
+      - "443:443"
+      - "5080:5080"
+    env_file: ./config/common.env
+    depends_on: 
+      - dbmongo
+
+  machine:
+    build: ./dockers/machine
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports: 
+      - "5081:5081"
+    env_file: ./config/common.env
+    depends_on: 
+      - lab
+      - dbmongo
+
+  dbmongo:
+    build: ./dockers/dbmongo
+    tty: true
+    stdin_open: true
+    volumes: 
+      - "./:/appsrc"
+    ports:  
+      - "27017:27017"
+    env_file: ./config/common.env

@@ -1,0 +1,58 @@
+{
+  "name": "integration-tests",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "reporters": [
+      "default",
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "pageTitle": "Jest Integration Test Suite",
+          "includeFailureMsg": true,
+          "includeConsoleLog": true,
+          "outputPath": "/results/test-report.html"
+        }
+      ]
+    ]
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^23.0.2",
+    "babel-jest": "^23.0.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "jest": "^23.1.0",
+    "jest-html-reporter": "^2.4.1",
+    "react-test-renderer": "^16.4.0",
+    "ts-jest": "^22.4.6",
+    "typescript": "^2.9.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "mongodb": "^2.1.19",
+    "mongoskin": "^2.1.0",
+    "es6-promise": "^4.2.4",
+    "isomorphic-fetch": "^2.2.1"
+  }
+}

@@ -8,19 +8,7 @@
     "firstname": "Test",
     "lastname": "User",
     "Roles": ["admin","beginner"],
-    "Datasets": [{
-        "name": "Gametes"
-    }, {
-        "name": "Adults"
-    }, {
-        "name": "Thyroid"
-    }, {
-        "name": "Breast Cancer"
-    }, {
-        "name": "Hypothyroid"
-    }, {
-        "name": "Mushrooms"
-    }],
+    "Datasets": [],
     "Algorithms": [{
         "name": "BernoulliNB",
         "name": "GaussianNB",

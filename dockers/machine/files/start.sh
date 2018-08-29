@@ -5,11 +5,22 @@ if [ ! -f '/root/forum' ]; then
     rm -f ${PROJECT_ROOT}/machine/specs.json
     for metadata in `find ${PROJECT_ROOT}/machine/datasets/ | grep metadata`;do rm -f $metadata;done
 fi
-if [ ! -d 'node_modules' ]; then
-    echo "installing npm, bower and webpack"
+
+if [ -d 'node_modules/.staging' ]; then
+    echo "npm partially installed, node_modules/.staging exists. Continuing install..."
     npm install
-    npm -g install pm2
-fi;
-sleep 5
-pm2 start machine.config.js
-bash
+elif [ ! -d 'node_modules' ]; then
+    echo "installing npm"
+    npm install
+    echo "npm install complete"
+else
+    echo "npm ready"
+fi
+
+
+echo "waiting for lab to be responsive..."
+/root/wait-for-it.sh -t 600 ${LAB_HOST}:${LAB_PORT} -- pm2 start machine.config.js
+
+#pm2 start machine.config.js
+pm2 logs
+#bash

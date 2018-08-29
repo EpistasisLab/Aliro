@@ -21,6 +21,7 @@ from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
+from ai.recommender.meta_recommender import MetaRecommender
 from collections import OrderedDict
 
 #encoder for numpy in json
@@ -101,6 +102,7 @@ class AI():
         self.load_options()
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
+        # default to random recommender
         if not rec:
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
         # build dictionary of ml ids to names conversion
@@ -109,12 +111,23 @@ class AI():
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         # toggled datasets
         self.dataset_threads = {}
-        # for comma-separated list of datasets in datasets, turn AI request on 
+
+        # verbosity...
+        print("paths:")
+        print("self.db_path: ", self.db_path)
+        print("self.exp_path: ", self.exp_path)
+        print("self.data_path: ", self.data_path)
+        print("self.projects_path: ", self.projects_path)
+        print("self.status_path: ", self.status_path)
+        print("self.submit_path: ", self.submit_path)
+        print("self.algo_path: ", self.algo_path)
+
+        # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
             data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
             print(data_usersets)
             for ds in datasets.split(','):
-                payload = {'ai': 'requested'} 
+                payload = {'ai': 'requested'}
                 data_submit_path = '/'.join([self.submit_path,data_usersets[ds],'ai'])
                 print('submitting ai requested to ',data_submit_path)
                 tmp = requests.put(data_submit_path,data=json.dumps(payload),
@@ -133,7 +146,7 @@ class AI():
                   print('loaded previous state from ',self.last_update)
 
     def load_options(self):
-        """Returns true if new AI request has been submitted by user."""
+        """Loads UI options."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','loading options...')
         v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
@@ -151,10 +164,10 @@ class AI():
 
     def check_requests(self):
         """Returns true if new AI request has been submitted by user."""
-        
+
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
-        
+
         if self.continous:
             payload = {'ai':['requested','finished']}
         else:
@@ -186,15 +199,16 @@ class AI():
 
     def check_results(self):
         """Returns true if new results have been posted since the previous
-        time step."""
+        time step. Processes them if so."""
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
-        
+
         # get new results
         payload = {'date_start':self.last_update,'has_scores':True}
         payload.update(self.static_payload)
         params = json.dumps(payload).encode('utf8')
+        print("requesting from : ", self.exp_path)
         req = urllib.request.Request(self.exp_path, data=params,
                                    headers=self.header)
         r = urllib.request.urlopen(req)
@@ -213,7 +227,7 @@ class AI():
             return True
 
         return False
-
+    
     def process_new_results(self,data):
         """Returns a dataframe of new results from the DB"""
         # clean up response
@@ -236,6 +250,7 @@ class AI():
                       '_scores' if '_scores' not in d.keys() else '',
                       '_dataset_id' if '_dataset_id' not in d.keys() else '')
               #print(d)
+        # if metarecommender, grab 
         new_data = pd.DataFrame(processed_data)
         if(len(new_data) >= 1):
           self.new_data = new_data
@@ -250,38 +265,28 @@ class AI():
 
     def transfer_rec(self,rec_payload):
             """performs http transfer of recommendation"""
-            self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-            n=0
-            rec_path = '/'.join([self.projects_path,
-                        rec_payload['algorithm_id'],
-                                      'experiment'])
-            v=requests.post(rec_path,data=json.dumps(rec_payload,cls=JasonEncoder),headers=self.header)
-            submitresponses = json.loads(v.text)
-            #parse json response into named array
-            submitstatus={}
-            if len(submitresponses) > 0:
-                for submiti in submitresponses:
-                    submitstatus[submiti] = submitresponses[submiti]
-            #look for errors and resubmit
-            if('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
-                print('slow it down pal')
-                sleep(1);
-                self.transfer_rec(rec_payload)
-                n=n+1
-            elif 'error' in submitstatus:
+            experimentData = json.dumps(rec_payload,cls=JasonEncoder)
+            submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+
+            while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
+                print('slow it down pal', submitstatus['error'])
+                sleep(3)
+                submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+
+            if 'error' in submitstatus:
+                print('unrecoverable error during transfer_rec '  )
+                print(submitstatus['error'])
                 pdb.set_trace()
-            if(n>0):
-                print('looped ' + str(n) + 'times')
 
 
     def process_rec(self):
-        """Sends recommendation to the API."""
+        """Generates recommendation and sends it to the API."""
         i = 0
         for r in self.request_queue:
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-            self.rec.last_n = 0 
+            self.rec.last_n = 0
             for alg,params,score in zip(ml,p,ai_scores):
                 # turn params into a dictionary
                 modified_params = eval(params)
@@ -297,7 +302,7 @@ class AI():
                 if self.verbose:
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                
+
                 # add static payload
                 rec_payload.update(self.static_payload)
                 # do http transfer
@@ -307,16 +312,14 @@ class AI():
                 #sleep(1)
 
                 #submit update to dataset to indicate ai:True
-            payload= {'ai':'finished'}
+            #payload= {'ai':'finished'} # h note - re-enable this once the queuing functionaity has been moved to lab server
+            payload= {'ai':'queuing'}
             data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
             i += 1
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':','processed',i,'requests')
 
-
+    #h note - this seems to be deprecated
     def send_rec(self):
         """Sends recommendation to the API."""
         i = 0
@@ -324,7 +327,7 @@ class AI():
             dataset = r['name']
             # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-            
+
             for alg,params,score in zip(ml,p,ai_scores):
                 # turn params into a dictionary
                 modified_params = eval(params)
@@ -350,9 +353,6 @@ class AI():
             tmp = requests.put(data_submit_path,data=json.dumps(payload),
                 headers=self.header)
             i += 1
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':','processed',i,'requests')
 
     def update_recommender(self):
         """Updates recommender based on new results."""
@@ -384,6 +384,38 @@ class AI():
                 self.metric
         """
 
+    #################
+    # Utility methods
+    #################
+    def post_experiment(self, algorithmId, experimentData):
+        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
+        rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
+        
+        try:
+            res=requests.post(rec_path,data=experimentData,headers=self.header)
+        except:
+            print("Unexpected error in post_experiment for path '", rec_path, "':", sys.exc_info()[0])
+            raise
+
+        submitresponses = json.loads(res.text)
+
+        #parse json response into named array
+        submitstatus={}
+        if len(submitresponses) > 0:
+            for submiti in submitresponses:
+                submitstatus[submiti] = submitresponses[submiti]
+
+        return submitstatus
+
+    def set_ai_status(self, datasetId, aiStatus):
+        """set the ai status for the given dataset"""
+        payload= {'ai':aiStatus}
+        data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
+        try:
+            tmp = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
+        except:
+            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
+            raise
 
 ####################################################################### Manager
 import argparse
@@ -395,7 +427,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive'], 
+                        choices = ['random','average','exhaustive','meta'],
                         help='Recommender algorithm options.')
     parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
@@ -404,24 +436,31 @@ def main():
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
-    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=False,
+    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=True,
                         help='Print out more messages.')
     parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
                         help='Start from last saved session.')
-   
+    parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
+                        help='Time to wait for pinging the server for results/ recommendation requests')
+
     args = parser.parse_args()
     print(args)
+    db_args={}
 
-    # dictionary of default recommenders to choose from at the command line. 
-    name_to_rec = {'random': RandomRecommender(db_path=args.DB_PATH,
-                                                api_key=os.environ['APIKEY']),
-            'average': AverageRecommender(),
-            'exhaustive': ExhaustiveRecommender(db_path=args.DB_PATH,api_key=os.environ['APIKEY'])
+    # dictionary of default recommenders to choose from at the command line.
+    name_to_rec = {'random': RandomRecommender,
+            'average': AverageRecommender,
+            'exhaustive': ExhaustiveRecommender,
+            'meta': MetaRecommender,
             }
-    print('=======','Penn AI','=======',sep='\n')
+    
+    if args.REC in ['random','exhaustive','meta']:
+        db_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
 
-    pennai = AI(rec=name_to_rec[args.REC],db_path=args.DB_PATH, user=args.USER, 
-                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START, 
+    print('=======','Penn AI','=======')#,sep='\n')
+
+    pennai = AI(rec=name_to_rec[args.REC](**db_args),db_path=args.DB_PATH, user=args.USER,
+                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS)
 
     n = 0;
@@ -435,7 +474,7 @@ def main():
                pennai.process_rec()
                 #pennai.send_rec()
             n = n + 1
-            sleep(2)
+            sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
     finally:

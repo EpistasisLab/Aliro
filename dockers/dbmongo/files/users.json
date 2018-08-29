@@ -1,36 +1,18 @@
 {
-    "_id": {
-        "$oid": "592e434749d74e09d31efefb"
-    },
     "username": "pennai",
     "firstname": "Penn",
     "lastname": "AI",
     "apikey": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
     "roles": ["ai"]
 } {
-    "_id": {
-        "$oid": "58c9a40915f1e8675d31972f"
-    },
-    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"],
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","SVC","LogisticRegression","RandomForestClassifier"],
     "username": "pmlb",
     "firstname": "Pmlb",
     "lastname": "User"
 } {
-    "_id": {
-        "$oid": "58c9a40915f1e8675d319730"
-    },
     "username": "testuser",
     "firstname": "Test",
     "lastname": "User",
     "roles": ["admin", "beginner"],
-    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","LinearSVC","LogisticRegression","RandomForestClassifier"]
-} {
-    "_id": {
-        "$oid": "58c9a40915f1e8675d319731"
-    },
-    "username": "svitale",
-    "firstname": "Steven",
-    "lastname": "Vitale",
-    "roles": ["admin", "beginner"],
-    "algorithms": ["PennAIRecommender"]
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","SVC","LogisticRegression","RandomForestClassifier"]
 }

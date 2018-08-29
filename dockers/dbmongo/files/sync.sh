@@ -1,3 +1,3 @@
-[ -d ${SHARE_PATH}/${NETWORK}/forums/${FORUM}/dump ]  || mkdir ${SHARE_PATH}/${NETWORK}/forums/${FORUM}
-cd ${SHARE_PATH}/${NETWORK}/forums/${FORUM}
+[ -d ${SHARE_PATH}/forums/${FORUM}/dump ]  || mkdir ${SHARE_PATH}/forums/${FORUM}
+cd ${SHARE_PATH}/forums/${FORUM}
 mongodump --excludeCollection users --db FGLab

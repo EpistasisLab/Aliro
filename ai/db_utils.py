@@ -36,9 +36,9 @@ def get_all_ml_p(algorithms):
             
             #print('\thyperparams: ',hyperparam_dict)
             #print(len(all_hyperparam_combos),' total hyperparameter combinations')
-                             
+                                         
             for ahc in all_hyperparam_combos:
-                result.append({'algorithm':x['_id'],'parameters':str(ahc)})
+                result.append({'algorithm':x['_id'],'parameters':str(ahc),'alg_name':x['name']})
         else:
             print('warning: ', x['name'], 'was skipped')
         good_def = True
