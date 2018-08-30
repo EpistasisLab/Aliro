@@ -301,6 +301,11 @@
     "name": "LinearSVC",
     "description": "Linear Support Vector Classification.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l2"}, {"loss":"hinge"}, {"dual":"false"}],
+        [{"penalty":"l1"}, {"loss":"square_hinge"}, {"dual":"true"}],
+        [{"penalty":"l1"}, {"loss":"hinge"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -358,6 +363,9 @@
     "name": "LogisticRegression",
     "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l1"}, {"dual":"true"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
