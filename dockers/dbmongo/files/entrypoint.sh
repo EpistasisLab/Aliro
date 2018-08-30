@@ -3,7 +3,7 @@ wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 if [ ! -v PROJECTS_FILE ]; then
     PROJECTS_FILE='projects.json';
 fi
-mongod -f /etc/mongod.conf &
+mongod -f /etc/mongod.conf --fork
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
     mongoimport -d FGLab -c users --file /root/users.json --type json
@@ -17,3 +17,5 @@ if [ ! -f '/root/forum' ]; then
     mongo FGLab --eval 'db.experiments.createIndex({_dataset_id: 1})'
     touch /root/forum
 fi
+
+bash
