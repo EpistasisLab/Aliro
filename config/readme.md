@@ -1,7 +1,7 @@
 # Environment Configuration
 
 # Algorithm Configuration
-Machine learning algorithm parameters and UI setting are defined in `/dockers/dbmongo/files/projects.config`
+Machine learning algorithm parameters and UI settings are defined in `/dockers/dbmongo/files/projects.json`
 
 ## Schema
 ```
@@ -20,7 +20,7 @@ Machine learning algorithm parameters and UI setting are defined in `/dockers/db
             "default": <default value>,
             "ui": {
                 "style": <one of ('array', 'checkbox')>,
-                "choices": <array of parameter values to be displayed in the ui.  if 'values' is not specified, the return value is the same as the display value>,
+                "choices": <array of parameter values to be displayed in the ui.  If 'values' is not specified, the return value is the same as the display value.>,
                 "values": <optional; array of values to be returned by the ui.  Only necessary if the return value is different then the display values.>
             }
         },
