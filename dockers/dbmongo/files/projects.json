@@ -1,6 +1,7 @@
 {
     "name": "BernoulliNB",
     "description": "Naive Bayes classifier for multivariate Bernoulli models.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -8,7 +9,8 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 1, 10, 100]
+                "choices": [0.001, 0.01, 0.1, 1, 10, 100],
+                "values": [0.001, 0.01, 0.1, 1, 10, 100]
             }
         },
         "binarize": {
@@ -17,7 +19,8 @@
             "default": 0,
             "ui": {
                 "style": "radio",
-                "choices": [0, 0.25, 0.5, 0.75, 1]
+                "choices": [0, 0.25, 0.5, 0.75, 1],
+                "values": [0, 0.25, 0.5, 0.75, 1]
             }
         },
         "fit_prior": {
@@ -26,7 +29,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         }
     },
@@ -34,11 +38,13 @@
 } {
     "name": "GaussianNB",
     "description": "Gaussian Naive Bayes",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
     "category": "ML"
 } {
     "name": "MultinomialNB",
     "description": "Naive Bayes classifier for multinomial models.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -46,7 +52,8 @@
             "default": 1.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.001, 0.01, 0.1, 1.0, 10, 100]
+                "choices": [0.001, 0.01, 0.1, 1.0, 10, 100],
+                "values": [0.001, 0.01, 0.1, 1.0, 10, 100]
             }
         },
         "fit_prior": {
@@ -55,7 +62,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         }
     },
@@ -63,15 +71,16 @@
 } {
     "name": "DecisionTreeClassifier",
     "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
             "type": "enum",
-            "values": ["gini", "entropy"],
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["gini", "entropy"],
+                "values": ["Gini impurity", "Information gain"]
             }
         },
         "max_depth": {
@@ -80,7 +89,8 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [2, 4, 6, 8]
+                "choices": [2, 4, 6, 8],
+                "values": [2, 4, 6, 8]
             }
         },
         "min_samples_split": {
@@ -89,7 +99,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
@@ -98,7 +109,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         }
     },
@@ -106,6 +118,7 @@
 } {
     "name": "ExtraTreesClassifier",
     "description": "Extremely Randomized Trees",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -113,7 +126,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "values": [100, 250]
             }
         },
         "criterion": {
@@ -123,7 +137,8 @@
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["gini", "entropy"],
+                "values": ["Gini impurity", "Information gain"]
             }
         },
         "max_features": {
@@ -132,7 +147,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["sqrt", "log2", "None"],
+                "values": ["Square root", "Log2", "None"]
             }
         },
         "min_samples_split": {
@@ -141,7 +157,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
@@ -150,7 +167,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -159,7 +177,8 @@
             "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         }
     },
@@ -167,6 +186,7 @@
 } {
     "name": "GradientBoostingClassifier",
     "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -174,7 +194,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "values": [100, 250]
             }
         },
         "learning_rate": {
@@ -183,7 +204,8 @@
             "default": 0.1,
             "ui": {
                 "style": "radio",
-                "choices": [0.01, 0.1, 1]
+                "choices": [0.01, 0.1, 1],
+                "values": [0.01, 0.1, 1]
             }
         },
         "max_depth": {
@@ -192,7 +214,8 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10]
+                "choices": [1, 5, 10],
+                "values": [1, 5, 10]
             }
         },
         "min_samples_split": {
@@ -201,7 +224,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
@@ -210,7 +234,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "subsample": {
@@ -219,7 +244,8 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.5, 1]
+                "choices": [0.5, 1],
+                "values": [0.5, 1]
             }
         },
         "max_features": {
@@ -228,7 +254,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["sqrt", "log2"],
+                "values": ["Square root", "Log2"]
             }
         }
     },
@@ -236,6 +263,7 @@
 } {
     "name": "KNeighborsClassifier",
     "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html",
     "schema": {
         "n_neighbors": {
             "description": "Number of neighbors to use by default for k_neighbors queries.",
@@ -243,7 +271,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [1, 3, 5, 7, 9, 11]
+                "choices": [1, 3, 5, 7, 9, 11],
+                "values": [1, 3, 5, 7, 9, 11]
             }
         },
         "weights": {
@@ -252,7 +281,8 @@
             "default": "uniform",
             "ui": {
                 "style": "radio",
-                "choices": ["uniform", "distance"]
+                "choices": ["uniform", "distance"],
+                "values": ["Uniform", "Distance"]
             }
         },
         "p": {
@@ -261,7 +291,8 @@
             "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [1, 2]
+                "choices": [1, 2],
+                "values": [1, 2]
             }
         }
     },
@@ -269,6 +300,12 @@
 } {
     "name": "LinearSVC",
     "description": "Linear Support Vector Classification.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l2"}, {"loss":"hinge"}, {"dual":"false"}],
+        [{"penalty":"l1"}, {"loss":"square_hinge"}, {"dual":"true"}],
+        [{"penalty":"l1"}, {"loss":"hinge"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -276,7 +313,8 @@
             "default": "l2",
             "ui": {
                 "style": "radio",
-                "choices": ["l1", "l2"]
+                "choices": ["l1", "l2"],
+                "values": ["L1", "L2"]
             }
         },
         "loss": {
@@ -285,7 +323,8 @@
             "default": "squared_hinge",
             "ui": {
                 "style": "radio",
-                "choices": ["hinge", "squared_hinge"]
+                "choices": ["hinge", "squared_hinge"],
+                "values": ["Hinge", "Squared hinge"]
             }
         },
         "dual": {
@@ -294,7 +333,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         },
         "tol": {
@@ -303,7 +343,8 @@
             "default": 0.0001,
             "ui": {
                 "style": "radio",
-                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1]
+                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1],
+                "values": [1e-05, 0.0001, 0.001, 0.01, 0.1]
             }
         },
         "C": {
@@ -312,7 +353,8 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25],
+                "values": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
             }
         }
     },
@@ -320,6 +362,10 @@
 } {
     "name": "LogisticRegression",
     "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l1"}, {"dual":"true"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
@@ -327,7 +373,8 @@
             "default": "l2",
             "ui": {
                 "style": "radio",
-                "choices": ["l1", "l2"]
+                "choices": ["l1", "l2"],
+                "values": ["L1", "L2"]
             }
         },
         "C": {
@@ -336,7 +383,8 @@
             "default": 1.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25],
+                "values": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
             }
         },
         "dual": {
@@ -345,7 +393,8 @@
             "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         }
     },
@@ -353,6 +402,7 @@
 } {
     "name": "RandomForestClassifier",
     "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -360,7 +410,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "values": [100, 250]
             }
         },
         "criterion": {
@@ -369,7 +420,8 @@
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["gini", "entropy"],
+                "values": ["Gini impurity", "Information gain"]
             }
         },
         "max_features": {
@@ -378,7 +430,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["sqrt", "log2"],
+                "values": ["Square root", "Log2"]
             }
         },
         "min_samples_split": {
@@ -387,7 +440,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "min_samples_leaf": {
@@ -396,7 +450,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "values": [5, 10, 20]
             }
         },
         "bootstrap": {
@@ -405,7 +460,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["true", "false"],
+                "values": ["True", "False"]
             }
         }
     },
@@ -413,6 +469,7 @@
 } {
     "name": "SVC",
     "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
     "schema": {
         "kernel": {
             "description": "Specifies the kernel type to be used in the algorithm",
@@ -420,7 +477,8 @@
             "default": "rbf",
             "ui": {
                 "style": "radio",
-                "choices": ["poly", "rbf"]
+                "choices": ["poly", "rbf"],
+                "values": ["Polynomial", "Radial basis function"]
             }
         },
         "tol": {
@@ -429,7 +487,8 @@
             "default": 0.0001,
             "ui": {
                 "style": "radio",
-                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1]
+                "choices": [1e-05, 0.0001, 0.001, 0.01, 0.1],
+                "values": [1e-05, 0.0001, 0.001, 0.01, 0.1]
             }
         },
         "C": {
@@ -438,7 +497,8 @@
             "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25],
+                "values": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
             }
         }
     },
