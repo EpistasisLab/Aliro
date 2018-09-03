@@ -315,11 +315,6 @@ body {
     margin-right: 0.5em;
 }
 
-.pennai .admin-scene .muted {
-    color: rgba(255,255,255,.7);
-    font-style: italic;
-}
-
 .c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
     font-size: 0.8rem;
 }
@@ -355,6 +350,11 @@ pre.schema {
 
 .float-right {
     float: right;
+}
+
+.pennai .muted {
+    color: rgba(255,255,255,.7);
+    font-style: italic;
 }
 
 @media (max-width: 321px) {
