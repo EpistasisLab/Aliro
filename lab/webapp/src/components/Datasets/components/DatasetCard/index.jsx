@@ -17,9 +17,9 @@ const DatasetCard = ({ dataset, toggleAI }) => {
         <Popup
           position="right center"
           header={formatDataset(dataset.name)}
-          content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}`}
+          content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}`}
           trigger={
-            <Header 
+            <Header
               as="a"
               inverted
               size="large"
