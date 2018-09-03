@@ -43,7 +43,14 @@ function AlgorithmOptions({
                 on="click"
                 position="right center"
                 header={formatAlgorithm(algorithm.name)}
-                content={algorithm.description}
+                content={
+                  <div className="content">
+                    <p>{algorithm.description}</p>
+                    {algorithm.url &&
+                      <a href={algorithm.url} target="_blank"><strong>Read more here <Icon name="angle double right" /></strong></a>
+                    }
+                  </div>
+                }
                 trigger={
                   <Icon
                     inverted
