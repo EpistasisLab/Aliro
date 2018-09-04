@@ -6,6 +6,7 @@ function ExperimentsTableHeader({
   selectedAlgorithm,
   shouldDisplayQuality,
   shouldDisplayParams,
+  shouldDisplayErrorMessage,
   orderedParamKeys,
   sort,
   updateQuery
@@ -62,6 +63,15 @@ function ExperimentsTableHeader({
         >
           {'Dataset'}
         </Table.HeaderCell>
+        {shouldDisplayErrorMessage &&
+          <Table.HeaderCell 
+            rowSpan={shouldDisplayParams && 2}
+            sorted={getIsSorted('error_message')}
+            onClick={() => onSort('error_message')}
+          >
+            {'Error Message'}
+          </Table.HeaderCell>
+        }
         <Table.HeaderCell 
           colSpan={shouldDisplayParams && orderedParamKeys.length}
           sorted={shouldDisplayParams ? null : getIsSorted('algorithm')}
