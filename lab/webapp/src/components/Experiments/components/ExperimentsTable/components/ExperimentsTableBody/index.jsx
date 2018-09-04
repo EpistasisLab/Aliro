@@ -7,6 +7,7 @@ function ExperimentsTableBody({
   shouldDisplayQuality,
   shouldDisplayAwards,
   shouldDisplayParams,
+  shouldDisplayErrorMessage,
   orderedParamKeys
 }) {
   const getExperimentLink = (experiment) => {
@@ -175,6 +176,13 @@ function ExperimentsTableBody({
                 {formatDataset(experiment.dataset_name)}
               </a>  
             </Table.Cell>
+            {shouldDisplayErrorMessage &&
+              <Table.Cell selectable>
+              <a href={experimentLink}>
+                {formatDataset(experiment.errorMessage)}
+              </a>  
+            </Table.Cell>
+            }
             {shouldDisplayParams ? (
               orderedParamKeys.map((key) => (
                 <Table.Cell key={[experiment._id, key]} selectable>
