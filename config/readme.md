@@ -17,11 +17,11 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
         "<parameter 1 name>": {
             "description": "<parameter description>",
             "type": <one of: (float, int, string, bool).  how the algorithm will cast the parameter value>",
-            "default": <default value>,
+            "default": <default value> Used to set the default UI value,
             "ui": {
-                "style": <one of ('array', 'checkbox')>,
-                "choices": <array of parameter values to be displayed in the ui.  If 'values' is not specified, the return value is the same as the display value.>,
-                "values": <optional; array of values to be returned by the ui.  Only necessary if the return value is different then the display values.>
+                "style": <one of ('array')>,
+                "choices": <array of parameter values to be displayed in the ui.  If 'values' is not specified, the return value is the same as the display value. Can be any fundamental type; string, int, float, bool etc.>,
+                "values": <optional; array of values to be returned by the ui.  Only necessary if the return value is different then the display values.  Can be any fundamental type; string, int, float, bool etc.>
             }
         },
         {
