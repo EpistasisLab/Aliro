@@ -56,7 +56,7 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/projects':
         json_data = [{
             "name": "SVC",
-            "param_type": {
+            "schema": {
                 "kernel": {
                     "type": "string",
                     "default": "rbf"
@@ -73,7 +73,7 @@ def mocked_requests_get(*args, **kwargs):
             "category": "ML"
         },
         {"name": "SVC",
-        "param_type": {
+        "schema": {
             "kernel": {
                 "type": "string",
                 "default": "rbf"

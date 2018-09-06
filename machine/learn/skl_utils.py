@@ -83,6 +83,7 @@ def generate_results(model, input_data,
     figure_export: Ture or False for exporting figures
     random_state: random seed
 
+    return: None
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
@@ -131,12 +132,7 @@ def generate_results(model, input_data,
     # fit model
     model.fit(training_features, training_classes)
     # dump fitted module as pickle file
-    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
-    joblib.dump(model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file)
-    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
-    export_scripts.write(pipeline_text)
-    export_scripts.close()
+    export_model(tmpdir, _id, model)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
@@ -288,8 +284,39 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
+def export_model(tmpdir, _id, model):
+    """export model as a pickle file and generate a scripts for using the pickled model.
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    model: a fitted scikit-learn model
+
+    return: None
+    """
+    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
+    joblib.dump(model, pickle_file)
+    pipeline_text = generate_export_codes(pickle_file)
+    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text)
+    export_scripts.close()
+
 
 def compute_imp_score(model, training_features, training_classes, random_state):
+    """compute importance scores for features.
+    If coef_ or feature_importances_ attribute is available for the model,
+    the the importance scores will be based on the attribute. If not,
+    then permuation importance scores will be estimated
+
+    model:  a fitted scikit-learn model
+    training_features: np.darray/pd.DataFrame training features
+    training_classes: np.darray/pd.DataFrame training target
+    random_state: random seed for permuation importances
+
+    return
+    coefs: feature importance scores
+
+    """
     # exporting/computing importance score
     if hasattr(model, 'coef_'):
         coefs = model.coef_
@@ -335,6 +362,23 @@ def save_json_fmt(outdir, _id, fname, content):
 
 
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
+    """
+    Make plot for confusion matrix.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    cnf_matrix: np.darray
+            confusion matrix
+    class_names: list
+            class names
+    Returns
+    -------
+    None
+
+    """
     cm = cnf_matrix
     classes = class_names
 
@@ -362,7 +406,25 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 
 def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     """
-    Save ROC Curve.
+    Plot ROC Curve.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    roc_curve: tuple
+            fpr : array, shape = [>2]
+                Increasing false positive rates such that element i is the false positive rate of predictions with score >= thresholds[i].
+            tpr : array, shape = [>2]
+                Increasing true positive rates such that element i is the true positive rate of predictions with score >= thresholds[i].
+            thresholds : array, shape = [n_thresholds]
+                Decreasing thresholds on the decision function used to compute fpr and tpr. thresholds[0] represents no instances being predicted and is arbitrarily set to max(y_score) + 1.
+    roc_auc_score: float
+            Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+    Returns
+    -------
+    None
     """
 
     fpr, tpr, _ = roc_curve
@@ -381,6 +443,23 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names):
+    """Plot importance scores for features.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    coefs: array
+        feature importance scores
+    feature_names: list
+        feature names
+
+    Returns
+    -------
+    None
+
+    """
     # plot bar charts for top 10 importanct features
     num_bar = min(max_bar_num, len(coefs))
     indices = np.argsort(coefs)[-num_bar:]
@@ -391,6 +470,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+
 
 def generate_export_codes(pickle_file):
     """Generate all library import calls for use in stand alone python scripts.

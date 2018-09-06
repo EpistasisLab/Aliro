@@ -54,6 +54,15 @@ def get_params(method_name):
 
 
 def parse_args(params):
+    """Parse argument.
+
+    Parameters
+    -------
+    params: dict
+        schema in projects.json
+
+
+    """
     parser = argparse.ArgumentParser()
 
     # parse args for each parameter
@@ -83,7 +92,6 @@ def get_input_data(_id, tmpdir):
                             ':' + LAB_PORT + '/api/v1/experiments/' + _id)
     jsondata = json.loads(response.text)
 
-    #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
     if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
@@ -135,7 +143,6 @@ def str_or_none(val):
     return str(val)
 
 # how should this check what kind of enum type? right now, just returns a string.
-
 
 def enum_type(val):
     return str(val)
