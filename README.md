@@ -39,6 +39,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 
 
 ## Developer Info
+-  After any code changes are pulled, when you first reload the webpage it is a good idea to first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache
 - To get the cpu and memory status of the running containers use `docker stats`
 - To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
