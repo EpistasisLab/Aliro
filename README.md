@@ -43,7 +43,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 - To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
 	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild with `docker build ./dockers/base -t pennai/base:latest`.
-- Use `docker-compose build lab --no-cache` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
+- Use `docker-compose build --no-cache lab` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
 - Use `docker rm $(docker ps -a -q)` to remove all docker containers
 - Use `docker rmi $(docker images -q)` to remove all docker images
 - Use `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
