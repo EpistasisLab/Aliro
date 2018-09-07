@@ -152,7 +152,7 @@ def test_generate_results_1():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=True)
+                    tmpdir=tmpdir, _id=_id, target_name='target', figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -178,11 +178,11 @@ def test_generate_results_2():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='label:nom', figure_export=False, random_state=42)
+                    tmpdir=tmpdir, _id=_id, target_name='target', figure_export=False, random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='label:nom'
+    target_name='target'
     features = input_data.drop(target_name, axis=1).values
     classes = LabelEncoder().fit_transform(input_data[target_name].values)
     training_features, testing_features, training_classes, testing_classes = \
@@ -280,7 +280,7 @@ def test_generate_export_codes():
     """Test generate_export_codes can generate scripts as execpted."""
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='label:nom'
+    target_name='target'
     features = input_data.drop(target_name, axis=1).values
     classes = LabelEncoder().fit_transform(input_data[target_name].values)
 
