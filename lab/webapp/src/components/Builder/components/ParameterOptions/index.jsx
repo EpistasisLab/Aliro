@@ -48,18 +48,18 @@ function ParameterOptions({
           </Segment>
           <Segment inverted attached="bottom">
             <Grid columns={calcCols(info.ui.choices)} className="compressed">
-              {info.ui.choices.map(value => (
-                <Grid.Column key={value}>
+            {info.ui.choices.map((choice, i) => (
+               <Grid.Column key={choice}>
                   <Button
-                    inverted
-                    color="blue"
-                    fluid
-                    content={value.toString()}
-                    active={isActive(param, value)}
-                    onClick={() => setParamValue(param, value)}
-                  />
-                </Grid.Column>
-              ))}
+                       fluid
+                       inverted
+                       color="blue"
+                       content={choice.toString()}
+                       active={isActive(param, choice)}
+                       onClick={() => setParamValue(param, info.ui.values ? info.ui.values[i] : choice)}
+                   />
+              </Grid.Column>
+            ))}
             </Grid>
           </Segment>
         </Grid.Column>
