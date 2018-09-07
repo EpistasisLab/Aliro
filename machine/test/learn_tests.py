@@ -7,8 +7,8 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-from learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from learn.io_utils import Experiment, get_input, get_params, get_input_data
+from machine.learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
+from machine.learn.io_utils import Experiment, get_input, get_params, get_input_data
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -20,10 +20,10 @@ from unittest import mock
 from io import StringIO
 
 # test input file for classification
-test_clf_input = "test/iris.tsv"
+test_clf_input = "machine/test/iris.tsv"
 test_clf_input_df = pd.read_csv(test_clf_input, sep='\t')
 # test inputfile for regression
-test_reg_input = "test/1027_ESL.tsv"
+test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 test_clf = DecisionTreeClassifier()
