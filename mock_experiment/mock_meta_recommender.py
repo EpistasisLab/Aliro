@@ -8,7 +8,7 @@ import pandas as pd
 class MockMetaRecommender(MetaRecommender):
     def get_metafeatures(self,d):
         """Fetch dataset metafeatures from file"""
-        print('fetching data for', d)
+        # print('fetching data for', d)
         # payload={}
         # # payload = {'metafeatures'}
         # payload.update(self.static_payload)
@@ -29,7 +29,7 @@ class MockMetaRecommender(MetaRecommender):
         df['dataset'] = d
         df.sort_index(axis=1, inplace=True)
 
-        print('df:',df)
+        # print('df:',df)
         return df
 
 

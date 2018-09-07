@@ -7,6 +7,9 @@ import argparse
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from mock_experiment.mock_meta_recommender import MockMetaRecommender
+from collections import OrderedDict
+import warnings 
+warnings.simplefilter("ignore")
 # define a comparison function that tests a recommender on the pmlb datasets, 
 #using an intial knowledge base.
 def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
@@ -28,7 +31,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
 
         holdout_subset_lookup = pmlb_data.loc[pmlb_data['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
-        print('generating recommendation for',dataset)
+        # print('generating recommendation for',dataset)
         for i in np.arange(n_recs):
             # ml ='adf'
             # p = 'pakd'
@@ -39,11 +42,17 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
 
             # for each dataset, generate a recommendation
             mls, ps, scores = recommender.recommend(n_recs=1, dataset_id=dataset)
-            
             ml = mls[0]
-            p = ps[0]
-            print('recommending',ml,p,'for',dataset)               
+            if type(recommender).__name__ == 'MockMetaRecommender':
+                tmp = eval(ps[0])
+                if 'coef0' in tmp.keys():
+                    tmp['coef0'] = float(tmp['coef0'])
+                p = str(OrderedDict(sorted(tmp.items())))
+            else:
+                p = ps[0]
+
             if (ml,p) not in holdout_subset_lookup:
+                print((ml,p),'not found')
                 pdb.set_trace()
 
             # n = n+1
@@ -55,6 +64,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
                                                'algorithm': [ml],
                                                'parameters': [p],
                                                'bal_accuracy': [actual_score]})
+            # print('updating recommender...')
             recommender.update(update_record)
             # store the trial, iteration, dataset, recommender, ml rec, param rec, bal_accuracy	
             results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score])
@@ -72,12 +82,12 @@ if __name__ == '__main__':
                         help="Show this help message and exit.")
     parser.add_argument('-recs',action='store',dest='rec',default='random,average', 
                         help='Comma-separated list of recommenders to run.') 
-    parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=10,help='Number of '
+    parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
     parser.add_argument('-v','-verbose',action='store_true',dest='verbose',default=False,
                         help='Print out more messages.')
-    parser.add_argument('-n_trials',action='store',dest='n_trials',type=int,default=20,
+    parser.add_argument('-n_trials',action='store',dest='n_trials',type=int,default=10,
                         help='Number of repeat experiments to run.')  
     parser.add_argument('-n_init',action='store',dest='n_init',type=int,default=10,
                         help='Number of initial datasets to seed knowledge database')
