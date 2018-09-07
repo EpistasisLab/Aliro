@@ -4,13 +4,13 @@ A data science assistant for generating useful results from large and complex da
 
 
 ## Installation
-PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)). 
+PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
 
 1. Install build requirements:
   - Docker (Version 1.13.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - Python and nose test runner (optional, needed only to run unit tests) 
+  - Python and nose test runner (optional, needed only to run unit tests)
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) via `pip install nose`
   - nodejs (optional, can be helpful for local development)
@@ -35,7 +35,7 @@ To start PennAI, from the PennAI directory run the command `docker-compose up`. 
 ### Analyzing Data ###
 Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with ~50 test datasets, starting with 'Allbp'.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
 
-From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page. 
+From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page.
 
 
 ## Developer Info
@@ -49,9 +49,9 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 - Use `docker rmi $(docker images -q)` to remove all docker images
 - Use `docker exec -it "container_name" /bin/bash` to attach to a running container with a bash prompt
 - To manually start the AI service, attach to the lab container with bash and start the AI service:
-  
+
   ```
-  docker exec -it "pennai_lab_1" /bin/bash 
+  docker exec -it "pennai_lab_1" /bin/bash
   cd $PROJECT_ROOT/
   python -m ai.ai -v -n 2
   ```
@@ -61,7 +61,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 
 ## Tests
 
-### Integration 
+### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
 - Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
 - Results: The results will be in the folder `.\tests\integration\results`
@@ -77,7 +77,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 	nosetests -s -v ai/tests/test_recommender.py
 	```
 
-#### Metafeatures 
+#### Metafeatures
 - Type: Python
 - Usage:
 	```
@@ -90,7 +90,6 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 - Prereqs: install nose `pip install nose`
 - Usage:
 	```
-	cd machine
-	nosetests -s -v test\learn_tests.py
+	nosetests -s -v machine/test/learn_tests.py
 	```
 - Docs: See [machine test docs](https://github.com/EpistasisLab/pennai/blob/master/machine/README.md) for details.
