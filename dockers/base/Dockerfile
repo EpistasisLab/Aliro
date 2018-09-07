@@ -34,7 +34,7 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
-RUN pip install requests_toolbelt eli5
 RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
+RUN pip install eli5
 
 COPY files/version /
