@@ -41,15 +41,17 @@ class MetaRecommender(BaseRecommender):
 
     """
 
-    def __init__(self, ml_type='classifier', metric=None, db_path='',api_key='', ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, db_path='',api_key='', ml_p=None,
+                 sample_size=1000):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
         self.ml_type = ml_type
+        self.sample_size = sample_size
 
         if metric is None:
-            self.metric = 'accuracy' if self.ml_type == 'classifier' else 'mse'
+            self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
         else:
             self.metric = metric
         # path for grabbing dataset metafeatures
@@ -100,14 +102,16 @@ class MetaRecommender(BaseRecommender):
 
     def params_to_features(self, df, init=False):
         """convert parameter dictionaries to dataframe columns"""
+        # pdb.set_trace()
         try:
             param = df['parameters'].apply(eval)
             param = pd.DataFrame.from_records(list(param))
             param = param.applymap(str)
             # get rid of trailing .0 added to integer vals 
             param = param.applymap(lambda x: x[:-2] if x[-2:] == '.0' else x)
+            param = param.reset_index(drop=True)
             # print('param:',param)
-            df = df.drop('parameters',axis=1)
+            df = df.drop('parameters',axis=1).reset_index(drop=True)
             df = pd.concat([df, param],axis=1)
 
             if not init: # need to add additional parameter combos for other ml
@@ -126,7 +130,21 @@ class MetaRecommender(BaseRecommender):
     def features_to_params(self, df ):
         """convert dataframe columns to parameter dictionaries"""
         param = df.to_dict('index')
-        return [str({k1:v1 for k1,v1 in v.items() if v1 != 'nan'}) for k,v in param.items()] 
+        plist = []
+        for k,v in param.items():
+            tmp = {k1:v1 for k1,v1 in v.items() if v1 != 'nan'}
+            for k1,v1 in tmp.items():
+                try:
+                    tmp[k1] = int(v1)
+                except:
+                    try:
+                        tmp[k1] = float(v1)
+                    except:
+                        pass
+                    pass
+            plist.append(str(tmp))
+
+        return plist 
 
 
     def update(self, results_data):
@@ -148,7 +166,6 @@ class MetaRecommender(BaseRecommender):
                results_data['parameters'].values)
         d_ml_p = np.unique(dap)
         self.trained_dataset_models.update(d_ml_p)
-
         # transform data for learning a model from it 
         self.setup_training_data(results_data) 
 
@@ -226,7 +243,7 @@ class MetaRecommender(BaseRecommender):
         # print('training data:',self.training_features)
         # print('training columns:',self.training_features[:10])
         # transform data using label encoder and one hot encoder
-        self.training_y = results_data['accuracy'].values
+        self.training_y = results_data[self.metric].values
         assert(len(self.training_y)==len(self.training_features))
          
     def recommend(self, dataset_id=None, n_recs=1):
@@ -256,7 +273,7 @@ class MetaRecommender(BaseRecommender):
             # ml_rec = [r.split('|')[0] for r in rec]
             # p_rec = [r.split('|')[1] for r in rec]
             # rec_score = [self.scores[r] for r in rec]
-        except e:
+        except Exception as e:
             print( 'error running self.best_model_prediction for',dataset_id)
             # print('ml_rec:', ml_rec)
             # print('p_rec', p_rec)
@@ -288,43 +305,37 @@ class MetaRecommender(BaseRecommender):
         df_mf = self.get_metafeatures(dataset_id) 
         mf = df_mf.drop('dataset',axis=1).values.flatten()
         # setup input data by sampling ml+p combinations from all possible combos 
-        X_ml_p = self.X_ml_p[np.random.randint(len(self.X_ml_p),size=100)]
-        # print('X_ml_p:',self.X_ml_p,self.X_ml_p.shape)
-        # print('X_ml_p:',X_ml_p,X_ml_p.shape)
-        # print('mf:',mf,mf.shape)
+        X_ml_p = self.X_ml_p[np.random.randint(len(self.X_ml_p),size=self.sample_size)]
+
         # make prediction data consisting of ml + p combinations plus metafeatures
-        # predict_features = np.array([np.hstack((ml_p, mf)) for ml_p in self.X_ml_p])
         predict_features = np.array([np.hstack((ml_p, mf)) for ml_p in X_ml_p])
-        # print('predict_features:',predict_features.shape)
-        # for p in predict_features:
-        #     print(p)
+        
         # generate predicted scores
         predict_scores = self.ml.predict(predict_features)
-        # print('predict scores:',predict_scores,predict_scores.shape)
+        
         # grab best scores
         predict_idx = np.argsort(predict_scores)[:n_recs]
+        
         # indices in X_ml_p that match best prediction scores
         predict_ml_p = X_ml_p[predict_idx]
-        # out = predict_ml_p
-        # n_samples = len(X_ml_p)
-        # n_features = X_ml_p.shape[1]
+        
+        # invert the one hot encoding
         fi = self.OHE.feature_indices_
         predict_ml_p_le = [x[fi[i]:fi[i+1]].dot(np.arange(nv)) for i,nv in 
                            enumerate(self.OHE.n_values_) 
                            for x in predict_ml_p]
-        # recovered_X = np.array(
-        #               [self.OHE.active_features_[col] for col in out.sorted_indices().indices]
-        #               ).reshape(n_samples, n_features) - self.OHE.feature_indices_[:-1]
-        # # print('recovered_X:',recovered_X)
-        # predict_ml_p_le = predict_ml_p.dot(self.OHE.active_features_).astype(int) 
-        # print('predict_ml_p before LE inversion:',predict_ml_p_le)
+        
         df_pr_ml_p = pd.DataFrame(
                 data=np.array(predict_ml_p_le).reshape(-1,len(self.ml_p.columns)),
                 columns = self.ml_p.columns, dtype=np.int64)
+        # invert the label encoding 
         df_pr_ml_p = df_pr_ml_p.apply(lambda x: self.LE[x.name].inverse_transform(x))
         predict_ml_p = df_pr_ml_p.values
+
+        # grab recommendations
         ml_recs = list(df_pr_ml_p['algorithm'].values)
         p_recs = self.features_to_params(df_pr_ml_p.drop('algorithm',axis=1))
         scores = predict_scores[predict_idx]
+        
         return ml_recs,p_recs,scores
         
