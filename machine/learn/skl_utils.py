@@ -6,9 +6,8 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.utils import safe_sqr
+from sklearn.utils import safe_sqr, check_X_y
 from eli5.sklearn import PermutationImportance
-from sklearn.preprocessing import LabelEncoder
 from sklearn.externals import joblib
 
 
@@ -94,13 +93,12 @@ def generate_results(model, input_data,
         feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
         features = input_data.drop(target_name, axis=1).values
-        if mode == 'classification':
-            classes = LabelEncoder().fit_transform(input_data[target_name].values)
-        elif mode == 'regression':
-            classes = input_data[target_name].values
+        target = input_data[target_name].values
+
+        features, target = check_X_y(features, target, dtype=np.float64, order="C")
 
         training_features, testing_features, training_classes, testing_classes = \
-            train_test_split(features, classes, random_state=random_state, stratify=input_data[target_name])
+            train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
     else: # two files for cross-validation
         training_data = input_data[0]
         testing_data = input_data[1]
@@ -110,14 +108,13 @@ def generate_results(model, input_data,
         training_features = training_data.drop(target_name, axis=1).values
         testing_features = testing_data.drop(target_name, axis=1).values
 
-        training_labels = training_data[target_name].values
-        testing_labels = testing_data[target_name].values
+        training_classes = training_data[target_name].values
+        testing_classes = testing_data[target_name].values
 
-        le = LabelEncoder()
-        le.fit(training_labels)
+        training_features, training_classes = check_X_y(training_features, training_classes, dtype=np.float64, order="C")
+        testing_features, testing_classes = check_X_y(testing_features, testing_classes, dtype=np.float64, order="C")
 
-        training_classes = le.transform(training_labels)
-        testing_classes = le.transform(testing_labels)
+
 
 
 
