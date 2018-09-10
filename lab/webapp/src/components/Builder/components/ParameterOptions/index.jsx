@@ -9,7 +9,9 @@ function ParameterOptions({
 }) {
   const calcCols = (choices) => choices.length > 2 ? 2 : 1;
 
-  const isActive = (param, value) => value === currentParams[param];
+  const isActive = (info, param, i) => currentParams[param] === getReturnValue(info, i);
+
+  const getReturnValue = (info, i) => info.ui.values ? info.ui.values[i] : info.ui.choices[i];
 
   return (
     <Grid.Row>
@@ -55,8 +57,8 @@ function ParameterOptions({
                        inverted
                        color="blue"
                        content={choice.toString()}
-                       active={isActive(param, choice)}
-                       onClick={() => setParamValue(param, info.ui.values ? info.ui.values[i] : choice)}
+                       active={isActive(info, param, i)}
+                       onClick={() => setParamValue(param, getReturnValue(info, i))}
                    />
               </Grid.Column>
             ))}
