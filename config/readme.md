@@ -16,8 +16,8 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
     "schema": {
         "<parameter 1 name>": {
             "description": "<parameter description>",
-            "type": <one of: (float, int, string, bool).  how the algorithm will cast the parameter value>",
-            "default": <default value> Used to set the default UI value,
+            "type": "<one of: (float, int, string, bool).  how the algorithm will cast the parameter value>",
+            "default": "<default value> Used to set the default UI value, must match one of the return values",
             "ui": {
                 "style": <one of ('array')>,
                 "choices": <array of parameter values to be displayed in the ui.  If 'values' is not specified, the return value is the same as the display value. Can be any fundamental type; string, int, float, bool etc.>,
