@@ -57,6 +57,12 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
   ```
 	- Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
 	- Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
+- When developing the UI, webpack can be run in dev mode so that bundle.js will be automatically be rebuilt when changes to the web code are detected.  User will need to refresh with ctrl+5f for the changes to be seen in the browser.  To do so, after PennAi is up, do the following:
+```
+docker exec -it "pennai_lab_1" /bin/bash
+cd $PROJECT_ROOT/lab/webapp
+npm run build-dev
+```
 
 
 ## Tests
