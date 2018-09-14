@@ -48,7 +48,6 @@ class MetaRecommender(BaseRecommender):
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
         self.ml_type = ml_type
-        self.sample_size = sample_size
 
         if metric is None:
             self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
@@ -83,6 +82,7 @@ class MetaRecommender(BaseRecommender):
 
         self.ml_p = self.params_to_features(self.ml_p, init=True)
 
+        self.sample_size = min(sample_size, len(self.ml_p))
         # Encoding the variables
         self.LE = defaultdict(LabelEncoder)
         self.OHE = OneHotEncoder(sparse=False)
