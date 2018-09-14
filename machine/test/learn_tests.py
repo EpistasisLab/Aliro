@@ -18,6 +18,23 @@ import requests
 import unittest
 from unittest import mock
 from io import StringIO
+import re
+
+NOT_WHITESPACE = re.compile(r'[^\s]')
+
+def decode_stacked(document, pos=0, decoder=json.JSONDecoder()):
+    while True:
+        match = NOT_WHITESPACE.search(document, pos)
+        if not match:
+            return
+        pos = match.start()
+
+        try:
+            obj, pos = decoder.raw_decode(document, pos)
+        except json.JSONDecodeError:
+            # do something sensible if there's some error
+            raise
+        yield obj
 
 # test input file for classification
 test_clf_input = "machine/test/iris.tsv"
@@ -28,6 +45,7 @@ test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 test_clf = DecisionTreeClassifier()
 test_reg = DecisionTreeRegressor()
+projects_json = "dockers/dbmongo/files/projects.json"
 
 
 # This method will be used by the mock to replace requests.get
@@ -54,41 +72,8 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
         return MockResponse(open(test_reg_input).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/projects':
-        json_data = [{
-            "name": "SVC",
-            "schema": {
-                "kernel": {
-                    "type": "string",
-                    "default": "rbf"
-                },
-                "tol": {
-                    "type": "float",
-                    "default": 0.0001
-                },
-                "C": {
-                    "type": "float",
-                    "default": 1.0
-                }
-            },
-            "category": "ML"
-        },
-        {"name": "SVC",
-        "schema": {
-            "kernel": {
-                "type": "string",
-                "default": "rbf"
-            },
-            "tol": {
-                "type": "float",
-                "default": 0.0001
-            },
-            "C": {
-                "type": "float",
-                "default": 1.0
-            }
-        },
-        "category": "ML"
-        }]
+        json_file = open(projects_json, encoding="utf8")
+        json_data = [obj for obj in decode_stacked(json_file.read())]
         return MockResponse(json.dumps(json_data), 200)
     else:
         return MockResponse(None, 404)
@@ -140,8 +125,6 @@ class APITESTCLASS(unittest.TestCase):
         assert exp.method_name == 'SVC'
         assert exp.basedir == '../'
         assert exp.tmpdir == '{}/machine/learn/{}/tmp/'.format('../', 'SVC')
-
-
 
 
 
