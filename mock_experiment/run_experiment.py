@@ -17,7 +17,8 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     results = []
     recommender = {'random': RandomRecommender(ml_p=ml_p,metric='bal_accuracy'),
             'average': AverageRecommender(metric='bal_accuracy'),
-            'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/')
+            'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
+                                        sample_size=1000)
             }[rec]
     #pdb.set_trace()
     # load first ten results into recommender
@@ -51,14 +52,15 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             else:
                 p = ps[0]
 
+            print('recommending',ml,'with',p,'for',dataset)
             if (ml,p) not in holdout_subset_lookup:
                 print((ml,p),'not found')
                 pdb.set_trace()
-
+            
             # n = n+1
             # retreive the performance of the recommended learner
             actual_score = holdout_subset_lookup[(ml, p)]
-
+            best_score = pmlb_data.loc[pmlb_data['dataset'] == dataset]['bal_accuracy'].max()
             # Update the recommender with the score from its latest guess
             update_record = pd.DataFrame(data={'dataset': [dataset],
                                                'algorithm': [ml],
@@ -67,7 +69,8 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             # print('updating recommender...')
             recommender.update(update_record)
             # store the trial, iteration, dataset, recommender, ml rec, param rec, bal_accuracy	
-            results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score])
+            results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score,best_score,
+                            best_score-actual_score])
 
     return results
 
@@ -112,7 +115,8 @@ if __name__ == '__main__':
                 + 'recs_' + str(args.n_trials) 
                 + 'trials_' + str(args.n_init) + 'init.csv')    
     with open(out_file,'w') as out: # write header
-        out.write('trial\titeration\trecommender\tdataset\tml-rec\tp-rec\tscore-rec\tbal_accuracy\n')
+        out.write('trial\titeration\trecommender\tdataset\tml-rec\tp-rec\tscore-rec\tbal_accuracy'
+                  '\tmax_bal_accuracy\tdelta_bal_accuracy\n')
 
     for t in np.arange(args.n_trials):   # for each trial (parallelize this)
         print('trial',t)
