@@ -46,9 +46,10 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             ml = mls[0]
             if type(recommender).__name__ == 'MockMetaRecommender':
                 tmp = eval(ps[0])
-                if 'coef0' in tmp.keys():
-                    tmp['coef0'] = float(tmp['coef0'])
-                p = str(OrderedDict(sorted(tmp.items())))
+                for mfs in ['coef0','learning_rate']:
+                    if mfs in tmp.keys():
+                        tmp[mfs] = float(tmp[mfs])
+                    p = str(OrderedDict(sorted(tmp.items())))
             else:
                 p = ps[0]
 
@@ -130,4 +131,4 @@ if __name__ == '__main__':
                 for res in results:
                     out.write('\t'.join([str(r) for r in res])+'\n')
 
-
+    print('done. results written to ', out_file)
