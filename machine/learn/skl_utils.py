@@ -95,7 +95,7 @@ def generate_results(model, input_data,
         features = input_data.drop(target_name, axis=1).values
         target = input_data[target_name].values
 
-        features, target = check_X_y(features, target, dtype=np.float64, order="C")
+        features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
 
         training_features, testing_features, training_classes, testing_classes = \
             train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
@@ -111,13 +111,16 @@ def generate_results(model, input_data,
         training_classes = training_data[target_name].values
         testing_classes = testing_data[target_name].values
 
-        training_features, training_classes = check_X_y(training_features, training_classes, dtype=np.float64, order="C")
-        testing_features, testing_classes = check_X_y(testing_features, testing_classes, dtype=np.float64, order="C")
-
-
-
-
-
+        training_features, training_classes = check_X_y(
+                                                        training_features,
+                                                        training_classes,
+                                                        dtype=np.float64, order="C",
+                                                        force_all_finite=True)
+        testing_features, testing_classes = check_X_y(
+                                                        testing_features,
+                                                        testing_classes,
+                                                        dtype=np.float64, order="C",
+                                                        force_all_finite=True)
 
     # fix random_state
     model = setup_model_params(model, 'random_state', random_state)
