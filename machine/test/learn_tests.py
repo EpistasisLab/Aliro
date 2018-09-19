@@ -1,14 +1,15 @@
 import os
+import sys
 # mock os.environ in unittest
 os.environ['LAB_HOST'] = 'lab'
 os.environ['LAB_PORT'] = '5080'
-os.environ['PROJECT_ROOT'] = '..'
+os.environ['PROJECT_ROOT'] = '.'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from machine.learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from machine.learn.io_utils import Experiment, get_input, get_params, get_input_data
+from machine.learn.io_utils import Experiment, get_input, get_params, get_input_data, get_type
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -134,6 +135,51 @@ class APITESTCLASS(unittest.TestCase):
         assert exp.basedir == '.'
         assert exp.tmpdir == './machine/learn/{}/tmp/'.format('SVC')
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_1(self, mock_get):
+        """Test main function in each machine learning  can produce right outputs in classification mode."""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id'
+        outdir = tmpdir + _id
+        os.mkdir(outdir)
+
+        for obj in projects_json_data:
+            algorithm_name = obj["name"]
+            if algorithm_name == "RandomForestClassifier":
+                schema = obj["schema"]
+                args = {}
+                args['_id'] = _id
+                for param_name in schema.keys():
+                    default_value = schema[param_name]["default"]
+                    param_type = schema[param_name]["type"]
+                    conv_func = get_type(param_type)
+                    conv_default_value = conv_func(default_value)
+                    args[param_name] = conv_default_value
+
+                import_str  = 'machine.learn.{}.main'.format(algorithm_name)
+                Path = "machine/learn"
+                if Path not in sys.path:
+                    sys.path.insert(0, Path)
+                exec('from {} import main'.format(import_str))
+                exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
+
+                value_json = '{}/value.json'.format(outdir)
+                assert os.path.isfile(value_json)
+                with open(value_json, 'r') as f:
+                    value = json.load(f)
+                assert value['_scores']['train_score'] > 0.9
+                assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+                assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+                assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+                assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+                assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+                assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+                # test pickle file
+                pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+                assert os.path.isfile(pickle_file)
+        rmtree(tmpdir)
+
+
 
 def test_generate_results_1():
     """Test generate results can produce right outputs in classification mode."""
@@ -142,7 +188,7 @@ def test_generate_results_1():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='target', figure_export=True)
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -168,11 +214,11 @@ def test_generate_results_2():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='target', figure_export=False, random_state=42)
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='target'
+    target_name='class'
     features = input_data.drop(target_name, axis=1).values
     classes = LabelEncoder().fit_transform(input_data[target_name].values)
     training_features, testing_features, training_classes, testing_classes = \
@@ -209,7 +255,7 @@ def test_generate_results_3():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='target',
+                    tmpdir=tmpdir, _id=_id, target_name='class',
                     mode='regression', figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
@@ -236,7 +282,7 @@ def test_generate_results_4():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='target',
+                    tmpdir=tmpdir, _id=_id, target_name='class',
                     mode='regression', figure_export=False)
 
     value_json = '{}/value.json'.format(outdir)
@@ -266,14 +312,15 @@ def test_generate_results_5():
     test_reg_input_df_nan = test_reg_input_df
     test_reg_input_df_nan.iloc[1,1] = np.nan
     assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_nan,
-                    tmpdir, _id, 'target',
+                    tmpdir, _id, 'class',
                     'regression', False)
     # data with infinity value
     test_reg_input_df_inf = test_reg_input_df
     test_reg_input_df_inf.iloc[1,1] = np.inf
     assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_inf,
-                    tmpdir, _id, 'target',
+                    tmpdir, _id, 'class',
                     'regression', False)
+
 
 
 
@@ -291,7 +338,7 @@ def test_generate_export_codes():
     """Test generate_export_codes can generate scripts as execpted."""
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='target'
+    target_name='class'
     features = input_data.drop(target_name, axis=1).values
     classes = LabelEncoder().fit_transform(input_data[target_name].values)
 

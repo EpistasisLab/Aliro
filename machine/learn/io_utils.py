@@ -119,16 +119,6 @@ def bool_type(val):
     else:
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
-# this shouldn't be for all int types --> change later
-
-def int_or_none(val):
-    if(val.lower() == 'none'):
-        return None
-    try:
-        int(val)
-    except Exception:
-        raise argparse.ArgumentTypeError(val + ' is not a valid int value')
-    return int(val)
 
 # this shouldn't be for all str types --> change later
 
@@ -150,7 +140,7 @@ def enum_type(val):
 
 def get_type(type):
     known_types = {
-        'int': int_or_none,  # change this later
+        'int': int,  # change this later
         'float': float,
         'string': str_or_none,  # change this later
         'bool': bool_type,
