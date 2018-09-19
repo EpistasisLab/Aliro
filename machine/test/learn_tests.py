@@ -8,8 +8,11 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-from machine.learn.skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from machine.learn.io_utils import Experiment, get_input, get_params, get_input_data, get_type
+Path = "machine/learn"
+if Path not in sys.path:
+    sys.path.insert(0, Path)
+from skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
+from io_utils import Experiment, get_input, get_params, get_input_data, get_type
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -157,9 +160,7 @@ class APITESTCLASS(unittest.TestCase):
                     args[param_name] = conv_default_value
 
                 import_str  = 'machine.learn.{}.main'.format(algorithm_name)
-                Path = "machine/learn"
-                if Path not in sys.path:
-                    sys.path.insert(0, Path)
+
                 exec('from {} import main'.format(import_str))
                 exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
 
