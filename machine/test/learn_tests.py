@@ -25,7 +25,8 @@ from unittest import mock
 from nose.tools import assert_raises
 from io import StringIO
 import re
-import subprocess
+
+import warnings
 
 
 NOT_WHITESPACE = re.compile(r'[^\s]')
@@ -160,9 +161,10 @@ class APITESTCLASS(unittest.TestCase):
                     args[param_name] = conv_default_value
 
                 import_str  = 'machine.learn.{}.main'.format(algorithm_name)
-
-                exec('from {} import main'.format(import_str))
-                exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    exec('from {} import main'.format(import_str))
+                    exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
 
                 value_json = '{}/value.json'.format(outdir)
                 assert os.path.isfile(value_json)
