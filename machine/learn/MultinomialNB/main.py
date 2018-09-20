@@ -13,8 +13,11 @@ if parentPath not in sys.path:
 from io_utils import Experiment
 from skl_utils import generate_results
 
-if __name__ == "__main__":
-    exp = Experiment('MultinomialNB')
-    args, input_data = exp.get_input()
+exp = Experiment('MultinomialNB')
+def main(args, input_data, tmpdir=exp.tmpdir):
     model = MultinomialNB(alpha=args['alpha'], fit_prior=args['fit_prior'])
-    generate_results(model, input_data, exp.tmpdir, args['_id'])
+    generate_results(model, input_data, tmpdir, args['_id'])
+
+if __name__ == "__main__":
+    args, input_data = exp.get_input()
+    main(args, input_data)

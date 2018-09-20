@@ -141,46 +141,45 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_1(self, mock_get):
-        """Test main function in each machine learning  can produce right outputs in classification mode."""
-        tmpdir = mkdtemp() + '/'
-        _id = 'test_id'
-        outdir = tmpdir + _id
-        os.mkdir(outdir)
+        """Test main function in each machine learning in projects.json can produce expected outputs."""
 
         for obj in projects_json_data:
+            tmpdir = mkdtemp() + '/'
+            _id = 'test_id'
+            outdir = tmpdir + _id
+            os.mkdir(outdir)
             algorithm_name = obj["name"]
-            if algorithm_name == "RandomForestClassifier":
-                schema = obj["schema"]
-                args = {}
-                args['_id'] = _id
-                for param_name in schema.keys():
-                    default_value = schema[param_name]["default"]
-                    param_type = schema[param_name]["type"]
-                    conv_func = get_type(param_type)
-                    conv_default_value = conv_func(default_value)
-                    args[param_name] = conv_default_value
+            schema = obj["schema"]
+            args = {}
+            args['_id'] = _id
+            for param_name in schema.keys():
+                default_value = schema[param_name]["default"]
+                param_type = schema[param_name]["type"]
+                conv_func = get_type(param_type)
+                conv_default_value = conv_func(default_value)
+                args[param_name] = conv_default_value
 
-                import_str  = 'machine.learn.{}.main'.format(algorithm_name)
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    exec('from {} import main'.format(import_str))
-                    exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
+            import_str  = 'machine.learn.{}.main'.format(algorithm_name)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                exec('from {} import main'.format(import_str))
+                exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
 
-                value_json = '{}/value.json'.format(outdir)
-                assert os.path.isfile(value_json)
-                with open(value_json, 'r') as f:
-                    value = json.load(f)
-                assert value['_scores']['train_score'] > 0.9
-                assert os.path.isfile('{}/prediction_values.json'.format(outdir))
-                assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-                assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-                assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-                assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
-                assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
-                # test pickle file
-                pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
-                assert os.path.isfile(pickle_file)
-        rmtree(tmpdir)
+            value_json = '{}/value.json'.format(outdir)
+            assert os.path.isfile(value_json)
+            with open(value_json, 'r') as f:
+                value = json.load(f)
+            assert value['_scores']['train_score']
+            assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+            assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+            assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+            assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+            assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+            assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+            # test pickle file
+            pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+            assert os.path.isfile(pickle_file)
+            rmtree(tmpdir)
 
 
 
