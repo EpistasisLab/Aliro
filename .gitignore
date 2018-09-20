@@ -19,3 +19,4 @@ tests/integration/results/*
 lab/node_modules_entrypoint_check.sha1
 config/ai.env
 target/*
+.coverage

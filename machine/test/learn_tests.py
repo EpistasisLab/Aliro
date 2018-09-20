@@ -184,7 +184,7 @@ class APITESTCLASS(unittest.TestCase):
 
 
 def test_generate_results_1():
-    """Test generate results can produce right outputs in classification mode."""
+    """Test generate results can produce expected outputs in classification mode."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
@@ -210,7 +210,7 @@ def test_generate_results_1():
 
 
 def test_generate_results_2():
-    """Test generate results can produce right outputs in classification mode without figure_export=False"""
+    """Test generate results can produce expected outputs in classification mode without figure_export=False"""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
@@ -251,7 +251,7 @@ def test_generate_results_2():
 
 
 def test_generate_results_3():
-    """Test generate results can produce right outputs in regression mode"""
+    """Test generate results can produce expected outputs in regression mode"""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
@@ -278,7 +278,7 @@ def test_generate_results_3():
 
 
 def test_generate_results_4():
-    """Test generate results can produce right outputs in regression mode without figure_export=False"""
+    """Test generate results can produce expected outputs in regression mode without figure_export=False"""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
@@ -322,8 +322,6 @@ def test_generate_results_5():
     assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_inf,
                     tmpdir, _id, 'class',
                     'regression', False)
-
-
 
 
 def test_setup_model_params():
