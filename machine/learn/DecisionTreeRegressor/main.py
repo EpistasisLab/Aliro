@@ -13,9 +13,13 @@ if parentPath not in sys.path:
 from io_utils import Experiment
 from skl_utils import generate_results
 
-if __name__ == "__main__":
-    exp = Experiment('DecisionTreeRegressor')
-    args, input_data = exp.get_input()
+exp = Experiment('DecisionTreeRegressor')
+def main(args, input_data, tmpdir=exp.tmpdir):
     model = DecisionTreeRegressor(max_depth=args['max_depth'], min_samples_split=args['min_samples_split'],
                                   min_samples_leaf=args['min_samples_leaf'])
-    generate_results(model, input_data, exp.tmpdir, args['_id'], mode='regression')
+    generate_results(model, input_data, tmpdir, args['_id'], mode='regression')
+
+
+if __name__ == "__main__":
+    args, input_data = exp.get_input()
+    main(args, input_data)
