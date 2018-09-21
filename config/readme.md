@@ -7,9 +7,10 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
 ```
 {
     "name": "<algorithm name>",
+    "path": "<import path from scikit-learn or package following scikit-learn API>"
     "description": "<algorithm description>",
     "url": "<documentation url>",
-    "category:<just "ml" for now>,
+    "category": "<classification or regression>"
     "invalidParameterCombinations": [
         <optional; lists of arrays of invalid parameter combinations.  array keys must be valid parameter names, array values must be valid parameter values>
     ]
