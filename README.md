@@ -12,7 +12,7 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
   - Python and nose test runner (optional, needed only to run unit tests)
   	- [Python 3.* ](https://www.python.org/downloads/)
-  	- install [nose](https://pypi.org/project/nose/) via `pip install nose`
+  	- install [nose](https://pypi.org/project/nose/) and [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
   - nodejs (optional, can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
 
@@ -75,15 +75,31 @@ npm run build-dev
 
 
 ### Unit
-#### AI
+- Type: Bash script that runs all the python unit tests and puts the test results and code coverage reports in the `.\target` directory
+- Dependencies: `pip install nose coverage`
+	- Python [nose](https://pypi.org/project/nose/)
+	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html)
+- Usage: `sh .\tests\unit_test_runner.sh`
+- Results: 
+	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
+	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
+
+#### AI Recommnender
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
 	```
 	nosetests -s -v ai/tests/test_recommender.py
 	```
+#### AI Controller
+- Type: Python [nose](https://pypi.org/project/nose/)
+- Prereqs: install nose `pip install nose`
+- Usage:
+	```
+	nosetests -s -v ai/tests/test_ai.py
+	```
 
-#### Metafeatures
+#### Metafeature Generation
 - Type: Python
 - Usage:
 	```
