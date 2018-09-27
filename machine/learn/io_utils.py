@@ -13,76 +13,74 @@ basedir = os.environ['PROJECT_ROOT']
 
 
 class Experiment:
-    def __init__(self, method_name, basedir=basedir):
+    def __init__(self, args, basedir=basedir):
         """
         method_name: ML Algorithm
         basedir: basedir for this project
         """
-        self.method_name = method_name
+        self.args = args
+        self.method_name = self.args['method']
         self.basedir = basedir
         self.build_paths()
 
     def build_paths(self):
+        """Build temporary directory."""
         self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
 
     def get_input(self):
-        return get_input(self.method_name, self.tmpdir)
+        """Get input data based on _id from API."""
+        input_data = get_input_data(self.args['_id'], self.tmpdir)
+        return input_data
+
+    def get_model(self):
+        """Get scikit learn method."""
+        projects = get_projects()
+        for pdict in projects:
+            if pdict['name'] == self.method_name:
+                params = pdict['schema']
+                import_path = pdict['path']
+                method_type = pdict['category']
+        method_args = {k:self.args[k] for k in params.keys()}
+        exec('from {} import {}'.format(import_path, self.method_name))
+        method = eval(self.method_name)
+        model = method(**method_args)
+        return model, method_type
 
 
-def get_input(method_name, tmpdir):
-    args = parse_args(get_params(method_name))
-    assert args['_id']
-    input_data = get_input_data(args['_id'], tmpdir)
-    return (args, input_data)
-
-
-def save_output(tmpdir, _id, output):
-    expdir = tmpdir + _id + '/'
-    with open(os.path.join(expdir, 'value.json'), 'w') as outfile:
-        json.dump({'_scores': output}, outfile)
-
-
-def get_params(method_name):
-    params = {}
-    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
-    jsondata = json.loads(requests.get(uri).text)
-    for pdict in jsondata:
-        if pdict['name'] == method_name:
-            params = pdict['schema']
-            break
-    return params
-
-
-def parse_args(params):
-    """Parse argument.
-
-    Parameters
-    -------
-    params: dict
-        schema in projects.json
-
-
+def get_projects():
+    """get all machine learning algorithm's information from API
+    (the information should be the same with projects.json).
     """
-    parser = argparse.ArgumentParser()
+    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
+    projects = json.loads(requests.get(uri).text)
+    return projects
 
-    # parse args for each parameter
-    for key, val in params.items():
-        arg = '--' + key
-        arg_dest = key
-        arg_default = val['default']
-        arg_type = get_type(val['type'])
 
-        parser.add_argument(arg, action='store', dest=arg_dest,
-                            default=arg_default, type=arg_type)
+def parse_args():
+    """Parse arguments for machine learning algorithm.
+    """
+    projects = get_projects()
+    parser = argparse.ArgumentParser(description='Driver for all machine learning algorithms in PennAI')
+    subparsers = parser.add_subparsers(dest='method',help="ML Learning Algorithm")
 
-    parser.add_argument('--_id', action='store', dest='_id',
+    for pdict in projects:
+        method = pdict['name']
+        params = pdict['schema']
+        subparser = subparsers.add_parser(method)
+        subparser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
 
-    args = vars(parser.parse_args())
+        # parse args for each parameter
+        for key, val in params.items():
+            arg = '--' + key
+            arg_dest = key
+            arg_default = val['default']
+            arg_type = get_type(val['type'])
 
-    print('parsed args:', args)
+            subparser.add_argument(arg, action='store', dest=arg_dest,
+                                default=arg_default, type=arg_type)
 
-    return args
+
 
 def get_input_data(_id, tmpdir):
     expdir = tmpdir + _id + '/'
