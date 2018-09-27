@@ -6,11 +6,11 @@ from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
 from time import sleep
+import time
 import datetime
 import json
 import pickle
 import requests
-import urllib.request, urllib.parse
 import pdb
 import time
 import ai.db_utils as db_utils
@@ -207,13 +207,10 @@ class AI():
         # get new results
         payload = {'date_start':self.last_update,'has_scores':True}
         payload.update(self.static_payload)
-        params = json.dumps(payload).encode('utf8')
+        params = json.dumps(payload)
         print("requesting from : ", self.exp_path)
-        req = urllib.request.Request(self.exp_path, data=params,
-                                   headers=self.header)
-        r = urllib.request.urlopen(req)
-        data = json.loads(r.read().decode(r.info().get_param('charset')
-                                          or 'utf-8'))
+        res = requests.post(self.exp_path, data=params, headers=self.header)
+        data = json.loads(res.text)
 
         if len(data) > 0:
             # if there are new results, return True
@@ -223,7 +220,7 @@ class AI():
             #process new results
             self.process_new_results(data)
             # update timestamp
-            self.last_update = int(datetime.datetime.now().strftime("%s"))*1000
+            self.last_update = int(time.time())*1000
             return True
 
         return False
@@ -474,9 +471,13 @@ def main():
                pennai.process_rec()
                 #pennai.send_rec()
             n = n + 1
-            sleep(args.SLEEP_TIME)
+            time.sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
         print('Saving current AI state and closing....')
+    except:
+        #print("Unhanded exception caught:", sys.exc_info()[0])
+        print("Unhanded exception caught:")
+        raise
     finally:
         # tell queues to exit
         print("foo")
