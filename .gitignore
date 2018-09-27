@@ -21,3 +21,4 @@ config/ai.env
 target/*
 .coverage
 nosetests.html
+__pycache__
