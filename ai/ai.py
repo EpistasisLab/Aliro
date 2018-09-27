@@ -14,6 +14,7 @@ import requests
 import pdb
 import time
 import ai.db_utils as db_utils
+from ai.db_utils import LabApi
 import os
 import ai.q_utils as q_utils
 from ai.recommender.average_recommender import AverageRecommender
@@ -69,6 +70,7 @@ class AI():
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
+
         # access to database
         self.db_path = db_path
         self.exp_path = '/'.join([self.db_path,'api/experiments'])
@@ -78,6 +80,7 @@ class AI():
         self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
         self.algo_path = '/'.join([self.db_path,'api/projects'])
         self.user=user
+
         self.verbose = verbose #False: no printouts, True: printouts on updates
         # api key for the recommender
         self.api_key=os.environ['APIKEY']
@@ -97,6 +100,15 @@ class AI():
         # timestamp for updates
         # self.last_update = int(datetime.datetime.now().strftime("%s")) * 1000
         self.last_update = 0
+
+        # api
+        self.labApi = LabApi(
+            db_path=self.db_path, 
+            user=self.user, 
+            api_key=self.api_key, 
+            extra_payload=self.extra_payload,
+            verbose=self.verbose)
+
         # if there is a file, load it as the recommender scores
         self.warm_start = warm_start
         self.load_options()
@@ -111,6 +123,7 @@ class AI():
         self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
         # toggled datasets
         self.dataset_threads = {}
+
 
         # verbosity...
         print("paths:")
@@ -127,11 +140,7 @@ class AI():
             data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
             print(data_usersets)
             for ds in datasets.split(','):
-                payload = {'ai': 'requested'}
-                data_submit_path = '/'.join([self.submit_path,data_usersets[ds],'ai'])
-                print('submitting ai requested to ',data_submit_path)
-                tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                    headers=self.header)
+                tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], aiStatus = 'requested')
 
     def load_state(self):
         """loads pickled score file."""
@@ -149,10 +158,10 @@ class AI():
         """Loads UI options."""
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','loading options...')
-        v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
-                          headers=self.header)
-        responses = json.loads(v.text)
+
+        responses = self.labApi.get_projects()
         self.ui_options = responses
+
         if len(responses) > 0:
             self.ui_options = responses
             #if self.verbose:
@@ -173,9 +182,7 @@ class AI():
         else:
             payload = {'ai':['requested','dummy']}
 
-        payload.update(self.static_payload)
-        r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
-        responses = json.loads(r.text)
+        responses = self.labApi.get_datasets(payload)
         #print(responses);
         #pdb.set_trace()
 
@@ -185,13 +192,10 @@ class AI():
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':','new ai request for:',[r['name'] for r in responses])
+            
             # set AI flag to 'true' to acknowledge requests received
-            payload= {'ai':'on'}
-            payload.update(self.static_payload)
             for r in self.request_queue:
-                data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-                tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                                      headers=self.header)
+                tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'on')
                 q_utils.startQ(self,r['_id'])
             return True
 
@@ -205,12 +209,7 @@ class AI():
                   ':','checking results...')
 
         # get new results
-        payload = {'date_start':self.last_update,'has_scores':True}
-        payload.update(self.static_payload)
-        params = json.dumps(payload)
-        print("requesting from : ", self.exp_path)
-        res = requests.post(self.exp_path, data=params, headers=self.header)
-        data = json.loads(res.text)
+        data = self.labApi.get_new_experiments(last_update=self.last_update)
 
         if len(data) > 0:
             # if there are new results, return True
@@ -263,12 +262,12 @@ class AI():
     def transfer_rec(self,rec_payload):
             """performs http transfer of recommendation"""
             experimentData = json.dumps(rec_payload,cls=JasonEncoder)
-            submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+            submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], experimentData)
 
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
                 sleep(3)
-                submitstatus = self.post_experiment(rec_payload['algorithm_id'], experimentData)
+                submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], experimentData)
 
             if 'error' in submitstatus:
                 print('unrecoverable error during transfer_rec '  )
@@ -309,46 +308,8 @@ class AI():
                 #sleep(1)
 
                 #submit update to dataset to indicate ai:True
-            #payload= {'ai':'finished'} # h note - re-enable this once the queuing functionaity has been moved to lab server
-            payload= {'ai':'queuing'}
-            data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-            tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                headers=self.header)
-            i += 1
-
-    #h note - this seems to be deprecated
-    def send_rec(self):
-        """Sends recommendation to the API."""
-        i = 0
-        for r in self.request_queue:
-            dataset = r['name']
-            # get recommendation for dataset
-            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
-
-            for alg,params,score in zip(ml,p,ai_scores):
-                # turn params into a dictionary
-                modified_params = eval(params)
-                #print(modified_params.max_features)
-                rec_payload = {'dataset_id':r['_id'],
-                        # 'dataset_name':r['name'],
-                        'algorithm_id':alg,
-                        # 'ml_name':alg,
-                        'parameters':modified_params,
-                        'ai_score':score,
-                        }
-                if self.verbose:
-                    print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                        ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                # add static payload
-                rec_payload.update(self.static_payload)
-                # do http transfer
-                transfer_status = self.transfer_rec(rec_payload)
-
-                #submit update to dataset to indicate ai:True
-            payload= {'ai':'finished'}
-            data_submit_path = '/'.join([self.submit_path,r['_id'],'ai'])
-            tmp = requests.put(data_submit_path,data=json.dumps(payload),
-                headers=self.header)
+            #tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'finished') # h note - re-enable this once the queuing functionaity has been moved to lab server
+            tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'queuing')
             i += 1
 
     def update_recommender(self):
@@ -375,44 +336,13 @@ class AI():
 
     def db_to_results_data(self,response):
         """load json files from db and convert to results_data.
+
         Output: a DataFrame with at least these columns:
                 'algorithm'
                 'parameters'
                 self.metric
         """
 
-    #################
-    # Utility methods
-    #################
-    def post_experiment(self, algorithmId, experimentData):
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-        rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
-        
-        try:
-            res=requests.post(rec_path,data=experimentData,headers=self.header)
-        except:
-            print("Unexpected error in post_experiment for path '", rec_path, "':", sys.exc_info()[0])
-            raise
-
-        submitresponses = json.loads(res.text)
-
-        #parse json response into named array
-        submitstatus={}
-        if len(submitresponses) > 0:
-            for submiti in submitresponses:
-                submitstatus[submiti] = submitresponses[submiti]
-
-        return submitstatus
-
-    def set_ai_status(self, datasetId, aiStatus):
-        """set the ai status for the given dataset"""
-        payload= {'ai':aiStatus}
-        data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
-        try:
-            tmp = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
-        except:
-            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
-            raise
 
 ####################################################################### Manager
 import argparse
