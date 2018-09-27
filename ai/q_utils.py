@@ -49,7 +49,7 @@ def process_data(self):
        #hacky way to know if the queue has just cleared
        if self.workQueue.empty() and workDone:
         print(str(self.workQueue.qsize()) + ' Jobs in queue for ' + self.name + ', marking ai as finished.')
-        self.p.set_ai_status(self.datasetId, 'finished')
+        self.p.labApi.set_ai_status(self.datasetId, 'finished')
        self.queueLock.release()
 
  
