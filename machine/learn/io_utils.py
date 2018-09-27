@@ -79,7 +79,9 @@ def parse_args():
 
             subparser.add_argument(arg, action='store', dest=arg_dest,
                                 default=arg_default, type=arg_type)
-
+    args = vars(parser.parse_args())
+    print('parsed args:', args)
+    return args
 
 
 def get_input_data(_id, tmpdir):
@@ -118,9 +120,6 @@ def bool_type(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 
-# this shouldn't be for all str types --> change later
-
-
 def str_or_none(val):
     if(val.lower() == 'none'):
         return None
@@ -130,7 +129,6 @@ def str_or_none(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid str value')
     return str(val)
 
-# how should this check what kind of enum type? right now, just returns a string.
 
 def enum_type(val):
     return str(val)
