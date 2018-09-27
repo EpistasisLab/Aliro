@@ -442,6 +442,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
 
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
 
+
 def plot_imp_score(tmpdir, _id, coefs, feature_names):
     """Plot importance scores for features.
     Parameters

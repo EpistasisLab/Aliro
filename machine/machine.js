@@ -199,8 +199,8 @@ app.get("/projects/:id/capacity", (req, res) => {
     }
 });
 
-/** 
-* Get current projects 
+/**
+* Get current projects
 * Used for debugging to make sure machine state is in sync with lab state
 */
 app.get("/projects", (req, res) => {
@@ -455,7 +455,7 @@ var wsErrHandler = function() {};
 // Call on connection from new client
 wss.on("connection", (ws) => {
     console.log(`wss.connection: ${ws}`)
-    
+
     // Listeners
     var sendStdout = function(data) {
         ws.send(JSON.stringify({
@@ -509,8 +509,8 @@ var getProjects = function() {
                     var project = {
                         name: dir,
                         command: "python",
-                        cwd: cwd,
-                        args: ["main.py"],
+                        cwd: "machine/learn/",
+                        args: ["driver.py",  dir],
                         options: "double-dash",
                         capacity: "1",
                         results: cwd + "/tmp"
