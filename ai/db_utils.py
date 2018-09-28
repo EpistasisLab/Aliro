@@ -27,21 +27,21 @@ class LabApi:
     """Class for communicating with the PennAI server
     """
 
-    def __init__(self, db_path, user, api_key, extra_payload, verbose):
+    def __init__(self, api_path, user, api_key, extra_payload, verbose):
         """
-        :param db_path: string - path to the lab api server
+        :param api_path: string - path to the lab api server
         :param extra_payload: dict - any additional payload that needs to be specified
         :param api_key: string - 
         :param user: string - test user
         :param verbose: Boolean
         """
-        self.db_path = db_path
-        self.exp_path = '/'.join([self.db_path,'api/experiments'])
-        self.data_path = '/'.join([self.db_path,'api/datasets'])
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-        self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
-        self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
-        self.algo_path = '/'.join([self.db_path,'api/projects'])
+        self.api_path = api_path
+        self.exp_path = '/'.join([self.api_path,'api/experiments'])
+        self.data_path = '/'.join([self.api_path,'api/datasets'])
+        self.projects_path = '/'.join([self.api_path,'api/v1/projects'])
+        self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
+        self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
+        self.algo_path = '/'.join([self.api_path,'api/projects'])
         self.api_key=api_key
         self.user=user
         self.verbose=verbose
@@ -56,7 +56,7 @@ class LabApi:
 
         if verbose:
             print("LabApi paths:")
-            print("self.db_path: ", self.db_path)
+            print("self.api_path: ", self.api_path)
             print("self.exp_path: ", self.exp_path)
             print("self.data_path: ", self.data_path)
             print("self.projects_path: ", self.projects_path)
@@ -77,7 +77,7 @@ class LabApi:
         payload.update(self.static_payload)
         experimentData = json.dumps(payload,cls=NumpyJsonEncoder)
 
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
+        self.projects_path = '/'.join([self.api_path,'api/v1/projects'])
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
         
         try:
