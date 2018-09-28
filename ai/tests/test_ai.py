@@ -9,19 +9,35 @@ import sys
 import json
 from unittest.mock import Mock, patch
 
+class MockResponse:
+    def __init__(self, json_data, status_code):
+        self.json_data = json_data
+        self.status_code = status_code
+        self.text = json_data
+
+    def json(self):
+        return self.json_data
+
+def mocked_requests_put(*args, **kwargs):
+    """This method will be used by mock to replace requests.post"""
+    print("mocked_requests_put: " + str(args[0]))
+    print("kwargs: " + str(kwargs))
+    if(kwargs and 'data' in kwargs.keys()) :
+        data = json.dumps(kwargs['data'])
+    else :
+        data = []
+
+    print("data: " + data)
+
+    if args[0] == 'http://lab:5080/api/foo':
+        json_data = []
+        return MockResponse(json.dumps(json_data), 200)
+    else:
+        return MockResponse(None, 404)
+
 
 # This method will be used by the mock to replace requests.get
 def mocked_requests_get(*args, **kwargs):
-    class MockResponse:
-        def __init__(self, json_data, status_code):
-            self.json_data = json_data
-            self.status_code = status_code
-            self.text = json_data
-
-        def json(self):
-            return self.json_data
-
-
     print("mocked_requests_get: " + str(args[0]))
     if args[0] == 'http://lab:5080/api/preferences':
         json_data = [
@@ -98,17 +114,7 @@ def mocked_requests_get(*args, **kwargs):
 
 # This method will be used by the mock to replace requests.get
 def mocked_requests_post(*args, **kwargs):
-    class MockResponse:
-        def __init__(self, json_data, status_code):
-            self.json_data = json_data
-            self.status_code = status_code
-            self.text = json_data
-
-        def json(self):
-            return self.json_data
-
     print("mocked_requests_post: " + str(args[0]))
-    #print(str(args))
     print("kwargs: " + str(kwargs))
     if(kwargs and 'data' in kwargs.keys()) :
         data = json.dumps(kwargs['data'])
@@ -246,9 +252,9 @@ def mocked_requests_post(*args, **kwargs):
         	]
         }]
         return MockResponse(json.dumps(json_data), 200)
-    elif  (args[0] == 'http://lab:5080/api/datasets' 
-                and (kwargs['data'] == '{"ai": ["requested", "dummy"], "apikey": "aaaaa"}')):
-        return MockResponse(json.dumps({}), 200)
+    #elif  (args[0] == 'http://lab:5080/api/datasets' 
+    #            and (kwargs['data'] == '{"ai": ["requested"], "apikey": "aaaaa"}')):
+    #    return MockResponse(json.dumps({}), 200)
     elif args[0] == 'http://lab:5080/api/userdatasets' or args[0] == 'http://lab:5080/api/datasets' :
         json_data = [
     {
@@ -437,6 +443,11 @@ def mocked_requests_post(*args, **kwargs):
     }
 ]
         return MockResponse(json.dumps(json_data), 200)
+    elif args[0] == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
+        json_data = {
+                  "_id": "562a12bd612a17b20f99a143"
+                }
+        return MockResponse(json.dumps(json_data), 200)
     else:
         print("Unhandled post")
         return MockResponse(None, 404)
@@ -469,9 +480,10 @@ def test_ai_random_recommender(mock_post, mock_get):
 
 @patch('requests.post', side_effect=mocked_requests_post)
 @patch('requests.get', side_effect=mocked_requests_get)
-@patch('time.sleep', side_effect=SystemExit)
+@patch('requests.put', side_effect=mocked_requests_put)
+@patch('time.sleep', side_effect=[None, None, SystemExit]) #Third time time.sleep() is called, SystemExit exception is raised
 @patch('sys.argv', ["a", "b"])
-def test_main(mock_post, mock_get, mock_sleep):
+def test_main(mock_post, mock_get, mock_put, mock_sleep):
     testargs = ["ai"]
     with patch.object(sys, 'argv', testargs):
         aiProc = ai.ai.main()

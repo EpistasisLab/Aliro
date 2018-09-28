@@ -10,9 +10,7 @@ import time
 import datetime
 import json
 import pickle
-import requests
 import pdb
-import time
 import ai.db_utils as db_utils
 from ai.db_utils import LabApi
 import os
@@ -25,17 +23,6 @@ from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from ai.recommender.meta_recommender import MetaRecommender
 from collections import OrderedDict
 
-#encoder for numpy in json
-class JasonEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            return super(JasonEncoder, self).default(obj)
 
 class AI():
     """AI managing agent for Penn AI.
@@ -47,58 +34,48 @@ class AI():
     - posting the recommendations to the API.
     - handling communication with the API.
 
-    Parameters
-    ----------
-    rec: recommender to use
+    :param rec: ai.BaseRecommender - recommender to use
+    :param db_path: string - path to the lab api server
+    :param extra_payload: dict - any additional payload that needs to be specified
+    :param user: string - test user
+    :param rec_score_file: file - pickled score file to keep persistent scores between sessions
+    :param verbose: Boolean
+    :param warm_start: Boolean - if true, attempt to load the ai state from the file provided by rec_score_file
+    :param n_recs: int - number of recommendations to make for each request
+    :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup 
 
-    db_path: base path to the database server
-
-    extra_payload: any additional payload that needs to be specified
-
-    user: the user for this AI instance.
-
-    rec_score_file: pickled score file to keep persistent scores between
-                    sessions
     """
 
-    def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
-                 extra_payload=dict(),
-                 user='testuser',rec_score_file='rec_state.obj',
-                 verbose=True,warm_start=False, n_recs=1, datasets=False):
+    def __init__(self,
+                rec=None,
+                db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+                extra_payload=dict(),
+                user='testuser', 
+                rec_score_file='rec_state.obj',
+                verbose=True,
+                warm_start=False, 
+                n_recs=1, 
+                datasets=False):
         """initializes AI managing agent."""
         # recommender settings
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
 
-        # access to database
-        self.db_path = db_path
-        self.exp_path = '/'.join([self.db_path,'api/experiments'])
-        self.data_path = '/'.join([self.db_path,'api/datasets'])
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-        self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
-        self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
-        self.algo_path = '/'.join([self.db_path,'api/projects'])
+        # api parameters, will be removed from self once the recommenders no longer call the api directly.
+        # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
         self.user=user
+        self.db_path=db_path
+        self.api_key=os.environ['APIKEY']
 
         self.verbose = verbose #False: no printouts, True: printouts on updates
-        # api key for the recommender
-        self.api_key=os.environ['APIKEY']
-        # optional extra payloads (e.g. user id) for posting to the db
-        self.extra_payload = extra_payload
+
         # file name of stored scores for the recommender
         self.rec_score_file = rec_score_file
-        # requests queue
+
+        # queue of datasets requesting ai recommendations
         self.request_queue = []
-        # static payload is the payload that is constant for every API post
-        # with api key for this host
-        self.static_payload = {'apikey':self.api_key}#,
-        # add any extra payload
-        self.static_payload.update(extra_payload)
-        # header info
-        self.header = {'content-type': 'application/json'}
-        # timestamp for updates
-        # self.last_update = int(datetime.datetime.now().strftime("%s")) * 1000
+        # timestamp of the last time new experiments were processed
         self.last_update = 0
 
         # api
@@ -106,34 +83,27 @@ class AI():
             db_path=self.db_path, 
             user=self.user, 
             api_key=self.api_key, 
-            extra_payload=self.extra_payload,
+            extra_payload=extra_payload,
             verbose=self.verbose)
 
-        # if there is a file, load it as the recommender scores
+        self.load_options() #loads algorithm parameters to self.ui_options 
+
+        # if there is a pickle file, load it as the recommender scores
         self.warm_start = warm_start
-        self.load_options()
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
+
         # default to random recommender
         if not rec:
             self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
+
         # build dictionary of ml ids to names conversion
-        self.ml_id_to_name = db_utils.get_ml_id_dict(self.algo_path,self.api_key)
+        self.ml_id_to_name = db_utils.get_ml_id_dict(self.labApi.algo_path, self.api_key)
         # build dictionary of dataset ids to names conversion
-        self.user_datasets = db_utils.get_user_datasets(self.submit_path,self.api_key,self.user)
-        # toggled datasets
+        self.user_datasets = db_utils.get_user_datasets(self.labApi.submit_path, self.api_key,self.user)
+        # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
 
-
-        # verbosity...
-        print("paths:")
-        print("self.db_path: ", self.db_path)
-        print("self.exp_path: ", self.exp_path)
-        print("self.data_path: ", self.data_path)
-        print("self.projects_path: ", self.projects_path)
-        print("self.status_path: ", self.status_path)
-        print("self.submit_path: ", self.submit_path)
-        print("self.algo_path: ", self.algo_path)
 
         # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
@@ -143,7 +113,10 @@ class AI():
                 tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], aiStatus = 'requested')
 
     def load_state(self):
-        """loads pickled score file."""
+        """Loads pickled score file and recommender model.
+
+        TODO: test that this still works
+        """
         if os.stat(self.rec_score_file).st_size != 0:
             filehandler = open(self.rec_score_file,'rb')
             state = pickle.load(filehandler)
@@ -155,24 +128,24 @@ class AI():
                   print('loaded previous state from ',self.last_update)
 
     def load_options(self):
-        """Loads UI options."""
+        """Loads algorithm UI parameters and sets them to self.ui_options."""
+
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','loading options...')
 
         responses = self.labApi.get_projects()
-        self.ui_options = responses
 
         if len(responses) > 0:
             self.ui_options = responses
-            #if self.verbose:
-                #print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                #      ':','new ai request for:',r for r in responses])
-            #return True
-        return False
+        else:
+            print("WARNING: no algorithms found by load_options()")
 
 
     def check_requests(self):
-        """Returns true if new AI request has been submitted by user."""
+        """Check to see if any new AI requests have been submitted.  If so, add them to self.request_queue.
+
+        :returns: Boolean - True if new AI requests have been submitted
+        """
 
         print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
               ':','checking requests...')
@@ -180,11 +153,9 @@ class AI():
         if self.continous:
             payload = {'ai':['requested','finished']}
         else:
-            payload = {'ai':['requested','dummy']}
+            payload = {'ai':['requested', 'dummy']}
 
         responses = self.labApi.get_datasets(payload)
-        #print(responses);
-        #pdb.set_trace()
 
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
@@ -193,40 +164,45 @@ class AI():
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':','new ai request for:',[r['name'] for r in responses])
             
-            # set AI flag to 'true' to acknowledge requests received
+            # set AI flag to 'on' to acknowledge requests received
             for r in self.request_queue:
                 tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'on')
-                q_utils.startQ(self,r['_id'])
+                q_utils.startQ(ai=self, datasetId=r['_id'])
             return True
 
         return False
 
+
     def check_results(self):
-        """Returns true if new results have been posted since the previous
-        time step. Processes them if so."""
+        """Checks to see if new experiment results have been posted since the previous
+        time step. If so, set them to self.new_data and return True.
+
+        :returns: Boolean - True if new results were found
+        """
         if self.verbose:
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
 
-        # get new results
-        data = self.labApi.get_new_experiments(last_update=self.last_update)
+        newResultsDict = self.labApi.get_new_experiments(last_update=self.last_update)
 
-        if len(data) > 0:
-            # if there are new results, return True
+        if len(newResultsDict) > 0:
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                      ':',len(data),' new results!')
-            #process new results
-            self.process_new_results(data)
-            # update timestamp
-            self.last_update = int(time.time())*1000
+                      ':',len(newResultsDict),' new results!')
+            
+            self.process_new_results(newResultsDict) # process new results as a dataframe and set them to self.new_data
+            self.last_update = int(time.time())*1000 # update timestamp
             return True
 
         return False
     
-    def process_new_results(self,data):
-        """Returns a dataframe of new results from the DB"""
-        # clean up response
+    def process_new_results(self, data):
+        """Transforms a dictionary of data representing new experiment results into a dataframe and
+        sets them to self.new_data
+
+        :param data: dictionary - results from labApi.get_new_experiments()
+        """
+
         processed_data = []
         for d in data:
             if '_options' in d.keys() and '_scores' in d.keys() and '_dataset_id' in d.keys():
@@ -245,52 +221,45 @@ class AI():
                       '_options' if '_options' not in d.keys() else '',
                       '_scores' if '_scores' not in d.keys() else '',
                       '_dataset_id' if '_dataset_id' not in d.keys() else '')
-              #print(d)
-        # if metarecommender, grab 
+        # TODO - grab and add metafeatures to dataframe
         new_data = pd.DataFrame(processed_data)
+
         if(len(new_data) >= 1):
           self.new_data = new_data
         else:
           print("no new data")
-          #print(self.new_data)
-        # print('results:\n',results)
-        # df = pd.DataFrame(response)
-        # ai = pd.DataFrame(response[0]['ai'])
-        # print('dataframe:\n',self.new_data.head())
-        # print('ai:',ai)
 
-    def transfer_rec(self,rec_payload):
-            """performs http transfer of recommendation"""
-            experimentData = json.dumps(rec_payload,cls=JasonEncoder)
-            submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], experimentData)
+    def transfer_rec(self, rec_payload):
+            """Attempt to send a recommendation to the lab server.
+            Continues until recommendation is successfully submitted or an unexpected error occurs.
+
+            :param rec_payload: dictionary - the payload describing the experiment
+            """
+            submitstatus = self.labApi.post_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
 
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
                 sleep(3)
-                submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], experimentData)
+                submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], rec_payload)
 
             if 'error' in submitstatus:
-                print('unrecoverable error during transfer_rec '  )
+                print('unrecoverable error during transfer_rec')
                 print(submitstatus['error'])
                 pdb.set_trace()
 
 
     def process_rec(self):
-        """Generates recommendation and sends it to the API."""
-        i = 0
+        """Generates requested experiment recommendations and adds them to the queue."""
+
+        # get recommendation for dataset
         for r in self.request_queue:
-            dataset = r['name']
-            # get recommendation for dataset
             ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
             self.rec.last_n = 0
             for alg,params,score in zip(ml,p,ai_scores):
-                # turn params into a dictionary
-                modified_params = eval(params)
-                #print(modified_params.max_features)
+                modified_params = eval(params) # turn params into a dictionary
+                
                 rec_payload = {'dataset_id':r['_id'],
-                        # 'dataset_name':r['name'],
                         'algorithm_id':alg,
-                        # 'ml_name':alg,
                         'username':self.user,
                         'parameters':modified_params,
                         'ai_score':score,
@@ -299,23 +268,17 @@ class AI():
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
 
-                # add static payload
-                rec_payload.update(self.static_payload)
-                # do http transfer
-                #transfer_status = self.transfer_rec(rec_payload)
-                q_utils.addToQueue(self,r,rec_payload)
-                #print('wait for it...')
-                #sleep(1)
+                q_utils.addExperimentToQueue(ai=self, datasetId=r['_id'], experimentPayload=rec_payload)
 
-                #submit update to dataset to indicate ai:True
             #tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'finished') # h note - re-enable this once the queuing functionaity has been moved to lab server
             tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'queuing')
-            i += 1
+
 
     def update_recommender(self):
-        """Updates recommender based on new results."""
-        # update recommender
-        #print(self);
+        """Update recommender models based on new experiment results in self.new_data, 
+            and then clear self.new_data. 
+        """
+
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             self.rec.update(self.new_data)
             if self.verbose:
@@ -334,7 +297,7 @@ class AI():
         state['last_update'] = self.last_update
         pickle.dump(state, out)
 
-    def db_to_results_data(self,response):
+    #def db_to_results_data(self,response):
         """load json files from db and convert to results_data.
 
         Output: a DataFrame with at least these columns:
@@ -399,7 +362,6 @@ def main():
             # check for new recommendation requests
             if pennai.check_requests():
                pennai.process_rec()
-                #pennai.send_rec()
             n = n + 1
             time.sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
