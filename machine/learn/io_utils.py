@@ -15,7 +15,7 @@ basedir = os.environ['PROJECT_ROOT']
 class Experiment:
     def __init__(self, args, basedir=basedir):
         """
-        method_name: ML Algorithm
+        args: arguments from API
         basedir: basedir for this project
         """
         self.args = args
