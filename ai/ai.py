@@ -35,7 +35,7 @@ class AI():
     - handling communication with the API.
 
     :param rec: ai.BaseRecommender - recommender to use
-    :param db_path: string - path to the lab api server
+    :param api_path: string - path to the lab api server
     :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
     :param rec_score_file: file - pickled score file to keep persistent scores between sessions
@@ -48,7 +48,7 @@ class AI():
 
     def __init__(self,
                 rec=None,
-                db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+                api_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                 extra_payload=dict(),
                 user='testuser', 
                 rec_score_file='rec_state.obj',
@@ -65,7 +65,7 @@ class AI():
         # api parameters, will be removed from self once the recommenders no longer call the api directly.
         # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
         self.user=user
-        self.db_path=db_path
+        self.api_path=api_path
         self.api_key=os.environ['APIKEY']
 
         self.verbose = verbose #False: no printouts, True: printouts on updates
@@ -80,7 +80,7 @@ class AI():
 
         # api
         self.labApi = LabApi(
-            db_path=self.db_path, 
+            api_path=self.api_path, 
             user=self.user, 
             api_key=self.api_key, 
             extra_payload=extra_payload,
@@ -95,7 +95,7 @@ class AI():
 
         # default to random recommender
         if not rec:
-            self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
+            self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
 
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = db_utils.get_ml_id_dict(self.labApi.algo_path, self.api_key)
@@ -335,7 +335,7 @@ def main():
 
     args = parser.parse_args()
     print(args)
-    db_args={}
+    api_args={}
 
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
@@ -345,11 +345,11 @@ def main():
             }
     
     if args.REC in ['random','exhaustive','meta']:
-        db_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
+        api_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**db_args),db_path=args.DB_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.DB_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS)
 

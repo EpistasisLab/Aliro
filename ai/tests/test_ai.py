@@ -458,7 +458,7 @@ def test_ai_init_args(mock_post, mock_get):
 	lab_connection_args = {}
 	pennai = AI(
 		rec=None,
-		db_path='http://lab:5080',
+		api_path='http://lab:5080',
 		user="testuser",
         verbose=True, 
         n_recs=1, 
