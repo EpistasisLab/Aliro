@@ -46,7 +46,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             ml = mls[0]
             if type(recommender).__name__ == 'MockMetaRecommender':
                 tmp = eval(ps[0])
-                for mfs in ['coef0','learning_rate']:
+                for mfs in ['coef0','learning_rate','min_weight_fraction_leaf']:
                     if mfs in tmp.keys():
                         tmp[mfs] = float(tmp[mfs])
                     p = str(OrderedDict(sorted(tmp.items())))
