@@ -1,0 +1,429 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ai.recommender.meta_recommender &#8212; PennAI 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ai.recommender.meta_recommender</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Recommender system for Penn AI.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">json</span> 
+<span class="kn">import</span> <span class="nn">urllib.request</span><span class="o">,</span> <span class="nn">urllib.parse</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">BaseRecommender</span>
+<span class="c1">#from ..metalearning import get_metafeatures</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="k">import</span> <span class="n">XGBRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">LabelEncoder</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">..db_utils</span> <span class="k">import</span> <span class="n">get_all_ml_p_from_db</span>  
+<span class="kn">import</span> <span class="nn">pdb</span>
+
+<div class="viewcode-block" id="MetaRecommender"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender">[docs]</a><span class="k">class</span> <span class="nc">MetaRecommender</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Penn AI meta recommender.</span>
+<span class="sd">    Recommends machine learning algorithms and parameters as follows:</span>
+<span class="sd">    maintains an internal model of the form f_d(ML,P,MF) = E</span>
+<span class="sd">    where </span>
+<span class="sd">    d is the dataset</span>
+<span class="sd">    ML is the machine learning</span>
+<span class="sd">    P is the ML parameters</span>
+<span class="sd">    MF is the metafeatures associated with d</span>
+<span class="sd">        </span>
+<span class="sd">    to produce recommendations for dataset d, it does the following:</span>
+<span class="sd">    E_a = f_d(ML_a,P_a,MF_d) prediction of performance of a on d</span>
+<span class="sd">    Sort E_a for several a (sampled from ML+P options)</span>
+<span class="sd">    recommend top E_a </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ml_type: str, &#39;classifier&#39; or &#39;regressor&#39;</span>
+<span class="sd">        Recommending classifiers or regressors. Used to determine ML options.</span>
+<span class="sd">    </span>
+<span class="sd">    metric: str (default: accuracy for classifiers, mse for regressors)</span>
+<span class="sd">        The metric by which to assess performance on the datasets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_type</span><span class="o">=</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">api_key</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ml_p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">sample_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ml_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span> <span class="s1">&#39;regressor&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ml_type must be &quot;classifier&quot; or &quot;regressor&quot;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_type</span> <span class="o">=</span> <span class="n">ml_type</span>
+
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="s1">&#39;bal_accuracy&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_type</span> <span class="o">==</span> <span class="s1">&#39;classifier&#39;</span> <span class="k">else</span> <span class="s1">&#39;mse&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="c1"># path for grabbing dataset metafeatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mf_path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">db_path</span><span class="p">,</span><span class="s1">&#39;api/datasets&#39;</span><span class="p">])</span>
+        <span class="c1"># print(&#39;mf_path:&#39;,self.mf_path)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;apikey&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span>
+
+        <span class="c1"># training data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_features</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># store metafeatures of datasets that have been seen</span>
+        <span class="c1"># self.dataset_metafeatures = None</span>
+        <span class="c1"># maintain a set of dataset-algorithm-parameter combinations that have already been </span>
+        <span class="c1"># evaluated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trained_dataset_models</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># TODO: add option for ML estimator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_update</span> <span class="o">=</span> <span class="kc">True</span>
+
+	<span class="c1"># load ML Parameter combinations and fit an encoding to them that can be used for</span>
+	<span class="c1"># learning a model : score = f(ml,p,dataset,metafeatures)</span>
+        
+        <span class="k">if</span> <span class="n">ml_p</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># pull algorithm/parameter combinations from the server. </span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span> <span class="o">=</span> <span class="n">get_all_ml_p_from_db</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">db_path</span><span class="p">,</span><span class="s1">&#39;api/preferences&#39;</span><span class="p">]),</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span> <span class="o">=</span> <span class="n">ml_p</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_to_features</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span> <span class="c1"># just in case duplicates are present</span>
+        <span class="c1"># print(&#39;ml_p:&#39;,self.ml_p)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;criterion&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="s1">&#39;max_features&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;min_weight_fraction_leaf&#39;</span><span class="p">,</span> <span class="s1">&#39;n_estimators&#39;</span><span class="p">,</span> <span class="s1">&#39;n_neighbors&#39;</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">sample_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="p">))</span>
+        <span class="c1"># Encoding the variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LE</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">LabelEncoder</span><span class="p">)</span>
+        <span class="c1"># self.OHE = OneHotEncoder(sparse=False)</span>
+        <span class="c1"># pdb.set_trace()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">LE</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># print(&#39;ml_p after LE:&#39;,self.ml_p)</span>
+        <span class="c1"># self.X_ml_p = self.OHE.fit_transform(self.ml_p.values)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># self.ml_p = self.ml_p.apply(lambda x: self.OHE[x.name].fit_transform(x))</span>
+        <span class="c1"># print(&#39;X after OHE:&#39;,self.X_ml_p.shape)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;self.ml_p:&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loaded </span><span class="si">{nalg}</span><span class="s1"> ml/parameter combinations with &#39;</span>
+                <span class="s1">&#39;</span><span class="si">{nparams}</span><span class="s1"> parameters&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nalg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">X_ml_p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                     <span class="n">nparams</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">X_ml_p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># our ML</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml</span> <span class="o">=</span> <span class="n">XGBRegressor</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MetaRecommender.params_to_features"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.params_to_features">[docs]</a>    <span class="k">def</span> <span class="nf">params_to_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;convert parameter dictionaries to dataframe columns&quot;&quot;&quot;</span>
+        <span class="c1"># pdb.set_trace()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">eval</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1"># get rid of trailing .0 added to integer vals </span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.0&#39;</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># print(&#39;param:&#39;,param)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;parameters&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">param</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">init</span><span class="p">:</span> <span class="c1"># need to add additional parameter combos for other ml</span>
+                <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">df_tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+                <span class="n">df_tmp</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df_tmp</span>
+            <span class="c1"># sort columns by name </span>
+            <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># print(&#39;df:&#39;,df)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">pdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span> 
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.features_to_params"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.features_to_params">[docs]</a>    <span class="k">def</span> <span class="nf">features_to_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;convert dataframe columns to parameter dictionaries&quot;&quot;&quot;</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+        <span class="n">plist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k1</span><span class="p">:</span><span class="n">v1</span> <span class="k">for</span> <span class="n">k1</span><span class="p">,</span><span class="n">v1</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v1</span> <span class="o">!=</span> <span class="s1">&#39;nan&#39;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">k1</span><span class="p">,</span><span class="n">v1</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tmp</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">tmp</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">pass</span>
+            <span class="n">plist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">plist</span> </div>
+
+
+<div class="viewcode-block" id="MetaRecommender.update"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations based on overall performance in results_data.</span>
+
+<span class="sd">        Updates self.scores</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results_data: DataFrame with columns corresponding to:</span>
+<span class="sd">                &#39;dataset&#39;</span>
+<span class="sd">                &#39;algorithm&#39;</span>
+<span class="sd">                &#39;parameters&#39;</span>
+<span class="sd">                self.metric</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># keep track of unique dataset / parameter / classifier combos in results_data</span>
+        <span class="n">dap</span> <span class="o">=</span> <span class="p">(</span><span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span>
+               <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span>
+               <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">d_ml_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trained_dataset_models</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d_ml_p</span><span class="p">)</span>
+        <span class="c1"># transform data for learning a model from it </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_training_data</span><span class="p">(</span><span class="n">results_data</span><span class="p">)</span> 
+
+        <span class="c1"># update internal model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_model</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.get_metafeatures"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.get_metafeatures">[docs]</a>    <span class="k">def</span> <span class="nf">get_metafeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetches dataset metafeatures, returning dataframe.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;fetching data for&#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">payload</span><span class="o">=</span><span class="p">{}</span>
+        <span class="c1"># payload = {&#39;metafeatures&#39;}</span>
+        <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">static_payload</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;full path:&#39;, self.mf_path+&#39;/&#39;+d)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mf_path</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">info</span><span class="p">()</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">)</span>
+                                      <span class="ow">or</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exception when grabbing metafeature data for&#39;</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        
+        <span class="n">mf</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;metafeatures&#39;</span><span class="p">]]</span>
+        <span class="c1"># print(&#39;mf:&#39;,mf)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">mf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="c1"># print(&#39;df:&#39;,df)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.transform_ml_p"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.transform_ml_p">[docs]</a>    <span class="k">def</span> <span class="nf">transform_ml_p</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">df_ml_p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Encodes categorical labels and transforms them using a one hot encoding.&quot;&quot;&quot;</span>
+        <span class="n">df_ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_to_features</span><span class="p">(</span><span class="n">df_ml_p</span><span class="p">)</span>
+        <span class="c1"># df_tmp = pd.DataFrame(columns=self.ml_p.columns)</span>
+        <span class="c1"># df_tmp = df_tmp.append(df_ml_p)</span>
+        <span class="c1"># df_tmp.fillna(&#39;nan&#39;, inplace=True)</span>
+        <span class="n">df_ml_p</span> <span class="o">=</span> <span class="n">df_ml_p</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">LE</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># df_ml_p = df_ml_p.apply(lambda x: self.LE[x.name].transform(x))</span>
+
+        <span class="c1"># print(&#39;df_ml_p after LE transform:&#39;,df_ml_p)</span>
+        <span class="c1"># X_ml_p = self.OHE.transform(df_ml_p.values)</span>
+        <span class="n">X_ml_p</span> <span class="o">=</span> <span class="n">df_ml_p</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># X_ml_p = self.OHE.transform(df_ml_p.values)</span>
+        <span class="c1"># print(&#39;df_ml_p after OHE (&#39;,X_ml_p.shape,&#39;:\n&#39;,X_ml_p)</span>
+        <span class="k">return</span> <span class="n">X_ml_p</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.setup_training_data"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.setup_training_data">[docs]</a>    <span class="k">def</span> <span class="nf">setup_training_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">results_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transforms metafeatures and results data into learnable format.&quot;&quot;&quot;</span>
+        <span class="n">dataset_metafeatures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="c1"># fetch metafeatures from server for dataset and append</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metafeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>        
+            <span class="c1"># print(&#39;metafeatures:&#39;,df)</span>
+            <span class="n">dataset_metafeatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            
+        <span class="n">df_mf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dataset_metafeatures</span><span class="p">,</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># join df_mf to results_data to get mf rows for each result</span>
+        <span class="n">results_mf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">results_data</span><span class="p">,</span> <span class="n">df_mf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+        <span class="n">df_mf</span> <span class="o">=</span> <span class="n">results_mf</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">results_mf</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_mf</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+        <span class="n">df_mf</span> <span class="o">=</span> <span class="n">df_mf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># print(&#39;df_mf:&#39;,df_mf)</span>
+        <span class="c1"># print(&#39;dataset_metafeatures:&#39;,dataset_metafeatures)</span>
+        <span class="c1"># transform algorithms and parameters to one hot encoding </span>
+        <span class="n">df_ml_p</span> <span class="o">=</span> <span class="n">results_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">results_data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span><span class="s1">&#39;parameters&#39;</span><span class="p">])]</span>
+        <span class="n">X_ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_ml_p</span><span class="p">(</span><span class="n">df_ml_p</span><span class="p">)</span>
+        <span class="c1"># print(&#39;df_ml_p shape:&#39;,df_ml_p.shape)</span>
+        <span class="c1"># join algorithm/parameters with dataset metafeatures</span>
+        <span class="c1"># print(&#39;df_mf shape:&#39;,df_mf.shape) </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X_ml_p</span><span class="p">,</span><span class="n">df_mf</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        
+         
+        <span class="c1"># print(&#39;training data:&#39;,self.training_features)</span>
+        <span class="c1"># print(&#39;training columns:&#39;,self.training_features[:10])</span>
+        <span class="c1"># transform data using label encoder and one hot encoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_y</span> <span class="o">=</span> <span class="n">results_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_y</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_features</span><span class="p">))</span></div>
+         
+<div class="viewcode-block" id="MetaRecommender.recommend"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            ID of the dataset for which the recommender is generating recommendations.</span>
+<span class="sd">        n_recs: int (default: 1), optional</span>
+<span class="sd">            Return a list of length n_recs in order of estimators and parameters expected to do best.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: predict scores over many variations of ML+P and pick the best</span>
+        <span class="c1"># return ML+P for best average y</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">rec_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_model_prediction</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">rec_score</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ml_rec:&#39;</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="s1">&#39;p_rec&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s1">&#39;rec_score&#39;</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">rec_score</span> <span class="o">=</span> <span class="n">ml_rec</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">],</span> <span class="n">p_rec</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">],</span> <span class="n">rec_score</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">]</span>
+            <span class="c1"># # if a dataset is specified, do not make recommendations for</span>
+            <span class="c1"># # algorithm-parameter combos that have already been run</span>
+            <span class="c1"># if dataset_id is not None:</span>
+            <span class="c1">#     rec = [r for r in rec if dataset_id + &#39;|&#39; + r not in</span>
+            <span class="c1">#            self.trained_dataset_models]</span>
+
+            <span class="c1"># ml_rec = [r.split(&#39;|&#39;)[0] for r in rec]</span>
+            <span class="c1"># p_rec = [r.split(&#39;|&#39;)[1] for r in rec]</span>
+            <span class="c1"># rec_score = [self.scores[r] for r in rec]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;error running self.best_model_prediction for&#39;</span><span class="p">,</span><span class="n">dataset_id</span><span class="p">)</span>
+            <span class="c1"># print(&#39;ml_rec:&#39;, ml_rec)</span>
+            <span class="c1"># print(&#39;p_rec&#39;, p_rec)</span>
+            <span class="c1"># print(&#39;rec_score&#39;,rec_score)</span>
+            <span class="k">raise</span> <span class="n">e</span> 
+
+        <span class="c1"># update the recommender&#39;s memory with the new algorithm-parameter combos that it recommended</span>
+        <span class="c1"># ml_rec = ml_rec[:n_recs]</span>
+        <span class="c1"># p_rec = p_rec[:n_recs]</span>
+        <span class="c1"># rec_score = rec_score[:n_recs]</span>
+
+        <span class="c1"># if dataset_id is not None:</span>
+        <span class="c1">#     self.trained_dataset_models.update(</span>
+        <span class="c1">#                                 [&#39;|&#39;.join([dataset_id, ml, p])</span>
+        <span class="c1">#                                 for ml, p in zip(ml_rec, p_rec)])</span>
+
+        <span class="k">return</span> <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">rec_score</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.update_model"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.update_model">[docs]</a>    <span class="k">def</span> <span class="nf">update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trains model on datasets and metafeatures.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;updating model&#39;</span><span class="p">)</span>
+        <span class="n">current_model</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">_Booster</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">get_booster</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_y</span><span class="p">,</span> <span class="n">xgb_model</span> <span class="o">=</span> <span class="n">current_model</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;model updated&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetaRecommender.best_model_prediction"><a class="viewcode-back" href="../../../index.html#ai.recommender.meta_recommender.MetaRecommender.best_model_prediction">[docs]</a>    <span class="k">def</span> <span class="nf">best_model_prediction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Predict scores over many variations of ML+P and pick the best&quot;&quot;&quot;</span>
+        <span class="c1"># get dataset metafeatures</span>
+        <span class="n">df_mf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metafeatures</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span> 
+        <span class="n">mf</span> <span class="o">=</span> <span class="n">df_mf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="c1"># setup input data by sampling ml+p combinations from all possible combos </span>
+        <span class="c1"># choices = np.random.choice(len(self.X_ml_p),size=self.sample_size,replace=False)</span>
+        <span class="n">X_ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_ml_p</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_ml_p</span><span class="p">),</span><span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_size</span><span class="p">,</span><span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;generating predictions for:&#39;</span><span class="p">)</span>
+        <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X_ml_p</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df_tmp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">LE</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="c1"># make prediction data consisting of ml + p combinations plus metafeatures</span>
+        <span class="n">predict_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">ml_p</span><span class="p">,</span> <span class="n">mf</span><span class="p">))</span> <span class="k">for</span> <span class="n">ml_p</span> <span class="ow">in</span> <span class="n">X_ml_p</span><span class="p">])</span>
+        
+        <span class="c1"># print(&#39;predict_features:&#39;,predict_features)</span>
+        <span class="c1"># generate predicted scores</span>
+        <span class="n">predict_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">predict_features</span><span class="p">)</span>
+        <span class="c1"># print(&#39;predict_scores:&#39;,predict_scores)</span>
+
+        <span class="c1"># grab best scores</span>
+        <span class="n">predict_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">predict_scores</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">n_recs</span><span class="p">]</span>
+        <span class="c1"># print(&#39;predict_idx:&#39;,predict_idx) </span>
+        <span class="c1"># indices in X_ml_p that match best prediction scores</span>
+        <span class="n">predict_ml_p</span> <span class="o">=</span> <span class="n">X_ml_p</span><span class="p">[</span><span class="n">predict_idx</span><span class="p">]</span>
+        <span class="n">pred_ml_p_df</span> <span class="o">=</span> <span class="n">df_tmp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">predict_idx</span><span class="p">,:]</span>
+        <span class="c1"># print(&#39;df_tmp[predict_idx]:&#39;,pred_ml_p_df)</span>
+        <span class="c1"># invert the one hot encoding</span>
+        <span class="c1"># fi = self.OHE.feature_indices_</span>
+        <span class="c1"># predict_ml_p_le = [x[fi[i]:fi[i+1]].dot(np.arange(nv)) for i,nv in </span>
+        <span class="c1">#                    enumerate(self.OHE.n_values_) </span>
+        <span class="c1">#                    for x in predict_ml_p]</span>
+        <span class="n">predict_ml_p_le</span> <span class="o">=</span> <span class="n">predict_ml_p</span>
+
+        <span class="c1"># df_pr_ml_p = pd.DataFrame(</span>
+        <span class="c1">#         data=np.array(predict_ml_p_le).reshape(-1,len(self.ml_p.columns)),</span>
+        <span class="c1">#         columns = self.ml_p.columns, dtype=np.int64)</span>
+        <span class="c1"># # invert the label encoding </span>
+        <span class="n">df_pr_ml_p</span> <span class="o">=</span> <span class="n">df_tmp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">predict_idx</span><span class="p">,:]</span>
+        <span class="n">df_pr_ml_p</span> <span class="o">=</span> <span class="n">df_pr_ml_p</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">LE</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># predict_ml_p = df_pr_ml_p.values</span>
+
+        <span class="c1"># grab recommendations</span>
+        <span class="n">ml_recs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_pr_ml_p</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">p_recs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_to_params</span><span class="p">(</span><span class="n">df_pr_ml_p</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">predict_scores</span><span class="p">[</span><span class="n">predict_idx</span><span class="p">]</span>
+        <span class="c1"># pdb.set_trace()</span>
+
+        <span class="k">return</span> <span class="n">ml_recs</span><span class="p">,</span><span class="n">p_recs</span><span class="p">,</span><span class="n">scores</span></div></div>
+        
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Penn.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

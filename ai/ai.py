@@ -1,7 +1,6 @@
-"""
-AI agent for Penn AI.
-
-"""
+#
+# AI agent for Penn AI.
+#
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
@@ -60,12 +59,14 @@ class AI():
                     sessions
     """
 
-    def __init__(self,rec=None,db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+    def __init__(self,rec=None,db_path=None,
                  extra_payload=dict(),
                  user='testuser',rec_score_file='rec_state.obj',
                  verbose=True,warm_start=False, n_recs=1, datasets=False):
         """initializes AI managing agent."""
         # recommender settings
+        if db_path == None:
+            db_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
@@ -379,15 +380,16 @@ class AI():
     def db_to_results_data(self,response):
         """load json files from db and convert to results_data.
         Output: a DataFrame with at least these columns:
-                'algorithm'
-                'parameters'
-                self.metric
+        'algorithm'
+        'parameters'
+        self.metric
         """
 
     #################
     # Utility methods
     #################
     def post_experiment(self, algorithmId, experimentData):
+        """posts the experiment"""
         self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
         
