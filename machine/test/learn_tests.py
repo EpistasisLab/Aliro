@@ -12,7 +12,8 @@ Path = "machine/learn"
 if Path not in sys.path:
     sys.path.insert(0, Path)
 from skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from io_utils import Experiment, get_input, get_params, get_input_data, get_type
+from io_utils import Experiment, get_projects, get_input_data, get_type
+from driver import main
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -123,19 +124,28 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_input_data2.equals(input_data[1])
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_get_params(self, mock_get):
-        """Test get_params return correct parameters"""
-        params = get_params('SVC')
+    def test_get_projects(self, mock_get):
+        """Test get_params return correct projects' info."""
+        projects = get_projects()
 
-        assert 'kernel' in params
-        assert 'tol' in params
+        assert projects == projects_json_data
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_Experiment_init(self, mock_get):
         """Test Experiment class has correct attribute."""
-        exp = Experiment(method_name='SVC', basedir='.')
 
-        assert exp.method_name == 'SVC'
+        args = {
+            "method": "SVC",
+            "_id": "test_id",
+            "kernel": "rbf",
+            "tol": 0.0001,
+            "C": 1
+            }
+        exp = Experiment(args=args, basedir='.')
+
+
+        assert exp.args == args
+        assert exp.method_name == "SVC"
         assert exp.basedir == '.'
         assert exp.tmpdir == './machine/learn/{}/tmp/'.format('SVC')
 
@@ -144,14 +154,12 @@ class APITESTCLASS(unittest.TestCase):
         """Test main function in each machine learning in projects.json can produce expected outputs."""
 
         for obj in projects_json_data:
-            tmpdir = mkdtemp() + '/'
-            _id = 'test_id'
-            outdir = tmpdir + _id
-            os.mkdir(outdir)
             algorithm_name = obj["name"]
             schema = obj["schema"]
             args = {}
+            _id = "test_id"
             args['_id'] = _id
+            args["method"] = algorithm_name
             for param_name in schema.keys():
                 default_value = schema[param_name]["default"]
                 param_type = schema[param_name]["type"]
@@ -159,11 +167,11 @@ class APITESTCLASS(unittest.TestCase):
                 conv_default_value = conv_func(default_value)
                 args[param_name] = conv_default_value
 
-            import_str  = 'machine.learn.{}.main'.format(algorithm_name)
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore')
-                exec('from {} import main'.format(import_str))
-                exec("main(args, test_clf_input_df, tmpdir=tmpdir)")
+            outdir = "./machine/learn/{}/tmp/test_id".format(algorithm_name)
+
+            print(algorithm_name, args)
+            main(args)
+            print(outdir)
 
             value_json = '{}/value.json'.format(outdir)
             assert os.path.isfile(value_json)
@@ -179,7 +187,6 @@ class APITESTCLASS(unittest.TestCase):
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
-            rmtree(tmpdir)
 
 
 

@@ -1,6 +1,6 @@
 {
     "name": "BernoulliNB",
-    "path": "sklearn.naive",
+    "path": "sklearn.naive_bayes",
     "description": "Naive Bayes classifier for multivariate Bernoulli models.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html",
     "schema": {
@@ -36,14 +36,14 @@
     "category": "classification"
 } {
     "name": "GaussianNB",
-    "path": "sklearn.naive",
+    "path": "sklearn.naive_bayes",
     "description": "Gaussian Naive Bayes",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
     "category": "classification"
 } {
     "name": "MultinomialNB",
-    "path": "sklearn.naive",
+    "path": "sklearn.naive_bayes",
     "description": "Naive Bayes classifier for multinomial models.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html",
     "schema": {
