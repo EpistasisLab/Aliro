@@ -66,7 +66,7 @@ class LabApi:
 
 
 
-    def post_experiment(self, algorithmId, payload):
+    def launch_experiment(self, algorithmId, payload):
         """Attempt to start a ml experiment.
 
         :param algorithmId: string - 
@@ -83,7 +83,7 @@ class LabApi:
         try:
             res=requests.post(rec_path,data=experimentData,headers=self.header)
         except:
-            print("Unexpected error in post_experiment for path '", rec_path, "':", sys.exc_info()[0])
+            print("Unexpected error in launch_experiment for path '", rec_path, "':", sys.exc_info()[0])
             raise
 
         submitresponses = json.loads(res.text)
@@ -106,7 +106,7 @@ class LabApi:
         responses = json.loads(v.text)
         return responses
 
-    def get_datasets(self, payload):
+    def get_filtered_datasets(self, payload):
         """Get datasets with filters
 
         :param payload: dict - How to filter the results {'ai':['requested','finished']}
@@ -151,12 +151,13 @@ class LabApi:
             raise
         return res
 
+
 # @Deprecated, used by recommenders
 def get_all_ml_p_from_db(path,key):
     """ Returns a list of ml and parameter options from the server.
     TODO - migrate to LabApi
     
-    :param path:
+    :param path: 'api/preferences'
     :param key:
 
     :returns: dataframe - unique ml parameter options
@@ -166,6 +167,7 @@ def get_all_ml_p_from_db(path,key):
     # filter on username (given in dataset)
     payload = {'apikey':key,'username':'testuser'}
     r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
     print('r:',r)
     response = json.loads(r.text)
     algorithms = response[0]['algorithms']
@@ -253,6 +255,7 @@ def get_ml_id_dict(path,key):
     # get json from server
     payload = {'apikey':key}
     r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
     print('r:',r)
     responses = json.loads(r.text)
 
@@ -271,6 +274,7 @@ def get_user_datasets(path,key,user):
     # get json from server
     payload = {'apikey':key,'username':user}
     r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    assert r.status_code == requests.codes.ok, "get_user_datasets status_code not ok, status code: " + str(r.status_code)
     responses = json.loads(r.text)
     dataset_id_to_name = {}
     for dataset in responses:
