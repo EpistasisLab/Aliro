@@ -79,7 +79,7 @@ class AI():
         self.last_update = 0
 
         # api
-        self.labApi = LabApi(
+        self.labApi = db_utils.LabApi(
             api_path=self.api_path, 
             user=self.user, 
             api_key=self.api_key, 
@@ -98,9 +98,9 @@ class AI():
             self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
 
         # build dictionary of ml ids to names conversion
-        self.ml_id_to_name = db_utils.get_ml_id_dict(self.labApi.algo_path, self.api_key)
+        self.ml_id_to_name = db_utils.get_ml_id_dict('/'.join([self.api_path,'api/projects']), self.api_key)
         # build dictionary of dataset ids to names conversion
-        self.user_datasets = db_utils.get_user_datasets(self.labApi.submit_path, self.api_key,self.user)
+        self.user_datasets = db_utils.get_user_datasets('/'.join([self.api_path,'api/userdatasets']), self.api_key,self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
 
@@ -151,11 +151,11 @@ class AI():
               ':','checking requests...')
 
         if self.continous:
-            payload = {'ai':['requested','finished']}
+            dsFilter = {'ai':['requested','finished']}
         else:
-            payload = {'ai':['requested', 'dummy']}
+            dsFilter = {'ai':['requested', 'dummy']}
 
-        responses = self.labApi.get_datasets(payload)
+        responses = self.labApi.get_filtered_datasets(dsFilter)
 
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
@@ -235,12 +235,12 @@ class AI():
 
             :param rec_payload: dictionary - the payload describing the experiment
             """
-            submitstatus = self.labApi.post_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
+            submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
 
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
                 sleep(3)
-                submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], rec_payload)
+                submitstatus = self.labApi.launch_experiment(rec_payload['algorithm_id'], rec_payload)
 
             if 'error' in submitstatus:
                 print('unrecoverable error during transfer_rec')
@@ -319,7 +319,7 @@ def main():
     parser.add_argument('-rec',action='store',dest='REC',default='random',
                         choices = ['random','average','exhaustive','meta'],
                         help='Recommender algorithm options.')
-    parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+    parser.add_argument('-api_path',action='store',dest='API_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
     parser.add_argument('-t',action='store',dest='DATASETS',help='turn on ai for these datasets')
@@ -345,11 +345,11 @@ def main():
             }
     
     if args.REC in ['random','exhaustive','meta']:
-        api_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
+        api_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.DB_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.API_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS)
 
