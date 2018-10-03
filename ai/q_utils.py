@@ -19,9 +19,19 @@ class DatasetThread (threading.Thread):
       self.queueLock = threading.Lock()
       self.ai = ai
 
+      """
+      Handle thread exceptions 
+      see <https://stackoverflow.com/questions/2829329/catch-a-threads-exception-in-the-caller-thread-in-python>
+      """
+      self.__threadExceptionBucket = queue.Queue()
+
    def run(self):
       print ("Creating queue for " + self.name)
-      process_data(self)
+      try:
+        process_data(self)
+      except BaseException:
+        print ("Exception caught in thread")
+        self.__threadExceptionBucket.put(sys.exc_info())
       print ("Exiting queue for " + self.name)
 
 
