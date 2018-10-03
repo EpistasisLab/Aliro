@@ -6,6 +6,13 @@ import queue
 import threading
 import time
 import requests
+import logging
+import traceback
+import sys
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 exitFlag = 0
 
 
@@ -26,13 +33,16 @@ class DatasetThread (threading.Thread):
       self.__threadExceptionBucket = queue.Queue()
 
    def run(self):
-      print ("Creating queue for " + self.name)
+      logger.debug("Creating queue for thread " + self.name)
       try:
         process_data(self)
-      except BaseException:
-        print ("Exception caught in thread")
-        self.__threadExceptionBucket.put(sys.exc_info())
-      print ("Exiting queue for " + self.name)
+      except:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        logger.error("Exception caught in thread '" + self.name + "': " + str(exc))
+        logger.error(''.join(traceback.format_exception(exc_type, exc_obj, exc_tb))) #see <https://docs.python.org/3/library/traceback.html#traceback-examples>
+        self.__threadExceptionBucket.put(exc_obj)
+        #raise #this will just terminate the thread; will not prop to the root thread
+      logger.debug("Exiting queue for thread " + self.name)
 
 
 def startQ(ai, datasetId):
@@ -48,7 +58,6 @@ def startQ(ai, datasetId):
         thread.start()
   ai.dataset_threads[datasetId] = thread
     
-
  
 def addExperimentToQueue(ai, datasetId, experimentPayload):
   """Add ml experiment to the queue for a particular dataset
@@ -67,18 +76,23 @@ def process_data(dsThread):
 
    :param dsThread: DatasetThread
    """
+   logger.debug("process_data("+ str(dsThread) + ")")
    while not exitFlag:
+       logger.debug("fuh")
        dsThread.queueLock.acquire()
        workDone = False
        if not dsThread.workQueue.empty():
          workDone = True
          data = dsThread.workQueue.get()
+         logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
          dsThread.ai.transfer_rec(data)
          if(dsThread.workQueue.qsize() % 10 == 0):
            print(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + dsThread.name)
        #hacky way to know if the queue has just cleared
        if dsThread.workQueue.empty() and workDone:
-        print(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + dsThread.name + ', marking ai as finished.')
+        msg = str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + dsThread.name + ', marking ai as finished.'
+        logger.debug(msg)
+        print(msg)
         dsThread.ai.labApi.set_ai_status(dsThread.datasetId, 'finished')
        dsThread.queueLock.release()
     
