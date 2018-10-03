@@ -46,16 +46,18 @@ class LabApi:
         self.user=user
         self.verbose=verbose
         self.header = {'content-type': 'application/json'}
-        # optional extra payloads (e.g. user id) for posting to the db
+        # optional extra payloads (e.g. user id) for posting to the api
         self.extra_payload = extra_payload
         # static payload is the payload that is constant for every API post
         # with api key for this host
         self.static_payload = {'apikey':self.api_key}
         # add any extra payload
         self.static_payload.update(extra_payload)
+        #trace level logs
+        self.trace = False
 
-        if verbose:
-            print("LabApi paths:")
+        if self.verbose:
+            print("==LabApi paths:")
             print("self.api_path: ", self.api_path)
             print("self.exp_path: ", self.exp_path)
             print("self.data_path: ", self.data_path)
@@ -63,6 +65,7 @@ class LabApi:
             print("self.status_path: ", self.status_path)
             print("self.submit_path: ", self.submit_path)
             print("self.algo_path: ", self.algo_path)
+            print("\n\n")
 
 
 
@@ -72,39 +75,46 @@ class LabApi:
         :param algorithmId: string - 
         :param payload: dict - dictionary describing the ml experiment parameters
 
-        :returns: dict  
+        :returns: dict {id(int): status(str)} 
         """
+        if self.verbose: print("launch_experiment(" + str(algorithmId) + ", ...) \n")
+        assert algorithmId
+
         payload.update(self.static_payload)
         experimentData = json.dumps(payload,cls=NumpyJsonEncoder)
 
-        self.projects_path = '/'.join([self.api_path,'api/v1/projects'])
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
         
         try:
-            res=requests.post(rec_path,data=experimentData,headers=self.header)
+            res=requests.request("POST", rec_path, data=experimentData, headers=self.header)
         except:
             print("Unexpected error in launch_experiment for path '", rec_path, "':", sys.exc_info()[0])
             raise
 
-        submitresponses = json.loads(res.text)
+
+        print ("res: " , res)
+        submitResponses = json.loads(res.text)
+        print(submitResponses)
 
         #parse json response into named array
-        submitstatus={}
-        if len(submitresponses) > 0:
-            for submiti in submitresponses:
-                submitstatus[submiti] = submitresponses[submiti]
+        submitStatus={}
+        if len(submitResponses) > 0:
+            for submitI in submitResponses:
+                submitStatus[submitI] = submitResponses[submitI]
 
-        return submitstatus
+        return submitStatus
 
     def get_projects(self):
         """Get the descriptions and parameters of the supported ml algorithms
 
         :return: dict - algorithm descriptions as returned by api/projects
         """
-        v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
-                          headers=self.header)
-        responses = json.loads(v.text)
-        return responses
+        if self.verbose: print("get_projects() \n")
+
+        res = self.__request(path=self.projects_path)
+        data = json.loads(res.text)
+        return data
+
 
     def get_filtered_datasets(self, payload):
         """Get datasets with filters
@@ -113,10 +123,11 @@ class LabApi:
 
         :return: dict - datasets that pass the payload filter
         """
-        payload.update(self.static_payload)
-        r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
-        responses = json.loads(r.text)
-        return responses
+        if self.verbose: print("get_filtered_datasets() \n")
+
+        res = self.__request(path=self.data_path, payload=payload)
+        data = json.loads(res.text)
+        return data
 
     def get_new_experiments(self, last_update):
         """Get experiments that occurred after last_update
@@ -125,13 +136,12 @@ class LabApi:
 
         :returns: dict - ml experiments results
         """
-        payload = {'date_start':last_update,'has_scores':True}
-        payload.update(self.static_payload)
-        params = json.dumps(payload)
-        print("requesting from : ", self.exp_path)
-        res = requests.post(self.exp_path, data=params, headers=self.header)
-        data = json.loads(res.text)
+        if self.verbose: print("get_new_experiments(" + str(last_update)+ ") \n")
 
+        payload = {'date_start':last_update,'has_scores':True}
+
+        res = self.__request(path=self.exp_path, payload=payload)
+        data = json.loads(res.text)
         return data
 
     def set_ai_status(self, datasetId, aiStatus):
@@ -140,17 +150,51 @@ class LabApi:
         :param datasetId: string - dataset to update
         :param aiStatus: string 
         """
+        if self.verbose: print("set_ai_status(" + str(datasetId) +", " + str(aiStatus) + ") \n")
+
         payload = {'ai':aiStatus}
-        payload.update(self.static_payload) #not sure if this is necessary?
         data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
-        res = None
-        try:
-            res = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
-        except:
-            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
-            raise
+        res = self.__request(path=data_submit_path, payload=payload, method="PUT")
         return res
 
+
+    def __request(self, path, payload = None, method = 'POST', headers = {'content-type': 'application/json'}):
+        """
+        Attempt to make an api request and return the result.
+        Throw an exception if the request fails or if a status code >400 is returned.
+
+        :return: Requests.response object
+        """
+        if self.trace: 
+            print ("Starting LabApi.__request(" + str(path) + ", " + str(payload) + ", " + str(method) + ", ...)" )
+            #print("payload:")
+            #print(payload)
+        
+        if payload: 
+            assert isinstance(payload, dict)
+            payload.update(self.static_payload)
+        else:
+            payload = self.static_payload
+
+        res = None
+        try:
+
+            res = requests.request(method, path, data=json.dumps(payload), headers=headers)
+
+        except:
+            print("Unexpected error in LabApi.__request for path '", str(method), ":", str(path), "':", sys.exc_info()[0])
+            raise
+        assert res.status_code == requests.codes.ok, "Request " + str(method) + " status_code not ok, path: " + str(path) + " status code: " + str(res.status_code) + " response text: " + str(res.text)
+        
+        if self.trace: 
+            print ("Got response LabApi.__request(" + str(path) + ", ..., " + str(method) + ", ...)" )
+            """
+            try:
+                print ("response: ", str(res.text), "\n")
+            except:
+                print ("couldn't text parse response")
+            """
+        return res
 
 # @Deprecated, used by recommenders
 def get_all_ml_p_from_db(path,key):
