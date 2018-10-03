@@ -8,6 +8,11 @@ import pdb
 import json
 import requests
 import itertools as it
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NumpyJsonEncoder(json.JSONEncoder):
     """ Encoder for numpy in json
@@ -44,7 +49,7 @@ class LabApi:
         self.algo_path = '/'.join([self.api_path,'api/projects'])
         self.api_key=api_key
         self.user=user
-        self.verbose=verbose
+        self.verbose=False
         self.header = {'content-type': 'application/json'}
         # optional extra payloads (e.g. user id) for posting to the api
         self.extra_payload = extra_payload
@@ -53,20 +58,15 @@ class LabApi:
         self.static_payload = {'apikey':self.api_key}
         # add any extra payload
         self.static_payload.update(extra_payload)
-        #trace level logs
-        self.trace = False
 
-        if self.verbose:
-            print("==LabApi paths:")
-            print("self.api_path: ", self.api_path)
-            print("self.exp_path: ", self.exp_path)
-            print("self.data_path: ", self.data_path)
-            print("self.projects_path: ", self.projects_path)
-            print("self.status_path: ", self.status_path)
-            print("self.submit_path: ", self.submit_path)
-            print("self.algo_path: ", self.algo_path)
-            print("\n\n")
-
+        logger.debug("==LabApi paths:")
+        logger.debug("self.api_path: " + self.api_path)
+        logger.debug("self.exp_path: " + self.exp_path)
+        logger.debug("self.data_path: " + self.data_path)
+        logger.debug("self.projects_path: " + self.projects_path)
+        logger.debug("self.status_path: " + self.status_path)
+        logger.debug("self.submit_path: " + self.submit_path)
+        logger.debug("self.algo_path: " + self.algo_path)
 
 
     def launch_experiment(self, algorithmId, payload):
@@ -77,7 +77,7 @@ class LabApi:
 
         :returns: dict {id(int): status(str)} 
         """
-        if self.verbose: print("launch_experiment(" + str(algorithmId) + ", ...) \n")
+        logger.info("launch_experiment(" + str(algorithmId) + ", " + str(payload))
         assert algorithmId
 
         payload.update(self.static_payload)
@@ -88,13 +88,10 @@ class LabApi:
         try:
             res=requests.request("POST", rec_path, data=experimentData, headers=self.header)
         except:
-            print("Unexpected error in launch_experiment for path '", rec_path, "':", sys.exc_info()[0])
+            logger.error("Unexpected error in launch_experiment for path '", rec_path, "':", sys.exc_info()[0])
             raise
 
-
-        print ("res: " , res)
         submitResponses = json.loads(res.text)
-        print(submitResponses)
 
         #parse json response into named array
         submitStatus={}
@@ -109,7 +106,7 @@ class LabApi:
 
         :return: dict - algorithm descriptions as returned by api/projects
         """
-        if self.verbose: print("get_projects() \n")
+        logger.info("get_projects()")
 
         res = self.__request(path=self.projects_path)
         data = json.loads(res.text)
@@ -123,7 +120,7 @@ class LabApi:
 
         :return: dict - datasets that pass the payload filter
         """
-        if self.verbose: print("get_filtered_datasets() \n")
+        logger.info("get_filtered_datasets()")
 
         res = self.__request(path=self.data_path, payload=payload)
         data = json.loads(res.text)
@@ -136,7 +133,7 @@ class LabApi:
 
         :returns: dict - ml experiments results
         """
-        if self.verbose: print("get_new_experiments(" + str(last_update)+ ") \n")
+        logger.info("get_new_experiments(" + str(last_update)+ ")")
 
         payload = {'date_start':last_update,'has_scores':True}
 
@@ -150,7 +147,7 @@ class LabApi:
         :param datasetId: string - dataset to update
         :param aiStatus: string 
         """
-        if self.verbose: print("set_ai_status(" + str(datasetId) +", " + str(aiStatus) + ") \n")
+        logger.info("set_ai_status(" + str(datasetId) +", " + str(aiStatus) + ")")
 
         payload = {'ai':aiStatus}
         data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
@@ -165,10 +162,8 @@ class LabApi:
 
         :return: Requests.response object
         """
-        if self.trace: 
-            print ("Starting LabApi.__request(" + str(path) + ", " + str(payload) + ", " + str(method) + ", ...)" )
-            #print("payload:")
-            #print(payload)
+
+        logger.debug("Starting LabApi.__request(" + str(path) + ", " + str(payload) + ", " + str(method) + ", ...)" )
         
         if payload: 
             assert isinstance(payload, dict)
@@ -178,22 +173,24 @@ class LabApi:
 
         res = None
         try:
-
             res = requests.request(method, path, data=json.dumps(payload), headers=headers)
-
         except:
-            print("Unexpected error in LabApi.__request for path '", str(method), ":", str(path), "':", sys.exc_info()[0])
+            logger.error("Unexpected error in LabApi.__request for path '" + str(method) + ":" + str(path) + "':" + str(sys.exc_info()[0]))
             raise
-        assert res.status_code == requests.codes.ok, "Request " + str(method) + " status_code not ok, path: " + str(path) + " status code: " + str(res.status_code) + " response text: " + str(res.text)
         
-        if self.trace: 
-            print ("Got response LabApi.__request(" + str(path) + ", ..., " + str(method) + ", ...)" )
-            """
-            try:
-                print ("response: ", str(res.text), "\n")
-            except:
-                print ("couldn't text parse response")
-            """
+        if res.status_code != requests.codes.ok:
+            msg = "Request " + str(method) + " status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+
+        #logger.debug("Got response LabApi.__request(" + str(path) + ", ..., " + str(method) + ", ...)" )
+        """
+        try:
+            logger.debug("response: ", str(res.text), "\n")
+        except:
+            logger.debug("couldn't text parse response")
+        """
         return res
 
 # @Deprecated, used by recommenders

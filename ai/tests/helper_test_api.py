@@ -326,7 +326,36 @@ api_experiments_data = [
     }
 ]
 
-api_experiment_a_data = [
+api_experiment_ai_on = 	[{
+    	"_id": "562a12bd612a17b20f99a143"
+    }]
+
+api_launch_experiment_running = {
+        "_id": "5b58f9e106c14c003221b4a0",
+        "_options": {
+            "criterion": "gini",
+            "max_depth": 3,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+        },
+        "_dataset_id": "5b58f9d506c14c003221b3f1",
+        "_project_id": "5b58f99db7941fabb1921e76",
+        "_machine_id": "5b58f9d106c14c003221b3bb",
+        "username": "testuser",
+        "files": [
+            {
+                "_id": "5b58f9d506c14c003221b416",
+                "filename": "adult.csv",
+                "mimetype": "text/csv",
+                "timestamp": 1532557783791
+            }
+        ],
+        "_status": "running",
+        "_started": "2018-07-25T22:29:53.772Z"
+       }
+
+# should return a dict, not a list
+api_launch_experiment_bad = [
 	{
     	"_id": "562a12bd612a17b20f99a143"
     }]
