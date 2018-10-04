@@ -75,7 +75,7 @@ class LabApi:
         :param algorithmId: string - 
         :param payload: dict - dictionary describing the ml experiment parameters
 
-        :returns: dict {id(int): status(str)} 
+        :returns: dict {value(str): status(str)} 
         """
         logger.info("launch_experiment(" + str(algorithmId) + ", " + str(payload))
         assert algorithmId

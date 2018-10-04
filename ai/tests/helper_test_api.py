@@ -354,8 +354,30 @@ api_launch_experiment_running = {
         "_started": "2018-07-25T22:29:53.772Z"
        }
 
-# should return a dict, not a list
-api_launch_experiment_bad = [
+# invalid response; should return a dict, not a list
+api_launch_experiment_invalid = [
 	{
     	"_id": "562a12bd612a17b20f99a143"
     }]
+
+api_launch_experiment_no_capacity = {
+        "_id": "5b58f9e106c14c003221b4a0",
+        "_options": {
+            "criterion": "gini",
+            "max_depth": 3,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+        },
+        "error": "No machine capacity available"
+       }
+
+api_launch_experiment_error = {
+        "_id": "5b58f9e106c14c003221b4a0",
+        "_options": {
+            "criterion": "gini",
+            "max_depth": 3,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1
+        },
+        "error": "An unrecoverable error occured"
+       }

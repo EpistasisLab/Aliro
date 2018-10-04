@@ -38,7 +38,7 @@ class DatasetThread (threading.Thread):
         process_data(self)
       except:
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        logger.error("Exception caught in thread '" + self.name + "': " + str(exc))
+        logger.error("Exception caught in thread '" + self.name + "': " + str(exc_obj))
         logger.error(''.join(traceback.format_exception(exc_type, exc_obj, exc_tb))) #see <https://docs.python.org/3/library/traceback.html#traceback-examples>
         self.__threadExceptionBucket.put(exc_obj)
         #raise #this will just terminate the thread; will not prop to the root thread
@@ -76,9 +76,9 @@ def process_data(dsThread):
 
    :param dsThread: DatasetThread
    """
-   logger.debug("process_data("+ str(dsThread) + ")")
+   logger.debug("process_data("+ str(dsThread) + ") exitFlag:" + str(exitFlag))
+
    while not exitFlag:
-       logger.debug("fuh")
        dsThread.queueLock.acquire()
        workDone = False
        if not dsThread.workQueue.empty():

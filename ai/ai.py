@@ -15,6 +15,7 @@ import ai.db_utils as db_utils
 from ai.db_utils import LabApi
 import os
 import ai.q_utils as q_utils
+import logging
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
@@ -22,6 +23,9 @@ from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from ai.recommender.meta_recommender import MetaRecommender
 from collections import OrderedDict
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class AI():
@@ -235,17 +239,23 @@ class AI():
 
             :param rec_payload: dictionary - the payload describing the experiment
             """
+            logger.info("transfer_rec(" + str(rec_payload) + ")")
             submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
 
+            logger.debug("transfer_rec() starting loop, submitstatus: " + str(submitstatus))
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
                 sleep(3)
                 submitstatus = self.labApi.launch_experiment(rec_payload['algorithm_id'], rec_payload)
 
-            if 'error' in submitstatus:
-                print('unrecoverable error during transfer_rec')
-                print(submitstatus['error'])
-                pdb.set_trace()
+            logger.debug("transfer_rec() exiting loop, submitstatus: " + str(submitstatus))
+
+            if 'error' in submitstatus or '_status' not in submitstatus:
+                msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
+                logger.error(msg)
+                print(msg)
+                raise RuntimeException(msg)
+                #pdb.set_trace()
 
 
     def process_rec(self):
@@ -373,6 +383,7 @@ def main():
     finally:
         # tell queues to exit
         print("foo")
+        logger.info("Exiting queue")
         q_utils.exitFlag=1
         pennai.save_state()
 
