@@ -14,26 +14,55 @@ basedir = os.environ['PROJECT_ROOT']
 
 class Experiment:
     def __init__(self, args, basedir=basedir):
-        """
-        args: arguments from API
-        basedir: basedir for this project
+        """ Experiment class for PennAI.
+
+        Parameters
+        ----------
+        args: dict
+            Arguments of a experiment from PennAI API
+        basedir: string
+            base directory for this project
+
+        Returns
+        -------
+        None
         """
         self.args = args
         self.method_name = self.args['method']
         self.basedir = basedir
-        self.build_paths()
-
-    def build_paths(self):
-        """Build temporary directory."""
+        # temporary directory
         self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
 
     def get_input(self):
-        """Get input data based on _id from API."""
+        """Get input data based on _id from API.
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input_data: pandas.Dataframe or list of two pandas.Dataframe
+            pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+            list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
+                while the 2nd one is testing dataset
+        """
         input_data = get_input_data(self.args['_id'], self.tmpdir)
         return input_data
 
     def get_model(self):
-        """Get scikit learn method."""
+        """Get scikit learn method.
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        model: scikit-learn Estimator
+            a machine learning model with scikit-learn API
+        method_type: string
+            'classification': classification model
+            'regression': regression model
+        """
         projects = get_projects()
         for pdict in projects:
             if pdict['name'] == self.method_name:
@@ -48,8 +77,17 @@ class Experiment:
 
 
 def get_projects():
-    """get all machine learning algorithm's information from API
+    """Get all machine learning algorithm's information from API
     (the information should be the same with projects.json).
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    projects: dict
+        a dict of all machine learning algorithm's information
+
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
     projects = json.loads(requests.get(uri).text)
@@ -58,6 +96,14 @@ def get_projects():
 
 def parse_args():
     """Parse arguments for machine learning algorithm.
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    args: dict
+        Arguments of a experiment from PennAI API
     """
     projects = get_projects()
     parser = argparse.ArgumentParser(description='Driver for all machine learning algorithms in PennAI')
@@ -85,6 +131,20 @@ def parse_args():
 
 
 def get_input_data(_id, tmpdir):
+    """ Get input dataset from PennAI API
+    Parameters
+    ----------
+    _id: string
+        Experiment ID in PennAI API
+    tmpdir: string
+        Path of temporary directory
+    Returns
+    -------
+    input_data: pandas.Dataframe or list of two pandas.Dataframe
+        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
+            while the 2nd one is testing dataset
+    """
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
         os.makedirs(expdir)
@@ -112,6 +172,16 @@ def get_input_data(_id, tmpdir):
 
 
 def bool_type(val):
+    """Convert argument to boolean type
+    Parameters
+    ----------
+    val: string
+        value of a parameter
+    Returns
+    -------
+    _: boolean
+        converted value
+    """
     if(val.lower() == 'true'):
         return True
     elif(val.lower() == 'false'):
@@ -121,6 +191,17 @@ def bool_type(val):
 
 
 def str_or_none(val):
+    """Convert argument to str type or None
+    Parameters
+    ----------
+    val: string
+        value of a parameter
+    Returns
+    -------
+    _: string or None
+        if input value if "none", then the function will return None
+        otherwise it will retune string
+    """
     if(val.lower() == 'none'):
         return None
     try:
@@ -130,17 +211,23 @@ def str_or_none(val):
     return str(val)
 
 
-def enum_type(val):
-    return str(val)
-
-
 def get_type(type):
+    """Return convertion function for input type
+    Parameters
+    ----------
+    type: string
+        type of a parameter which is defined in projects.json
+    Returns
+    -------
+    known_types[type]: function
+        function for converting argument from PennAI UI before assigning to scikit-learn estimator
+    """
     known_types = {
         'int': int,  # change this later
         'float': float,
         'string': str_or_none,  # change this later
         'bool': bool_type,
-        'enum': enum_type  # change this later
+        'enum': str
         # float between 1 and 0
         # enum type
     }
