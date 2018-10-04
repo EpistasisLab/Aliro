@@ -502,21 +502,19 @@ var getProjects = function() {
             var project_folder = learnpath + '/' + dir;
             var project_subs = fs.readdirSync(project_folder);
             if (project_subs !== undefined) {
-                if (project_subs.indexOf('main.py') >= 0) {
-                    if (project_subs.indexOf('tmp') == -1) fs.mkdirSync(project_folder + '/tmp', 0744);
+                if (project_subs.indexOf('tmp') == -1) fs.mkdirSync(project_folder + '/tmp', 0744);
 
-                    var cwd = "machine/learn/" + dir
-                    var project = {
-                        name: dir,
-                        command: "python",
-                        cwd: "machine/learn/",
-                        args: ["driver.py",  dir],
-                        options: "double-dash",
-                        capacity: "1",
-                        results: cwd + "/tmp"
-                    }
-                    project_list.push(project);
+                var cwd = "machine/learn/" + dir
+                var project = {
+                    name: dir,
+                    command: "python",
+                    cwd: "machine/learn/",
+                    args: ["driver.py",  dir],
+                    options: "double-dash",
+                    capacity: "1",
+                    results: cwd + "/tmp"
                 }
+                project_list.push(project);
             }
         }
     }
