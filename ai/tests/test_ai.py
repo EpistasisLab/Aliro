@@ -1,4 +1,4 @@
-"""Tests for ai.py and db_utils.py that mock the json responses that would be returned from the lab server
+"""Tests for ai.py and api_utils.py that mock the json responses that would be returned from the lab server
 """
 import os
 os.environ["LAB_HOST"] = "lab"
@@ -7,7 +7,7 @@ os.environ['APIKEY'] = "aaaaa"
 
 from ai.ai import AI
 import ai.ai
-from ai.db_utils import LabApi
+from ai.api_utils import LabApi
 import ai.recommender.random_recommender
 import sys
 import json
@@ -34,7 +34,7 @@ def mocked_requests_post(*args, **kwargs):
     else:
         return helper.MockResponse(None, 404)
 
-@patch('ai.db_utils.LabApi')
+@patch('ai.api_utils.LabApi')
 @patch('requests.post', side_effect = mocked_requests_post)  #remove once api calls have been removed from recommenders
 def test_ai_init( mockLabApi, mockRequestsPost):
         labApiInstance = mockLabApi.return_value
