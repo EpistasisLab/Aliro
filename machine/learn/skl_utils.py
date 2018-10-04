@@ -75,16 +75,31 @@ def generate_results(model, input_data,
     mode='classification', figure_export=figure_export,
     random_state=random_state):
     """generate reaults for apply a model on a datasetself.
-    model: a machine learning model with scikit-learn API
-    input_data: pandas.Dataframe
-    target_name: string target name in input file
-    tmpdir: template folder PATH
-    _id: experiment id
-    mode: 'classification' or 'regression'
-    figure_export: Ture or False for exporting figures
-    random_state: random seed
+    Parameters
+    ----------
+    model: scikit-learn Estimator
+        a machine learning model with scikit-learn API
+    input_data: pandas.Dataframe or list of two pandas.Dataframe
+        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
+            while the 2nd one is testing dataset
+    target_name: string
+        target name in input data
+    tmpdir: string
+        Path of template directory
+    _id: string
+        experiment id
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
+    figure_export: boolean
+        If figure_export is True, the figures will be exported
+    random_state: int
+        random seed
 
-    return: None
+    Returns
+    -------
+    None
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
@@ -272,13 +287,20 @@ def generate_results(model, input_data,
 
 def setup_model_params(model, parameter_name, value):
     """setup parameter in a model.
+    Parameters
+    ----------
 
-    model: a scikit-learn model
-    parameter_name: string, parameter name in the scikit-learn model
-    value: value for this parameter
+    model: scikit-learn Estimator
+        a scikit-learn model
+    parameter_name: string
+        parameter name in the scikit-learn model
+    value: object
+        values for assigning to the parameter
 
-    return:
-    model: a new scikit-learn model with a updated parameter
+    Returns
+    -------
+    model: scikit-learn Estimator
+        a new scikit-learn model with a updated parameter
     """
     # fix random_state
     if hasattr(model, parameter_name):
@@ -288,13 +310,17 @@ def setup_model_params(model, parameter_name, value):
 
 def export_model(tmpdir, _id, model):
     """export model as a pickle file and generate a scripts for using the pickled model.
+    Parameters
+    ----------
     tmpdir: string
             path of temporary  output directory
     _id: string
             Job ID in FGlab
     model: a fitted scikit-learn model
 
-    return: None
+    Returns
+    -------
+    None
     """
     pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
     joblib.dump(model, pickle_file)
@@ -309,14 +335,23 @@ def compute_imp_score(model, training_features, training_classes, random_state):
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
     then permuation importance scores will be estimated
+    Parameters
+    ----------
+    tmpdir: string
 
-    model:  a fitted scikit-learn model
-    training_features: np.darray/pd.DataFrame training features
-    training_classes: np.darray/pd.DataFrame training target
-    random_state: random seed for permuation importances
+    model:  scikit-learn Estimator
+        a fitted scikit-learn model
+    training_features: np.darray/pd.DataFrame
+        training features
+    training_classes: np.darray/pd.DataFrame
+        training target
+    random_state: int
+        random seed for permuation importances
 
-    return
-    coefs: feature importance scores
+    Returns
+    -------
+    coefs: np.darray
+        feature importance scores
 
     """
     # exporting/computing importance score
