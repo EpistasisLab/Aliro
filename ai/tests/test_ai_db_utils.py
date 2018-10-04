@@ -1,5 +1,5 @@
 """
-Test the api engine (ai.py) and the labAPi methods (db_utils.py) together by simulating the 
+Test the api engine (ai.py) and the labAPi methods (api_utils.py) together by simulating the 
 responses that would be returned by GETing, POSTing and PUTing requests to the lab server.
 """
 import os

@@ -1,5 +1,5 @@
 """
-Databse utility functions for Penn-AI
+API utility functions for Penn-AI
 """
 
 import pandas as pd

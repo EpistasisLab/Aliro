@@ -11,8 +11,8 @@ import datetime
 import json
 import pickle
 import pdb
-import ai.db_utils as db_utils
-from ai.db_utils import LabApi
+import ai.api_utils as api_utils
+from ai.api_utils import LabApi
 import os
 import ai.q_utils as q_utils
 import logging
@@ -83,7 +83,7 @@ class AI():
         self.last_update = 0
 
         # api
-        self.labApi = db_utils.LabApi(
+        self.labApi = api_utils.LabApi(
             api_path=self.api_path, 
             user=self.user, 
             api_key=self.api_key, 
@@ -102,9 +102,9 @@ class AI():
             self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
 
         # build dictionary of ml ids to names conversion
-        self.ml_id_to_name = db_utils.get_ml_id_dict('/'.join([self.api_path,'api/projects']), self.api_key)
+        self.ml_id_to_name = api_utils.get_ml_id_dict('/'.join([self.api_path,'api/projects']), self.api_key)
         # build dictionary of dataset ids to names conversion
-        self.user_datasets = db_utils.get_user_datasets('/'.join([self.api_path,'api/userdatasets']), self.api_key,self.user)
+        self.user_datasets = api_utils.get_user_datasets('/'.join([self.api_path,'api/userdatasets']), self.api_key,self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
 
@@ -250,11 +250,11 @@ class AI():
 
             logger.debug("transfer_rec() exiting loop, submitstatus: " + str(submitstatus))
 
-            if 'error' in submitstatus or '_status' not in submitstatus:
+            if 'error' in submitstatus:
                 msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
                 logger.error(msg)
                 print(msg)
-                raise RuntimeException(msg)
+                raise RuntimeError(msg)
                 #pdb.set_trace()
 
 
