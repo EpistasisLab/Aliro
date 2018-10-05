@@ -488,34 +488,38 @@ wss.on("connection", (ws) => {
 
 
 
-//Generate a list of projects that we'll use for execution
+//Generate a list of projects based on machine_config.json
 var getProjects = function() {
     var project_list = [];
-    var learnpath = project_root + '/machine/learn';
+    var learnpath = project_root + "/machine/learn";
+    var tmppath = learnpath + "/tmp";
+    if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
+
+    var machine_config;
+        fs.readFile('machine_config.json', 'utf-8', (err, data) {
+            if (err) throw err;
+            console.log(data);
+            machine_config = JSON.parse(data);
+        });
 
     //get a list of folders in the learn directory
-    var dirs = fs.readdirSync(learnpath)
-    //dirs.forEach(dir => {
-    for (var i in dirs) {
-        var dir = dirs[i];
-        if (fs.statSync(learnpath + '/' + dir).isDirectory()) {
-            var project_folder = learnpath + '/' + dir;
-            var project_subs = fs.readdirSync(project_folder);
-            if (project_subs !== undefined) {
-                if (project_subs.indexOf('tmp') == -1) fs.mkdirSync(project_folder + '/tmp', 0744);
+    var algorithms = machine_config.algorithms
+    for (var i in algorithms) {
+        var algo = algorithms[i];
+        var project_folder = tmppath + '/' + algo;
+        if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744)
+        if (project_subs !== undefined) {
 
-                var cwd = "machine/learn/" + dir
-                var project = {
-                    name: dir,
-                    command: "python",
-                    cwd: "machine/learn/",
-                    args: ["driver.py",  dir],
-                    options: "double-dash",
-                    capacity: "1",
-                    results: cwd + "/tmp"
-                }
-                project_list.push(project);
+            var project = {
+                name: algo,
+                command: "python",
+                cwd: "machine/learn/",
+                args: ["driver.py",  algo],
+                options: "double-dash",
+                capacity: "1",
+                results: project_folder
             }
+            project_list.push(project);
         }
     }
     return (project_list);
