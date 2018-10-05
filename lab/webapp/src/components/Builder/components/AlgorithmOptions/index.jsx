@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Segment, Header, Button } from 'semantic-ui-react';
+import { Grid, Segment, Header, Popup, Button, Icon } from 'semantic-ui-react';
 import { formatAlgorithm } from 'utils/formatter';
 
 function AlgorithmOptions({
@@ -14,33 +14,55 @@ function AlgorithmOptions({
   return (
     <Grid.Column width={16}>
       <Segment inverted attached="top" className="panel-header">
-        <Header 
+        <Header
           inverted
           size="large"
           color="orange"
-          content="Select Algorithm" 
+          content="Select Algorithm"
         />
       </Segment>
-      <Segment inverted attached="bottom">  
+      <Segment inverted attached="bottom">
         <Grid columns={3} stackable className="compressed">
           {algorithms && algorithms.map(algorithm => (
             <Grid.Column key={algorithm._id}>
               <Button
-                inverted 
+                fluid
+                inverted
                 color="orange"
                 size="large"
-                fluid
                 active={getIsActive(algorithm)}
                 onClick={() => setCurrentAlgorithm(algorithm)}
+                className="algorithm-btn"
               >
                 {formatAlgorithm(algorithm.name)}
                 <div className="param-count">
                   {`${Object.keys(algorithm.schema).length} parameters`}
                 </div>
               </Button>
+              <Popup
+                on="click"
+                position="right center"
+                header={formatAlgorithm(algorithm.name)}
+                content={
+                  <div className="content">
+                    <p>{algorithm.description}</p>
+                    {algorithm.url &&
+                      <a href={algorithm.url} target="_blank"><strong>Read more here <Icon name="angle double right" /></strong></a>
+                    }
+                  </div>
+                }
+                trigger={
+                  <Icon
+                    inverted
+                    size="large"
+                    color="orange"
+                    name="info circle"
+                  />
+                }
+              />
             </Grid.Column>
           ))}
-        </Grid> 
+        </Grid>
       </Segment>
     </Grid.Column>
   );

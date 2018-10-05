@@ -13,9 +13,12 @@ if parentPath not in sys.path:
 from io_utils import Experiment
 from skl_utils import generate_results
 
-if __name__ == "__main__":
-    exp = Experiment('LogisticRegression')
-    args, input_data = exp.get_input()
+exp = Experiment('LogisticRegression')
+def main(args, input_data, tmpdir=exp.tmpdir):
     model = LogisticRegression(
         penalty=args['penalty'], C=args['C'], dual=args['dual'])
-    generate_results(model, input_data, exp.tmpdir, args['_id'])
+    generate_results(model, input_data, tmpdir, args['_id'])
+
+if __name__ == "__main__":
+    args, input_data = exp.get_input()
+    main(args, input_data)

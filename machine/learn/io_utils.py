@@ -54,6 +54,15 @@ def get_params(method_name):
 
 
 def parse_args(params):
+    """Parse argument.
+
+    Parameters
+    -------
+    params: dict
+        schema in projects.json
+
+
+    """
     parser = argparse.ArgumentParser()
 
     # parse args for each parameter
@@ -83,7 +92,6 @@ def get_input_data(_id, tmpdir):
                             ':' + LAB_PORT + '/api/v1/experiments/' + _id)
     jsondata = json.loads(response.text)
 
-    #files = jsondata['files']
     _dataset_id = jsondata['_dataset_id']
     if (_dataset_id is None):
         raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
@@ -111,16 +119,6 @@ def bool_type(val):
     else:
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
-# this shouldn't be for all int types --> change later
-
-def int_or_none(val):
-    if(val.lower() == 'none'):
-        return None
-    try:
-        int(val)
-    except Exception:
-        raise argparse.ArgumentTypeError(val + ' is not a valid int value')
-    return int(val)
 
 # this shouldn't be for all str types --> change later
 
@@ -136,14 +134,13 @@ def str_or_none(val):
 
 # how should this check what kind of enum type? right now, just returns a string.
 
-
 def enum_type(val):
     return str(val)
 
 
 def get_type(type):
     known_types = {
-        'int': int_or_none,  # change this later
+        'int': int,  # change this later
         'float': float,
         'string': str_or_none,  # change this later
         'bool': bool_type,

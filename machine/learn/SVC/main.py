@@ -12,9 +12,12 @@ if parentPath not in sys.path:
 
 from io_utils import Experiment
 from skl_utils import generate_results
+exp = Experiment('SVC')
+def main(args, input_data, tmpdir=exp.tmpdir):
+    model = SVC(kernel=args['kernel'], tol=args['tol'], C=args['C'])
+    generate_results(model, input_data, tmpdir, args['_id'])
 
 if __name__ == "__main__":
-    exp = Experiment('SVC')
+
     args, input_data = exp.get_input()
-    model = SVC(kernel=args['kernel'], tol=args['tol'], C=args['C'])
-    generate_results(model, input_data, exp.tmpdir, args['_id'])
+    main(args, input_data)

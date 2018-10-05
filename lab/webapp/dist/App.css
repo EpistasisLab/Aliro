@@ -250,6 +250,21 @@ body {
    background-color: #ff7701 !important;
 }
 
+.pennai .builder-scene .algorithm-btn + i.icon {
+  position: absolute;
+  top: 1.1em;
+  right: .1em;
+  cursor: pointer;
+}
+
+/* Remember: active class and active state are different! */
+.pennai .builder-scene .algorithm-btn.active + i.icon,
+.pennai .builder-scene .algorithm-btn:active + i.icon,
+.pennai .builder-scene .algorithm-btn:focus + i.icon,
+.pennai .builder-scene .algorithm-btn:hover + i.icon {
+  color: wheat !important;
+}
+
 .pennai .builder-scene .param-count {
     font-size: 0.90rem;
     margin-top: 0.5rem;
@@ -300,11 +315,6 @@ body {
     margin-right: 0.5em;
 }
 
-.pennai .admin-scene .muted {
-    color: rgba(255,255,255,.7);
-    font-style: italic;
-}
-
 .c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
     font-size: 0.8rem;
 }
@@ -342,6 +352,11 @@ pre.schema {
     float: right;
 }
 
+.pennai .muted {
+    color: rgba(255,255,255,.7);
+    font-style: italic;
+}
+
 @media (max-width: 321px) {
 
 }
@@ -360,7 +375,7 @@ pre.schema {
     }
 
     h1.ui.header {
-        font-size: calc(2rem * 2.5); 
+        font-size: calc(2rem * 2.5);
     }
 
     h1.ui.header .sub.header {
@@ -368,7 +383,7 @@ pre.schema {
     }
 
     .ui.button {
-        font-size: calc(1rem * 2.5); 
+        font-size: calc(1rem * 2.5);
     }
 
     .ui.inverted.segment {

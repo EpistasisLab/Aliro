@@ -12,10 +12,8 @@ if parentPath not in sys.path:
 
 from io_utils import Experiment
 from skl_utils import generate_results
-
-if __name__ == "__main__":
-    exp = Experiment('GradientBoostingClassifier')
-    args, input_data = exp.get_input()
+exp = Experiment('GradientBoostingClassifier')
+def main(args, input_data, tmpdir=exp.tmpdir):
     model = GradientBoostingClassifier(n_estimators=args['n_estimators'],
                                         learning_rate=args['learning_rate'],
                                         max_depth=args['max_depth'],
@@ -23,4 +21,9 @@ if __name__ == "__main__":
                                         min_samples_leaf=args['min_samples_leaf'],
                                         subsample=args['subsample'],
                                         max_features=args['max_features'])
-    generate_results(model, input_data, exp.tmpdir, args['_id'])
+    generate_results(model, input_data, tmpdir, args['_id'])
+
+
+if __name__ == "__main__":
+    args, input_data = exp.get_input()
+    main(args, input_data)
