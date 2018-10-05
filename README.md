@@ -10,6 +10,8 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
   - Docker (Version 1.13.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - Docker-Compose - Seperate installation is only needed for linux; docker-compose is bundled with windows and mac docker installation
+  	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
   - Python and nose test runner (optional, needed only to run unit tests)
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) and [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
