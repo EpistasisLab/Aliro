@@ -152,7 +152,7 @@ class APITESTCLASS(unittest.TestCase):
         assert exp.args == args
         assert exp.method_name == "SVC"
         assert exp.basedir == '.'
-        assert exp.tmpdir == './machine/learn/{}/tmp/'.format('SVC')
+        assert exp.tmpdir == './machine/learn/tmp/{}/'.format('SVC')
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -173,7 +173,7 @@ class APITESTCLASS(unittest.TestCase):
                 conv_default_value = conv_func(default_value)
                 args[param_name] = conv_default_value
 
-            outdir = "./machine/learn/{}/tmp/test_id".format(algorithm_name)
+            outdir = "./machine/learn/tmp/{}/test_id".format(algorithm_name)
 
             print(algorithm_name, args)
             main(args)

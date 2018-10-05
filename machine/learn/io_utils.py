@@ -32,6 +32,9 @@ class Experiment:
         self.basedir = basedir
         # temporary directory
         self.tmpdir = '{}/machine/learn/tmp/{}/'.format(self.basedir, self.method_name)
+        if not os.path.isdir(self.tmpdir):
+            os.makedirs(self.tmpdir)
+
 
     def get_input(self):
         """Get input data based on _id from API.
