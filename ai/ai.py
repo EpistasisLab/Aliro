@@ -302,7 +302,8 @@ class AI():
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
-          state['scores'] = self.rec.scores
+            state['scores'] = self.rec.scores #TODO: make this a more generic. Maybe just save the 
+                                              # AI or rec object itself. 
         state['trained_dataset_models'] = self.rec.trained_dataset_models
         state['last_update'] = self.last_update
         pickle.dump(state, out)
