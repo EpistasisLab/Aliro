@@ -13,7 +13,7 @@ warnings.simplefilter("ignore")
 # define a comparison function that tests a recommender on the pmlb datasets, 
 #using an intial knowledge base.
 def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
-    """generates recommendations for datasets, using the first 10 as knowledge base."""
+    """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
     recommender = {'random': RandomRecommender(ml_p=ml_p,metric='bal_accuracy'),
             'average': AverageRecommender(metric='bal_accuracy'),
@@ -33,7 +33,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
         holdout_subset_lookup = pmlb_data.loc[pmlb_data['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
         # print('generating recommendation for',dataset)
-        for i in np.arange(n_recs):
+        # for i in np.arange(n_recs):
             # ml ='adf'
             # p = 'pakd'
             # n = 0
@@ -41,38 +41,47 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             # if (ml,p) not in holdout_subset_lookup:
             #     pdb.set_trace()
 
-            # for each dataset, generate a recommendation
-            mls, ps, scores = recommender.recommend(n_recs=1, dataset_id=dataset)
-            ml = mls[0]
+        # for each dataset, generate a recommendation
+        mls, ps, scores = recommender.recommend(n_recs=n_recs, dataset_id=dataset)
+        updates = []
+        for i in np.arange(n_recs):
+            ml = mls[i]
             if type(recommender).__name__ == 'MockMetaRecommender':
-                tmp = eval(ps[0])
-                for mfs in ['coef0','learning_rate','min_weight_fraction_leaf']:
+                tmp = eval(ps[i])
+                for mfs in ['gamma','coef0','learning_rate','min_weight_fraction_leaf']:
                     if mfs in tmp.keys():
                         tmp[mfs] = float(tmp[mfs])
                     p = str(OrderedDict(sorted(tmp.items())))
             else:
-                p = ps[0]
+                p = ps[i]
 
             print('recommending',ml,'with',p,'for',dataset)
             if (ml,p) not in holdout_subset_lookup:
-                print((ml,p),'not found')
-                pdb.set_trace()
+                raise ValueError((ml,p),'not found')
             
             # n = n+1
             # retreive the performance of the recommended learner
             actual_score = holdout_subset_lookup[(ml, p)]
             best_score = pmlb_data.loc[pmlb_data['dataset'] == dataset]['bal_accuracy'].max()
             # Update the recommender with the score from its latest guess
-            update_record = pd.DataFrame(data={'dataset': [dataset],
+            updates.append(pd.DataFrame(data={'dataset': [dataset],
                                                'algorithm': [ml],
                                                'parameters': [p],
                                                'bal_accuracy': [actual_score]})
-            # print('updating recommender...')
-            recommender.update(update_record)
+                          )
+            
             # store the trial, iteration, dataset, recommender, ml rec, param rec, bal_accuracy	
             results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score,best_score,
-                            best_score-actual_score])
+                            (best_score-actual_score)/best_score])
 
+        # print('updating recommender...')
+        update_record = pd.concat(updates)
+        recommender.update(update_record)
+
+    if rec == 'meta':   # store feature importance scores
+        fi = recommender.ml.feature_importances_
+        with open('feature_importances_'+str(trial) + '.txt','w') as out:
+            out.write(','.join([str(fi) for fi in recommender.ml.feature_importances_])+'\n')
     return results
 
 # make a figure comparing several runs of the test over different orderings of datasets
@@ -95,11 +104,14 @@ if __name__ == '__main__':
                         help='Number of repeat experiments to run.')  
     parser.add_argument('-n_init',action='store',dest='n_init',type=int,default=10,
                         help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-knowledge',action='store',dest='KNOWL',type=str,
+                        default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
+                        help='Number of initial datasets to seed knowledge database')
+
     args = parser.parse_args()
     
-    pmlb_file = 'mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz'
-    # load pmlb data
-    print('load pmlb data')
+    pmlb_file = args.KNOWL    # load knowledge base
+    print('loading knowledge base')
     pmlb_data = pd.read_csv(pmlb_file,
                             compression='gzip', sep='\t').fillna('')#,
     ml_p = pmlb_data.loc[:,['algorithm','parameters']]                      
