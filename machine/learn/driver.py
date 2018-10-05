@@ -1,5 +1,5 @@
-from .io_utils import Experiment, parse_args
-from .skl_utils import generate_results
+from io_utils import Experiment, parse_args
+from skl_utils import generate_results
 
 def main(args):
     exp = Experiment(args)
