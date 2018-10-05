@@ -8,12 +8,9 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-Path = "machine/learn"
-if Path not in sys.path:
-    sys.path.insert(0, Path)
-from skl_utils import generate_results, generate_export_codes, SCORERS, setup_model_params
-from io_utils import Experiment, get_projects, get_input_data, get_type
-from driver import main
+from machine.learn.skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params
+from machine.learn.io_utils import Experiment, get_projects, get_input_data, get_type, parse_args
+from machine.learn.driver import main
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
@@ -108,6 +105,7 @@ class APITESTCLASS(unittest.TestCase):
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
 
+
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_2(self, mock_get):
         """Test get_input_data function return a list of input dataset for cross-validataion"""
@@ -123,12 +121,14 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
 
+
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_projects(self, mock_get):
         """Test get_params return correct projects' info."""
         projects = get_projects()
 
         assert projects == projects_json_data
+
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_Experiment_init(self, mock_get):
@@ -143,11 +143,11 @@ class APITESTCLASS(unittest.TestCase):
             }
         exp = Experiment(args=args, basedir='.')
 
-
         assert exp.args == args
         assert exp.method_name == "SVC"
         assert exp.basedir == '.'
         assert exp.tmpdir == './machine/learn/{}/tmp/'.format('SVC')
+
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_1(self, mock_get):
@@ -188,6 +188,16 @@ class APITESTCLASS(unittest.TestCase):
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
 
+
+def test_balanced_accuracy():
+    """Assert that the balanced_accuracy in TPOT returns correct accuracy."""
+    y_true = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    y_pred1 = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    y_pred2 = np.array([3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    accuracy_score1 = balanced_accuracy(y_true, y_pred1)
+    accuracy_score2 = balanced_accuracy(y_true, y_pred2)
+    assert np.allclose(accuracy_score1, 1.0)
+    assert np.allclose(accuracy_score2, 0.833333333333333)
 
 
 def test_generate_results_1():
