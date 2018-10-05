@@ -495,32 +495,26 @@ var getProjects = function() {
     var tmppath = learnpath + "/tmp";
     if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
 
-    var machine_config;
-        fs.readFile('machine_config.json', 'utf-8', (err, data) {
-            if (err) throw err;
-            console.log(data);
-            machine_config = JSON.parse(data);
-        });
+    var machine_config = JSON.parse(fs.readFileSync('machine_config.json', 'utf-8'));
 
     //get a list of folders in the learn directory
-    var algorithms = machine_config.algorithms
+    var algorithms = machine_config["algorithms"]
+
     for (var i in algorithms) {
         var algo = algorithms[i];
+        console.log("Register " + algo)
         var project_folder = tmppath + '/' + algo;
         if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744)
-        if (project_subs !== undefined) {
-
-            var project = {
-                name: algo,
-                command: "python",
-                cwd: "machine/learn/",
-                args: ["driver.py",  algo],
-                options: "double-dash",
-                capacity: "1",
-                results: project_folder
-            }
-            project_list.push(project);
+        var project = {
+            name: algo,
+            command: "python",
+            cwd: "machine/learn/",
+            args: ["driver.py",  algo],
+            options: "double-dash",
+            capacity: "1",
+            results: "machine/learn/tmp/" + algo
         }
+        project_list.push(project);
     }
     return (project_list);
 }

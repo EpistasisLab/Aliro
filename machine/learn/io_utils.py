@@ -31,7 +31,7 @@ class Experiment:
         self.method_name = self.args['method']
         self.basedir = basedir
         # temporary directory
-        self.tmpdir = '{}/machine/learn/{}/tmp/'.format(self.basedir, self.method_name)
+        self.tmpdir = '{}/machine/learn/tmp/{}/'.format(self.basedir, self.method_name)
 
     def get_input(self):
         """Get input data based on _id from API.
