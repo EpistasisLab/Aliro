@@ -8,9 +8,12 @@ from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
-from machine.learn.skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params
-from machine.learn.io_utils import Experiment, get_projects, get_input_data, get_type
-from machine.learn.driver import main
+Path = "machine/learn"
+if Path not in sys.path:
+    sys.path.insert(0, Path)
+from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params
+from io_utils import Experiment, get_projects, get_input_data, get_type
+from driver import main
 import json
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelEncoder
