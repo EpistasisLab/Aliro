@@ -397,7 +397,6 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     """
     Make plot for confusion matrix.

@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tempfile import mkdtemp
 from shutil import rmtree
 from machine.learn.skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params
-from machine.learn.io_utils import Experiment, get_projects, get_input_data, get_type, parse_args
+from machine.learn.io_utils import Experiment, get_projects, get_input_data, get_type
 from machine.learn.driver import main
 import json
 from sklearn.externals import joblib
@@ -43,9 +43,12 @@ def decode_stacked(document, pos=0, decoder=json.JSONDecoder()):
             raise
         yield obj
 
-# test input file for classification
-test_clf_input = "machine/test/iris.tsv"
+# test input file for multiclass classification
+test_clf_input = "machine/test/iris_full.tsv"
 test_clf_input_df = pd.read_csv(test_clf_input, sep='\t')
+# test input file for binary classification
+test_clf_input2 = "machine/test/iris_binary.tsv"
+test_clf_input_df2 = pd.read_csv(test_clf_input, sep='\t')
 # test inputfile for regression
 test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
@@ -81,7 +84,7 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
         return MockResponse(json.dumps({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}, {'_id': 'test_file_id2', 'filename': 'test_reg_input'}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
-        return MockResponse(open(test_clf_input).read(), 200)
+        return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
         return MockResponse(open(test_reg_input).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/projects':
@@ -101,7 +104,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_HOST = 'lab'
         # Assert requests.get calls
         input_data = get_input_data(_id, tmpdir=tmpdir)
-        exp_input_data = pd.read_csv(test_clf_input, sep='\t')
+        exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
 
@@ -115,7 +118,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_HOST = 'lab'
         # Assert requests.get calls
         input_data = get_input_data(_id, tmpdir=tmpdir)
-        exp_input_data1 = pd.read_csv(test_clf_input, sep='\t')
+        exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data1.equals(input_data[0])
@@ -181,7 +184,7 @@ class APITESTCLASS(unittest.TestCase):
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
             assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-            assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+            assert os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
             assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
             # test pickle file
