@@ -261,6 +261,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     //  args = []
     //console.log("args")
     //console.log(args)
+    var experimentErrorMessage
     var experiment = spawn(project.command, args, {
             cwd: project_root + '/' + project.cwd
         })
@@ -271,15 +272,18 @@ app.post("/projects/:id", jsonParser, (req, res) => {
                 uri: laburi + "/api/v1/experiments/" + experimentId,
                 method: "PUT",
                 json: {
-                    _status: "fail"
+                    _status: "fail",
+                    errorMessage: `Error spawning ml process: ${er}`
                 },
                 gzip: true
             });
             // Log error
             console.log("Error: Experiment could not start - please check projects.json");
+            console.log(er)
         });
 
     maxCapacity -= Number(project.capacity); // Reduce capacity of machine
+
     rp({
         uri: laburi + "/api/v1/experiments/" + experimentId + "/started",
         method: "PUT",
@@ -291,12 +295,19 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     // Log stdout
     experiment.stdout.on("data", (data) => {
         mediator.emit("experiments:" + experimentId + ":stdout", data.toString()); // Emit event
-        console.log("Stdout: " + data.toString());
+        console.log("stdout: " + data.toString());
     });
     // Log errors
     experiment.stderr.on("data", (data) => {
-        mediator.emit("experiments:" + experimentId + ":stderr", data.toString()); // Emit event
-        console.log("Error: " + data.toString());
+        var dataStr = data.toString()
+        mediator.emit("experiments:" + experimentId + ":stderr", dataStr); // Emit event
+        console.log("stderr: " + dataStr);
+        if (dataStr.indexOf("ValueError") !== -1) {
+            experimentErrorMessage = dataStr.substring(dataStr.indexOf("ValueError")).replace('\n', '').replace('\\', '')
+        }
+        else if(dataStr.indexOf("Traceback") !== -1) { // python exception w. traceback
+            experimentErrorMessage = dataStr
+        }
     });
 
     // List of file promises (to make sure all files are uploaded before removing results folder)
@@ -349,22 +360,26 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // Processes results
     experiment.on("exit", (exitCode) => {
+        console.log("on exit!")
         maxCapacity += Number(project.capacity); // Add back capacity
 
         // Send status
         var status
-        if (exitCode === 0) { status = "success" }
-        else if (experiment.killed) { status = "cancelled" }
-        else { status = "fail"}
+        var statusMap
+        if (exitCode === 0) { statusMap = {_status : "success" }}
+        else if (experiment.killed) { statusMap = {_status : "cancelled" }}
+        else { statusMap = {
+            _status : "fail",
+            errorMessage: experimentErrorMessage
+        }}
 
-        //console.log(`Exit code: ${exitCode}, status: ${status}`)
+        console.log(`Exit code: ${exitCode}, status: ${status}`)
+        //`Process ended with exit code ${exitCode}`
 
         rp({
             uri: laburi + "/api/v1/experiments/" + experimentId,
             method: "PUT",
-            json: {
-                _status: status
-            },
+            json: statusMap,
             gzip: true
         });
         rp({

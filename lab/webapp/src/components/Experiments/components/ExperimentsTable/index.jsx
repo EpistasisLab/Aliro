@@ -23,6 +23,8 @@ function ExperimentsTable({
 
   const shouldDisplayParams = selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0;
 
+  const shouldDisplayErrorMessage = selectedStatus === 'fail';
+
   const orderedParamKeys = Object.keys(currentParameters).sort();
 
   return (
@@ -41,6 +43,7 @@ function ExperimentsTable({
           selectedAlgorithm={selectedAlgorithm}
           shouldDisplayQuality={shouldDisplayQuality}
           shouldDisplayParams={shouldDisplayParams}
+          shouldDisplayErrorMessage={shouldDisplayErrorMessage}
           orderedParamKeys={orderedParamKeys}
           sort={sort}
           updateQuery={updateQuery}
@@ -50,6 +53,7 @@ function ExperimentsTable({
           shouldDisplayQuality={shouldDisplayQuality}
           shouldDisplayAwards={shouldDisplayAwards}
           shouldDisplayParams={shouldDisplayParams}
+          shouldDisplayErrorMessage={shouldDisplayErrorMessage}
           orderedParamKeys={orderedParamKeys}
         />
       </Table>

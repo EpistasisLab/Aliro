@@ -7,7 +7,7 @@ class ResponsiveGrid extends Component {
       MAX_MOBILE: 480,
       MIN_TABLET: 768,
       MAX_TABLET: 1024,
-      MAX_DESKTOP: 1224,
+      MAX_DESKTOP: 1374,
       MAX_LGSCREEN: 1824
     };
   }

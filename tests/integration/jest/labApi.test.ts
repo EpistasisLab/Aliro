@@ -10,26 +10,26 @@ import * as labApi from './labApi';
 it('lab fetchDatasets', () => {
 	expect.assertions(5);
 	return labApi.fetchDatasets().then((data) => {
-		expect(data.length).toBeGreaterThan(50);
-		var adult = data.find(function(element) {
-		  return element.name == 'adult';
+		expect(data.length).toBeGreaterThan(30);
+		var banana = data.find(function(element) {
+		  return element.name == 'banana';
 		});
-		expect(adult).toBeTruthy();
-		expect(adult.metafeatures).toBeTruthy();
-		expect(adult.metafeatures).toHaveProperty('n_rows')
-		expect(adult.metafeatures).toHaveProperty('n_columns')
+		expect(banana).toBeTruthy();
+		expect(banana.metafeatures).toBeTruthy();
+		expect(banana.metafeatures).toHaveProperty('n_rows')
+		expect(banana.metafeatures).toHaveProperty('n_columns')
 	});
 });
 
 
 it('lab fetchDataset', async () => {
-	// get adult dataset
+	// get banana dataset
  	var datasets = await labApi.fetchDatasets();
  	expect(datasets.length).toBeGreaterThan(1);
- 	var adultId = datasets.find(function(element) {return element.name == 'adult';})._id;
- 	expect(adultId).toBeTruthy();
+ 	var bananaId = datasets.find(function(element) {return element.name == 'banana';})._id;
+ 	expect(bananaId).toBeTruthy();
 
- 	return labApi.fetchDataset(adultId).then((data) => {
+ 	return labApi.fetchDataset(bananaId).then((data) => {
  		console.log(data)
   		expect(data.length).toEqual(1);
   		expect(data[0].metafeatures).toBeTruthy();
@@ -42,14 +42,14 @@ it('lab fetchDataset', async () => {
 it.skip('lab fetchDatasetMetaFeatures', async () => {
 	expect.assertions(3);
 
-	// get adult dataset
+	// get banana dataset
  	var datasets = await labApi.fetchDatasets();
  	expect(datasets.length).toBeGreaterThan(1);
- 	var adultId = datasets.find(function(element) {return element.name == 'adult';})._id;
- 	expect(adultId).toBeTruthy();
+ 	var bananaId = datasets.find(function(element) {return element.name == 'banana';})._id;
+ 	expect(bananaId).toBeTruthy();
 
 
- 	return labApi.fetchDatasetMetafeatures(adultId).then((data) => {
+ 	return labApi.fetchDatasetMetafeatures(bananaId).then((data) => {
  		console.log(data)
   		expect(data.length).toBeGreaterThan(4);
 	});

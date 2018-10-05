@@ -1,33 +1,37 @@
 import React from 'react';
-import { Grid, Segment, Header, Popup, Icon, Button } from 'semantic-ui-react';
+import { Grid, Segment, Header, Popup, Button, Icon } from 'semantic-ui-react';
 import { formatParam } from 'utils/formatter';
 
-function ParameterOptions({ 
+function ParameterOptions({
   params,
   currentParams,
   setParamValue
 }) {
   const calcCols = (choices) => choices.length > 2 ? 2 : 1;
 
-  const isActive = (param, value) => value === currentParams[param];
+  const isActive = (info, param, i) => currentParams[param] === getReturnValue(info, i);
+
+  const getReturnValue = (info, i) => info.ui.values ? info.ui.values[i] : info.ui.choices[i];
 
   return (
     <Grid.Row>
       {params && Object.entries(params).map(([param, info]) => (
-        <Grid.Column 
-          key={param} 
-          mobile={16} 
-          tablet={8} 
-          computer={8} 
-          widescreen={8} 
+        <Grid.Column
+          key={param}
+          mobile={16}
+          tablet={8}
+          computer={8}
+          widescreen={8}
           largeScreen={8}
         >
           <Segment inverted attached="top" className="panel-header">
-            <Popup 
-              size="large"
+            <Popup
               on="click"
+              position="top center"
+              header={formatParam(info.alias || param)}
+              content={info.description}
               trigger={
-                <Icon 
+                <Icon
                   inverted
                   size="large"
                   color="blue"
@@ -35,31 +39,30 @@ function ParameterOptions({
                   className="info-icon float-right"
                 />
               }
-              content={info.description}
             />
-            <Header 
+            <Header
               as="h2"
-              inverted 
+              inverted
               color="blue"
               content={formatParam(info.alias || param)}
               className="param-name"
             />
-          </Segment>  
+          </Segment>
           <Segment inverted attached="bottom">
             <Grid columns={calcCols(info.ui.choices)} className="compressed">
-              {info.ui.choices.map(value => (
-                <Grid.Column key={value}>
+            {info.ui.choices.map((choice, i) => (
+               <Grid.Column key={choice}>
                   <Button
-                    inverted 
-                    color="blue"
-                    fluid
-                    content={value.toString()} 
-                    active={isActive(param, value)}
-                    onClick={() => setParamValue(param, value)} 
-                  />
-                </Grid.Column>
-              ))}
-            </Grid> 
+                       fluid
+                       inverted
+                       color="blue"
+                       content={choice.toString()}
+                       active={isActive(info, param, i)}
+                       onClick={() => setParamValue(param, getReturnValue(info, i))}
+                   />
+              </Grid.Column>
+            ))}
+            </Grid>
           </Segment>
         </Grid.Column>
       ))}

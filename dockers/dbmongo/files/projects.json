@@ -1,6 +1,7 @@
 {
     "name": "BernoulliNB",
     "description": "Naive Bayes classifier for multivariate Bernoulli models.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -26,7 +27,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         }
     },
@@ -34,11 +36,13 @@
 } {
     "name": "GaussianNB",
     "description": "Gaussian Naive Bayes",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
     "category": "ML"
 } {
     "name": "MultinomialNB",
     "description": "Naive Bayes classifier for multinomial models.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html",
     "schema": {
         "alpha": {
             "description": "Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).",
@@ -55,7 +59,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         }
     },
@@ -63,15 +68,16 @@
 } {
     "name": "DecisionTreeClassifier",
     "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
             "type": "enum",
-            "values": ["gini", "entropy"],
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["Gini impurity", "Information gain"],
+                "values": ["gini", "entropy"]
             }
         },
         "max_depth": {
@@ -106,6 +112,7 @@
 } {
     "name": "ExtraTreesClassifier",
     "description": "Extremely Randomized Trees",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -123,7 +130,8 @@
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["Gini impurity", "Information gain"],
+                "values": ["gini", "entropy"]
             }
         },
         "max_features": {
@@ -132,7 +140,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2", "None"]
+                "choices": ["Square root", "Log2", "None"],
+                "values": ["sqrt", "log2", "None"]
             }
         },
         "min_samples_split": {
@@ -159,7 +168,8 @@
             "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         }
     },
@@ -167,6 +177,7 @@
 } {
     "name": "GradientBoostingClassifier",
     "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -228,7 +239,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["Square root", "Log2"],
+                "values": ["sqrt", "log2"]
             }
         }
     },
@@ -236,6 +248,7 @@
 } {
     "name": "KNeighborsClassifier",
     "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html",
     "schema": {
         "n_neighbors": {
             "description": "Number of neighbors to use by default for k_neighbors queries.",
@@ -252,7 +265,8 @@
             "default": "uniform",
             "ui": {
                 "style": "radio",
-                "choices": ["uniform", "distance"]
+                "choices": ["Uniform", "Distance"],
+                "values": ["uniform", "distance"]
             }
         },
         "p": {
@@ -269,6 +283,12 @@
 } {
     "name": "LinearSVC",
     "description": "Linear Support Vector Classification.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l2"}, {"loss":"hinge"}, {"dual":"false"}],
+        [{"penalty":"l1"}, {"loss":"square_hinge"}, {"dual":"true"}],
+        [{"penalty":"l1"}, {"loss":"hinge"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -276,7 +296,8 @@
             "default": "l2",
             "ui": {
                 "style": "radio",
-                "choices": ["l1", "l2"]
+                "choices": ["L1", "L2"],
+                "values": ["l1", "l2"]
             }
         },
         "loss": {
@@ -285,7 +306,8 @@
             "default": "squared_hinge",
             "ui": {
                 "style": "radio",
-                "choices": ["hinge", "squared_hinge"]
+                "choices": ["Hinge", "Squared hinge"],
+                "values": ["hinge", "squared_hinge"]
             }
         },
         "dual": {
@@ -294,7 +316,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         },
         "tol": {
@@ -320,6 +343,10 @@
 } {
     "name": "LogisticRegression",
     "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html",
+    "invalidParameterCombinations" : [
+        [{"penalty":"l1"}, {"dual":"true"}]
+    ],
     "schema": {
         "penalty": {
             "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
@@ -327,7 +354,8 @@
             "default": "l2",
             "ui": {
                 "style": "radio",
-                "choices": ["l1", "l2"]
+                "choices": ["L1", "L2"],
+                "values": ["l1", "l2"]
             }
         },
         "C": {
@@ -345,7 +373,8 @@
             "default": "false",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         }
     },
@@ -353,6 +382,7 @@
 } {
     "name": "RandomForestClassifier",
     "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html",
     "schema": {
         "n_estimators": {
             "description": "The number of trees in the forest.",
@@ -369,7 +399,8 @@
             "default": "gini",
             "ui": {
                 "style": "radio",
-                "choices": ["gini", "entropy"]
+                "choices": ["Gini impurity", "Information gain"],
+                "values": ["gini", "entropy"]
             }
         },
         "max_features": {
@@ -378,7 +409,8 @@
             "default": "sqrt",
             "ui": {
                 "style": "radio",
-                "choices": ["sqrt", "log2"]
+                "choices": ["Square root", "Log2"],
+                "values": ["sqrt", "log2"]
             }
         },
         "min_samples_split": {
@@ -405,7 +437,8 @@
             "default": "true",
             "ui": {
                 "style": "radio",
-                "choices": ["true", "false"]
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
             }
         }
     },
@@ -413,6 +446,7 @@
 } {
     "name": "SVC",
     "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
+    "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
     "schema": {
         "kernel": {
             "description": "Specifies the kernel type to be used in the algorithm",
@@ -420,7 +454,8 @@
             "default": "rbf",
             "ui": {
                 "style": "radio",
-                "choices": ["poly", "rbf"]
+                "choices": ["Polynomial", "Radial basis function"],
+                "values": ["poly", "rbf"]
             }
         },
         "tol": {
