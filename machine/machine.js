@@ -20,6 +20,7 @@ var rp = require("request-promise");
 var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
+const getProjects = require('../getprojects.js');
 
 
 /* App instantiation */
@@ -59,8 +60,6 @@ if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     console.log("Error: No FGMachine address specified");
     process.exit(1);
 }
-
-
 
 /* Machine specifications */
 // Attempt to read existing specs
@@ -117,6 +116,14 @@ fs.readFile("specs.json", "utf-8")
                 // Reload specs with _id (prior to adding projects)
                 specs = body;
                 project_list = getProjects();
+                var tmppath = project_root + "/machine/learn/tmp";
+                if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
+                for (var i in project_list) {
+                    var algo = project_list[i].name;
+                    var project_folder = tmppath + '/' + algo;
+                    if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744);
+                }
+
                 // Register projects
                 rp({
                         uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
@@ -485,36 +492,3 @@ wss.on("connection", (ws) => {
         mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
     });
 });
-
-
-
-//Generate a list of projects based on machine_config.json
-var getProjects = function() {
-    var project_list = [];
-    var learnpath = project_root + "/machine/learn";
-    var tmppath = learnpath + "/tmp";
-    if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
-
-    var machine_config = JSON.parse(fs.readFileSync('machine_config.json', 'utf-8'));
-
-    //get a list of folders in the learn directory
-    var algorithms = machine_config["algorithms"]
-
-    for (var i in algorithms) {
-        var algo = algorithms[i];
-        console.log("Register " + algo)
-        var project_folder = tmppath + '/' + algo;
-        if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744)
-        var project = {
-            name: algo,
-            command: "python",
-            cwd: "machine/learn/",
-            args: ["driver.py",  algo],
-            options: "double-dash",
-            capacity: "1",
-            results: "machine/learn/tmp/" + algo
-        }
-        project_list.push(project);
-    }
-    return (project_list);
-}
