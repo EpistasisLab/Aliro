@@ -382,19 +382,21 @@ def test_generate_export_codes():
     expected_text = """import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.externals import joblib
 
 # NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 
 # load fitted model
 model = joblib.load({})
-# Applcation 1: cross validation of fitted model
+# Application 1: cross validation of fitted model
+# 'TARGET' is column name of outcome in the input dataset
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
-# Applcation 2: predict outcome by fitted model
+# Application 2: predict outcome by fitted model
 predict_target = model.predict(input_data.values)
 """.format(pickle_file)
     assert pipeline_text==expected_text
