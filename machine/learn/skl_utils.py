@@ -494,10 +494,10 @@ input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.f
     pipeline_text += """
 # load fitted model
 model = joblib.load({})""".format(pickle_file)
-    
+
     pipeline_text += """
 # Application 1: cross validation of fitted model
-# 'TARGET' is column name of outcome
+# 'TARGET' is column name of outcome in the input dataset
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
