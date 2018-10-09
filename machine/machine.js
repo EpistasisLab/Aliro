@@ -20,7 +20,7 @@ var rp = require("request-promise");
 var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
-const getProjects = require('../getprojects.js');
+const getProjects = require('./getprojects.js');
 
 
 /* App instantiation */
