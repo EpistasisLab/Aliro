@@ -520,34 +520,27 @@ def generate_export_codes(pickle_file):
        The Python code that imports all required library used in the current
        optimized pipeline
     """
-    pipeline_text = 'import numpy as np\nimport pandas as pd\n'
+    pipeline_text = """import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.externals import joblib
 
-    # Always start with these imports
-    pipeline_imports = {
-        'sklearn.model_selection': ['train_test_split'],
-    }
-
-
-    # Build import string
-    for key in sorted(pipeline_imports.keys()):
-        module_list = ', '.join(sorted(pipeline_imports[key]))
-        pipeline_text += 'from {} import {}\n'.format(key, module_list)
-
-    pipeline_text += """
 # NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 """
     pipeline_text += """
 # load fitted model
 model = joblib.load({})""".format(pickle_file)
+
     pipeline_text += """
-# Applcation 1: cross validation of fitted model
+# Application 1: cross validation of fitted model
+# 'TARGET' is column name of outcome in the input dataset
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
-# Applcation 2: predict outcome by fitted model
+# Application 2: predict outcome by fitted model
 predict_target = model.predict(input_data.values)
 """
 
