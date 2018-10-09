@@ -48,7 +48,8 @@
     "gulp-git": "^1.7.1",
     "gulp-util": "^3.0.7",
     "minimist": "^1.2.0",
-    "run-sequence": "^1.2.0"
+    "run-sequence": "^1.2.0",
+    "mocha": "5.0.1"
   },
   "engines": {
     "node": "6.x"
