@@ -111,7 +111,9 @@ npm run build-dev
 
 #### Machine
 - Type: Python via [nose](https://pypi.org/project/nose/) and Javascript via [mocha](https://mochajs.org/)
-- Prereqs: install nose `pip install nose`
+- Prereqs:
+    - install nose `pip install nose`
+    - install mocha `npm install -g mocha`
 - Usage:
 	```
   # test Python codes
@@ -119,5 +121,6 @@ npm run build-dev
   # test Javascript codes
   cd machine
   npm install
-  npm test
+  # note the path of test.js need to be updated in Windows environment
+  mocha ./test/test.js # or `npm test`
 	```
