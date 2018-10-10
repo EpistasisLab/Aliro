@@ -72,7 +72,9 @@ npm run build-dev
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
 - Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
-- Results: The results will be in the folder `.\tests\integration\results`
+- Results: 
+	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
+	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
 - Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
 
 
