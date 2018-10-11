@@ -38,7 +38,7 @@ for dataset, dfg in pmlb_data.groupby('dataset'):
     assert(len(dataset_path)==1)
     dataset_path = dataset_path[0]
     print(dataset_path)
-    mf = get_metafeatures(dataset_path,'class',{'compression':compression})
+    mf = get_metafeatures(dataset_path,'class',compression = compression)
     meta_json = simplejson.dumps(mf, ignore_nan=True) #, ensure_ascii=False)    
     if not os.path.exists('metafeatures/api/datasets/'+dataset):
             os.makedirs('metafeatures/api/datasets/'+dataset)
