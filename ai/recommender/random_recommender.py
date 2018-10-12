@@ -5,7 +5,7 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
-from ..db_utils import get_all_ml_p_from_db  
+from ..db_utils import get_all_ml_p_from_db 
 
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
@@ -114,7 +114,7 @@ class RandomRecommender(BaseRecommender):
                                        self.trained_dataset_models)
                     else:
                         rec_not_new = False
-                if n==99:
+                if n==999:
                     print('warning: tried 1000 times (and failed) to find a novel recommendation')
                 
                 ml_rec.append(ml_tmp)
