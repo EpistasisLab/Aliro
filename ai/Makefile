@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = PennAI
 SOURCEDIR     = source
-BUILDDIR      = build
+BUILDDIR      = ../target/ai_docs
 
 # Put it first so that "make" without argument is like "make help".
 help:
