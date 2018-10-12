@@ -4,16 +4,20 @@ Dumps the results into json.
 """
 
 import pandas as pd
-from dataset_describe import Dataset
+try:
+    from dataset_describe import Dataset
+except:
+    from ai.metalearning.dataset_describe import Dataset
+
 from collections import OrderedDict
 import argparse
 import sys
 import simplejson
 
-def get_metafeatures(input_file, target_field):
+def get_metafeatures(input_file, target_field, **kwargs):
     """Calls metafeature generating methods from dataset_describe"""
     # Read the data set into memory
-    df = pd.read_csv(input_file, sep=None, engine='python')
+    df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
    
     dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
    
