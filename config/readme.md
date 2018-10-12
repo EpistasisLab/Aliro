@@ -31,14 +31,15 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
     }
 }
 {
-  ...algo 2... 
+  ...algo 2...
 }
 ```
 
 ## Example
 ```
 {
-    "name": "LinearSVC_Example",
+    "name": "LinearSVC",
+    "path": "sklearn.svm",
     "description": "Linear Support Vector Classification.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html",
     "invalidParameterCombinations" : [
@@ -47,25 +48,6 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
         [{"penalty":"l1"}, {"loss":"hinge"}]
     ],
     "schema": {
-        "exampleParam": {
-            "description":"An example parameter with two choices mapping to the same value",
-            "type": "bool",
-            "default": "false",
-            "ui": {
-                "style": "radio",
-                "choices": ["Yes", "No", "None"],
-                "values" : ["true", "false", "false"]
-            }
-        },
-        "exampleParam2": {
-            "description":"An example parameter that does not use 'values'",
-            "type": "string",
-            "default": "Orange",
-            "ui": {
-                "style": "radio",
-                "choices": ["Apple", "Cherry", "Orange"]
-            }
-        },
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
             "type": "string",
@@ -115,6 +97,6 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
             }
         }
     },
-    "category": "ML"
-}
+    "category": "classification"
+} 
 ```
