@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
-from mock_experiment.mock_meta_recommender import MockMetaRecommender
+from mock_experiment.mock_meta_recommender import MockMetaRecommender, MockMLPMetaRecommender
 from collections import OrderedDict
 import warnings 
 warnings.simplefilter("ignore")
@@ -18,6 +18,8 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     recommender = {'random': RandomRecommender(ml_p=ml_p,metric='bal_accuracy'),
             'average': AverageRecommender(metric='bal_accuracy'),
             'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
+                                        sample_size=1000),
+            'mlp_meta': MockMLPMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
                                         sample_size=1000)
             }[rec]
     #pdb.set_trace()
@@ -46,7 +48,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
         updates = []
         for i in np.arange(n_recs):
             ml = mls[i]
-            if type(recommender).__name__ == 'MockMetaRecommender':
+            if 'Meta' in type(recommender).__name__:
                 tmp = eval(ps[i])
                 for mfs in ['gamma','coef0','learning_rate','min_weight_fraction_leaf']:
                     if mfs in tmp.keys():

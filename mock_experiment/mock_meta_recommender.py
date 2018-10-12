@@ -1,12 +1,11 @@
 # metarecommender with the get_metafeatures class overridden to return 
 # hard-coded json metafeature data.
 from ai.recommender.meta_recommender import MetaRecommender
+from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
 import json
 import pdb
 import pandas as pd
-
-class MockMetaRecommender(MetaRecommender):
-    def get_metafeatures(self,d):
+def get_metafeatures(self,d):
         """Fetch dataset metafeatures from file"""
         # print('fetching data for', d)
         # payload={}
@@ -32,5 +31,11 @@ class MockMetaRecommender(MetaRecommender):
         # print('df:',df)
         return df
 
+class MockMetaRecommender(MetaRecommender):
+    def get_metafeatures(self,d):
+        return get_metafeatures(self,d)    
 
+class MockMLPMetaRecommender(MLPMetaRecommender):
+    def get_metafeatures(self,d):
+        return get_metafeatures(self,d)    
 
