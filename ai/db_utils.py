@@ -199,7 +199,7 @@ def get_all_ml_p_from_db(path,key):
             #print(len(all_hyperparam_combos),' total hyperparameter combinations')
 
             for ahc in all_hyperparam_combos:
-                result.append({'algorithm':x['_id'],'parameters':str(ahc)})
+                result.append({'algorithm':x['_id'],'parameters':str(ahc),'alg_name':x['name']})
         else:
             print('warning: ', x['name'], 'was skipped')
         good_def = True
@@ -211,7 +211,6 @@ def get_all_ml_p_from_db(path,key):
 
     return all_ml_p
 
-# @Deprecated, not used
 def get_random_ml_p_from_db(path,key):
     """ Returns a random ml+parameter option from the server."""
 
