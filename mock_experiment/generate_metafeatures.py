@@ -24,25 +24,28 @@ if len(sys.argv)>3:
 else:
     tail = '.tsv.gz'
 
+print(pmlb_file)
+print(data_dir)
+print(tail)
 compression = 'gzip' if 'gz' in tail else None
 # load pmlb data
-print('load pmlb data')
 pmlb_data = pd.read_csv(pmlb_file,
                         compression='gzip', sep='\t').fillna('')
 
 for dataset, dfg in pmlb_data.groupby('dataset'):
-    print(dataset)
+    # print(data_dir+'/'+dataset+'/*'+tail)
     # dataset_path = data_dir+dataset+'/'+dataset+tail
     # dataset_path = data_dir+'/'+dataset+tail
-    dataset_path = glob(data_dir+'/'+dataset+'*'+tail)
+    dataset_path = glob(data_dir+'/'+dataset+'/*'+tail)
+    print('dataset_path:',dataset_path)
     assert(len(dataset_path)==1)
     dataset_path = dataset_path[0]
     print(dataset_path)
-    mf = get_metafeatures(dataset_path,'class',compression = compression)
+    mf = get_metafeatures(dataset_path,'target',compression = compression)
     meta_json = simplejson.dumps(mf, ignore_nan=True) #, ensure_ascii=False)    
-    if not os.path.exists('metafeatures/api/datasets/'+dataset):
-            os.makedirs('metafeatures/api/datasets/'+dataset)
-    out_file = 'metafeatures/api/datasets/'+dataset+'/metafeatures.json'
+    if not os.path.exists('mock_experiment/metafeatures/api/datasets/'+dataset):
+            os.makedirs('mock_experiment/metafeatures/api/datasets/'+dataset)
+    out_file = 'mock_experiment/metafeatures/api/datasets/'+dataset+'/metafeatures.json'
     with open(out_file,'w') as out:
         out.write(meta_json)
 
