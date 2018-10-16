@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.decomposition import PCA
-
+import pdb
 from scipy.stats import kurtosis, skew
 class Dataset:
     """
@@ -157,132 +157,132 @@ class Dataset:
     #todo: ratop_rowcol_post_encoding
 
 
-    #----------------------------------------------------------------------
-    # Correlation related
-    corr_with_dependent = None
+    ##----------------------------------------------------------------------
+    ## Correlation related
+    #corr_with_dependent = None
 
-    def _get_corr_with_dependent(self):
-        """Called from init. Sets up data for correlation related meta-features.
-        #todo: take-call - Should I make different classes/modules for
-        different types of meta-features? Eg. Correlation, Entropy"""
+    #def _get_corr_with_dependent(self):
+    #    """Called from init. Sets up data for correlation related meta-features.
+    #    #todo: take-call - Should I make different classes/modules for
+    #    different types of meta-features? Eg. Correlation, Entropy"""
         
-        #Correlation with dependent variable only make sense for regression problems
-        if self.prediction_type == 'regression':
-            if self.corr_with_dependent!=None:
-                return self.corr_with_dependent
-            else:
-                self.corr_with_dependent = self.df_encoded.corr()[self.dependent_col]
-                self.corr_with_dependent = self.corr_with_dependent.loc[self.corr_with_dependent.index!=self.dependent_col]
-                return self.corr_with_dependent
+    #    #Correlation with dependent variable only make sense for regression problems
+    #    if self.prediction_type == 'regression':
+    #        if self.corr_with_dependent!=None:
+    #            return self.corr_with_dependent
+    #        else:
+    #            self.corr_with_dependent = self.df_encoded.corr()[self.dependent_col]
+    #            self.corr_with_dependent = self.corr_with_dependent.loc[self.corr_with_dependent.index!=self.dependent_col]
+    #            return self.corr_with_dependent
 
-    def corr_with_dependent_abs_max(self):
-        """ max absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return abs_corr_with_dependent.max()
+    #def corr_with_dependent_abs_max(self):
+    #    """ max absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return abs_corr_with_dependent.max()
     
-    def corr_with_dependent_abs_min(self):
-        """ min absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return abs_corr_with_dependent.min()    
+    #def corr_with_dependent_abs_min(self):
+    #    """ min absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return abs_corr_with_dependent.min()    
 
 
-    def corr_with_dependent_abs_mean(self):
-        """ mean absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return abs_corr_with_dependent.mean()    
+    #def corr_with_dependent_abs_mean(self):
+    #    """ mean absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return abs_corr_with_dependent.mean()    
 
-    def corr_with_dependent_abs_median(self):
-        """ median absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return abs_corr_with_dependent.median()    
-
-
-
-    def corr_with_dependent_abs_std(self):
-        """ std absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return abs_corr_with_dependent.std(ddof = 1)    
+    #def corr_with_dependent_abs_median(self):
+    #    """ median absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return abs_corr_with_dependent.median()    
 
 
 
-    def corr_with_dependent_abs_25p(self):
-        """ 25p absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return np.nanpercentile(abs_corr_with_dependent, 25)   
+    #def corr_with_dependent_abs_std(self):
+    #    """ std absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return abs_corr_with_dependent.std(ddof = 1)    
 
 
 
-    def corr_with_dependent_abs_75p(self):
-        """ 75p absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return np.nanpercentile(abs_corr_with_dependent, 75)
+    #def corr_with_dependent_abs_25p(self):
+    #    """ 25p absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return np.nanpercentile(abs_corr_with_dependent, 25)   
 
-    #todo: try kurtosis and skew for correl values without abs.
 
-    def corr_with_dependent_abs_kurtosis(self):
-        """ kurtosis of absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        from scipy.stats import kurtosis
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return kurtosis(abs_corr_with_dependent, bias = False)
 
-    def corr_with_dependent_abs_skew(self):
-        """ skew of absolute pearson correlation with dependent variable
-        returns np.nan for classificaiton problems. Uses df_encoded
-        ie dataframe with categorical columns encoded automatically.
-        """
-        if self.prediction_type == 'classification':
-            return np.nan
-        else:
-            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-            return skew(abs_corr_with_dependent, bias = False)
+    #def corr_with_dependent_abs_75p(self):
+    #    """ 75p absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return np.nanpercentile(abs_corr_with_dependent, 75)
+
+    ##todo: try kurtosis and skew for correl values without abs.
+
+    #def corr_with_dependent_abs_kurtosis(self):
+    #    """ kurtosis of absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    from scipy.stats import kurtosis
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return kurtosis(abs_corr_with_dependent, bias = False)
+
+    #def corr_with_dependent_abs_skew(self):
+    #    """ skew of absolute pearson correlation with dependent variable
+    #    returns np.nan for classificaiton problems. Uses df_encoded
+    #    ie dataframe with categorical columns encoded automatically.
+    #    """
+    #    if self.prediction_type == 'classification':
+    #        return np.nan
+    #    else:
+    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+    #        return skew(abs_corr_with_dependent, bias = False)
 
     #----------------------------------------------------------------------
     # Class probablity related
@@ -341,7 +341,7 @@ class Dataset:
     symbol_counts_dict = None
     def _get_symbols_per_category(self):
         """
-        Sets an dictionary with number of symbols per categorical 
+        Sets a dictionary with number of symbols per categorical 
         column using categorical_cols info.
         """
 
@@ -360,7 +360,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0 
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.nanmean(symbol_counts))
@@ -371,10 +372,13 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
-
-        return np.nanstd(symbol_counts, ddof = 1)
+        # if np.isnan(np.nanstd(symbol_counts, ddof = 1)):
+        #     print('nan in symbols_std')
+        #     pdb.set_trace()
+        return np.nanstd(symbol_counts, ddof = 1 if len(symbol_counts)>1 else 0)
 
     
     def symbols_min(self):
@@ -382,7 +386,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.min(symbol_counts))
@@ -393,7 +398,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
 
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.max(symbol_counts))
@@ -403,7 +409,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -414,7 +421,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -425,7 +433,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -458,7 +467,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -471,7 +481,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -485,7 +496,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -499,7 +511,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -513,7 +526,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -527,7 +541,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -541,7 +556,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -570,7 +586,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -585,7 +602,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -600,7 +618,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -614,7 +633,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -628,7 +648,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -642,7 +663,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -655,7 +677,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -686,16 +709,18 @@ class Dataset:
 
 
     def pca_fraction_95(self):
-        pca_compenents = self._get_pca_components()
+        """Returns the fraction of total number of features that explain 95% of the variance
+        in the dataset."""
+        pca_components = self._get_pca_components()
 
-        if pca_compenents!=False:
+        if pca_components!=False:
             sum_variance = 0
             min_idx = 0
-            for idx, ratio in enumerate(pca_compenents.explained_variance_ratio_):
+            for idx, ratio in enumerate(pca_components.explained_variance_ratio_):
                 sum_variance = sum_variance + ratio
                 min_idx = min_idx + 1
                 if sum_variance >= 0.95:
-                    return float(min_idx)/len(pca_compenents.explained_variance_ratio_)
+                    return float(min_idx)/len(pca_components.explained_variance_ratio_)
                 else:
                     continue
             return 1
