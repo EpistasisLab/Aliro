@@ -24,3 +24,4 @@ nosetests.html
 mock_experiment/metafeatures
 experiment*csv
 experiment*pdf
+*/*metafeatures.json
