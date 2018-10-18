@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.utils import safe_sqr, check_X_y
 from eli5.sklearn import PermutationImportance
 from sklearn.externals import joblib
-
-
+from sklearn import __version__ as skl_version
+import warnings
 
 # if system environment allows to export figures
 figure_export = True
@@ -73,7 +73,8 @@ SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
-    random_state=random_state):
+    random_state=random_state,
+    filename=['test_dataset']):
     """generate reaults for apply a model on a datasetself.
     Parameters
     ----------
@@ -96,6 +97,8 @@ def generate_results(model, input_data,
         If figure_export is True, the figures will be exported
     random_state: int
         random seed
+    filename: list
+        filename for input dataset
 
     Returns
     -------
@@ -144,24 +147,29 @@ def generate_results(model, input_data,
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
 
-    print('args used in model:', model.get_params())
+    print('Args used in model:', model.get_params())
 
-    # fit model
-    model.fit(training_features, training_classes)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        # fit model
+        model.fit(training_features, training_classes)
+
+        # computing cross-validated metrics
+        cv_scores = cross_val_score(
+                                    estimator=model,
+                                    X=training_features,
+                                    y=training_classes,
+                                    scoring=SCORERS["balanced_accuracy"],
+                                    cv=5
+                                    )
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model)
+    export_model(tmpdir, _id, model, filename)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
 
-    # computing cross-validated metrics
-    cv_scores = cross_val_score(
-                                estimator=model,
-                                X=training_features,
-                                y=training_classes,
-                                scoring=SCORERS["balanced_accuracy"],
-                                cv=5
-                                )
+
 
     # exporting/computing importance score
     coefs = compute_imp_score(model, training_features, training_classes, random_state)
@@ -308,7 +316,7 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def export_model(tmpdir, _id, model):
+def export_model(tmpdir, _id, model, filename):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
     ----------
@@ -324,7 +332,7 @@ def export_model(tmpdir, _id, model):
     """
     pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
     joblib.dump(model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file)
+    pipeline_text = generate_export_codes(pickle_file, model, filename)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
     export_scripts.close()
@@ -436,6 +444,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+    plt.close()
 
 # After switching to dynamic charts, possibly disable outputting graphs from this function
 
@@ -477,6 +486,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.legend(loc="lower right")
 
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+    plt.close()
 
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names):
@@ -507,9 +517,10 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+    plt.close()
 
 
-def generate_export_codes(pickle_file):
+def generate_export_codes(pickle_file, model, filename):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
@@ -519,28 +530,46 @@ def generate_export_codes(pickle_file):
     pipeline_text: String
        The Python code that imports all required library used in the current
        optimized pipeline
+    model: scikit-learn Estimator
+        a machine learning model with scikit-learn API
+    filename: list
+        filename for input dataset
     """
-    pipeline_text = """import numpy as np
+    pipeline_text = """# please install numpy v{numpy_version}, pandas v{pandas_version} and skikit-learn v{skl_version} via conda
+# random seed = {random_state}
+# dataset filename = {dataset}
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
+""".format(numpy_version=np.__version__,
+    pandas_version=pd.__version__,
+    skl_version=skl_version,
+    dataset=",".join(filename),
+    random_state=random_state)
 
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-"""
     pipeline_text += """
 # load fitted model
-model = joblib.load({})""".format(pickle_file)
+model = joblib.load({pickle_file})
+# model: {model}
+""".format(pickle_file=pickle_file,
+            model=str(model).replace('\n', '\n#'))
 
     pipeline_text += """
 # Application 1: cross validation of fitted model
 # 'TARGET' is column name of outcome in the input dataset
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
+
 # Application 2: predict outcome by fitted model
+# In this application, the input dataset should not include target column
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
 """
 

@@ -20,6 +20,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
+from sklearn import __version__ as skl_version
 import requests
 import unittest
 from unittest import mock
@@ -106,10 +107,12 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
+        exp_filename = 'test_clf_input'
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
+        assert exp_filename == filename[0]
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -120,12 +123,14 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
+        assert filename[0] == 'test_clf_input'
+        assert filename[1] == 'test_reg_input'
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -377,27 +382,39 @@ def test_generate_export_codes():
     load_clf_score = load_clf.score(features, classes)
     assert test_clf_scoe == load_clf_score
 
-    pipeline_text = generate_export_codes(pickle_file)
+    pipeline_text = generate_export_codes(pickle_file, test_clf, filename=['test_id'])
 
-    expected_text = """import numpy as np
+    expected_text = """# please install numpy v{numpy_version}, pandas v{pandas_version} and skikit-learn v{skl_version} via conda
+# random seed = None
+# dataset filename = test_id
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
 
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-
 # load fitted model
-model = joblib.load({})
+model = joblib.load({pickle_file})
+# model: {model}
+
 # Application 1: cross validation of fitted model
 # 'TARGET' is column name of outcome in the input dataset
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
+
 # Application 2: predict outcome by fitted model
+# In this application, the input dataset should not include target column
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
-""".format(pickle_file)
+""".format(numpy_version=np.__version__,
+    pandas_version=pd.__version__,
+    skl_version=skl_version,
+    model=str(load_clf).replace('\n', '\n#'),
+    pickle_file=pickle_file)
     assert pipeline_text==expected_text
     rmtree(tmpdir)
