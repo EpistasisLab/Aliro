@@ -49,8 +49,8 @@ class Experiment:
             list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
                 while the 2nd one is testing dataset
         """
-        input_data = get_input_data(self.args['_id'], self.tmpdir)
-        return input_data
+        input_data, filename = get_input_data(self.args['_id'], self.tmpdir)
+        return input_data, filename
 
     def get_model(self):
         """Get scikit learn method.
@@ -162,6 +162,7 @@ def get_input_data(_id, tmpdir):
     response = requests.get('http://' + LAB_HOST +':' + LAB_PORT + '/api/v1/datasets/' + _dataset_id)
     jsondata = json.loads(response.text)
     files = jsondata['files']
+    filename = [file['filename'] for file in files]
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
         input_data = pd.read_csv(StringIO(requests.get(uri).text), sep='\t')
@@ -171,7 +172,7 @@ def get_input_data(_id, tmpdir):
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
             input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep='\t'))
 
-    return input_data
+    return input_data, filename
 
 
 def bool_type(val):
