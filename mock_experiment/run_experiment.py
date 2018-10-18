@@ -19,15 +19,19 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             'average': AverageRecommender(metric='bal_accuracy'),
             'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
                                         sample_size=1000),
-            'mlp_meta': MockMLPMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
-                                        sample_size=1000)
+            'MLPmeta': MockMLPMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/')
             }[rec]
     #pdb.set_trace()
     # load first ten results into recommender
     train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
-    print('setting training data for recommender:',train_subset)
+    # print('setting training data for recommender:',train_subset)
+    init_data = []
     for i in train_subset:
-        recommender.update(pmlb_data.loc[pmlb_data['dataset']==i])
+        init_data.append(pmlb_data.loc[pmlb_data['dataset']==i])
+    init_df = pd.concat(init_data)
+    print('initial training on',len(init_df),'results')
+    for i in train_subset:
+        recommender.update(init_df)
     rec_subset = [d for i,d in enumerate(data_idx) if i >= n_init]
     # loop thru rest of datasets
     for it,dataset in enumerate(rec_subset):
@@ -50,7 +54,8 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             ml = mls[i]
             if 'Meta' in type(recommender).__name__:
                 tmp = eval(ps[i])
-                for mfs in ['gamma','coef0','learning_rate','min_weight_fraction_leaf']:
+                for mfs in ['C','gamma','coef0','learning_rate','min_weight_fraction_leaf',
+                            'min_impurity_decrease']:
                     if mfs in tmp.keys():
                         tmp[mfs] = float(tmp[mfs])
                     p = str(OrderedDict(sorted(tmp.items())))
@@ -125,7 +130,9 @@ if __name__ == '__main__':
     #         }
     data_idx = np.unique(pmlb_data['dataset'])  # datasets 
     # output file
-    out_file = ('experiment_' + '-'.join(args.rec.split(',')) 
+    out_file = ('experiment_' 
+                + pmlb_file.split('/')[-1].split('.')[0]
+                + '-'.join(args.rec.split(',')) 
                 + '_' + str(args.n_recs) 
                 + 'recs_' + str(args.n_trials) 
                 + 'trials_' + str(args.n_init) + 'init.csv')    

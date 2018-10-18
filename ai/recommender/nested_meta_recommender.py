@@ -6,7 +6,7 @@ import json
 import urllib.request, urllib.parse
 from .base import BaseRecommender
 #from ..metalearning import get_metafeatures
-from xgboost import XGBRegressor
+from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.pipeline import Pipeline
 import numpy as np
@@ -14,7 +14,7 @@ from collections import defaultdict, OrderedDict
 from ..db_utils import get_all_ml_p_from_db  
 import pdb
 
-class MetaRecommender(BaseRecommender):
+class NestedMetaRecommender(BaseRecommender):
     """Penn AI meta recommender.
     Recommends machine learning algorithms and parameters as follows:
     maintains an internal model of the form f_d(ML,P,MF) = E
@@ -38,7 +38,7 @@ class MetaRecommender(BaseRecommender):
         The metric by which to assess performance on the datasets.
     """
     def __init__(self, ml_type='classifier', metric=None, db_path='',api_key='', ml_p=None,
-                 sample_size=100):
+                 sample_size=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -74,31 +74,58 @@ class MetaRecommender(BaseRecommender):
         else:
             self.ml_p = ml_p
 
-        self.ml_p = self.params_to_features(self.ml_p, init=True)
         
+        self.ml_p = self.params_to_features(self.ml_p, init=True)
+        self.mlnames = self.ml_p['algorithm'].unique()
+
         self.ml_p = self.ml_p.drop_duplicates() # just in case duplicates are present
         # print('ml_p:',self.ml_p)
         self.cat_params = ['criterion', 'kernel', 'loss', 'max_depth', 'max_features',
                            'min_weight_fraction_leaf', 'n_estimators', 'n_neighbors', 'weights']
+        self.ordinal_params = ['alpha','binarize','learning_rate','subsample','tol','C',
+                               'n_neighbors','p','n_estimators','min_samples_split',
+                               'min_samples_leaf','max_depth']
 
-        self.sample_size = min(sample_size, len(self.ml_p))
+        if sample_size == None:
+            self.sample_size = len(self.ml_p)
+        else:
+            self.sample_size = min(sample_size, len(self.ml_p))
         # Encoding the variables
         self.LE = defaultdict(LabelEncoder)
-        # self.OHE = OneHotEncoder(sparse=False)
+        self.OHE = defaultdict(OneHotEncoder(sparse=False))
         # pdb.set_trace()
-        self.ml_p = self.ml_p.apply(lambda x: self.LE[x.name].fit_transform(x))
-        # print('ml_p after LE:',self.ml_p)
-        # self.X_ml_p = self.OHE.fit_transform(self.ml_p.values)
-        self.X_ml_p = self.ml_p.values
-        # self.ml_p = self.ml_p.apply(lambda x: self.OHE[x.name].fit_transform(x))
-        # print('X after OHE:',self.X_ml_p.shape)
-        # print('self.ml_p:',self.ml_p)
-        print('loaded {nalg} ml/parameter combinations with '
-                '{nparams} parameters'.format(nalg=self.X_ml_p.shape[0],
-                                                     nparams=self.X_ml_p.shape[1]-1))
+        self.ml_p_dict=[]
+        for ml,ml_p_g in self.ml_p.groupby('algorithm'):
+            self.ml_p_dict[ml] = self.ml_p_g.apply(lambda x: self.LE[ml+'|'+x.name].fit_transform(x) 
+                                    if x.name not in self.ordinal_params else x)
 
+            # apply one hot encoding to categorical data, NOT to float data
+            print('ordinal_params data:',self.ml_p_g.filter(items=self.ordinal_params))
+            Xordinal_params = self.ml_p_g.filter(items=self.ordinal_params)
+            # Xordinal_params = self.ml_p.loc[:,self.ordinal_params].values
+            catcols = [c for c in self.ml_p_g.columns if c not in self.ordinal_params]
+            Xcat = self.ml_p_g.filter(items = catcols)
+            print('Xcat:',Xcat)
+            XcatOHE = self.OHE[ml].fit_transform(Xcat)
+            print('XcatOHE:',XcatOHE)
+            # print('ml_p after LE(',self.ml_p.shape,'):',self.ml_p)
+            # self.X_ml_p = self.OHE.fit_transform(self.ml_p.values)
+            pdb.set_trace()
+            self.X_ml_p[ml] = np.hstack((Xordinal_params,Xcat))
+            print('self.X_ml_p:',self.X_ml_p[ml].shape,self.X_ml_p[ml])
+            # self.X_ml_p = self.ml_p.values
+            # self.ml_p = self.ml_p.apply(lambda x: self.OHE[x.name].fit_transform(x))
+            # print('self.X_ml_p after OHE:',self.X_ml_p.shape)
+            # print(np.where(np.isnan(self.X_ml_p)))
+            print('loaded {nalg} ml/parameter combinations with '
+                    '{nparams} parameters'.format(nalg=self.X_ml_p[ml].shape[0],
+                                                         nparams=self.X_ml_p[ml].shape[1]-1))
         # our ML
-        self.ml = XGBRegressor(max_depth=6,n_estimators=500)
+        self.ml = {}
+        for mln in self.mlnames:
+            self.ml[mln] = MLPRegressor(hidden_layer_sizes=(100,40,20,10), activation='relu', 
+                                    solver='adam',
+                                    warm_start=False,max_iter=200,verbose=False)
 
     def params_to_features(self, df, init=False):
         """convert parameter dictionaries to dataframe columns"""
@@ -174,7 +201,7 @@ class MetaRecommender(BaseRecommender):
 
     def get_metafeatures(self, d):
         """Fetches dataset metafeatures, returning dataframe."""
-        print('fetching data for', d)
+        # print('fetching data for', d)
         payload={}
         # payload = {'metafeatures'}
         payload.update(self.static_payload)
@@ -209,10 +236,10 @@ class MetaRecommender(BaseRecommender):
         # df_ml_p = df_ml_p.apply(lambda x: self.LE[x.name].transform(x))
 
         # print('df_ml_p after LE transform:',df_ml_p)
-        # X_ml_p = self.OHE.transform(df_ml_p.values)
-        X_ml_p = df_ml_p.values
-        # X_ml_p = self.OHE.transform(df_ml_p.values)
-        # print('df_ml_p after OHE (',X_ml_p.shape,':\n',X_ml_p)
+        X_ml_p = self.OHE.transform(df_ml_p.values)
+        # X_ml_p = df_ml_p.values
+        # print('df_ml_p after OHE transform (',X_ml_p.shape,':\n',X_ml_p)
+        # print(np.where(np.isnan(self.X_ml_p)))
         return X_ml_p
 
     def setup_training_data(self,results_data):
@@ -238,8 +265,9 @@ class MetaRecommender(BaseRecommender):
         # print('df_ml_p shape:',df_ml_p.shape)
         # join algorithm/parameters with dataset metafeatures
         # print('df_mf shape:',df_mf.shape) 
-        self.training_features = np.hstack((X_ml_p,df_mf.values))
-        
+        for k in X_ml_p.keys():
+            self.training_features[k] = np.hstack((X_ml_p[k],df_mf.values))
+        # self.training_features = X_ml_p 
          
         # print('training data:',self.training_features)
         # print('training columns:',self.training_features[:10])
@@ -295,9 +323,14 @@ class MetaRecommender(BaseRecommender):
 
     def update_model(self):
         """Trains model on datasets and metafeatures."""
-        print('updating model')
-        current_model = None if self.ml._Booster is None else self.ml.get_booster()
-        self.ml.fit(self.training_features, self.training_y, xgb_model = current_model)
+        print('updating model...',end='')
+        # print(np.where(np.isnan(self.training_features)))
+        # print(np.where(np.isnan(self.training_y)))
+        # print(np.where(np.isinf(self.training_features)))
+        # print(np.where(np.isinf(self.training_y)))
+        # print(self.training_features.shape)
+        # for xi,yi in zip(self.training_features, self.training_y):
+        self.ml.partial_fit(self.training_features, self.training_y)
         print('model updated')
 
     def best_model_prediction(self,dataset_id, n_recs=1):
@@ -308,14 +341,16 @@ class MetaRecommender(BaseRecommender):
         # setup input data by sampling ml+p combinations from all possible combos 
         # choices = np.random.choice(len(self.X_ml_p),size=self.sample_size,replace=False)
         X_ml_p = self.X_ml_p[np.random.choice(len(self.X_ml_p),size=self.sample_size,replace=False)]
-        print('generating predictions for:')
-        df_tmp = pd.DataFrame(X_ml_p,columns=self.ml_p.columns)
-        print(df_tmp.apply(lambda x: self.LE[x.name].inverse_transform(x)))
+        # print('generating predictions for:')
+        # df_tmp = pd.DataFrame(X_ml_p,columns=self.ml_p.columns)
+        # print(df_tmp.apply(lambda x: self.LE[x.name].inverse_transform(x)))
         # make prediction data consisting of ml + p combinations plus metafeatures
+        # TODO: clean mf data
         predict_features = np.array([np.hstack((ml_p, mf)) for ml_p in X_ml_p])
-        
-        # print('predict_features:',predict_features)
+        # predict_features = X_ml_p 
+        # print('predict_features:',predict_features.shape)
         # generate predicted scores
+
         predict_scores = self.ml.predict(predict_features)
         # print('predict_scores:',predict_scores)
 
@@ -324,20 +359,29 @@ class MetaRecommender(BaseRecommender):
         # print('predict_idx:',predict_idx) 
         # indices in X_ml_p that match best prediction scores
         predict_ml_p = X_ml_p[predict_idx]
-        pred_ml_p_df = df_tmp.loc[predict_idx,:]
+        predict_ml_p = X_ml_p
+        # print('predict_ml_p(',predict_ml_p.shape,'):',predict_ml_p)
+        # print('self.OHE.n_values:',self.OHE.n_values_)
+        # print('self.OHE.feature_indices_:',self.OHE.feature_indices_)
+        # pred_ml_p_df = df_tmp.loc[predict_idx,:]
         # print('df_tmp[predict_idx]:',pred_ml_p_df)
         # invert the one hot encoding
-        # fi = self.OHE.feature_indices_
-        # predict_ml_p_le = [x[fi[i]:fi[i+1]].dot(np.arange(nv)) for i,nv in 
-        #                    enumerate(self.OHE.n_values_) 
-        #                    for x in predict_ml_p]
-        predict_ml_p_le = predict_ml_p
-
-        # df_pr_ml_p = pd.DataFrame(
-        #         data=np.array(predict_ml_p_le).reshape(-1,len(self.ml_p.columns)),
-        #         columns = self.ml_p.columns, dtype=np.int64)
+        fi = self.OHE.feature_indices_
+        predict_ml_p_le = np.array([[x[fi[i]:fi[i+1]].dot(np.arange(nv)) 
+                                    for i,nv in enumerate(self.OHE.n_values_)]
+                                    for x in list(predict_ml_p)]
+                                  )
+        # predict_ml_p_le = predict_ml_p
+        # print('predict_ml_p_le:',predict_ml_p_le)
+        # predict_ml_p_le = np.array(predict_ml_p_le).reshape(n_recs,-1)
+        # print('transformed predict_ml_p_le:',predict_ml_p_le)
+        df_pr_ml_p = pd.DataFrame(
+                                  data=predict_ml_p_le,
+                                  columns = self.ml_p.columns, dtype=np.int64)
         # # invert the label encoding 
-        df_pr_ml_p = df_tmp.loc[predict_idx,:]
+        # df_pr_ml_p = df_tmp.loc[predict_idx,:]
+        # print('df_pr_ml_p:',df_pr_ml_p)
+        # print(df_pr_ml_p.describe())
         df_pr_ml_p = df_pr_ml_p.apply(lambda x: self.LE[x.name].inverse_transform(x))
         # predict_ml_p = df_pr_ml_p.values
 
