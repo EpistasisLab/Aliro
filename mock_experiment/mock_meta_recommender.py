@@ -5,7 +5,7 @@ from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
 import json
 import pdb
 import pandas as pd
-def local_get_metafeatures(d):
+def local_get_metafeatures(self,d):
         """Fetch dataset metafeatures from file"""
         # print('fetching data for', d)
         # payload={}
@@ -33,9 +33,9 @@ def local_get_metafeatures(d):
 
 class MockMetaRecommender(MetaRecommender):
     def get_metafeatures(self,d):
-        return local_get_metafeatures(d)    
+        return local_get_metafeatures(self,d)    
 
 class MockMLPMetaRecommender(MLPMetaRecommender):
     def get_metafeatures(self,d):
-        return local_get_metafeatures(d)    
+        return local_get_metafeatures(self,d)    
 

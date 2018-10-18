@@ -92,7 +92,7 @@ class MetaRecommender(BaseRecommender):
         self.X_ml_p = self.ml_p.values
         # self.ml_p = self.ml_p.apply(lambda x: self.OHE[x.name].fit_transform(x))
         # print('X after OHE:',self.X_ml_p.shape)
-        print('self.ml_p:',self.ml_p)
+        # print('self.ml_p:',self.ml_p)
         print('loaded {nalg} ml/parameter combinations with '
                 '{nparams} parameters'.format(nalg=self.X_ml_p.shape[0],
                                                      nparams=self.X_ml_p.shape[1]-1))
