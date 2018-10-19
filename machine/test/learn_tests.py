@@ -24,7 +24,7 @@ from sklearn import __version__ as skl_version
 import requests
 import unittest
 from unittest import mock
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_equal
 from io import StringIO
 import re
 
@@ -270,8 +270,10 @@ def test_generate_results_2():
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
     # test reloaded model is the same
-    load_clf = joblib.load(pickle_file)
-    load_clf_score = SCORERS['balanced_accuracy'](
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_scorer = pickle_model['scorer']
+    load_clf_score = load_scorer(
         load_clf, training_features, training_classes)
     assert train_score == load_clf_score
 
@@ -369,36 +371,64 @@ def test_generate_export_codes():
     target_name='class'
     features = input_data.drop(target_name, axis=1).values
     classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    training_features, testing_features, training_classes, testing_classes = \
+        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
 
     test_clf = DecisionTreeClassifier(random_state=42)
-    test_clf.fit(features, classes)
-    test_clf_scoe = test_clf.score(features, classes)
+    test_clf.fit(training_features, training_classes)
+    test_clf_scoe = SCORERS['balanced_accuracy'](test_clf, testing_features, testing_classes)
 
     tmpdir = mkdtemp() + '/'
     pickle_file = tmpdir + '/test.plk'
     # test dump and load fitted model
-    joblib.dump(test_clf, pickle_file)
-    load_clf = joblib.load(pickle_file)
-    load_clf_score = load_clf.score(features, classes)
+    pickle_model = {}
+    pickle_model['model'] = test_clf
+    pickle_model['scorer'] = SCORERS['balanced_accuracy']
+    joblib.dump(pickle_model, pickle_file)
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_scorer = pickle_model['scorer']
+    load_clf_score = load_scorer(load_clf, testing_features, testing_classes)
     assert test_clf_scoe == load_clf_score
 
-    pipeline_text = generate_export_codes(pickle_file, test_clf, filename=['test_id'])
+    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
 
-    expected_text = """# please install numpy v{numpy_version}, pandas v{pandas_version} and skikit-learn v{skl_version} via conda
-# random seed = None
-# dataset filename = test_id
+    expected_text = """# Results are generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# random seed = 42
+# Training dataset filename = test_dataset.tsv
+# Pickle filename = test.plk
+# Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
+from sklearn.utils import check_X_y
 
 # load fitted model
-model = joblib.load({pickle_file})
-# model: {model}
+# NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named test.plk
+pickle_model = joblib.load('PATH/TO/PICKLE/FILE')
+model = pickle_model['model']
 
-# Application 1: cross validation of fitted model
+# Application 1: reproducing trainng score and testing score from PennAI
+# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for training data submited to PennAI
 # 'TARGET' is column name of outcome in the input dataset
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+features = input_data.drop('TARGET', axis=1).values
+target = input_data['TARGET'].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+training_features, testing_features, training_classes, testing_classes = \\
+    train_test_split(features, target, random_state=random_state, stratify=input_data['TARGET'])
+scorer = pickle_model['scorer']
+train_score = scorer(model, training_features, training_classes)
+print("Training score:", train_score)
+test_score = scorer(model, testing_features, testing_classes)
+print("Testing score:", test_score)
+
+
+# Application 2: cross validation of fitted model
+# 'TARGET' is column name of outcome in the input dataset
+# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
@@ -406,15 +436,14 @@ testing_target = input_data['TARGET'].values
 print(model.score(testing_features, testing_target))
 
 
-# Application 2: predict outcome by fitted model
+# Application 3: predict outcome by fitted model
 # In this application, the input dataset should not include target column
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
 """.format(numpy_version=np.__version__,
     pandas_version=pd.__version__,
     skl_version=skl_version,
-    model=str(load_clf).replace('\n', '\n#'),
-    pickle_file=pickle_file)
-    assert pipeline_text==expected_text
+    model=str(load_clf).replace('\n', '\n#'))
+    assert_equal(pipeline_text, expected_text)
     rmtree(tmpdir)
