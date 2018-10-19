@@ -2,10 +2,8 @@ process.env.MACHINE_CONFIG = './test/test_machine_config.json'
 const getProjects = require('../getprojects.js');
 const assert = require('assert');
 
-var fs = require("mz/fs");
-var machine_config = JSON.parse(fs.readFileSync('./test/test_machine_config.json', 'utf-8'));
-var algorithms = machine_config["algorithms"]
-var project_list = getProjects()
+var algorithms = ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier"]
+var project_list = getProjects(algorithms)
 
 describe('Test for getProjects function', function () {
   it('Test the total number of algorithms is the same with config.', function () {
