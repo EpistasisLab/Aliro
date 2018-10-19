@@ -61,6 +61,12 @@ if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     process.exit(1);
 }
 
+/* Machine config */
+var machine_config_file = process.env.MACHINE_CONFIG
+console.log("Machine config:", machine_config_file)
+var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
+var algorithms = machine_config["algorithms"]
+
 /* Machine specifications */
 // Attempt to read existing specs
 fs.readFile("specs.json", "utf-8")
@@ -115,7 +121,7 @@ fs.readFile("specs.json", "utf-8")
                 fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
                 // Reload specs with _id (prior to adding projects)
                 specs = body;
-                project_list = getProjects();
+                project_list = getProjects(algorithms);
                 var tmppath = project_root + "/machine/learn/tmp";
                 if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
                 for (var i in project_list) {
