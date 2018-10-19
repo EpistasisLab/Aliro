@@ -84,7 +84,7 @@ npm run build-dev
 	- Python [nose](https://pypi.org/project/nose/)
 	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html)
 - Usage: `sh .\tests\unit_test_runner.sh`
-- Results: 
+- Results:
 	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
 	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
 
@@ -112,10 +112,17 @@ npm run build-dev
 	```
 
 #### Machine
-- Type: Python [nose](https://pypi.org/project/nose/)
-- Prereqs: install nose `pip install nose`
+- Type: Python via [nose](https://pypi.org/project/nose/) and Javascript via [mocha](https://mochajs.org/)
+- Prereqs:
+    - install nose `pip install nose`
+    - install mocha `npm install -g mocha`
 - Usage:
 	```
+  # test Python codes
 	nosetests -s -v machine/test/learn_tests.py
+  # test Javascript codes
+  cd machine
+  npm install
+  # note the path of test.js need to be updated in Windows environment
+  mocha ./test/test.js # or `npm test`
 	```
-- Docs: See [machine test docs](https://github.com/EpistasisLab/pennai/blob/master/machine/README.md) for details.
