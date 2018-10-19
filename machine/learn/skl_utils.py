@@ -164,7 +164,7 @@ def generate_results(model, input_data,
                                     cv=5
                                     )
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model, filename)
+    export_model(tmpdir, _id, model, filename, random_state)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
@@ -314,28 +314,6 @@ def setup_model_params(model, parameter_name, value):
     if hasattr(model, parameter_name):
         setattr(model, parameter_name, value)
     return model
-
-
-def export_model(tmpdir, _id, model, filename):
-    """export model as a pickle file and generate a scripts for using the pickled model.
-    Parameters
-    ----------
-    tmpdir: string
-            path of temporary  output directory
-    _id: string
-            Job ID in FGlab
-    model: a fitted scikit-learn model
-
-    Returns
-    -------
-    None
-    """
-    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
-    joblib.dump(model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file, model, filename)
-    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
-    export_scripts.write(pipeline_text)
-    export_scripts.close()
 
 
 def compute_imp_score(model, training_features, training_classes, random_state):
@@ -520,11 +498,46 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.close()
 
 
-def generate_export_codes(pickle_file, model, filename):
+def export_model(tmpdir, _id, model, filename, random_state=42):
+    """export model as a pickle file and generate a scripts for using the pickled model.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    model: scikit-learn estimator
+            a fitted scikit-learn model
+    filename: string
+            file name of input dataset
+    random_state: int
+        random seed
+
+    Returns
+    -------
+    None
+    """
+    pickle_file_name = 'model_{}.pkl'.format(_id)
+    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
+
+    pickle_model = {}
+    pickle_model['model'] = model
+    pickle_model['data_filename'] = filename
+    pickle_model['scorer'] = SCORERS['balanced_accuracy']
+
+    joblib.dump(pickle_model, pickle_file)
+    pipeline_text = generate_export_codes(pickle_file_name, model, filename, random_state)
+    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text)
+    export_scripts.close()
+
+
+def generate_export_codes(pickle_file_name, model, filename, random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
-    pickle_file: a pickle file for a fitted scikit-learn estimator
+    pickle_file_name: string
+        a pickle file for a fitted scikit-learn estimator
     Returns
     -------
     pipeline_text: String
@@ -534,31 +547,45 @@ def generate_export_codes(pickle_file, model, filename):
         a machine learning model with scikit-learn API
     filename: list
         filename for input dataset
+    random_state: int
+        random seed
     """
-    pipeline_text = """# please install numpy v{numpy_version}, pandas v{pandas_version} and skikit-learn v{skl_version} via conda
+    pipeline_text = """# Results are generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = {random_state}
-# dataset filename = {dataset}
+# Training dataset filename = {dataset}
+# Pickle filename = {pickle_file_name}
+# Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
-""".format(numpy_version=np.__version__,
-    pandas_version=pd.__version__,
-    skl_version=skl_version,
-    dataset=",".join(filename),
-    random_state=random_state)
+from sklearn.utils import check_X_y
 
-    pipeline_text += """
 # load fitted model
-model = joblib.load({pickle_file})
-# model: {model}
-""".format(pickle_file=pickle_file,
-            model=str(model).replace('\n', '\n#'))
+# NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named {pickle_file_name}
+pickle_model = joblib.load('PATH/TO/PICKLE/FILE')
+model = pickle_model['model']
 
-    pipeline_text += """
-# Application 1: cross validation of fitted model
+# Application 1: reproducing trainng score and testing score from PennAI
+# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for training data submited to PennAI
 # 'TARGET' is column name of outcome in the input dataset
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+features = input_data.drop('TARGET', axis=1).values
+target = input_data['TARGET'].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+training_features, testing_features, training_classes, testing_classes = \\
+    train_test_split(features, target, random_state=random_state, stratify=input_data['TARGET'])
+scorer = pickle_model['scorer']
+train_score = scorer(model, training_features, training_classes)
+print("Training score:", train_score)
+test_score = scorer(model, testing_features, testing_classes)
+print("Testing score:", test_score)
+
+
+# Application 2: cross validation of fitted model
+# 'TARGET' is column name of outcome in the input dataset
+# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 testing_features = input_data.drop('TARGET', axis=1).values
 testing_target = input_data['TARGET'].values
@@ -566,11 +593,18 @@ testing_target = input_data['TARGET'].values
 print(model.score(testing_features, testing_target))
 
 
-# Application 2: predict outcome by fitted model
+# Application 3: predict outcome by fitted model
 # In this application, the input dataset should not include target column
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
+# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
-"""
+""".format(numpy_version=np.__version__,
+    pandas_version=pd.__version__,
+    skl_version=skl_version,
+    dataset=",".join(filename),
+    pickle_file_name=pickle_file_name,
+    random_state=random_state,
+    model=str(model).replace('\n', '\n#'))
+
 
     return pipeline_text
