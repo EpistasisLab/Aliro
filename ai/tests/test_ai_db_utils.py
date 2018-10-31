@@ -195,6 +195,7 @@ def test_main_command_line(mock_request, mock_post, mock_sleep):
     with patch.object(sys, 'argv', testargs):
         aiProc = ai.ai.main()
 
+@nottest
 @raises(Exception)
 @patch('requests.request', side_effect=mocked_requests_request_invalid_launch_experiment)
 @patch('requests.post', side_effect=mocked_requests_post)

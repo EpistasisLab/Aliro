@@ -114,7 +114,7 @@ class RandomRecommender(BaseRecommender):
                                        self.trained_dataset_models)
                     else:
                         rec_not_new = False
-                if n==99:
+                if n==999:
                     print('warning: tried 1000 times (and failed) to find a novel recommendation')
                 
                 ml_rec.append(ml_tmp)

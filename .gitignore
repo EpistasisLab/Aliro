@@ -1,5 +1,5 @@
 *.pyc
-.ipynb_checkpoints/*
+*/*.ipynb_checkpoints/*
 *~
 pennai-dev-notebook.ipynb
 test_eval.ipynb
@@ -21,3 +21,7 @@ config/ai.env
 target/*
 .coverage
 nosetests.html
+__pycache__
+mock_experiment/metafeatures
+experiment*csv
+experiment*pdf

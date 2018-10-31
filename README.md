@@ -10,6 +10,8 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
   - Docker (Version 1.13.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - Docker-Compose - Separate installation is only needed for linux; docker-compose is bundled with windows and mac docker installation
+  	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
   - Python and nose test runner (optional, needed only to run unit tests)
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) and [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
@@ -70,7 +72,9 @@ npm run build-dev
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
 - Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
-- Results: The results will be in the folder `.\tests\integration\results`
+- Results: 
+	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
+	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
 - Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
 
 
@@ -80,7 +84,7 @@ npm run build-dev
 	- Python [nose](https://pypi.org/project/nose/)
 	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html)
 - Usage: `sh .\tests\unit_test_runner.sh`
-- Results: 
+- Results:
 	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
 	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
 
@@ -108,10 +112,17 @@ npm run build-dev
 	```
 
 #### Machine
-- Type: Python [nose](https://pypi.org/project/nose/)
-- Prereqs: install nose `pip install nose`
+- Type: Python via [nose](https://pypi.org/project/nose/) and Javascript via [mocha](https://mochajs.org/)
+- Prereqs:
+    - install nose `pip install nose`
+    - install mocha `npm install -g mocha`
 - Usage:
 	```
+  # test Python codes
 	nosetests -s -v machine/test/learn_tests.py
+  # test Javascript codes
+  cd machine
+  npm install
+  # note the path of test.js need to be updated in Windows environment
+  mocha ./test/test.js # or `npm test`
 	```
-- Docs: See [machine test docs](https://github.com/EpistasisLab/pennai/blob/master/machine/README.md) for details.

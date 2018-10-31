@@ -26,7 +26,15 @@
           "pageTitle": "Jest Integration Test Suite",
           "includeFailureMsg": true,
           "includeConsoleLog": true,
-          "outputPath": "/results/test-report.html"
+          "outputPath": "/target/test-reports/html/int_jest_test_report.html"
+        }
+      ],
+      [
+      "./node_modules/jest-junit",
+        {
+          "suiteName":"Jest Integration Test Suite",
+          "outputDirectory":"/target/test-reports",
+          "outputName":"int_jest_xunit.xml"
         }
       ]
     ]
@@ -44,6 +52,7 @@
     "babel-preset-react": "^6.24.1",
     "jest": "^23.1.0",
     "jest-html-reporter": "^2.4.1",
+    "jest-junit": "^5.2.0",
     "react-test-renderer": "^16.4.0",
     "ts-jest": "^22.4.6",
     "typescript": "^2.9.1"

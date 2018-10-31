@@ -1,7 +1,6 @@
-"""
-AI agent for Penn AI.
-
-"""
+#
+# AI agent for Penn AI.
+#
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
@@ -62,6 +61,8 @@ class AI():
                 datasets=False):
         """initializes AI managing agent."""
         # recommender settings
+        if api_path == None:
+            api_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
@@ -312,11 +313,10 @@ class AI():
         """load json files from db and convert to results_data.
 
         Output: a DataFrame with at least these columns:
-                'algorithm'
-                'parameters'
-                self.metric
+        'algorithm'
+        'parameters'
+        self.metric
         """
-
 
 ####################################################################### Manager
 import argparse

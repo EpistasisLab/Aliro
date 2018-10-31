@@ -1,5 +1,6 @@
 {
     "name": "BernoulliNB",
+    "path": "sklearn.naive_bayes",
     "description": "Naive Bayes classifier for multivariate Bernoulli models.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html",
     "schema": {
@@ -32,15 +33,17 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "GaussianNB",
+    "path": "sklearn.naive_bayes",
     "description": "Gaussian Naive Bayes",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "MultinomialNB",
+    "path": "sklearn.naive_bayes",
     "description": "Naive Bayes classifier for multinomial models.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html",
     "schema": {
@@ -64,9 +67,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "DecisionTreeClassifier",
+    "path": "sklearn.tree",
     "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
     "schema": {
@@ -108,9 +112,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "ExtraTreesClassifier",
+    "path": "sklearn.ensemble",
     "description": "Extremely Randomized Trees",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html",
     "schema": {
@@ -173,9 +178,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "GradientBoostingClassifier",
+    "path": "sklearn.ensemble",
     "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
     "schema": {
@@ -244,9 +250,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "KNeighborsClassifier",
+    "path": "sklearn.neighbors",
     "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html",
     "schema": {
@@ -279,9 +286,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "LinearSVC",
+    "path": "sklearn.svm",
     "description": "Linear Support Vector Classification.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html",
     "invalidParameterCombinations" : [
@@ -339,9 +347,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "LogisticRegression",
+    "path": "sklearn.linear_model",
     "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html",
     "invalidParameterCombinations" : [
@@ -378,9 +387,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "RandomForestClassifier",
+    "path": "sklearn.ensemble",
     "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html",
     "schema": {
@@ -442,9 +452,10 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 } {
     "name": "SVC",
+    "path": "sklearn.svm",
     "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
     "schema": {
@@ -477,5 +488,5 @@
             }
         }
     },
-    "category": "ML"
+    "category": "classification"
 }

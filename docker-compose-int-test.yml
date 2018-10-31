@@ -15,7 +15,8 @@ services:
     tty: true
     stdin_open: true
     volumes: 
-      - "./tests/integration/results:/results"
+      - "./tests/integration/jest:/src/jest"
+      - "./target:/target"
 
   lab:
     build: 

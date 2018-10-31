@@ -20,6 +20,7 @@ var rp = require("request-promise");
 var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
+const getProjects = require('./getprojects.js');
 
 
 /* App instantiation */
@@ -60,7 +61,11 @@ if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     process.exit(1);
 }
 
-
+/* Machine config */
+var machine_config_file = process.env.MACHINE_CONFIG
+console.log("Machine config:", machine_config_file)
+var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
+var algorithms = machine_config["algorithms"]
 
 /* Machine specifications */
 // Attempt to read existing specs
@@ -116,7 +121,15 @@ fs.readFile("specs.json", "utf-8")
                 fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
                 // Reload specs with _id (prior to adding projects)
                 specs = body;
-                project_list = getProjects();
+                project_list = getProjects(algorithms);
+                var tmppath = project_root + "/machine/learn/tmp";
+                if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
+                for (var i in project_list) {
+                    var algo = project_list[i].name;
+                    var project_folder = tmppath + '/' + algo;
+                    if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744);
+                }
+
                 // Register projects
                 rp({
                         uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
@@ -199,8 +212,8 @@ app.get("/projects/:id/capacity", (req, res) => {
     }
 });
 
-/** 
-* Get current projects 
+/**
+* Get current projects
 * Used for debugging to make sure machine state is in sync with lab state
 */
 app.get("/projects", (req, res) => {
@@ -455,7 +468,7 @@ var wsErrHandler = function() {};
 // Call on connection from new client
 wss.on("connection", (ws) => {
     console.log(`wss.connection: ${ws}`)
-    
+
     // Listeners
     var sendStdout = function(data) {
         ws.send(JSON.stringify({
@@ -485,40 +498,3 @@ wss.on("connection", (ws) => {
         mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
     });
 });
-
-
-
-//Generate a list of projects that we'll use for execution
-var getProjects = function() {
-    var project_list = [];
-    var learnpath = project_root + '/machine/learn';
-
-    //get a list of folders in the learn directory
-    var dirs = fs.readdirSync(learnpath)
-    //dirs.forEach(dir => {
-    for (var i in dirs) {
-        var dir = dirs[i];
-        if (fs.statSync(learnpath + '/' + dir).isDirectory()) {
-            var project_folder = learnpath + '/' + dir;
-            var project_subs = fs.readdirSync(project_folder);
-            if (project_subs !== undefined) {
-                if (project_subs.indexOf('main.py') >= 0) {
-                    if (project_subs.indexOf('tmp') == -1) fs.mkdirSync(project_folder + '/tmp', 0744);
-
-                    var cwd = "machine/learn/" + dir
-                    var project = {
-                        name: dir,
-                        command: "python",
-                        cwd: cwd,
-                        args: ["main.py"],
-                        options: "double-dash",
-                        capacity: "1",
-                        results: cwd + "/tmp"
-                    }
-                    project_list.push(project);
-                }
-            }
-        }
-    }
-    return (project_list);
-}
