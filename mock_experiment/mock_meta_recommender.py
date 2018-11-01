@@ -2,9 +2,11 @@
 # hard-coded json metafeature data.
 from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
+from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 import json
 import pdb
 import pandas as pd
+
 def local_get_metafeatures(self,d):
         """Fetch dataset metafeatures from file"""
         # print('fetching data for', d)
@@ -36,6 +38,10 @@ class MockMetaRecommender(MetaRecommender):
         return local_get_metafeatures(self,d)    
 
 class MockMLPMetaRecommender(MLPMetaRecommender):
+    def get_metafeatures(self,d):
+        return local_get_metafeatures(self,d)    
+
+class MockKNNMetaRecommender(KNNMetaRecommender):
     def get_metafeatures(self,d):
         return local_get_metafeatures(self,d)    
 

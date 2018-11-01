@@ -6,7 +6,8 @@ import numpy as np
 import argparse
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
-from mock_experiment.mock_meta_recommender import MockMetaRecommender, MockMLPMetaRecommender
+from mock_experiment.mock_meta_recommender import (MockMetaRecommender, MockMLPMetaRecommender,
+                                                  MockKNNMetaRecommender)
 from collections import OrderedDict
 import warnings 
 warnings.simplefilter("ignore")
@@ -15,12 +16,20 @@ warnings.simplefilter("ignore")
 def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
-    recommender = {'random': RandomRecommender(ml_p=ml_p,metric='bal_accuracy'),
-            'average': AverageRecommender(metric='bal_accuracy'),
-            'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
-                                        sample_size=1000),
-            'MLPmeta': MockMLPMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/')
-            }[rec]
+    kwargs = {'metric':'bal_accuracy'}
+    if rec in ['random','meta','mlp','knn']:
+        kwargs.update({'db_path':'mock_experiment/metafeatures/'})
+        if rec != 'knn':
+            kwargs.update({'ml_p':ml_p})
+
+    rec_choice = {'random': RandomRecommender,
+            'average': AverageRecommender,
+            'meta': MockMetaRecommender,
+            'mlp': MockMLPMetaRecommender,
+            'knn': MockKNNMetaRecommender
+            }
+
+    recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
     # load first ten results into recommender
     train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
