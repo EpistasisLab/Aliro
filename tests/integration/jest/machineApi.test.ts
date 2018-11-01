@@ -11,6 +11,10 @@ import * as util from "./util/testUtils";
 
 const db = dbBuilder.openDbConnection();
 
+const EXPECTED_MACHINE_ALGO_COUNT = 6; // number of algorithms a machine instance can run
+const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
+const MIN_EXPECTED_DATASET_COUNT = 10; // min number of datasets registered with the lab server
+
 
 afterAll(() => {
   db.close();
@@ -30,7 +34,7 @@ it('machine.fetchProjects', async () => {
  	//console.log("data: ", data);
 
  	expect(data)
-  	expect(Object.keys(data).length).toBeGreaterThan(10);
+  	expect(Object.keys(data).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT);
 };
 
 it('machine exists in db by address', async () => {
@@ -67,13 +71,13 @@ it.skip('kill experiment', async () => {
 	//-------------------
  	// get dataset
  	var datasets = await labApi.fetchDatasets();
- 	expect(datasets.length).toBeGreaterThan(1);
+ 	expect(datasets.length).toBeGreaterThan(MIN_EXPECTED_DATASET_COUNT);
  	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
  	expect(datasetId).toBeTruthy();
 
  	// get algorithm
  	var algorithms = await labApi.fetchAlgorithms();
- 	expect(algorithms.length).toBeGreaterThan(10);
+ 	expect(algorithms.length).toBeGreaterThan(MIN_EXPECTED_LAB_ALGO_COUNT);
  	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
  	expect(algoId).toBeTruthy();
 
@@ -119,7 +123,7 @@ it.skip('kill experiment', async () => {
 	expect(experimentResults._status).toEqual('cancelled')
 };
 
-it('machine projectIds match db machine.project ids', async () => {
+it('local machine projectIds match db machine.projectIds', async () => {
 	//console.log('machine projectIds match db machine.project ids')
 	
 	//---get machine server projects state
@@ -150,9 +154,9 @@ it('machine projectIds match db machine.project ids', async () => {
   	//console.log("dbProjectsList:", dbProjectsList)
 
   	//---check server state against database state
-  	expect(Object.keys(servMachineProjects).length).toBeGreaterThan(10)
-  	expect(Object.keys(dbMachineProjects).length).toBeGreaterThan(10)
-  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(10)
+  	expect(Object.keys(servMachineProjects).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT)
+  	expect(Object.keys(dbMachineProjects).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT)
+  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(MIN_EXPECTED_DATASET_COUNT)
 
   	// check that dbMachineProjects is a subset of servMachineProjects by id
   	for (let dbMacProjId of Object.keys(dbMachineProjects)) {
