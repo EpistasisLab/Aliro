@@ -6,11 +6,15 @@
 import * as labApi from './labApi';
 
 
+const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
+const MIN_EXPECTED_DATASET_COUNT = 10; // min number of datasets registered with the lab server
+
+
 // fetch datasets and check for metafeatures
 it('lab fetchDatasets', () => {
 	expect.assertions(5);
 	return labApi.fetchDatasets().then((data) => {
-		expect(data.length).toBeGreaterThan(30);
+		expect(data.length).toBeGreaterThan(MIN_EXPECTED_DATASET_COUNT);
 		var banana = data.find(function(element) {
 		  return element.name == 'banana';
 		});
