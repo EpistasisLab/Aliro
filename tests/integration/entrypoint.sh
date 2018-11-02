@@ -13,5 +13,3 @@ echo "hardcoded sleep to load datasets..."
 sleep 90s
 echo "starting tests..."
 npm test
-
-chmod -R a+x /appsrc/target
