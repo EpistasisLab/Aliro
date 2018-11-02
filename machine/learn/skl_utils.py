@@ -13,6 +13,8 @@ from eli5.sklearn import PermutationImportance
 from sklearn.externals import joblib
 from sklearn import __version__ as skl_version
 import warnings
+import dill
+from sys import version
 
 # if system environment allows to export figures
 figure_export = True
@@ -524,8 +526,8 @@ def export_model(tmpdir, _id, model, filename, random_state=42):
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
     pickle_model['scorer'] = SCORERS['balanced_accuracy']
-
-    joblib.dump(pickle_model, pickle_file)
+    pickle_f = open(pickle_file, 'wb')
+    dill.dump(pickle_model, pickle_f)
     pipeline_text = generate_export_codes(pickle_file_name, model, filename, random_state)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
@@ -550,7 +552,8 @@ def generate_export_codes(pickle_file_name, model, filename, random_state=42):
     random_state: int
         random seed
     """
-    pipeline_text = """# Results are generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+    pipeline_text = """Python version: {python_version}
+# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = {random_state}
 # Training dataset filename = {dataset}
 # Pickle filename = {pickle_file_name}
@@ -598,13 +601,16 @@ print(model.score(testing_features, testing_target))
 # NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
-""".format(numpy_version=np.__version__,
-    pandas_version=pd.__version__,
-    skl_version=skl_version,
-    dataset=",".join(filename),
-    pickle_file_name=pickle_file_name,
-    random_state=random_state,
-    model=str(model).replace('\n', '\n#'))
+""".format(
+            python_version=version,
+            numpy_version=np.__version__,
+            pandas_version=pd.__version__,
+            skl_version=skl_version,
+            dataset=",".join(filename),
+            pickle_file_name=pickle_file_name,
+            random_state=random_state,
+            model=str(model).replace('\n', '\n#')
+            )
 
 
     return pipeline_text
