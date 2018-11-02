@@ -27,6 +27,7 @@ from unittest import mock
 from nose.tools import assert_raises, assert_equal
 from io import StringIO
 import re
+import dill
 
 import warnings
 
@@ -270,7 +271,7 @@ def test_generate_results_2():
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
     # test reloaded model is the same
-    pickle_model = joblib.load(pickle_file)
+    pickle_model = dill.load(open(pickle_file,'rb'))
     load_clf = pickle_model['model']
     load_scorer = pickle_model['scorer']
     load_clf_score = load_scorer(
@@ -393,7 +394,8 @@ def test_generate_export_codes():
 
     pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
 
-    expected_text = """# Results are generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+    expected_text = """Python version: {python_version}
+# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
 # Pickle filename = test.plk
@@ -441,7 +443,9 @@ print(model.score(testing_features, testing_target))
 # NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for data without target outcome
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
 predict_target = model.predict(input_data.values)
-""".format(numpy_version=np.__version__,
+""".format(
+    python_version=sys.version,
+    numpy_version=np.__version__,
     pandas_version=pd.__version__,
     skl_version=skl_version,
     model=str(load_clf).replace('\n', '\n#'))
