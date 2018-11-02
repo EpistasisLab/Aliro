@@ -2,7 +2,8 @@
 pipeline {
     agent any 
     parameters {
-        string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
+        //string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
+        string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu, weixuanf@pennmedicine.upenn.edu, lacava@upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
     }
     environment {
         LOCAL_PENNAI_DEPLOY_DIR = '/data/git/pennai'
@@ -128,7 +129,7 @@ pipeline {
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) failure',
                 body: 'Please go to ${BUILD_URL} to view build details.', 
                 to: "${params.STATUS_EMAIL}",
-                //recipientProviders: [culprits()],
+                recipientProviders: [culprits()],
                 replyTo: "${params.STATUS_EMAIL}"
         }
         fixed {
@@ -138,7 +139,7 @@ pipeline {
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) is back to normal',
                 body: 'Please go to ${BUILD_URL} to view build details.', 
                 to: "${params.STATUS_EMAIL}",
-                //recipientProviders: [culprits()], 
+                recipientProviders: [culprits()], 
                 replyTo: "${params.STATUS_EMAIL}"
         }
     }
