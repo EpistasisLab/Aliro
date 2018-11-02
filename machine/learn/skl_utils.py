@@ -13,8 +13,8 @@ from eli5.sklearn import PermutationImportance
 from sklearn.externals import joblib
 from sklearn import __version__ as skl_version
 import warnings
-import dill
 from sys import version
+import __main__
 
 # if system environment allows to export figures
 figure_export = True
@@ -151,7 +151,10 @@ def generate_results(model, input_data,
 
     print('Args used in model:', model.get_params())
 
-
+    if mode == "classification":
+        scoring = SCORERS["balanced_accuracy"]
+    else:
+        scoring = SCORERS["neg_mean_squared_error"]
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         # fit model
@@ -162,7 +165,7 @@ def generate_results(model, input_data,
                                     estimator=model,
                                     X=training_features,
                                     y=training_classes,
-                                    scoring=SCORERS["balanced_accuracy"],
+                                    scoring=scoring,
                                     cv=5
                                     )
     # dump fitted module as pickle file
@@ -525,9 +528,7 @@ def export_model(tmpdir, _id, model, filename, random_state=42):
     pickle_model = {}
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
-    pickle_model['scorer'] = SCORERS['balanced_accuracy']
-    pickle_f = open(pickle_file, 'wb')
-    dill.dump(pickle_model, pickle_f)
+    joblib.dump(pickle_model, pickle_file)
     pipeline_text = generate_export_codes(pickle_file_name, model, filename, random_state)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
@@ -552,7 +553,7 @@ def generate_export_codes(pickle_file_name, model, filename, random_state=42):
     random_state: int
         random seed
     """
-    pipeline_text = """Python version: {python_version}
+    pipeline_text = """#Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = {random_state}
 # Training dataset filename = {dataset}
@@ -563,6 +564,25 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
+from sklearn.metrics import make_scorer
+
+def balanced_accuracy(y_true, y_pred):
+    all_classes = list(set(np.append(y_true, y_pred)))
+    all_class_accuracies = []
+    for this_class in all_classes:
+        this_class_sensitivity = 0.
+        this_class_specificity = 0.
+        if sum(y_true == this_class) != 0:
+            this_class_sensitivity = \\
+                float(sum((y_pred == this_class) & (y_true == this_class))) /\\
+                float(sum((y_true == this_class)))
+            this_class_specificity = \\
+                float(sum((y_pred != this_class) & (y_true != this_class))) /\\
+                float(sum((y_true != this_class)))
+        this_class_accuracy = (this_class_sensitivity +
+                               this_class_specificity) / 2.
+        all_class_accuracies.append(this_class_accuracy)
+    return np.mean(all_class_accuracies)
 
 # load fitted model
 # NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named {pickle_file_name}
@@ -579,7 +599,7 @@ target = input_data['TARGET'].values
 features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
     train_test_split(features, target, random_state=random_state, stratify=input_data['TARGET'])
-scorer = pickle_model['scorer']
+scorer = make_scorer(balanced_accuracy)
 train_score = scorer(model, training_features, training_classes)
 print("Training score:", train_score)
 test_score = scorer(model, testing_features, testing_classes)
