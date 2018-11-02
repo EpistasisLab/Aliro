@@ -27,7 +27,6 @@ from unittest import mock
 from nose.tools import assert_raises, assert_equal
 from io import StringIO
 import re
-import dill
 
 import warnings
 
@@ -271,10 +270,9 @@ def test_generate_results_2():
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
     # test reloaded model is the same
-    pickle_model = dill.load(open(pickle_file,'rb'))
+    pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_scorer = pickle_model['scorer']
-    load_clf_score = load_scorer(
+    load_clf_score = SCORERS['balanced_accuracy'](
         load_clf, training_features, training_classes)
     assert train_score == load_clf_score
 
@@ -384,17 +382,15 @@ def test_generate_export_codes():
     # test dump and load fitted model
     pickle_model = {}
     pickle_model['model'] = test_clf
-    pickle_model['scorer'] = SCORERS['balanced_accuracy']
     joblib.dump(pickle_model, pickle_file)
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_scorer = pickle_model['scorer']
-    load_clf_score = load_scorer(load_clf, testing_features, testing_classes)
+    load_clf_score = SCORERS['balanced_accuracy'](load_clf, testing_features, testing_classes)
     assert test_clf_scoe == load_clf_score
 
     pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
 
-    expected_text = """Python version: {python_version}
+    expected_text = """#Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
@@ -405,6 +401,25 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
+from sklearn.metrics import make_scorer
+
+def balanced_accuracy(y_true, y_pred):
+    all_classes = list(set(np.append(y_true, y_pred)))
+    all_class_accuracies = []
+    for this_class in all_classes:
+        this_class_sensitivity = 0.
+        this_class_specificity = 0.
+        if sum(y_true == this_class) != 0:
+            this_class_sensitivity = \\
+                float(sum((y_pred == this_class) & (y_true == this_class))) /\\
+                float(sum((y_true == this_class)))
+            this_class_specificity = \\
+                float(sum((y_pred != this_class) & (y_true != this_class))) /\\
+                float(sum((y_true != this_class)))
+        this_class_accuracy = (this_class_sensitivity +
+                               this_class_specificity) / 2.
+        all_class_accuracies.append(this_class_accuracy)
+    return np.mean(all_class_accuracies)
 
 # load fitted model
 # NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named test.plk
@@ -421,7 +436,7 @@ target = input_data['TARGET'].values
 features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
     train_test_split(features, target, random_state=random_state, stratify=input_data['TARGET'])
-scorer = pickle_model['scorer']
+scorer = make_scorer(balanced_accuracy)
 train_score = scorer(model, training_features, training_classes)
 print("Training score:", train_score)
 test_score = scorer(model, testing_features, testing_classes)
