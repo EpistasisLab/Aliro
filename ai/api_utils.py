@@ -16,7 +16,6 @@ logger.setLevel(logging.INFO)
 
 class NumpyJsonEncoder(json.JSONEncoder):
     """ Encoder for numpy in json
-    h-note: confirm that this is necessary
     """
     def default(self, obj):
         if isinstance(obj, np.integer):
