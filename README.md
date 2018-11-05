@@ -71,7 +71,7 @@ npm run build-dev
 
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
-- Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit`
+- Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`
 - Results: 
 	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
 	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
@@ -79,7 +79,20 @@ npm run build-dev
 
 
 ### Unit
-- Type: Bash script that runs all the python unit tests and puts the test results and code coverage reports in the `.\target` directory
+There are several unit test suites for the various components of PennAI.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.
+
+The default location of the test output is the `.\target\test-reports\` directory.
+
+#### Docker unit test runner
+- Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the `.\target` directory
+- Dependencies: Docker-compose
+- Usage: `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit`
+- Results:
+	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
+	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
+
+#### Host unit test runner
+- Type: Bash script that runs all the python unit tests on the host system and puts the test results and code coverage reports in the `.\target` directory
 - Dependencies: `pip install nose coverage`
 	- Python [nose](https://pypi.org/project/nose/)
 	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html)
@@ -88,14 +101,17 @@ npm run build-dev
 	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
 	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
 
-#### AI Recommnender
+
+#### Unit test suite details
+##### AI Recommnender
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
 	```
 	nosetests -s -v ai/tests/test_recommender.py
 	```
-#### AI Controller
+
+##### AI Controller
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
@@ -103,7 +119,7 @@ npm run build-dev
 	nosetests -s -v ai/tests/test_ai.py
 	```
 
-#### Metafeature Generation
+##### Metafeature Generation
 - Type: Python
 - Usage:
 	```
@@ -111,7 +127,7 @@ npm run build-dev
 	python tests_dataset_describe.py
 	```
 
-#### Machine
+##### Machine
 - Type: Python via [nose](https://pypi.org/project/nose/) and Javascript via [mocha](https://mochajs.org/)
 - Prereqs:
     - install nose `pip install nose`
