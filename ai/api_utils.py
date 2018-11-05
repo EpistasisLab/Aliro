@@ -42,11 +42,14 @@ class LabApi:
         """
         self.api_path = api_path
         self.exp_path = '/'.join([self.api_path,'api/experiments'])
-        self.data_path = '/'.join([self.api_path,'api/datasets'])
+
         self.projects_path = '/'.join([self.api_path,'api/v1/projects'])
+        self.algo_path = '/'.join([self.api_path,'api/projects'])
+
+        self.data_path = '/'.join([self.api_path,'api/datasets'])
         self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
         self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
-        self.algo_path = '/'.join([self.api_path,'api/projects'])
+        
         self.api_key=api_key
         self.user=user
         self.verbose=False
@@ -61,12 +64,16 @@ class LabApi:
 
         logger.debug("==LabApi paths:")
         logger.debug("self.api_path: " + self.api_path)
+
         logger.debug("self.exp_path: " + self.exp_path)
-        logger.debug("self.data_path: " + self.data_path)
+
         logger.debug("self.projects_path: " + self.projects_path)
+        logger.debug("self.algo_path: " + self.algo_path)
+        
+        logger.debug("self.data_path: " + self.data_path)
         logger.debug("self.status_path: " + self.status_path)
         logger.debug("self.submit_path: " + self.submit_path)
-        logger.debug("self.algo_path: " + self.algo_path)
+        
 
 
     def launch_experiment(self, algorithmId, payload):
@@ -153,6 +160,41 @@ class LabApi:
         data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
         res = self.__request(path=data_submit_path, payload=payload, method="PUT")
         return res
+
+    # @Deprecated, used in ai.py; redundant
+    def get_ml_id_dict(self):
+        """Returns a dictionary for converting algorithm IDs to names.
+
+        :return: dict {mlId(str):mlName(str)}
+        """
+        logger.info("get_ml_id_dict()")
+
+        res = self.__request(path=self.algo_path)
+        responses = json.loads(res.text)
+
+        ml_id_to_name = {}
+        for ml in responses:
+            ml_id_to_name.update({ml['_id']:ml['name']})
+
+        return ml_id_to_name
+
+
+    # @Deprecated, used in ai.py; redundant
+    def get_user_datasets(self, user):
+        """Returns a dictionary for converting dataset IDs to names.  
+        
+        :return: dict {datasetId(str):datasetName(str)}
+        """
+        logger.info("get_user_datasets(" + str(user) + ")")
+
+        payload = {'username':user}
+        res = self.__request(path=self.submit_path, payload=payload)
+
+        responses = json.loads(res.text)
+        dataset_id_to_name = {}
+        for dataset in responses:
+            dataset_id_to_name.update({dataset['_id']:dataset['name']})
+        return dataset_id_to_name
 
 
     def __request(self, path, payload = None, method = 'POST', headers = {'content-type': 'application/json'}):
@@ -285,38 +327,3 @@ def get_random_ml_p_from_db(path,key):
     p = np.random.choice(all_hyperparam_combos)
 
     return ml,p
-
-# @Deprecated, used in ai.py
-def get_ml_id_dict(path,key):
-    """Returns a dictionary for converting algorithm IDs to names.
-    TODO - migrate to LabApi
-    """
-
-    # get json from server
-    payload = {'apikey':key}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
-    print('r:',r)
-    responses = json.loads(r.text)
-
-    ml_id_to_name = {}
-    for ml in responses:
-        ml_id_to_name.update({ml['_id']:ml['name']})
-
-    return ml_id_to_name
-
-
-# @Deprecated, used in ai.py
-def get_user_datasets(path,key,user):
-    """Returns a dictionary for converting dataset IDs to names.
-    TODO - migrate to LabApi   
-    """
-    # get json from server
-    payload = {'apikey':key,'username':user}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    assert r.status_code == requests.codes.ok, "get_user_datasets status_code not ok, status code: " + str(r.status_code)
-    responses = json.loads(r.text)
-    dataset_id_to_name = {}
-    for dataset in responses:
-        dataset_id_to_name.update({dataset['_id']:dataset['name']})
-    return dataset_id_to_name
