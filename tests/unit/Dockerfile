@@ -16,3 +16,4 @@ RUN pip install xgboost
 RUN pip install sphinx
 RUN pip install coverage
 RUN pip install nose
+run pip install nose-htmloutput

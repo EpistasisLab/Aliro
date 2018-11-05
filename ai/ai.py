@@ -103,9 +103,9 @@ class AI():
             self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
 
         # build dictionary of ml ids to names conversion
-        self.ml_id_to_name = api_utils.get_ml_id_dict('/'.join([self.api_path,'api/projects']), self.api_key)
+        self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # build dictionary of dataset ids to names conversion
-        self.user_datasets = api_utils.get_user_datasets('/'.join([self.api_path,'api/userdatasets']), self.api_key,self.user)
+        self.user_datasets = self.labApi.get_user_datasets(self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
 
