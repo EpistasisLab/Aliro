@@ -51,7 +51,7 @@ class AI():
 
     def __init__(self,
                 rec=None,
-                api_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+                api_path=None,
                 extra_payload=dict(),
                 user='testuser', 
                 rec_score_file='rec_state.obj',
