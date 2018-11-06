@@ -3,7 +3,7 @@
 REPORT_PATH="target/test-reports"
 COVERAGE_PATH="target/test-reports/cobertura"
 
-NOSE_TESTS="ai/tests/test_recommender.py ai/tests/test_ai.py ai/tests/test_ai_api_utils.py machine/test/learn_tests.py"
+NOSE_TESTS="ai/tests/test_recommender.py ai/tests/test_ai.py ai/tests/test_ai_api_utils.py machine/test/learn_tests.py ai/tests/test_results_utils.py"
 
 rm -f "${REPORT_PATH}/nose_xunit.xml"
 rm -f "${REPORT_PATH}/html/nose.html"
