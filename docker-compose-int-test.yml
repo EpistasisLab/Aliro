@@ -14,6 +14,7 @@ services:
       - "./tests/integration/jest:/src/jest"
       - "./target:/target"
       - "./ai/__pycache__:/appsrc/ai/__pycache__"
+      - "./ai/metalearning/__pycache__:/appsrc/ai/metalearning/__pycache__"
 
   lab:
     build: 
