@@ -390,7 +390,7 @@ def test_generate_export_codes():
 
     pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
 
-    expected_text = """#Python version: {python_version}
+    expected_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
@@ -403,6 +403,8 @@ from sklearn.externals import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer
 
+# Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
+# It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
     all_classes = list(set(np.append(y_true, y_pred)))
     all_class_accuracies = []
@@ -426,16 +428,18 @@ def balanced_accuracy(y_true, y_pred):
 pickle_model = joblib.load('PATH/TO/PICKLE/FILE')
 model = pickle_model['model']
 
-# Application 1: reproducing trainng score and testing score from PennAI
 # NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for training data submited to PennAI
-# 'TARGET' is column name of outcome in the input dataset
 input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-features = input_data.drop('TARGET', axis=1).values
-target = input_data['TARGET'].values
+# NOTE: Please edit 'TARGET' which is column name of outcome in the input dataset
+target = 'TARGET'
+
+# Application 1: reproducing training score and testing score from PennAI
+features = input_data.drop(target, axis=1).values
+target = input_data[target].values
 # Checking dataset
 features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
-    train_test_split(features, target, random_state=random_state, stratify=input_data['TARGET'])
+    train_test_split(features, target, random_state=42, stratify=input_data[target])
 scorer = make_scorer(balanced_accuracy)
 train_score = scorer(model, training_features, training_classes)
 print("Training score:", train_score)
@@ -444,22 +448,18 @@ print("Testing score:", test_score)
 
 
 # Application 2: cross validation of fitted model
-# 'TARGET' is column name of outcome in the input dataset
-# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-testing_features = input_data.drop('TARGET', axis=1).values
-testing_target = input_data['TARGET'].values
+testing_features = input_data.drop(target, axis=1).values
+testing_target = input_data[target].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
 
 # Application 3: predict outcome by fitted model
-# In this application, the input dataset should not include target column
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for data without target outcome
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+# In this application, the input dataset may not include target column
+input_data.drop(target, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
 """.format(
-    python_version=sys.version,
+    python_version=sys.version.replace('\n', ''),
     numpy_version=np.__version__,
     pandas_version=pd.__version__,
     skl_version=skl_version,
