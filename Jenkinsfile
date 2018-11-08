@@ -7,8 +7,19 @@ pipeline {
     }
     environment {
         LOCAL_PENNAI_DEPLOY_DIR = '/data/git/pennai'
+        LOCAL_PENNAI_DEPLOY_FILE = "${LOCAL_PENNAI_DEPLOY_DIR}/docker-compose.yml"
     }
     stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+
+                // checkout
+                checkout scm
+                dir ('target/ai_docs') {echo 'target/ai_docs'}
+                dir ('target/test-reports/cobertura') {echo 'target/test-reports/cobertura'}
+            }
+        }
         stage('Build Docs') {
             agent {
                 dockerfile { 
@@ -17,8 +28,7 @@ pipeline {
                 }
             } 
             steps {
-                //git credentialsId: 'pennai-jenkins', url: 'git@github.com:EpistasisLab/pennai.git'   
-                checkout scm
+                sh 'rm -fdr target'
                 dir ('ai') {
                     sh 'make html'
                 }                
@@ -37,8 +47,7 @@ pipeline {
                 }
             }   
             steps {
-                //git credentialsId: 'pennai-jenkins', url: 'git@github.com:EpistasisLab/pennai.git'
-                checkout scm
+                sh 'rm -fdr target'
                 sh 'sh tests/unit_test_runner.sh'
             }
             post {
@@ -47,35 +56,28 @@ pipeline {
                 }
             }
         }
-        /*
-        stage('Stop PennAI Locally') {
+        stage('Rebuild') {
             steps {
-                dir(LOCAL_PENNAI_DEPLOY_DIR) {
-                    sh 'pwd'
-                    sh 'docker-compose stop'
-                    sh 'docker-compose down'
-                }
-            }
-        }
-        stage('Integration Tests') { 
-            steps {
-                // checkout
-                //git credentialsId: 'pennai-jenkins', url: 'git@github.com:EpistasisLab/pennai.git'
-                checkout scm
-
                 // rebuild
                 sh 'cp config/ai.env-template config/ai.env'
                 sh 'docker build ./dockers/base -t pennai/base:latest'
                 sh 'docker-compose build'
+            }
 
+        }
+        stage('Stop PennAI Locally') {
+            steps {
+                sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} stop"
+            }
+        }
+        stage('Integration Tests') { 
+            steps {
                 // stop any running pennai test or dev instances
                 sh 'docker-compose -f ./docker-compose-int-test.yml stop'
-                sh 'docker-compose -f ./docker-compose-int-test.yml down'
 
                 // run the integration test instance
                 sh 'docker-compose -f ./docker-compose-int-test.yml build'
-                sh 'docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit'
-                sh 'docker-compose -f ./docker-compose-int-test.yml down'
+                sh 'docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate'
             }
             post {
                 always {
@@ -85,42 +87,23 @@ pipeline {
         }
         stage('Start PennAI Locally') {
             steps {
-                dir(LOCAL_PENNAI_DEPLOY_DIR) {
-                    //git credentialsId: 'pennai-jenkins', url: 'git@github.com:EpistasisLab/pennai.git'
-                    checkout scm
-                    sh 'docker-compose stop'
-                    sh 'docker-compose down'
-                    sh 'docker-compose up'
-                }
-            }
+                sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} up --detach --force-recreate"
+            }   
         }
-        /*
-        stage('Remote Deploy') { 
-            steps {
-                sh "ssh jenkins@wayland 'git pull'"
-                sh "ssh jenkins@wayland 'git clean -xdf'"
-                sh "ssh jenkins@wayland 'cp config/ai.env-template config/ai.env'"
-                sh "ssh jenkins@wayland 'docker build ./dockers/base -t pennai/base:latest'"
-                sh "ssh jenkins@wayland 'docker-compose build'"
-            }
-        }
-        stage('Remote Start') {
-            steps {
-                sh "ssh jenkins@wayland 'docker-compose down'"
-                sh "ssh jenkins@wayland 'docker-compose up -d'"
-            }
-        }
-        */
     }
     post {
         always {
+            sh '(cd target && ls -lR)'
+            cleanWs()
             unstash 'docs-python'
             unstash 'testresult-unittest'
-            //unstash 'testresult-inttest'
+            unstash 'testresult-inttest'
+            sh '(cd target && ls -lR)'
 
             junit 'target/test-reports/*.xml'
             cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/test-reports/cobertura/nose_cover.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'target/ai_docs/html', reportFiles: 'index.html, search.html, py-modindex.html', reportName: 'AI docs', reportTitles: ''])
+
         }
         failure {
             echo 'Pipeline failure'
@@ -129,7 +112,7 @@ pipeline {
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) failure',
                 body: 'Please go to ${BUILD_URL} to view build details.', 
                 to: "${params.STATUS_EMAIL}",
-                recipientProviders: [culprits()],
+                //recipientProviders: [culprits()],
                 replyTo: "${params.STATUS_EMAIL}"
         }
         fixed {
@@ -139,7 +122,7 @@ pipeline {
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) is back to normal',
                 body: 'Please go to ${BUILD_URL} to view build details.', 
                 to: "${params.STATUS_EMAIL}",
-                recipientProviders: [culprits()], 
+                //recipientProviders: [culprits()], 
                 replyTo: "${params.STATUS_EMAIL}"
         }
     }
