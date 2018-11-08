@@ -1,6 +1,6 @@
 
 
-import ai.results_utils as results_utils
+import ai.knowledgebase_loader as knowledgebase_loader
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
@@ -28,7 +28,7 @@ def load_test_data():
 class TestResultUtils(unittest.TestCase):
 	@parameterized.expand(load_test_data)
 	def test_load_results_from_file(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		data = results_utils._load_results_from_file(testResultFile)
+		data = knowledgebase_loader._load_results_from_file(testResultFile)
 		assert isinstance(data, pd.DataFrame)
 
 		self.assertGreater(len(data), 1)
@@ -36,7 +36,7 @@ class TestResultUtils(unittest.TestCase):
 
 	@parameterized.expand(load_test_data)
 	def test_generate_metadata_from_directory(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		data = results_utils._generate_metadata_from_directory(testResultsDataDirectory)
+		data = knowledgebase_loader._generate_metadata_from_directory(testResultsDataDirectory)
 		assert isinstance(data, dict)
 
 		self.assertGreater(len(data.keys()), 1)
@@ -44,7 +44,7 @@ class TestResultUtils(unittest.TestCase):
 
 	@parameterized.expand(load_test_data)
 	def test_load_knowledgebase(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		result = results_utils.load_knowledgebase(testResultFile, testResultsDataDirectory)
+		result = knowledgebase_loader.load_knowledgebase(testResultFile, testResultsDataDirectory)
 		assert 'resultsData' in result
 		assert 'metafeaturesData' in result
 

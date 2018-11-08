@@ -14,7 +14,7 @@ import ai.api_utils as api_utils
 from ai.api_utils import LabApi
 import os
 import ai.q_utils as q_utils
-import ai.results_utils as results_utils
+import ai.knowledgebase_loader as knowledgebase_loader
 import logging
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
@@ -129,7 +129,7 @@ class AI():
         """
         print('loading pmlb knowledgebase')
 
-        kb = results_utils.load_pmbl_knowledgebase()
+        kb = knowledgebase_loader.load_pmbl_knowledgebase()
         self.rec.update(kb['resultsData'])
         
         print('pmlb knowledgebase loaded')

@@ -1,6 +1,12 @@
 """
-Utility functions for loading experiment results that can be used for building an initial knowledgebase for the recommenders
+Utility functions for loading experiment results that can be used for building an 
+initial knowledgebase for the recommenders.
+
+
+A knowledgebase consists of a relational dataset of previously run experiments, and 
+the metafeatures of the datasets in those experiments.
 """
+
 import pandas as pd
 import os
 import ai.metalearning.get_metafeatures as mf
@@ -11,10 +17,10 @@ logger.setLevel(logging.INFO)
 
 
 def load_knowledgebase(resultsFile, datasetDirectory):
-    """Load experiment results from from file and generate metadata for the experiment datasets
+    """Load experiment results from from file and generate metadata for the experiment datasets.
 
-    :param resultsFile: string 
-    :param datasetDirectory: string 
+    :param resultsFile: string - a gzip file of experiment results in csv form
+    :param datasetDirectory: string - the directory that contains the datasets used in resultsFile
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
     				'dataset',
