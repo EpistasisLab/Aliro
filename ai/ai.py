@@ -127,12 +127,12 @@ class AI():
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
-        if self.verbose:
-            print('loading pmlb knowledgebase')
+        print('loading pmlb knowledgebase')
 
         kb = results_utils.load_pmbl_knowledgebase()
         self.rec.update(kb['resultsData'])
-
+        
+        print('pmlb knowledgebase loaded')
 
     def load_options(self):
         """Loads algorithm UI parameters and sets them to self.ui_options."""
