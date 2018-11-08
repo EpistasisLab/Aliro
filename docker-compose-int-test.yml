@@ -4,10 +4,6 @@ services:
 
   tester:
     build: ./tests/integration
-    #command: bash
-    #command: npm test
-    #See <https://github.com/vishnubob/wait-for-it>
-    #command: ["/opt/wait-for-it.sh", "-t", "200", "lab:5080", "--", "npm", "test"]
     depends_on: 
       - lab
       - machine
@@ -17,6 +13,7 @@ services:
     volumes: 
       - "./tests/integration/jest:/src/jest"
       - "./target:/target"
+      - "./ai/__pycache__:/appsrc/ai/__pycache__"
 
   lab:
     build: 

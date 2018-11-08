@@ -13,3 +13,6 @@ echo "hardcoded sleep to load datasets..."
 sleep 90s
 echo "starting tests..."
 npm test
+
+echo "cleanup"
+rm -rf '/appsrc/ai/__pycache__/*'
