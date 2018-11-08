@@ -18,3 +18,6 @@ RUN pip install coverage
 RUN pip install nose
 RUN pip install nose-htmloutput
 RUN pip install parameterized
+
+
+RUN apt-get update && apt-get install -y vim dos2unix
