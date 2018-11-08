@@ -1,5 +1,5 @@
 """
-Databse utility functions for Penn-AI
+API utility functions for Penn-AI
 """
 
 import pandas as pd
@@ -8,10 +8,14 @@ import pdb
 import json
 import requests
 import itertools as it
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class NumpyJsonEncoder(json.JSONEncoder):
     """ Encoder for numpy in json
-    h-note: confirm that this is necessary
     """
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -27,26 +31,29 @@ class LabApi:
     """Class for communicating with the PennAI server
     """
 
-    def __init__(self, db_path, user, api_key, extra_payload, verbose):
+    def __init__(self, api_path, user, api_key, extra_payload, verbose):
         """
-        :param db_path: string - path to the lab api server
+        :param api_path: string - path to the lab api server
         :param extra_payload: dict - any additional payload that needs to be specified
         :param api_key: string - 
         :param user: string - test user
         :param verbose: Boolean
         """
-        self.db_path = db_path
-        self.exp_path = '/'.join([self.db_path,'api/experiments'])
-        self.data_path = '/'.join([self.db_path,'api/datasets'])
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
-        self.status_path = '/'.join([self.db_path,'api/v1/datasets'])
-        self.submit_path = '/'.join([self.db_path,'api/userdatasets'])
-        self.algo_path = '/'.join([self.db_path,'api/projects'])
+        self.api_path = api_path
+        self.exp_path = '/'.join([self.api_path,'api/experiments'])
+
+        self.projects_path = '/'.join([self.api_path,'api/v1/projects'])
+        self.algo_path = '/'.join([self.api_path,'api/projects'])
+
+        self.data_path = '/'.join([self.api_path,'api/datasets'])
+        self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
+        self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
+        
         self.api_key=api_key
         self.user=user
-        self.verbose=verbose
+        self.verbose=False
         self.header = {'content-type': 'application/json'}
-        # optional extra payloads (e.g. user id) for posting to the db
+        # optional extra payloads (e.g. user id) for posting to the api
         self.extra_payload = extra_payload
         # static payload is the payload that is constant for every API post
         # with api key for this host
@@ -54,69 +61,76 @@ class LabApi:
         # add any extra payload
         self.static_payload.update(extra_payload)
 
-        if verbose:
-            print("LabApi paths:")
-            print("self.db_path: ", self.db_path)
-            print("self.exp_path: ", self.exp_path)
-            print("self.data_path: ", self.data_path)
-            print("self.projects_path: ", self.projects_path)
-            print("self.status_path: ", self.status_path)
-            print("self.submit_path: ", self.submit_path)
-            print("self.algo_path: ", self.algo_path)
+        logger.debug("==LabApi paths:")
+        logger.debug("self.api_path: " + self.api_path)
+
+        logger.debug("self.exp_path: " + self.exp_path)
+
+        logger.debug("self.projects_path: " + self.projects_path)
+        logger.debug("self.algo_path: " + self.algo_path)
+        
+        logger.debug("self.data_path: " + self.data_path)
+        logger.debug("self.status_path: " + self.status_path)
+        logger.debug("self.submit_path: " + self.submit_path)
+        
 
 
-
-    def post_experiment(self, algorithmId, payload):
+    def launch_experiment(self, algorithmId, payload):
         """Attempt to start a ml experiment.
 
         :param algorithmId: string - 
         :param payload: dict - dictionary describing the ml experiment parameters
 
-        :returns: dict  
+        :returns: dict {value(str): status(str)} 
         """
+        logger.info("launch_experiment(" + str(algorithmId) + ", " + str(payload))
+        assert algorithmId
+
         payload.update(self.static_payload)
         experimentData = json.dumps(payload,cls=NumpyJsonEncoder)
 
-        self.projects_path = '/'.join([self.db_path,'api/v1/projects'])
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
         
         try:
-            res=requests.post(rec_path,data=experimentData,headers=self.header)
+            res=requests.request("POST", rec_path, data=experimentData, headers=self.header)
         except:
-            print("Unexpected error in post_experiment for path '", rec_path, "':", sys.exc_info()[0])
+            logger.error("Unexpected error in launch_experiment for path '", rec_path, "':", sys.exc_info()[0])
             raise
 
-        submitresponses = json.loads(res.text)
+        submitResponses = json.loads(res.text)
 
         #parse json response into named array
-        submitstatus={}
-        if len(submitresponses) > 0:
-            for submiti in submitresponses:
-                submitstatus[submiti] = submitresponses[submiti]
+        submitStatus={}
+        if len(submitResponses) > 0:
+            for submitI in submitResponses:
+                submitStatus[submitI] = submitResponses[submitI]
 
-        return submitstatus
+        return submitStatus
 
     def get_projects(self):
         """Get the descriptions and parameters of the supported ml algorithms
 
         :return: dict - algorithm descriptions as returned by api/projects
         """
-        v = requests.post(self.projects_path,data=json.dumps(self.static_payload),
-                          headers=self.header)
-        responses = json.loads(v.text)
-        return responses
+        logger.info("get_projects()")
 
-    def get_datasets(self, payload):
+        res = self.__request(path=self.projects_path)
+        data = json.loads(res.text)
+        return data
+
+
+    def get_filtered_datasets(self, payload):
         """Get datasets with filters
 
         :param payload: dict - How to filter the results {'ai':['requested','finished']}
 
         :return: dict - datasets that pass the payload filter
         """
-        payload.update(self.static_payload)
-        r = requests.post(self.data_path,data=json.dumps(payload), headers=self.header)
-        responses = json.loads(r.text)
-        return responses
+        logger.info("get_filtered_datasets()")
+
+        res = self.__request(path=self.data_path, payload=payload)
+        data = json.loads(res.text)
+        return data
 
     def get_new_experiments(self, last_update):
         """Get experiments that occurred after last_update
@@ -125,13 +139,12 @@ class LabApi:
 
         :returns: dict - ml experiments results
         """
-        payload = {'date_start':last_update,'has_scores':True}
-        payload.update(self.static_payload)
-        params = json.dumps(payload)
-        print("requesting from : ", self.exp_path)
-        res = requests.post(self.exp_path, data=params, headers=self.header)
-        data = json.loads(res.text)
+        logger.info("get_new_experiments(" + str(last_update)+ ")")
 
+        payload = {'date_start':last_update,'has_scores':True}
+
+        res = self.__request(path=self.exp_path, payload=payload)
+        data = json.loads(res.text)
         return data
 
     def set_ai_status(self, datasetId, aiStatus):
@@ -140,15 +153,85 @@ class LabApi:
         :param datasetId: string - dataset to update
         :param aiStatus: string 
         """
+        logger.info("set_ai_status(" + str(datasetId) +", " + str(aiStatus) + ")")
+
         payload = {'ai':aiStatus}
-        payload.update(self.static_payload) #not sure if this is necessary?
         data_submit_path = '/'.join([self.submit_path, datasetId,'ai'])
+        res = self.__request(path=data_submit_path, payload=payload, method="PUT")
+        return res
+
+    # @Deprecated, used in ai.py; redundant
+    def get_ml_id_dict(self):
+        """Returns a dictionary for converting algorithm IDs to names.
+
+        :return: dict {mlId(str):mlName(str)}
+        """
+        logger.info("get_ml_id_dict()")
+
+        res = self.__request(path=self.algo_path)
+        responses = json.loads(res.text)
+
+        ml_id_to_name = {}
+        for ml in responses:
+            ml_id_to_name.update({ml['_id']:ml['name']})
+
+        return ml_id_to_name
+
+
+    # @Deprecated, used in ai.py; redundant
+    def get_user_datasets(self, user):
+        """Returns a dictionary for converting dataset IDs to names.  
+        
+        :return: dict {datasetId(str):datasetName(str)}
+        """
+        logger.info("get_user_datasets(" + str(user) + ")")
+
+        payload = {'username':user}
+        res = self.__request(path=self.submit_path, payload=payload)
+
+        responses = json.loads(res.text)
+        dataset_id_to_name = {}
+        for dataset in responses:
+            dataset_id_to_name.update({dataset['_id']:dataset['name']})
+        return dataset_id_to_name
+
+
+    def __request(self, path, payload = None, method = 'POST', headers = {'content-type': 'application/json'}):
+        """
+        Attempt to make an api request and return the result.
+        Throw an exception if the request fails or if a status code >400 is returned.
+
+        :return: Requests.response object
+        """
+
+        logger.debug("Starting LabApi.__request(" + str(path) + ", " + str(payload) + ", " + str(method) + ", ...)" )
+        
+        if payload: 
+            assert isinstance(payload, dict)
+            payload.update(self.static_payload)
+        else:
+            payload = self.static_payload
+
         res = None
         try:
-            res = requests.put(data_submit_path,data=json.dumps(payload), headers=self.header)
+            res = requests.request(method, path, data=json.dumps(payload), headers=headers)
         except:
-            print("Unexpected error in set_ai_status for path '", data_submit_path, "':", sys.exc_info()[0])
+            logger.error("Unexpected error in LabApi.__request for path '" + str(method) + ":" + str(path) + "':" + str(sys.exc_info()[0]))
             raise
+        
+        if res.status_code != requests.codes.ok:
+            msg = "Request " + str(method) + " status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+
+        #logger.debug("Got response LabApi.__request(" + str(path) + ", ..., " + str(method) + ", ...)" )
+        """
+        try:
+            logger.debug("response: ", str(res.text), "\n")
+        except:
+            logger.debug("couldn't text parse response")
+        """
         return res
 
 # @Deprecated, used by recommenders
@@ -156,7 +239,7 @@ def get_all_ml_p_from_db(path,key):
     """ Returns a list of ml and parameter options from the server.
     TODO - migrate to LabApi
     
-    :param path:
+    :param path: 'api/preferences'
     :param key:
 
     :returns: dataframe - unique ml parameter options
@@ -166,6 +249,7 @@ def get_all_ml_p_from_db(path,key):
     # filter on username (given in dataset)
     payload = {'apikey':key,'username':'testuser'}
     r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
+    assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
     print('r:',r)
     response = json.loads(r.text)
     algorithms = response[0]['algorithms']
@@ -242,36 +326,3 @@ def get_random_ml_p_from_db(path,key):
     p = np.random.choice(all_hyperparam_combos)
 
     return ml,p
-
-# @Deprecated, used in ai.py
-def get_ml_id_dict(path,key):
-    """Returns a dictionary for converting algorithm IDs to names.
-    TODO - migrate to LabApi
-    """
-
-    # get json from server
-    payload = {'apikey':key}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    print('r:',r)
-    responses = json.loads(r.text)
-
-    ml_id_to_name = {}
-    for ml in responses:
-        ml_id_to_name.update({ml['_id']:ml['name']})
-
-    return ml_id_to_name
-
-
-# @Deprecated, used in ai.py
-def get_user_datasets(path,key,user):
-    """Returns a dictionary for converting dataset IDs to names.
-    TODO - migrate to LabApi   
-    """
-    # get json from server
-    payload = {'apikey':key,'username':user}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    responses = json.loads(r.text)
-    dataset_id_to_name = {}
-    for dataset in responses:
-        dataset_id_to_name.update({dataset['_id']:dataset['name']})
-    return dataset_id_to_name
