@@ -26,6 +26,8 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 				metafeaturesData: {String (datasetName): metafeatures}
 				}
     """
+    logger.info("load_knowledgebase({0},{1})".format(resultsFile, datasetDirectory))
+
 
     resultsData = _load_results_from_file(resultsFile)
     metafeaturesData = _generate_metadata_from_directory(datasetDirectory)

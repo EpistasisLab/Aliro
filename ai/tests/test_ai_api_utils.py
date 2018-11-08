@@ -30,7 +30,23 @@ def test_ai_init_args(mock_request, mock_post):
         verbose=True, 
         n_recs=1, 
         warm_start=False,
-        datasets={}
+        datasets={},
+        use_knowledgebase=False
+    )
+
+@patch('requests.request', side_effect=mocker.mocked_requests_request)
+@patch('requests.post', side_effect=mocker.mocked_requests_post)
+def test_ai_init_knowledgebase(mock_request, mock_post):
+    lab_connection_args = {}
+    pennai = AI(
+        rec=None,
+        api_path='http://lab:5080',
+        user="testuser",
+        verbose=True, 
+        n_recs=1, 
+        warm_start=False,
+        datasets={},
+        use_knowledgebase=True
     )
 
 @patch('requests.request', side_effect=mocker.mocked_requests_request)

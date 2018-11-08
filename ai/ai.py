@@ -14,6 +14,7 @@ import ai.api_utils as api_utils
 from ai.api_utils import LabApi
 import os
 import ai.q_utils as q_utils
+import ai.results_utils as results_utils
 import logging
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
@@ -46,6 +47,7 @@ class AI():
     :param warm_start: Boolean - if true, attempt to load the ai state from the file provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
     :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup 
+    :param use_pmlb_knowledgebase: Boolean
 
     """
 
@@ -58,7 +60,8 @@ class AI():
                 verbose=True,
                 warm_start=False, 
                 n_recs=1, 
-                datasets=False):
+                datasets=False,
+                use_knowledgebase=False):
         """initializes AI managing agent."""
         # recommender settings
         if api_path == None:
@@ -117,20 +120,19 @@ class AI():
             for ds in datasets.split(','):
                 tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], aiStatus = 'requested')
 
-    def load_state(self):
-        """Loads pickled score file and recommender model.
+        if use_knowledgebase:
+            self.load_knowledgebase()
 
-        TODO: test that this still works
+
+    def load_knowledgebase(self):
+        """ Bootstrap the recommenders with the knowledgebase
         """
-        if os.stat(self.rec_score_file).st_size != 0:
-            filehandler = open(self.rec_score_file,'rb')
-            state = pickle.load(filehandler)
-            if(hasattr(self.rec, 'scores')):
-              self.rec.scores = state['scores']
-              self.rec.trained_dataset_models = state['trained_dataset_models']
-              self.last_update = state['last_update']
-              if self.verbose:
-                  print('loaded previous state from ',self.last_update)
+        if self.verbose:
+            print('loading pmlb knowledgebase')
+
+        kb = results_utils.load_pmbl_knowledgebase()
+        self.rec.update(kb['resultsData'])
+
 
     def load_options(self):
         """Loads algorithm UI parameters and sets them to self.ui_options."""
@@ -299,7 +301,10 @@ class AI():
             self.new_data = pd.DataFrame()
 
     def save_state(self):
-        """Save ML+P scores in pickle or to DB"""
+        """Save ML+P scores in pickle or to DB
+
+        TODO: test that this still works
+        """
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
@@ -309,14 +314,20 @@ class AI():
         state['last_update'] = self.last_update
         pickle.dump(state, out)
 
-    #def db_to_results_data(self,response):
-        """load json files from db and convert to results_data.
+    def load_state(self):
+        """Loads pickled score file and recommender model.
 
-        Output: a DataFrame with at least these columns:
-        'algorithm'
-        'parameters'
-        self.metric
+        TODO: test that this still works
         """
+        if os.stat(self.rec_score_file).st_size != 0:
+            filehandler = open(self.rec_score_file,'rb')
+            state = pickle.load(filehandler)
+            if(hasattr(self.rec, 'scores')):
+              self.rec.scores = state['scores']
+              self.rec.trained_dataset_models = state['trained_dataset_models']
+              self.last_update = state['last_update']
+              if self.verbose:
+                  print('loaded previous state from ',self.last_update)
 
 ####################################################################### Manager
 import argparse
@@ -343,6 +354,8 @@ def main():
                         help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
                         help='Time to wait for pinging the server for results/ recommendation requests')
+    parser.add_argument('-knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',default=False, 
+                        help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
     print(args)
@@ -362,7 +375,7 @@ def main():
 
     pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.API_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
-                datasets=args.DATASETS)
+                datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE)
 
     n = 0;
     try:
