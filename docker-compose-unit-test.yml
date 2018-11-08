@@ -4,8 +4,7 @@ services:
   unit_tester:
     build: ./tests/unit
     working_dir: /appsrc
-    command: "sh tests/unit_test_runner.sh"
-    #command: ls
+    command: bash -c "dos2unix tests/unit_test_runner.sh && sh tests/unit_test_runner.sh"
     tty: true
     stdin_open: true
     volumes: 

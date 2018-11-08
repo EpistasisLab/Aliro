@@ -12,30 +12,11 @@ import ai.recommender.random_recommender
 import sys
 import json
 from unittest.mock import Mock, patch
-import helper_test_api as helper
+import lab_api_mocker as mocker
 
-def mocked_requests_post(*args, **kwargs):
-    """This method will be used by mock to replace requests.post"""
-    print("mocked_requests_post: " + str(args[0]))
-    print("kwargs: " + str(kwargs))
-    if(kwargs and 'data' in kwargs.keys()) :
-        data = json.dumps(kwargs['data'])
-    else :
-        data = []
-
-    print("data: " + data)
-
-    if args[0] == 'http://lab:5080/api/preferences':
-        return helper.MockResponse(json.dumps(helper.api_preferences_data), 200)
-    elif args[0] == 'http://lab:5080/api/projects':
-        return helper.MockResponse(json.dumps(helper.api_projects_data), 200)
-    elif args[0] == 'http://lab:5080/api/userdatasets':
-        return helper.MockResponse(json.dumps(helper.api_datasets_data), 200)
-    else:
-        return helper.MockResponse(None, 404)
 
 @patch('ai.api_utils.LabApi')
-@patch('requests.post', side_effect = mocked_requests_post)  #remove once api calls have been removed from recommenders
+@patch('requests.post', side_effect = mocker.mocked_requests_post)  #remove once api calls have been removed from recommenders
 def test_ai_init( mockLabApi, mockRequestsPost):
         labApiInstance = mockLabApi.return_value
 
