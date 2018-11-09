@@ -98,7 +98,6 @@ pipeline {
             unstash 'docs-python'
             unstash 'testresult-unittest'
             unstash 'testresult-inttest'
-            sh '(cd target && ls -lR)'
 
             junit 'target/test-reports/*.xml'
             cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/test-reports/cobertura/nose_cover.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
@@ -110,6 +109,16 @@ pipeline {
             emailext attachLog: false, 
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) failure',
+                body: 'Please go to ${BUILD_URL} to view build details.', 
+                to: "${params.STATUS_EMAIL}",
+                //recipientProviders: [culprits()],
+                replyTo: "${params.STATUS_EMAIL}"
+        }
+        unstable {
+            echo 'Pipeline Unstable'
+            emailext attachLog: false, 
+                compressLog: false,
+                subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) unstable',
                 body: 'Please go to ${BUILD_URL} to view build details.', 
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()],
