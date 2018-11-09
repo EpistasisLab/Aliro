@@ -14,12 +14,12 @@ def load_test_data():
     return [
         ("benchmark5", 
         	"ai/metalearning/sklearn-benchmark5-data-short.tsv.gz", 
-        	"machine/datasets/byuser_full/testuser",
+        	"data/datasets/pmlb",
         	pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
         	{'apple':[1,2,3]},
 #        ("badPath", 
 #        	"ai/metalearning/sklearn-benchmarkfoo-data-short.tsv.gz", 
-#        	"machine/datasets/byuser_full/testuser/foooo",
+#        	"data/datasets/pmlb/foooo",
 #        	pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
 #        	{'apple':[a,b,c]}
 		)

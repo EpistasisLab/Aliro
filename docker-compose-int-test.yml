@@ -31,6 +31,7 @@ services:
       - "5080:5080"
     environment:
       - AI_AUTOSTART=0
+      - STARTUP_DATASET_PATH=/appsrc/data/datasets/pmlb_test
     env_file: ./config/common.env
     depends_on: 
       - dbmongo

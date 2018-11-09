@@ -3,7 +3,7 @@ var getProjects = function(algorithms) {
     var project_list = [];
     for (var i in algorithms) {
         var algo = algorithms[i];
-        console.log("Register " + algo)
+        console.log("Register algorithm " + algo)
         var project = {
             name: algo,
             command: "python",

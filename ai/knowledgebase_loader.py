@@ -48,7 +48,7 @@ def load_pmbl_knowledgebase():
 	"""
 	return load_knowledgebase(
 		resultsFile = 'ai/metalearning/sklearn-benchmark5-data-short.tsv.gz',
-		datasetDirectory = "machine/datasets/byuser_full/testuser"
+		datasetDirectory = "data/datasets/pmlb"
 		)
 
 

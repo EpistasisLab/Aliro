@@ -13,7 +13,7 @@ const db = dbBuilder.openDbConnection();
 
 const EXPECTED_MACHINE_ALGO_COUNT = 6; // number of algorithms a machine instance can run
 const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
-const MIN_EXPECTED_DATASET_COUNT = 10; // min number of datasets registered with the lab server
+const MIN_EXPECTED_DATASET_COUNT = 4; // min number of datasets registered with the lab server
 
 
 afterAll(() => {
