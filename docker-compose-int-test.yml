@@ -47,6 +47,8 @@ services:
       - "/appsrc/machine/node_modules"
     ports: 
       - "5081:5081"
+    environment:
+      - STARTUP_DATASET_PATH=/appsrc/data/datasets/pmlb_test
     env_file: ./config/common.env
     depends_on: 
       - lab
