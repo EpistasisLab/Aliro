@@ -153,7 +153,7 @@ fs.readFile("specs.json", "utf-8")
                 process.exit();
             });
     });
-chokidar.watch(datasets.byuser_datasets_path, {
+chokidar.watch(datasets.datasets_path, {
     awaitWriteFinish: true,
     ignored: /metadata/,
 }).on("all", (event, path) => {
@@ -166,7 +166,7 @@ chokidar.watch(datasets.byuser_datasets_path, {
 /* Global max capacity */
 /* Process Datasets */
 datasets.laburi = laburi
-datasets.scrapeUsers()
+datasets.loadInitialDatasets()
 
 var maxCapacity = 1;
 if (process.env.CAPACITY) {

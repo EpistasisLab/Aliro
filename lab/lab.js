@@ -1115,6 +1115,7 @@ var processDataset = function(files, dataset_id) {
                                     _id: gfs.fileId,
                                     filename: gfs.filename,
                                     mimetype: gfs.metadata.contentType,
+                                    filepath: gfs.path,
                                     timestamp: Date.now()
                                 }
                             }
