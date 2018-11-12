@@ -184,9 +184,11 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
     // Retrieve list of files for experiment
     // Process files
     var metadata = JSON.parse(req.body._metadata);
+    var filepath = metadata['filepath'];
+
     if (metadata['dataset_id'] !== undefined) {
         dataset_id = metadata['dataset_id'];
-        var filesP = processDataset(req.files, dataset_id);        
+        var filesP = processDataset(req.files, dataset_id, filepath);        
         Promise.all(filesP)
             .then((results) => {
                 res.send({
@@ -205,7 +207,7 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
             }, {})
             .then((exp) => {
                 var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-                var filesP = processDataset(req.files, dataset_id);
+                var filesP = processDataset(req.files, dataset_id, filepath);
                 Promise.all(filesP)
                     .then((results) => {
                         res.send({
@@ -1076,16 +1078,19 @@ var linkDataset = function(experiment, datasetId) {
 * process files for a dataset
 *
 */
-var processDataset = function(files, dataset_id) {
+var processDataset = function(files, dataset_id, filepath) {
+    console.log(`processDataset ${files} ${filepath}`)
+
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
     obj = {};
     promises = [];
     files.forEach(function(fileObj, i) {
+        console.log(`fileObj: ${fileObj}`)
         fileId = new db.ObjectID();
         metadata = []
 
-        var mfRes = generateFeatures(fileObj)
+        var mfRes = generateFeatures(fileObj, filepath)
         if (mfRes.success) {
             db.datasets.updateByIdAsync(dataset_id, {$set : {metafeatures: mfRes.data}})
             console.log("setting metafeatures for dataset " + dataset_id)

@@ -3,11 +3,10 @@ require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var fs = require('fs');
+//var fs = require('fs');
 var rp = require("request-promise");
 const md5File = require('md5-file')
 var mime = require('mime');
-var debug = false;
 exports.laburi;
 
 var datasets_path;
@@ -80,16 +79,24 @@ var genForm = function(file, callback) {
                     callback(formData,metadata);
                 })
         } else {
-        formData._metadata = JSON.stringify(metadata);
-        callback(formData,metadata);
+            formData._metadata = JSON.stringify(metadata);
+            callback(formData,metadata);
         }
 
     });
 };
-// change the algo to sha1, sha256 etc according to your requirements
-//var processUserDataset = function(username, dataset_name) {
+/**
+* Read the dataset and register it with the lab api
+* 
+* dataset.csv
+* dataset_metafeatures.csv
+* dataset_config.json
+*
+* @param username - string
+* @param dataset_name - string
+* @param dataset_path - string
+*/
 var processDataset = function(username, dataset_name, dataset_path) {
-    //var dataset_path = byuser_datasets_path + '/' + username + '/' + dataset_name
     console.log(`processDataset(${username}, ${dataset_name}, ${dataset_path})`)
     var formData = {
         _files: [],
@@ -100,101 +107,96 @@ var processDataset = function(username, dataset_name, dataset_path) {
     fs.readdir(dataset_path, function(err, files) {
         var metadata_json_path = dataset_path + '/metadata.json'
 
-        // if metadata exists, ignore
-        if (fs.existsSync(metadata_json_path) && !debug) {
-            console.log(`${metadata_json_path} exists, not registering file`)
-        } else {
-            metadata = {
-                'name': dataset_name,
-                'username': username,
-                'timestamp': Date.now(),
-                'files': []
-            }
-            if(files) {
-                for (var i = 0; i < files.length; i++) {
-                    if (files[i].toUpperCase() == 'README.MD') {
-                        //todo:parse README
-                    } else {
-                        var filename = dataset_path + '/' + files[i];
-                        var is_zipped = false;
-                        checksum = md5File.sync(filename);
-                        if (path.extname(filename) == '.gz') {
-                            filetype = mime.lookup(path.basename(filename, '.gz'));
-                            is_zipped = true;
-                        } else {
-                            filetype = mime.lookup(filename);
-                        }
+        metadata = {
+            'name': dataset_name,
+            'username': username,
+            'timestamp': Date.now(),
+            'filepath' : dataset_path,
+            'files': []
+        }
+        console.log(`files: ${files}`)
 
-                        var file_level_metadata = {
-                            'filename': files[i],
-                            'checksum': checksum,
-                            'filetype': filetype,
-                            'filepath' : dataset_path
-                        }
-                        if (filetype == 'text/csv') {
-                            file_level_metadata['classlabel'] = 'class';
-                        }
-                        metadata.files.push(file_level_metadata);
-                        formData._files.push(fs.createReadStream(filename));
+        if(files) {
+            for (var i = 0; i < files.length; i++) {
+                console.log(`${path.parse(files[i]).name}`)
+                if (files[i].toUpperCase() == 'README.MD') {
+                    //todo:parse README
+                } else if (path.parse(files[i]).name.toUpperCase() == dataset_name.toUpperCase()){
+                    var filename = dataset_path + '/' + files[i];
+                    var is_zipped = false;
+                    checksum = md5File.sync(filename);
+                    if (path.extname(filename) == '.gz') {
+                        filetype = mime.lookup(path.basename(filename, '.gz'));
+                        is_zipped = true;
+                    } else {
+                        filetype = mime.lookup(filename);
                     }
+
+                    var file_level_metadata = {
+                        'filename': files[i],
+                        'checksum': checksum,
+                        'filetype': filetype
+                    }
+                    if (filetype == 'text/csv') {
+                        file_level_metadata['classlabel'] = 'class';
+                    }
+                    metadata.files.push(file_level_metadata);
+                    formData._files.push(fs.createReadStream(filename));
                 }
-                formData._metadata = JSON.stringify(metadata);
-                //console.log(`Registering dataset ${formData._metadata}`)
-                console.log(`Registering dataset ${JSON.stringify(metadata.files)}`)
-                var p = rp({
-                        uri: exports.laburi + "/api/v1/datasets/",
-                        method: "PUT",
-                        formData: formData,
-                        gzip: true
-                    })
-                    .then(response => {
-                        data = JSON.parse(response);
-                        metadata['dataset_id'] = data['dataset_id'];
-                        /*
-                        fs.writeFile(metadata_json_path, JSON.stringify(metadata), function(err) {
-                            if (err) throw err;
-                            console.log('wrote metadata');
-                        });
-                        */
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-                //console.log(p);
             }
+            formData._metadata = JSON.stringify(metadata);
+            //console.log(`Registering dataset ${formData._metadata}`)
+            console.log(`Registering dataset ${JSON.stringify(metadata.files)}`)
+            var p = rp({
+                    uri: exports.laburi + "/api/v1/datasets/",
+                    method: "PUT",
+                    formData: formData,
+                    gzip: true
+                })
+                .then(response => {
+                    data = JSON.parse(response);
+                    metadata['dataset_id'] = data['dataset_id'];
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            //console.log(p);
         }
     });
 };
 
 
 
-/*
-var processUserDatasets = function(username) {
-    fs.readdir(datasets_path, function(err, datasets) {
-        if (datasets !== undefined) {
-            for (var i = 0; i < datasets.length; i++) {
-                var dataset_name = datasets[i];
-                //processDataset(dataset_path);
-                processUserDataset(username, dataset_name);
-            }
-        }
-    });
-}
-*/
-
 /**
-* process datasets that are in subdirectories
+* process datasets that are in subdirectories or in the current directory
+* Datasets must end with .csv or .gz
 * 
 * i.e path/adult/adult.csv, path/banana/banana.csv
 */
-var processSubdirectoryDatasets = function(path, username) {
-    console.log(`processSubdirectoryDatasets(${path}, ${username})`)
-    fs.readdir(path, function(err, datasets) {
-        if (datasets !== undefined) {
-            for (var i = 0; i < datasets.length; i++) {
-                var dataset_name = datasets[i];
-                var dataset_path = path + '/' + dataset_name
-                processDataset(username, dataset_name, dataset_path);
+var processSubdirectoryDatasets = function(rootPath, username) {
+    console.log(`processSubdirectoryDatasets(${rootPath}, ${username})`)
+    fs.readdir(rootPath, function(err, files) {
+        if (files !== undefined) {
+            console.log(`files: ${files}`)
+            for (let file of files) {
+                
+                console.log(`file: ${file} - ${Object.prototype.toString.call(file)}`)
+                console.log(`ext: ${path.parse(file).ext}`)
+
+                if (path.parse(file).ext == undefined || path.parse(file).ext == '') { // is directory?
+                    var dataset_name = file
+                    var dataset_path = rootPath + '/' + dataset_name
+                    processDataset(username, dataset_name, dataset_path)
+                }
+                else if ((path.parse(file).ext !== undefined) && 
+                    ((path.extname(file) == '.csv') || (path.extname(file) == '.gz'))) {
+                    var dataset_name = path.parse(file).name;
+                    var dataset_path = rootPath
+                    processDataset(username, dataset_name, dataset_path)
+                }
+                else {
+                    console.log (`skipping file: ${file}`)
+                }
             }
         }
         else {
@@ -202,6 +204,13 @@ var processSubdirectoryDatasets = function(path, username) {
         }
     });
 }
+
+
+/**
+* process datasets that are in this path
+* 
+* i.e path/adult.csv, path/banana.csv
+*/
 
 exports.loadInitialDatasets = function() {
     console.log(`Loading initial datasets for ${datasets_path}`)
@@ -214,13 +223,6 @@ exports.loadInitialDatasets = function() {
     }
 
     if (fs.existsSync(datasets_path)) {
-        /*
-        fs.readdir(datasets_path, function(err, users) {
-            for (var i = 0; i < users.length; i++) {
-                var username = users[i];
-                processUserDatasets(username);
-            }
-        });*/
         processSubdirectoryDatasets(datasets_path, 'testuser')
     }
     else {
