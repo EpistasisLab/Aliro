@@ -177,12 +177,7 @@ var processSubdirectoryDatasets = function(rootPath, username) {
     console.log(`processSubdirectoryDatasets(${rootPath}, ${username})`)
     fs.readdir(rootPath, function(err, files) {
         if (files !== undefined) {
-            console.log(`files: ${files}`)
             for (let file of files) {
-                
-                console.log(`file: ${file} - ${Object.prototype.toString.call(file)}`)
-                console.log(`ext: ${path.parse(file).ext}`)
-
                 if (path.parse(file).ext == undefined || path.parse(file).ext == '') { // is directory?
                     var dataset_name = file
                     var dataset_path = rootPath + '/' + dataset_name
