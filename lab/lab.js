@@ -1079,7 +1079,7 @@ var linkDataset = function(experiment, datasetId) {
 *
 */
 var processDataset = function(files, dataset_id, filepath) {
-    console.log(`processDataset ${files} ${filepath}`)
+   // console.log(`processDataset ${files} ${filepath}`)
 
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
