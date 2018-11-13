@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import os
 import json
@@ -9,8 +11,10 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.utils import safe_sqr, check_X_y
 from eli5.sklearn import PermutationImportance
 from sklearn.externals import joblib
-
-
+from sklearn import __version__ as skl_version
+import warnings
+from sys import version
+import __main__
 
 # if system environment allows to export figures
 figure_export = True
@@ -71,18 +75,36 @@ SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
-    random_state=random_state):
+    random_state=random_state,
+    filename=['test_dataset']):
     """generate reaults for apply a model on a datasetself.
-    model: a machine learning model with scikit-learn API
-    input_data: pandas.Dataframe
-    target_name: string target name in input file
-    tmpdir: template folder PATH
-    _id: experiment id
-    mode: 'classification' or 'regression'
-    figure_export: Ture or False for exporting figures
-    random_state: random seed
+    Parameters
+    ----------
+    model: scikit-learn Estimator
+        a machine learning model with scikit-learn API
+    input_data: pandas.Dataframe or list of two pandas.Dataframe
+        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
+            while the 2nd one is testing dataset
+    target_name: string
+        target name in input data
+    tmpdir: string
+        Path of template directory
+    _id: string
+        experiment id
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
+    figure_export: boolean
+        If figure_export is True, the figures will be exported
+    random_state: int
+        random seed
+    filename: list
+        filename for input dataset
 
-    return: None
+    Returns
+    -------
+    None
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
@@ -127,24 +149,32 @@ def generate_results(model, input_data,
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
 
-    print('args used in model:', model.get_params())
+    print('Args used in model:', model.get_params())
 
-    # fit model
-    model.fit(training_features, training_classes)
+    if mode == "classification":
+        scoring = SCORERS["balanced_accuracy"]
+    else:
+        scoring = SCORERS["neg_mean_squared_error"]
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        # fit model
+        model.fit(training_features, training_classes)
+
+        # computing cross-validated metrics
+        cv_scores = cross_val_score(
+                                    estimator=model,
+                                    X=training_features,
+                                    y=training_classes,
+                                    scoring=scoring,
+                                    cv=5
+                                    )
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model)
+    export_model(tmpdir, _id, model, filename, random_state)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
 
-    # computing cross-validated metrics
-    cv_scores = cross_val_score(
-                                estimator=model,
-                                X=training_features,
-                                y=training_classes,
-                                scoring=SCORERS["balanced_accuracy"],
-                                cv=5
-                                )
+
 
     # exporting/computing importance score
     coefs = compute_imp_score(model, training_features, training_classes, random_state)
@@ -270,13 +300,20 @@ def generate_results(model, input_data,
 
 def setup_model_params(model, parameter_name, value):
     """setup parameter in a model.
+    Parameters
+    ----------
 
-    model: a scikit-learn model
-    parameter_name: string, parameter name in the scikit-learn model
-    value: value for this parameter
+    model: scikit-learn Estimator
+        a scikit-learn model
+    parameter_name: string
+        parameter name in the scikit-learn model
+    value: object
+        values for assigning to the parameter
 
-    return:
-    model: a new scikit-learn model with a updated parameter
+    Returns
+    -------
+    model: scikit-learn Estimator
+        a new scikit-learn model with a updated parameter
     """
     # fix random_state
     if hasattr(model, parameter_name):
@@ -284,37 +321,28 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def export_model(tmpdir, _id, model):
-    """export model as a pickle file and generate a scripts for using the pickled model.
-    tmpdir: string
-            path of temporary  output directory
-    _id: string
-            Job ID in FGlab
-    model: a fitted scikit-learn model
-
-    return: None
-    """
-    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
-    joblib.dump(model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file)
-    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
-    export_scripts.write(pipeline_text)
-    export_scripts.close()
-
-
 def compute_imp_score(model, training_features, training_classes, random_state):
     """compute importance scores for features.
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
     then permuation importance scores will be estimated
+    Parameters
+    ----------
+    tmpdir: string
 
-    model:  a fitted scikit-learn model
-    training_features: np.darray/pd.DataFrame training features
-    training_classes: np.darray/pd.DataFrame training target
-    random_state: random seed for permuation importances
+    model:  scikit-learn Estimator
+        a fitted scikit-learn model
+    training_features: np.darray/pd.DataFrame
+        training features
+    training_classes: np.darray/pd.DataFrame
+        training target
+    random_state: int
+        random seed for permuation importances
 
-    return
-    coefs: feature importance scores
+    Returns
+    -------
+    coefs: np.darray
+        feature importance scores
 
     """
     # exporting/computing importance score
@@ -360,7 +388,6 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     """
     Make plot for confusion matrix.
@@ -400,6 +427,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+    plt.close()
 
 # After switching to dynamic charts, possibly disable outputting graphs from this function
 
@@ -441,6 +469,8 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.legend(loc="lower right")
 
     plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+    plt.close()
+
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names):
     """Plot importance scores for features.
@@ -470,41 +500,137 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+    plt.close()
 
 
-def generate_export_codes(pickle_file):
+def export_model(tmpdir, _id, model, filename, random_state=42):
+    """export model as a pickle file and generate a scripts for using the pickled model.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    model: scikit-learn estimator
+            a fitted scikit-learn model
+    filename: string
+            file name of input dataset
+    random_state: int
+        random seed
+
+    Returns
+    -------
+    None
+    """
+    pickle_file_name = 'model_{}.pkl'.format(_id)
+    pickle_file = '{0}{1}/model_{1}.pkl'.format(tmpdir, _id)
+
+    pickle_model = {}
+    pickle_model['model'] = model
+    pickle_model['data_filename'] = filename
+    joblib.dump(pickle_model, pickle_file)
+    pipeline_text = generate_export_codes(pickle_file_name, model, filename, random_state)
+    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text)
+    export_scripts.close()
+
+
+def generate_export_codes(pickle_file_name, model, filename, random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
-    pickle_file: a pickle file for a fitted scikit-learn estimator
+    pickle_file_name: string
+        a pickle file for a fitted scikit-learn estimator
     Returns
     -------
     pipeline_text: String
        The Python code that imports all required library used in the current
        optimized pipeline
+    model: scikit-learn Estimator
+        a machine learning model with scikit-learn API
+    filename: list
+        filename for input dataset
+    random_state: int
+        random seed
     """
-    pipeline_text = """import numpy as np
+    pipeline_text = """# Python version: {python_version}
+# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# random seed = {random_state}
+# Training dataset filename = {dataset}
+# Pickle filename = {pickle_file_name}
+# Model in the pickle file: {model}
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
+from sklearn.utils import check_X_y
+from sklearn.metrics import make_scorer
 
-# NOTE: Please change 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for testing data or data without target outcome
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-"""
-    pipeline_text += """
+# Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
+# It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
+def balanced_accuracy(y_true, y_pred):
+    all_classes = list(set(np.append(y_true, y_pred)))
+    all_class_accuracies = []
+    for this_class in all_classes:
+        this_class_sensitivity = 0.
+        this_class_specificity = 0.
+        if sum(y_true == this_class) != 0:
+            this_class_sensitivity = \\
+                float(sum((y_pred == this_class) & (y_true == this_class))) /\\
+                float(sum((y_true == this_class)))
+            this_class_specificity = \\
+                float(sum((y_pred != this_class) & (y_true != this_class))) /\\
+                float(sum((y_true != this_class)))
+        this_class_accuracy = (this_class_sensitivity +
+                               this_class_specificity) / 2.
+        all_class_accuracies.append(this_class_accuracy)
+    return np.mean(all_class_accuracies)
+
 # load fitted model
-model = joblib.load({})""".format(pickle_file)
+# NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named {pickle_file_name}
+pickle_model = joblib.load('PATH/TO/PICKLE/FILE')
+model = pickle_model['model']
 
-    pipeline_text += """
-# Application 1: cross validation of fitted model
-# 'TARGET' is column name of outcome in the input dataset
-testing_features = input_data.drop('TARGET', axis=1).values
-testing_target = input_data['TARGET'].values
+# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for training data submited to PennAI
+input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
+# NOTE: Please edit 'TARGET' which is column name of outcome in the input dataset
+target = 'TARGET'
+
+# Application 1: reproducing training score and testing score from PennAI
+features = input_data.drop(target, axis=1).values
+target = input_data[target].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+training_features, testing_features, training_classes, testing_classes = \\
+    train_test_split(features, target, random_state={random_state}, stratify=input_data[target])
+scorer = make_scorer(balanced_accuracy)
+train_score = scorer(model, training_features, training_classes)
+print("Training score:", train_score)
+test_score = scorer(model, testing_features, testing_classes)
+print("Testing score:", test_score)
+
+
+# Application 2: cross validation of fitted model
+testing_features = input_data.drop(target, axis=1).values
+testing_target = input_data[target].values
 # Get holdout score for fitted model
 print(model.score(testing_features, testing_target))
 
-# Application 2: predict outcome by fitted model
+
+# Application 3: predict outcome by fitted model
+# In this application, the input dataset may not include target column
+input_data.drop(target, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
-"""
+""".format(
+            python_version=version.replace('\n', ''),
+            numpy_version=np.__version__,
+            pandas_version=pd.__version__,
+            skl_version=skl_version,
+            dataset=",".join(filename),
+            pickle_file_name=pickle_file_name,
+            random_state=random_state,
+            model=str(model).replace('\n', '\n#')
+            )
+
 
     return pipeline_text

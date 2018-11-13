@@ -3,13 +3,20 @@ require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var byuser_datasets_path = 'datasets/byuser';
-var fs = require('fs');
+//var fs = require('fs');
 var rp = require("request-promise");
 const md5File = require('md5-file')
 var mime = require('mime');
-var debug = false;
 exports.laburi;
+
+var datasets_path;
+
+if (process.env.STARTUP_DATASET_PATH) {
+    datasets_path = process.env.STARTUP_DATASET_PATH;
+} else {
+    console.log("Error: environment variable STARTUP_DATASET_PATH not defined");
+    process.exit(1);
+}
 
 //genForm
 // process parentdir for file, execute callback with results
@@ -57,9 +64,9 @@ var genForm = function(file, callback) {
             if (filetype == 'text/csv') {
                 file_level_metadata['classlabel'] = 'class';
             }
-else {
-console.log(filetype);
-}
+            else {
+            console.log(filetype);
+            }
             metadata.files.push(file_level_metadata);
             formData._files.push(fs.createReadStream(filename));
             }
@@ -72,16 +79,25 @@ console.log(filetype);
                     callback(formData,metadata);
                 })
         } else {
-        formData._metadata = JSON.stringify(metadata);
-        callback(formData,metadata);
+            formData._metadata = JSON.stringify(metadata);
+            callback(formData,metadata);
         }
 
     });
 };
-// change the algo to sha1, sha256 etc according to your requirements
-//var processDataset = function(dataset_path) {
-var processUserDataset = function(username, dataset_name) {
-    var dataset_path = byuser_datasets_path + '/' + username + '/' + dataset_name;
+/**
+* Read the dataset and register it with the lab api
+* 
+* dataset.csv
+* dataset_metafeatures.csv
+* dataset_config.json
+*
+* @param username - string
+* @param dataset_name - string
+* @param dataset_path - string
+*/
+var processDataset = function(username, dataset_name, dataset_path) {
+    console.log(`processDataset(${username}, ${dataset_name}, ${dataset_path})`)
     var formData = {
         _files: [],
         _metadata: []
@@ -89,22 +105,23 @@ var processUserDataset = function(username, dataset_name) {
     var metadata = [];
     // Create form data
     fs.readdir(dataset_path, function(err, files) {
-        // if metadata exists, ignore
-        var metadata_json = dataset_path + '/metadata.json'
-        if (fs.existsSync(metadata_json) && !debug) {
-            //console.log('exists')
-        } else {
-            metadata = {
-                'name': dataset_name,
-                'username': username,
-                'timestamp': Date.now(),
-                'files': []
-            }
+        var metadata_json_path = dataset_path + '/metadata.json'
+
+        metadata = {
+            'name': dataset_name,
+            'username': username,
+            'timestamp': Date.now(),
+            'filepath' : dataset_path,
+            'files': []
+        }
+        console.log(`files: ${files}`)
+
         if(files) {
             for (var i = 0; i < files.length; i++) {
+                console.log(`${path.parse(files[i]).name}`)
                 if (files[i].toUpperCase() == 'README.MD') {
                     //todo:parse README
-                } else {
+                } else if (path.parse(files[i]).name.toUpperCase() == dataset_name.toUpperCase()){
                     var filename = dataset_path + '/' + files[i];
                     var is_zipped = false;
                     checksum = md5File.sync(filename);
@@ -128,6 +145,8 @@ var processUserDataset = function(username, dataset_name) {
                 }
             }
             formData._metadata = JSON.stringify(metadata);
+            //console.log(`Registering dataset ${formData._metadata}`)
+            console.log(`Registering dataset ${JSON.stringify(metadata.files)}`)
             var p = rp({
                     uri: exports.laburi + "/api/v1/datasets/",
                     method: "PUT",
@@ -137,83 +156,104 @@ var processUserDataset = function(username, dataset_name) {
                 .then(response => {
                     data = JSON.parse(response);
                     metadata['dataset_id'] = data['dataset_id'];
-                    fs.writeFile(metadata_json, JSON.stringify(metadata), function(err) {
-                        if (err) throw err;
-                        console.log('wrote metadata');
-                    });
-
-
-                }).catch(err => {
+                })
+                .catch(err => {
                     console.log(err);
                 });
             //console.log(p);
-
-}
         }
     });
-    // Add file
-    // return(formData);
 };
 
 
 
-
-var processUserDatasets = function(username) {
-    datasets_path = byuser_datasets_path + '/' + username;
-    fs.readdir(datasets_path, function(err, datasets) {
-        if (datasets !== undefined) {
-            for (var i = 0; i < datasets.length; i++) {
-                var dataset_name = datasets[i];
-                //processDataset(dataset_path);
-                processUserDataset(username, dataset_name);
+/**
+* process datasets that are in subdirectories or in the current directory
+* Datasets must end with .csv or .gz
+* 
+* i.e path/adult/adult.csv, path/banana/banana.csv
+*/
+var processSubdirectoryDatasets = function(rootPath, username) {
+    console.log(`processSubdirectoryDatasets(${rootPath}, ${username})`)
+    fs.readdir(rootPath, function(err, files) {
+        if (files !== undefined) {
+            for (let file of files) {
+                if (path.parse(file).ext == undefined || path.parse(file).ext == '') { // is directory?
+                    var dataset_name = file
+                    var dataset_path = rootPath + '/' + dataset_name
+                    processDataset(username, dataset_name, dataset_path)
+                }
+                else if ((path.parse(file).ext !== undefined) && 
+                    ((path.extname(file) == '.csv') || (path.extname(file) == '.gz'))) {
+                    var dataset_name = path.parse(file).name;
+                    var dataset_path = rootPath
+                    processDataset(username, dataset_name, dataset_path)
+                }
+                else {
+                    console.log (`skipping file: ${file}`)
+                }
             }
+        }
+        else {
+            console.log(`no datasets found for path ${path}`)
         }
     });
 }
 
-exports.scrapeUsers = function() {
-if(exports.laburi) {
-console.log(exports.laburi) 
-} else {
-console.log('laburi not defined');
-exit(0);
-}
-    if (fs.existsSync(byuser_datasets_path)) {
-        fs.readdir(byuser_datasets_path, function(err, users) {
-            for (var i = 0; i < users.length; i++) {
-                var username = users[i];
-                processUserDatasets(username);
-            }
-        });
+
+/**
+* process datasets that are in this path
+* 
+* i.e path/adult.csv, path/banana.csv
+*/
+
+exports.loadInitialDatasets = function() {
+    console.log(`Loading initial datasets for ${datasets_path}`)
+
+    if(exports.laburi) {
+        console.log(exports.laburi) 
+    } else {
+        console.log('laburi not defined');
+        exit(0);
+    }
+
+    if (fs.existsSync(datasets_path)) {
+        processSubdirectoryDatasets(datasets_path, 'testuser')
+    }
+    else {
+        console.log(`WARNING: Could not load datasets, path does not exist: ${datasets_path}`)
     }
 }
+
 var submitForm = function(formData,metadata) {
-            metadata_json = byuser_datasets_path + '/' + username + '/' + dataset_name + '/metadata.json';
-            formData._metadata = JSON.stringify(metadata);
-            var p = rp({
-                    uri: exports.laburi + "/api/v1/datasets/",
-                    method: "PUT",
-                    formData: formData,
-                    gzip: true
-                })
-                .then(response => {
-                    data = JSON.parse(response);
-                    metadata['dataset_id'] = data['dataset_id'];
-                    fs.writeFile(metadata_json, JSON.stringify(metadata), function(err) {
-                        if (err) throw err;
-                        console.log('wrote metadata');
-                    });
+    metadata_json = datasets_path + '/' + dataset_name + '/metadata.json';
+    formData._metadata = JSON.stringify(metadata);
+    var p = rp({
+            uri: exports.laburi + "/api/v1/datasets/",
+            method: "PUT",
+            formData: formData,
+            gzip: true
+        })
+        .then(response => {
+            data = JSON.parse(response);
+            metadata['dataset_id'] = data['dataset_id'];
+            fs.writeFile(metadata_json, JSON.stringify(metadata), function(err) {
+                if (err) throw err;
+                console.log('wrote metadata');
+            });
 
 
-                }).catch(err => {
-                    console.log(err);
-                });
+        }).catch(err => {
+            console.log(err);
+        });
 
 }
+
 exports.processChangedFile = function(file) {
     console.log("Update metadata for " + file);
     // get base path for dataset
     genForm(file, submitForm);
     //processDataset(dataset_path);
 }
-exports.byuser_datasets_path = byuser_datasets_path;
+
+exports.datasets_path = datasets_path;

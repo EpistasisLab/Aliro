@@ -10,10 +10,12 @@ import datetime
 import json
 import pickle
 import pdb
-import ai.db_utils as db_utils
-from ai.db_utils import LabApi
+import ai.api_utils as api_utils
+from ai.api_utils import LabApi
 import os
 import ai.q_utils as q_utils
+import ai.knowledgebase_loader as knowledgebase_loader
+import logging
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
@@ -21,6 +23,9 @@ from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from ai.recommender.meta_recommender import MetaRecommender
 from collections import OrderedDict
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class AI():
@@ -34,7 +39,7 @@ class AI():
     - handling communication with the API.
 
     :param rec: ai.BaseRecommender - recommender to use
-    :param db_path: string - path to the lab api server
+    :param api_path: string - path to the lab api server
     :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
     :param rec_score_file: file - pickled score file to keep persistent scores between sessions
@@ -42,23 +47,25 @@ class AI():
     :param warm_start: Boolean - if true, attempt to load the ai state from the file provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
     :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup 
+    :param use_pmlb_knowledgebase: Boolean
 
     """
 
     def __init__(self,
                 rec=None,
-                db_path='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+                api_path=None,
                 extra_payload=dict(),
                 user='testuser', 
                 rec_score_file='rec_state.obj',
                 verbose=True,
                 warm_start=False, 
                 n_recs=1, 
-                datasets=False):
+                datasets=False,
+                use_knowledgebase=False):
         """initializes AI managing agent."""
         # recommender settings
-        if db_path == None:
-            db_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
+        if api_path == None:
+            api_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
@@ -66,7 +73,7 @@ class AI():
         # api parameters, will be removed from self once the recommenders no longer call the api directly.
         # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
         self.user=user
-        self.db_path=db_path
+        self.api_path=api_path
         self.api_key=os.environ['APIKEY']
 
         self.verbose = verbose #False: no printouts, True: printouts on updates
@@ -80,8 +87,8 @@ class AI():
         self.last_update = 0
 
         # api
-        self.labApi = LabApi(
-            db_path=self.db_path, 
+        self.labApi = api_utils.LabApi(
+            api_path=self.api_path, 
             user=self.user, 
             api_key=self.api_key, 
             extra_payload=extra_payload,
@@ -96,12 +103,12 @@ class AI():
 
         # default to random recommender
         if not rec:
-            self.rec = RandomRecommender(db_path=self.db_path,api_key=self.api_key)
+            self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
 
         # build dictionary of ml ids to names conversion
-        self.ml_id_to_name = db_utils.get_ml_id_dict(self.labApi.algo_path, self.api_key)
+        self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # build dictionary of dataset ids to names conversion
-        self.user_datasets = db_utils.get_user_datasets(self.labApi.submit_path, self.api_key,self.user)
+        self.user_datasets = self.labApi.get_user_datasets(self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
 
@@ -113,20 +120,19 @@ class AI():
             for ds in datasets.split(','):
                 tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], aiStatus = 'requested')
 
-    def load_state(self):
-        """Loads pickled score file and recommender model.
+        if use_knowledgebase:
+            self.load_knowledgebase()
 
-        TODO: test that this still works
+
+    def load_knowledgebase(self):
+        """ Bootstrap the recommenders with the knowledgebase
         """
-        if os.stat(self.rec_score_file).st_size != 0:
-            filehandler = open(self.rec_score_file,'rb')
-            state = pickle.load(filehandler)
-            if(hasattr(self.rec, 'scores')):
-              self.rec.scores = state['scores']
-              self.rec.trained_dataset_models = state['trained_dataset_models']
-              self.last_update = state['last_update']
-              if self.verbose:
-                  print('loaded previous state from ',self.last_update)
+        print('loading pmlb knowledgebase')
+
+        kb = knowledgebase_loader.load_pmbl_knowledgebase()
+        self.rec.update(kb['resultsData'])
+        
+        print('pmlb knowledgebase loaded')
 
     def load_options(self):
         """Loads algorithm UI parameters and sets them to self.ui_options."""
@@ -152,11 +158,11 @@ class AI():
               ':','checking requests...')
 
         if self.continous:
-            payload = {'ai':['requested','finished']}
+            dsFilter = {'ai':['requested','finished']}
         else:
-            payload = {'ai':['requested', 'dummy']}
+            dsFilter = {'ai':['requested', 'dummy']}
 
-        responses = self.labApi.get_datasets(payload)
+        responses = self.labApi.get_filtered_datasets(dsFilter)
 
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
@@ -236,17 +242,23 @@ class AI():
 
             :param rec_payload: dictionary - the payload describing the experiment
             """
-            submitstatus = self.labApi.post_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
+            logger.info("transfer_rec(" + str(rec_payload) + ")")
+            submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
 
+            logger.debug("transfer_rec() starting loop, submitstatus: " + str(submitstatus))
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
                 print('slow it down pal', submitstatus['error'])
                 sleep(3)
-                submitstatus = self.labApi.post_experiment(rec_payload['algorithm_id'], rec_payload)
+                submitstatus = self.labApi.launch_experiment(rec_payload['algorithm_id'], rec_payload)
+
+            logger.debug("transfer_rec() exiting loop, submitstatus: " + str(submitstatus))
 
             if 'error' in submitstatus:
-                print('unrecoverable error during transfer_rec')
-                print(submitstatus['error'])
-                pdb.set_trace()
+                msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
+                logger.error(msg)
+                print(msg)
+                raise RuntimeError(msg)
+                #pdb.set_trace()
 
 
     def process_rec(self):
@@ -289,23 +301,33 @@ class AI():
             self.new_data = pd.DataFrame()
 
     def save_state(self):
-        """Save ML+P scores in pickle or to DB"""
+        """Save ML+P scores in pickle or to DB
+
+        TODO: test that this still works
+        """
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
-          state['scores'] = self.rec.scores
+            state['scores'] = self.rec.scores #TODO: make this a more generic. Maybe just save the 
+                                              # AI or rec object itself. 
         state['trained_dataset_models'] = self.rec.trained_dataset_models
         state['last_update'] = self.last_update
         pickle.dump(state, out)
 
-    #def db_to_results_data(self,response):
-        """load json files from db and convert to results_data.
+    def load_state(self):
+        """Loads pickled score file and recommender model.
 
-        Output: a DataFrame with at least these columns:
-        'algorithm'
-        'parameters'
-        self.metric
+        TODO: test that this still works
         """
+        if os.stat(self.rec_score_file).st_size != 0:
+            filehandler = open(self.rec_score_file,'rb')
+            state = pickle.load(filehandler)
+            if(hasattr(self.rec, 'scores')):
+              self.rec.scores = state['scores']
+              self.rec.trained_dataset_models = state['trained_dataset_models']
+              self.last_update = state['last_update']
+              if self.verbose:
+                  print('loaded previous state from ',self.last_update)
 
 ####################################################################### Manager
 import argparse
@@ -319,7 +341,7 @@ def main():
     parser.add_argument('-rec',action='store',dest='REC',default='random',
                         choices = ['random','average','exhaustive','meta'],
                         help='Recommender algorithm options.')
-    parser.add_argument('-db_path',action='store',dest='DB_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+    parser.add_argument('-api_path',action='store',dest='API_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
     parser.add_argument('-t',action='store',dest='DATASETS',help='turn on ai for these datasets')
@@ -332,10 +354,12 @@ def main():
                         help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
                         help='Time to wait for pinging the server for results/ recommendation requests')
+    parser.add_argument('-knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',default=False, 
+                        help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
     print(args)
-    db_args={}
+    api_args={}
 
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
@@ -345,13 +369,13 @@ def main():
             }
     
     if args.REC in ['random','exhaustive','meta']:
-        db_args = {'db_path':args.DB_PATH,'api_key':os.environ['APIKEY']}
+        api_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**db_args),db_path=args.DB_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.API_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
-                datasets=args.DATASETS)
+                datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE)
 
     n = 0;
     try:
@@ -373,6 +397,7 @@ def main():
     finally:
         # tell queues to exit
         print("foo")
+        logger.info("Exiting queue")
         q_utils.exitFlag=1
         pennai.save_state()
 

@@ -5,7 +5,7 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
-from ..db_utils import get_all_ml_p_from_db  
+from ..api_utils import get_all_ml_p_from_db  
 
 class ExhaustiveRecommender(BaseRecommender):
     """Penn AI random recommender.

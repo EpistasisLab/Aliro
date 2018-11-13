@@ -14,7 +14,7 @@ import argparse
 import sys
 import simplejson
 
-def get_metafeatures(input_file, target_field, **kwargs):
+def get_metafeatures_from_file(input_file, target_field, **kwargs):
     """Calls metafeature generating methods from dataset_describe"""
     # Read the data set into memory
     df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
@@ -31,13 +31,13 @@ def get_metafeatures(input_file, target_field, **kwargs):
 
 def main():
     meta_features_all = []
-    parser = argparse.ArgumentParser(description="Generates metadata.json file given a dataseet", add_help=False)
+    parser = argparse.ArgumentParser(description="Generates metadata.json file given a dataset", add_help=False)
     parser.add_argument('INPUT_FILE', type=str, help='Data file to analyze.')    
     parser.add_argument('-target', action='store', dest='TARGET', type=str, default='class',
                         help='Name of target column')
     args = parser.parse_args()
 
-    meta_features = get_metafeatures(args.INPUT_FILE, args.TARGET)
+    meta_features = get_metafeatures_from_file(args.INPUT_FILE, args.TARGET)
     meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
