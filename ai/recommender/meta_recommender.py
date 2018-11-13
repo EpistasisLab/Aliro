@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
-from ..db_utils import get_all_ml_p_from_db  
+from ..api_utils import get_all_ml_p_from_db  
 import pdb
 
 class MetaRecommender(BaseRecommender):

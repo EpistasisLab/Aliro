@@ -11,9 +11,10 @@ var spawnSync = require("child_process").spawnSync;
 *				 data: (if success) JSON
 *				 error: (if falure) String}
 */
-function generateFeatures(fileObj) {
+function generateFeatures(fileObj, filepath) {
 	// hack for now
-	var filepath = process.env.PROJECT_ROOT + '/machine/datasets/byuser/testuser/' + fileObj.originalname.slice(0, -4) + "/" + fileObj.originalname
+	//var filepath = process.env.STARTUP_DATASET_PATH + "/" + fileObj.originalname.slice(0, -4) + "/" + fileObj.originalname
+	var filepath = filepath + "/" + fileObj.originalname
 	console.log(`filepath: ${filepath}`)
 
 	var args = ['ai/metalearning/get_metafeatures.py', filepath]

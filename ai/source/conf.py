@@ -15,9 +15,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-os.environ["LAB_HOST"] = "lab"
-os.environ['LAB_PORT'] = "5080"
-os.environ['APIKEY'] = "aaaaa"
 print(sys.path)
 
 # -- Project information -----------------------------------------------------
