@@ -566,6 +566,16 @@ from sklearn.externals import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer
 
+# NOTE: Edit variables below with appropriate values
+# path to your pickle file, below is the downloaded pickle file
+pickle_file = '{pickle_file_name}'
+# file path to the dataset
+dataset = ''
+# outcome column name
+target_column = ''
+# seed to be used for train_test_split (default in PennAI is 42)
+seed = {random_state}
+
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
 # It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
@@ -587,39 +597,37 @@ def balanced_accuracy(y_true, y_pred):
     return np.mean(all_class_accuracies)
 
 # load fitted model
-# NOTE: Please edit 'PATH/TO/PICKLE/FILE' for downloaded pickle file named {pickle_file_name}
-pickle_model = joblib.load('PATH/TO/PICKLE/FILE')
+pickle_model = joblib.load(pickle_file)
 model = pickle_model['model']
 
-# NOTE: Please edit 'PATH/TO/DATA/FILE' and 'COLUMN_SEPARATOR' for training data submited to PennAI
-input_data = pd.read_csv('PATH/TO/DATA/FILE', sep='COLUMN_SEPARATOR', dtype=np.float64)
-# NOTE: Please edit 'TARGET' which is column name of outcome in the input dataset
-target = 'TARGET'
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python', dtype=np.float64)
 
 # Application 1: reproducing training score and testing score from PennAI
-features = input_data.drop(target, axis=1).values
-target = input_data[target].values
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
 # Checking dataset
 features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
-    train_test_split(features, target, random_state={random_state}, stratify=input_data[target])
+    train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
 scorer = make_scorer(balanced_accuracy)
 train_score = scorer(model, training_features, training_classes)
-print("Training score:", train_score)
+print("Training score: ", train_score)
 test_score = scorer(model, testing_features, testing_classes)
-print("Testing score:", test_score)
+print("Testing score: ", test_score)
 
 
 # Application 2: cross validation of fitted model
-testing_features = input_data.drop(target, axis=1).values
-testing_target = input_data[target].values
+testing_features = input_data.drop(target_column, axis=1).values
+testing_target = input_data[target_column].values
 # Get holdout score for fitted model
+print("Holding score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
 # Application 3: predict outcome by fitted model
 # In this application, the input dataset may not include target column
-input_data.drop(target, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
+input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
 """.format(
             python_version=version.replace('\n', ''),
