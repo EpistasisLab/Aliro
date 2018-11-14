@@ -37,7 +37,7 @@ class MetaRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, db_path='',api_key='', ml_p=None,
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
                  sample_size=100):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
@@ -49,12 +49,7 @@ class MetaRecommender(BaseRecommender):
             self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
         else:
             self.metric = metric
-        # path for grabbing dataset metafeatures
-        self.mf_path = '/'.join([db_path,'api/datasets'])
-        # print('mf_path:',self.mf_path)
-        self.api_key = api_key
-        self.static_payload = {'apikey':self.api_key}
-
+        
         # training data
         self.training_features = None
         # store metafeatures of datasets that have been seen
@@ -67,16 +62,11 @@ class MetaRecommender(BaseRecommender):
 
 	# load ML Parameter combinations and fit an encoding to them that can be used for
 	# learning a model : score = f(ml,p,dataset,metafeatures)
-        
-        if ml_p is None:
-            # pull algorithm/parameter combinations from the server. 
-            self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
-        else:
-            self.ml_p = ml_p
-
+       
+        self.ml_p = ml_p
         self.ml_p = self.params_to_features(self.ml_p, init=True)
-        
         self.ml_p = self.ml_p.drop_duplicates() # just in case duplicates are present
+        
         # print('ml_p:',self.ml_p)
         self.cat_params = ['criterion', 'kernel', 'loss', 'max_depth', 'max_features',
                            'min_weight_fraction_leaf', 'n_estimators', 'n_neighbors', 'weights']
@@ -147,7 +137,7 @@ class MetaRecommender(BaseRecommender):
         return plist 
 
 
-    def update(self, results_data):
+    def update(self, results_data, results_mf):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
         Updates self.scores
@@ -167,37 +157,37 @@ class MetaRecommender(BaseRecommender):
         d_ml_p = np.unique(dap)
         self.trained_dataset_models.update(d_ml_p)
         # transform data for learning a model from it 
-        self.setup_training_data(results_data) 
+        self.setup_training_data(results_data, results_mf) 
 
         # update internal model
         self.update_model()
 
-    def get_metafeatures(self, d):
-        """Fetches dataset metafeatures, returning dataframe."""
-        print('fetching data for', d)
-        payload={}
-        # payload = {'metafeatures'}
-        payload.update(self.static_payload)
-        params = json.dumps(payload).encode('utf8')
-        # print('full path:', self.mf_path+'/'+d)
-        try:
-            req = urllib.request.Request(self.mf_path+'/'+d, data=params)
-            r = urllib.request.urlopen(req)
+    # def get_metafeatures(self, d):
+    #     """Fetches dataset metafeatures, returning dataframe."""
+    #     print('fetching data for', d)
+    #     payload={}
+    #     # payload = {'metafeatures'}
+    #     payload.update(self.static_payload)
+    #     params = json.dumps(payload).encode('utf8')
+    #     # print('full path:', self.mf_path+'/'+d)
+    #     try:
+    #         req = urllib.request.Request(self.mf_path+'/'+d, data=params)
+    #         r = urllib.request.urlopen(req)
             
-            data = json.loads(r.read().decode(r.info().get_param('charset')
-                                      or 'utf-8'))[0]
-        except Exception as e:
-            print('exception when grabbing metafeature data for',d)
-            raise e
+    #         data = json.loads(r.read().decode(r.info().get_param('charset')
+    #                                   or 'utf-8'))[0]
+    #     except Exception as e:
+    #         print('exception when grabbing metafeature data for',d)
+    #         raise e
         
-        mf = [data['metafeatures']]
-        # print('mf:',mf)
-        df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
-        # print('df:',df)
-        df['dataset'] = data['_id']
-        df.sort_index(axis=1, inplace=True)
+    #     mf = [data['metafeatures']]
+    #     # print('mf:',mf)
+    #     df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
+    #     # print('df:',df)
+    #     df['dataset'] = data['_id']
+    #     df.sort_index(axis=1, inplace=True)
 
-        return df
+    #     return df
 
     def transform_ml_p(self,df_ml_p):
         """Encodes categorical labels and transforms them using a one hot encoding."""
@@ -215,20 +205,20 @@ class MetaRecommender(BaseRecommender):
         # print('df_ml_p after OHE (',X_ml_p.shape,':\n',X_ml_p)
         return X_ml_p
 
-    def setup_training_data(self,results_data):
+    def setup_training_data(self, results_data, results_mf):
         """Transforms metafeatures and results data into learnable format."""
-        dataset_metafeatures = []
-        for d in results_data['dataset'].unique():
-            # fetch metafeatures from server for dataset and append
-            df = self.get_metafeatures(d)        
-            # print('metafeatures:',df)
-            dataset_metafeatures.append(df)
+        # dataset_metafeatures = []
+        # for d in results_data['dataset'].unique():
+        #     # fetch metafeatures from server for dataset and append
+        #     df = self.get_metafeatures(d)        
+        #     # print('metafeatures:',df)
+        #     dataset_metafeatures.append(df)
             
-        df_mf = pd.concat(dataset_metafeatures,ignore_index=True)
+        # df_mf = pd.concat(dataset_metafeatures,ignore_index=True)
 
         # join df_mf to results_data to get mf rows for each result
-        results_mf = pd.merge(results_data, df_mf, on='dataset', how='outer')
-        df_mf = results_mf.loc[:,results_mf.columns.isin(df_mf.columns)]
+        df_mf = pd.merge(results_data, results_mf, on='dataset', how='outer')
+        df_mf = df_mf.loc[:,df_mf.columns.isin(results_mf.columns)]
         df_mf = df_mf.drop('dataset',axis=1)
         # print('df_mf:',df_mf)
         # print('dataset_metafeatures:',dataset_metafeatures)
@@ -247,7 +237,7 @@ class MetaRecommender(BaseRecommender):
         self.training_y = results_data[self.metric].values
         assert(len(self.training_y)==len(self.training_features))
          
-    def recommend(self, dataset_id=None, n_recs=1):
+    def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
 
         Parameters
@@ -260,7 +250,8 @@ class MetaRecommender(BaseRecommender):
         # TODO: predict scores over many variations of ML+P and pick the best
         # return ML+P for best average y
         try:
-            ml_rec, p_rec, rec_score = self.best_model_prediction(dataset_id, 10)
+            ml_rec, p_rec, rec_score = self.best_model_prediction(dataset_id, n_recs,
+                                                                  dataset_mf)
 
             for (m,p,r) in zip(ml_rec, p_rec, rec_score):
                 print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
@@ -300,10 +291,10 @@ class MetaRecommender(BaseRecommender):
         self.ml.fit(self.training_features, self.training_y, xgb_model = current_model)
         print('model updated')
 
-    def best_model_prediction(self,dataset_id, n_recs=1):
+    def best_model_prediction(self,dataset_id, n_recs=1, df_mf=None):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
-        df_mf = self.get_metafeatures(dataset_id) 
+        # df_mf = self.get_metafeatures(dataset_id) 
         mf = df_mf.drop('dataset',axis=1).values.flatten()
         # setup input data by sampling ml+p combinations from all possible combos 
         # choices = np.random.choice(len(self.X_ml_p),size=self.sample_size,replace=False)

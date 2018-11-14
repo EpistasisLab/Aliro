@@ -42,7 +42,7 @@ class AverageRecommender(BaseRecommender):
         # evaluated
         self.trained_dataset_models = set()
 
-    def update(self, results_data):
+    def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
         Updates self.scores
@@ -77,7 +77,7 @@ class AverageRecommender(BaseRecommender):
         # update scores
         self._update_scores(new_scores, new_weights)
 
-    def recommend(self, dataset_id=None, n_recs=1):
+    def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
 
         Parameters

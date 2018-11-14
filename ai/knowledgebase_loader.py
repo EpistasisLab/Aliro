@@ -43,7 +43,7 @@ def load_knowledgebase(resultsFile, datasetDirectory):
     # return
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData}
 
-def load_pmbl_knowledgebase():
+def load_pmlb_knowledgebase():
 	""" load the PMBL knowledgebase
 	"""
 	return load_knowledgebase(

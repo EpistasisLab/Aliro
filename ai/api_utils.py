@@ -7,6 +7,7 @@ import numpy as np
 import pdb
 import json
 import requests
+# import urllib.request, urllib.parse
 import itertools as it
 import logging
 import sys
@@ -234,6 +235,42 @@ class LabApi:
         """
         return res
 
+    def get_metafeatures(self, d):
+            """Fetches dataset metafeatures, returning dataframe.
+
+            :param d: dataset ID/path relative to self.data_path
+            :return df: a dataframe of metafeatures, sorted by mf name
+            """
+            # # print('fetching data for', d)
+            # payload={}
+            # # payload = {'metafeatures'}
+            # payload.update(self.static_payload)
+            # params = json.dumps(payload).encode('utf8')
+            # # print('full path:', self.mf_path+'/'+d)
+            try:
+                res = self.__request(path=self.data_path+'/'+d)
+                data = json.loads(res.text)
+
+#                 req = urllib.request.Request(self.data_path+'/'+d, data=params)
+#                 r = urllib.request.urlopen(req)
+                
+#                 data = json.loads(r.read().decode(r.info().get_param('charset')
+#                                           or 'utf-8'))[0]
+            except Exception as e:
+                print('exception when grabbing metafeature data for',d)
+                raise e
+
+            data = data[0] 
+            mf = [data['metafeatures']]
+            # print('mf:',mf)
+            df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
+            # print('df:',df)
+            # df['dataset'] = data['_id']
+            df['dataset'] = data['name']
+            df.sort_index(axis=1, inplace=True)
+
+            return df
+
 # @Deprecated, used by recommenders
 def get_all_ml_p_from_db(path,key):
     """ Returns a list of ml and parameter options from the server.
@@ -252,6 +289,7 @@ def get_all_ml_p_from_db(path,key):
     assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
     print('r:',r)
     response = json.loads(r.text)
+    # print('response:',response)
     algorithms = response[0]['algorithms']
     result = [] # returned value
     good_def = True # checks that json for ML is in good form
