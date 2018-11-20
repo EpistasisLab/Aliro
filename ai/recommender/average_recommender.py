@@ -42,6 +42,18 @@ class AverageRecommender(BaseRecommender):
         # evaluated
         self.trained_dataset_models = set()
 
+    def set_trained_dataset_models(self, results_data):
+        results_data.loc[:, 'dataset-algorithm-parameters'] = (
+                                       results_data['dataset'].values + '|' +
+                                       results_data['algorithm'].values + '|' +
+                                       results_data['parameters'].values)
+
+        # get unique dataset / parameter / classifier combos in results_data
+        ml_p = results_data['algorithm-parameters'].unique()
+        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
+        self.trained_dataset_models.update(d_ml_p)
+
+
     def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
@@ -55,20 +67,13 @@ class AverageRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         """
-        # make combined data columns of datasets, classifiers, and parameters
+        # update trained dataset models
+        self.set_trained_dataset_models(results_data)
+
+        # make combined data columns of classifiers and parameters
         results_data.loc[:, 'algorithm-parameters'] = (
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
-
-        results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + '|' +
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
-
-        # get unique dataset / parameter / classifier combos in results_data
-        ml_p = results_data['algorithm-parameters'].unique()
-        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
-        self.trained_dataset_models.update(d_ml_p)
 
         # get average balanced accuracy by classifier-parameter combo
         new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()

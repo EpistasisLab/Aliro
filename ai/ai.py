@@ -395,7 +395,7 @@ def main():
 
     args = parser.parse_args()
     print(args)
-    api_args={}
+    rec_args={}
 
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
@@ -407,12 +407,13 @@ def main():
     
     if args.REC in ['random','exhaustive','meta']:
         ml_p = api_utils.get_all_ml_p_from_db(args.API_PATH+'/api/preferences',os.environ['APIKEY'])
-        api_args = {'ml_p':ml_p}
-        # api_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
+        rec_args = {'ml_p':ml_p}
+        # rec_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
+    rec_args['metric'] = 'accuracy'
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.API_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**rec_args),api_path=args.API_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE)
 
