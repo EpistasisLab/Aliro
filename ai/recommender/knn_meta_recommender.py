@@ -36,12 +36,6 @@ class KNNMetaRecommender(BaseRecommender):
 
         self.ml_type = ml_type
         
-        # path for grabbing dataset metafeatures
-        # self.mf_path = '/'.join([db_path,'api/datasets'])
-        # print('mf_path:',self.mf_path)
-        # self.api_key = api_key
-        # self.static_payload = {'apikey':self.api_key}
-
         if metric is None:
             self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
         else:
@@ -54,6 +48,10 @@ class KNNMetaRecommender(BaseRecommender):
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
       
+        # maintain a set of dataset-algorithm-parameter combinations that have already been 
+        # evaluated
+        self.trained_dataset_models = set()
+
     def update(self, results_data, results_mf):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
@@ -64,6 +62,10 @@ class KNNMetaRecommender(BaseRecommender):
                 self.metric
         :param results_mf: metafeatures for the datasets in results_data 
         """
+
+        # update trained dataset models
+        self.set_trained_dataset_models(results_data)
+
         # # transform data for learning a model from it 
         # self.update_dataset_mf(dataset_mf) 
         print('setting self.dataset_mf to ',results_mf)
@@ -72,59 +74,27 @@ class KNNMetaRecommender(BaseRecommender):
         # update internal model
         self.update_model(results_data)
 
-    # def get_metafeatures(self, d):
-    #     """Fetches dataset metafeatures, returning dataframe."""
-    #     # print('fetching data for', d)
-    #     payload={}
-    #     # payload = {'metafeatures'}
-    #     payload.update(self.static_payload)
-    #     params = json.dumps(payload).encode('utf8')
-    #     # print('full path:', self.mf_path+'/'+d)
-    #     try:
-    #         req = urllib.request.Request(self.mf_path+'/'+d, data=params)
-    #         r = urllib.request.urlopen(req)
-            
-    #         data = json.loads(r.read().decode(r.info().get_param('charset')
-    #                                   or 'utf-8'))[0]
-    #     except Exception as e:
-    #         print('exception when grabbing metafeature data for',d)
-    #         raise e
-        
-    #     mf = [data['metafeatures']]
-    #     # print('mf:',mf)
-    #     df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
-    #     # print('df:',df)
-    #     df['dataset'] = data['_id']
-    #     df.sort_index(axis=1, inplace=True)
+    def set_trained_dataset_models(self, results_data):
+        results_data.loc[:, 'dataset-algorithm-parameters'] = (
+                                       results_data['dataset'].values + '|' +
+                                       results_data['algorithm'].values + '|' +
+                                       results_data['parameters'].values)
 
-    #     return df
-
-    def transform_ml_p(self,df_ml_p):
-        """Encodes categorical labels and transforms them using a one hot encoding."""
-        df_ml_p = self.params_to_features(df_ml_p)
-        # df_tmp = pd.DataFrame(columns=self.ml_p.columns)
-        # df_tmp = df_tmp.append(df_ml_p)
-        # df_tmp.fillna('nan', inplace=True)
-        df_ml_p = df_ml_p.apply(lambda x: self.LE[x.name].transform(x))
-        # df_ml_p = df_ml_p.apply(lambda x: self.LE[x.name].transform(x))
-
-        # print('df_ml_p after LE transform:',df_ml_p)
-        # X_ml_p = self.OHE.transform(df_ml_p.values)
-        X_ml_p = df_ml_p.values
-        # X_ml_p = self.OHE.transform(df_ml_p.values)
-        # print('df_ml_p after OHE (',X_ml_p.shape,':\n',X_ml_p)
-        return X_ml_p
+        # get unique dataset / parameter / classifier combos in results_data
+        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
+        self.trained_dataset_models.update(d_ml_p)
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
         print('updating model')
+        # pdb.set_trace()
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
                 dfg[self.metric].max() > self.best_mlp.loc[d,'score']):
                 self.best_mlp.loc[d,'score'] = dfg[self.metric].max()
                 dfg = dfg.reset_index()
-                idx = dfg[self.metric].argmax()
+                idx = dfg[self.metric].idxmax()
                 # print('dfg:\n',dfg)
                 print('new best for',d,':',dfg.loc[idx,'algorithm'],'idx:',idx)
                 self.best_mlp.loc[d,'algorithm'] = dfg.loc[idx,'algorithm']
@@ -147,8 +117,9 @@ class KNNMetaRecommender(BaseRecommender):
         # TODO: raise error if dataset_mf is None 
         try:
             ml_rec, p_rec, rec_score = self.best_model_prediction(dataset_id, 
-                                                                  dataset_mf,
-                                                                  n_recs)
+                                                                  dataset_mf)
+            
+            ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score)
 
             for (m,p,r) in zip(ml_rec, p_rec, rec_score):
                 print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
@@ -161,15 +132,32 @@ class KNNMetaRecommender(BaseRecommender):
             # print('rec_score',rec_score)
             raise e 
 
-        # update the recommender's memory with the new algorithm-parameter combos that it recommended
-        # ml_rec = ml_rec[:n_recs]
-        # p_rec = p_rec[:n_recs]
-        # rec_score = rec_score[:n_recs]
+        # update the recommender's memory with the new algorithm-parameter combos 
+        # that it recommended
 
-        # if dataset_id is not None:
-        #     self.trained_dataset_models.update(
-        #                                 ['|'.join([dataset_id, ml, p])
-        #                                 for ml, p in zip(ml_rec, p_rec)])
+        self.trained_dataset_models.update(
+                                    ['|'.join([dataset_id, ml, p])
+                                    for ml, p in zip(ml_rec, p_rec)])
+
+        return ml_rec, p_rec, rec_score
+
+    def filter_repeats(self, dataset_id, ml_rec, p_rec, rec_score):
+        """Uses trained_dataset_models to filter recs that have already been run"""
+        # Filter recommendations for
+        # algorithm-parameter combos that have already been run
+        rec = ['|'.join([dataset_id, ml, p]) for ml, p in zip(ml_rec, p_rec)]
+        try:
+            frec,idx = zip(*((r,i) for i,r in enumerate(rec) 
+                             if r not in self.trained_dataset_models))
+        except ValueError as e:
+            print("WARNING: can't filter results, probably all recommmendations are repeats")
+            return ml_rec, p_rec, rec_score
+
+        # print('rec:',rec) 
+        # print('idx:',idx) 
+        ml_rec = [r.split('|')[1] for r in frec]
+        p_rec = [r.split('|')[2] for r in frec]
+        rec_score = [rec[i] for i in idx]
 
         return ml_rec, p_rec, rec_score
 
@@ -180,12 +168,12 @@ class KNNMetaRecommender(BaseRecommender):
         mf = df_mf.drop('dataset',axis=1).values.flatten()
 
         # compute the neighbors of past results 
-        nbrs = NearestNeighbors(n_neighbors=n_recs, algorithm='ball_tree')
+        nbrs = NearestNeighbors(n_neighbors=len(self.dataset_mf), algorithm='ball_tree')
         # print('fitting nbrs to self.dataset_mf with shape',
         #       self.dataset_mf.values.shape)
         rs = RobustScaler()
         X = rs.fit_transform(self.dataset_mf.values)
-        nbrs.fit(self.dataset_mf.values)
+        nbrs.fit(X)
         # find n_recs nearest neighbors to new dataset
         # print('querying neighbors with mf of shape',mf.shape)
         distances,indices = nbrs.kneighbors(rs.transform(mf.reshape(1,-1)))
@@ -197,10 +185,11 @@ class KNNMetaRecommender(BaseRecommender):
 
         # print('self.best_mlp:',self.best_mlp)
         for i,dist in zip(dataset_idx,distances[0]):   
-            print('closest dataset:',i,'distance:',dist)
-            ml_recs.append(self.best_mlp.loc[i,'algorithm'])
-            p_recs.append(self.best_mlp.loc[i,'parameters'])
-            scores.append(dist)
+            if dist > 0:    # don't recommend based on this same dataset
+                print('closest dataset:',i,'distance:',dist)
+                ml_recs.append(self.best_mlp.loc[i,'algorithm'])
+                p_recs.append(self.best_mlp.loc[i,'parameters'])
+                scores.append(dist)
 
         return ml_recs,p_recs,scores
         
