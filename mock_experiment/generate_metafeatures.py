@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pmlb import dataset_names, fetch_data
 import os
-from ai.metalearning.get_metafeatures import get_metafeatures
+from ai.metalearning.get_metafeatures import get_metafeatures_from_file
 import simplejson
 import sys
 from glob import glob
@@ -13,7 +13,7 @@ import argparse
 if __name__ == '__main__':
     """run experiment"""
 
-    parser = argparse.ArgumentParser(description='Run a PennAI a recommender experiment.', 
+    parser = argparse.ArgumentParser(description='Generate metafeatures for datasets in file.', 
                                      add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 # load pmlb data
     pmlb_data = pd.read_csv(args.pmlb_file,
                             compression='gzip', sep='\t').fillna('')
-
+    print('datset cols:',pmlb_data.columns)
     for dataset, dfg in pmlb_data.groupby('dataset'):
         # print(args.data_dir+'/'+dataset+'/*'+args.tail)
         # dataset_path = args.data_dir+dataset+'/'+dataset+args.tail
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         assert(len(dataset_path)==1)
         dataset_path = dataset_path[0]
         print(dataset_path)
-        mf = get_metafeatures(dataset_path,args.label,compression = compression)
+        mf = get_metafeatures_from_file(dataset_path,args.label,compression = compression)
         meta_json = simplejson.dumps(mf, ignore_nan=True) #, ensure_ascii=False)    
         if not os.path.exists('mock_experiment/metafeatures/api/datasets/'+dataset):
                 os.makedirs('mock_experiment/metafeatures/api/datasets/'+dataset)
