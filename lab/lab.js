@@ -183,7 +183,20 @@ app.post("/api/v1/projects", (req, res, next) => {
 */
 app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
     // Parse request
-    var metadata = JSON.parse(req.body._metadata);
+    if (req.body._metadata === undefined) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata"});
+    }
+
+    var metadata
+    try {
+        metadata = JSON.parse(req.body._metadata);
+    }
+    catch(e) {
+        res.status(400);
+        console.log(`Unable to parse _metadata: ${e.message}`)
+        return res.send({error:`Unable to parse _metadata: ${e.message}`})
+    }
 
     // Validate
     if (!metadata) {
@@ -224,7 +237,8 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
                 });
             })
             .catch((err) => {
-                next(err);
+                res.status(400);
+                res.send({error:"Unable to upload files"})
             });
     } else {
         db.datasets.insertAsync({
@@ -243,7 +257,8 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
                         });
                     })
                     .catch((err) => {
-                        next(err);
+                        res.status(400);
+                        res.send({error:"Unable to upload files"})
                     });
             });
     }
