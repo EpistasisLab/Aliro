@@ -6,16 +6,18 @@ A tool to use artificial intelligence for easy and intuitive analysis of data us
 PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
 
 1. Install build requirements:
-  - Docker (Version 1.13.0+)
+#### Required
+  - Docker (Version 17.06.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - Docker-Compose - Separate installation is only needed for linux; docker-compose is bundled with windows and mac docker installation
+  - Docker-Compose (Version 1.22.0+, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
-1 (optional). Build requirements for development/testing:
-  - Python and nose test runner (optional, needed only to run unit tests locally)
+#### Optional dependencies for development/testing:
+  - Python and pyton test runners (needed only to run unit tests locally)
   	- [Python 3.* ](https://www.python.org/downloads/)
-  	- install [nose](https://pypi.org/project/nose/) and [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
-  - nodejs (can be helpful for local development)
+  	- [nose](https://pypi.org/project/nose/) 
+	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
+  - Node.js (can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
 
 2. Clone the PennAI project using `git clone git@github.com:EpistasisLab/pennai.git`
