@@ -49,7 +49,6 @@ class AverageRecommender(BaseRecommender):
                                        results_data['parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
-        ml_p = results_data['algorithm-parameters'].unique()
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
 
@@ -75,6 +74,7 @@ class AverageRecommender(BaseRecommender):
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
 
+        # ml_p = results_data['algorithm-parameters'].unique()
         # get average balanced accuracy by classifier-parameter combo
         new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()
         new_weights = results_data.groupby('algorithm-parameters').size()
@@ -100,9 +100,12 @@ class AverageRecommender(BaseRecommender):
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
-                rec = [r for r in rec if dataset_id + '|' + r not in
+                rec_filt = [r for r in rec if dataset_id + '|' + r not in
                        self.trained_dataset_models]
-
+                if len(rec_filt) >= n_recs:
+                    rec = rec_filt
+                else:
+                    print("WARNING: can't filter recommendations, possibly repeating")
             ml_rec = [r.split('|')[0] for r in rec]
             p_rec = [r.split('|')[1] for r in rec]
             rec_score = [self.scores[r] for r in rec]

@@ -117,7 +117,8 @@ class KNNMetaRecommender(BaseRecommender):
             ml_rec, p_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
             
-            ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score)
+            ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
+                    n_recs)
 
             for (m,p,r) in zip(ml_rec, p_rec, rec_score):
                 print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
@@ -139,7 +140,7 @@ class KNNMetaRecommender(BaseRecommender):
 
         return ml_rec, p_rec, rec_score
 
-    def filter_repeats(self, dataset_id, ml_rec, p_rec, rec_score):
+    def filter_repeats(self, dataset_id, ml_rec, p_rec, rec_score, n_recs):
         """Uses trained_dataset_models to filter recs that have already been run"""
         # Filter recommendations for
         # algorithm-parameter combos that have already been run
@@ -153,10 +154,12 @@ class KNNMetaRecommender(BaseRecommender):
 
         # print('rec:',rec) 
         # print('idx:',idx) 
-        ml_rec = [r.split('|')[1] for r in frec]
-        p_rec = [r.split('|')[2] for r in frec]
-        rec_score = [rec_score[i] for i in idx]
-
+        if len(frec) >= n_recs:
+            ml_rec = [r.split('|')[1] for r in frec]
+            p_rec = [r.split('|')[2] for r in frec]
+            rec_score = [rec_score[i] for i in idx]
+        else:
+            print("WARNING: can't filter recommendations, possibly repeating")
         return ml_rec, p_rec, rec_score
 
     def best_model_prediction(self, dataset_id, df_mf, n_recs=1):
