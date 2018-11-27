@@ -1,6 +1,5 @@
 # Penn AI
-A data science assistant for generating useful results from large and complex data problems.
-
+A tool to use artificial intelligence for easy and intuitive analysis of data using supervised machine learning.
 
 
 ## Installation
@@ -12,10 +11,11 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
   - Docker-Compose - Separate installation is only needed for linux; docker-compose is bundled with windows and mac docker installation
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
-  - Python and nose test runner (optional, needed only to run unit tests)
+1 (optional). Build requirements for development/testing:
+  - Python and nose test runner (optional, needed only to run unit tests locally)
   	- [Python 3.* ](https://www.python.org/downloads/)
   	- install [nose](https://pypi.org/project/nose/) and [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
-  - nodejs (optional, can be helpful for local development)
+  - nodejs (can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
 
 2. Clone the PennAI project using `git clone git@github.com:EpistasisLab/pennai.git`
@@ -30,9 +30,9 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 
 ## Usage
 ### Starting and Stopping ###
-To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
+To start PennAI, from the PennAI directory run the command `docker-compose up --force-recreate`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
 
-- Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
+- Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 ### Analyzing Data ###
 Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with ~50 test datasets, starting with 'Allbp'.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
