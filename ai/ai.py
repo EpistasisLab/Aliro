@@ -135,11 +135,14 @@ class AI():
         print('loading pmlb knowledgebase')
 
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
+        # replace algorithm names with their ids
+        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
+        kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
+                                          lambda x: self.ml_name_to_id[x])
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
         # self.update_dataset_mf(kb['resultsData'])
-        pdb.set_trace()
         self.rec.update(kb['resultsData'], self.dataset_mf)
         
         print('pmlb knowledgebase loaded')
@@ -390,7 +393,8 @@ def main():
                         help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
                         help='Time to wait for pinging the server for results/ recommendation requests')
-    parser.add_argument('-knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',default=False, 
+    parser.add_argument('--knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',
+                        default=False, 
                         help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()

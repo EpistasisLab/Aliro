@@ -66,10 +66,9 @@ class KNNMetaRecommender(BaseRecommender):
         # update trained dataset models
         self.set_trained_dataset_models(results_data)
 
-        # # transform data for learning a model from it 
-        # self.update_dataset_mf(dataset_mf) 
-        print('setting self.dataset_mf to ',results_mf)
+        # save a copy of the results_mf with NaNs filled with zero 
         self.dataset_mf = results_mf.fillna(0.0) 
+        # print('setting self.dataset_mf to ',self.dataset_mf)
 
         # update internal model
         self.update_model(results_data)
@@ -87,7 +86,6 @@ class KNNMetaRecommender(BaseRecommender):
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
         print('updating model')
-        # pdb.set_trace()
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -157,7 +155,7 @@ class KNNMetaRecommender(BaseRecommender):
         # print('idx:',idx) 
         ml_rec = [r.split('|')[1] for r in frec]
         p_rec = [r.split('|')[2] for r in frec]
-        rec_score = [rec[i] for i in idx]
+        rec_score = [rec_score[i] for i in idx]
 
         return ml_rec, p_rec, rec_score
 
@@ -185,7 +183,7 @@ class KNNMetaRecommender(BaseRecommender):
 
         # print('self.best_mlp:',self.best_mlp)
         for i,dist in zip(dataset_idx,distances[0]):   
-            if dist > 0:    # don't recommend based on this same dataset
+            if dist > 0.0:    # don't recommend based on this same dataset
                 print('closest dataset:',i,'distance:',dist)
                 ml_recs.append(self.best_mlp.loc[i,'algorithm'])
                 p_recs.append(self.best_mlp.loc[i,'parameters'])

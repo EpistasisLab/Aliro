@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.average_recommender import AverageRecommender
+from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 #from ai.ai import AI
 import pdb
 
@@ -46,6 +47,29 @@ def test_ave_rec():
         ml, p, scores = pennai.recommend(n_recs=n_recs)
         print(str(n), ': ml:', ml,', p:', p, 'scores=', scores)
 
+def test_knn_rec():
+    """KNN recommender updates and recommends without error"""
+
+    # print('loading pmlb results data...')
+    # pennai = AverageRecommender()
+    # pennai.update(data)
+    # ml, p, scores = pennai.recommend()
+    # print('ml:', ml[0])
+    # print('p:', p[0])
+    # del pennai
+
+    # test updating scores
+    epochs = 5 
+    datlen = int(data.shape[0] / float(epochs))
+    pennai = KNNRecommender()
+    n_recs = 1
+    for n in np.arange(epochs):
+        new_data = data.iloc[n * datlen:(n + 1) * datlen]
+        pennai.update(new_data)
+        ml, p, scores = pennai.recommend(n_recs=n_recs)
+        print(str(n), ': ml:', ml,', p:', p, 'scores=', scores)
+
+
 # @mock.patch('requests.post',autospec=True)
 def test_rand_rec():
     """Rand recommender updates and recommends without error"""
@@ -67,7 +91,7 @@ def test_n_recs():
     """Recommender returns correct number of recommendations"""
 
     ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
-    for recommender in [AverageRecommender, RandomRecommender]:
+    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender]:
         if recommender is RandomRecommender:
             pennai = recommender(ml_p=ml_p)
         else:

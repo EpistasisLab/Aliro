@@ -26,7 +26,7 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
         PARMS+=" -v"
     fi
     if [ ${AI_PMLB_KNOWLEDGEBASE} -eq 1 ]; then
-        PARMS+=" -knowledgebase"
+        PARMS+=" --knowledgebase"
     fi
 
     #echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER} 
