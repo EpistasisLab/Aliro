@@ -177,13 +177,39 @@ app.post("/api/v1/projects", (req, res, next) => {
 * @param _metadata - json
 *    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
+*    filepath 
 *    username - owner of the dataset
 *
 */
 app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
-    // Retrieve list of files for experiment
-    // Process files
+    // Parse request
     var metadata = JSON.parse(req.body._metadata);
+
+    // Validate
+    if (!metadata) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata"});
+    } else if (!metadata.hasOwnProperty('dependent_col')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.dependent_col"});
+    } else if (!metadata.hasOwnProperty('name')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.name"});
+    } else if (!metadata.hasOwnProperty('filepath')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.filepath"});
+    } else if (!metadata.hasOwnProperty('username')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.username"});
+    } else if (!req.hasOwnProperty('files')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _files"});
+    } else if (req.files.length == 0) {
+        res.status(400);
+        return res.send({error: "_files has length 0"});
+    } 
+
+    // process dataset
     var filepath = metadata['filepath'];
     var dependent_col = metadata['dependent_col'];
 
