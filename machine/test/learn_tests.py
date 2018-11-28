@@ -83,11 +83,24 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id2':
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id2"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id3': # different target names
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id3"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id4': # no target name
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id4"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id5': # invalid target name
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id5"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
                                                 {"_id":"test_file_id2", "dependent_col": "class", "filename": "test_reg_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
+                                                {"_id":"test_file_id2", "dependent_col": "target", "filename": "test_reg_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "filename": "test_clf_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -134,6 +147,38 @@ class APITESTCLASS(unittest.TestCase):
         assert filename[0] == 'test_clf_input'
         assert filename[1] == 'test_reg_input'
         assert target_name == 'class'
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_3(self, mock_get):
+        """Test get_input_data function raise RuntimeError when target names are inconsistent in two dataset files of one experiment."""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id3'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_4(self, mock_get):
+        """Test get_input_data function raise RuntimeError when target names are no available from API"""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id4'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_5(self, mock_get):
+        """Test get_input_data function raise RuntimeError when target names are no available in input dataset."""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id5'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
