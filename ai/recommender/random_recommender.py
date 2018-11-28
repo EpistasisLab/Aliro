@@ -108,14 +108,13 @@ class RandomRecommender(BaseRecommender):
                 ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
                 p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
                                                           'parameters'])
-                if dataset_id is not None:
-                    rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
-                                   self.trained_dataset_models)
-                else:
-                    rec_not_new = False
+                # if dataset_id is not None:
+                #     rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
+                #                    self.trained_dataset_models)
+                # else:
+                #     rec_not_new = False
                 # if n==999:
                 #     print('warning: tried 10 times (and failed) to find a novel recommendation')
-                
                 ml_rec.append(ml_tmp)
                 p_rec.append(p_tmp)
                 rec_score.append(0) 
