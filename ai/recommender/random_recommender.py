@@ -5,7 +5,6 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
-# from ..api_utils import get_all_ml_p_from_db  
 
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
@@ -37,13 +36,7 @@ class RandomRecommender(BaseRecommender):
         else:
             self.metric = metric
 
-        # # ml p options
-        # self.db_path = db_path
-        # self.api_key = api_key
-        # if ml_p is None:
-        #     # pull algorithm/parameter combinations from the server. 
-        #     self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
-        # else:
+        # machine learning and parameter (ml_p) options 
         self.ml_p = ml_p
         
         # maintain a set of dataset-algorithm-parameter combinations that have already been 

@@ -101,14 +101,16 @@ class AI():
         self.warm_start = warm_start
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
-
-        # default to random recommender
-        if not rec:
-            ml_p = api_utils.get_all_ml_p_from_db(self.api_path,self.api_key)
-            self.rec = RandomRecommender(ml_p=ml_p)
+        
+        if rec:
+            if hasattr(rec,'ml_p'):
+                self.rec.ml_p = self.labApi.get_all_ml_p()
+        else: # default to random recommender
+            self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
 
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
+        print('ml_id_to_name:',self.ml_id_to_name)
         # build dictionary of dataset ids to names conversion
         self.user_datasets = self.labApi.get_user_datasets(self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
@@ -409,9 +411,9 @@ def main():
             'knn': KNNMetaRecommender
             }
     
-    if args.REC in ['random','exhaustive','meta']:
-        ml_p = api_utils.get_all_ml_p_from_db(args.API_PATH+'/api/preferences',os.environ['APIKEY'])
-        rec_args = {'ml_p':ml_p}
+    # if args.REC in ['random','exhaustive','meta']:
+    #     ml_p = api_utils.get_all_ml_p_from_db(args.API_PATH+'/api/preferences',os.environ['APIKEY'])
+    #     rec_args = {'ml_p':ml_p}
         # rec_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
     rec_args['metric'] = 'accuracy'
 

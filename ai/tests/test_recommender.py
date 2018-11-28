@@ -137,7 +137,6 @@ def test_n_recs():
             for d in data.dataset.unique(): 
                 ml, p, scores = pennai.recommend(d,n_recs=n_recs,
                                                  dataset_mf=get_metafeatures(d))
-                print('len ml:',len(ml))
                 assert(len(ml)==n_recs)
                 assert(len(p)==n_recs)
                 assert(len(scores)==n_recs)
