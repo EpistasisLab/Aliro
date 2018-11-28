@@ -101,7 +101,7 @@ def handle_put(path, data):
     if path == "http://lab:5080/api/userdatasets/5ba417507831bf002bcbd59b/ai":
         return MockResponse(json.dumps(api_experiment_ai_on), 200)
     else:
-        logger.error("Unhandled path: " + str(args[0]))
+        logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
 def handle_get(path, data):
@@ -111,7 +111,7 @@ def handle_get(path, data):
     if path == 'http://lab:5080/api/preferences':
         return MockResponse(json.dumps(api_preferences_data), 200)
     else:
-        logger.error("Unhandled path: " + str(args[0]))
+        logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
 def handle_post(path, data):
@@ -132,7 +132,7 @@ def handle_post(path, data):
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_running), 200)
     else:
-        logger.error("Unhandled path: " + str(args[0]))
+        logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
 def handle_post_invalid_launch_experiment(path, data):
@@ -150,7 +150,7 @@ def handle_post_invalid_launch_experiment(path, data):
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_invalid), 200)
     else:
-        logger.error("Unhandled path: " + str(args[0]))
+        logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
 
