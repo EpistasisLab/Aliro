@@ -53,7 +53,7 @@ class Dataset:
         elif dependent_col in self.df.columns.tolist():
             self.dependent_col = dependent_col
         else:
-            raise ValueError
+            raise ValueError("dependent_col '" + dependent_col + "' does not exist in dataset")
 
     def _set_prediction_type(self, prediction_type):
         """ See the dtype of the dependent_col and return

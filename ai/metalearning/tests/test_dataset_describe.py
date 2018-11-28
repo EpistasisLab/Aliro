@@ -2,17 +2,24 @@ import unittest
 import pandas as pd
 import numpy as np
 import math
-from dataset_describe import Dataset
+import os
+from ai.metalearning.dataset_describe import Dataset
+from nose.tools import nottest
+
+package_directory = os.path.dirname(os.path.abspath(__file__))
  
 class Dataset_Describe(unittest.TestCase):
  
     def setUp(self):
+        irisPath = os.path.join(package_directory, 'iris.csv')
+        tipsPath = os.path.join(package_directory, 'tips.csv')
+
         # classification problem.
-        iris = pd.read_csv('iris.csv')
+        iris = pd.read_csv(irisPath)
         self.iris = Dataset(iris)   
 
         # Regression problem
-        tips = pd.read_csv('tips.csv')
+        tips = pd.read_csv(tipsPath)
         self.tips = Dataset(tips, dependent_col = 'tip')   
 
 
@@ -104,7 +111,7 @@ class Dataset_Describe(unittest.TestCase):
         self.assertAlmostEqual(0.33, self.iris.class_prob_mean(), places = 2)
         self.assertAlmostEqual(0.33, self.iris.class_prob_median(), places = 2)
 
-
+    @nottest
     def test_class_symbols_suite(self):
         mean = 2.5
         std = 1
