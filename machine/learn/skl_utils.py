@@ -108,10 +108,6 @@ def generate_results(model, input_data,
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
-        if target_name not in input_data.columns.values:
-            raise ValueError(
-                'The provided data file does not seem to have a target column.')
-
         feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
         features = input_data.drop(target_name, axis=1).values
@@ -169,7 +165,7 @@ def generate_results(model, input_data,
                                     cv=5
                                     )
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model, filename, random_state)
+    export_model(tmpdir, _id, model, filename, target_name, random_state)
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
@@ -503,7 +499,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.close()
 
 
-def export_model(tmpdir, _id, model, filename, random_state=42):
+def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
     ----------
@@ -515,6 +511,8 @@ def export_model(tmpdir, _id, model, filename, random_state=42):
             a fitted scikit-learn model
     filename: string
             file name of input dataset
+    target_name: string
+        target name in input data
     random_state: int
         random seed
 
@@ -529,13 +527,13 @@ def export_model(tmpdir, _id, model, filename, random_state=42):
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
     joblib.dump(pickle_model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file_name, model, filename, random_state)
+    pipeline_text = generate_export_codes(pickle_file_name, model, filename, target_name, random_state)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
     export_scripts.close()
 
 
-def generate_export_codes(pickle_file_name, model, filename, random_state=42):
+def generate_export_codes(pickle_file_name, model, filename, target_name, random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
@@ -550,6 +548,8 @@ def generate_export_codes(pickle_file_name, model, filename, random_state=42):
         a machine learning model with scikit-learn API
     filename: list
         filename for input dataset
+    target_name: string
+        target name in input data
     random_state: int
         random seed
     """
@@ -570,9 +570,9 @@ from sklearn.metrics import make_scorer
 # path to your pickle file, below is the downloaded pickle file
 pickle_file = '{pickle_file_name}'
 # file path to the dataset
-dataset = ''
-# outcome column name
-target_column = ''
+dataset = {dataset}
+# target column name
+target_column = {target_name}
 # seed to be used for train_test_split (default in PennAI is 42)
 seed = {random_state}
 
@@ -635,6 +635,7 @@ predict_target = model.predict(input_data.values)
             pandas_version=pd.__version__,
             skl_version=skl_version,
             dataset=",".join(filename),
+            target_name=target_name,
             pickle_file_name=pickle_file_name,
             random_state=random_state,
             model=str(model).replace('\n', '\n#')
