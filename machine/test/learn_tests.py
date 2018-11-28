@@ -151,7 +151,7 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_3(self, mock_get):
-        """Test get_input_data function raise RuntimeError when target names are inconsistent in two dataset files of one experiment."""
+        """Test get_input_data function raises RuntimeError when target names are inconsistent in two dataset files of one experiment."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id3'
         LAB_PORT = '5080'
@@ -161,7 +161,7 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_4(self, mock_get):
-        """Test get_input_data function raise RuntimeError when target names are no available from API"""
+        """Test get_input_data function raises RuntimeError when target names are no available from API"""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id4'
         LAB_PORT = '5080'
@@ -172,13 +172,13 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_5(self, mock_get):
-        """Test get_input_data function raise RuntimeError when target names are no available in input dataset."""
+        """Test get_input_data function raises ValueError when target names are no available in input dataset."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id5'
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
+        assert_raises(ValueError, get_input_data, _id, tmpdir)
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -436,7 +436,8 @@ def test_generate_export_codes():
     load_clf_score = SCORERS['balanced_accuracy'](load_clf, testing_features, testing_classes)
     assert test_clf_scoe == load_clf_score
 
-    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
+    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'],
+                                        target_name=target_name, random_state=42)
 
     expected_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
@@ -455,9 +456,9 @@ from sklearn.metrics import make_scorer
 # path to your pickle file, below is the downloaded pickle file
 pickle_file = 'test.plk'
 # file path to the dataset
-dataset = ''
-# outcome column name
-target_column = ''
+dataset = test_dataset.tsv
+# target column name
+target_column = {target_name}
 # seed to be used for train_test_split (default in PennAI is 42)
 seed = 42
 
@@ -515,10 +516,13 @@ print(model.score(testing_features, testing_target))
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
 """.format(
-    python_version=sys.version.replace('\n', ''),
-    numpy_version=np.__version__,
-    pandas_version=pd.__version__,
-    skl_version=skl_version,
-    model=str(load_clf).replace('\n', '\n#'))
+        python_version=sys.version.replace('\n', ''),
+        numpy_version=np.__version__,
+        pandas_version=pd.__version__,
+        skl_version=skl_version,
+        target_name=target_name,
+        model=str(load_clf).replace('\n', '\n#')
+    )
+
     assert_equal(pipeline_text, expected_text)
     rmtree(tmpdir)

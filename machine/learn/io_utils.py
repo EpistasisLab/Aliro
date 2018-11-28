@@ -203,8 +203,9 @@ def check_column(column_name, dataframe):
     -------
     None
     """
-    if column_name not in dataframe.columns:
-        raise RuntimeError("Target column does exist in input dataset.")
+    if column_name not in dataframe.columns.values:
+        raise ValueError(
+            'The provided data file does not seem to have a target column.')
 
 
 def bool_type(val):
