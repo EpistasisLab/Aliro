@@ -31,7 +31,7 @@ services:
       - "5080:5080"
     environment:
       - AI_AUTOSTART=0
-      - STARTUP_DATASET_PATH=/appsrc/data/datasets/test_mixed
+      - STARTUP_DATASET_PATH=/appsrc/data/datasets/test/test_mixed
     env_file: ./config/common.env
     depends_on: 
       - dbmongo
@@ -48,7 +48,7 @@ services:
     ports: 
       - "5081:5081"
     environment:
-      - STARTUP_DATASET_PATH=/appsrc/data/datasets/test_mixed
+      - STARTUP_DATASET_PATH=/appsrc/data/datasets/test/test_mixed
     env_file: ./config/common.env
     depends_on: 
       - lab

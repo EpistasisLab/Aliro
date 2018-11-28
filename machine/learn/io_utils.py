@@ -165,12 +165,12 @@ def get_input_data(_id, tmpdir):
     filename = [file['filename'] for file in files]
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
-        input_data = pd.read_csv(StringIO(requests.get(uri).text), sep='\t')
+        input_data = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep='\t'))
+            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python'))
 
     return input_data, filename
 

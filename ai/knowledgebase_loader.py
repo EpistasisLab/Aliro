@@ -80,7 +80,7 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class', c
 #				dataset = os.path.splitext(entry.name)[0]
 #				print(entry.name)
 #				print(dataset)
-#				metafeatures = mf.get_metafeatures_from_file(entry.path, targetField)
+#				metafeatures = mf.generate_metafeatures_from_datafile(entry.path, targetField)
 #				metafeaturesData[dataset] = metafeatures
 
 
@@ -89,7 +89,7 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class', c
 			if not name.startswith('.') and name.endswith('.csv'):
 				dataset = os.path.splitext(name)[0]
 				logger.debug("Generating metadata for {}".format(os.path.join(root, name)))
-				metafeatures = mf.get_metafeatures_from_file(os.path.join(root, name), targetField)
+				metafeatures = mf.generate_metafeatures_from_datafile(os.path.join(root, name), targetField)
 				metafeaturesData[dataset] = metafeatures
 
 	return metafeaturesData

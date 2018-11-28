@@ -20,6 +20,7 @@ if (process.env.STARTUP_DATASET_PATH) {
 
 //genForm
 // process parentdir for file, execute callback with results
+// Deprecated
 var genForm = function(file, callback) {
     dataset_id = false;
     has_metadata = false;
@@ -112,16 +113,19 @@ var processDataset = function(username, dataset_name, dataset_path) {
             'username': username,
             'timestamp': Date.now(),
             'filepath' : dataset_path,
+            'dependent_col' : 'class',
             'files': []
         }
         console.log(`files: ${files}`)
 
         if(files) {
+            var fileFound = false;
             for (var i = 0; i < files.length; i++) {
-                console.log(`${path.parse(files[i]).name}`)
+                //console.log(`${path.parse(files[i]).name}`)
                 if (files[i].toUpperCase() == 'README.MD') {
                     //todo:parse README
-                } else if (path.parse(files[i]).name.toUpperCase() == dataset_name.toUpperCase()){
+                } else if (path.parse(files[i]).name.toUpperCase() == dataset_name.toUpperCase() && (path.parse(files[i]).ext !== undefined)){
+                    fileFound = true;
                     var filename = dataset_path + '/' + files[i];
                     var is_zipped = false;
                     checksum = md5File.sync(filename);
@@ -144,23 +148,31 @@ var processDataset = function(username, dataset_name, dataset_path) {
                     formData._files.push(fs.createReadStream(filename));
                 }
             }
-            formData._metadata = JSON.stringify(metadata);
-            //console.log(`Registering dataset ${formData._metadata}`)
-            console.log(`Registering dataset ${JSON.stringify(metadata.files)}`)
-            var p = rp({
-                    uri: exports.laburi + "/api/v1/datasets/",
-                    method: "PUT",
-                    formData: formData,
-                    gzip: true
-                })
-                .then(response => {
-                    data = JSON.parse(response);
-                    metadata['dataset_id'] = data['dataset_id'];
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-            //console.log(p);
+            if(fileFound) {
+                formData._metadata = JSON.stringify(metadata);
+                //console.log(`Registering dataset ${formData._metadata}`)
+                console.log(`Registering dataset ${JSON.stringify(metadata.files)}`)
+                var p = rp({
+                        uri: exports.laburi + "/api/v1/datasets/",
+                        method: "PUT",
+                        formData: formData,
+                        gzip: true
+                    })
+                    .then(response => {
+                        data = JSON.parse(response);
+                        metadata['dataset_id'] = data['dataset_id'];
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                //console.log(p);
+            }
+            else {
+                console.log("no dataset files found")
+            }
+        }
+        else {
+            console.log("no files")
         }
     });
 };
@@ -178,7 +190,7 @@ var processSubdirectoryDatasets = function(rootPath, username) {
     fs.readdir(rootPath, function(err, files) {
         if (files !== undefined) {
             for (let file of files) {
-                if (path.parse(file).ext == undefined || path.parse(file).ext == '') { // is directory?
+                if ((path.parse(file).ext == undefined || path.parse(file).ext == '') && (!path.parse(file).name.startsWith('.') )) { // is directory?
                     var dataset_name = file
                     var dataset_path = rootPath + '/' + dataset_name
                     processDataset(username, dataset_name, dataset_path)

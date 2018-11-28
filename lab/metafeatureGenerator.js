@@ -11,13 +11,13 @@ var spawnSync = require("child_process").spawnSync;
 *				 data: (if success) JSON
 *				 error: (if falure) String}
 */
-function generateFeatures(fileObj, filepath) {
-	// hack for now
-	//var filepath = process.env.STARTUP_DATASET_PATH + "/" + fileObj.originalname.slice(0, -4) + "/" + fileObj.originalname
-	var filepath = filepath + "/" + fileObj.originalname
-	console.log(`filepath: ${filepath}`)
+function generateFeatures(fileObj, filepath, dependent_col) {
+	console.log(`generateFeatures ('${fileObj.originalname}', '${filepath}', '${dependent_col}')`)
 
-	var args = ['ai/metalearning/get_metafeatures.py', filepath]
+	var filepath = filepath + "/" + fileObj.originalname
+	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
+
+	console.log(`args: ${args}`)
 
 /*
 	// async
@@ -42,14 +42,6 @@ function generateFeatures(fileObj, filepath) {
     	args, {
             cwd: process.env.PROJECT_ROOT
     })
-	/*
-	console.log(`generateFeatures returned ${metafeatureProcObj}`)
-	console.log(`generateFeatures.output ${metafeatureProcObj.output}`)
-	console.log(`generateFeatures.stdout ${metafeatureProcObj.stdout}`)
-	console.log(`generateFeatures.stderr ${metafeatureProcObj.stderr}`)
-	console.log(`generateFeatures.status ${metafeatureProcObj.status}`)
-	console.log(`generateFeatures.error ${metafeatureProcObj.error}`)
-	*/
 
 	if (metafeatureProcObj.error != null) {
 		var error = `Error: unable to spawn generateFeatures process: ${err}`
