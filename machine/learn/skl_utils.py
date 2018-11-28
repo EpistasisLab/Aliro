@@ -572,7 +572,7 @@ pickle_file = '{pickle_file_name}'
 # file path to the dataset
 dataset = '{dataset}'
 # target column name
-target_column = {target_name}
+target_column = '{target_name}'
 # seed to be used for train_test_split (default in PennAI is 42)
 seed = {random_state}
 
