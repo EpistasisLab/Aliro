@@ -6,6 +6,7 @@ os.environ['LAB_PORT'] = '5080'
 os.environ['PROJECT_ROOT'] = '.'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from tempfile import mkdtemp
 from shutil import rmtree
 Path = "machine/learn"
@@ -58,6 +59,8 @@ test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 test_clf = DecisionTreeClassifier()
+test_rfc = RandomForestClassifier()
+test_gbc = GradientBoostingClassifier()
 test_reg = DecisionTreeRegressor()
 # projects information
 projects_json = "dockers/dbmongo/files/projects.json"
@@ -230,13 +233,13 @@ class APITESTCLASS(unittest.TestCase):
 
             print(algorithm_name, args)
             main(args)
-            print(outdir)
 
             value_json = '{}/value.json'.format(outdir)
             assert os.path.isfile(value_json)
             with open(value_json, 'r') as f:
                 value = json.load(f)
-            assert value['_scores']['train_score']
+            train_score = value['_scores']['train_score']
+            assert train_score
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
             assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
@@ -246,6 +249,19 @@ class APITESTCLASS(unittest.TestCase):
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
+            input_data = pd.read_csv(test_clf_input2, sep='\t')
+            target_name='class'
+            features = input_data.drop(target_name, axis=1).values
+            classes = LabelEncoder().fit_transform(input_data[target_name].values)
+            training_features, testing_features, training_classes, testing_classes = \
+                train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+            # test reloaded model is the same
+            pickle_model = joblib.load(pickle_file)
+            load_clf = pickle_model['model']
+            load_clf_score = SCORERS['balanced_accuracy'](
+                load_clf, training_features, training_classes)
+            print(algorithm_name, train_score, load_clf_score)
+            assert train_score == load_clf_score
 
 
 def test_balanced_accuracy():
@@ -399,6 +415,90 @@ def test_generate_results_5():
     assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_inf,
                     tmpdir, _id, 'class',
                     'regression', False)
+
+
+def test_generate_results_6():
+    """Test generate results can produce expected pickle files with RandomForestClassifier."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_rfc, input_data=test_clf_input_df,
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+
+    input_data = pd.read_csv(
+        test_clf_input, sep='\t')
+    target_name='class'
+    features = input_data.drop(target_name, axis=1).values
+    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    training_features, testing_features, training_classes, testing_classes = \
+        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    train_score = value['_scores']['train_score']
+    assert train_score > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
+    # test reloaded model is the same
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_clf_score = SCORERS['balanced_accuracy'](
+        load_clf, training_features, training_classes)
+    assert train_score == load_clf_score
+
+    rmtree(tmpdir)
+
+
+def test_generate_results_7():
+    """Test generate results can produce expected pickle files with GradientBoostingClassifier."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_gbc, input_data=test_clf_input_df,
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+
+    input_data = pd.read_csv(
+        test_clf_input, sep='\t')
+    target_name='class'
+    features = input_data.drop(target_name, axis=1).values
+    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    training_features, testing_features, training_classes, testing_classes = \
+        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    train_score = value['_scores']['train_score']
+    assert train_score > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
+    # test reloaded model is the same
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_clf_score = SCORERS['balanced_accuracy'](
+        load_clf, training_features, training_classes)
+    assert train_score == load_clf_score
+
+    rmtree(tmpdir)
 
 
 def test_setup_model_params():
