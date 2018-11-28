@@ -558,7 +558,7 @@ pickle_file = 'test.plk'
 # file path to the dataset
 dataset = 'test_dataset.tsv'
 # target column name
-target_column = {target_name}
+target_column = '{target_name}'
 # seed to be used for train_test_split (default in PennAI is 42)
 seed = 42
 
