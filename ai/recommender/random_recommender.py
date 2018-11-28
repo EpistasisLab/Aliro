@@ -5,7 +5,6 @@ import pandas as pd
 from .base import BaseRecommender
 import numpy as np
 import pdb
-from ..api_utils import get_all_ml_p_from_db  
 
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
@@ -25,8 +24,7 @@ class RandomRecommender(BaseRecommender):
     """
 
 
-    def __init__(self, ml_type='classifier', metric=None, db_path='', api_key='',
-                 ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -38,20 +36,14 @@ class RandomRecommender(BaseRecommender):
         else:
             self.metric = metric
 
-        # ml p options
-        self.db_path = db_path
-        self.api_key = api_key
-        if ml_p is None:
-            # pull algorithm/parameter combinations from the server. 
-            self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
-        else:
-            self.ml_p = ml_p
+        # machine learning and parameter (ml_p) options 
+        self.ml_p = ml_p
         
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
         self.trained_dataset_models = set()
 
-    def update(self, results_data):
+    def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
         Updates self.scores
@@ -85,7 +77,7 @@ class RandomRecommender(BaseRecommender):
         self.trained_dataset_models.update(d_ml_p)
 
 
-    def recommend(self, dataset_id=None, n_recs=1):
+    def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
 
         Parameters
@@ -104,19 +96,18 @@ class RandomRecommender(BaseRecommender):
             for i in np.arange(n_recs):
                 n=0
                 rec_not_new = True
-                while (rec_not_new and n<1000):
+                # while (rec_not_new and n<10):
                     #print(self.ml_p)
-                    ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
-                    p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
+                ml_tmp = np.random.choice(self.ml_p['algorithm'].unique())
+                p_tmp = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==ml_tmp,
                                                           'parameters'])
-                    if dataset_id is not None:
-                        rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
-                                       self.trained_dataset_models)
-                    else:
-                        rec_not_new = False
-                if n==999:
-                    print('warning: tried 1000 times (and failed) to find a novel recommendation')
-                
+                # if dataset_id is not None:
+                #     rec_not_new = (dataset_id + '|' + ml_tmp + '|' + p_tmp in
+                #                    self.trained_dataset_models)
+                # else:
+                #     rec_not_new = False
+                # if n==999:
+                #     print('warning: tried 10 times (and failed) to find a novel recommendation')
                 ml_rec.append(ml_tmp)
                 p_rec.append(p_tmp)
                 rec_score.append(0) 
