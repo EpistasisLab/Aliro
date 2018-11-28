@@ -159,130 +159,130 @@ class Dataset:
 
     ##----------------------------------------------------------------------
     ## Correlation related
-    #corr_with_dependent = None
+    corr_with_dependent = None
 
-    #def _get_corr_with_dependent(self):
-    #    """Called from init. Sets up data for correlation related meta-features.
-    #    #todo: take-call - Should I make different classes/modules for
-    #    different types of meta-features? Eg. Correlation, Entropy"""
+    def _get_corr_with_dependent(self):
+        """Called from init. Sets up data for correlation related meta-features.
+        #todo: take-call - Should I make different classes/modules for
+        different types of meta-features? Eg. Correlation, Entropy"""
         
-    #    #Correlation with dependent variable only make sense for regression problems
-    #    if self.prediction_type == 'regression':
-    #        if self.corr_with_dependent!=None:
-    #            return self.corr_with_dependent
-    #        else:
-    #            self.corr_with_dependent = self.df_encoded.corr()[self.dependent_col]
-    #            self.corr_with_dependent = self.corr_with_dependent.loc[self.corr_with_dependent.index!=self.dependent_col]
-    #            return self.corr_with_dependent
+        #Correlation with dependent variable only make sense for regression problems
+        if self.prediction_type == 'regression':
+            if self.corr_with_dependent!=None:
+                return self.corr_with_dependent
+            else:
+                self.corr_with_dependent = self.df_encoded.corr()[self.dependent_col]
+                self.corr_with_dependent = self.corr_with_dependent.loc[self.corr_with_dependent.index!=self.dependent_col]
+                return self.corr_with_dependent
 
-    #def corr_with_dependent_abs_max(self):
-    #    """ max absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return abs_corr_with_dependent.max()
+    def corr_with_dependent_abs_max(self):
+        """ max absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return abs_corr_with_dependent.max()
     
-    #def corr_with_dependent_abs_min(self):
-    #    """ min absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return abs_corr_with_dependent.min()    
+    def corr_with_dependent_abs_min(self):
+        """ min absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return abs_corr_with_dependent.min()    
 
 
-    #def corr_with_dependent_abs_mean(self):
-    #    """ mean absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return abs_corr_with_dependent.mean()    
+    def corr_with_dependent_abs_mean(self):
+        """ mean absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return abs_corr_with_dependent.mean()    
 
-    #def corr_with_dependent_abs_median(self):
-    #    """ median absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return abs_corr_with_dependent.median()    
-
-
-
-    #def corr_with_dependent_abs_std(self):
-    #    """ std absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return abs_corr_with_dependent.std(ddof = 1)    
+    def corr_with_dependent_abs_median(self):
+        """ median absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return abs_corr_with_dependent.median()    
 
 
 
-    #def corr_with_dependent_abs_25p(self):
-    #    """ 25p absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return np.nanpercentile(abs_corr_with_dependent, 25)   
+    def corr_with_dependent_abs_std(self):
+        """ std absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return abs_corr_with_dependent.std(ddof = 1)    
 
 
 
-    #def corr_with_dependent_abs_75p(self):
-    #    """ 75p absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return np.nanpercentile(abs_corr_with_dependent, 75)
+    def corr_with_dependent_abs_25p(self):
+        """ 25p absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return np.nanpercentile(abs_corr_with_dependent, 25)   
 
-    ##todo: try kurtosis and skew for correl values without abs.
 
-    #def corr_with_dependent_abs_kurtosis(self):
-    #    """ kurtosis of absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    from scipy.stats import kurtosis
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return kurtosis(abs_corr_with_dependent, bias = False)
 
-    #def corr_with_dependent_abs_skew(self):
-    #    """ skew of absolute pearson correlation with dependent variable
-    #    returns np.nan for classificaiton problems. Uses df_encoded
-    #    ie dataframe with categorical columns encoded automatically.
-    #    """
-    #    if self.prediction_type == 'classification':
-    #        return np.nan
-    #    else:
-    #        abs_corr_with_dependent = self._get_corr_with_dependent().abs()
-    #        return skew(abs_corr_with_dependent, bias = False)
+    def corr_with_dependent_abs_75p(self):
+        """ 75p absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return np.nanpercentile(abs_corr_with_dependent, 75)
+
+    #todo: try kurtosis and skew for correl values without abs.
+
+    def corr_with_dependent_abs_kurtosis(self):
+        """ kurtosis of absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        from scipy.stats import kurtosis
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return kurtosis(abs_corr_with_dependent, bias = False)
+
+    def corr_with_dependent_abs_skew(self):
+        """ skew of absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return skew(abs_corr_with_dependent, bias = False)
 
     #----------------------------------------------------------------------
     # Class probablity related
