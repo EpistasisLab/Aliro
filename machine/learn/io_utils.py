@@ -51,7 +51,7 @@ class Experiment:
         """
         input_data, filename, dependent_col = get_input_data(self.args['_id'], self.tmpdir)
         return input_data, filename, dependent_col
-    
+
     def get_model(self):
         """Get scikit learn method.
         Parameters
@@ -168,21 +168,43 @@ def get_input_data(_id, tmpdir):
     jsondata = json.loads(response.text)
     files = jsondata['files']
     filename = [file['filename'] for file in files]
-    dependent_cols = list(set([file['dependent_col'] for file in files]))
-    if len(dependent_cols) != 1:
-        raise RuntimeError("Two files in one experiment should has the same target name. Filenames: " + str(filename))
-    dependent_col = dependent_cols[0]
+    dependent_col = ''
+    for file in files:
+        if 'dependent_col' not in file:
+            raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
+        if dependent_col and dependent_col != file['dependent_col']:
+            raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
+        else:
+            dependent_col = file['dependent_col']
 
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
         input_data = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+        check_column(dependent_col, input_data)
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python'))
+            indata = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+            check_column(dependent_col, indata)
+            input_data.append(indata)
 
     return input_data, filename, dependent_col
+
+def check_column(column_name, dataframe):
+    """ check if a column exists in Pandas DataFrame.
+    Parameters
+    ----------
+    column_name: string
+        column name
+    dataframe: pandas.DataFrame
+        pandas DataFrame
+    Returns
+    -------
+    None
+    """
+    if column_name not in dataframe.columns:
+        raise RuntimeError("Target column does exist in input dataset.")
 
 
 def bool_type(val):
