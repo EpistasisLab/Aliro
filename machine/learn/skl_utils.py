@@ -621,7 +621,7 @@ print("Testing score: ", test_score)
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
-print("Holding score: ", end="")
+print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
