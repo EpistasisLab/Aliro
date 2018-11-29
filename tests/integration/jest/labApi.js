@@ -2,11 +2,11 @@
 * Api interfact to a lab instance
 */
 
-import { get, post, put } from './util/apiHelper';
+import { get, post, put, putFormData } from './util/apiHelper';
 
 export const fetchDatasets = () => get('http://lab:5080/api/userdatasets');
 export const fetchDataset = (id) => get(`http://lab:5080/api/datasets/${id}`);
-export const putDataset = (params) => put(`http://lab:5080/api/v1/datasets/`, params);
+export const putDataset = (params) => putFormData(`http://lab:5080/api/v1/datasets/`, params);//, true, 'multipart/form-data');
 
 
 export const fetchDatasetMetafeatures = (id) => get(`http://lab:5080/api/v1/files/${id}/metafeatures`);

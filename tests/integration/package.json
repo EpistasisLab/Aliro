@@ -30,11 +30,11 @@
         }
       ],
       [
-      "./node_modules/jest-junit",
+        "./node_modules/jest-junit",
         {
-          "suiteName":"Jest Integration Test Suite",
-          "outputDirectory":"/target/test-reports",
-          "outputName":"int_jest_xunit.xml"
+          "suiteName": "Jest Integration Test Suite",
+          "outputDirectory": "/target/test-reports",
+          "outputName": "int_jest_xunit.xml"
         }
       ]
     ]
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.0.2",
+    "@types/node": "^10.12.10",
     "babel-jest": "^23.0.1",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
