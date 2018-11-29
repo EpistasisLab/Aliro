@@ -41,6 +41,9 @@ Once the webserver is up, connect to <http://localhost:5080/> to access the webs
 
 From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page.
 
+### Usage of scripts and model exported from PennAI ###
+
+Please check [Demo](docs/PennAI_Demo/Demo of using exported scripts from PennAI.ipynb) of using scripts and model exported from PennAI.
 
 ## Developer Info
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.  If the code changes modified the base container, run `docker build ./dockers/base -t pennai/base:latest` before running `docker-compose build`.
