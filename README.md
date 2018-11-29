@@ -15,7 +15,7 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (needed only to run unit tests locally)
   	- [Python 3.* ](https://www.python.org/downloads/)
-  	- [nose](https://pypi.org/project/nose/) 
+  	- [nose](https://pypi.org/project/nose/)
 	- [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
   - Node.js (can be helpful for local development)
   	- [https://nodejs.org/en/](https://nodejs.org/en/)
@@ -43,7 +43,7 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 
 ### Usage of scripts and model exported from PennAI ###
 
-Please check [Demo](docs/PennAI_Demo/Demo of using exported scripts from PennAI.ipynb) of using scripts and model exported from PennAI.
+Please check [Demo](docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb) of using scripts and model exported from PennAI.
 
 ## Developer Info
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.  If the code changes modified the base container, run `docker build ./dockers/base -t pennai/base:latest` before running `docker-compose build`.
@@ -77,7 +77,7 @@ npm run build-dev
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
 - Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`
-- Results: 
+- Results:
 	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
 	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
 - Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
