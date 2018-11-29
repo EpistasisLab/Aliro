@@ -49,8 +49,8 @@ class Experiment:
             list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
                 while the 2nd one is testing dataset
         """
-        input_data, filename = get_input_data(self.args['_id'], self.tmpdir)
-        return input_data, filename
+        input_data, filename, dependent_col = get_input_data(self.args['_id'], self.tmpdir)
+        return input_data, filename, dependent_col
 
     def get_model(self):
         """Get scikit learn method.
@@ -147,6 +147,11 @@ def get_input_data(_id, tmpdir):
         pandas.DataFrame: PennAI will use train_test_split to make train/test splits
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
             while the 2nd one is testing dataset
+    filename: list
+        list fo filename(s) in one experiment
+    dependent_col: string
+        target column name
+
     """
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
@@ -163,16 +168,44 @@ def get_input_data(_id, tmpdir):
     jsondata = json.loads(response.text)
     files = jsondata['files']
     filename = [file['filename'] for file in files]
+    dependent_col = ''
+    for file in files:
+        if 'dependent_col' not in file:
+            raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
+        if dependent_col and dependent_col != file['dependent_col']:
+            raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
+        else:
+            dependent_col = file['dependent_col']
+
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
         input_data = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+        check_column(dependent_col, input_data)
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            input_data.append(pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python'))
+            indata = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+            check_column(dependent_col, indata)
+            input_data.append(indata)
 
-    return input_data, filename
+    return input_data, filename, dependent_col
+
+def check_column(column_name, dataframe):
+    """ check if a column exists in Pandas DataFrame.
+    Parameters
+    ----------
+    column_name: string
+        column name
+    dataframe: pandas.DataFrame
+        pandas DataFrame
+    Returns
+    -------
+    None
+    """
+    if column_name not in dataframe.columns.values:
+        raise ValueError(
+            'The provided data file does not seem to have a target column.')
 
 
 def bool_type(val):
