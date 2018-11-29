@@ -173,7 +173,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 /**
 * Add datasets to the database.
 * 
-* @param _files - dataset files
+* @param _files - an array of dataset files
 * @param _metadata - json
 *    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
@@ -181,7 +181,9 @@ app.post("/api/v1/projects", (req, res, next) => {
 *    username - owner of the dataset
 *
 */
-app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
+app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
+    //console.log(`======app.put ${req.get('Content-Type')}`)
+
     // Parse request
     if (req.body._metadata === undefined) {
         res.status(400);
@@ -217,9 +219,9 @@ app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next
     } else if (!req.hasOwnProperty('files')) {
         res.status(400);
         return res.send({error: "Missing parameter _files"});
-    } else if (req.files.length == 0) {
+    } else if (req.files.length != 1) {
         res.status(400);
-        return res.send({error: "_files has length 0"});
+        return res.send({error: `_files does not have length 1`});
     } 
 
     // process dataset
@@ -1121,6 +1123,7 @@ var linkDataset = function(experiment, datasetId) {
 *
 */
 var processDataset = function(files, dataset_id, filepath, dependent_col) {
+    console.log(`processDataset: ${filepath}`)
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
     obj = {};

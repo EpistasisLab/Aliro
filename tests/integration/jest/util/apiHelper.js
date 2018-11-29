@@ -1,5 +1,7 @@
 require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
+const FormData = require('form-data');
+
 
 export const get = (route) => {
   return fetch(route, {
@@ -49,9 +51,9 @@ export const post = (route, body) => {
     .then(json => json);
 };
 
-export const put = (route, body, stringify=true) => {
+export const put = (route, body, stringify=true, contentType='application/json') => {
   let myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Content-Type', contentType);
   
   if (stringify) { body = JSON.stringify(body) }
 
@@ -72,10 +74,36 @@ export const put = (route, body, stringify=true) => {
     .then(json => json);
 };
 
+export const putFormData = (route, form) => {
+  let myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'multipart/form-data');
+  
+  /*
+  def form = new FormData();
+
+  Object.keys(data).forEach(function(key) {
+    //console.log(`key: ${key}`)
+    form.append(key, data[key]);
+  });
+*/
+  return fetch(route, {
+    method: 'PUT',
+    credentials: 'include',
+    body: form
+  }).then(checkStatus)
+    .then(response => {
+      return response.json();
+    })
+    .catch((err) => {
+           throw(err);
+    })
+    .then(json => json);
+};
+
 
 function checkStatus(response) {
   if (response.status >= 400) {
-    console.log(`error: ${response.error}`)
+    //console.log(`error: ${response.error}`)
     var error = new Error(`${response.status}: ${response.statusText}`);
     error.response = response;
     throw error;
