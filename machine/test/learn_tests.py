@@ -6,6 +6,7 @@ os.environ['LAB_PORT'] = '5080'
 os.environ['PROJECT_ROOT'] = '.'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from tempfile import mkdtemp
 from shutil import rmtree
 Path = "machine/learn"
@@ -58,6 +59,8 @@ test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 test_clf = DecisionTreeClassifier()
+test_rfc = RandomForestClassifier()
+test_gbc = GradientBoostingClassifier()
 test_reg = DecisionTreeRegressor()
 # projects information
 projects_json = "dockers/dbmongo/files/projects.json"
@@ -83,10 +86,24 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id2':
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id2"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id3': # different target names
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id3"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id4': # no target name
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id4"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id5': # invalid target name
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id5"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
-        return MockResponse(json.dumps({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
-        return MockResponse(json.dumps({"files": [{'_id': 'test_file_id', 'filename': 'test_clf_input'}, {'_id': 'test_file_id2', 'filename': 'test_reg_input'}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
+                                                {"_id":"test_file_id2", "dependent_col": "class", "filename": "test_reg_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
+                                                {"_id":"test_file_id2", "dependent_col": "target", "filename": "test_reg_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "filename": "test_clf_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -107,12 +124,13 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
         exp_filename = 'test_clf_input'
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
         assert exp_filename == filename[0]
+        assert target_name == 'class'
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -123,7 +141,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
@@ -131,6 +149,39 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_input_data2.equals(input_data[1])
         assert filename[0] == 'test_clf_input'
         assert filename[1] == 'test_reg_input'
+        assert target_name == 'class'
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_3(self, mock_get):
+        """Test get_input_data function raises RuntimeError when target names are inconsistent in two dataset files of one experiment."""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id3'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_4(self, mock_get):
+        """Test get_input_data function raises RuntimeError when target names are no available from API"""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id4'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(RuntimeError, get_input_data, _id, tmpdir)
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_5(self, mock_get):
+        """Test get_input_data function raises ValueError when target names are no available in input dataset."""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id5'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        assert_raises(ValueError, get_input_data, _id, tmpdir)
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -182,13 +233,13 @@ class APITESTCLASS(unittest.TestCase):
 
             print(algorithm_name, args)
             main(args)
-            print(outdir)
 
             value_json = '{}/value.json'.format(outdir)
             assert os.path.isfile(value_json)
             with open(value_json, 'r') as f:
                 value = json.load(f)
-            assert value['_scores']['train_score']
+            train_score = value['_scores']['train_score']
+            assert train_score
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
             assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
@@ -198,6 +249,19 @@ class APITESTCLASS(unittest.TestCase):
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
+            input_data = pd.read_csv(test_clf_input2, sep='\t')
+            target_name='class'
+            features = input_data.drop(target_name, axis=1).values
+            classes = LabelEncoder().fit_transform(input_data[target_name].values)
+            training_features, testing_features, training_classes, testing_classes = \
+                train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+            # test reloaded model is the same
+            pickle_model = joblib.load(pickle_file)
+            load_clf = pickle_model['model']
+            load_clf_score = SCORERS['balanced_accuracy'](
+                load_clf, training_features, training_classes)
+            print(algorithm_name, train_score, load_clf_score)
+            assert train_score == load_clf_score
 
 
 def test_balanced_accuracy():
@@ -353,6 +417,90 @@ def test_generate_results_5():
                     'regression', False)
 
 
+def test_generate_results_6():
+    """Test generate results can produce expected pickle files with RandomForestClassifier."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_rfc, input_data=test_clf_input_df,
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+
+    input_data = pd.read_csv(
+        test_clf_input, sep='\t')
+    target_name='class'
+    features = input_data.drop(target_name, axis=1).values
+    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    training_features, testing_features, training_classes, testing_classes = \
+        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    train_score = value['_scores']['train_score']
+    assert train_score > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
+    # test reloaded model is the same
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_clf_score = SCORERS['balanced_accuracy'](
+        load_clf, training_features, training_classes)
+    assert train_score == load_clf_score
+
+    rmtree(tmpdir)
+
+
+def test_generate_results_7():
+    """Test generate results can produce expected pickle files with GradientBoostingClassifier."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_gbc, input_data=test_clf_input_df,
+                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+
+    input_data = pd.read_csv(
+        test_clf_input, sep='\t')
+    target_name='class'
+    features = input_data.drop(target_name, axis=1).values
+    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    training_features, testing_features, training_classes, testing_classes = \
+        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    train_score = value['_scores']['train_score']
+    assert train_score > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
+    # test reloaded model is the same
+    pickle_model = joblib.load(pickle_file)
+    load_clf = pickle_model['model']
+    load_clf_score = SCORERS['balanced_accuracy'](
+        load_clf, training_features, training_classes)
+    assert train_score == load_clf_score
+
+    rmtree(tmpdir)
+
+
 def test_setup_model_params():
     """Test setup_model_params update parameter in a scikit-learn model."""
     new_model = setup_model_params(test_clf, 'random_state', 32)
@@ -388,7 +536,8 @@ def test_generate_export_codes():
     load_clf_score = SCORERS['balanced_accuracy'](load_clf, testing_features, testing_classes)
     assert test_clf_scoe == load_clf_score
 
-    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'], random_state=42)
+    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'],
+                                        target_name=target_name, random_state=42)
 
     expected_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
@@ -407,9 +556,9 @@ from sklearn.metrics import make_scorer
 # path to your pickle file, below is the downloaded pickle file
 pickle_file = 'test.plk'
 # file path to the dataset
-dataset = ''
-# outcome column name
-target_column = ''
+dataset = 'test_dataset.tsv'
+# target column name
+target_column = '{target_name}'
 # seed to be used for train_test_split (default in PennAI is 42)
 seed = 42
 
@@ -458,7 +607,7 @@ print("Testing score: ", test_score)
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
-print("Holding score: ", end="")
+print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
@@ -467,10 +616,13 @@ print(model.score(testing_features, testing_target))
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
 """.format(
-    python_version=sys.version.replace('\n', ''),
-    numpy_version=np.__version__,
-    pandas_version=pd.__version__,
-    skl_version=skl_version,
-    model=str(load_clf).replace('\n', '\n#'))
+        python_version=sys.version.replace('\n', ''),
+        numpy_version=np.__version__,
+        pandas_version=pd.__version__,
+        skl_version=skl_version,
+        target_name=target_name,
+        model=str(load_clf).replace('\n', '\n#')
+    )
+
     assert_equal(pipeline_text, expected_text)
     rmtree(tmpdir)
