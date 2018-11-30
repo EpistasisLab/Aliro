@@ -1,3 +1,5 @@
+// DEPRECATED, see loadInitialDatasets.py
+
 /* Modules */
 require("./env"); // Load configuration variables
 var os = require("os");

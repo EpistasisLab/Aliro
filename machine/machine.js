@@ -3,7 +3,7 @@ require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
-var datasets = require("./datasets");
+//var datasets = require("./datasets");
 var spawn = require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
 var EventEmitter = require("events").EventEmitter;
@@ -153,6 +153,9 @@ fs.readFile("specs.json", "utf-8")
                 process.exit();
             });
     });
+
+    /*
+    datasets management
 chokidar.watch(datasets.datasets_path, {
     awaitWriteFinish: true,
     ignored: /metadata/,
@@ -163,11 +166,11 @@ chokidar.watch(datasets.datasets_path, {
 });
 
 
-/* Global max capacity */
-/* Process Datasets */
 datasets.laburi = laburi
 datasets.loadInitialDatasets()
+*/
 
+//max capacity
 var maxCapacity = 1;
 if (process.env.CAPACITY) {
     maxCapacity = process.env.CAPACITY;
