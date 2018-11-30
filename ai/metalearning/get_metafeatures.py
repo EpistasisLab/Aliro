@@ -2,17 +2,20 @@
 Script to get metafeatures for a dataset passed at the command line.
 Dumps the results into json. 
 """
+import warnings
 
-import pandas as pd
-try:
-    from dataset_describe import Dataset
-except:
-    from ai.metalearning.dataset_describe import Dataset
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=DeprecationWarning)
+    import pandas as pd
+    try:
+        from dataset_describe import Dataset
+    except:
+        from ai.metalearning.dataset_describe import Dataset
 
-from collections import OrderedDict
-import argparse
-import sys
-import simplejson
+    from collections import OrderedDict
+    import argparse
+    import sys
+    import simplejson
 
 def generate_metafeatures_from_datafile(input_file, target_field, **kwargs):
     """Calls metafeature generating methods from dataset_describe"""

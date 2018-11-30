@@ -549,12 +549,10 @@ mediaType: application/json
   put:
     description: Register a new datafile
     body:
-      application/json:
+      multipart/form-data:
         type: object
         example: {
-          _files:[
-            fileBin1
-          ],
+          _files:array of files,
           _metadata: [
             name: "datasetName",
             username: "testUser",

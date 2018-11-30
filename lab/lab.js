@@ -182,7 +182,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 *
 */
 app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
-    //console.log(`======app.put ${req.get('Content-Type')}`)
+    //console.log(`======app.put datasets ${req.get('Content-Type')}`)
 
     // Parse request
     if (req.body._metadata === undefined) {
@@ -228,43 +228,35 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     var filepath = metadata['filepath'];
     var dependent_col = metadata['dependent_col'];
 
-    if (metadata['dataset_id'] !== undefined) {
-        dataset_id = metadata['dataset_id'];
-        var filesP = processDataset(req.files, dataset_id, filepath, dependent_col);        
-        Promise.all(filesP)
-            .then((results) => {
-                res.send({
-                    message: "Files uploaded",
-                    dataset_id: dataset_id
-                });
-            })
-            .catch((err) => {
-                res.status(400);
-                res.send({error:"Unable to upload files"})
-            });
-    } else {
-        db.datasets.insertAsync({
-                name: metadata.name,
-                username: metadata.username,
-                files: []
-            }, {})
-            .then((exp) => {
-                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-                var filesP = processDataset(req.files, dataset_id, filepath, dependent_col);
-                Promise.all(filesP)
-                    .then((results) => {
-                        res.send({
-                            message: "Files uploaded",
-                            dataset_id: dataset_id
-                        });
-                    })
-                    .catch((err) => {
-                        res.status(400);
-                        res.send({error:"Unable to upload files"})
-                    });
-            });
-    }
+    db.datasets.insertAsync({
+            name: metadata.name,
+            username: metadata.username,
+            files: []
+        }, {})
+        .then((exp) => {
+            var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
+            // this should be changed to use a different error mechanism then try/catch
+            var filesP
+            try {
+                filesP = processDataset(req.files, dataset_id, filepath, dependent_col);
+            }
+            catch (e) {
+                res.status(400);
+                return res.send({error:e.message})
+            }
+            Promise.all(filesP)
+                .then((results) => {
+                    res.send({
+                        message: "Files uploaded",
+                        dataset_id: dataset_id
+                    });
+                })
+                .catch((err) => {
+                    res.status(400);
+                    res.send({error:"Unable to upload files"})
+                });
+        });
 });
 
 //toggles ai for dataset
@@ -1137,7 +1129,10 @@ var processDataset = function(files, dataset_id, filepath, dependent_col) {
             console.log(`setting metafeatures for dataset ${dataset_id} - '${fileObj.originalname}'`)
         }
         else {
-            console.log(`Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`)
+            errMsg = `Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`
+            console.log(errMsg)
+            // this should be changed to use callbacks or promises, see <https://stackoverflow.com/questions/33086247/throwing-an-error-in-node-js>
+            throw new Error(errMsg)
         }
 
         var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {
