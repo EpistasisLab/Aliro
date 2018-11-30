@@ -173,55 +173,90 @@ app.post("/api/v1/projects", (req, res, next) => {
 /**
 * Add datasets to the database.
 * 
-* @param _files - dataset files
+* @param _files - an array of dataset files
 * @param _metadata - json
 *    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
+*    filepath 
 *    username - owner of the dataset
 *
 */
-app.put("/api/v1/datasets", upload.array("_files", "_metadata"), (req, res, next) => {
-    // Retrieve list of files for experiment
-    // Process files
-    var metadata = JSON.parse(req.body._metadata);
+app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
+    //console.log(`======app.put datasets ${req.get('Content-Type')}`)
+
+    // Parse request
+    if (req.body._metadata === undefined) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata"});
+    }
+
+    var metadata
+    try {
+        metadata = JSON.parse(req.body._metadata);
+    }
+    catch(e) {
+        res.status(400);
+        console.log(`Unable to parse _metadata: ${e.message}`)
+        return res.send({error:`Unable to parse _metadata: ${e.message}`})
+    }
+
+    // Validate
+    if (!metadata) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata"});
+    } else if (!metadata.hasOwnProperty('dependent_col')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.dependent_col"});
+    } else if (!metadata.hasOwnProperty('name')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.name"});
+    } else if (!metadata.hasOwnProperty('filepath')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.filepath"});
+    } else if (!metadata.hasOwnProperty('username')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _metadata.username"});
+    } else if (!req.hasOwnProperty('files')) {
+        res.status(400);
+        return res.send({error: "Missing parameter _files"});
+    } else if (req.files.length != 1) {
+        res.status(400);
+        return res.send({error: `_files does not have length 1`});
+    } 
+
+    // process dataset
     var filepath = metadata['filepath'];
     var dependent_col = metadata['dependent_col'];
 
-    if (metadata['dataset_id'] !== undefined) {
-        dataset_id = metadata['dataset_id'];
-        var filesP = processDataset(req.files, dataset_id, filepath, dependent_col);        
-        Promise.all(filesP)
-            .then((results) => {
-                res.send({
-                    message: "Files uploaded",
-                    dataset_id: dataset_id
-                });
-            })
-            .catch((err) => {
-                next(err);
-            });
-    } else {
-        db.datasets.insertAsync({
-                name: metadata.name,
-                username: metadata.username,
-                files: []
-            }, {})
-            .then((exp) => {
-                var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-                var filesP = processDataset(req.files, dataset_id, filepath, dependent_col);
-                Promise.all(filesP)
-                    .then((results) => {
-                        res.send({
-                            message: "Files uploaded",
-                            dataset_id: dataset_id
-                        });
-                    })
-                    .catch((err) => {
-                        next(err);
-                    });
-            });
-    }
+    db.datasets.insertAsync({
+            name: metadata.name,
+            username: metadata.username,
+            files: []
+        }, {})
+        .then((exp) => {
+            var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
 
+            // this should be changed to use a different error mechanism then try/catch
+            var filesP
+            try {
+                filesP = processDataset(req.files, dataset_id, filepath, dependent_col);
+            }
+            catch (e) {
+                res.status(400);
+                return res.send({error:e.message})
+            }
+            Promise.all(filesP)
+                .then((results) => {
+                    res.send({
+                        message: "Files uploaded",
+                        dataset_id: dataset_id
+                    });
+                })
+                .catch((err) => {
+                    res.status(400);
+                    res.send({error:"Unable to upload files"})
+                });
+        });
 });
 
 //toggles ai for dataset
@@ -1080,6 +1115,7 @@ var linkDataset = function(experiment, datasetId) {
 *
 */
 var processDataset = function(files, dataset_id, filepath, dependent_col) {
+    console.log(`processDataset: ${filepath}`)
     metadataP = Array(files.length);
     ready = Promise.resolve(null);
     obj = {};
@@ -1093,7 +1129,10 @@ var processDataset = function(files, dataset_id, filepath, dependent_col) {
             console.log(`setting metafeatures for dataset ${dataset_id} - '${fileObj.originalname}'`)
         }
         else {
-            console.log(`Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`)
+            errMsg = `Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`
+            console.log(errMsg)
+            // this should be changed to use callbacks or promises, see <https://stackoverflow.com/questions/33086247/throwing-an-error-in-node-js>
+            throw new Error(errMsg)
         }
 
         var gfs = new db.GridStore(db, fileId, fileObj.originalname, "w", {

@@ -12,6 +12,7 @@ services:
     stdin_open: true
     volumes: 
       - "./tests/integration/jest:/src/jest"
+      - "./data/datasets/test/integration:/appsrc/data/datasets/test/integration"
       - "./target:/target"
       - "./ai/__pycache__:/appsrc/ai/__pycache__"
       - "./ai/metalearning/__pycache__:/appsrc/ai/metalearning/__pycache__"
