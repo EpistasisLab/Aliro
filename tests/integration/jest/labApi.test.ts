@@ -4,10 +4,13 @@
 */
 
 import * as labApi from './labApi';
-
+import fs = require('fs');
+import FormData = require('form-data');
 
 const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
 const EXPECTED_DATASET_COUNT = 4; // min number of datasets registered with the lab server
+
+const DATASET_PATH = '/appsrc/data/datasets/test/integration'
 
 describe('lab', () => {
 	describe('api', () => {
@@ -41,6 +44,98 @@ describe('lab', () => {
 				expect(data[0].metafeatures).toHaveProperty('n_rows')
 				expect(data[0].metafeatures).toHaveProperty('n_columns')
 			});
+		});
+
+		it.skip('putDatasetGood', async () => {
+			let filepath = `${DATASET_PATH}/appendicitis_2.csv`
+
+			let form = new FormData();
+
+			let metadata =  JSON.stringify({
+					'name': 'appendicitis_2.csv',
+		            'username': 'testUser',
+		            'timestamp': Date.now(),
+		            'dependent_col' : 'target_class',
+		            'filepath' : DATASET_PATH
+	            })
+
+			form.append('_metadata', metadata)
+			form.append('_files', fs.createReadStream(filepath));
+
+			let result
+
+			try {
+				result = await labApi.putDataset(form);
+			}
+			catch (e) {
+				var json = await e.response.json()
+				expect(json.error).toBeUndefined()
+				expect(e).toBeUndefined()
+			}
+
+			expect(result).toHaveProperty('message');
+			expect(result).toHaveProperty('dataset_id');
+
+			expect(result.message).toEqual("Files uploaded");
+		});
+
+		it('putDataset missing param _metadata', async () => {
+			expect.assertions(2);
+
+			let form = new FormData();
+
+			try {
+				var result = await labApi.putDataset(form);
+			} catch (e) {
+				var json = await e.response.json() // get the specific error description
+				expect(json.error).toEqual("Missing parameter _metadata")
+				expect(e.response.status).toEqual(400)
+			}
+		});
+
+		it('putDataset missing param _metadata.filepath', async () => {
+			expect.assertions(2);
+
+			var metadata = JSON.stringify({
+					'name': 'datasetName',
+		            'username': 'testUser',
+		            'timestamp': Date.now(),
+		            'dependent_col' : 'class',
+	            })
+
+			let form = new FormData();
+			form.append('_metadata', metadata)
+
+			try {
+				var result = await labApi.putDataset(form);
+			} catch (e) {
+				var json = await e.response.json() // get the specific error description
+				expect(json.error).toEqual("Missing parameter _metadata.filepath")
+				expect(e.response.status).toEqual(400)
+			}
+		});
+
+		it.skip('putDataset empty file array', async () => {
+			expect.assertions(2);
+
+			var metadata = JSON.stringify({
+					'name': 'datasetName',
+		            'username': 'testUser',
+		            'timestamp': Date.now(),
+		            'dependent_col' : 'class',
+		            'filepath' : DATASET_PATH
+	            })
+
+			let form = new FormData();
+			form.append('_metadata', metadata)
+
+			try {
+				var result = await labApi.putDataset(parms);
+			} catch (e) {
+				var json = await e.response.json() // get the specific error description
+				expect(json.error).toEqual("_files does not have length 1")
+				expect(e.response.status).toEqual(400)
+			}
 		});
 
 
