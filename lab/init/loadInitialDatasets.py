@@ -19,6 +19,9 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
+DEFAULT_TARGET_COLUMN = "class"
+
+
 def registerDatafiles(directory, apiPath):
 	'''
 	Register all the datafiles in directory with the lab server
@@ -31,7 +34,7 @@ def registerDatafiles(directory, apiPath):
 			extension = os.path.splitext(file)[1]
 
 			if (extension in ['.csv', '.tsv']):
-				target_column = "class"
+				foundMetadataFile, target_column = getMetadataForDatafile(root, file)
 
 				valResult, message = validateDatafile(root, file, target_column)
 
@@ -42,9 +45,50 @@ def registerDatafiles(directory, apiPath):
 				registerDatafile(root, file, target_column, apiPath)		
 
 
+def getMetadataForDatafile(root, file):
+	'''
+	Check to see if there is a metadata .json file for the data file, if so attempt to use it to get 
+	dataset metadata.
+
+	Currently only looks for 'target_column', in the future may also include other data such as 
+	which columns should represent catagorial features.
+
+	For a dataset named "dataset.csv", the analogous metadata file would be "dataset_metadata.json"
+
+	@return tuple
+		boolean - was metadata extracted
+		string 	- target_column
+	'''
+	metafile = os.path.splitext(file)[0] + "_metadata.json"
+	filepath = os.path.join(root, metafile)
+
+	target_column = DEFAULT_TARGET_COLUMN
+
+	# Try to open and parse the file
+	try:
+		with open(filepath) as f:
+			data = simplejson.load(f)
+	except FileNotFoundError:
+		logger.info("File " + metafile + " does not exist.")
+		return False, target_column
+	except Exception as e:
+		logger.warning("Unable to parse file " + filepath + ": " + str(e))
+		return False, target_column
+
+	# extract matadata from the file
+	if ('target_column' in data.keys()):
+		target_column = data['target_column']
+	else:
+		logger.warning("Could not get 'target_column' from file " + filepath)
+
+
+	return True, target_column
+
+
 def validateDatafile(root, file, target_column):
 	'''
 	Check that a datafile is valid
+
 
 	@return tuple
 		boolean - validation result

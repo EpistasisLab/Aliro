@@ -41,6 +41,25 @@ def load_good_test_data():
         	"foobar"),
 	   ]
 
+def load_metadata():
+    return [
+        ("good1", 
+        	"data/datasets/test/metadata", 
+        	"test.csv",
+        	True,
+        	"my_target_column"),
+        ("good2", 
+        	"data/datasets/test/metadata", 
+        	"test.tsv",
+        	True,
+        	"my_target_column"),
+        ("dne", 
+        	"data/datasets/test/metadata", 
+        	"i_dont_exist.csv",
+        	False,
+        	"class"),
+	   ]
+
 class TestResultUtils(unittest.TestCase):
 	@parameterized.expand(load_bad_test_data)
 	def test_validate_data_file_bad(self, name, root, file, target_column, expectedMessage):
@@ -54,3 +73,9 @@ class TestResultUtils(unittest.TestCase):
 		result, message = loadInitialDatasets.validateDatafile(root, file, target_column)
 		assert(result)
 		assert not(message)
+
+	@parameterized.expand(load_metadata)
+	def test_get_metadata_for_datafile(self, name, root, file, expected_fileExists, expected_target_column):
+		fileExists, target_column = loadInitialDatasets.getMetadataForDatafile(root, file)
+		assert(fileExists == expected_fileExists)
+		assert(target_column == expected_target_column)
