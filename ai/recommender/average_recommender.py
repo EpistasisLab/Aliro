@@ -42,7 +42,18 @@ class AverageRecommender(BaseRecommender):
         # evaluated
         self.trained_dataset_models = set()
 
-    def update(self, results_data):
+    def set_trained_dataset_models(self, results_data):
+        results_data.loc[:, 'dataset-algorithm-parameters'] = (
+                                       results_data['dataset'].values + '|' +
+                                       results_data['algorithm'].values + '|' +
+                                       results_data['parameters'].values)
+
+        # get unique dataset / parameter / classifier combos in results_data
+        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
+        self.trained_dataset_models.update(d_ml_p)
+
+
+    def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
         Updates self.scores
@@ -55,21 +66,15 @@ class AverageRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         """
-        # make combined data columns of datasets, classifiers, and parameters
+        # update trained dataset models
+        self.set_trained_dataset_models(results_data)
+
+        # make combined data columns of classifiers and parameters
         results_data.loc[:, 'algorithm-parameters'] = (
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameters'].values)
 
-        results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + '|' +
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
-
-        # get unique dataset / parameter / classifier combos in results_data
-        ml_p = results_data['algorithm-parameters'].unique()
-        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
-        self.trained_dataset_models.update(d_ml_p)
-
+        # ml_p = results_data['algorithm-parameters'].unique()
         # get average balanced accuracy by classifier-parameter combo
         new_scores = results_data.groupby(('algorithm-parameters'))[self.metric].mean()
         new_weights = results_data.groupby('algorithm-parameters').size()
@@ -77,7 +82,7 @@ class AverageRecommender(BaseRecommender):
         # update scores
         self._update_scores(new_scores, new_weights)
 
-    def recommend(self, dataset_id=None, n_recs=1):
+    def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
 
         Parameters
@@ -95,9 +100,12 @@ class AverageRecommender(BaseRecommender):
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
-                rec = [r for r in rec if dataset_id + '|' + r not in
+                rec_filt = [r for r in rec if dataset_id + '|' + r not in
                        self.trained_dataset_models]
-
+                if len(rec_filt) >= n_recs:
+                    rec = rec_filt
+                else:
+                    print("WARNING: can't filter recommendations, possibly repeating")
             ml_rec = [r.split('|')[0] for r in rec]
             p_rec = [r.split('|')[1] for r in rec]
             rec_score = [self.scores[r] for r in rec]

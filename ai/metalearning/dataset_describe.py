@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.decomposition import PCA
-
+import pdb
 from scipy.stats import kurtosis, skew
 class Dataset:
     """
@@ -157,8 +157,8 @@ class Dataset:
     #todo: ratop_rowcol_post_encoding
 
 
-    #----------------------------------------------------------------------
-    # Correlation related
+    ##----------------------------------------------------------------------
+    ## Correlation related
     corr_with_dependent = None
 
     def _get_corr_with_dependent(self):
@@ -341,7 +341,7 @@ class Dataset:
     symbol_counts_dict = None
     def _get_symbols_per_category(self):
         """
-        Sets an dictionary with number of symbols per categorical 
+        Sets a dictionary with number of symbols per categorical 
         column using categorical_cols info.
         """
 
@@ -360,7 +360,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0 
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.nanmean(symbol_counts))
@@ -371,10 +372,13 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
-
-        return np.nanstd(symbol_counts, ddof = 1)
+        # if np.isnan(np.nanstd(symbol_counts, ddof = 1)):
+        #     print('nan in symbols_std')
+        #     pdb.set_trace()
+        return np.nanstd(symbol_counts, ddof = 1 if len(symbol_counts)>1 else 0)
 
     
     def symbols_min(self):
@@ -382,7 +386,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.min(symbol_counts))
@@ -393,7 +398,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
 
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
         symbol_counts = list(symbol_counts_dict.values())
 
         return int(np.max(symbol_counts))
@@ -403,7 +409,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -414,7 +421,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -425,7 +433,8 @@ class Dataset:
         symbol_counts_dict = self._get_symbols_per_category()
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
-            return np.nan
+            # return np.nan
+            return 0
 
         symbol_counts = list(symbol_counts_dict.values())
 
@@ -458,7 +467,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -471,7 +481,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -485,7 +496,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -499,7 +511,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -513,7 +526,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -527,7 +541,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -541,7 +556,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not kurtosis_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         kurtosisses = list(kurtosis_dict.values())
 
@@ -570,7 +586,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -585,7 +602,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -600,7 +618,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -614,7 +633,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -628,7 +648,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -642,7 +663,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -655,7 +677,8 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         
         if not skew_dict:
-            return np.nan
+            # return np.nan
+            return 0
         
         skews = list(skew_dict.values())
 
@@ -686,16 +709,18 @@ class Dataset:
 
 
     def pca_fraction_95(self):
-        pca_compenents = self._get_pca_components()
-        
-        if pca_compenents!=False:
+        """Returns the fraction of total number of features that explain 95% of the variance
+        in the dataset."""
+        pca_components = self._get_pca_components()
+
+        if pca_components!=False:
             sum_variance = 0
             min_idx = 0
-            for idx, ratio in enumerate(pca_compenents.explained_variance_ratio_):
+            for idx, ratio in enumerate(pca_components.explained_variance_ratio_):
                 sum_variance = sum_variance + ratio
                 min_idx = min_idx + 1
                 if sum_variance >= 0.95:
-                    return float(min_idx)/len(pca_compenents.explained_variance_ratio_)
+                    return float(min_idx)/len(pca_components.explained_variance_ratio_)
                 else:
                     continue
             return 1

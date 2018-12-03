@@ -43,26 +43,26 @@ def load_knowledgebase(resultsFile, datasetDirectory):
     # return
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData}
 
-def load_pmbl_knowledgebase():
-	""" load the PMBL knowledgebase
-	"""
-	return load_knowledgebase(
-		resultsFile = 'ai/metalearning/sklearn-benchmark5-data-short.tsv.gz',
-		datasetDirectory = "data/datasets/pmlb"
-		)
-
-
+def load_pmlb_knowledgebase():
+    """ load the PMBL knowledgebase"""
+    return load_knowledgebase(
+            resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted-filtered.tsv.gz',
+            datasetDirectory = "data/datasets/pmlb"
+            )
 
 def _load_results_from_file(resultsFile):
-	results_data = pd.read_csv(resultsFile,
-                       compression='gzip', sep='\t',
-                       names=['dataset',
-                              'algorithm',
-                              'parameters',
-                              'accuracy',
-                              'macrof1',
-                              'bal_accuracy']).fillna('')
-	return results_data
+    results_data = pd.read_csv(resultsFile,
+                       compression='gzip', sep='\t')
+                       # names=['dataset',
+                       #        'algorithm',
+                       #        'parameters',
+                       #        'accuracy',
+                       #        'macrof1',
+                       #        'bal_accuracy']).fillna('')
+    assert(not results_data.isna().any().any())
+    print('results_data:')
+    print(results_data.head())
+    return results_data
 
 
 

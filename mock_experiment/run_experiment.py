@@ -6,8 +6,12 @@ import numpy as np
 import argparse
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
-from mock_experiment.mock_meta_recommender import MockMetaRecommender, MockMLPMetaRecommender
+from ai.recommender.meta_recommender import MetaRecommender
+from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
+
 from collections import OrderedDict
+from mock_experiment.mf_utils import local_get_metafeatures, update_dataset_mf
 import warnings 
 warnings.simplefilter("ignore")
 # define a comparison function that tests a recommender on the pmlb datasets, 
@@ -15,19 +19,32 @@ warnings.simplefilter("ignore")
 def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
-    recommender = {'random': RandomRecommender(ml_p=ml_p,metric='bal_accuracy'),
-            'average': AverageRecommender(metric='bal_accuracy'),
-            'meta': MockMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
-                                        sample_size=1000),
-            'mlp_meta': MockMLPMetaRecommender(ml_p=ml_p,db_path='mock_experiment/metafeatures/',
-                                        sample_size=1000)
-            }[rec]
+    kwargs = {'metric':'bal_accuracy'}
+    if rec in ['random','meta','mlp']:
+            kwargs.update({'ml_p':ml_p})
+
+    rec_choice = {'random': RandomRecommender,
+            'average': AverageRecommender,
+            'meta': MetaRecommender,
+            'mlp': MLPMetaRecommender,
+            'knn': KNNMetaRecommender
+            }
+
+    recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
     # load first ten results into recommender
     train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
-    print('setting training data for recommender:',train_subset)
+    # print('setting training data for recommender:',train_subset)
+    init_data = []
+    init_data_mf = []
     for i in train_subset:
-        recommender.update(pmlb_data.loc[pmlb_data['dataset']==i])
+        init_data.append(pmlb_data.loc[pmlb_data['dataset']==i])
+        init_data_mf.append(local_get_metafeatures(i))
+    init_df = pd.concat(init_data)
+    dataset_mf = pd.concat(init_data_mf).set_index('dataset')
+    print('initial training on',len(init_df),'results')
+    recommender.update(init_df, dataset_mf)
+    
     rec_subset = [d for i,d in enumerate(data_idx) if i >= n_init]
     # loop thru rest of datasets
     for it,dataset in enumerate(rec_subset):
@@ -44,13 +61,18 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
             #     pdb.set_trace()
 
         # for each dataset, generate a recommendation
-        mls, ps, scores = recommender.recommend(n_recs=n_recs, dataset_id=dataset)
+        mls, ps, scores = recommender.recommend(dataset_id=dataset,
+                                                n_recs=n_recs,
+                                                dataset_mf=local_get_metafeatures(dataset)
+                                                )
+        print(len(mls))
         updates = []
         for i in np.arange(n_recs):
             ml = mls[i]
             if 'Meta' in type(recommender).__name__:
                 tmp = eval(ps[i])
-                for mfs in ['gamma','coef0','learning_rate','min_weight_fraction_leaf']:
+                for mfs in ['C','gamma','coef0','learning_rate','min_weight_fraction_leaf',
+                            'min_impurity_decrease']:
                     if mfs in tmp.keys():
                         tmp[mfs] = float(tmp[mfs])
                     p = str(OrderedDict(sorted(tmp.items())))
@@ -72,13 +94,15 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
                                                'bal_accuracy': [actual_score]})
                           )
             
-            # store the trial, iteration, dataset, recommender, ml rec, param rec, bal_accuracy	
+            # store the trial, iteration, dataset, recommender, ml rec, param rec,bal_accuracy	
             results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score,best_score,
                             (best_score-actual_score)/best_score])
 
         # print('updating recommender...')
         update_record = pd.concat(updates)
-        recommender.update(update_record)
+        dataset_mf = update_dataset_mf(dataset_mf, update_record)
+        
+        recommender.update(update_record,dataset_mf)
 
     if rec == 'meta':   # store feature importance scores
         fi = recommender.ml.feature_importances_
@@ -125,7 +149,9 @@ if __name__ == '__main__':
     #         }
     data_idx = np.unique(pmlb_data['dataset'])  # datasets 
     # output file
-    out_file = ('experiment_' + '-'.join(args.rec.split(',')) 
+    out_file = ('experiment_' 
+                + pmlb_file.split('/')[-1].split('.')[0]
+                + '-'.join(args.rec.split(',')) 
                 + '_' + str(args.n_recs) 
                 + 'recs_' + str(args.n_trials) 
                 + 'trials_' + str(args.n_init) + 'init.csv')    
