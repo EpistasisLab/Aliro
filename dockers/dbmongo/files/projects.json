@@ -110,6 +110,25 @@
                 "style": "radio",
                 "choices": [5, 10, 20]
             }
+        },
+        "min_weight_fraction_leaf": {
+            "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+            "type": "float",
+            "default": 0.0,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0,   0.05, 0.1,  0.15, 0.2,  0.25, 0.3,  0.35, 0.4,  0.45, 0.5 ]
+            }
+        },
+        "max_features": {
+            "description": "The number of features to consider when looking for the best split.",
+            "type": "string",
+            "default": "sqrt",
+            "ui": {
+                "style": "radio",
+                "choices": ["Square root", "Log2", "None"],
+                "values": ["sqrt", "log2", "None"]
+            }
         }
     },
     "category": "classification"
@@ -248,6 +267,16 @@
                 "choices": ["Square root", "Log2"],
                 "values": ["sqrt", "log2"]
             }
+        },
+        "loss": {
+            "description": "The loss function to be optimized.",
+            "type": "string",
+            "default": "deviance",
+            "ui": {
+                "style": "radio",
+                "choices": ["Deviance", "Exponential"],
+                "values": ["deviance", "exponential"]
+            }
         }
     },
     "category": "classification"
@@ -385,6 +414,16 @@
                 "choices": ["True", "False"],
                 "values": ["true", "false"]
             }
+        },
+        "fit_intercept": {
+            "description": "Fit intercept in addition to feature coefficients.",
+            "type": "bool",
+            "default": "true",
+            "ui": {
+                "style": "radio",
+                "choices": ["True", "False"],
+                "values": ["true", "false"]
+            }
         }
     },
     "category": "classification"
@@ -450,10 +489,19 @@
                 "choices": ["True", "False"],
                 "values": ["true", "false"]
             }
+        },
+        "min_weight_fraction_leaf": {
+            "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+            "type": "float",
+            "default": 0.0,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0,   0.05, 0.1,  0.15, 0.2,  0.25, 0.3,  0.35, 0.4,  0.45, 0.5 ]
+            }
         }
     },
     "category": "classification"
-} {
+} { 
     "name": "SVC",
     "path": "sklearn.svm",
     "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
@@ -485,6 +533,33 @@
             "ui": {
                 "style": "radio",
                 "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+            }
+        },
+        "gamma": {
+            "description": "Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.",
+            "type": "float",
+            "default": 0.01,
+            "ui": {
+                "style": "radio",
+                "choices": [0.01, 0.1, 0.5, 1.0, 10.0, 100.0, 50.0 ]
+            }
+        },
+        "degree": {
+            "description": "Degree of the 'poly' kernel.",
+            "type": "int",
+            "default": 3,
+            "ui": {
+                "style": "radio",
+                "choices": [2, 3 ]
+            }
+        },
+        "coef0": {
+            "description": "Independent term in kernel function.",
+            "type": "float",
+            "default": 0.0 ,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0, 0.1, 0.5, 1.0, 10, 50, 100 ]
             }
         }
     },

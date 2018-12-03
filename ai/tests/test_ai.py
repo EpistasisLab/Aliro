@@ -16,8 +16,8 @@ import lab_api_mocker as mocker
 
 
 @patch('ai.api_utils.LabApi')
-@patch('requests.post', side_effect = mocker.mocked_requests_post)  #remove once api calls have been removed from recommenders
-def test_ai_init( mockLabApi, mockRequestsPost):
+#@patch('requests.post', side_effect = mocker.mocked_requests_post)  #remove once api calls have been removed from recommenders
+def test_ai_init( mockLabApi): #, mockRequestsPost
         labApiInstance = mockLabApi.return_value
 
         labApiInstance.launch_experiment.return_value = {'launch_experiment'}

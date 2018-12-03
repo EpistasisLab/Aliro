@@ -7,6 +7,7 @@ import numpy as np
 import pdb
 import json
 import requests
+# import urllib.request, urllib.parse
 import itertools as it
 import logging
 import sys
@@ -234,66 +235,103 @@ class LabApi:
         """
         return res
 
-# @Deprecated, used by recommenders
-def get_all_ml_p_from_db(path,key):
-    """ Returns a list of ml and parameter options from the server.
-    TODO - migrate to LabApi
-    
-    :param path: 'api/preferences'
-    :param key:
+    def get_metafeatures(self, d):
+            """Fetches dataset metafeatures, returning dataframe.
 
-    :returns: dataframe - unique ml parameter options
-    """
+            :param d: dataset ID/path relative to self.data_path
+            :return df: a dataframe of metafeatures, sorted by mf name
+            """
+            # # print('fetching data for', d)
+            # payload={}
+            # # payload = {'metafeatures'}
+            # payload.update(self.static_payload)
+            # params = json.dumps(payload).encode('utf8')
+            # # print('full path:', self.mf_path+'/'+d)
+            try:
+                res = self.__request(path=self.data_path+'/'+d, method='GET')
+                data = json.loads(res.text)
 
-    # get json from server
-    # filter on username (given in dataset)
-    payload = {'apikey':key,'username':'testuser'}
-    r = requests.post(path,data=json.dumps(payload), headers={'content-type':'application/json'})
-    assert r.status_code == requests.codes.ok, "get_all_ml_p_from_db status_code not ok, path: " + str(path) + " status code: " + str(r.status_code)
-    print('r:',r)
-    response = json.loads(r.text)
-    algorithms = response[0]['algorithms']
-    result = [] # returned value
-    good_def = True # checks that json for ML is in good form
+#                 req = urllib.request.Request(self.data_path+'/'+d, data=params)
+#                 r = urllib.request.urlopen(req)
+                
+#                 data = json.loads(r.read().decode(r.info().get_param('charset')
+#                                           or 'utf-8'))[0]
+            except Exception as e:
+                print('exception when grabbing metafeature data for',d)
+                raise e
 
-    for i,x in enumerate(algorithms):
-    #for i,x in enumerate(response):
-        #print('ML: ',x['name'])
-        hyperparams = x['schema'].keys()
-        hyperparam_dict = {}
+            data = data[0] 
+            mf = [data['metafeatures']]
+            # print('mf:',mf)
+            df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
+            # print('df:',df)
+            # df['dataset'] = data['_id']
+            df['dataset'] = data['name']
+            df.sort_index(axis=1, inplace=True)
 
-        # get a dictionary of hyperparameters and their values
-        for h in hyperparams:
-            #print('x[''schema''][h]',x['schema'][h])
-            if 'ui' in x['schema'][h]:
-                if 'values' in x['schema'][h]['ui']:
-                    hyperparam_dict.update({h: x['schema'][h]['ui']['values']})
+            return df
+
+    def get_all_ml_p(self):
+        """ Returns a list of ml and parameter options from the server.
+        
+        :param path: 'api/preferences'
+        :param key:
+
+        :returns: dataframe - unique ml parameter options
+        """
+
+        # get json from server
+        r = self.__request(path=self.api_path+'/api/preferences',method='GET')
+        response = json.loads(r.text)
+        # print('response type:',type(response))
+        # print('len response :',len(response))
+        # response = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
+        algorithms = response[0]['algorithms']
+
+        # print('no. of algorithms:',len(algorithms))
+        result = [] # returned value
+        good_def = True # checks that json for ML is in good form
+
+        for i,x in enumerate(algorithms):
+        #for i,x in enumerate(response):
+            print('ML: ',x['name'])
+            hyperparams = x['schema'].keys()
+            hyperparam_dict = {}
+
+            # get a dictionary of hyperparameters and their values
+            for h in hyperparams:
+                #print('x[''schema''][h]',x['schema'][h])
+                if 'ui' in x['schema'][h]:
+                    if 'values' in x['schema'][h]['ui']:
+                        hyperparam_dict.update({h: x['schema'][h]['ui']['values']})
+                    else:
+                        hyperparam_dict.update({h: x['schema'][h]['ui']['choices']})
                 else:
-                    hyperparam_dict.update({h: x['schema'][h]['ui']['choices']})
+                    good_def = False
+            if good_def:
+                sorted_hp = sorted(hyperparam_dict)
+                # enumerate all possible hyperparameter combinations
+                all_hyperparam_combos = [dict(zip(sorted_hp,prod))
+                                          for prod in it.product(*(hyperparam_dict[k]
+                                          for k in sorted_hp))]
+
+                #print('\thyperparams: ',hyperparam_dict)
+                #print(len(all_hyperparam_combos),' total hyperparameter combinations')
+
+                for ahc in all_hyperparam_combos:
+                    result.append({'algorithm':x['_id'],
+                                   'parameters':str(ahc),
+                                   'alg_name':x['name']})
             else:
-                good_def = False
-        if good_def:
-            sorted_hp = sorted(hyperparam_dict)
-            # enumerate all possible hyperparameter combinations
-            all_hyperparam_combos = [dict(zip(sorted_hp,prod))
-                                      for prod in it.product(*(hyperparam_dict[k]
-                                      for k in sorted_hp))]
+                print('warning: ', x['name'], 'was skipped')
+            good_def = True
 
-            #print('\thyperparams: ',hyperparam_dict)
-            #print(len(all_hyperparam_combos),' total hyperparameter combinations')
+        # convert to dataframe, making sure there are no duplicates
+        all_ml_p = pd.DataFrame(result).drop_duplicates()
 
-            for ahc in all_hyperparam_combos:
-                result.append({'algorithm':x['_id'],'parameters':str(ahc),'alg_name':x['name']})
-        else:
-            print('warning: ', x['name'], 'was skipped')
-        good_def = True
-
-    # convert to dataframe, making sure there are no duplicates
-    all_ml_p = pd.DataFrame(result).drop_duplicates()
-
-    print(len(all_ml_p),' ml-parameter options loaded')
-
-    return all_ml_p
+        print(len(all_ml_p),' ml-parameter options loaded')
+        print('algs:',all_ml_p.algorithm.unique())
+        return all_ml_p
 
 def get_random_ml_p_from_db(path,key):
     """ Returns a random ml+parameter option from the server."""

@@ -11,7 +11,6 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
-from ..db_utils import get_all_ml_p_from_db  
 import pdb
 
 class MetaRecommender(BaseRecommender):
@@ -67,12 +66,7 @@ class MetaRecommender(BaseRecommender):
 
 	# load ML Parameter combinations and fit an encoding to them that can be used for
 	# learning a model : score = f(ml,p,dataset,metafeatures)
-        
-        if ml_p is None:
-            # pull algorithm/parameter combinations from the server. 
-            self.ml_p = get_all_ml_p_from_db('/'.join([db_path,'api/preferences']),api_key)
-        else:
-            self.ml_p = ml_p
+        self.ml_p = ml_p
 
         self.ml_p = self.params_to_features(self.ml_p, init=True)
         
@@ -92,7 +86,7 @@ class MetaRecommender(BaseRecommender):
         self.X_ml_p = self.ml_p.values
         # self.ml_p = self.ml_p.apply(lambda x: self.OHE[x.name].fit_transform(x))
         # print('X after OHE:',self.X_ml_p.shape)
-        print('self.ml_p:',self.ml_p)
+        # print('self.ml_p:',self.ml_p)
         print('loaded {nalg} ml/parameter combinations with '
                 '{nparams} parameters'.format(nalg=self.X_ml_p.shape[0],
                                                      nparams=self.X_ml_p.shape[1]-1))

@@ -22,6 +22,7 @@ from ai.recommender.weighted_recommender import WeightedRecommender
 from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from ai.recommender.meta_recommender import MetaRecommender
+from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
@@ -100,37 +101,52 @@ class AI():
         self.warm_start = warm_start
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
-
-        # default to random recommender
-        if not rec:
-            self.rec = RandomRecommender(db_path=self.api_path,api_key=self.api_key)
-
+        
+        if rec:
+            if hasattr(rec,'ml_p'):
+                self.rec.ml_p = self.labApi.get_all_ml_p()
+        else: # default to random recommender
+            self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
+        # tmp = self.labApi.get_all_ml_p()
+        # tmp.to_csv('ml_p_options.csv') 
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
+        # print('ml_id_to_name:',self.ml_id_to_name)
         # build dictionary of dataset ids to names conversion
         self.user_datasets = self.labApi.get_user_datasets(self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
         self.dataset_threads = {}
-
 
         # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
             data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
             print(data_usersets)
             for ds in datasets.split(','):
-                tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], aiStatus = 'requested')
+                tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], 
+                                                aiStatus = 'requested')
+        
+        # local dataframe of datasets and their metafeatures
+        self.dataset_mf = pd.DataFrame()
 
         if use_knowledgebase:
             self.load_knowledgebase()
 
-
+        
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
         print('loading pmlb knowledgebase')
 
-        kb = knowledgebase_loader.load_pmbl_knowledgebase()
-        self.rec.update(kb['resultsData'])
+        kb = knowledgebase_loader.load_pmlb_knowledgebase()
+        # replace algorithm names with their ids
+        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
+        kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
+                                          lambda x: self.ml_name_to_id[x])
+        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        # keep only metafeatures with results
+        self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
+        # self.update_dataset_mf(kb['resultsData'])
+        self.rec.update(kb['resultsData'], self.dataset_mf)
         
         print('pmlb knowledgebase loaded')
 
@@ -266,7 +282,8 @@ class AI():
 
         # get recommendation for dataset
         for r in self.request_queue:
-            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'],n_recs=self.n_recs)
+            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'], n_recs=self.n_recs,
+                                                dataset_mf=self.labApi.get_metafeatures(r['_id']))
             self.rec.last_n = 0
             for alg,params,score in zip(ml,p,ai_scores):
                 modified_params = eval(params) # turn params into a dictionary
@@ -293,7 +310,8 @@ class AI():
         """
 
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            self.rec.update(self.new_data)
+            self.update_dataset_mf(self.new_data)
+            self.rec.update(self.new_data,self.dataset_mf)
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                      'recommender updated')
@@ -310,7 +328,7 @@ class AI():
         if(hasattr(self.rec, 'scores')):
             state['scores'] = self.rec.scores #TODO: make this a more generic. Maybe just save the 
                                               # AI or rec object itself. 
-        state['trained_dataset_models'] = self.rec.trained_dataset_models
+        # state['trained_dataset_models'] = self.rec.trained_dataset_models
         state['last_update'] = self.last_update
         pickle.dump(state, out)
 
@@ -324,10 +342,34 @@ class AI():
             state = pickle.load(filehandler)
             if(hasattr(self.rec, 'scores')):
               self.rec.scores = state['scores']
-              self.rec.trained_dataset_models = state['trained_dataset_models']
+              # self.rec.trained_dataset_models = state['trained_dataset_models']
               self.last_update = state['last_update']
               if self.verbose:
                   print('loaded previous state from ',self.last_update)
+
+    def update_dataset_mf(self,results_data):
+        """Grabs metafeatures of datasets in results_data
+        
+        :param results_data: experiment results with associated datasets
+        
+        """
+        print('in AI::update_dataset_mf')
+        print('results_data:',results_data.columns)
+        print('results_data:',results_data.head())
+        dataset_metafeatures = []
+        for d in results_data['dataset'].unique():
+            if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
+                # fetch metafeatures from server for dataset and append
+                df = self.labApi.get_metafeatures(d)        
+                df['dataset'] = d
+                # print('metafeatures:',df)
+                dataset_metafeatures.append(df)
+        if dataset_metafeatures:
+            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
+            # print('df_mf:',df_mf['dataset'], df_mf) 
+            self.dataset_mf = self.dataset_mf.append(df_mf)
+            # print('self.dataset_mf:\n',self.dataset_mf)
+         
 
 ####################################################################### Manager
 import argparse
@@ -339,7 +381,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive','meta'],
+                        choices = ['random','average','exhaustive','meta','knn'],
                         help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
@@ -354,26 +396,31 @@ def main():
                         help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
                         help='Time to wait for pinging the server for results/ recommendation requests')
-    parser.add_argument('-knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',default=False, 
+    parser.add_argument('--knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',
+                        default=False, 
                         help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
     print(args)
-    api_args={}
+    rec_args={}
 
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
             'exhaustive': ExhaustiveRecommender,
             'meta': MetaRecommender,
+            'knn': KNNMetaRecommender
             }
     
-    if args.REC in ['random','exhaustive','meta']:
-        api_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
+    # if args.REC in ['random','exhaustive','meta']:
+    #     ml_p = api_utils.get_all_ml_p_from_db(args.API_PATH+'/api/preferences',os.environ['APIKEY'])
+    #     rec_args = {'ml_p':ml_p}
+        # rec_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
+    rec_args['metric'] = 'accuracy'
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**api_args),api_path=args.API_PATH, user=args.USER,
+    pennai = AI(rec=name_to_rec[args.REC](**rec_args),api_path=args.API_PATH, user=args.USER,
                 verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
                 datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE)
 
