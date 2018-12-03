@@ -11,20 +11,14 @@ import pdb
 import json
 # set up data for tests.
 # print('loading pmlb results data...')
-data = pd.read_csv('data/knowledgebases/sklearn-benchmark5-data-short.tsv.gz',
-                   compression='gzip', sep='\t',
-                   names=['dataset',
-                          'classifier',
-                          'parameters',
-                          'accuracy',
-                          'macrof1',
-                          'bal_accuracy']).fillna('')
+data = pd.read_csv('data/knowledgebases/sklearn-benchmark5-data-short-formatted.tsv.gz',
+                   compression='gzip', sep='\t')
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
-mask = np.array([c in pennai_classifiers for c in data['classifier'].values])
+mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
-data = data.rename(columns={'classifier': 'algorithm'})
+data.set_index('dataset')
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""

@@ -166,7 +166,7 @@ class KNNMetaRecommender(BaseRecommender):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
         # df_mf = self.get_metafeatures(dataset_id) 
-        mf = df_mf.drop('dataset',axis=1).values.flatten()
+        mf = df_mf.drop('dataset',axis=1).fillna(0.0).values.flatten()
 
         # compute the neighbors of past results 
         nbrs = NearestNeighbors(n_neighbors=len(self.dataset_mf), algorithm='ball_tree')
@@ -185,11 +185,12 @@ class KNNMetaRecommender(BaseRecommender):
         ml_recs, p_recs, scores = [],[],[]
 
         # print('self.best_mlp:',self.best_mlp)
-        for i,dist in zip(dataset_idx,distances[0]):   
+        for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):   
+            if i < 10:
+                print('closest dataset:',d,'distance:',dist)
             if dist > 0.0:    # don't recommend based on this same dataset
-                print('closest dataset:',i,'distance:',dist)
-                ml_recs.append(self.best_mlp.loc[i,'algorithm'])
-                p_recs.append(self.best_mlp.loc[i,'parameters'])
+                ml_recs.append(self.best_mlp.loc[d,'algorithm'])
+                p_recs.append(self.best_mlp.loc[d,'parameters'])
                 scores.append(dist)
 
         return ml_recs,p_recs,scores

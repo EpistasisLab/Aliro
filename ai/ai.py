@@ -107,10 +107,11 @@ class AI():
                 self.rec.ml_p = self.labApi.get_all_ml_p()
         else: # default to random recommender
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
-
+        # tmp = self.labApi.get_all_ml_p()
+        # tmp.to_csv('ml_p_options.csv') 
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
-        print('ml_id_to_name:',self.ml_id_to_name)
+        # print('ml_id_to_name:',self.ml_id_to_name)
         # build dictionary of dataset ids to names conversion
         self.user_datasets = self.labApi.get_user_datasets(self.user)
         # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
