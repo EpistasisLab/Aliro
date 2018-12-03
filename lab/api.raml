@@ -484,6 +484,95 @@ mediaType: application/json
       responses:
         200:
           body:
+            example:
+              {
+    "_id": "5bf4841c9fc83c002cdbf5e6",
+    "name": "appendicitis",
+    "username": "testuser",
+    "files": [
+        {
+            "_id": "5bf4841c9fc83c002cdbf5e8",
+            "filename": "appendicitis.csv",
+            "mimetype": "text/csv",
+            "filepath": "/appsrc/data/datasets/user",
+            "dependent_col": "class",
+            "timestamp": 1542751267786
+        }
+    ],
+    "metafeatures": {
+        "class_prob_max": 0.8018867924528302,
+        "class_prob_mean": 0.5,
+        "class_prob_median": 0.5,
+        "class_prob_min": 0.19811320754716982,
+        "class_prob_std": 0.4269323961881042,
+        "corr_with_dependent_abs_25p": null,
+        "corr_with_dependent_abs_75p": null,
+        "corr_with_dependent_abs_kurtosis": null,
+        "corr_with_dependent_abs_max": null,
+        "corr_with_dependent_abs_mean": null,
+        "corr_with_dependent_abs_median": null,
+        "corr_with_dependent_abs_min": null,
+        "corr_with_dependent_abs_skew": null,
+        "corr_with_dependent_abs_std": null,
+        "diversity_fraction": 0.822528983974963,
+        "entropy_dependent": 0.49777562247179563,
+        "kurtosis_kurtosis": 4.452150103293069,
+        "kurtosis_max": 5.319422971587894,
+        "kurtosis_mean": 1.337358676553602,
+        "kurtosis_median": 0.8241556149720961,
+        "kurtosis_min": -0.064662454053662,
+        "kurtosis_skew": 2.049814018854758,
+        "kurtosis_std": 1.7321483030218767,
+        "n_categorical": 0,
+        "n_classes": 2,
+        "n_columns": 8,
+        "n_numerical": 7,
+        "n_rows": 106,
+        "pca_fraction_95": 0.42857142857142855,
+        "ratio_rowcol": 13.25,
+        "skew_kurtosis": -0.8072038717745542,
+        "skew_max": 2.0405760464786686,
+        "skew_mean": 0.23121482439885738,
+        "skew_median": 0.20576966206912586,
+        "skew_min": -1.2122210852887918,
+        "skew_skew": 0.24606691449283033,
+        "skew_std": 1.1148468812633117,
+        "symbols_kurtosis": null,
+        "symbols_max": null,
+        "symbols_mean": null,
+        "symbols_min": null,
+        "symbols_skew": null,
+        "symbols_std": null,
+        "symbols_sum": null
+    }
+}
+  put:
+    description: Register a new datafile
+    body:
+      multipart/form-data:
+        type: object
+        example: {
+          _files:array of files,
+          _metadata: [
+            name: "datasetName",
+            username: "testUser",
+            timestamp: Date.now(),
+            dependent_col: "class",
+            files: [
+              filename:"file1.csv",
+              checksum: "12345",
+              filetype: "text/csv",
+              classlabel: "class"
+            ]
+          ]
+          }
+    responses:
+      201:
+        body:
+          example: {
+            message: "Files uploaded",
+            dataset_id: dataset_id
+            }
 /webhooks:
   post:
     description: Create a new webhook
@@ -617,7 +706,7 @@ mediaType: application/json
                               }
                           },
                           "max_depth": {
-                              "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
+                              "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the in variables.",
                               "type": "int",
                               "default": 1,
                               "ui": {
