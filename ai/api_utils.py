@@ -283,14 +283,18 @@ class LabApi:
         # get json from server
         r = self.__request(path=self.api_path+'/api/preferences',method='GET')
         response = json.loads(r.text)
-        # print('response:',response)
+        # print('response type:',type(response))
+        # print('len response :',len(response))
+        # response = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
         algorithms = response[0]['algorithms']
+
+        # print('no. of algorithms:',len(algorithms))
         result = [] # returned value
         good_def = True # checks that json for ML is in good form
 
         for i,x in enumerate(algorithms):
         #for i,x in enumerate(response):
-            #print('ML: ',x['name'])
+            print('ML: ',x['name'])
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
 
@@ -315,7 +319,9 @@ class LabApi:
                 #print(len(all_hyperparam_combos),' total hyperparameter combinations')
 
                 for ahc in all_hyperparam_combos:
-                    result.append({'algorithm':x['_id'],'parameters':str(ahc),'alg_name':x['name']})
+                    result.append({'algorithm':x['_id'],
+                                   'parameters':str(ahc),
+                                   'alg_name':x['name']})
             else:
                 print('warning: ', x['name'], 'was skipped')
             good_def = True

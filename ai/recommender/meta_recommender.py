@@ -161,33 +161,6 @@ class MetaRecommender(BaseRecommender):
         # update internal model
         self.update_model()
 
-    # def get_metafeatures(self, d):
-    #     """Fetches dataset metafeatures, returning dataframe."""
-    #     print('fetching data for', d)
-    #     payload={}
-    #     # payload = {'metafeatures'}
-    #     payload.update(self.static_payload)
-    #     params = json.dumps(payload).encode('utf8')
-    #     # print('full path:', self.mf_path+'/'+d)
-    #     try:
-    #         req = urllib.request.Request(self.mf_path+'/'+d, data=params)
-    #         r = urllib.request.urlopen(req)
-            
-    #         data = json.loads(r.read().decode(r.info().get_param('charset')
-    #                                   or 'utf-8'))[0]
-    #     except Exception as e:
-    #         print('exception when grabbing metafeature data for',d)
-    #         raise e
-        
-    #     mf = [data['metafeatures']]
-    #     # print('mf:',mf)
-    #     df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
-    #     # print('df:',df)
-    #     df['dataset'] = data['_id']
-    #     df.sort_index(axis=1, inplace=True)
-
-    #     return df
-
     def transform_ml_p(self,df_ml_p):
         """Encodes categorical labels and transforms them using a one hot encoding."""
         df_ml_p = self.params_to_features(df_ml_p)
@@ -206,32 +179,20 @@ class MetaRecommender(BaseRecommender):
 
     def setup_training_data(self, results_data, results_mf):
         """Transforms metafeatures and results data into learnable format."""
-        # dataset_metafeatures = []
-        # for d in results_data['dataset'].unique():
-        #     # fetch metafeatures from server for dataset and append
-        #     df = self.get_metafeatures(d)        
-        #     # print('metafeatures:',df)
-        #     dataset_metafeatures.append(df)
-            
-        # df_mf = pd.concat(dataset_metafeatures,ignore_index=True)
-
         # join df_mf to results_data to get mf rows for each result
-        df_mf = pd.merge(results_data, results_mf, on='dataset', how='outer')
+        df_mf = pd.merge(results_data, results_mf, on='dataset', how='inner')
         df_mf = df_mf.loc[:,df_mf.columns.isin(results_mf.columns)]
-        df_mf = df_mf.drop('dataset',axis=1)
+        if 'dataset' in df_mf.columns: 
+            df_mf = df_mf.drop('dataset',axis=1)
         # print('df_mf:',df_mf)
         # print('dataset_metafeatures:',dataset_metafeatures)
         # transform algorithms and parameters to one hot encoding 
         df_ml_p = results_data.loc[:, results_data.columns.isin(['algorithm','parameters'])]
         X_ml_p = self.transform_ml_p(df_ml_p)
-        # print('df_ml_p shape:',df_ml_p.shape)
+        print('df_ml_p shape:',df_ml_p.shape)
         # join algorithm/parameters with dataset metafeatures
-        # print('df_mf shape:',df_mf.shape) 
+        print('df_mf shape:',df_mf.shape) 
         self.training_features = np.hstack((X_ml_p,df_mf.values))
-        
-         
-        # print('training data:',self.training_features)
-        # print('training columns:',self.training_features[:10])
         # transform data using label encoder and one hot encoder
         self.training_y = results_data[self.metric].values
         assert(len(self.training_y)==len(self.training_features))

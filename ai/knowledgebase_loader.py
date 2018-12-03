@@ -46,7 +46,7 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 def load_pmlb_knowledgebase():
     """ load the PMBL knowledgebase"""
     return load_knowledgebase(
-            resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted.tsv.gz',
+            resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted-filtered.tsv.gz',
             datasetDirectory = "data/datasets/pmlb"
             )
 
