@@ -69,7 +69,7 @@ def getMetadataForDatafile(root, file):
 		with open(filepath) as f:
 			data = simplejson.load(f)
 	except FileNotFoundError:
-		logger.info("File " + metafile + " does not exist.")
+		logger.debug("File " + metafile + " does not exist.")
 		return False, target_column
 	except Exception as e:
 		logger.warning("Unable to parse file " + filepath + ": " + str(e))
@@ -112,7 +112,7 @@ def validateDatafile(root, file, target_column):
 	except Exception as e:
 		return False, "sklearn.check_X_y() validation failed: " + str(e)
 
-	return True, ""
+	return True, None
 
 
 def registerDatafile(root, file, target_column, apiPath):

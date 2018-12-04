@@ -4,10 +4,13 @@ import lab.init.loadInitialDatasets as loadInitialDatasets
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
-from nose.tools import nottest, raises, assert_equals
+from nose.tools import nottest, raises, assert_equals, assert_true
 from parameterized import parameterized
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 @nottest
 def load_bad_test_data():
@@ -31,14 +34,14 @@ def load_bad_test_data():
 
 def load_good_test_data():
 	return [
-		("appendicitis", 
+		("allbp", 
 			"data/datasets/test/test_flat", 
-			"appendicitis.csv",
+			"allbp.csv",
 			"class"),
 		("appendicitis_alt_target_col", 
-			"data/datasets/test/test_bad", 
-			"appendicitis_bad_target_col.csv",
-			"foobar"),
+			"data/datasets/test/test_flat", 
+			"appendicitis.csv",
+			"target_class"),
 	   ]
 
 def load_metadata():
@@ -67,10 +70,11 @@ class TestResultUtils(unittest.TestCase):
 		assert not(result)
 		assert(message)
 
-#	@parameterized.expand(load_good_test_data)
-#	def test_validate_data_file_good(self, name, root, file, target_column):
-#		result, message = loadInitialDatasets.validateDatafile(root, file, target_column)
-#		assert(result)
+	@parameterized.expand(load_good_test_data)
+	def test_validate_data_file_good(self, name, root, file, target_column):
+		result, message = loadInitialDatasets.validateDatafile(root, file, target_column)
+		logger.debug("name: " + name + " root: " + root + " file: " + file + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
+		self.assertTrue(result)
 		
 
 	@parameterized.expand(load_metadata)
