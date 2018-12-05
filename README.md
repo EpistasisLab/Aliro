@@ -37,7 +37,7 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 ### Adding Datasets ###
-Labeled datasets for analyzing should be added to the `data/datasets/user` directory.  Data can be placed in subfolders in the directories.  PennAI must be restarted if new datasets are added while it is running.  Datasets have the following restrictions:
+Labeled datasets for analyzing should be added to the `data/datasets/user` directory.  Data can be placed in subfolders in this directory.  PennAI must be restarted if new datasets are added while it is running.  Datasets have the following restrictions:
 
 * Datasets must have the extension .csv or .tsv
 * Datasets can contain only numeric values and cannot have any null values
