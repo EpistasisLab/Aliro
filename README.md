@@ -36,14 +36,29 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
+### Adding Datasets ###
+Labeled datasets for analyzing should be added to the `data/datasets/user` directory.  Data can be placed in subfolders in the directories.  PennAI must be restarted if new datasets are added while it is running.  Datasets have the following restrictions:
+
+* Datasets must have the extension .csv or .tsv
+* Datasets can contain only numeric values and cannot have any null values
+* By default, the column with the label should be named 'class'
+* Datasets can optionally have a coresponding json configuration file in the same directory which can be used to specify the target column.  If the file is named `myDatafile.*sv`, the configuration file must be named `myDatafile_metadata.json`
+	* Example configuration file:
+```
+{
+	"target_column":"my_custom_target_column_name"
+}
+```
+
 ### Analyzing Data ###
-Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with ~50 test datasets, starting with 'Allbp'.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
+Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with the datasets in the `data/datasets/user` directory.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
 
 From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page.
 
-### Usage of scripts and model exported from PennAI ###
+### Downloading and Using Models ###
+A pickled version of the fitted model and an example script for using that model can be downloded for any completed experiment from the **Experiments** page.
 
-Please check [Demo](docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb) of using scripts and model exported from PennAI.
+Please check [Demo](docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb) for instructions on using the scripts and model exported from PennAI.
 
 ## Developer Info
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.  If the code changes modified the base container, run `docker build ./dockers/base -t pennai/base:latest` before running `docker-compose build`.
