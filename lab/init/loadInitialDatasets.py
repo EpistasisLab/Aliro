@@ -164,7 +164,7 @@ def main():
     args = parser.parse_args()
 
     # set up the file logger
-    logpath = os.path.join(os.environ['PROJECT_ROOT'], "/target/logs")
+    logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
     if not os.path.exists(logpath):
         os.makedirs(logpath)
 
