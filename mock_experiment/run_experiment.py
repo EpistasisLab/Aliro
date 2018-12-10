@@ -9,14 +9,15 @@ from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
+from ai.recommender.svd_recommender import SVDRecommender
 
 from collections import OrderedDict
 from mock_experiment.mf_utils import local_get_metafeatures, update_dataset_mf
 import warnings 
 warnings.simplefilter("ignore")
-# define a comparison function that tests a recommender on the pmlb datasets, 
+# define a comparison function that tests a recommender on the datasets, 
 #using an intial knowledge base.
-def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
+def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
     kwargs = {'metric':'bal_accuracy'}
@@ -38,7 +39,7 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     init_data = []
     init_data_mf = []
     for i in train_subset:
-        init_data.append(pmlb_data.loc[pmlb_data['dataset']==i])
+        init_data.append(knowledge_base.loc[knowledge_base['dataset']==i])
         init_data_mf.append(local_get_metafeatures(i))
     init_df = pd.concat(init_data)
     dataset_mf = pd.concat(init_data_mf).set_index('dataset')
@@ -49,15 +50,17 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
     # loop thru rest of datasets
     for it,dataset in enumerate(rec_subset):
 
-        holdout_subset_lookup = pmlb_data.loc[pmlb_data['dataset'] == dataset].set_index(
+        holdout_accuracy_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
+        holdout_rank_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
+            ['algorithm', 'parameters']).loc[:, 'ranking'].to_dict()
         # print('generating recommendation for',dataset)
         # for i in np.arange(n_recs):
             # ml ='adf'
             # p = 'pakd'
             # n = 0
-            # while (ml,p) not in holdout_subset_lookup and n<1000:
-            # if (ml,p) not in holdout_subset_lookup:
+            # while (ml,p) not in holdout_accuracy_lookup and n<1000:
+            # if (ml,p) not in holdout_accuracy_lookup:
             #     pdb.set_trace()
 
         # for each dataset, generate a recommendation
@@ -65,9 +68,8 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
                                                 n_recs=n_recs,
                                                 dataset_mf=local_get_metafeatures(dataset)
                                                 )
-        print(len(mls))
         updates = []
-        for i in np.arange(n_recs):
+        for i in np.arange(len(mls)):
             ml = mls[i]
             if 'Meta' in type(recommender).__name__:
                 tmp = eval(ps[i])
@@ -80,13 +82,16 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
                 p = ps[i]
 
             print('recommending',ml,'with',p,'for',dataset)
-            if (ml,p) not in holdout_subset_lookup:
+            if (ml,p) not in holdout_accuracy_lookup:
                 raise ValueError((ml,p),'not found')
             
             # n = n+1
             # retreive the performance of the recommended learner
-            actual_score = holdout_subset_lookup[(ml, p)]
-            best_score = pmlb_data.loc[pmlb_data['dataset'] == dataset]['bal_accuracy'].max()
+            actual_score = holdout_accuracy_lookup[(ml, p)]
+            actual_ranking = holdout_rank_lookup[(ml,p)]
+            best_score = knowledge_base.loc[knowledge_base['dataset'] == dataset]['bal_accuracy'].max()
+            best_idx = knowledge_base.loc[knowledge_base['dataset'] == dataset]['bal_accuracy'].idxmax()
+            best_algorithm = knowledge_base.loc[best_idx,'algorithm']
             # Update the recommender with the score from its latest guess
             updates.append(pd.DataFrame(data={'dataset': [dataset],
                                                'algorithm': [ml],
@@ -95,8 +100,20 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
                           )
             
             # store the trial, iteration, dataset, recommender, ml rec, param rec,bal_accuracy	
-            results.append([trial,it,rec,dataset,ml,p,scores[0],actual_score,best_score,
-                            (best_score-actual_score)/best_score])
+            results.append({'trial':trial,
+                            'iteration':it,
+                            'n_recs':n_recs,
+                            'n_init':n_init,
+                            'recommender':rec,
+                            'dataset':dataset,
+                            'ml-rec':ml,
+                            'p-rec':p,
+                            'score-rec':scores[0],
+                            'bal_accuracy':actual_score,
+                            'max_bal_accuracy':best_score,
+                            'best_algorithm':best_algorithm,
+                            'ranking':actual_ranking,
+                            'delta_bal_accuracy':(best_score-actual_score)/best_score})
 
         # print('updating recommender...')
         update_record = pd.concat(updates)
@@ -104,10 +121,10 @@ def run_experiment(rec,data_idx,n_recs,trial,pmlb_data,ml_p,n_init):
         
         recommender.update(update_record,dataset_mf)
 
-    if rec == 'meta':   # store feature importance scores
-        fi = recommender.ml.feature_importances_
-        with open('feature_importances_'+str(trial) + '.txt','w') as out:
-            out.write(','.join([str(fi) for fi in recommender.ml.feature_importances_])+'\n')
+    # if rec == 'meta':   # store feature importance scores
+    #     fi = recommender.ml.feature_importances_
+    #     with open('feature_importances_'+str(trial) + '.txt','w') as out:
+    #         out.write(','.join([str(fi) for fi in recommender.ml.feature_importances_])+'\n')
     return results
 
 # make a figure comparing several runs of the test over different orderings of datasets
@@ -130,45 +147,69 @@ if __name__ == '__main__':
                         help='Number of repeat experiments to run.')  
     parser.add_argument('-n_init',action='store',dest='n_init',type=int,default=10,
                         help='Number of initial datasets to seed knowledge database')
-    parser.add_argument('-knowledge',action='store',dest='KNOWL',type=str,
+    parser.add_argument('-n_init_range',action='store',dest='n_init_range',type=str,
+                        default='',
+                        help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-n_recs_range',action='store',dest='n_recs_range',type=str,default='',
+                        help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-data',action='store',dest='KNOWL',type=str,
                         default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
                         help='Number of initial datasets to seed knowledge database')
 
     args = parser.parse_args()
     
-    pmlb_file = args.KNOWL    # load knowledge base
-    print('loading knowledge base')
-    pmlb_data = pd.read_csv(pmlb_file,
-                            compression='gzip', sep='\t').fillna('')#,
-    ml_p = pmlb_data.loc[:,['algorithm','parameters']]                      
-    
-    # dictionary of default recommenders to choose from at the command line. 
-    # name_to_rec = {'random': RandomRecommender(pmlb_file=pmlb_file,metric='bal_accuracy'),
-    #         'average': AverageRecommender(metric='bal_accuracy'),
-    #         'meta': MetaRecommender(metric='bal_accuracy')
-    #         }
-    data_idx = np.unique(pmlb_data['dataset'])  # datasets 
-    # output file
-    out_file = ('experiment_' 
-                + pmlb_file.split('/')[-1].split('.')[0]
-                + '-'.join(args.rec.split(',')) 
-                + '_' + str(args.n_recs) 
-                + 'recs_' + str(args.n_trials) 
-                + 'trials_' + str(args.n_init) + 'init.csv')    
-    with open(out_file,'w') as out: # write header
-        out.write('trial\titeration\trecommender\tdataset\tml-rec\tp-rec\tscore-rec\tbal_accuracy'
-                  '\tmax_bal_accuracy\tdelta_bal_accuracy\n')
+    # load knowledge base(s)
+    if ',' in args.KNOWL:
+        data_files = args.KNOWL.split(',')
+    else:
+        data_files = [args.KNOWL]
 
-    for t in np.arange(args.n_trials):   # for each trial (parallelize this)
-        print('trial',t)
-        np.random.shuffle(data_idx) # shuffle datasets
-        for rec in args.rec.split(','):        # for each recommender
-            print('rec',rec)
-            # run experiment
-            results = run_experiment(rec,data_idx,args.n_recs,t,pmlb_data,ml_p,args.n_init)
-    
-            with open(out_file,'a') as out:     # printout results
-                for res in results:
-                    out.write('\t'.join([str(r) for r in res])+'\n')
+    for data_file in data_files:
+        print(70*'=','\n','loading',data_file,'\n'+70*'=','\n')
+        knowledge_base = pd.read_csv(data_file,
+                                compression='gzip', sep='\t').fillna('')#,
+        ml_p = knowledge_base.loc[:,['algorithm','parameters']]                      
+        
+        data_idx = np.unique(knowledge_base['dataset'])  # datasets 
+        
+        if args.n_recs_range != '':
+            n_recs_range = [int(r) for r in args.n_recs_range.split(',')]
+        else:
+            n_recs_range = [args.n_recs]
+        if args.n_init_range != '':
+            n_init_range = [int(r) for r in args.n_init_range.split(',')]
+        else:
+            n_init_range = [args.n_init]
 
-    print('done. results written to ', out_file)
+        # output file
+        out_file = ('mock_experiment/results/experiment_' 
+                    + data_file.split('/')[-1].split('.')[0]
+                    + '_recs-'+'-'.join(args.rec.split(',')) 
+                    + '_ninit-'+'-'.join([str(n) for n in n_init_range])
+                    + '_nrecs-'+'-'.join([str(n) for n in n_recs_range]) 
+                    + '_ntrials-{}'.format(args.n_trials) 
+                    + '.csv')    
+
+        first = True
+        for t in np.arange(args.n_trials):   # for each trial (parallelize this)
+            print('trial=',t)
+            for n_init in n_init_range:
+                print('n_init=',n_init)
+                for n_recs in n_recs_range:
+                    print('n_recs=',n_recs)
+                    np.random.shuffle(data_idx) # shuffle datasets
+                    for rec in args.rec.split(','):        # for each recommender
+                        print('rec=',rec)
+                        # run experiment
+                        results = run_experiment(rec,data_idx,n_recs,t,knowledge_base,
+                                                 ml_p,n_init)
+                        df_results = pd.DataFrame.from_records(results,columns=results[0].keys()) 
+                        # write results
+                        if first:
+                            df_results.to_csv(out_file,index=False)
+                            first=False
+                        else:
+                            with open(out_file,'a') as out:     # printout results
+                                df_results.to_csv(out, header=False, index=False)
+
+        print('done. results written to ', out_file)

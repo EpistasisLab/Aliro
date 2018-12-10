@@ -6,7 +6,6 @@ import pandas as pd
 # import urllib.request, urllib.parse
 from .base import BaseRecommender
 #from ..metalearning import get_metafeatures
-from xgboost import XGBRegressor
 from sklearn.preprocessing import RobustScaler 
 from sklearn.pipeline import Pipeline
 import numpy as np
