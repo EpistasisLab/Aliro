@@ -1,5 +1,4 @@
-#FROM python:3.6-jessie
-FROM python:3
+FROM node:8.11.2-slim
 
 # Miniconda 4.5.4
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -18,6 +17,7 @@ RUN pip install coverage
 RUN pip install nose
 RUN pip install nose-htmloutput
 RUN pip install parameterized
+RUN npm install -g mocha
 
 
 RUN apt-get update && apt-get install -y vim dos2unix
