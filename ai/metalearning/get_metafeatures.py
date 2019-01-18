@@ -17,13 +17,17 @@ with warnings.catch_warnings():
     import sys
     import simplejson
 
-def generate_metafeatures_from_datafile(input_file, target_field, **kwargs):
+def generate_metafeatures_from_file(input_file, target_field, **kwargs):
     """Calls metafeature generating methods from dataset_describe"""
+    
     # Read the data set into memory
     df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
-   
     dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
-   
+
+    return generate_metafeatures(dataset, target_field)
+
+
+def generate_metafeatures(dataset, target_field):
     meta_features = OrderedDict() 
     for i in dir(dataset):
         result = getattr(dataset, i)
@@ -40,7 +44,7 @@ def main():
                         help='Name of target column')
     args = parser.parse_args()
 
-    meta_features = generate_metafeatures_from_datafile(args.INPUT_FILE, args.TARGET)
+    meta_features = generate_metafeatures_from_file(args.INPUT_FILE, args.TARGET)
     meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)

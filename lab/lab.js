@@ -19,6 +19,7 @@ var users = require("./users");
 var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
 var generateFeatures = require("./metafeatureGenerator").generateFeatures;
+var generateFeaturesAsync = require("./metafeatureGenerator").generateFeaturesAsync;
 var Q = require("q");
 
 /* App instantiation */
@@ -228,26 +229,21 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     var filepath = metadata['filepath'];
     var dependent_col = metadata['dependent_col'];
 
-    db.datasets.insertAsync({
-            name: metadata.name,
-            username: metadata.username,
-            files: []
-        }, {})
-        .then((exp) => {
-            var dataset_id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-            registerDataset(req.files[0], dataset_id, filepath, dependent_col).then((fileId) => {
-                console.log(`==fileId: ${fileId}==`)
-                    res.send({
-                        message: "Files uploaded",
-                        dataset_id: dataset_id
-                    });
-                })
-                .catch((err) => {
-                    console.log(`error: ${err}`)
-                    res.status(400);
-                    res.send({error:"Unable to upload files: " + err})
-                });
+    stageDatasetFile(req.files[0], filepath)
+    .then((fileId) => {registerDataset(req.files[0], fileId, filepath, dependent_col, metadata)})
+    .then((dataset_id) => {
+        console.log(`==dataset_id: ${dataset_id}==`)
+        res.send({
+            message: "Files uploaded",
+            dataset_id: dataset_id
         });
+    })
+    .catch((err) => {
+        console.log(`error: ${err}`)
+        res.status(400);
+        res.send({error:"Unable to upload files: " + err})
+    });
+    
 });
 
 //toggles ai for dataset
@@ -1114,6 +1110,29 @@ var linkDataset = function(experiment, datasetId) {
 *
 */
 var stageDatasetFile = function(fileObj, filepath) {
+    console.log(`stageDatasetFile: ${filepath}`)
+
+    return new Promise((resolve, reject) => { 
+        var fileId = new db.ObjectID()
+
+        var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+            metadata: {
+                contentType: fileObj.mimetype
+            },
+            promiseLibrary: Promise
+        });
+
+        gridStore.open((err, gridStore) => {
+            if (err) {
+                console.log(err);
+                throw new Error(err)
+            } else {
+                gridStore.write(fileObj.buffer, true)
+                .then(gridStore => gridStore.close())
+                .then((result) => { resolve(fileId) })
+            }
+        })
+    })
 }
 
 
@@ -1124,58 +1143,62 @@ var stageDatasetFile = function(fileObj, filepath) {
 * @return Promise that returns the datasetId
 *
 */
-//var registerDataset = function(fileId, datasetId, filepath, dependent_col) {
-var registerDataset = function(fileObj, dataset_id, filepath, dependent_col) {
+var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadata) {
     console.log(`registerDataset: ${filepath}`)
 
-    // gridStore.open returns a mongoskin object, not a promise
-    return new Promise((resolve, reject) => { 
+    var dataset_id 
 
-        var mfRes = generateFeatures(fileObj, filepath, dependent_col)
-        if (mfRes.success) {
-            db.datasets.updateByIdAsync(dataset_id, {$set : {metafeatures: mfRes.data}})
-            console.log(`setting metafeatures for dataset ${dataset_id} - '${fileObj.originalname}'`)
-        }
-        else {
-            errMsg = `Error getting metafeatures for dataset ${dataset_id}, error: ${mfRes.error}`
-            console.log(errMsg)
-            throw new Error(errMsg)
-        }
+    // generate dataset profile
+    var generateProfilePromise = generateFeaturesAsync(fileObj, filepath, dependent_col)
+    console.log(`gpp: ${generateProfilePromise}`)
 
-        fileId = new db.ObjectID();
-        var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-            metadata: {
-                contentType: fileObj.mimetype
-            },
-            promiseLibrary: Promise
-        });
+    // then create a new datasets instance and with the dataset profile
+    return generateProfilePromise.then((dataProfile) => {
+        db.datasets.insertAsync({
+            name: metadata.name,
+            username: metadata.username,
+            metafeatures: dataProfile.data,
+            files: []
+        }, {})
+    })
+    // open the file in the filestore
+    .then((res) => {
+        console.log(`result: ${res}`)
+        console.log(result.ops[0]._id.toString())
+        dataset_id = result.ops[0]._id.toString()
+        return new Promise((resolve, reject) => { 
+            var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+                metadata: {
+                    contentType: fileObj.mimetype
+                },
+                promiseLibrary: Promise
+            });
 
-
-        gridStore.open((err, gridStore) => {
-            if (err) {
-                console.log(err);
-                throw new Error(err)
-            } else {
-                gridStore.write(fileObj.buffer, true)
-                .then((gridStore) => {
-                    db.datasets.updateByIdAsync(dataset_id, {
-                        $push: {
-                            files: {
-                                _id: gridStore.fileId,
-                                filename: gridStore.filename,
-                                mimetype: gridStore.metadata.contentType,
-                                filepath: filepath,
-                                dependent_col: dependent_col,
-                                timestamp: Date.now()
-                            }
-                        }
-                    });
-                })
-                //.then(gridStore => gridStore.close())
-                .then((result) => {resolve(fileId)})
+            gridStore.open((err, gridStore) => {
+                if (err) {
+                    console.log(err);
+                    throw new Error(err)
+                } 
+                resolve(gridStore)
+            })
+        })
+    })
+    // add file data to the dataset instance
+    .then((gridStore) => {
+        db.datasets.updateByIdAsync(dataset_id, {
+            $push: {
+                files: {
+                    _id: gridStore.fileId,
+                    filename: gridStore.filename,
+                    mimetype: gridStore.metadata.contentType,
+                    filepath: filepath,
+                    dependent_col: dependent_col,
+                    timestamp: Date.now()
+                }
             }
         })
-    }); 
+    })
+    .then((res) => { return dataset_id })
 };
 
 
