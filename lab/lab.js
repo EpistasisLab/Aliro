@@ -21,6 +21,7 @@ var emitEvent = require("./socketServer").emitEvent;
 var generateFeatures = require("./metafeatureGenerator").generateFeatures;
 var generateFeaturesAsync = require("./metafeatureGenerator").generateFeaturesAsync;
 var Q = require("q");
+const assert = require("assert");
 
 /* App instantiation */
 var app = express();
@@ -230,7 +231,7 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     var dependent_col = metadata['dependent_col'];
 
     stageDatasetFile(req.files[0], filepath)
-    .then((fileId) => {registerDataset(req.files[0], fileId, filepath, dependent_col, metadata)})
+    .then((fileId) => {return registerDataset(req.files[0], fileId, filepath, dependent_col, metadata)})
     .then((dataset_id) => {
         console.log(`==dataset_id: ${dataset_id}==`)
         res.send({
@@ -243,7 +244,7 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
         res.status(400);
         res.send({error:"Unable to upload files: " + err})
     });
-    
+
 });
 
 //toggles ai for dataset
@@ -1149,22 +1150,17 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
     var dataset_id 
 
     // generate dataset profile
-    var generateProfilePromise = generateFeaturesAsync(fileObj, filepath, dependent_col)
-    console.log(`gpp: ${generateProfilePromise}`)
-
-    // then create a new datasets instance and with the dataset profile
-    return generateProfilePromise.then((dataProfile) => {
-        db.datasets.insertAsync({
+    return generateFeaturesAsync(fileObj, filepath, dependent_col)
+    // create a new datasets instance and with the dataset dataProfile
+    .then((dataProfile) => {
+        return db.datasets.insertAsync({
             name: metadata.name,
             username: metadata.username,
-            metafeatures: dataProfile.data,
+            metafeatures: dataProfile,
             files: []
         }, {})
     })
-    // open the file in the filestore
-    .then((res) => {
-        console.log(`result: ${res}`)
-        console.log(result.ops[0]._id.toString())
+    .then((result) => { // open the file in the filestore
         dataset_id = result.ops[0]._id.toString()
         return new Promise((resolve, reject) => { 
             var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
@@ -1199,6 +1195,10 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
         })
     })
     .then((res) => { return dataset_id })
+    .catch((err) => {
+        console.log(`error in registerDataset: ${err}`)
+        throw new Error(err)
+    })
 };
 
 
@@ -1344,6 +1344,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
     var macP = db.machines.findByIdAsync(req.params.id);
 
+    //Q -> Promise.all
     Q.allSettled([macP, projP]).then((result) => {
 
         //console.log("/api/v1/machines/:id/projects")
