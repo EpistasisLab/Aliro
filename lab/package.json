@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.7",
     "body-parser": "^1.15.0",
     "compression": "^1.6.2",
     "dotenv": "^2.0.0",

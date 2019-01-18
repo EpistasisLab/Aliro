@@ -45,7 +45,11 @@ function generateFeatures(fileObj, filepath, dependent_col) {
 	}
 }
 
-var generateFeaturesAsync = Promise.promisify(generateFeatures)
+function generateFeaturesAsync(fileObj, filepath, dependent_col) {
+	return new Promise((resolve, reject) => { 
+		resolve(generateFeatures(fileObj, filepath, dependent_col))
+	})
+}
 
 
 module.exports = {
