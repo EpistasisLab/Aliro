@@ -231,9 +231,9 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     var dependent_col = metadata['dependent_col'];
 
     stageDatasetFile(req.files[0], filepath)
-    .then((fileId) => {return registerDataset(req.files[0], fileId, filepath, dependent_col, metadata)})
+    .then((file_id) => {return registerDataset(req.files[0], file_id, filepath, dependent_col, metadata)})
     .then((dataset_id) => {
-        console.log(`==dataset_id: ${dataset_id}==`)
+        //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
             message: "Files uploaded",
             dataset_id: dataset_id
@@ -1113,8 +1113,10 @@ var linkDataset = function(experiment, datasetId) {
 var stageDatasetFile = function(fileObj, filepath) {
     console.log(`stageDatasetFile: ${filepath}`)
 
+    var fileId
+    // open the gridStore
     return new Promise((resolve, reject) => { 
-        var fileId = new db.ObjectID()
+        fileId = new db.ObjectID()
 
         var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
             metadata: {
@@ -1123,16 +1125,21 @@ var stageDatasetFile = function(fileObj, filepath) {
             promiseLibrary: Promise
         });
 
-        gridStore.open((err, gridStore) => {
-            if (err) {
-                console.log(err);
-                throw new Error(err)
-            } else {
-                gridStore.write(fileObj.buffer, true)
-                .then(gridStore => gridStore.close())
-                .then((result) => { resolve(fileId) })
-            }
-        })
+        resolve(gridStore)
+    })
+    // write and save the file
+    .then((gridStore) => {
+        return gridStore.openAsync()
+    })
+    .then((gridStore) => {
+        return gridStore.write(fileObj.buffer, true)
+    })
+    .then((result) => {
+        return fileId
+    })
+    .catch((err) => {
+        console.log(`error in stageDatasetFile: ${err}`)
+        throw new Error(err)
     })
 }
 
@@ -1145,7 +1152,9 @@ var stageDatasetFile = function(fileObj, filepath) {
 *
 */
 var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadata) {
-    console.log(`registerDataset: ${filepath}`)
+    console.log(`registerDataset: ${filepath}, ${fileId}`)
+
+    assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
 
     var dataset_id 
 
@@ -1163,10 +1172,7 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
     .then((result) => { // open the file in the filestore
         dataset_id = result.ops[0]._id.toString()
         return new Promise((resolve, reject) => { 
-            var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-                metadata: {
-                    contentType: fileObj.mimetype
-                },
+            var gridStore = new db.GridStore(db, fileId, "r", {
                 promiseLibrary: Promise
             });
 
@@ -1181,7 +1187,7 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
     })
     // add file data to the dataset instance
     .then((gridStore) => {
-        db.datasets.updateByIdAsync(dataset_id, {
+        return db.datasets.updateByIdAsync(dataset_id, {
             $push: {
                 files: {
                     _id: gridStore.fileId,
