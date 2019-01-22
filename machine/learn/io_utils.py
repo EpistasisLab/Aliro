@@ -204,7 +204,7 @@ def get_file_data(file_id):
         msg = "Unable to retrieve file '" + str(file_id) + "'.  Status code: '" + str(res.status_code) + "'. Response text: '" + str(res.text) + "'"
         raise ValueError(msg)
 
-    return http_response.text
+    return res.text
 
 
 def check_column(column_name, dataframe):
