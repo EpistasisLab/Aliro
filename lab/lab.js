@@ -18,7 +18,6 @@ var db = require("./db").db;
 var users = require("./users");
 var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
-var generateFeaturesFromFilepathAsync = require("./metafeatureGenerator").generateFeaturesFromFilepathAsync;
 var generateFeaturesFromFileIdAsync = require("./metafeatureGenerator").generateFeaturesFromFileIdAsync;
 var Q = require("q");
 const assert = require("assert");
@@ -179,7 +178,6 @@ app.post("/api/v1/projects", (req, res, next) => {
 * @param _metadata - json
 *    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
-*    filepath 
 *    username - owner of the dataset
 *
 */
@@ -212,9 +210,6 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     } else if (!metadata.hasOwnProperty('name')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.name"});
-    } else if (!metadata.hasOwnProperty('filepath')) {
-        res.status(400);
-        return res.send({error: "Missing parameter _metadata.filepath"});
     } else if (!metadata.hasOwnProperty('username')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.username"});
@@ -227,11 +222,10 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     } 
 
     // process dataset
-    var filepath = metadata['filepath'];
     var dependent_col = metadata['dependent_col'];
 
-    stageDatasetFile(req.files[0], filepath)
-    .then((file_id) => {return registerDataset(req.files[0], file_id, filepath, dependent_col, metadata)})
+    stageDatasetFile(req.files[0])
+    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1105,13 +1099,12 @@ var linkDataset = function(experiment, datasetId) {
 * Load a dataset into the filestore
 *
 * @ param fileObj
-* @ param filepath
 * 
 * @return Promise that returns the fileId
 *
 */
-var stageDatasetFile = function(fileObj, filepath) {
-    console.log(`stageDatasetFile: ${filepath}`)
+var stageDatasetFile = function(fileObj) {
+    console.log(`stageDatasetFile: ${fileObj.originalname}`)
 
     var fileId
     // open the gridStore
@@ -1151,8 +1144,8 @@ var stageDatasetFile = function(fileObj, filepath) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadata) {
-    console.log(`registerDataset: ${filepath}, ${fileId}`)
+var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
+    console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
 
@@ -1160,7 +1153,7 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
 
     // generate dataset profile
     return generateFeaturesFromFileIdAsync(fileId, dependent_col)
-    //return generateFeaturesFromFilepathAsync(fileObj.originalname, filepath, dependent_col)
+
     // create a new datasets instance and with the dataset dataProfile
     .then((dataProfile) => {
         return db.datasets.insertAsync({
@@ -1194,7 +1187,6 @@ var registerDataset = function(fileObj, fileId, filepath, dependent_col, metadat
                     _id: gridStore.fileId,
                     filename: gridStore.filename,
                     mimetype: gridStore.metadata.contentType,
-                    filepath: filepath,
                     dependent_col: dependent_col,
                     timestamp: Date.now()
                 }

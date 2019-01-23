@@ -4,7 +4,7 @@ var Promise = require("bluebird");
 
 /**
 * Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
-* For now, generate the process synchronously.
+* The process is blocking.
 * 
 *
 * @param filename (String)
@@ -24,15 +24,31 @@ function generateFeaturesFromFilepath(filename, filepath, dependent_col) {
 	return generateFeatures(args)
 }
 
-function generateFeaturesFromFilepathAsync(fileObj, filepath, dependent_col) {
-	return new Promise((resolve, reject) => { 
-		resolve(generateFeaturesFromFilepath(fileObj, filepath, dependent_col))
-	})
+
+/**
+* Spawn a python process that generates metafeatures for a given dataset and generates JSON formatted data.
+* 
+*
+* @param filename (String)
+* @param filepath (String)
+* @param dependent_col (String)
+*
+* @return Promise
+*/
+function generateFeaturesFromFilepathAsync(filename, filepath, dependent_col) {
+	console.log(`generateFeaturesFromFilepath ('${filename}', '${filepath}', '${dependent_col}')`)
+
+	var filepath = filepath + "/" + filename
+	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
+
+	console.log(`args: ${args}`)
+
+	return generateFeaturesAsync(args)
 }
 
 /**
 * Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
-* For now, generate the process synchronously.
+* The process is blocking.
 * 
 *
 * @param fileid (String)
@@ -50,7 +66,16 @@ function generateFeaturesFromFileId(fileid, dependent_col) {
 	return generateFeatures(args)
 }
 
-
+/**
+* Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
+* The process is blocking.
+* 
+*
+* @param fileid (String)
+* @param dependent_col (String)
+*
+* @return Promise
+*/
 function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 	console.log(`generateFeaturesFromFileId ('${fileid}', '${dependent_col}')`)
 
@@ -60,6 +85,8 @@ function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 
 	return generateFeaturesAsync(args)
 }
+
+
 
 
 function generateFeatures(args) {
@@ -110,7 +137,7 @@ function generateFeaturesAsync(args) {
 		metafeatureProc.stdout.on('data', (raw_data) => {
 			try { var data = JSON.parse(`${raw_data}`) }
 			catch (err) {
-				var error = `Error, generateFeaturesAsync unable to parse stdout as JSON.  stdout: ${metafeatureProc.stdout}, err: ${err}`
+				var error = `Error, generateFeaturesAsync unable to parse stdout as JSON.  stdout: ${raw_data}, err: ${err}`
 				console.log(error)
 				throw new Error(error)
 			} 
@@ -131,5 +158,4 @@ module.exports = {
 	generateFeaturesFromFilepathAsync: generateFeaturesFromFilepathAsync,
 	generateFeaturesFromFileId: generateFeaturesFromFileId,
 	generateFeaturesFromFileIdAsync: generateFeaturesFromFileIdAsync
-
 };
