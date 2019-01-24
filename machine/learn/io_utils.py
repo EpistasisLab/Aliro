@@ -49,8 +49,8 @@ class Experiment:
             list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
                 while the 2nd one is testing dataset
         """
-        input_data, filename, dependent_col = get_input_data(self.args['_id'], self.tmpdir)
-        return input_data, filename, dependent_col
+        input_data, filename, dependent_col, categories = get_input_data(self.args['_id'], self.tmpdir)
+        return input_data, filename, dependent_col, categories
 
     def get_model(self):
         """Get scikit learn method.
@@ -169,6 +169,7 @@ def get_input_data(_id, tmpdir):
     files = jsondata['files']
     filename = [file['filename'] for file in files]
     dependent_col = ''
+    categories = None
     for file in files:
         if 'dependent_col' not in file:
             raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
@@ -176,6 +177,8 @@ def get_input_data(_id, tmpdir):
             raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
         else:
             dependent_col = file['dependent_col']
+        if 'categories' in file:
+            categories = file['categories']
 
     if len(files) == 1: # only 1 file
         uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
@@ -189,7 +192,7 @@ def get_input_data(_id, tmpdir):
             check_column(dependent_col, indata)
             input_data.append(indata)
 
-    return input_data, filename, dependent_col
+    return input_data, filename, dependent_col, categories
 
 def check_column(column_name, dataframe):
     """ check if a column exists in Pandas DataFrame.

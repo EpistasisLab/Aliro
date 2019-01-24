@@ -123,13 +123,14 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name, categories = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
         exp_filename = 'test_clf_input'
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
         assert exp_filename == filename[0]
         assert target_name == 'class'
+        assert categories is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -140,7 +141,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name, categories = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
@@ -149,6 +150,7 @@ class APITESTCLASS(unittest.TestCase):
         assert filename[0] == 'test_clf_input'
         assert filename[1] == 'test_reg_input'
         assert target_name == 'class'
+        assert categories is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
