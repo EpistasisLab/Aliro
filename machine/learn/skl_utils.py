@@ -8,6 +8,8 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.pipeline import make_pipeline
 from sklearn.utils import safe_sqr, check_X_y
 from eli5.sklearn import PermutationImportance
 from sklearn.externals import joblib
@@ -77,7 +79,9 @@ def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
     random_state=random_state,
-    filename=['test_dataset']):
+    filename=['test_dataset'],
+    categories=None
+    ):
     """generate reaults for apply a model on a datasetself.
     Parameters
     ----------
@@ -102,7 +106,10 @@ def generate_results(model, input_data,
         random seed
     filename: list
         filename for input dataset
-
+    categories: list
+        categories[i] holds the categories expected in the ith column.
+        The passed categories should not mix strings and numeric values,
+        and should be sorted in case of numeric values.
     Returns
     -------
     None
@@ -114,7 +121,7 @@ def generate_results(model, input_data,
         features = input_data.drop(target_name, axis=1).values
         target = input_data[target_name].values
 
-        features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+        features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
         training_features, testing_features, training_classes, testing_classes = \
             train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
@@ -133,18 +140,22 @@ def generate_results(model, input_data,
         training_features, training_classes = check_X_y(
                                                         training_features,
                                                         training_classes,
-                                                        dtype=np.float64, order="C",
+                                                        dtype=None, order="C",
                                                         force_all_finite=True)
         testing_features, testing_classes = check_X_y(
                                                         testing_features,
                                                         testing_classes,
-                                                        dtype=np.float64, order="C",
+                                                        dtype=None, order="C",
                                                         force_all_finite=True)
 
     # fix random_state
     model = setup_model_params(model, 'random_state', random_state)
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
+    # use OneHotEncoder to convert ca
+    if categories:
+        enc = OneHotEncoder(categories=categories, handle_unknown='ignore')
+        model = make_pipeline(enc, model)
 
     print('Args used in model:', model.get_params())
 
