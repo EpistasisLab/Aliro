@@ -3,7 +3,7 @@ from skl_utils import generate_results
 from os import environ
 
 # if system environments has a time limit setting for each experiment
-timeout = 5*60 # 5 mins by default
+timeout = 300 # 5 mins by default
 if 'TIMEOUT' in environ:
     timeout = int(environ['TIMEOUT'])*60
 
