@@ -52,7 +52,10 @@ test_clf_input = "machine/test/iris_full.tsv"
 test_clf_input_df = pd.read_csv(test_clf_input, sep='\t')
 # test input file for binary classification
 test_clf_input2 = "machine/test/iris_binary.tsv"
-test_clf_input_df2 = pd.read_csv(test_clf_input, sep='\t')
+test_clf_input_df2 = pd.read_csv(test_clf_input2, sep='\t')
+# test input file with categorical feature
+test_clf_input3 = "machine/test/test_categories.tsv"
+test_clf_input_df3 = pd.read_csv(test_clf_input3, sep='\t')
 # test inputfile for regression
 test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
@@ -103,10 +106,14 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id3", "dependent_col": "class", "categories":  ["test_categorical_feature"], "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
         return MockResponse(open(test_reg_input).read(), 200)
+    elif args[0] == 'http://lab:5080/api/v1/files/test_file_id3':
+        return MockResponse(open(test_clf_input3).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/projects':
         return MockResponse(json.dumps(projects_json_data), 200)
     else:
@@ -538,6 +545,33 @@ def test_generate_results_8():
     return_val = generate_results(model=test_gbc_long, input_data=test_clf_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42, timeout=1)
     assert return_val == "Timeout"
+    rmtree(tmpdir)
+
+
+def test_generate_results_9():
+    """Test generate results can produce expected outputs with a categorical feature"""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_clf, input_data=test_clf_input_df3,
+                    tmpdir=tmpdir, _id=_id, target_name='class',
+                    figure_export=True, categories=["test_categorical_feature"])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['train_score'] > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
     rmtree(tmpdir)
 
 

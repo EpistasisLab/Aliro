@@ -116,10 +116,17 @@ def generate_results(model, input_data,
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
-        feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
-        features = input_data.drop(target_name, axis=1).values
+
+        features = input_data.drop(target_name, axis=1)
         target = input_data[target_name].values
+
+        # use OneHotEncoder to convert categorical features
+        if categories:
+            feature_names, features, enc = categorical_feature_encoding(features, categories, enc=None)
+        else:
+            feature_names = features.columns.values
+            features = features.values
 
         features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
@@ -131,11 +138,19 @@ def generate_results(model, input_data,
 
         feature_names = np.array([x for x in training_data.columns.values if x != target_name])
 
-        training_features = training_data.drop(target_name, axis=1).values
-        testing_features = testing_data.drop(target_name, axis=1).values
+        training_features = training_data.drop(target_name, axis=1)
+        testing_features = testing_data.drop(target_name, axis=1)
 
         training_classes = training_data[target_name].values
         testing_classes = testing_data[target_name].values
+
+        if categories:
+            feature_names, training_features, enc = categorical_feature_encoding(training_features, categories, enc=None)
+            _, testing_features, _ = categorical_feature_encoding(testing_features, categories, enc=enc)
+        else:
+            feature_names = training_features.columns.values
+            training_features = training_features.values
+            testing_features = testing_features.values
 
         training_features, training_classes = check_X_y(
                                                         training_features,
@@ -152,10 +167,9 @@ def generate_results(model, input_data,
     model = setup_model_params(model, 'random_state', random_state)
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
-    # use OneHotEncoder to convert ca
-    if categories:
-        enc = OneHotEncoder(categories=categories, handle_unknown='ignore')
-        model = make_pipeline(enc, model)
+
+
+
 
     print('Args used in model:', model.get_params())
 
@@ -305,6 +319,42 @@ def generate_results(model, input_data,
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=prediction_dict)
 
+
+def categorical_feature_encoding(features, categories, enc=None):
+    """encode categorical features
+    Parameters
+    ----------
+
+    features: pandas DataFrame
+        input features
+    categories: list
+        lisf of categorical features
+    enc: scikit-learn Estimator or None
+        scikit-learn Estimator: a fitted encoder
+        None: refit OneHotEncoder
+
+
+    Returns
+    -------
+    features: np.ndarray
+        input features
+    feature_names: np.array
+        list of feature names
+    enc: scikit-learn Estimator
+        scikit-learn Estimator: a fitted encoder
+    """
+    categorical_features = features[categories]
+    other_features = features.drop(categories, axis=1)
+    other_features_names = list(other_features.columns.values)
+    if not enc:
+        enc = OneHotEncoder()
+        enc.fit(categorical_features)
+    enc_categorical_features = enc.transform(categorical_features).toarray()
+    categorical_feature_names = list(enc.get_feature_names(input_features=categories))
+    # merge to one 2-D array for return features
+    features =  np.hstack((other_features.values, enc_categorical_features))
+    feature_names = np.array(other_features_names + categorical_feature_names)
+    return feature_names, features, enc
 
 def setup_model_params(model, parameter_name, value):
     """setup parameter in a model.
