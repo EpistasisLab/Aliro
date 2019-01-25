@@ -5,7 +5,7 @@ const assert = require('assert');
 var algorithms = ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier"]
 var project_list = getProjects(algorithms)
 
-describe('Test for getProjects function', function () {
+describe('Mocha Test for getProjects function', function () {
   it('Test the total number of algorithms is the same with config.', function () {
         assert.equal(project_list.length, algorithms.length);
     });

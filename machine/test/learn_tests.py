@@ -17,7 +17,6 @@ from io_utils import Experiment, get_projects, get_input_data, get_type
 from driver import main
 import json
 from sklearn.externals import joblib
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
@@ -252,7 +251,7 @@ class APITESTCLASS(unittest.TestCase):
             input_data = pd.read_csv(test_clf_input2, sep='\t')
             target_name='class'
             features = input_data.drop(target_name, axis=1).values
-            classes = LabelEncoder().fit_transform(input_data[target_name].values)
+            classes = input_data[target_name].values
             training_features, testing_features, training_classes, testing_classes = \
                 train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
             # test reloaded model is the same
@@ -314,7 +313,7 @@ def test_generate_results_2():
         test_clf_input, sep='\t')
     target_name='class'
     features = input_data.drop(target_name, axis=1).values
-    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
         train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
 
@@ -430,7 +429,7 @@ def test_generate_results_6():
         test_clf_input, sep='\t')
     target_name='class'
     features = input_data.drop(target_name, axis=1).values
-    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
         train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
 
@@ -472,7 +471,7 @@ def test_generate_results_7():
         test_clf_input, sep='\t')
     target_name='class'
     features = input_data.drop(target_name, axis=1).values
-    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
         train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
 
@@ -517,7 +516,7 @@ def test_generate_export_codes():
         test_clf_input, sep='\t')
     target_name='class'
     features = input_data.drop(target_name, axis=1).values
-    classes = LabelEncoder().fit_transform(input_data[target_name].values)
+    classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
         train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
 
