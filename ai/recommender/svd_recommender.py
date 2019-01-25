@@ -56,7 +56,11 @@ class SVDRecommender(BaseRecommender):
         # reader for translating btw PennAI results and Suprise training set
         self.reader = Reader(rating_scale=(0,1))
         # algo is the online Surprise-based rec system
-        self.algo = mySVD()
+        self.algo = mySVD(n_factors=100, n_epochs=20, biased=True, init_mean=0,
+                          init_std_dev=.2, lr_all=.01,
+                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, lr_qi=None,
+                          reg_bu=None, reg_bi=None, reg_pu=None, reg_qi=None,
+                          random_state=None, verbose=False)
         
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
