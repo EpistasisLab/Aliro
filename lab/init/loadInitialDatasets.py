@@ -14,10 +14,10 @@ import logging
 import requests
 import time
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 DEFAULT_TARGET_COLUMN = "class"
 
@@ -69,7 +69,7 @@ def getMetadataForDatafile(root, file):
 		with open(filepath) as f:
 			data = simplejson.load(f)
 	except FileNotFoundError:
-		logger.info("File " + metafile + " does not exist.")
+		logger.debug("File " + metafile + " does not exist.")
 		return False, target_column
 	except Exception as e:
 		logger.warning("Unable to parse file " + filepath + ": " + str(e))
@@ -112,7 +112,7 @@ def validateDatafile(root, file, target_column):
 	except Exception as e:
 		return False, "sklearn.check_X_y() validation failed: " + str(e)
 
-	return True, ""
+	return True, None
 
 
 def registerDatafile(root, file, target_column, apiPath):
@@ -154,12 +154,27 @@ def registerDatafile(root, file, target_column, apiPath):
 def main():
     '''
     Attempt to load the inital datasets using the user directory and lab host defined in environmental variables
+
+    Also add an additional file log handler to '../target/log/loadInitialDatasets.log'
     '''
     meta_features_all = []
     parser = argparse.ArgumentParser(description="Reads or creates 'DATASET_metadata.json' file given a dataset", add_help=False)
     #parser.add_argument('DIRECTORY', type=str, help='Direcory to get get datafiles from')    
 
     args = parser.parse_args()
+
+    # set up the file logger
+    logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
+    if not os.path.exists(logpath):
+        os.makedirs(logpath)
+
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    fhandler = logging.FileHandler(os.path.join(logpath, 'loadInitialDatasets.log'))
+    fhandler.setFormatter(formatter)
+    logger.addHandler(fhandler)
+
+    print("logpath: " + logpath)
+    print(os.path.join(logpath, 'loadInitialDatasets.log'))
 
     apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
     directory = os.environ['STARTUP_DATASET_PATH']
