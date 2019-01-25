@@ -770,6 +770,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                 .then((project) => {
                     if (project === null) {
                         res.status(400);
+                        console.log("400 ERROR: Project ID " + projId + " does not exist")
                         res.send({
                             error: "Project ID " + projId + " does not exist"
                         });
@@ -801,6 +802,7 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                         var validation = optionChecker(project.schema, obj, dataset);
                         if (validation.error) {
                             res.status(400);
+                            console.log("400 Validation error: " + validation)
                             res.send(validation);
                         } else {
                             //console.log(projId, obj, files, dataset, username);
