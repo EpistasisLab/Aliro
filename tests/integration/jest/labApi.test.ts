@@ -55,8 +55,7 @@ describe('lab', () => {
 					'name': 'appendicitis_2.csv',
 		            'username': 'testUser',
 		            'timestamp': Date.now(),
-		            'dependent_col' : 'target_class',
-		            'filepath' : DATASET_PATH
+		            'dependent_col' : 'target_class'
 	            })
 
 			form.append('_metadata', metadata)
@@ -93,28 +92,6 @@ describe('lab', () => {
 			}
 		});
 
-		it('putDataset missing param _metadata.filepath', async () => {
-			expect.assertions(2);
-
-			var metadata = JSON.stringify({
-					'name': 'datasetName',
-		            'username': 'testUser',
-		            'timestamp': Date.now(),
-		            'dependent_col' : 'class',
-	            })
-
-			let form = new FormData();
-			form.append('_metadata', metadata)
-
-			try {
-				var result = await labApi.putDataset(form);
-			} catch (e) {
-				var json = await e.response.json() // get the specific error description
-				expect(json.error).toEqual("Missing parameter _metadata.filepath")
-				expect(e.response.status).toEqual(400)
-			}
-		});
-
 		it.skip('putDataset empty file array', async () => {
 			expect.assertions(2);
 
@@ -123,7 +100,6 @@ describe('lab', () => {
 		            'username': 'testUser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'class',
-		            'filepath' : DATASET_PATH
 	            })
 
 			let form = new FormData();
