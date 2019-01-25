@@ -14,6 +14,7 @@ from sklearn.externals import joblib
 from sklearn import __version__ as skl_version
 import warnings
 from sys import version
+from stopit import threading_timeoutable
 import __main__
 
 # if system environment allows to export figures
@@ -71,7 +72,7 @@ def balanced_accuracy(y_true, y_pred):
 SCORERS = metrics.SCORERS
 SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
 
-
+@threading_timeoutable(default="Timeout")
 def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
