@@ -11,8 +11,12 @@ from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
 import pdb
-from surprise import SVD, Reader, Dataset
+from surprise import Reader, Dataset, mySVD
+# import pyximport
+# pyximport.install()
+# from .svdedit import mySVD
 from collections import defaultdict
+import itertools as it
 
 class SVDRecommender(BaseRecommender):
     """Penn AI SVD recommender.
@@ -42,22 +46,22 @@ class SVDRecommender(BaseRecommender):
             self.metric = metric
 
         # get ml+p combos
-        self.ml_p = ml_p
+        self.ml_p = ml_p.drop_duplicates()
         # get dataset names
         self.datasets = datasets
-        for mlp in self.ml_p:
-            for data in self.datasets:
-                results_dict['dataset'].append(data)
-                results_dict['algorithm'].append(mlp)
-                results_dict['score'].append('')
+        # machine learning - parameter combinations
+        self.mlp_combos = self.ml_p['algorithm']+'|'+self.ml_p['parameters']
+        # store results
+        self.results_df = pd.DataFrame()
+        # reader for translating btw PennAI results and Suprise training set
+        self.reader = Reader(rating_scale=(0,1))
+        # algo is the online Surprise-based rec system
+        self.algo = mySVD()
         
-        self.results = pd.DataFrame(results_dict).set_index(['dataset','algorithm'])
-        
-        reader = Reader(rating_scale=(0,1))
-        # The columns must correspond to dataset id, algorithm id and score (in that order).
-        self.trainset = Dataset.load_from_df(df[['dataset', 'algorithm', 'score']], reader)
-        self.algo = SVD()
-        
+        # maintain a set of dataset-algorithm-parameter combinations that have already been 
+        # evaluated
+        self.trained_dataset_models = set()
+
     def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
 
@@ -87,23 +91,28 @@ class SVDRecommender(BaseRecommender):
 
     def update_training_data(self,results_data):
         """Fill in new data from the results"""
-        for row in results_data.iterrows():
-            self.results.loc[(row['dataset'],
-                              row['algorithm']+'|'+row['parameters'])]['score'] = row[self.metric]
-        
-        self.trainset = Dataset.load_from_df(self.results[['dataset', 'algorithm', 'score']], 
-                                             reader)
+        results_data.loc[:, 'algorithm-parameters'] =  (results_data['algorithm'].values + '|' +
+                                                        results_data['parameters'].values)
+        results_data.rename(columns={self.metric:'score'},inplace=True)
+        self.results_df = self.results_df.append(results_data[['algorithm-parameters',
+                                                              'dataset','score']]
+                                                ).drop_duplicates()
+
+        data = Dataset.load_from_df(self.results_df[['dataset', 'algorithm-parameters', 
+                                                     'score']], self.reader)
+        # build training set from the data
+        self.trainset = data.build_full_trainset()
 
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
-        print('updating model')
+        # print('updating model')
         
         self.update_training_data(results_data)
 
         self.algo.partial_fit(self.trainset)
         
-        print('model updated')
-                
+        # print('model updated') 
+
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
 
@@ -117,111 +126,50 @@ class SVDRecommender(BaseRecommender):
         """
         # TODO: raise error if dataset_mf is None 
         try:
-	    predictions = self.alg.predict(dataset_id, self.results.index)
-		
-            ml_rec, p_rec, rec_score = predictions[0], predictions[1], predictions[2] 
+            predictions = []
+            for alg_params in self.mlp_combos:
+                # this prevents repeat recommendations
+                if dataset_id+'|'+alg_params not in self.trained_dataset_models:  
+                    predictions.append(self.algo.predict(dataset_id, alg_params,clip=False))
             
-            ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
-                    					   n_recs)
-	    ml_rec, p_rec, rec_score = self.get_top_n(n_recs)
+            ml_rec, p_rec, score_rec = self.get_top_n(predictions, n_recs)
             
-	    for (m,p,r) in zip(ml_rec, p_rec, rec_score):
-                print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
+            # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
+            #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
             
         except Exception as e:
             print( 'error running self.best_model_prediction for',dataset_id)
-            # print('ml_rec:', ml_rec)
-            # print('p_rec', p_rec)
-            # print('rec_score',rec_score)
             raise e 
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-
         self.trained_dataset_models.update(
                                     ['|'.join([dataset_id, ml, p])
                                     for ml, p in zip(ml_rec, p_rec)])
 
-        return ml_rec, p_rec, rec_score
+        return ml_rec, p_rec, score_rec
 
-    def filter_repeats(self, dataset_id, ml_rec, p_rec, rec_score, n_recs):
-        """Uses trained_dataset_models to filter recs that have already been run"""
-        # Filter recommendations for
-        # algorithm-parameter combos that have already been run
-        rec = ['|'.join([dataset_id, ml, p]) for ml, p in zip(ml_rec, p_rec)]
-        try:
-            frec,idx = zip(*((r,i) for i,r in enumerate(rec) 
-                             if r not in self.trained_dataset_models))
-        except ValueError as e:
-            print("WARNING: can't filter results, probably all recommmendations are repeats")
-            return ml_rec, p_rec, rec_score
+    def get_top_n(self,predictions, n=10):
+        '''Return the top-N recommendation for each user from a set of predictions.
+        
+        Args:
+            predictions(list of Prediction objects): The list of predictions, as
+                returned by the test method of an algorithm.
+            n(int): The number of recommendation to output for each user. Default
+                is 10.
 
-        # print('rec:',rec) 
-        # print('idx:',idx) 
-        if len(frec) >= n_recs:
-            ml_rec = [r.split('|')[1] for r in frec]
-            p_rec = [r.split('|')[2] for r in frec]
-            rec_score = [rec_score[i] for i in idx]
-        else:
-            print("WARNING: can't filter recommendations, possibly repeating")
-        return ml_rec, p_rec, rec_score
+        Returns:
+            ml recs, parameter recs, and their scores in three lists
+        '''
 
-    def best_model_prediction(self, dataset_id, df_mf, n_recs=1):
-        """Predict scores over many variations of ML+P and pick the best"""
-        # get dataset metafeatures
-        # df_mf = self.get_metafeatures(dataset_id) 
-        mf = df_mf.drop('dataset',axis=1).fillna(0.0).values.flatten()
+        # grabs the ml ids and their estimated scores for this dataset 
+        top_n = [] 
+        for uid, iid, true_r, est, _ in predictions:
+            top_n.append((iid, est))
 
-        # compute the neighbors of past results 
-        nbrs = NearestNeighbors(n_neighbors=len(self.dataset_mf), algorithm='ball_tree')
-        # print('fitting nbrs to self.dataset_mf with shape',
-        #       self.dataset_mf.values.shape)
-        rs = RobustScaler()
-        X = rs.fit_transform(self.dataset_mf.values)
-        nbrs.fit(X)
-        # find n_recs nearest neighbors to new dataset
-        # print('querying neighbors with mf of shape',mf.shape)
-        distances,indices = nbrs.kneighbors(rs.transform(mf.reshape(1,-1)))
-        # print('distances:',distances)
-        # print('indices:',indices)
-        dataset_idx = [self.dataset_mf.index[i] for i in indices[0]]
-        # recommend the mlp results closest to the dataset in metafeature space
-        ml_recs, p_recs, scores = [],[],[]
-
-        # print('self.best_mlp:',self.best_mlp)
-        for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):   
-            if i < 10:
-                print('closest dataset:',d,'distance:',dist)
-            if dist > 0.0:    # don't recommend based on this same dataset
-                ml_recs.append(self.best_mlp.loc[d,'algorithm'])
-                p_recs.append(self.best_mlp.loc[d,'parameters'])
-                scores.append(dist)
-
-        return ml_recs,p_recs,scores
-
-    def get_top_n(predictions, n=10):
-	'''Return the top-N recommendation for each user from a set of predictions.
-
-	Args:
-	    predictions(list of Prediction objects): The list of predictions, as
-		returned by the test method of an algorithm.
-	    n(int): The number of recommendation to output for each user. Default
-		is 10.
-
-	Returns:
-	A dict where keys are user (raw) ids and values are lists of tuples:
-	    [(raw item id, rating estimation), ...] of size n.
-	'''
-
-	# First map the predictions to each user.
-	top_n = defaultdict(list)
-	for uid, iid, true_r, est, _ in predictions:
-	    top_n[uid].append((iid, est))
-
-	# Then sort the predictions for each user and retrieve the k highest ones.
-	for uid, user_ratings in top_n.items():
-	    user_ratings.sort(key=lambda x: x[1], reverse=True)
-	    top_n[uid] = user_ratings[:n]
-
-	return top_n
-	    
+        top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
+        
+        ml_rec = [n[0].split('|')[0] for n in top_n]
+        p_rec = [n[0].split('|')[1] for n in top_n]
+        score_rec = [n[1] for n in top_n]
+        return ml_rec, p_rec, score_rec 
