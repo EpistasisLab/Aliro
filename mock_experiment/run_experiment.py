@@ -1,6 +1,7 @@
 # William La Cava
 # mock experiment for comparing recommenders.
 import pdb
+import os
 import pandas as pd
 import numpy as np
 import argparse
@@ -11,45 +12,54 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 
+from joblib import Parallel, delayed
 from collections import OrderedDict
 from mock_experiment.mf_utils import local_get_metafeatures, update_dataset_mf
 import warnings 
 warnings.simplefilter("ignore")
 # define a comparison function that tests a recommender on the datasets, 
 #using an intial knowledge base.
-def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init):
+def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
     kwargs = {'metric':'bal_accuracy'}
-    if rec in ['random','meta','mlp']:
-            kwargs.update({'ml_p':ml_p})
-
+    if rec in ['random','meta','mlp','svd']:
+        kwargs.update({'ml_p':ml_p})
+    if rec == 'svd': 
+        kwargs.update({'datasets':knowledge_base.dataset.unique()})
     rec_choice = {'random': RandomRecommender,
             'average': AverageRecommender,
             'meta': MetaRecommender,
             'mlp': MLPMetaRecommender,
-            'knn': KNNMetaRecommender
+            'knn': KNNMetaRecommender,
+            'svd': SVDRecommender
             }
 
     recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
     # load first ten results into recommender
-    train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
+    # train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
+    train_subset = np.random.choice(knowledge_base.index, size = n_init, replace=False)
     # print('setting training data for recommender:',train_subset)
     init_data = []
     init_data_mf = []
-    for i in train_subset:
-        init_data.append(knowledge_base.loc[knowledge_base['dataset']==i])
+    # for i in train_subset:
+        # init_data.append(knowledge_base.loc[knowledge_base['dataset']==i])
+        # init_df = pd.concat(init_data)
+    init_df = knowledge_base.iloc[train_subset]
+    for i,_ in init_df.groupby('dataset'):
         init_data_mf.append(local_get_metafeatures(i))
-    init_df = pd.concat(init_data)
+
     dataset_mf = pd.concat(init_data_mf).set_index('dataset')
     print('initial training on',len(init_df),'results')
     recommender.update(init_df, dataset_mf)
     
-    rec_subset = [d for i,d in enumerate(data_idx) if i >= n_init]
+    # rec_subset = [d for i,d in enumerate(data_idx) if i >= n_init]
+    datasets = data_idx
     # loop thru rest of datasets
-    for it,dataset in enumerate(rec_subset):
-
+    # for it,dataset in enumerate(rec_subset):
+    for it in np.arange(iters):
+        dataset = np.random.choice(datasets)
         holdout_accuracy_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
         holdout_rank_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
@@ -104,6 +114,7 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init):
                             'iteration':it,
                             'n_recs':n_recs,
                             'n_init':n_init,
+                            'iters':iters,
                             'recommender':rec,
                             'dataset':dataset,
                             'ml-rec':ml,
@@ -127,7 +138,6 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init):
     #         out.write(','.join([str(fi) for fi in recommender.ml.feature_importances_])+'\n')
     return results
 
-# make a figure comparing several runs of the test over different orderings of datasets
 
 if __name__ == '__main__':
     """run experiment"""
@@ -136,22 +146,19 @@ if __name__ == '__main__':
                                      add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
-    parser.add_argument('-recs',action='store',dest='rec',default='random,average', 
-                        help='Comma-separated list of recommenders to run.') 
+    parser.add_argument('-rec',action='store',dest='rec',default='random', 
+                        help='Recommender to run.') 
     parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
     parser.add_argument('-v','-verbose',action='store_true',dest='verbose',default=False,
                         help='Print out more messages.')
-    parser.add_argument('-n_trials',action='store',dest='n_trials',type=int,default=10,
-                        help='Number of repeat experiments to run.')  
     parser.add_argument('-n_init',action='store',dest='n_init',type=int,default=10,
                         help='Number of initial datasets to seed knowledge database')
-    parser.add_argument('-n_init_range',action='store',dest='n_init_range',type=str,
-                        default='',
+    parser.add_argument('-iters',action='store',dest='iters',type=int,default=100,
                         help='Number of initial datasets to seed knowledge database')
-    parser.add_argument('-n_recs_range',action='store',dest='n_recs_range',type=str,default='',
-                        help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-t',action='store',dest='trial',type=int,default=0,
+                        help='Trial number')
     parser.add_argument('-data',action='store',dest='KNOWL',type=str,
                         default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
                         help='Number of initial datasets to seed knowledge database')
@@ -172,44 +179,37 @@ if __name__ == '__main__':
         
         data_idx = np.unique(knowledge_base['dataset'])  # datasets 
         
-        if args.n_recs_range != '':
-            n_recs_range = [int(r) for r in args.n_recs_range.split(',')]
-        else:
-            n_recs_range = [args.n_recs]
-        if args.n_init_range != '':
-            n_init_range = [int(r) for r in args.n_init_range.split(',')]
-        else:
-            n_init_range = [args.n_init]
 
         # output file
         out_file = ('mock_experiment/results/experiment_' 
                     + data_file.split('/')[-1].split('.')[0]
-                    + '_recs-'+'-'.join(args.rec.split(',')) 
-                    + '_ninit-'+'-'.join([str(n) for n in n_init_range])
-                    + '_nrecs-'+'-'.join([str(n) for n in n_recs_range]) 
-                    + '_ntrials-{}'.format(args.n_trials) 
+                    + '_rec-{}'.format(args.rec) 
+                    + '_ninit-{}'.format(args.n_init)
+                    + '_nrecs-{}'.format(args.n_recs)
+                    + '_iters-{}'.format(args.iters) 
+                    + '_trial-{}'.format(args.trial) 
                     + '.csv')    
 
-        first = True
-        for t in np.arange(args.n_trials):   # for each trial (parallelize this)
-            print('trial=',t)
-            for n_init in n_init_range:
-                print('n_init=',n_init)
-                for n_recs in n_recs_range:
-                    print('n_recs=',n_recs)
-                    np.random.shuffle(data_idx) # shuffle datasets
-                    for rec in args.rec.split(','):        # for each recommender
-                        print('rec=',rec)
-                        # run experiment
-                        results = run_experiment(rec,data_idx,n_recs,t,knowledge_base,
-                                                 ml_p,n_init)
-                        df_results = pd.DataFrame.from_records(results,columns=results[0].keys()) 
-                        # write results
-                        if first:
-                            df_results.to_csv(out_file,index=False)
-                            first=False
-                        else:
-                            with open(out_file,'a') as out:     # printout results
-                                df_results.to_csv(out, header=False, index=False)
+        # run experiment
+
+        np.random.shuffle(data_idx) # shuffle datasets
+        print('rec:',args.rec,'n_recs:',args.n_recs,'n_init:',args.n_init,
+              'iters:',args.iters)
+        results = run_experiment(args.rec,
+                                 data_idx,
+                                 args.n_recs,
+                                 args.trial,
+                                 knowledge_base,
+                                 ml_p,
+                                 args.n_init,
+                                 args.iters)
+
+        df_results = pd.DataFrame.from_records(results,columns=results[0].keys()) 
+        # write results
+        if os.path.exists(out_file):
+            with open(out_file, 'a') as out:
+                df_results.to_csv(out,index=False,header=False)
+        else:
+            df_results.to_csv(out_file,index=False)
 
         print('done. results written to ', out_file)

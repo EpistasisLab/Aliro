@@ -84,7 +84,7 @@ class KNNMetaRecommender(BaseRecommender):
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        print('updating model')
+        # print('updating model')
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -98,7 +98,7 @@ class KNNMetaRecommender(BaseRecommender):
                 self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameters']
             else:
                 print('skipping',d)
-        print('model updated')
+        # print('model updated')
                 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
@@ -119,8 +119,8 @@ class KNNMetaRecommender(BaseRecommender):
             ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
                     n_recs)
 
-            for (m,p,r) in zip(ml_rec, p_rec, rec_score):
-                print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
+            # for (m,p,r) in zip(ml_rec, p_rec, rec_score):
+            #     print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
             ml_rec, p_rec, rec_score = ml_rec[:n_recs], p_rec[:n_recs], rec_score[:n_recs]
             
         except Exception as e:
