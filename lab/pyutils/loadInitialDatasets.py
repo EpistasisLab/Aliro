@@ -35,13 +35,6 @@ def registerDatafiles(directory, apiPath):
 
 			if (extension in ['.csv', '.tsv']):
 				foundMetadataFile, target_column = getMetadataForDatafile(root, file)
-
-				valResult, message = validateDatafile(root, file, target_column)
-
-				if not(valResult):
-					logger.warning("Validation failed for " + os.path.join(root, file) + ": " + message)
-					break
-					
 				registerDatafile(root, file, target_column, apiPath)		
 
 
@@ -84,35 +77,6 @@ def getMetadataForDatafile(root, file):
 
 	return True, target_column
 
-
-def validateDatafile(root, file, target_column):
-	'''
-	Check that a datafile is valid
-
-
-	@return tuple
-		boolean - validation result
-		string 	- message
-	'''
-	filepath = os.path.join(root, file)
-
-	try:
-		input_data = pd.read_csv(filepath, sep=None, engine='python', dtype=np.float64)
-	except Exception as e:
-		return False, "Unable to parse file: " + str(e)
-
-	if not(target_column in input_data.columns):
-		return False, "Target column '" + target_column + "' not in data"
-
-	features = input_data.drop(target_column, axis=1).values
-	target = input_data[target_column].values
-
-	try:
-		features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
-	except Exception as e:
-		return False, "sklearn.check_X_y() validation failed: " + str(e)
-
-	return True, None
 
 
 def registerDatafile(root, file, target_column, apiPath):
