@@ -658,13 +658,13 @@ pickle_model = joblib.load(pickle_file)
 model = pickle_model['model']
 
 # read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python', dtype=np.float64)
+input_data = pd.read_csv(dataset, sep=None, engine='python')
 
 # Application 1: reproducing training score and testing score from PennAI
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
     train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
 scorer = make_scorer(balanced_accuracy)
