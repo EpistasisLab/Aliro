@@ -8,10 +8,11 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
 from sklearn.utils import safe_sqr, check_X_y
-from eli5.sklearn import PermutationImportance
+from mlxtend.evaluate import feature_importance_permutation
 from sklearn.externals import joblib
 from sklearn import __version__ as skl_version
 import warnings
@@ -80,7 +81,8 @@ def generate_results(model, input_data,
     mode='classification', figure_export=figure_export,
     random_state=random_state,
     filename=['test_dataset'],
-    categories=None
+    categories=None,
+    ordinals=None
     ):
     """generate reaults for apply a model on a datasetself.
     Parameters
@@ -107,26 +109,19 @@ def generate_results(model, input_data,
     filename: list
         filename for input dataset
     categories: list
-        categories[i] holds the categories expected in the ith column.
-        The passed categories should not mix strings and numeric values,
-        and should be sorted in case of numeric values.
+        list of column names for one-hot encoding
+    ordinals: list
+        list of column names for label encoding to ordinal integers
     Returns
     -------
     None
     """
     print('loading..')
     if isinstance(input_data, pd.DataFrame):
+        feature_names = np.array([x for x in input_data.columns.values if x != target_name])
 
-
-        features = input_data.drop(target_name, axis=1)
+        features = input_data.drop(target_name, axis=1).values
         target = input_data[target_name].values
-
-        # use OneHotEncoder to convert categorical features
-        if categories:
-            feature_names, features, enc = categorical_feature_encoding(features, categories, enc=None)
-        else:
-            feature_names = features.columns.values
-            features = features.values
 
         features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
@@ -138,19 +133,11 @@ def generate_results(model, input_data,
 
         feature_names = np.array([x for x in training_data.columns.values if x != target_name])
 
-        training_features = training_data.drop(target_name, axis=1)
-        testing_features = testing_data.drop(target_name, axis=1)
+        training_features = training_data.drop(target_name, axis=1).values
+        testing_features = testing_data.drop(target_name, axis=1).values
 
         training_classes = training_data[target_name].values
         testing_classes = testing_data[target_name].values
-
-        if categories:
-            feature_names, training_features, enc = categorical_feature_encoding(training_features, categories, enc=None)
-            _, testing_features, _ = categorical_feature_encoding(testing_features, categories, enc=enc)
-        else:
-            feature_names = training_features.columns.values
-            training_features = training_features.values
-            testing_features = testing_features.values
 
         training_features, training_classes = check_X_y(
                                                         training_features,
@@ -168,15 +155,35 @@ def generate_results(model, input_data,
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
 
+    # use OneHotEncoder or OrdinalEncoder to convert categorical features
+    if categories or ordinals:
+        transform_cols = []
+        feature_names_list = list(feature_names)
+        if categories:
+            col_idx = get_col_idx(feature_names_list, categories)
+            transform_cols.append(("onehotencoder", OneHotEncoder(), col_idx))
+        if ordinals:
+            col_idx = get_col_idx(feature_names_list, ordinals)
+            transform_cols.append(("ordinalencoder", OrdinalEncoder(), col_idx))
 
+        print(transform_cols[0][1]==OneHotEncoder())
+
+        ct = ColumnTransformer(
+                                transformers=transform_cols,
+                                 remainder='passthrough',
+                                 sparse_threshold=0
+                                 )
+        model = make_pipeline(ct, model)
 
 
     print('Args used in model:', model.get_params())
 
     if mode == "classification":
         scoring = SCORERS["balanced_accuracy"]
+        metric = "accuracy"
     else:
         scoring = SCORERS["neg_mean_squared_error"]
+        metric = 'r2'
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         # fit model
@@ -199,7 +206,7 @@ def generate_results(model, input_data,
 
 
     # exporting/computing importance score
-    coefs = compute_imp_score(model, training_features, training_classes, random_state)
+    coefs = compute_imp_score(model, metric, training_features, training_classes, random_state)
 
     feature_importances = {
         'feature_names': feature_names.tolist(),
@@ -319,42 +326,23 @@ def generate_results(model, input_data,
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=prediction_dict)
 
-
-def categorical_feature_encoding(features, categories, enc=None):
-    """encode categorical features
+def get_col_idx(feature_names_list, columns):
+    """get unique indexes of columns based on list of column names
     Parameters
     ----------
 
-    features: pandas DataFrame
-        input features
-    categories: list
-        lisf of categorical features
-    enc: scikit-learn Estimator or None
-        scikit-learn Estimator: a fitted encoder
-        None: refit OneHotEncoder
-
+    feature_names_list: list
+        list of column names
+    columns: list
+        list of selected column names
 
     Returns
     -------
-    features: np.ndarray
-        input features
-    feature_names: np.array
-        list of feature names
-    enc: scikit-learn Estimator
-        scikit-learn Estimator: a fitted encoder
+    col_idx: list
+        list of selected column indexes
     """
-    categorical_features = features[categories]
-    other_features = features.drop(categories, axis=1)
-    other_features_names = list(other_features.columns.values)
-    if not enc:
-        enc = OneHotEncoder()
-        enc.fit(categorical_features)
-    enc_categorical_features = enc.transform(categorical_features).toarray()
-    categorical_feature_names = list(enc.get_feature_names(input_features=categories))
-    # merge to one 2-D array for return features
-    features =  np.hstack((other_features.values, enc_categorical_features))
-    feature_names = np.array(other_features_names + categorical_feature_names)
-    return feature_names, features, enc
+    return [feature_names_list.index(c) for c in columns]
+
 
 def setup_model_params(model, parameter_name, value):
     """setup parameter in a model.
@@ -379,7 +367,7 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def compute_imp_score(model, training_features, training_classes, random_state):
+def compute_imp_score(model, metric, training_features, training_classes, random_state):
     """compute importance scores for features.
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
@@ -390,6 +378,14 @@ def compute_imp_score(model, training_features, training_classes, random_state):
 
     model:  scikit-learn Estimator
         a fitted scikit-learn model
+    metric: str, callable
+        The metric for evaluating the feature importance through
+        permutation. By default, the strings 'accuracy' is
+        recommended for classifiers and the string 'r2' is
+        recommended for regressors. Optionally, a custom
+        scoring function (e.g., `metric=scoring_func`) that
+        accepts two arguments, y_true and y_pred, which have
+        similar shape to the `y` array.
     training_features: np.darray/pd.DataFrame
         training features
     training_classes: np.darray/pd.DataFrame
@@ -409,14 +405,14 @@ def compute_imp_score(model, training_features, training_classes, random_state):
     else:
         coefs = getattr(model, 'feature_importances_', None)
     if coefs is None:
-        perm = PermutationImportance(
-                                    estimator=model,
-                                    n_iter=5,
-                                    random_state=random_state,
-                                    refit=False
+        coefs, _ = feature_importance_permutation(
+                                    predict_method=model.predict,
+                                    X=training_features,
+                                    y=training_classes,
+                                    num_rounds=5,
+                                    metric=metric,
+                                    seed=random_state,
                                     )
-        perm.fit(training_features, training_classes)
-        coefs = perm.feature_importances_
 
     if coefs.ndim > 1:
         coefs = safe_sqr(coefs).sum(axis=0)
