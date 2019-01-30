@@ -49,8 +49,7 @@ class Experiment:
             list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
                 while the 2nd one is testing dataset
         """
-        input_data, filename, dependent_col, categories = get_input_data(self.args['_id'], self.tmpdir)
-        return input_data, filename, dependent_col, categories
+        return get_input_data(self.args['_id'], self.tmpdir)
 
     def get_model(self):
         """Get scikit learn method.
@@ -170,6 +169,7 @@ def get_input_data(_id, tmpdir):
     filename = [file['filename'] for file in files]
     dependent_col = ''
     categories = None
+    ordinals = None
     for file in files:
         if 'dependent_col' not in file:
             raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
@@ -179,6 +179,8 @@ def get_input_data(_id, tmpdir):
             dependent_col = file['dependent_col']
         if 'categories' in file:
             categories = file['categories']
+        if 'ordinals' in file:
+            ordinals = file['ordinals']
 
     if len(files) == 1: # only 1 file
         input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
@@ -190,7 +192,7 @@ def get_input_data(_id, tmpdir):
             check_column(dependent_col, indata)
             input_data.append(indata)
 
-    return input_data, filename, dependent_col, categories
+    return input_data, filename, dependent_col, categories, ordinals
 
 def get_file_data(file_id):
     """

@@ -4,6 +4,7 @@ import sys
 os.environ['LAB_HOST'] = 'lab'
 os.environ['LAB_PORT'] = '5080'
 os.environ['PROJECT_ROOT'] = '.'
+os.environ['RANDOM_SEED'] = '42'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -109,7 +110,10 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id3", "dependent_col": "class", "categories":  ["test_categorical_feature"], "filename": "test_clf_input3"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id3", "dependent_col": "class",
+                            "categories":  ["test_categorical_feature_1", "test_categorical_feature_2"],
+                            "ordinals":  ["test_ordinal_feature"],
+                            "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -132,7 +136,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name, categories = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
         exp_filename = 'test_clf_input'
         rmtree(tmpdir)
@@ -140,6 +144,7 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_filename == filename[0]
         assert target_name == 'class'
         assert categories is None
+        assert ordinals is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -150,7 +155,7 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name, categories = get_input_data(_id, tmpdir=tmpdir)
+        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
@@ -160,6 +165,7 @@ class APITESTCLASS(unittest.TestCase):
         assert filename[1] == 'test_reg_input'
         assert target_name == 'class'
         assert categories is None
+        assert ordinals is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -192,6 +198,24 @@ class APITESTCLASS(unittest.TestCase):
         LAB_HOST = 'lab'
         # Assert requests.get calls
         assert_raises(ValueError, get_input_data, _id, tmpdir)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_input_data_6(self, mock_get):
+        """Test get_input_data function return one input dataset with categorical and ordinal features"""
+        tmpdir = mkdtemp() + '/'
+        _id = 'test_id6'
+        LAB_PORT = '5080'
+        LAB_HOST = 'lab'
+        # Assert requests.get calls
+        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
+        exp_input_data = pd.read_csv(test_clf_input3, sep='\t')
+        exp_filename = 'test_clf_input3'
+        rmtree(tmpdir)
+        assert exp_input_data.equals(input_data)
+        assert exp_filename == filename[0]
+        assert target_name == 'class'
+        assert categories == ["test_categorical_feature_1", "test_categorical_feature_2"]
+        assert ordinals == ["test_ordinal_feature"]
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -295,7 +319,7 @@ class APITESTCLASS(unittest.TestCase):
                 if param_name != 'n_estimators':
                     args[param_name] = conv_default_value
                 else:
-                    args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
+                    args[param_name] = 10000 # set n_estimators to 1000 to raise time out.
         print(algorithm_name, args)
         assert_raises(RuntimeError, main, args, 1)
 
@@ -517,7 +541,8 @@ def test_generate_results_6():
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_rfc, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+                    tmpdir=tmpdir, _id=_id, target_name='class',
+                    figure_export=False, random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
@@ -615,7 +640,7 @@ def test_generate_results_9():
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df3,
                     tmpdir=tmpdir, _id=_id, target_name='class',
-                    figure_export=True, categories=["test_categorical_feature"])
+                    figure_export=True, categories=["test_categorical_feature_1"])
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -632,6 +657,36 @@ def test_generate_results_9():
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
     rmtree(tmpdir)
+
+
+def test_generate_results_10():
+    """Test generate results can produce expected outputs with 2 categorical features and 1 ordinal feature."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    generate_results(model=test_clf, input_data=test_clf_input_df3,
+                    tmpdir=tmpdir, _id=_id, target_name='class',
+                    figure_export=True,
+                    categories=["test_categorical_feature_1", "test_categorical_feature_2"],
+                    ordinals=["test_ordinal_feature"])
+
+    value_json = '{}/value.json'.format(outdir)
+    assert os.path.isfile(value_json)
+    with open(value_json, 'r') as f:
+        value = json.load(f)
+    assert value['_scores']['train_score'] > 0.9
+    assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+    assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+    assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    # test pickle file
+    pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+    assert os.path.isfile(pickle_file)
+    rmtree(tmpdir)
+
 
 
 def test_setup_model_params():
