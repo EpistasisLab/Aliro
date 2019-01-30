@@ -1,70 +1,161 @@
 var spawn = require("child_process").spawn;
 var spawnSync = require("child_process").spawnSync;
+var Promise = require("bluebird");
 
 /**
 * Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
-* For now, generate the process synchronously.
+* The process is blocking.
 * 
 *
-* @param fileObj
-* @return Map - {success: Boolean, 
-*				 data: (if success) JSON
-*				 error: (if falure) String}
+* @param filename (String)
+* @param filepath (String)
+* @param dependent_col (String)
+*
+* @return data: (if success) JSON
 */
-function generateFeatures(fileObj, filepath, dependent_col) {
-	console.log(`generateFeatures ('${fileObj.originalname}', '${filepath}', '${dependent_col}')`)
+function generateFeaturesFromFilepath(filename, filepath, dependent_col) {
+	console.log(`generateFeaturesFromFilepath ('${filename}', '${filepath}', '${dependent_col}')`)
 
-	var filepath = filepath + "/" + fileObj.originalname
+	var filepath = filepath + "/" + filename
 	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
 
 	console.log(`args: ${args}`)
 
-/*
-	// async
-    var metafeatureProc = spawn('python', 
-    	args, {
-            cwd: process.env.PROJECT_ROOT + '/ai/metalearning/generateTestMetafeatures.py'
-    })
-    .on("error", (err) => {
-    	console.log(`unable to spawn generateFeatures process: ${err}`)
-    })
+	return generateFeatures(args)
+}
 
-    metafeatureProc.stdout.on('data', (data) => {
-    	metafeatureJson = data
-	})
 
-	metafeatureProc.on('close', (code) => {
-	  console.log(`child process exited with code ${code}`);
-	});
+/**
+* Spawn a python process that generates metafeatures for a given dataset and generates JSON formatted data.
+* 
+*
+* @param filename (String)
+* @param filepath (String)
+* @param dependent_col (String)
+*
+* @return Promise
 */
+function generateFeaturesFromFilepathAsync(filename, filepath, dependent_col) {
+	console.log(`generateFeaturesFromFilepath ('${filename}', '${filepath}', '${dependent_col}')`)
 
-	var metafeatureProcObj = spawnSync('python', 
+	var filepath = filepath + "/" + filename
+	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
+
+	console.log(`args: ${args}`)
+
+	return generateFeaturesAsync(args)
+}
+
+/**
+* Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
+* The process is blocking.
+* 
+*
+* @param fileid (String)
+* @param dependent_col (String)
+*
+* @return data: (if success) JSON
+*/
+function generateFeaturesFromFileId(fileid, dependent_col) {
+	console.log(`generateFeaturesFromFileId ('${fileid}', '${dependent_col}')`)
+
+	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
+
+	console.log(`args: ${args}`)
+
+	return generateFeatures(args)
+}
+
+/**
+* Spawn a python process that generates metafeatures for a given dataset and returns JSON formatted data on stdout.
+* The process is blocking.
+* 
+*
+* @param fileid (String)
+* @param dependent_col (String)
+*
+* @return Promise
+*/
+function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
+	console.log(`generateFeaturesFromFileId ('${fileid}', '${dependent_col}')`)
+
+	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
+
+	console.log(`args: ${args}`)
+
+	return generateFeaturesAsync(args)
+}
+
+
+
+
+function generateFeatures(args) {
+	var metafeatureProc = spawnSync('python', 
     	args, {
             cwd: process.env.PROJECT_ROOT
     })
 
-	if (metafeatureProcObj.error != null) {
+	if (metafeatureProc.error != null) {
 		var error = `Error: unable to spawn generateFeatures process: ${err}`
 		console.log(error)
-		return {success:false, error:error}
+		throw new Error(error)
 	}
-	else if(metafeatureProcObj.status != 0) {
-		var error = `Error, generateFeatures process exited with status ${metafeatureProcObj.status}, stderr: '${metafeatureProcObj.stderr}'`
+	else if(metafeatureProc.status != 0) {
+		var error = `Error, generateFeatures process exited with status ${metafeatureProc.status}, stderr: '${metafeatureProc.stderr}'`
 		console.log(error)
-		return {success:false, error:error}
+		throw new Error(error)
 	}
 	else { 
-		try { var data = JSON.parse(metafeatureProcObj.stdout) }
+		try { var data = JSON.parse(metafeatureProc.stdout) }
 		catch (err) {
-			var error = `Error, generateFeatures process exited properly with status ${metafeatureProcObj.status}, but unable to parse stdout as JSON.  stdout: ${metafeatureProcObj.stdout}, err: ${err}`
+			var error = `Error, generateFeatures process exited properly with status ${metafeatureProc.status}, but unable to parse stdout as JSON.  stdout: ${metafeatureProc.stdout}, err: ${err}`
 			console.log(error)
-			return {success:false, error:error}
+			throw new Error(error)
 		} 
-		return {success:true, data:data}
+		return data
 	}
+}
+
+function generateFeaturesAsync(args) {
+	return new Promise((resolve, reject) => { 
+
+		var metafeatureProc = spawn('python', 
+	    	args, {
+	            cwd: process.env.PROJECT_ROOT
+	    })
+
+	    metafeatureProc.on('close', (code) => {
+			console.log(`child process exited with code ${code}`);
+
+			if(code != 0) {
+				var error = `Error, generateFeaturesAsync process exited with status ${metafeatureProc.status}, stderr: '${metafeatureProc.stderr}'`
+				console.log(error)
+				throw new Error(error)
+			}
+		})
+
+		metafeatureProc.stdout.on('data', (raw_data) => {
+			try { var data = JSON.parse(`${raw_data}`) }
+			catch (err) {
+				var error = `Error, generateFeaturesAsync unable to parse stdout as JSON.  stdout: ${raw_data}, err: ${err}`
+				console.log(error)
+				throw new Error(error)
+			} 
+			resolve(data)
+		});
+
+		metafeatureProc.on('error', (code) => {
+			var error = `Error: unable to spawn generateFeaturesAsync process: ${err}`
+			console.log(error)
+			throw new Error(error)
+		})
+	})
 }
 
 
 module.exports = {
-	generateFeatures: generateFeatures
+	generateFeaturesFromFilepath: generateFeaturesFromFilepath,
+	generateFeaturesFromFilepathAsync: generateFeaturesFromFilepathAsync,
+	generateFeaturesFromFileId: generateFeaturesFromFileId,
+	generateFeaturesFromFileIdAsync: generateFeaturesFromFileIdAsync
 };
