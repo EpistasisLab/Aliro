@@ -181,18 +181,34 @@ def get_input_data(_id, tmpdir):
             categories = file['categories']
 
     if len(files) == 1: # only 1 file
-        uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + files[0]['_id']
-        input_data = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+        input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
         check_column(dependent_col, input_data)
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
-            uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file['_id']
-            indata = pd.read_csv(StringIO(requests.get(uri).text), sep=None, engine='python')
+            indata = pd.read_csv(StringIO(get_file_data(file['_id'])), sep=None, engine='python')
             check_column(dependent_col, indata)
             input_data.append(indata)
 
     return input_data, filename, dependent_col, categories
+
+def get_file_data(file_id):
+    """
+    Attempt to retrieve dataset file.  If the file is corrupt or an error response is returned, throw an error.
+    Parameters
+    ----------
+    file_id: string
+        id of the file to retrieve from the server
+    """
+    uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file_id
+    res = requests.get(uri)
+
+    if res.status_code != requests.codes.ok:
+        msg = "Unable to retrieve file '" + str(file_id) + "'.  Status code: '" + str(res.status_code) + "'. Response text: '" + str(res.text) + "'"
+        raise ValueError(msg)
+
+    return res.text
+
 
 def check_column(column_name, dataframe):
     """ check if a column exists in Pandas DataFrame.
@@ -208,7 +224,7 @@ def check_column(column_name, dataframe):
     """
     if column_name not in dataframe.columns.values:
         raise ValueError(
-            'The provided data file does not seem to have a target column.')
+            'The provided data file does not seem to have target column "' + column_name + '".')
 
 
 def bool_type(val):

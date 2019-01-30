@@ -10,6 +10,6 @@ class Dataset_Describe(unittest.TestCase):
 	def setUp(self):
         irisPath = os.path.join(package_directory, 'iris.csv')
 
-    def test_generate_metafeatures_from_datafile():
-    	result = mf.generate_metafeatures_from_datafile(irisPath, 'Name')
+    def generate_metafeatures_from_filepath():
+    	result = mf.generate_metafeatures_from_file(irisPath, 'Name')
     	print result
