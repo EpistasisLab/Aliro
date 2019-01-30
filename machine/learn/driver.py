@@ -10,7 +10,7 @@ if 'TIMEOUT' in environ:
 
 def main(args, timeout=timeout):
     exp = Experiment(args)
-    input_data, filename, target_name, categories = exp.get_input()
+    input_data, filename, target_name, categories, ordinals = exp.get_input()
     model, method_type = exp.get_model()
     return_val = generate_results(model=model,
                     input_data=input_data,
@@ -20,6 +20,7 @@ def main(args, timeout=timeout):
                     mode=method_type,
                     filename=filename,
                     categories=categories,
+                    ordinals=ordinals,
                     timeout=timeout
                     )
     if return_val == "Timeout":

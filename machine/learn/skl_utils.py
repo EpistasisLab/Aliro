@@ -166,7 +166,6 @@ def generate_results(model, input_data,
             col_idx = get_col_idx(feature_names_list, ordinals)
             transform_cols.append(("ordinalencoder", OrdinalEncoder(), col_idx))
 
-        print(transform_cols[0][1]==OneHotEncoder())
 
         ct = ColumnTransformer(
                                 transformers=transform_cols,
