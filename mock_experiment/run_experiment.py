@@ -23,7 +23,7 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
     results = []
     kwargs = {'metric':'bal_accuracy'}
-    if rec in ['random','meta','mlp','svd']:
+    if rec in ['random','meta','mlp','svd','knn']:
         kwargs.update({'ml_p':ml_p})
     if rec == 'svd': 
         kwargs.update({'datasets':knowledge_base.dataset.unique()})
