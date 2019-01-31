@@ -13,7 +13,7 @@ import time
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def validate_data_from_server(file_id, target_field, **kwargs):
@@ -22,7 +22,7 @@ def validate_data_from_server(file_id, target_field, **kwargs):
     df = pd.read_csv(StringIO(raw_data), sep=None, engine='python',**kwargs)
     return validate_data(df, target_field)
 
-def validate_data_from_file(file_id, target_field, **kwargs):
+def validate_data_from_filepath(file_id, target_field, **kwargs):
     # Read the data set into memory
     df = pd.read_csv(file_id, sep=None, engine='python',**kwargs)
     return validate_data(df, target_field)
@@ -94,16 +94,31 @@ def main():
                         help='Name of target column', required=False)
     parser.add_argument('-identifier_type', action='store', dest='IDENTIFIER_TYPE', type=str, choices=['filepath', 'fileid'], default='filepath',
                         help='Name of target column')
+
     args = parser.parse_args()
 
-    meta_features = None
+    # set up the file logger
+    logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
+    if not os.path.exists(logpath):
+        os.makedirs(logpath)
+
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    fhandler = logging.FileHandler(os.path.join(logpath, 'validateDataset.log'))
+    fhandler.setFormatter(formatter)
+    logger.addHandler(fhandler)
+
+    #print("logpath: " + logpath)
+    #print(os.path.join(logpath, 'validateDataset.log'))
+
+    success = None
+    errorMessage = None
 
     if(args.IDENTIFIER_TYPE == 'filepath'):
-        meta_features = validate_data_from_filepath(args.INPUT_FILE, args.TARGET)
+        success, errorMessage = validate_data_from_filepath(args.INPUT_FILE, args.TARGET)
     else:
-        meta_features = validate_data_from_server(args.INPUT_FILE, args.TARGET)
+        success, errorMessage = validate_data_from_server(args.INPUT_FILE, args.TARGET)
 
-    meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
+    meta_json = simplejson.dumps({"success":success, "errorMessage":errorMessage}, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
     sys.stdout.flush()
