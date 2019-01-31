@@ -37,8 +37,7 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
 
     recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
-    # load first ten results into recommender
-    # train_subset = [d for i,d in enumerate(data_idx) if i < n_init]
+    #################################################### load first n_init results into recommender
     train_subset = np.random.choice(knowledge_base.index, size = n_init, replace=False)
     # print('setting training data for recommender:',train_subset)
     init_data = []
@@ -47,14 +46,17 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
         # init_data.append(knowledge_base.loc[knowledge_base['dataset']==i])
         # init_df = pd.concat(init_data)
     init_df = knowledge_base.iloc[train_subset]
+    # get the metafeatures for the initial datasets
     for i,_ in init_df.groupby('dataset'):
         init_data_mf.append(local_get_metafeatures(i))
 
     dataset_mf = pd.concat(init_data_mf).set_index('dataset')
     print('initial training on',len(init_df),'results')
     recommender.update(init_df, dataset_mf)
-    
-    # rec_subset = [d for i,d in enumerate(data_idx) if i >= n_init]
+    #################################################### load first n_init results into recommender
+
+
+    ########################################################################## main experiment loop
     datasets = data_idx
     # loop thru rest of datasets
     # for it,dataset in enumerate(rec_subset):
@@ -65,13 +67,6 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
         holdout_rank_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'ranking'].to_dict()
         # print('generating recommendation for',dataset)
-        # for i in np.arange(n_recs):
-            # ml ='adf'
-            # p = 'pakd'
-            # n = 0
-            # while (ml,p) not in holdout_accuracy_lookup and n<1000:
-            # if (ml,p) not in holdout_accuracy_lookup:
-            #     pdb.set_trace()
 
         # for each dataset, generate a recommendation
         mls, ps, scores = recommender.recommend(dataset_id=dataset,
@@ -99,9 +94,11 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
             # retreive the performance of the recommended learner
             actual_score = holdout_accuracy_lookup[(ml, p)]
             actual_ranking = holdout_rank_lookup[(ml,p)]
-            best_score = knowledge_base.loc[knowledge_base['dataset'] == dataset]['bal_accuracy'].max()
-            best_idx = knowledge_base.loc[knowledge_base['dataset'] == dataset]['bal_accuracy'].idxmax()
-            best_algorithm = knowledge_base.loc[best_idx,'algorithm']
+            # find all top ranking algorithms
+            dataset_results = knowledge_base.loc[knowledge_base['dataset'] == dataset]
+            best_score = dataset_results['bal_accuracy'].max()
+            best_algs = dataset_results.loc[dataset_results['ranking']==1]['algorithm'].unique()
+            best_algorithm = '|'.join(list(best_algs)) 
             # Update the recommender with the score from its latest guess
             updates.append(pd.DataFrame(data={'dataset': [dataset],
                                                'algorithm': [ml],
@@ -131,11 +128,7 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
         dataset_mf = update_dataset_mf(dataset_mf, update_record)
         
         recommender.update(update_record,dataset_mf)
-
-    # if rec == 'meta':   # store feature importance scores
-    #     fi = recommender.ml.feature_importances_
-    #     with open('feature_importances_'+str(trial) + '.txt','w') as out:
-    #         out.write(','.join([str(fi) for fi in recommender.ml.feature_importances_])+'\n')
+    ########################################################################## main experiment loop
     return results
 
 
@@ -190,9 +183,10 @@ if __name__ == '__main__':
                     + '_trial-{}'.format(args.trial) 
                     + '.csv')    
 
+        # set seed
+        np.random.seed(args.trial)
         # run experiment
-
-        np.random.shuffle(data_idx) # shuffle datasets
+        # np.random.shuffle(data_idx) # shuffle datasets
         print('rec:',args.rec,'n_recs:',args.n_recs,'n_init:',args.n_init,
               'iters:',args.iters)
         results = run_experiment(args.rec,
