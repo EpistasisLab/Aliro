@@ -113,7 +113,7 @@ def generate_results(model, input_data,
         list of column names for one-hot encoding
     ordinals: dict
         ordinals, list, categorical feature name(s)
-        ordinal_list, list of lists,
+        ordinal_map, list of lists,
             categories[i] holds the categories expected in the ith column.
     encoding_strategy: string
         encoding strategy for categorical features
@@ -173,7 +173,7 @@ def generate_results(model, input_data,
         if ordinals:
             col_idx = get_col_idx(feature_names_list, ordinals['ordinals'])
             transform_cols.append(("ordinalencoder",
-                                    OrdinalEncoder(categories=ordinals['ordinal_list']),
+                                    OrdinalEncoder(categories=ordinals['ordinal_map']),
                                     col_idx))
 
 
