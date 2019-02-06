@@ -110,9 +110,13 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id3", "dependent_col": "class",
-                            "categories":  ["test_categorical_feature_1", "test_categorical_feature_2"],
+        return MockResponse(json.dumps({"files": [
+                            {"_id":"test_file_id3",
+                            "dependent_col": "class",
+                            "categories":  ["test_categorical_feature_1",
+                                            "test_categorical_feature_2"],
                             "ordinals":  ["test_ordinal_feature"],
+                            "ordinal_list": [[1, 3, 5, 7, 9]],
                             "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
@@ -136,15 +140,15 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
+        input_data, data_info = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input2, sep='\t')
         exp_filename = 'test_clf_input'
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
-        assert exp_filename == filename[0]
-        assert target_name == 'class'
-        assert categories is None
-        assert ordinals is None
+        assert data_info['filename'][0] == exp_filename
+        assert data_info['target_name'] == 'class'
+        assert data_info['categories'] is None
+        assert data_info['ordinals'] is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -155,17 +159,17 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
+        input_data, data_info = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
         exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
-        assert filename[0] == 'test_clf_input'
-        assert filename[1] == 'test_reg_input'
-        assert target_name == 'class'
-        assert categories is None
-        assert ordinals is None
+        assert data_info['filename'][0] == 'test_clf_input'
+        assert data_info['filename'][1] == 'test_reg_input'
+        assert data_info['target_name'] == 'class'
+        assert data_info['categories'] is None
+        assert data_info['ordinals'] is None
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -207,15 +211,16 @@ class APITESTCLASS(unittest.TestCase):
         LAB_PORT = '5080'
         LAB_HOST = 'lab'
         # Assert requests.get calls
-        input_data, filename, target_name, categories, ordinals = get_input_data(_id, tmpdir=tmpdir)
+        input_data, data_info = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data = pd.read_csv(test_clf_input3, sep='\t')
         exp_filename = 'test_clf_input3'
         rmtree(tmpdir)
         assert exp_input_data.equals(input_data)
-        assert exp_filename == filename[0]
-        assert target_name == 'class'
-        assert categories == ["test_categorical_feature_1", "test_categorical_feature_2"]
-        assert ordinals == ["test_ordinal_feature"]
+        assert data_info['filename'][0] == exp_filename
+        assert data_info['target_name'] == 'class'
+        assert data_info['categories'] == ["test_categorical_feature_1", "test_categorical_feature_2"]
+        assert data_info['ordinals']['ordinals'] == ["test_ordinal_feature"]
+        assert data_info['ordinals']['ordinal_list'] == [[1, 3, 5, 7, 9]]
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -325,61 +330,116 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_3(self, mock_get):
-        """Test main function with categorical features"""
+        """Test main function when applying GradientBoostingClassifier on dateset with categorical features."""
+        obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id6"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            if param_name != 'n_estimators':
+                args[param_name] = conv_default_value
+            else:
+                args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
+        print(algorithm_name, args)
+        main(args)
+        outdir = "./machine/learn/tmp/{}/test_id6".format(algorithm_name)
 
-        for obj in projects_json_data:
-            algorithm_name = obj["name"]
-            if algorithm_name != "GradientBoostingClassifier":
-                continue
-            schema = obj["schema"]
-            args = {}
-            _id = "test_id6"
-            args['_id'] = _id
-            args["method"] = algorithm_name
-            for param_name in schema.keys():
-                default_value = schema[param_name]["default"]
-                param_type = schema[param_name]["type"]
-                conv_func = get_type(param_type)
-                conv_default_value = conv_func(default_value)
-                if param_name != 'n_estimators':
-                    args[param_name] = conv_default_value
-                else:
-                    args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
-            print(algorithm_name, args)
-            main(args)
-            outdir = "./machine/learn/tmp/{}/test_id6".format(algorithm_name)
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        input_data = pd.read_csv(test_clf_input3, sep='\t')
+        target_name='class'
+        features = input_data.drop(target_name, axis=1).values
+        classes = input_data[target_name].values
+        training_features, testing_features, training_classes, testing_classes = \
+            train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        # test reloaded model is the same
+        pickle_model = joblib.load(pickle_file)
+        load_clf = pickle_model['model']
+        load_clf_str = str(load_clf)
+        assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
+        load_clf_score = SCORERS['balanced_accuracy'](
+            load_clf, training_features, training_classes)
+        print(algorithm_name, train_score, load_clf_score)
+        assert train_score == load_clf_score
 
-            value_json = '{}/value.json'.format(outdir)
-            assert os.path.isfile(value_json)
-            with open(value_json, 'r') as f:
-                value = json.load(f)
-            train_score = value['_scores']['train_score']
-            assert train_score
-            assert os.path.isfile('{}/prediction_values.json'.format(outdir))
-            assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-            assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
-            # test pickle file
-            pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
-            assert os.path.isfile(pickle_file)
-            # test pickle file
-            pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
-            assert os.path.isfile(pickle_file)
-            input_data = pd.read_csv(test_clf_input3, sep='\t')
-            target_name='class'
-            features = input_data.drop(target_name, axis=1).values
-            classes = input_data[target_name].values
-            training_features, testing_features, training_classes, testing_classes = \
-                train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
-            # test reloaded model is the same
-            pickle_model = joblib.load(pickle_file)
-            load_clf = pickle_model['model']
-            load_clf_score = SCORERS['balanced_accuracy'](
-                load_clf, training_features, training_classes)
-            print(algorithm_name, train_score, load_clf_score)
-            assert train_score == load_clf_score
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_4(self, mock_get):
+        """Test main function when applying LogisticRegression on dateset with categorical features."""
+        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id6"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            if param_name != 'n_estimators':
+                args[param_name] = conv_default_value
+            else:
+                args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
+        print(algorithm_name, args)
+        main(args)
+        outdir = "./machine/learn/tmp/{}/test_id6".format(algorithm_name)
+
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        input_data = pd.read_csv(test_clf_input3, sep='\t')
+        target_name='class'
+        features = input_data.drop(target_name, axis=1).values
+        classes = input_data[target_name].values
+        training_features, testing_features, training_classes, testing_classes = \
+            train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        # test reloaded model is the same
+        pickle_model = joblib.load(pickle_file)
+        load_clf = pickle_model['model']
+        load_clf_str = str(load_clf)
+        assert load_clf_str.count('OneHotEncoder')
+        load_clf_score = SCORERS['balanced_accuracy'](
+            load_clf, training_features, training_classes)
+        print(algorithm_name, train_score, load_clf_score)
+        assert train_score == load_clf_score
 
 def test_balanced_accuracy():
     """Assert that the balanced_accuracy in TPOT returns correct accuracy."""
@@ -640,7 +700,9 @@ def test_generate_results_9():
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df3,
                     tmpdir=tmpdir, _id=_id, target_name='class',
-                    figure_export=True, categories=["test_categorical_feature_1"])
+                    figure_export=True,
+                    categories=["test_categorical_feature_1"],
+                    encoding_strategy='OrdinalEncoder')
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -665,11 +727,15 @@ def test_generate_results_10():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_clf, input_data=test_clf_input_df3,
+    generate_results(
+                    model=test_clf, input_data=test_clf_input_df3,
                     tmpdir=tmpdir, _id=_id, target_name='class',
                     figure_export=True,
                     categories=["test_categorical_feature_1", "test_categorical_feature_2"],
-                    ordinals=["test_ordinal_feature"])
+                    ordinals={'ordinals':["test_ordinal_feature"],
+                            'ordinal_list': [[1,3,5,7,9]]},
+                    encoding_strategy='OrdinalEncoder'
+                    )
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)

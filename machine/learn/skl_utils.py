@@ -82,7 +82,8 @@ def generate_results(model, input_data,
     random_state=random_state,
     filename=['test_dataset'],
     categories=None,
-    ordinals=None
+    ordinals=None,
+    encoding_strategy="OneHotEncoder"
     ):
     """generate reaults for apply a model on a datasetself.
     Parameters
@@ -110,8 +111,12 @@ def generate_results(model, input_data,
         filename for input dataset
     categories: list
         list of column names for one-hot encoding
-    ordinals: list
-        list of column names for label encoding to ordinal integers
+    ordinals: dict
+        ordinals, list, categorical feature name(s)
+        ordinal_list, list of lists,
+            categories[i] holds the categories expected in the ith column.
+    encoding_strategy: string
+        encoding strategy for categorical features
     Returns
     -------
     None
@@ -161,10 +166,15 @@ def generate_results(model, input_data,
         feature_names_list = list(feature_names)
         if categories:
             col_idx = get_col_idx(feature_names_list, categories)
-            transform_cols.append(("onehotencoder", OneHotEncoder(), col_idx))
+            if encoding_strategy == "OneHotEncoder":
+                transform_cols.append(("categorical_encoder", OneHotEncoder(), col_idx))
+            elif encoding_strategy == "OrdinalEncoder":
+                transform_cols.append(("categorical_encoder", OrdinalEncoder(), col_idx))
         if ordinals:
-            col_idx = get_col_idx(feature_names_list, ordinals)
-            transform_cols.append(("ordinalencoder", OrdinalEncoder(), col_idx))
+            col_idx = get_col_idx(feature_names_list, ordinals['ordinals'])
+            transform_cols.append(("ordinalencoder",
+                                    OrdinalEncoder(categories=ordinals['ordinal_list']),
+                                    col_idx))
 
 
         ct = ColumnTransformer(
