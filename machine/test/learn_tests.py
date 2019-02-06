@@ -116,7 +116,7 @@ def mocked_requests_get(*args, **kwargs):
                             "categories":  ["test_categorical_feature_1",
                                             "test_categorical_feature_2"],
                             "ordinals":  ["test_ordinal_feature"],
-                            "ordinal_list": [[1, 3, 5, 7, 9]],
+                            "ordinal_map": [[1, 3, 5, 7, 9]],
                             "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
@@ -220,7 +220,7 @@ class APITESTCLASS(unittest.TestCase):
         assert data_info['target_name'] == 'class'
         assert data_info['categories'] == ["test_categorical_feature_1", "test_categorical_feature_2"]
         assert data_info['ordinals']['ordinals'] == ["test_ordinal_feature"]
-        assert data_info['ordinals']['ordinal_list'] == [[1, 3, 5, 7, 9]]
+        assert data_info['ordinals']['ordinal_map'] == [[1, 3, 5, 7, 9]]
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -733,7 +733,7 @@ def test_generate_results_10():
                     figure_export=True,
                     categories=["test_categorical_feature_1", "test_categorical_feature_2"],
                     ordinals={'ordinals':["test_ordinal_feature"],
-                            'ordinal_list': [[1,3,5,7,9]]},
+                            'ordinal_map': [[1,3,5,7,9]]},
                     encoding_strategy='OrdinalEncoder'
                     )
 

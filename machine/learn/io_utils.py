@@ -152,7 +152,7 @@ def get_input_data(_id, tmpdir):
         categories: list, categorical feature name(s)
         ordinals: dict
             ordinals, list, categorical feature name(s)
-            ordinal_list, list of lists,
+            ordinal_map, list of lists,
                 categories[i] holds the categories expected in the ith column.
     """
     expdir = tmpdir + _id + '/'
@@ -185,7 +185,7 @@ def get_input_data(_id, tmpdir):
         if 'ordinals' in file:
             ordinals = {
                     'ordinals': file['ordinals'],
-                    'ordinal_list': file['ordinal_list']
+                    'ordinal_map': file['ordinal_map']
                     }
 
     if len(files) == 1: # only 1 file
