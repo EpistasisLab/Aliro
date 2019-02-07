@@ -227,6 +227,8 @@ def generate_results(model, input_data,
 
     if figure_export:
         plot_imp_score(tmpdir, _id, coefs, feature_names)
+        if not categories and not ordinals:
+            plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state)
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -334,6 +336,7 @@ def generate_results(model, input_data,
     prediction_dict = { 'prediction_values' : predicted_classes.tolist() }
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=prediction_dict)
+
 
 def get_col_idx(feature_names_list, columns):
     """get unique indexes of columns based on list of column names
@@ -564,6 +567,46 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
     plt.close()
+
+
+def plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state):
+    """Make dot plot for based on decision tree.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    training_features: np.darray/pd.DataFrame
+        training features
+    training_classes: np.darray/pd.DataFrame
+        training target
+    feature_names: list
+        feature names
+    random_state: int
+        random seed for permuation importances
+
+    Returns
+    -------
+    None
+
+    """
+    # plot bar charts for top 10 importanct features
+    import pydot
+    from sklearn.tree import export_graphviz, DecisionTreeClassifier
+    dtree=DecisionTreeClassifier(random_state=random_state)
+    dtree.fit(training_features, training_classes)
+    dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
+    png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
+    class_names = [str(i) for i in dtree.classes_]
+    export_graphviz(dtree, out_file=dot_file,
+                     feature_names=feature_names,
+                     class_names=class_names,
+                     filled=True, rounded=True,
+                     special_characters=True)
+    (graph,) = pydot.graph_from_dot_file(dot_file)
+    graph.write_png(png_file)
+
 
 
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
