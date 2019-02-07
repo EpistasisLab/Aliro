@@ -128,8 +128,7 @@ def registerDatafile(root, file, target_column, apiPath):
     payload = {'_metadata' : simplejson.dumps({
     	'name': os.path.splitext(file)[0],
         'username': 'testuser',
-        'dependent_col' : target_column,
-        'filepath' : root
+        'dependent_col' : target_column
         })
     }
 
