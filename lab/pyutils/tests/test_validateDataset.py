@@ -9,6 +9,11 @@ import logging
 import io
 import sys
 import simplejson
+import os
+
+os.environ['PROJECT_ROOT'] = "."
+os.environ["LAB_HOST"] = "lab"
+os.environ['LAB_PORT'] = "5080"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -86,3 +91,21 @@ class TestResultUtils(unittest.TestCase):
 		self.assertTrue(result.getvalue())
 		objResult = simplejson.loads(result.getvalue())
 		self.assertEqual(objResult, {"success": False, "errorMessage": expectedMessage})
+
+
+	@parameterized.expand(load_good_test_data)
+	def test_validate_data_api_main_connect_error(self, name, file_path, target_column):
+		result = io.StringIO()
+		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'fileid']
+		with patch.object(sys, 'argv', testargs):
+			sys.stdout = result
+			validateDataset.main()
+			sys.stdout = sys.__stdout__
+		logger.debug("testargs: " + str(testargs) + " res: " + result.getvalue())
+		self.assertTrue(result.getvalue())
+		objResult = simplejson.loads(result.getvalue())
+		#self.assertEqual(objResult, {"success": False, "errorMessage": None})
+		self.assertIsInstance(objResult, dict)
+		self.assertEqual(list(objResult), ["success", "errorMessage"])
+		self.assertEqual(objResult['success'], False)
+		self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")

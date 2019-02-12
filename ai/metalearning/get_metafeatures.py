@@ -23,7 +23,7 @@ with warnings.catch_warnings():
 
 
 logger = logging.getLogger(__name__)
-#logger.addHandler(logging.StreamHandler())
+logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
 
@@ -78,7 +78,7 @@ def get_file_from_server(file_id):
         logger.error(msg)
         raise RuntimeError(msg)
 
-    logger.info("File retrieved: " + str(res.status_code))
+    logger.info("File retrieved, file_id: '" + file_id + "', path: '" + path + "', status_code: " + str(res.status_code))
     return res.text
 
 def main():
@@ -91,14 +91,31 @@ def main():
                         help='Name of target column')
     args = parser.parse_args()
 
-    meta_features = None
+    # set up the file logger
+    logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
+    if not os.path.exists(logpath):
+        os.makedirs(logpath)
 
-    if(args.IDENTIFIER_TYPE == 'filepath'):
-        meta_features = generate_metafeatures_from_filepath(args.INPUT_FILE, args.TARGET)
-    else:
-        meta_features = generate_metafeatures_from_server(args.INPUT_FILE, args.TARGET)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    fhandler = logging.FileHandler(os.path.join(logpath, 'get_metafeatures.log'))
+    fhandler.setFormatter(formatter)
+    logger.addHandler(fhandler)
 
-    meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)    
+
+    success = None
+    errorMessage = None
+    meta_json = None
+
+    try:
+        if(args.IDENTIFIER_TYPE == 'filepath'):
+            meta_features = generate_metafeatures_from_filepath(args.INPUT_FILE, args.TARGET)
+        else:
+            meta_features = generate_metafeatures_from_server(args.INPUT_FILE, args.TARGET)
+
+        meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)  
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        meta_json = simplejson.dumps({"success":False, "errorMessage":"Exception: " + repr(e)}, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
     sys.stdout.flush()
