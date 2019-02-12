@@ -1153,10 +1153,9 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
     var dataset_id 
 
     // generate dataset profile
-    //return validateDatafileByFileIdAsync(fileId, dependent_col)
-    //.then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
-    return generateFeaturesFromFileIdAsync(fileId, dependent_col)
-
+    return validateDatafileByFileIdAsync(fileId, dependent_col)
+    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
+    
     // create a new datasets instance and with the dataset dataProfile
     .then((dataProfile) => {
         return db.datasets.insertAsync({

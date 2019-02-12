@@ -9,11 +9,13 @@ import numpy as np
 import logging
 import requests
 import time
+import traceback
+from io import StringIO
 
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 def validate_data_from_server(file_id, target_field, **kwargs):
@@ -82,7 +84,7 @@ def get_file_from_server(file_id):
         logger.error(msg)
         raise RuntimeError(msg)
 
-    logger.info("File retrieved: " + str(res.status_code))
+    logger.info("File retrieved, file_id: '" + file_id + "', path: '" + path + "', status_code: " + str(res.status_code))
     return res.text
 
 
@@ -107,18 +109,19 @@ def main():
     fhandler.setFormatter(formatter)
     logger.addHandler(fhandler)
 
-    #print("logpath: " + logpath)
-    #print(os.path.join(logpath, 'validateDataset.log'))
-
     success = None
     errorMessage = None
+    meta_json = None
 
-    if(args.IDENTIFIER_TYPE == 'filepath'):
-        success, errorMessage = validate_data_from_filepath(args.INPUT_FILE, args.TARGET)
-    else:
-        success, errorMessage = validate_data_from_server(args.INPUT_FILE, args.TARGET)
-
-    meta_json = simplejson.dumps({"success":success, "errorMessage":errorMessage}, ignore_nan=True) #, ensure_ascii=False)    
+    try:
+        if(args.IDENTIFIER_TYPE == 'filepath'):
+            success, errorMessage = validate_data_from_filepath(args.INPUT_FILE, args.TARGET)
+        else:
+            success, errorMessage = validate_data_from_server(args.INPUT_FILE, args.TARGET)
+        meta_json = simplejson.dumps({"success":success, "errorMessage":errorMessage}, ignore_nan=True) #, ensure_ascii=False)
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        meta_json = simplejson.dumps({"success":False, "errorMessage":"Exception: " + repr(e)}, ignore_nan=True) #, ensure_ascii=False)    
 
     print(meta_json)
     sys.stdout.flush()
