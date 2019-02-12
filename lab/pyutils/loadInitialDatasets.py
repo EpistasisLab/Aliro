@@ -29,7 +29,8 @@ def registerDatafiles(directory, apiPath):
 
 	logger.info("Register datafiles in directory '" + directory + "'")
 
-	for root, dirs, files in os.walk(directory):
+    # infinite recursion can occur if symlink points to the parent directory, see <https://docs.python.org/3/library/os.html#os.walk>
+	for root, dirs, files in os.walk(directory, topdown=True, onerror=None, followlinks=True):
 		for file in files:
 			extension = os.path.splitext(file)[1]
 
@@ -106,11 +107,10 @@ def registerDatafile(root, file, target_column, apiPath):
         raise
     
     if res.status_code != requests.codes.ok:
-        msg = "Request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
+        msg = "Error registering datafile, request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
         logger.error(msg)
-        raise RuntimeError(msg)
-
-    logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
+    else:
+        logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
 
 
 
