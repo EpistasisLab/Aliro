@@ -151,9 +151,8 @@ def get_input_data(_id, tmpdir):
         filename: list, filename(s)
         categories: list, categorical feature name(s)
         ordinals: dict
-            ordinals, list, categorical feature name(s)
-            ordinal_map, list of lists,
-                categories[i] holds the categories expected in the ith column.
+            keys: categorical feature name(s)
+            values: categorical values
     """
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
@@ -180,13 +179,10 @@ def get_input_data(_id, tmpdir):
             raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
         else:
             target_name = file['dependent_col']
-        if 'categories' in file:
-            categories = file['categories']
-        if 'ordinals' in file:
-            ordinals = {
-                    'ordinals': file['ordinals'],
-                    'ordinal_map': file['ordinal_map']
-                    }
+        if 'categorical_features' in file:
+            categories = file['categorical_features']
+        if 'ordinal_features' in file:
+            ordinals = file['ordinal_features']
 
     if len(files) == 1: # only 1 file
         input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')

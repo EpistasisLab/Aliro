@@ -115,10 +115,9 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id3",
                             "dependent_col": "class",
-                            "categories":  ["test_categorical_feature_1",
+                            "categorical_features":  ["test_categorical_feature_1",
                                             "test_categorical_feature_2"],
-                            "ordinals":  ["test_ordinal_feature"],
-                            "ordinal_map": [[1, 3, 5, 7, 9]],
+                            "ordinal_features":  {"test_ordinal_feature": [1, 3, 5, 7, 9]},
                             "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id7':
         return MockResponse(json.dumps({"files":
@@ -228,8 +227,8 @@ class APITESTCLASS(unittest.TestCase):
         assert data_info['filename'][0] == exp_filename
         assert data_info['target_name'] == 'class'
         assert data_info['categories'] == ["test_categorical_feature_1", "test_categorical_feature_2"]
-        assert data_info['ordinals']['ordinals'] == ["test_ordinal_feature"]
-        assert data_info['ordinals']['ordinal_map'] == [[1, 3, 5, 7, 9]]
+        assert list(data_info['ordinals'].keys()) == ["test_ordinal_feature"]
+        assert data_info['ordinals']['test_ordinal_feature'] == [1, 3, 5, 7, 9]
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -793,8 +792,7 @@ def test_generate_results_10():
                     tmpdir=tmpdir, _id=_id, target_name='class',
                     figure_export=True,
                     categories=["test_categorical_feature_1", "test_categorical_feature_2"],
-                    ordinals={'ordinals':["test_ordinal_feature"],
-                            'ordinal_map': [[1,3,5,7,9]]},
+                    ordinals={'test_ordinal_feature': [1,3,5,7,9]},
                     encoding_strategy='OrdinalEncoder'
                     )
 
