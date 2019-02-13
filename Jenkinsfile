@@ -105,11 +105,12 @@ pipeline {
 
         }
         failure {
-            echo 'Pipeline failure'
+            echo 'Pipeline Failure'
             emailext attachLog: false, 
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) failure',
-                body: 'Please go to ${BUILD_URL} to view build details.', 
+                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()],
                 replyTo: "${params.STATUS_EMAIL}"
@@ -119,7 +120,8 @@ pipeline {
             emailext attachLog: false, 
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) unstable',
-                body: 'Please go to ${BUILD_URL} to view build details.', 
+                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()],
                 replyTo: "${params.STATUS_EMAIL}"
@@ -129,7 +131,8 @@ pipeline {
             emailext attachLog: false, 
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) is back to normal',
-                body: 'Please go to ${BUILD_URL} to view build details.', 
+                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()], 
                 replyTo: "${params.STATUS_EMAIL}"
