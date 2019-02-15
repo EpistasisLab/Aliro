@@ -37,7 +37,12 @@ RUN npm install --silent --progress=false
 ## ai/metalearning python packages
 RUN pip install simplejson
 RUN pip install xgboost
-
+### my surprise fork
+RUN pip install numpy cython
+RUN git clone https://github.com/lacava/surprise.git 
+WORKDIR surprise
+RUN python setup.py install
+ 
 VOLUME /share
 
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/

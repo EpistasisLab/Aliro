@@ -38,7 +38,8 @@ class RandomRecommender(BaseRecommender):
 
         # machine learning and parameter (ml_p) options 
         self.ml_p = ml_p
-        
+        if ml_p is not None:
+            self.ml_p = self.ml_p.drop_duplicates()
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
         self.trained_dataset_models = set()

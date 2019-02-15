@@ -23,6 +23,7 @@ from ai.recommender.time_recommender import TimeRecommender
 from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
 from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from ai.recommender.svd_recommender import SVDRecommender
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
@@ -105,6 +106,8 @@ class AI():
         if rec:
             if hasattr(rec,'ml_p'):
                 self.rec.ml_p = self.labApi.get_all_ml_p()
+            if hasattr(rec,'mlp_combos'):
+                self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
         else: # default to random recommender
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
         # tmp = self.labApi.get_all_ml_p()
@@ -381,7 +384,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive','meta','knn'],
+                        choices = ['random','average','exhaustive','meta','knn','svd'],
                         help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
                         help='Path to the database.')
@@ -409,7 +412,8 @@ def main():
             'average': AverageRecommender,
             'exhaustive': ExhaustiveRecommender,
             'meta': MetaRecommender,
-            'knn': KNNMetaRecommender
+            'knn': KNNMetaRecommender,
+            'svd': SVDRecommender
             }
     
     # if args.REC in ['random','exhaustive','meta']:
