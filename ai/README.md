@@ -1,44 +1,20 @@
-## AI Recommender Details
-Engine for reading in modeling results, updating knowledge base, and making recommendations that instantiate new runs.
+## AI Details
 
-### Workflow
- - The Penn AI agent looks for new requests for recommendations and new experimental results every 5 seconds.
- - when a new experiment is found, it is used to update the recommender.
- - when a new request is received, the AI retreives a recommendation from the recommender and pushes it to the user.
- 
-### Recommender
-```python
-pennai = Recommender(method='ml_p',ml_type='classifier')
-# data: a dataframe of results from database
-pennai.update(results_data)
-```
- - given a new modeling task, the AI recommends an ML method with parameter values (P)
-```python
-# dataset_metafeatures: an optional set of metafeatures of the dataset to assist in recommendations
-ml,p = pennai.recommend(dataset_metafeatures=None)
-```
- - the ML+P recommendation is run on the dataset using the AI system
+The AI system consists of an AI class that looks for new requests and results, and uses these to update an internal recommendation ssytem. It is built to be run from the command line as a module. The run command is `python -m ai.ai` from the root directory. Type `python -m ai.ai -h` to see options.
 
-```python
-ai.send_rec()
-```
- - the results are used to update the recommender
-```python
-pennai.update(new_results_data)
-```
-## overall tasks
- - [x] build dataframe `results_data` from MongoDB results.
- - [x] make method to post job submissions
- - [ ] recommendation shows up in launch page
+While the AI is running, it checks for new requests and results every 5 seconds.
+When the user clicks on the AI button, the AI receives a request and returns `n_recs` recommendations.
+Each recommendation consists of an ML method with associated parameter values, and for some recommenders, a score estimate.
 
-## recommender tasks
-- [x] filter recommendations for what has already been run
-- [x] direct acess to MongDB results for checking what has been run
+Within the AI class is `self.rec`, which is the heart of the recommender system. 
+Various recommenders are available in the `recommender/` folder. 
+Each recommender implements an `update()` method that is called when new results are found, 
+and a `recommend()` method that is called when new AI requests are receieved. 
 
-recommendations using:
- - [x] ml + p
- - [ ] ml + p + mf
- - [ ] ml + p + mf, per model basis
- - [ ] incorporating expert knowledge rules
- - [ ] analyze which metafeatures are important
- - [x] make method to submit jobs (`submit(dataset,ml,p)`)
+The `LabAPI` class is a helper class that encapsulates all calls to the server. 
+
+## Building your own recommender
+
+To build your own recommender, start with the `recommender/base.py` file.
+From there, implement `update()` and `recommend()` strategies. 
+You can adjust the initialization as you wish, but be aware that you will have to handle these changes in the AI class.

@@ -46,11 +46,14 @@ class SVDRecommender(BaseRecommender):
             self.metric = metric
 
         # get ml+p combos
-        self.ml_p = ml_p.drop_duplicates()
+        self.ml_p = ml_p
+        self.mlp_combos = None
+        if ml_p is not None:
+            self.ml_p = ml_p.drop_duplicates()
+            # machine learning - parameter combinations
+            self.mlp_combos = self.ml_p['algorithm']+'|'+self.ml_p['parameters']
         # get dataset names
         self.datasets = datasets
-        # machine learning - parameter combinations
-        self.mlp_combos = self.ml_p['algorithm']+'|'+self.ml_p['parameters']
         # store results
         self.results_df = pd.DataFrame()
         # reader for translating btw PennAI results and Suprise training set
