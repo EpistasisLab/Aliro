@@ -29,19 +29,13 @@ def registerDatafiles(directory, apiPath):
 
 	logger.info("Register datafiles in directory '" + directory + "'")
 
-	for root, dirs, files in os.walk(directory):
+    # infinite recursion can occur if symlink points to the parent directory, see <https://docs.python.org/3/library/os.html#os.walk>
+	for root, dirs, files in os.walk(directory, topdown=True, onerror=None, followlinks=True):
 		for file in files:
 			extension = os.path.splitext(file)[1]
 
 			if (extension in ['.csv', '.tsv']):
 				foundMetadataFile, target_column = getMetadataForDatafile(root, file)
-
-				valResult, message = validateDatafile(root, file, target_column)
-
-				if not(valResult):
-					logger.warning("Validation failed for " + os.path.join(root, file) + ": " + message)
-					break
-					
 				registerDatafile(root, file, target_column, apiPath)		
 
 
@@ -85,35 +79,6 @@ def getMetadataForDatafile(root, file):
 	return True, target_column
 
 
-def validateDatafile(root, file, target_column):
-	'''
-	Check that a datafile is valid
-
-
-	@return tuple
-		boolean - validation result
-		string 	- message
-	'''
-	filepath = os.path.join(root, file)
-
-	try:
-		input_data = pd.read_csv(filepath, sep=None, engine='python', dtype=np.float64)
-	except Exception as e:
-		return False, "Unable to parse file: " + str(e)
-
-	if not(target_column in input_data.columns):
-		return False, "Target column '" + target_column + "' not in data"
-
-	features = input_data.drop(target_column, axis=1).values
-	target = input_data[target_column].values
-
-	try:
-		features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
-	except Exception as e:
-		return False, "sklearn.check_X_y() validation failed: " + str(e)
-
-	return True, None
-
 
 def registerDatafile(root, file, target_column, apiPath):
     '''
@@ -128,8 +93,7 @@ def registerDatafile(root, file, target_column, apiPath):
     payload = {'_metadata' : simplejson.dumps({
     	'name': os.path.splitext(file)[0],
         'username': 'testuser',
-        'dependent_col' : target_column,
-        'filepath' : root
+        'dependent_col' : target_column
         })
     }
 
@@ -143,11 +107,10 @@ def registerDatafile(root, file, target_column, apiPath):
         raise
     
     if res.status_code != requests.codes.ok:
-        msg = "Request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
+        msg = "Error registering datafile, request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
         logger.error(msg)
-        raise RuntimeError(msg)
-
-    logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
+    else:
+        logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
 
 
 
