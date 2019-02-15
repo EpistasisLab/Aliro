@@ -33,6 +33,7 @@ pipeline {
             steps {
                 sh 'rm -fdr target'
                 dir ('ai') {
+                    sh 'pip install m2r'
                     sh 'make html'
                 }                
             }
