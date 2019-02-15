@@ -63,8 +63,9 @@ class MetaRecommender(BaseRecommender):
 	# learning a model : score = f(ml,p,dataset,metafeatures)
        
         self.ml_p = ml_p
-        self.ml_p = self.params_to_features(self.ml_p, init=True)
-        self.ml_p = self.ml_p.drop_duplicates() # just in case duplicates are present
+        if self.ml_p is not None:
+            self.ml_p = self.params_to_features(self.ml_p, init=True)
+            self.ml_p = self.ml_p.drop_duplicates() # just in case duplicates are present
         
         # print('ml_p:',self.ml_p)
         self.cat_params = ['criterion', 'kernel', 'loss', 'max_depth', 'max_features',

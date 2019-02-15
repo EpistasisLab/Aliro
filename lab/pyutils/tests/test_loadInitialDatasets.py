@@ -1,6 +1,6 @@
 
 
-import lab.init.loadInitialDatasets as loadInitialDatasets
+import lab.pyutils.loadInitialDatasets as loadInitialDatasets
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
@@ -64,19 +64,6 @@ def load_metadata():
 	   ]
 
 class TestResultUtils(unittest.TestCase):
-	@parameterized.expand(load_bad_test_data)
-	def test_validate_data_file_bad(self, name, root, file, target_column, expectedMessage):
-		result, message = loadInitialDatasets.validateDatafile(root, file, target_column)
-		assert not(result)
-		assert(message)
-
-	@parameterized.expand(load_good_test_data)
-	def test_validate_data_file_good(self, name, root, file, target_column):
-		result, message = loadInitialDatasets.validateDatafile(root, file, target_column)
-		logger.debug("name: " + name + " root: " + root + " file: " + file + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
-		self.assertTrue(result)
-		
-
 	@parameterized.expand(load_metadata)
 	def test_get_metadata_for_datafile(self, name, root, file, expected_fileExists, expected_target_column):
 		fileExists, target_column = loadInitialDatasets.getMetadataForDatafile(root, file)
