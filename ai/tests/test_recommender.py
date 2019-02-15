@@ -5,6 +5,7 @@ import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from ai.recommender.svd_recommender import SVDRecommender
 #from ai.ai import AI
 import pdb
 
@@ -61,76 +62,58 @@ def update_dataset_mf(dataset_mf,results_data):
 
     return dataset_mf
 
-def test_ave_rec():
-    """Ave recommender updates and recommends without error"""
-
+def check_rec(rec):
+    """Recommender updates and recommends without error"""
     # test updating scores
     epochs = 5 
     datlen = int(data.shape[0] / float(epochs))
-    pennai = AverageRecommender()
-    n_recs = 1
-    for n in np.arange(epochs):
-        new_data = data.iloc[n * datlen:(n + 1) * datlen]
-        pennai.update(new_data)
-        ml, p, scores = pennai.recommend(n_recs=n_recs)
-        print(str(n), ': ml:', ml,', p:', p, 'scores=', scores)
+    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
+    if rec is AverageRecommender:
+        rec_obj = rec()
+    else:
+        rec_obj = rec(ml_p=ml_p)
 
-def test_knn_rec():
-    """KNN recommender updates and recommends without error"""
-
-    # test updating scores
-    epochs = 5 
-    datlen = int(data.shape[0] / float(epochs))
-    pennai = KNNMetaRecommender()
     n_recs = 1
     dataset_mf = pd.DataFrame()
-    
+    new_data = data.sample(n=100)
+    dataset_mf = update_dataset_mf(dataset_mf, new_data)
+    rec_obj.update(new_data, dataset_mf)
+    # test making recommendations
     for n in np.arange(epochs):
-        new_data = data.iloc[n * datlen:(n + 1) * datlen]
-        dataset_mf = update_dataset_mf(dataset_mf, new_data)
-        pennai.update(new_data, dataset_mf)
         for d in data.dataset.unique(): 
-            ml, p, scores = pennai.recommend(d,
-                                             n_recs=n_recs,
-                                             dataset_mf=get_metafeatures(d))
-            print(str(n),d, ': ml:', ml,', p:', p, 'scores=', scores)
+            ml, p, scores = rec_obj.recommend(d,
+                                          n_recs=n_recs,
+                                          dataset_mf=get_metafeatures(d))
+            print(rec.__name__,str(n),d, ': ml:', ml,', p:', p, 'scores=', scores)
 
+def test_recs_work():
+    """Each recommender updates and recommends without error"""
+    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender, 
+                        SVDRecommender]:
+        yield (check_rec, recommender)
 
-# @mock.patch('requests.post',autospec=True)
-def test_rand_rec():
-    """Rand recommender updates and recommends without error"""
-
-    # test updating scores
-    epochs = 5
-    datlen = int(data.shape[0] / float(epochs))
-    # set up mock ml_p for random recommender
+def check_n_recs(rec):
+    """Recommender returns correct number of recommendations"""
     ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
-    pennai = RandomRecommender(ml_p=ml_p)
-    n_recs = 1
-    for n in np.arange(epochs):
-        new_data = data.iloc[n * datlen:(n + 1) * datlen]
-        pennai.update(new_data)
-        ml, p, scores = pennai.recommend(n_recs=n_recs)
-        print(str(n), ': ml:', ml,', p:', p, 'scores=', scores)
+    print(rec)
+    if rec is AverageRecommender:
+        rec_obj = rec()
+    else:
+        rec_obj = rec(ml_p=ml_p)
+    new_data = data.sample(n=100)
+    dataset_mf = update_dataset_mf(dataset_mf, new_data)
+    rec_obj.update(new_data, dataset_mf)
+    # test updating scores
+    for n_recs in np.arange(10):
+        for d in data.dataset.unique(): 
+            ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
+                                             dataset_mf=get_metafeatures(d))
+            assert(len(ml)==n_recs)
+            assert(len(p)==n_recs)
+            assert(len(scores)==n_recs)
 
 def test_n_recs():
     """Recommender returns correct number of recommendations"""
-
-    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
-    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender]:
-        print(recommender)
-        if recommender is RandomRecommender:
-            pennai = recommender(ml_p=ml_p)
-        else:
-            pennai = recommender()
-        dataset_mf = pd.DataFrame()
-        dataset_mf = update_dataset_mf(dataset_mf,data)
-        pennai.update(data,dataset_mf)
-        # test updating scores
-        for n_recs in np.arange(10):
-            for d in data.dataset.unique(): 
-                ml, p, scores = pennai.recommend(d,n_recs=n_recs,
-                                                 dataset_mf=get_metafeatures(d))
-                assert(len(ml)==n_recs)
-                assert(len(p)==n_recs)
-                assert(len(scores)==n_recs)
+    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender, 
+                        SVDRecommender]:
+        yield (check_rec, recommender)

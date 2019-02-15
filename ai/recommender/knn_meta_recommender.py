@@ -41,7 +41,9 @@ class KNNMetaRecommender(BaseRecommender):
             self.metric = metric
 
         # get ml+p combos
-        self.ml_p = ml_p.drop_duplicates()
+        self.ml_p = ml_p
+        if ml_p is not None:
+            self.ml_p = ml_p.drop_duplicates()
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['dataset','algorithm','parameters','score'])
         self.best_mlp.set_index('dataset',inplace=True)
@@ -119,7 +121,8 @@ class KNNMetaRecommender(BaseRecommender):
                                                                   dataset_mf)
             if len(ml_rec) < n_recs: 
                 print('len(ml_rec)=',len(ml_rec),'recommending random')
-            while len(ml_rec) < n_recs:
+            iters = 0
+            while len(ml_rec) < n_recs and iters < 1000:
                 # add random ml_p recommendations until n_recs is met
                 new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
                 new_p_rec = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
@@ -129,7 +132,14 @@ class KNNMetaRecommender(BaseRecommender):
                     ml_rec.append(new_ml_rec)
                     p_rec.append(new_p_rec)
                     rec_score.append(np.nan)
-
+                iters = iters+1
+            if iters == 1000:
+                print('couldn''t find',n_recs,'unique recommendations! returning',len(ml_rec))
+                # pdb.set_trace()
+                subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
+                print('btw, there are ',
+                       len([tdm for i,tdm in enumerate(self.trained_dataset_models) if subset[i]]),
+                       'results for',dataset_id,'already')
             # ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
             #         n_recs)
 

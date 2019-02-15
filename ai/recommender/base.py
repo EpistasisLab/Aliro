@@ -22,7 +22,7 @@ class BaseRecommender:
         """Initialize recommendation system."""
         raise RuntimeError('Do not instantiate the BaseRecommender class directly.')
 
-    def update(self, results_data):
+    def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations.
 
         Parameters
@@ -31,10 +31,13 @@ class BaseRecommender:
                 'algorithm'
                 'parameters'
                 self.metric
+
+        results_mf: DataFrame with columns corresponding to metafeatures of each dataset in 
+                    results_data.
         """
         raise NotImplementedError
 
-    def recommend(self, dataset_id=None, n_recs=1):
+    def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
 
         Parameters
@@ -43,5 +46,6 @@ class BaseRecommender:
             ID of the dataset for which the recommender is generating recommendations.
         n_recs: int (default: 1), optional
             Return a list of length n_recs in order of estimators and parameters expected to do best.
+        dataset_mf: metafeatures of the dataset represented by dataset_id
         """
         raise NotImplementedError
