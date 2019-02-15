@@ -25,6 +25,8 @@ RUN pip install nose
 RUN pip install nose-htmloutput
 RUN pip install parameterized
 RUN npm install -g mocha
-
+# pypi packages for docs
+RUN pip install m2r
+RUN pip install sphinx_rtd_theme
 
 RUN apt-get update && apt-get install -y vim dos2unix
