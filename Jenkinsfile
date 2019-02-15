@@ -34,6 +34,7 @@ pipeline {
                 sh 'rm -fdr target'
                 dir ('ai') {
                     sh 'pip install m2r'
+                    sh 'pip install sphinx_rtd_theme'
                     sh 'make html'
                 }                
             }
