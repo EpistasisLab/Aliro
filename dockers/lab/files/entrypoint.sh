@@ -6,12 +6,13 @@ npm run build
 
 cd ${PROJECT_ROOT}/lab
 pm2 start lab.config.js --watch
+pm2 logs &
 
 echo "waiting for lab to be responsive..."
 /root/wait-for-it.sh -t 300 ${LAB_HOST}:${LAB_PORT} -- echo "lab wait over"
 
 echo "loading initial datasets..."
-python  ./init/loadInitialDatasets.py
+python  ./pyutils/loadInitialDatasets.py
 echo "datasets loaded..."
 
 #start pennai
@@ -45,5 +46,4 @@ fi
 
 
 #final command
-## bash
-pm2 logs
+bash
