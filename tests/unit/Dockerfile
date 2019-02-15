@@ -29,4 +29,10 @@ RUN npm install -g mocha
 RUN pip install m2r
 RUN pip install sphinx_rtd_theme
 
+### my surprise fork
+RUN pip install numpy cython
+RUN git clone https://github.com/lacava/surprise.git 
+WORKDIR surprise
+RUN python setup.py install
+
 RUN apt-get update && apt-get install -y vim dos2unix
