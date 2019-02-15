@@ -1,6 +1,4 @@
-"""
-Recommender system for Penn AI.
-"""
+# Recommender system for Penn AI.
 import pandas as pd
 # import json 
 # import urllib.request, urllib.parse
