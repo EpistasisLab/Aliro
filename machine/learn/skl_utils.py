@@ -8,8 +8,11 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import make_pipeline
 from sklearn.utils import safe_sqr, check_X_y
-from eli5.sklearn import PermutationImportance
+from mlxtend.evaluate import feature_importance_permutation
 from sklearn.externals import joblib
 from sklearn import __version__ as skl_version
 import warnings
@@ -77,7 +80,11 @@ def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
     mode='classification', figure_export=figure_export,
     random_state=random_state,
-    filename=['test_dataset']):
+    filename=['test_dataset'],
+    categories=None,
+    ordinals=None,
+    encoding_strategy="OneHotEncoder"
+    ):
     """generate reaults for apply a model on a datasetself.
     Parameters
     ----------
@@ -102,7 +109,13 @@ def generate_results(model, input_data,
         random seed
     filename: list
         filename for input dataset
-
+    categories: list
+        list of column names for one-hot encoding
+    ordinals: dict
+        keys: categorical feature name(s)
+        values: categorical values
+    encoding_strategy: string
+        encoding strategy for categorical features
     Returns
     -------
     None
@@ -114,7 +127,7 @@ def generate_results(model, input_data,
         features = input_data.drop(target_name, axis=1).values
         target = input_data[target_name].values
 
-        features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+        features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
         training_features, testing_features, training_classes, testing_classes = \
             train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
@@ -133,12 +146,12 @@ def generate_results(model, input_data,
         training_features, training_classes = check_X_y(
                                                         training_features,
                                                         training_classes,
-                                                        dtype=np.float64, order="C",
+                                                        dtype=None, order="C",
                                                         force_all_finite=True)
         testing_features, testing_classes = check_X_y(
                                                         testing_features,
                                                         testing_classes,
-                                                        dtype=np.float64, order="C",
+                                                        dtype=None, order="C",
                                                         force_all_finite=True)
 
     # fix random_state
@@ -146,12 +159,41 @@ def generate_results(model, input_data,
     # set class_weight
     model = setup_model_params(model, 'class_weight', 'balanced')
 
+    # use OneHotEncoder or OrdinalEncoder to convert categorical features
+    if categories or ordinals:
+        transform_cols = []
+        feature_names_list = list(feature_names)
+        if categories:
+            col_idx = get_col_idx(feature_names_list, categories)
+            if encoding_strategy == "OneHotEncoder":
+                transform_cols.append(("categorical_encoder", OneHotEncoder(), col_idx))
+            elif encoding_strategy == "OrdinalEncoder":
+                transform_cols.append(("categorical_encoder", OrdinalEncoder(), col_idx))
+        if ordinals:
+            ordinal_features = sorted(list(ordinals.keys()))
+            col_idx = get_col_idx(feature_names_list, ordinal_features)
+            ordinal_map = [ordinals[k] for k in ordinal_features]
+            transform_cols.append(("ordinalencoder",
+                                    OrdinalEncoder(categories=ordinal_map),
+                                    col_idx))
+
+
+        ct = ColumnTransformer(
+                                transformers=transform_cols,
+                                 remainder='passthrough',
+                                 sparse_threshold=0
+                                 )
+        model = make_pipeline(ct, model)
+
+
     print('Args used in model:', model.get_params())
 
     if mode == "classification":
         scoring = SCORERS["balanced_accuracy"]
+        metric = "accuracy"
     else:
         scoring = SCORERS["neg_mean_squared_error"]
+        metric = 'r2'
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         # fit model
@@ -174,7 +216,7 @@ def generate_results(model, input_data,
 
 
     # exporting/computing importance score
-    coefs = compute_imp_score(model, training_features, training_classes, random_state)
+    coefs = compute_imp_score(model, metric, training_features, training_classes, random_state)
 
     feature_importances = {
         'feature_names': feature_names.tolist(),
@@ -186,6 +228,8 @@ def generate_results(model, input_data,
 
     if figure_export:
         plot_imp_score(tmpdir, _id, coefs, feature_names)
+        if not categories and not ordinals:
+            plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state)
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -295,6 +339,24 @@ def generate_results(model, input_data,
                   fname="prediction_values.json", content=prediction_dict)
 
 
+def get_col_idx(feature_names_list, columns):
+    """get unique indexes of columns based on list of column names
+    Parameters
+    ----------
+
+    feature_names_list: list
+        list of column names
+    columns: list
+        list of selected column names
+
+    Returns
+    -------
+    col_idx: list
+        list of selected column indexes
+    """
+    return [feature_names_list.index(c) for c in columns]
+
+
 def setup_model_params(model, parameter_name, value):
     """setup parameter in a model.
     Parameters
@@ -318,7 +380,7 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def compute_imp_score(model, training_features, training_classes, random_state):
+def compute_imp_score(model, metric, training_features, training_classes, random_state):
     """compute importance scores for features.
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
@@ -329,6 +391,14 @@ def compute_imp_score(model, training_features, training_classes, random_state):
 
     model:  scikit-learn Estimator
         a fitted scikit-learn model
+    metric: str, callable
+        The metric for evaluating the feature importance through
+        permutation. By default, the strings 'accuracy' is
+        recommended for classifiers and the string 'r2' is
+        recommended for regressors. Optionally, a custom
+        scoring function (e.g., `metric=scoring_func`) that
+        accepts two arguments, y_true and y_pred, which have
+        similar shape to the `y` array.
     training_features: np.darray/pd.DataFrame
         training features
     training_classes: np.darray/pd.DataFrame
@@ -348,14 +418,14 @@ def compute_imp_score(model, training_features, training_classes, random_state):
     else:
         coefs = getattr(model, 'feature_importances_', None)
     if coefs is None:
-        perm = PermutationImportance(
-                                    estimator=model,
-                                    n_iter=5,
-                                    random_state=random_state,
-                                    refit=False
+        coefs, _ = feature_importance_permutation(
+                                    predict_method=model.predict,
+                                    X=training_features,
+                                    y=training_classes,
+                                    num_rounds=5,
+                                    metric=metric,
+                                    seed=random_state,
                                     )
-        perm.fit(training_features, training_classes)
-        coefs = perm.feature_importances_
 
     if coefs.ndim > 1:
         coefs = safe_sqr(coefs).sum(axis=0)
@@ -500,6 +570,46 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     plt.close()
 
 
+def plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state):
+    """Make dot plot for based on decision tree.
+    Parameters
+    ----------
+    tmpdir: string
+            path of temporary  output directory
+    _id: string
+            Job ID in FGlab
+    training_features: np.darray/pd.DataFrame
+        training features
+    training_classes: np.darray/pd.DataFrame
+        training target
+    feature_names: list
+        feature names
+    random_state: int
+        random seed for permuation importances
+
+    Returns
+    -------
+    None
+
+    """
+    # plot bar charts for top 10 importanct features
+    import pydot
+    from sklearn.tree import export_graphviz, DecisionTreeClassifier
+    dtree=DecisionTreeClassifier(random_state=random_state)
+    dtree.fit(training_features, training_classes)
+    dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
+    png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
+    class_names = [str(i) for i in dtree.classes_]
+    export_graphviz(dtree, out_file=dot_file,
+                     feature_names=feature_names,
+                     class_names=class_names,
+                     filled=True, rounded=True,
+                     special_characters=True)
+    (graph,) = pydot.graph_from_dot_file(dot_file)
+    graph.write_png(png_file)
+
+
+
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
@@ -602,13 +712,13 @@ pickle_model = joblib.load(pickle_file)
 model = pickle_model['model']
 
 # read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python', dtype=np.float64)
+input_data = pd.read_csv(dataset, sep=None, engine='python')
 
 # Application 1: reproducing training score and testing score from PennAI
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=np.float64, order="C", force_all_finite=True)
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 training_features, testing_features, training_classes, testing_classes = \\
     train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
 scorer = make_scorer(balanced_accuracy)
