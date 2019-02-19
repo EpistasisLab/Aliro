@@ -15,7 +15,7 @@ ENV PATH /opt/node-v6.12.3-linux-x64/bin:$PATH
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
 RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
-RUN pip install eli5
+RUN pip install mlxtend
 RUN pip install stopit
 RUN pip install simplejson
 RUN pip install xgboost
