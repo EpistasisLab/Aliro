@@ -36,4 +36,4 @@ RUN git clone https://github.com/lacava/surprise.git
 WORKDIR surprise
 RUN python setup.py install
 
-RUN apt-get update && apt-get install -y vim dos2unix
+RUN apt-get update && apt-get install -y vim dos2unix graphviz
