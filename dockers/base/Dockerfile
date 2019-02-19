@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     wget screen ngrep ca-cacert \
     mercurial subversion \
     build-essential cmake lsb-core cpio mesa-common-dev \
-    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
+    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix graphviz \
     --no-install-recommends
 
 #nodejs
