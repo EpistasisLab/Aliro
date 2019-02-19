@@ -17,6 +17,7 @@ ENV PATH /opt/conda/bin:$PATH
 RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
 RUN pip install mlxtend
 RUN pip install stopit
+RUN pip install pydot
 RUN pip install simplejson
 RUN pip install xgboost
 RUN pip install sphinx
