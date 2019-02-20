@@ -31,8 +31,13 @@ random_state = None
 if 'RANDOM_SEED' in os.environ:
     random_state = int(os.environ['RANDOM_SEED'])
 
-#max numbers of bar in importance_score plots
+#max numbers of bar in importance_score plot and decision tree plot
 max_bar_num = 10
+
+# The maximum depth of the decision tree for plot
+DT_MAX_DEPTH = 6
+if 'DT_MAX_DEPTH' in os.environ:
+    DT_MAX_DEPTH = int(os.environ['DT_MAX_DEPTH'])
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
@@ -225,11 +230,19 @@ def generate_results(model, input_data,
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="feature_importances.json", content=feature_importances)
+    dtree_test_score = None
 
     if figure_export:
-        plot_imp_score(tmpdir, _id, coefs, feature_names)
+        top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names)
         if not categories and not ordinals:
-            plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state)
+            dtree_test_score = plot_dot_plot(tmpdir, _id, training_features,
+                            training_classes,
+                            testing_features,
+                            testing_classes
+                            top_features,
+                            indices,
+                            random_state,
+                            mode):
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -299,6 +312,7 @@ def generate_results(model, input_data,
         metrics_dict = {'_scores': {
             'train_score': train_score,
             'test_score': test_score,
+            'dtree_test_score': dtree_test_score,
             'accuracy_score': accuracy_score,
             'precision_score': precision_score,
             'recall_score': recall_score,
@@ -323,6 +337,7 @@ def generate_results(model, input_data,
         metrics_dict = {'_scores': {
             'train_score': train_score,
             'test_score': test_score,
+            'dtree_test_score': dtree_test_score,
             'r2_score': r2_score,
             'mean_squared_error': mean_squared_error,
             'cv_scores_mean': cv_scores.mean(),
@@ -549,28 +564,39 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
             Job ID in FGlab
     coefs: array
         feature importance scores
-    feature_names: list
-        feature names
+    feature_names: np.array
+        list of feature names
 
     Returns
     -------
-    None
+    top_features: list
+        top features with high importance score
+    indices: ndarray
+        array of indices of top important features
 
     """
-    # plot bar charts for top 10 importanct features
+    # plot bar charts for top important features
     num_bar = min(max_bar_num, len(coefs))
     indices = np.argsort(coefs)[-num_bar:]
     h=plt.figure()
     plt.title("Feature importances")
     plt.barh(range(num_bar), coefs[indices], color="r", align="center")
+    top_features = list(feature_names[indices])
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
     plt.close()
+    return top_features, indices
 
 
-def plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_names, random_state):
+def plot_dot_plot(tmpdir, _id, training_features,
+                training_classes,
+                testing_features,
+                testing_classes
+                top_features,
+                indices,
+                random_state):
     """Make dot plot for based on decision tree.
     Parameters
     ----------
@@ -582,21 +608,46 @@ def plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_name
         training features
     training_classes: np.darray/pd.DataFrame
         training target
-    feature_names: list
-        feature names
+    testing_features: np.darray/pd.DataFrame
+        testing features
+    testing_classes: np.darray/pd.DataFrame
+        testing target
+    top_features: list
+        top feature_names
+    indices: ndarray
+        array of indices of top important features
     random_state: int
         random seed for permuation importances
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
 
     Returns
     -------
-    None
+    dtree_test_score, float
+        test score from fitting decision tree on top important feat'
 
     """
-    # plot bar charts for top 10 importanct features
+    # plot bar charts for top important features
     import pydot
-    from sklearn.tree import export_graphviz, DecisionTreeClassifier
-    dtree=DecisionTreeClassifier(random_state=random_state)
+    from sklearn.tree import export_graphviz
+
+    top_training_features = training_features[:, indices]
+    top_testing_features = testing_features[:, indices]
+    if mode = 'classification':
+        from sklearn.tree import DecisionTreeClassifier
+        dtree=DecisionTreeClassifier(random_state=random_state,
+                                max_depth=DT_MAX_DEPTH)
+        scoring = SCORERS['balanced_accuracy']
+    else:
+        from sklearn.tree import DecisionTreeRegressor
+        dtree=DecisionTreeRegressor(random_state=random_state,
+                                max_depth=DT_MAX_DEPTH)
+        scoring = SCORERS["neg_mean_squared_error"]
+
     dtree.fit(training_features, training_classes)
+    dtree_test_score = scoring(
+        dtree, top_testing_features, testing_classes)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     class_names = [str(i) for i in dtree.classes_]
@@ -607,6 +658,7 @@ def plot_dot_plot(tmpdir, _id, training_features, training_classes, feature_name
                      special_characters=True)
     (graph,) = pydot.graph_from_dot_file(dot_file)
     graph.write_png(png_file)
+    return dtree_test_score
 
 
 
