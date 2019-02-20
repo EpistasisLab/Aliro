@@ -32,14 +32,12 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
         PARMS+=" --knowledgebase"
     fi
 
-    #echo 'python -m ai.ai -v -n ' ${AI_NUMRECOMMEND} ' -rec ' ${AI_RECOMMENDER} 
     echo "python -m ai.ai $PARMS"
 
     cd $PROJECT_ROOT/
-    python -m ai.ai $PARMS
-    #python -m ai.ai -v -n ${AI_NUMRECOMMEND} -rec ${AI_RECOMMENDER} -knowledgebase ${AI_PMLB_KNOWLEDGEBASE}
-    #python -m ai.ai -n 2
-    #pm2 start python -- -m ai.ai -n 2
+    #python -m ai.ai $PARMS
+    pm2 start "python -u -m ai.ai $PARMS" --name ai
+
 else
     echo "not autostarting ai..."
 fi
