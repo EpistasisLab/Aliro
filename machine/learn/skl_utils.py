@@ -238,11 +238,11 @@ def generate_results(model, input_data,
             dtree_test_score = plot_dot_plot(tmpdir, _id, training_features,
                             training_classes,
                             testing_features,
-                            testing_classes
+                            testing_classes,
                             top_features,
                             indices,
                             random_state,
-                            mode):
+                            mode)
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -603,10 +603,11 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
 def plot_dot_plot(tmpdir, _id, training_features,
                 training_classes,
                 testing_features,
-                testing_classes
+                testing_classes,
                 top_features,
                 indices,
-                random_state):
+                random_state,
+                mode):
     """Make dot plot for based on decision tree.
     Parameters
     ----------
@@ -644,7 +645,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
 
     top_training_features = training_features[:, indices]
     top_testing_features = testing_features[:, indices]
-    if mode = 'classification':
+    if mode == 'classification':
         from sklearn.tree import DecisionTreeClassifier
         dtree=DecisionTreeClassifier(random_state=random_state,
                                 max_depth=DT_MAX_DEPTH)
@@ -660,9 +661,11 @@ def plot_dot_plot(tmpdir, _id, training_features,
         dtree, top_testing_features, testing_classes)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
-    class_names = [str(i) for i in dtree.classes_]
+    class_names = None
+    if mode == 'classification':
+        class_names = [str(i) for i in dtree.classes_]
     export_graphviz(dtree, out_file=dot_file,
-                     feature_names=feature_names,
+                     feature_names=top_features,
                      class_names=class_names,
                      filled=True, rounded=True,
                      special_characters=True)
