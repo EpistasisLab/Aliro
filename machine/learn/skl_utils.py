@@ -308,11 +308,16 @@ def generate_results(model, input_data,
             if figure_export:
                plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
 
+        abs_diff_test_score = None
+        if dtree_test_score is not None:
+            abs_diff_test_score = abs(test_score-dtree_test_score)
+
         # save metrics
         metrics_dict = {'_scores': {
             'train_score': train_score,
             'test_score': test_score,
             'dtree_test_score': dtree_test_score,
+            'abs_diff_test_score': abs_diff_test_score,
             'accuracy_score': accuracy_score,
             'precision_score': precision_score,
             'recall_score': recall_score,
@@ -333,11 +338,16 @@ def generate_results(model, input_data,
 
         # scatter plot of predicted vs true target values
 
+        abs_diff_test_score = None
+        if dtree_test_score is not None:
+            abs_diff_test_score = abs(test_score-dtree_test_score)
+
         # save metrics
         metrics_dict = {'_scores': {
             'train_score': train_score,
             'test_score': test_score,
             'dtree_test_score': dtree_test_score,
+            'abs_diff_test_score': abs_diff_test_score,
             'r2_score': r2_score,
             'mean_squared_error': mean_squared_error,
             'cv_scores_mean': cv_scores.mean(),
