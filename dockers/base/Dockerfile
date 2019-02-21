@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     wget screen ngrep ca-cacert \
     mercurial subversion \
     build-essential cmake lsb-core cpio mesa-common-dev \
-    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix graphviz \
+    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends
 
 #nodejs
@@ -35,6 +35,5 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
 RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
-RUN pip install mlxtend stopit pydot
 
 COPY files/version /
