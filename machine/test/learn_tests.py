@@ -14,7 +14,7 @@ from shutil import rmtree
 Path = "machine/learn"
 if Path not in sys.path:
     sys.path.insert(0, Path)
-from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params
+from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params, plot_dot_plot
 from io_utils import Experiment, get_projects, get_input_data, get_type
 from driver import main
 import json
@@ -105,6 +105,9 @@ training_features_2, testing_features_2, training_classes_2, testing_classes_2, 
     make_train_test_split(input_data=test_clf_input_df2, target_name='class', random_state=42)
 training_features_3, testing_features_3, training_classes_3, testing_classes_3, feature_names_3 = \
     make_train_test_split(input_data=test_clf_input_df3, target_name='class', random_state=42)
+
+training_features_4, testing_features_4, training_classes_4, testing_classes_4, feature_names_4 = \
+    make_train_test_split(input_data=test_reg_input_df, target_name='class', random_state=42)
 
 test_clf = DecisionTreeClassifier()
 test_rfc = RandomForestClassifier()
@@ -321,9 +324,8 @@ class APITESTCLASS(unittest.TestCase):
                 conv_func = get_type(param_type)
                 conv_default_value = conv_func(default_value)
                 args[param_name] = conv_default_value
-
+            main(args)
             outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
-
             value_json = '{}/value.json'.format(outdir)
             assert os.path.isfile(value_json)
             with open(value_json, 'r') as f:
@@ -371,7 +373,7 @@ class APITESTCLASS(unittest.TestCase):
                     args[param_name] = conv_default_value
                 else:
                     args[param_name] = 10000 # set n_estimators to 1000 to raise time out.
-        print(algorithm_name, args)
+
         assert_raises(RuntimeError, main, args, 1)
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
@@ -393,7 +395,6 @@ class APITESTCLASS(unittest.TestCase):
                 args[param_name] = conv_default_value
             else:
                 args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
-        print(algorithm_name, args)
         main(args)
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
@@ -441,7 +442,6 @@ class APITESTCLASS(unittest.TestCase):
                 args[param_name] = conv_default_value
             else:
                 args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
-        print(algorithm_name, args)
         main(args)
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
@@ -486,12 +486,8 @@ class APITESTCLASS(unittest.TestCase):
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
             args[param_name] = conv_default_value
-
-        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
-
-        print(algorithm_name, args)
         main(args)
-
+        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
         value_json = '{}/value.json'.format(outdir)
         assert os.path.isfile(value_json)
         with open(value_json, 'r') as f:
@@ -827,6 +823,48 @@ def test_generate_results_10():
     assert os.path.isfile(pickle_file)
     rmtree(tmpdir)
 
+
+def test_plot_dot_plot():
+    """Test plot_dot_plot function generates dot and png plots for classification dataset."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_1,
+                    training_classes_1,
+                    testing_features_1,
+                    testing_classes_1,
+                    feature_names_1,
+                    indices=np.array([0,1,2,3]),
+                    random_state=42,
+                    mode='classification')
+    dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
+    png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
+    assert os.path.isfile(dot_file)
+    assert os.path.isfile(png_file)
+    assert dtree_test_score > 0.7
+    rmtree(tmpdir)
+
+
+def test_plot_dot_plot_2():
+    """Test plot_dot_plot function generates dot and png plots for regression dataset."""
+    tmpdir = mkdtemp() + '/'
+    _id = 'test_id'
+    outdir = tmpdir + _id
+    os.mkdir(outdir)
+    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_4,
+                    training_classes_4,
+                    testing_features_4,
+                    testing_classes_4,
+                    feature_names_4,
+                    indices=np.array([0,1,2,3]),
+                    random_state=42,
+                    mode='regression')
+    dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
+    png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
+    assert os.path.isfile(dot_file)
+    assert os.path.isfile(png_file)
+    rmtree(tmpdir)
 
 
 def test_setup_model_params():
