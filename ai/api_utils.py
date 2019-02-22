@@ -14,6 +14,8 @@ import sys
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 class NumpyJsonEncoder(json.JSONEncoder):
@@ -212,7 +214,7 @@ class LabApi:
                 data = json.loads(res.text)
 
             except Exception as e:
-                logger.error('exception when grabbing metafeature data for',datasetId)
+                logger.error('exception when grabbing metafeature data for' + str(datasetId))
                 raise e
 
             data = data[0] 
@@ -243,13 +245,13 @@ class LabApi:
         good_def = True # checks that json for ML is in good form
 
         for i,x in enumerate(algorithms):
-            logger.debug('Checking ML: ',x['name'])
+            logger.debug('Checking ML: ' + str(x['name']))
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
 
             # get a dictionary of hyperparameters and their values
             for h in hyperparams:
-                logger.debug('  Checking hyperparams: x[''schema''][h]',x['schema'][h])
+                logger.debug('  Checking hyperparams: x[''schema''][h]' + str(x['schema'][h]))
                 if 'ui' in x['schema'][h]:
                     if 'values' in x['schema'][h]['ui']:
                         hyperparam_dict.update({h: x['schema'][h]['ui']['values']})
@@ -272,15 +274,15 @@ class LabApi:
                                    'parameters':str(ahc),
                                    'alg_name':x['name']})
             else:
-                logger.error('warning: ', x['name'], 'was skipped')
+                logger.error('warning: ' + str(x['name']) + 'was skipped')
             good_def = True
 
         # convert to dataframe, making sure there are no duplicates
         all_ml_p = pd.DataFrame(result).drop_duplicates()
 
         if (len(all_ml_p) > 0):
-            logger.info(len(all_ml_p),' ml-parameter options loaded')
-            logger.info('algs:',all_ml_p.algorithm.unique())
+            logger.info(str(len(all_ml_p)) + ' ml-parameter options loaded')
+            logger.info('algs:' + str(all_ml_p.algorithm.unique()))
         else:
             logger.warn('get_all_ml_p() parsed no results')
 
