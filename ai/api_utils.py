@@ -239,7 +239,7 @@ class LabApi:
         response = json.loads(r.text)
 
         algorithms = response[0]['algorithms']
-        logger.debug('response.algorithms length(): ', str(len(algorithms)))
+        logger.debug('response.algorithms length(): ' + str(len(algorithms)))
 
         result = [] # returned value
         good_def = True # checks that json for ML is in good form
