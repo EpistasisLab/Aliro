@@ -30,6 +30,8 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
@@ -136,6 +138,7 @@ class AI():
 
         if use_knowledgebase:
             self.load_knowledgebase()
+
         
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
