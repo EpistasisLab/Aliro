@@ -352,6 +352,7 @@ mediaType: application/json
     responses:
       200:
         body:
+          description: List of details for all datasets.  See /datasets/{datasetId} for details.
           example: {
             [
                 {
@@ -363,7 +364,6 @@ mediaType: application/json
                             "_id": "5bf4841c9fc83c002cdbf5e8",
                             "filename": "appendicitis.csv",
                             "mimetype": "text/csv",
-                            "filepath": "/appsrc/data/datasets/user",
                             "dependent_col": "class",
                             "timestamp": 1542751267786
                         }
@@ -424,7 +424,6 @@ mediaType: application/json
                             "_id": "5bf484209fc83c002cdbf5e9",
                             "filename": "breast-cancer.csv",
                             "mimetype": "text/csv",
-                            "filepath": "/appsrc/data/datasets/user",
                             "dependent_col": "class",
                             "timestamp": 1542751267784
                         }
@@ -483,6 +482,18 @@ mediaType: application/json
       description: Get a particular dataset
       responses:
         200:
+          description: |
+            files {
+              -id - The id of the label encoded file object
+              -raw-id - (optional) The raw file, if label encoded
+              filename - human readable filename
+              mimetype -
+              dependent_col - name of the target column
+              categorical_features - (optional) list of categorical features
+              ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
+            }
+            metafeatures - the dataset profile for this dataset
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
           body:
             example:
               {
@@ -492,10 +503,12 @@ mediaType: application/json
     "files": [
         {
             "_id": "5bf4841c9fc83c002cdbf5e8",
-            "filename": "appendicitis.csv",
+            "_raw_id" : "5bf4841c9fc83c002cdbfdfadfa",
+            "filename": "appendicitis_categorical.csv",
             "mimetype": "text/csv",
-            "filepath": "/appsrc/data/datasets/user",
             "dependent_col": "class",
+            "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+            "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]},
             "timestamp": 1542751267786
         }
     ],
@@ -551,19 +564,21 @@ mediaType: application/json
     body:
       multipart/form-data:
         type: object
+        description: |
+          name - file name
+          username - owner of the dataset
+          dependent_col - name of the target column
+          categorical_features - (optional) list of categorical features
+          ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
+
         example: {
-          _files:array of files,
+          _files:file binary,
           _metadata: [
             name: "datasetName",
             username: "testUser",
-            timestamp: Date.now(),
             dependent_col: "class",
-            files: [
-              filename:"file1.csv",
-              checksum: "12345",
-              filetype: "text/csv",
-              classlabel: "class"
-            ]
+            categorical_features : ["cat_feat_1", "cat_feat_2"],
+            ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
           ]
           }
     responses:
@@ -572,6 +587,11 @@ mediaType: application/json
           example: {
             message: "Files uploaded",
             dataset_id: dataset_id
+            }
+      400:
+        body:
+          example: {
+            error: "Missing parameter _metadata.name"
             }
 /webhooks:
   post:
@@ -597,7 +617,7 @@ mediaType: application/json
             }
 /preferences:
   get:
-    description: get algorithm preferences for each user (note: does not include {version} in the baseUri)
+    description: get algorithm preferences for each user (note- does not include {version} in the baseUri)
     responses:
       200:
         body:

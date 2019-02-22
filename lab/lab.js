@@ -174,12 +174,27 @@ app.post("/api/v1/projects", (req, res, next) => {
 
 /**
 * Add register a new dataset
+*
+* Example body:
+*    {
+*      _files:file binary,
+*      _metadata: [
+*        name: "datasetName",
+*        username: "testUser",
+*        dependent_col: "class",
+*        categorical_features : ["cat_feat_1", "cat_feat_2"],
+*        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+*      ]
+*    }
 * 
+*
 * @param _files - an array of dataset files
 * @param _metadata - json
-*    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
 *    username - owner of the dataset
+*    dependent_col - name of the target column
+*    categorical_features - list of categorical features
+*    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
 *
 */
 app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
