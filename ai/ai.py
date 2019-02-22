@@ -26,8 +26,11 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 from collections import OrderedDict
 
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+logger.addHandler(ch)
 
 
 class AI():
@@ -133,7 +136,6 @@ class AI():
 
         if use_knowledgebase:
             self.load_knowledgebase()
-
         
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
