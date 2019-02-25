@@ -33,6 +33,35 @@ def load_bad_test_data():
 			"data/datasets/test/test_bad/appendicitis_null.csv",
 			"class",
 			"sklearn.check_X_y() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),	
+		("appendicitis_cat", 
+			"data/datasets/test/test_bad/appendicitis_cat.csv",
+			"target_class",
+			"sklearn.check_X_y() validation failed: could not convert string to float: 'b'"),
+		("appendicitis_cat_2", 
+			"data/datasets/test/test_bad/appendicitis_cat_2.csv",
+			"target_class",
+			"sklearn.check_X_y() validation failed: could not convert string to float: 'a'"),
+	]
+
+@nottest
+def load_bad_test_data_no_target():
+	return [
+		("appendicitis_bad_dim", 
+			"data/datasets/test/test_bad/appendicitis_bad_dim.csv",
+			"class",
+			"sklearn.check_array() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),
+		("appendicitis_null", 
+			"data/datasets/test/test_bad/appendicitis_null.csv",
+			"class",
+			"sklearn.check_array() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),	
+		("appendicitis_cat", 
+			"data/datasets/test/test_bad/appendicitis_cat.csv",
+			"target_class",
+			"sklearn.check_array() validation failed: could not convert string to float: 'b'"),
+		("appendicitis_cat_2", 
+			"data/datasets/test/test_bad/appendicitis_cat_2.csv",
+			"target_class",
+			"sklearn.check_array() validation failed: could not convert string to float: 'a'"),
 	]
 
 @nottest
@@ -52,6 +81,14 @@ class TestResultUtils(unittest.TestCase):
 		result, message = validateDataset.validate_data_from_filepath(file_path, target_column)
 		assert not(result)
 		assert(message)
+		self.assertEqual(message, expectedMessage)
+
+	@parameterized.expand(load_bad_test_data_no_target)
+	def test_validate_data_file_bad_no_target(self, name, file_path, target_column, expectedMessage):
+		result, message = validateDataset.validate_data_from_filepath(file_path, None)
+		assert not(result)
+		assert(message)
+		self.assertEqual(message, expectedMessage)
 
 	@parameterized.expand(load_good_test_data)
 	def test_validate_data_file_good(self, name, file_path, target_column):

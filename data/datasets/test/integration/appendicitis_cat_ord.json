@@ -1,0 +1,1 @@
+{class: "target_class", categorical_features : ["cat"], ordinal_features : {"ord" : ["first", "second", "third"]}
