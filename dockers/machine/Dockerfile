@@ -13,7 +13,7 @@ COPY ${docker_filepath}/entrypoint.sh /root/
 COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN dos2unix /root/wait-for-it.sh && dos2unix /root/entrypoint.sh
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
-RUN apt-get install -y graphviz
+RUN apt-get update && apt-get install -y graphviz
 RUN pip install mlxtend stopit pydot
 
 VOLUME /share
