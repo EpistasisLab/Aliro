@@ -1,12 +1,9 @@
-"""
-Recommender system for Penn AI.
-"""
+# Recommender system for Penn AI.
 import pandas as pd
 # import json 
 # import urllib.request, urllib.parse
 from .base import BaseRecommender
 #from ..metalearning import get_metafeatures
-from xgboost import XGBRegressor
 from sklearn.preprocessing import RobustScaler 
 from sklearn.pipeline import Pipeline
 import numpy as np
@@ -29,7 +26,7 @@ class KNNMetaRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None): #, db_path='',api_key=''):
+    def __init__(self, ml_type='classifier', metric=None, ml_p = None): #, db_path='',api_key=''):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -41,6 +38,10 @@ class KNNMetaRecommender(BaseRecommender):
         else:
             self.metric = metric
 
+        # get ml+p combos
+        self.ml_p = ml_p
+        if ml_p is not None:
+            self.ml_p = ml_p.drop_duplicates()
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['dataset','algorithm','parameters','score'])
         self.best_mlp.set_index('dataset',inplace=True)
@@ -85,7 +86,7 @@ class KNNMetaRecommender(BaseRecommender):
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        print('updating model')
+        # print('updating model')
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -99,7 +100,7 @@ class KNNMetaRecommender(BaseRecommender):
                 self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameters']
             else:
                 print('skipping',d)
-        print('model updated')
+        # print('model updated')
                 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
@@ -116,19 +117,40 @@ class KNNMetaRecommender(BaseRecommender):
         try:
             ml_rec, p_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
-            
-            ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
-                    n_recs)
+            if len(ml_rec) < n_recs: 
+                print('len(ml_rec)=',len(ml_rec),'recommending random')
+            iters = 0
+            while len(ml_rec) < n_recs and iters < 1000:
+                # add random ml_p recommendations until n_recs is met
+                new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
+                new_p_rec = np.random.choice(self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
+                                              ['parameters'].unique())
+                if (dataset_id + '|' + new_ml_rec + '|' + new_p_rec 
+                        not in self.trained_dataset_models):
+                    ml_rec.append(new_ml_rec)
+                    p_rec.append(new_p_rec)
+                    rec_score.append(np.nan)
+                iters = iters+1
+            if iters == 1000:
+                print('couldn''t find',n_recs,'unique recommendations! returning',len(ml_rec))
+                # pdb.set_trace()
+                subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
+                print('btw, there are ',
+                       len([tdm for i,tdm in enumerate(self.trained_dataset_models) if subset[i]]),
+                       'results for',dataset_id,'already')
+            # ml_rec, p_rec, rec_score = self.filter_repeats(dataset_id, ml_rec, p_rec, rec_score,
+            #         n_recs)
 
-            for (m,p,r) in zip(ml_rec, p_rec, rec_score):
-                print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
+            # for (m,p,r) in zip(ml_rec, p_rec, rec_score):
+            #     print('ml_rec:', m, 'p_rec', p, 'rec_score',r)
             ml_rec, p_rec, rec_score = ml_rec[:n_recs], p_rec[:n_recs], rec_score[:n_recs]
+            assert(len(ml_rec) == n_recs)
             
         except Exception as e:
             print( 'error running self.best_model_prediction for',dataset_id)
-            # print('ml_rec:', ml_rec)
-            # print('p_rec', p_rec)
-            # print('rec_score',rec_score)
+            print('ml_rec:', ml_rec)
+            print('p_rec', p_rec)
+            print('rec_score',rec_score)
             raise e 
 
         # update the recommender's memory with the new algorithm-parameter combos 
@@ -189,9 +211,13 @@ class KNNMetaRecommender(BaseRecommender):
             if i < 10:
                 print('closest dataset:',d,'distance:',dist)
             if dist > 0.0:    # don't recommend based on this same dataset
-                ml_recs.append(self.best_mlp.loc[d,'algorithm'])
-                p_recs.append(self.best_mlp.loc[d,'parameters'])
-                scores.append(dist)
+                alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
+                              self.best_mlp.loc[d,'parameters'])
+                # only recommend if not already recommended
+                if dataset_id+'|'+alg_params not in self.trained_dataset_models:  
+                    ml_recs.append(self.best_mlp.loc[d,'algorithm'])
+                    p_recs.append(self.best_mlp.loc[d,'parameters'])
+                    scores.append(dist)
 
         return ml_recs,p_recs,scores
         

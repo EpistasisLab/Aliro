@@ -1,4 +1,4 @@
-# Recommender
+# Recommenders
 
 A recommender is responsible for deciding what ML-parameter combination will be run when the AI button is clicked. 
 
@@ -6,8 +6,8 @@ A recommender is responsible for deciding what ML-parameter combination will be 
 
 A recommender should inherit from the BaseRecommender class, which contains the minimum methods needed. 
 
- - `update(self, results_data)`: takes in new results as they are generated. Most recommenders use this to maintain an internal state. 
- - `recommend(self, dataset_id=None, n_recs=1)`: Returns an ML choice, its parameter values, and the internal score of its recommendation for `dataset_id`.
+ - `update(self, results_data, results_mf=None)`: takes in new results as they are generated. Most recommenders use this to maintain an internal state. 
+ - `recommend(self, dataset_id=None, n_recs=1, dataset_mf=None)`: Returns an ML choice, its parameter values, and the internal score of its recommendation for `dataset_id`.
 
 For a new recommender, these two classes, along with the class constructor, must be implemented. 
 
@@ -54,6 +54,25 @@ For a new recommender, these two classes, along with the class constructor, must
     - recommend top `n_recs` `E_a` 
     
 
+ - **KNNMetaRecommender**
+    
+    This is a collaborative filtering approach. 
+    The recommender tries to recommend MLs that have performed well on similar datasets. 
+    
+    KNNMetaRecommender maintains and internal list of the best MLs on each dataset that has been seen. 
+    When a new recommendation request comes in, the neighborhood of the dataset is calculated in metafeature space, and recommendations are made in order of nearest to farthest dataset using the best ML methods for that dataset (excluding the current one). 
+    
+    In the case of repeat recommendations, this recommender defaults to random recommendations.
 
+ - **SVDRecommender**
 
+    This recommender uses an online version of the SVD recommender system from the [Surprise package](https://surprise.readthedocs.io/en/stable/matrix_factorization.html)
+    See their documentation for details.
 
+    Note: Any other recommenders in that folder are not currently supported or maintained. 
+
+## Building your own recommender
+
+To build your own recommender, start with the `recommender/base.py` file.
+From there, implement `update()` and `recommend()` strategies. 
+You can adjust the initialization as you wish, but be aware that you will have to handle these changes in the AI class.

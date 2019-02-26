@@ -46,7 +46,7 @@ describe('lab', () => {
 			});
 		});
 
-		it.skip('putDatasetGood', async () => {
+		it('putDatasetGood', async () => {
 			let filepath = `${DATASET_PATH}/appendicitis_2.csv`
 
 			let form = new FormData();

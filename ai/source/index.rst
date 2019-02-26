@@ -8,20 +8,10 @@ Welcome to PennAI's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-    
-.. automodule:: ai.ai
-    :members:
 
-.. automodule:: ai.recommender.random_recommender
-    :members:
-
-.. automodule:: ai.recommender.average_recommender
-    :members:
-
-.. automodule:: ai.recommender.meta_recommender
-    :members:
-
+   ai
+   recommenders
+   api
 
 Indices and tables
 ==================
