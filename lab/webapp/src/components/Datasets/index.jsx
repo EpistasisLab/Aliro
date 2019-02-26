@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getSortedDatasets } from 'data/datasets';
 import * as actions from 'data/datasets/actions';
 import SceneHeader from '../SceneHeader';
+import FileUpload from '../FileUpload';
 import ResponsiveGrid from '../ResponsiveGrid';
 import DatasetCard from './components/DatasetCard';
 import FetchError from '../FetchError';
@@ -24,7 +25,7 @@ class Datasets extends Component {
 
     if(error) {
       return (
-        <FetchError 
+        <FetchError
           message={datasets.error}
           onRetry={() => fetchDatasets()}
         />
@@ -33,7 +34,9 @@ class Datasets extends Component {
 
     return (
       <div>
+
         <SceneHeader header="Datasets" />
+        <FileUpload />
         {/*<SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />*/}
         {datasets.length > 0 ? (
           <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
