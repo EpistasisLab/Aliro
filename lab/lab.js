@@ -18,7 +18,8 @@ var db = require("./db").db;
 var users = require("./users");
 var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
-var generateFeaturesFromFileIdAsync = require("./metafeatureGenerator").generateFeaturesFromFileIdAsync;
+var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromFileIdAsync;
+var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
 var Q = require("q");
 const assert = require("assert");
 
@@ -1152,8 +1153,9 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
     var dataset_id 
 
     // generate dataset profile
-    return generateFeaturesFromFileIdAsync(fileId, dependent_col)
-
+    return validateDatafileByFileIdAsync(fileId, dependent_col)
+    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
+    
     // create a new datasets instance and with the dataset dataProfile
     .then((dataProfile) => {
         return db.datasets.insertAsync({

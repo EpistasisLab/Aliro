@@ -3,7 +3,7 @@
 REPORT_PATH="target/test-reports"
 COVERAGE_PATH="target/test-reports/cobertura"
 
-NOSE_TESTS="ai/tests/test_recommender.py ai/tests/test_ai.py ai/tests/test_ai_and_api_utils.py machine/test/learn_tests.py ai/tests/test_knowledgebase_loader.py ai/metalearning/tests/test_dataset_describe.py lab/init/tests/test_loadInitialDatasets.py"
+NOSE_TESTS="ai/tests/test_recommender.py ai/tests/test_ai.py ai/tests/test_ai_and_api_utils.py machine/test/learn_tests.py ai/tests/test_knowledgebase_loader.py ai/metalearning/tests/test_dataset_describe.py lab/pyutils/tests/test_loadInitialDatasets.py lab/pyutils/tests/test_validateDataset.py"
 MOCHA_TESTS="machine/test/test.js"
 
 rm -f "${REPORT_PATH}/nose_xunit.xml"

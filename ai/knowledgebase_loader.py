@@ -60,8 +60,8 @@ def _load_results_from_file(resultsFile):
                        #        'macrof1',
                        #        'bal_accuracy']).fillna('')
     assert(not results_data.isna().any().any())
-    print('results_data:')
-    print(results_data.head())
+    logger.debug('results_data:')
+    logger.debug(results_data.head())
     return results_data
 
 

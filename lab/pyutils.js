@@ -21,7 +21,7 @@ function generateFeaturesFromFilepath(filename, filepath, dependent_col) {
 
 	console.log(`args: ${args}`)
 
-	return generateFeatures(args)
+	return pythonProcessSync(args)
 }
 
 
@@ -43,7 +43,7 @@ function generateFeaturesFromFilepathAsync(filename, filepath, dependent_col) {
 
 	console.log(`args: ${args}`)
 
-	return generateFeaturesAsync(args)
+	return pythonProcessAsync(args)
 }
 
 /**
@@ -63,7 +63,7 @@ function generateFeaturesFromFileId(fileid, dependent_col) {
 
 	console.log(`args: ${args}`)
 
-	return generateFeatures(args)
+	return pythonProcessSync(args)
 }
 
 /**
@@ -83,32 +83,56 @@ function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 
 	console.log(`args: ${args}`)
 
-	return generateFeaturesAsync(args)
+	return pythonProcessAsync(args)
+}
+
+/**
+*
+*
+*
+* @param fileid (String)
+* @param dependent_col (String)
+*
+* @return Promise
+*/
+function validateDatafileByFileIdAsync(fileid, dependent_col) {
+	console.log(`validateDatafileByFileIdAsync ('${fileid}', '${dependent_col}')`)
+
+	var args = ['lab/pyutils/validateDataset.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
+
+	console.log(`args: ${args}`)
+
+	return pythonProcessAsync(args)
+	.then((result) => {
+		return new Promise((resolve, reject) => {
+			if (result.success == true) { resolve(result) }
+			else throw new Error(`Datafile validation failed: ${result.errorMessage}`)
+		})
+	})
 }
 
 
 
-
-function generateFeatures(args) {
-	var metafeatureProc = spawnSync('python', 
+function pythonProcessSync(args) {
+	var pyProc = spawnSync('python', 
     	args, {
             cwd: process.env.PROJECT_ROOT
     })
 
-	if (metafeatureProc.error != null) {
-		var error = `Error: unable to spawn generateFeatures process: ${err}`
+	if (pyProc.error != null) {
+		var error = `Error: unable to spawn pythonProcessSync process: ${err}`
 		console.log(error)
 		throw new Error(error)
 	}
-	else if(metafeatureProc.status != 0) {
-		var error = `Error, generateFeatures process exited with status ${metafeatureProc.status}, stderr: '${metafeatureProc.stderr}'`
+	else if(pyProc.status != 0) {
+		var error = `Error, pythonProcessSync process exited with status ${pyProc.status}, stderr: '${pyProc.stderr}'`
 		console.log(error)
 		throw new Error(error)
 	}
 	else { 
-		try { var data = JSON.parse(metafeatureProc.stdout) }
+		try { var data = JSON.parse(pyProc.stdout) }
 		catch (err) {
-			var error = `Error, generateFeatures process exited properly with status ${metafeatureProc.status}, but unable to parse stdout as JSON.  stdout: ${metafeatureProc.stdout}, err: ${err}`
+			var error = `Error, pythonProcessSync process exited properly with status ${pyProc.status}, but unable to parse stdout as JSON.  stdout: ${pyProc.stdout}, err: ${err}`
 			console.log(error)
 			throw new Error(error)
 		} 
@@ -116,36 +140,36 @@ function generateFeatures(args) {
 	}
 }
 
-function generateFeaturesAsync(args) {
+function pythonProcessAsync(args) {
 	return new Promise((resolve, reject) => { 
 
-		var metafeatureProc = spawn('python', 
+		var pyProc = spawn('python', 
 	    	args, {
 	            cwd: process.env.PROJECT_ROOT
 	    })
 
-	    metafeatureProc.on('close', (code) => {
+	    pyProc.on('close', (code) => {
 			console.log(`child process exited with code ${code}`);
 
 			if(code != 0) {
-				var error = `Error, generateFeaturesAsync process exited with status ${metafeatureProc.status}, stderr: '${metafeatureProc.stderr}'`
+				var error = `Error, pythonProcessAsync process exited with status ${pyProc.status}, args: '${args}', stderr: '${pyProc.stderr.read()}', stdout: '${pyProc.stdout.read()}'`
 				console.log(error)
 				throw new Error(error)
 			}
 		})
 
-		metafeatureProc.stdout.on('data', (raw_data) => {
+		pyProc.stdout.on('data', (raw_data) => {
 			try { var data = JSON.parse(`${raw_data}`) }
 			catch (err) {
-				var error = `Error, generateFeaturesAsync unable to parse stdout as JSON.  stdout: ${raw_data}, err: ${err}`
+				var error = `Error, pythonProcessAsync unable to parse stdout as JSON.  stdout: ${raw_data}, err: ${err}`
 				console.log(error)
 				throw new Error(error)
 			} 
 			resolve(data)
 		});
 
-		metafeatureProc.on('error', (code) => {
-			var error = `Error: unable to spawn generateFeaturesAsync process: ${err}`
+		pyProc.on('error', (code) => {
+			var error = `Error: unable to spawn pythonProcessAsync process: ${err}`
 			console.log(error)
 			throw new Error(error)
 		})
@@ -157,5 +181,6 @@ module.exports = {
 	generateFeaturesFromFilepath: generateFeaturesFromFilepath,
 	generateFeaturesFromFilepathAsync: generateFeaturesFromFilepathAsync,
 	generateFeaturesFromFileId: generateFeaturesFromFileId,
-	generateFeaturesFromFileIdAsync: generateFeaturesFromFileIdAsync
+	generateFeaturesFromFileIdAsync: generateFeaturesFromFileIdAsync,
+	validateDatafileByFileIdAsync: validateDatafileByFileIdAsync
 };
