@@ -24,7 +24,7 @@ def load_bad_test_data():
 		("appendicitis_bad_dim", 
 			"data/datasets/test/test_bad/appendicitis_bad_dim.csv",
 			"class",
-			"sklearn.check_X_y() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),
+			"sklearn.check_array() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),
 		("appendicitis_bad_target_col", 
 			"data/datasets/test/test_bad/appendicitis_bad_target_col.csv",
 			"class",
@@ -32,15 +32,15 @@ def load_bad_test_data():
 		("appendicitis_null", 
 			"data/datasets/test/test_bad/appendicitis_null.csv",
 			"class",
-			"sklearn.check_X_y() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),	
+			"sklearn.check_array() validation failed: Input contains NaN, infinity or a value too large for dtype('float64')."),	
 		("appendicitis_cat", 
 			"data/datasets/test/test_bad/appendicitis_cat.csv",
 			"target_class",
-			"sklearn.check_X_y() validation failed: could not convert string to float: 'b'"),
+			"sklearn.check_array() validation failed: could not convert string to float: 'b'"),
 		("appendicitis_cat_2", 
 			"data/datasets/test/test_bad/appendicitis_cat_2.csv",
 			"target_class",
-			"sklearn.check_X_y() validation failed: could not convert string to float: 'a'"),
+			"sklearn.check_array() validation failed: could not convert string to float: 'a'"),
 	]
 
 @nottest
@@ -69,10 +69,25 @@ def load_good_test_data():
 	return [
 		("allbp", 
 			"data/datasets/test/test_flat/allbp.csv",
-			"class"),
+			"class",
+			None,
+			None),
 		("appendicitis_alt_target_col", 
 			"data/datasets/test/test_flat/appendicitis.csv",
-			"target_class"),
+			"target_class",
+			None,
+			None),
+		("appendicitis_cat", 
+			"data/datasets/test/integration/appendicitis_cat.csv",
+			"target_class",
+			["cat"],
+			None),
+		("appendicitis_cat_ord", 
+			"data/datasets/test/integration/appendicitis_cat_ord.csv",
+			"target_class",
+			["cat"],
+			{"ord" : ["first", "second", "third"]}
+			),
 	   ]
 
 class TestResultUtils(unittest.TestCase):
@@ -91,21 +106,28 @@ class TestResultUtils(unittest.TestCase):
 		self.assertEqual(message, expectedMessage)
 
 	@parameterized.expand(load_good_test_data)
-	def test_validate_data_file_good(self, name, file_path, target_column):
-		result, message = validateDataset.validate_data_from_filepath(file_path, target_column)
+	def test_validate_data_file_good(self, name, file_path, target_column, categories, ordinals):
+		result, message = validateDataset.validate_data_from_filepath(file_path, target_column, categories, ordinals)
 		logger.debug("name: " + name + " file_path: " + file_path + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
 		self.assertTrue(result)
 		
 	@parameterized.expand(load_good_test_data)
-	def test_validate_data_file_good_no_target(self, name, file_path, target_column):
-		result, message = validateDataset.validate_data_from_filepath(file_path, None)
+	def test_validate_data_file_good_no_target(self, name, file_path, target_column, categories, ordinals):
+		result, message = validateDataset.validate_data_from_filepath(file_path, None, categories, ordinals)
 		logger.debug("name: " + name + " file_path: " + file_path + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
 		self.assertTrue(result)
 
+
+
+
 	@parameterized.expand(load_good_test_data)
-	def test_validate_data_file_good_main(self, name, file_path, target_column):
+	def test_validate_data_main_file_good(self, name, file_path, target_column, categories, ordinals):
 		result = io.StringIO()
 		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'filepath']
+		
+		if (categories) : testargs.extend(['-categorical_features', simplejson.dumps(categories)])
+		if (ordinals) : testargs.extend(['-ordinal_features', simplejson.dumps(ordinals)])
+
 		with patch.object(sys, 'argv', testargs):
 			sys.stdout = result
 			validateDataset.main()
@@ -117,7 +139,7 @@ class TestResultUtils(unittest.TestCase):
 
 
 	@parameterized.expand(load_bad_test_data)
-	def test_validate_data_file_bad_main(self, name, file_path, target_column, expectedMessage):
+	def test_validate_data_main_file_bad(self, name, file_path, target_column, expectedMessage):
 		result = io.StringIO()
 		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'filepath']
 		with patch.object(sys, 'argv', testargs):
@@ -131,9 +153,13 @@ class TestResultUtils(unittest.TestCase):
 
 
 	@parameterized.expand(load_good_test_data)
-	def test_validate_data_api_main_connect_error(self, name, file_path, target_column):
+	def test_validate_data_main_api_connect_error(self, name, file_path, target_column, categories, ordinals):
 		result = io.StringIO()
 		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'fileid']
+
+		if (categories) : testargs.extend(['-categorical_features', simplejson.dumps(categories)])
+		if (ordinals) : testargs.extend(['-ordinal_features', simplejson.dumps(ordinals)])
+
 		with patch.object(sys, 'argv', testargs):
 			sys.stdout = result
 			validateDataset.main()
