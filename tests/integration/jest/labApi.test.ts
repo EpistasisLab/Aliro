@@ -104,7 +104,7 @@ describe('lab', () => {
 				var json = await e.response.json()
 				expect(json.error).toBeTruthy()
 				expect(e.response.status).toEqual(400)
-				expect(json.error).toEqual("Unable to upload files: Error: Error: Datafile validation failed: sklearn.check_X_y() validation failed: could not convert string to float: 'b'")
+				expect(json.error).toEqual("Unable to upload files: Error: Error: Datafile validation failed: sklearn.check_array() validation failed: could not convert string to float: 'b'")
 			}
 		});
 
