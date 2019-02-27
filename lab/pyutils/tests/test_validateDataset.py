@@ -75,8 +75,8 @@ def load_good_test_data():
 		("appendicitis_alt_target_col", 
 			"data/datasets/test/test_flat/appendicitis.csv",
 			"target_class",
-			None,
-			None),
+			[],
+			{}),
 		("appendicitis_cat", 
 			"data/datasets/test/integration/appendicitis_cat.csv",
 			"target_class",
@@ -152,23 +152,23 @@ class TestResultUtils(unittest.TestCase):
 		self.assertEqual(objResult, {"success": False, "errorMessage": expectedMessage})
 
 
-	@parameterized.expand(load_good_test_data)
-	def test_validate_data_main_api_connect_error(self, name, file_path, target_column, categories, ordinals):
-		result = io.StringIO()
-		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'fileid']
-
-		if (categories) : testargs.extend(['-categorical_features', simplejson.dumps(categories)])
-		if (ordinals) : testargs.extend(['-ordinal_features', simplejson.dumps(ordinals)])
-
-		with patch.object(sys, 'argv', testargs):
-			sys.stdout = result
-			validateDataset.main()
-			sys.stdout = sys.__stdout__
-		logger.debug("testargs: " + str(testargs) + " res: " + result.getvalue())
-		self.assertTrue(result.getvalue())
-		objResult = simplejson.loads(result.getvalue())
-		#self.assertEqual(objResult, {"success": False, "errorMessage": None})
-		self.assertIsInstance(objResult, dict)
-		self.assertEqual(list(objResult), ["success", "errorMessage"])
-		self.assertEqual(objResult['success'], False)
-		self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")
+#	@parameterized.expand(load_good_test_data)
+#	def test_validate_data_main_api_connect_error(self, name, file_path, target_column, categories, ordinals):
+#		result = io.StringIO()
+#		testargs = ["program.py", file_path, '-target', target_column, '-identifier_type', 'fileid']
+#
+#		if (categories) : testargs.extend(['-categorical_features', simplejson.dumps(categories)])
+#		if (ordinals) : testargs.extend(['-ordinal_features', simplejson.dumps(ordinals)])
+#
+#		with patch.object(sys, 'argv', testargs):
+#			sys.stdout = result
+#			validateDataset.main()
+#			sys.stdout = sys.__stdout__
+#		logger.debug("testargs: " + str(testargs) + " res: " + result.getvalue())
+#		self.assertTrue(result.getvalue())
+#		objResult = simplejson.loads(result.getvalue())
+#		#self.assertEqual(objResult, {"success": False, "errorMessage": None})
+#		self.assertIsInstance(objResult, dict)
+#		self.assertEqual(list(objResult), ["success", "errorMessage"])
+#		self.assertEqual(objResult['success'], False)
+#		self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")

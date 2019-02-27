@@ -199,6 +199,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 */
 app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     //console.log(`======app.put datasets ${req.get('Content-Type')}`)
+    //console.log(`======app.put datasets ${req.body._metadata}`)
 
     // Parse request
     if (req.body._metadata === undefined) {
@@ -237,11 +238,14 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
         return res.send({error: `_files does not have length 1`});
     } 
 
+
     // process dataset
     var dependent_col = metadata['dependent_col'];
+    var categorical_features = metadata['categorical_features'] 
+    var ordinal_features = metadata['ordinal_features']
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, metadata)})
+    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1160,7 +1164,7 @@ var stageDatasetFile = function(fileObj) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
+var registerDataset = function(fileObj, fileId, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
@@ -1168,7 +1172,7 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
     var dataset_id 
 
     // generate dataset profile
-    return validateDatafileByFileIdAsync(fileId, dependent_col)
+    return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)
     .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
     
     // create a new datasets instance and with the dataset dataProfile
@@ -1177,6 +1181,8 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
             name: metadata.name,
             username: metadata.username,
             metafeatures: dataProfile,
+            categorical_features: categorical_features,
+            ordinal_features: ordinal_features,
             files: []
         }, {})
     })
