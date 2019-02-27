@@ -1156,6 +1156,29 @@ var stageDatasetFile = function(fileObj) {
     })
 }
 
+/**
+* Verify that the metadata for a file to be registered.
+*
+* @Promise that returns a bool
+*/
+var validateDatasetMetadata = function(metadata) {
+    // verify that username is one of the existing users
+    // verify that the dataset name is not already registered in the database
+
+    return new Promise((resolve, reject) => { 
+        if (metadata.username != "testuser")
+            throw new Error(`Metadata validation failed, username '${metadata.username}' does not exist.`)
+        resolve(true)
+    }).then((result) => {
+        return db.datasets.countAsync({name: metadata.name})
+    }).then((count) => {
+        if (count != 0)
+            throw new Error(`Metadata validation failed, dataset with name '${metadata.name}' has already been registered, count: ${count}.`)
+        return true
+    })
+}
+
+
 
 /**
 * Register a file in the filestore as a dataset.
@@ -1172,7 +1195,9 @@ var registerDataset = function(fileObj, fileId, dependent_col, categorical_featu
     var dataset_id 
 
     // generate dataset profile
-    return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)
+    //return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)
+    return validateDatasetMetadata(metadata)
+    .then((result) => {return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)})
     .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
     
     // create a new datasets instance and with the dataset dataProfile
