@@ -37,30 +37,22 @@ def encode_data(df, target_column, categories, ordinals, encoding_strategy = "On
 	use OneHotEncoder or OrdinalEncoder to convert categorical features
 	See skl_utils
 	'''
-	#check_array(df, dtype=None, order="C", force_all_finite=True)
 
-	feature_names = np.array([x for x in df.columns.values if (target_column == None) or x != target_column])
-
+	# check that categorical and ordinal columns can be encoded
 	if categories or ordinals:
-		transform_cols = []
-		feature_names_list = list(feature_names)
+		transformers = []
 		if categories:
-			col_idx = get_col_idx(feature_names_list, categories)
-			if encoding_strategy == "OneHotEncoder":
-				transform_cols.append(("categorical_encoder", OneHotEncoder(), col_idx))
-			elif encoding_strategy == "OrdinalEncoder":
-				transform_cols.append(("categorical_encoder", OrdinalEncoder(), col_idx))
+			if encoding_strategy == "OneHotEncoder": transformers.append(("categorical_encoder", OneHotEncoder(), categories))
+			elif encoding_strategy == "OrdinalEncoder": transformers.append(("categorical_encoder", OrdinalEncoder(), categories))
 		if ordinals:
 			ordinal_features = sorted(list(ordinals.keys()))
-			col_idx = get_col_idx(feature_names_list, ordinal_features)
 			ordinal_map = [ordinals[k] for k in ordinal_features]
-			transform_cols.append(("ordinalencoder",
+			transformers.append(("ordinalencoder",
 									OrdinalEncoder(categories=ordinal_map),
-									col_idx))
-
+									ordinal_features))
 
 		ct = ColumnTransformer(
-								transformers=transform_cols,
+								transformers=transformers,
 								 remainder='passthrough',
 								 sparse_threshold=0
 								 )
@@ -68,23 +60,6 @@ def encode_data(df, target_column, categories, ordinals, encoding_strategy = "On
 	else:
 		return df
 
-def get_col_idx(feature_names_list, columns):
-	"""get unique indexes of columns based on list of column names
-	see skl_utils
-	Parameters
-	----------
-
-	feature_names_list: list
-		list of column names
-	columns: list
-		list of selected column names
-
-	Returns
-	-------
-	col_idx: list
-		list of selected column indexes
-	"""
-	return [feature_names_list.index(c) for c in columns]
 
 def validate_data(df, target_column = None, categories = None, ordinals = None):
 	'''
@@ -95,24 +70,29 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 		boolean - validation result
 		string 	- message
 	'''
+	num_df = df
+
 	if (target_column != None) and not(target_column in df.columns):
 		return False, "Target column '" + target_column + "' not in data"
 
+	# check that cat columns can be encoded
 	if categories or ordinals:
 		try:
 			encode_data(df, target_column, categories, ordinals, "OneHotEncoder")
 			encode_data(df, target_column, categories, ordinals, "OrdinalEncoder")
 		except Exception as e:
 			return False, "encode_data() failed: " + str(e)
-		return True, None
+		
+		if categories: num_df = num_df.drop(columns=categories)
+		if ordinals: num_df = num_df.drop(columns=list(ordinals.keys()))
 
-	else:
-		try:
-			check_array(df, dtype=np.float64, order="C", force_all_finite=True)
-		except Exception as e:
-			return False, "sklearn.check_array() validation failed: " + str(e)
+	# check that non-cat columns contain only numeric data
+	try:
+		check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
+	except Exception as e:
+		return False, "sklearn.check_array() validation failed: " + str(e)
 
-		return True, None
+	return True, None
 
 def get_file_from_server(file_id):
 	'''
