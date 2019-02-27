@@ -53,7 +53,7 @@ describe('lab', () => {
 
 			let metadata =  JSON.stringify({
 					'name': 'appendicitis_2.csv',
-		            'username': 'testUser',
+		            'username': 'testuser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'target_class'
 	            })
@@ -87,7 +87,7 @@ describe('lab', () => {
 
 			let metadata =  JSON.stringify({
 					'name': 'appendicitis_cat.csv',
-		            'username': 'testUser',
+		            'username': 'testuser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'target_class'
 	            })
@@ -108,6 +108,66 @@ describe('lab', () => {
 			}
 		});
 
+		it('putDataset_badUsername', async () => {
+			expect.assertions(3);
+
+			let filepath = `${DATASET_PATH}/appendicitis_2.csv`
+
+			let form = new FormData();
+
+			let metadata =  JSON.stringify({
+					'name': 'appendicitis.csv',
+		            'username': 'testUser',
+		            'timestamp': Date.now(),
+		            'dependent_col' : 'target_class'
+	            })
+
+			form.append('_metadata', metadata)
+			form.append('_files', fs.createReadStream(filepath));
+
+			let result
+
+			try {
+				result = await labApi.putDataset(form);
+			}
+			catch (e) {
+				var json = await e.response.json()
+				expect(json.error).toBeTruthy()
+				expect(e.response.status).toEqual(400)
+				expect(json.error).toEqual("Unable to upload files: Error: Error: Metadata validation failed, username 'testUser' does not exist.")
+			}
+		});
+
+		it('putDataset_bad_existingFilename', async () => {
+			expect.assertions(3);
+
+			let filepath = `${DATASET_PATH}/banana.csv`
+
+			let form = new FormData();
+
+			let metadata =  JSON.stringify({
+					'name': 'banana',
+		            'username': 'testuser',
+		            'timestamp': Date.now(),
+		            'dependent_col' : 'class'
+	            })
+
+			form.append('_metadata', metadata)
+			form.append('_files', fs.createReadStream(filepath));
+
+			let result
+
+			try {
+				result = await labApi.putDataset(form);
+			}
+			catch (e) {
+				var json = await e.response.json()
+				expect(json.error).toBeTruthy()
+				expect(e.response.status).toEqual(400)
+				expect(json.error).toEqual("Unable to upload files: Error: Error: Metadata validation failed, dataset with name 'banana' has already been registered, count: 1.")
+			}
+		});
+
 		it('putDatasetGood_categorical', async () => {
 			let filepath = `${DATASET_PATH}/appendicitis_cat.csv`
 
@@ -115,7 +175,7 @@ describe('lab', () => {
 
 			let metadata =  JSON.stringify({
 					'name': 'appendicitis_cat.csv',
-		            'username': 'testUser',
+		            'username': 'testuser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'target_class',
 		            'categorical_features' : ["cat"]
@@ -148,7 +208,7 @@ describe('lab', () => {
 
 			let metadata =  JSON.stringify({
 					'name': 'appendicitis_cat_ord.csv',
-		            'username': 'testUser',
+		            'username': 'testuser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'target_class',
 		            'categorical_features' : ["cat"],
@@ -194,7 +254,7 @@ describe('lab', () => {
 
 			var metadata = JSON.stringify({
 					'name': 'datasetName',
-		            'username': 'testUser',
+		            'username': 'testuser',
 		            'timestamp': Date.now(),
 		            'dependent_col' : 'class',
 	            })
