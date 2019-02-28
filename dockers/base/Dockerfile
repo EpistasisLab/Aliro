@@ -34,6 +34,6 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
-RUN conda install --yes scikit-learn pymongo tqdm pandas matplotlib
+RUN conda install --yes scikit-learn=0.20.2 pymongo tqdm pandas matplotlib
 
 COPY files/version /
