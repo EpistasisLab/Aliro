@@ -1156,6 +1156,7 @@ var stageDatasetFile = function(fileObj) {
     })
 }
 
+
 /**
 * Verify that the metadata for a file to be registered.
 *
@@ -1206,8 +1207,6 @@ var registerDataset = function(fileObj, fileId, dependent_col, categorical_featu
             name: metadata.name,
             username: metadata.username,
             metafeatures: dataProfile,
-            categorical_features: categorical_features,
-            ordinal_features: ordinal_features,
             files: []
         }, {})
     })
@@ -1236,6 +1235,8 @@ var registerDataset = function(fileObj, fileId, dependent_col, categorical_featu
                     filename: gridStore.filename,
                     mimetype: gridStore.metadata.contentType,
                     dependent_col: dependent_col,
+                    categorical_features: categorical_features,
+                    ordinal_features: ordinal_features,
                     timestamp: Date.now()
                 }
             }
