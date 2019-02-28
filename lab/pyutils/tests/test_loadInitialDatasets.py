@@ -50,22 +50,30 @@ def load_metadata():
 			"data/datasets/test/metadata", 
 			"test.csv",
 			True,
-			"my_target_column"),
+			"my_target_column",
+			[],
+			{}),
 		("good2", 
 			"data/datasets/test/metadata", 
 			"test.tsv",
 			True,
-			"my_target_column"),
+			"my_target_column",
+			[],
+			{}),
 		("dne", 
 			"data/datasets/test/metadata", 
 			"i_dont_exist.csv",
 			False,
-			"class"),
+			"class",
+			[],
+			{}),
 	   ]
 
 class TestResultUtils(unittest.TestCase):
 	@parameterized.expand(load_metadata)
-	def test_get_metadata_for_datafile(self, name, root, file, expected_fileExists, expected_target_column):
-		fileExists, target_column = loadInitialDatasets.getMetadataForDatafile(root, file)
+	def test_get_metadata_for_datafile(self, name, root, file, expected_fileExists, expected_target_column, expected_categorical_features, expected_ordinal_features):
+		fileExists, target_column, categorical_features, ordinal_features = loadInitialDatasets.getMetadataForDatafile(root, file)
 		assert(fileExists == expected_fileExists)
 		assert(target_column == expected_target_column)
+		assert(categorical_features == expected_categorical_features)
+		assert(ordinal_features == expected_ordinal_features)

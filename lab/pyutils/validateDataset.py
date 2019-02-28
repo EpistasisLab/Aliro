@@ -73,6 +73,7 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	num_df = df
 
 	if (target_column != None) and not(target_column in df.columns):
+		logger.warn("Target column '" + target_column + "' not in data")
 		return False, "Target column '" + target_column + "' not in data"
 
 	# check that cat columns can be encoded
@@ -81,6 +82,7 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 			encode_data(df, target_column, categories, ordinals, "OneHotEncoder")
 			encode_data(df, target_column, categories, ordinals, "OrdinalEncoder")
 		except Exception as e:
+			logger.warn("encode_data() failed: " + str(e))
 			return False, "encode_data() failed: " + str(e)
 		
 		if categories: num_df = num_df.drop(columns=categories)
@@ -90,6 +92,7 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	try:
 		check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
 	except Exception as e:
+		logger.warn("sklearn.check_array() validation failed: " + str(e))
 		return False, "sklearn.check_array() validation failed: " + str(e)
 
 	return True, None
