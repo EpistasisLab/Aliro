@@ -87,7 +87,7 @@ function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 }
 
 /**
-*
+* Validate a dataset.  Reject the promise if the validation failed.
 *
 *
 * @param fileid (String)
@@ -95,11 +95,23 @@ function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 *
 * @return Promise
 */
-function validateDatafileByFileIdAsync(fileid, dependent_col) {
-	console.log(`validateDatafileByFileIdAsync ('${fileid}', '${dependent_col}')`)
+function validateDatafileByFileIdAsync(fileid, dependent_col, categorical_features, ordinal_features) {
+	console.log(`validateDatafileByFileIdAsync ('${fileid}', '${dependent_col}', '${categorical_features}', '${ordinal_features}')`)
 
-	var args = ['lab/pyutils/validateDataset.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
-
+	var args = [
+		'lab/pyutils/validateDataset.py', fileid, 
+		'-target', dependent_col, 
+		'-identifier_type', 'fileid'
+	]
+	if (categorical_features != null) {
+		args.push('-categorical_features')
+		args.push(JSON.stringify(categorical_features))
+	}
+	if (ordinal_features != null) {
+		args.push('-ordinal_features')
+		args.push(JSON.stringify(ordinal_features))
+	}
+	
 	console.log(`args: ${args}`)
 
 	return pythonProcessAsync(args)
