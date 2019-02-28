@@ -174,16 +174,32 @@ app.post("/api/v1/projects", (req, res, next) => {
 
 /**
 * Add register a new dataset
+*
+* Example body:
+*    {
+*      _files:file binary,
+*      _metadata: [
+*        name: "datasetName",
+*        username: "testUser",
+*        dependent_col: "class",
+*        categorical_features : ["cat_feat_1", "cat_feat_2"],
+*        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+*      ]
+*    }
 * 
+*
 * @param _files - an array of dataset files
 * @param _metadata - json
-*    dataset_id - optional.  If not provided, dataset_id is generated as the database primary key
 *    name - file name
 *    username - owner of the dataset
+*    dependent_col - name of the target column
+*    categorical_features - list of categorical features
+*    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
 *
 */
 app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     //console.log(`======app.put datasets ${req.get('Content-Type')}`)
+    //console.log(`======app.put datasets ${req.body._metadata}`)
 
     // Parse request
     if (req.body._metadata === undefined) {
@@ -222,11 +238,14 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
         return res.send({error: `_files does not have length 1`});
     } 
 
+
     // process dataset
     var dependent_col = metadata['dependent_col'];
+    var categorical_features = metadata['categorical_features'] 
+    var ordinal_features = metadata['ordinal_features']
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, metadata)})
+    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1139,13 +1158,37 @@ var stageDatasetFile = function(fileObj) {
 
 
 /**
+* Verify that the metadata for a file to be registered.
+*
+* @Promise that returns a bool
+*/
+var validateDatasetMetadata = function(metadata) {
+    // verify that username is one of the existing users
+    // verify that the dataset name is not already registered in the database
+
+    return new Promise((resolve, reject) => { 
+        if (metadata.username != "testuser")
+            throw new Error(`Metadata validation failed, username '${metadata.username}' does not exist.`)
+        resolve(true)
+    }).then((result) => {
+        return db.datasets.countAsync({name: metadata.name})
+    }).then((count) => {
+        if (count != 0)
+            throw new Error(`Metadata validation failed, dataset with name '${metadata.name}' has already been registered, count: ${count}.`)
+        return true
+    })
+}
+
+
+
+/**
 * Register a file in the filestore as a dataset.
 * Creates a dataset entry, generate a dataset profile for the datafile
 *
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
+var registerDataset = function(fileObj, fileId, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
@@ -1153,7 +1196,9 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
     var dataset_id 
 
     // generate dataset profile
-    return validateDatafileByFileIdAsync(fileId, dependent_col)
+    //return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)
+    return validateDatasetMetadata(metadata)
+    .then((result) => {return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)})
     .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
     
     // create a new datasets instance and with the dataset dataProfile
@@ -1190,6 +1235,8 @@ var registerDataset = function(fileObj, fileId, dependent_col, metadata) {
                     filename: gridStore.filename,
                     mimetype: gridStore.metadata.contentType,
                     dependent_col: dependent_col,
+                    categorical_features: categorical_features,
+                    ordinal_features: ordinal_features,
                     timestamp: Date.now()
                 }
             }
