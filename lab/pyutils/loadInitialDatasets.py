@@ -27,16 +27,17 @@ def registerDatafiles(directory, apiPath):
 	Register all the datafiles in directory with the lab server
 	'''
 
+	logger.info("============")
 	logger.info("Register datafiles in directory '" + directory + "'")
 
-    # infinite recursion can occur if symlink points to the parent directory, see <https://docs.python.org/3/library/os.html#os.walk>
+	# infinite recursion can occur if symlink points to the parent directory, see <https://docs.python.org/3/library/os.html#os.walk>
 	for root, dirs, files in os.walk(directory, topdown=True, onerror=None, followlinks=True):
 		for file in files:
 			extension = os.path.splitext(file)[1]
 
 			if (extension in ['.csv', '.tsv']):
-				foundMetadataFile, target_column = getMetadataForDatafile(root, file)
-				registerDatafile(root, file, target_column, apiPath)		
+				foundMetadataFile, target_column, categorical_features, ordinal_features = getMetadataForDatafile(root, file)
+				registerDatafile(root, file, target_column, categorical_features, ordinal_features, apiPath)		
 
 
 def getMetadataForDatafile(root, file):
@@ -57,17 +58,19 @@ def getMetadataForDatafile(root, file):
 	filepath = os.path.join(root, metafile)
 
 	target_column = DEFAULT_TARGET_COLUMN
+	categorical_features = []
+	ordinal_features = {}
 
 	# Try to open and parse the file
 	try:
 		with open(filepath) as f:
 			data = simplejson.load(f)
 	except FileNotFoundError:
-		logger.debug("File " + metafile + " does not exist.")
-		return False, target_column
+		logger.info("File " + metafile + " does not exist, using default metadata.")
+		return False, target_column, categorical_features, ordinal_features
 	except Exception as e:
-		logger.warning("Unable to parse file " + filepath + ": " + str(e))
-		return False, target_column
+		logger.error("Unable to parse file " + filepath + ": " + str(e))
+		return False, target_column, categorical_features, ordinal_features
 
 	# extract matadata from the file
 	if ('target_column' in data.keys()):
@@ -75,74 +78,84 @@ def getMetadataForDatafile(root, file):
 	else:
 		logger.warning("Could not get 'target_column' from file " + filepath)
 
+	if ('categorical_features' in data.keys()): categorical_features = data['categorical_features']
+	else: logger.warning("Could not get 'categorical_features' from file " + filepath)
 
-	return True, target_column
+	if ('ordinal_features' in data.keys()): ordinal_features = data['ordinal_features']
+	else: logger.warning("Could not get 'ordinal_features' from file " + filepath)
+
+	return True, target_column, categorical_features, ordinal_features
 
 
 
-def registerDatafile(root, file, target_column, apiPath):
-    '''
-    Register a datafile with the main PennAI server
-    '''
-    filepath = os.path.join(root, file)
-    path = apiPath + "/api/v1/datasets"
+def registerDatafile(root, file, target_column, categorical_features, ordinal_features, apiPath):
+	'''
+	Register a datafile with the main PennAI server
+	'''
+	filepath = os.path.join(root, file)
+	path = apiPath + "/api/v1/datasets"
 
-    logger.debug("registering file:" + root + " " + file)
-    logger.debug("api path: " + path)
+	logger.debug("registering file:" + root + " " + file)
+	logger.debug("api path: " + path)
+	logger.debug("target_column: " + str(target_column) + " categorical_features: " + str(categorical_features) + " ordinal_features: " + str(ordinal_features))
 
-    payload = {'_metadata' : simplejson.dumps({
-    	'name': os.path.splitext(file)[0],
-        'username': 'testuser',
-        'dependent_col' : target_column
-        })
-    }
+	payload = {'_metadata' : simplejson.dumps({
+		'name': os.path.splitext(file)[0],
+		'username': 'testuser',
+		'dependent_col' : target_column,
+		'categorical_features' : categorical_features,
+		'ordinal_features' : ordinal_features
+		})
+	}
 
-    files = {'_files': open(filepath, 'rb')}
+	logger.debug("payload: " + str(payload))
 
-    res = None
-    try:
-        res = requests.request('PUT', path, files=files, data=payload)
-    except:
-        logger.error("Unexpected error in registerDatafile for path 'PUT:" + str(path) + "': " + str(sys.exc_info()[0]))
-        raise
-    
-    if res.status_code != requests.codes.ok:
-        msg = "Error registering datafile, request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
-        logger.error(msg)
-    else:
-        logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
+	files = {'_files': open(filepath, 'rb')}
+
+	res = None
+	try:
+		res = requests.request('PUT', path, files=files, data=payload)
+	except:
+		logger.error("Unexpected error in registerDatafile for path 'PUT:" + str(path) + "': " + str(sys.exc_info()[0]))
+		raise
+	
+	if res.status_code != requests.codes.ok:
+		msg = "Error registering datafile, request PUT status_code not ok, path: '" + str(path) + "'' status code: '" + str(res.status_code) + "'' response text: " + str(res.text)
+		logger.error(msg)
+	else:
+		logger.info("Datafile '" + filepath + "' registered: " + str(res.status_code) + " : " + str(res.text))
 
 
 
 def main():
-    '''
-    Attempt to load the inital datasets using the user directory and lab host defined in environmental variables
+	'''
+	Attempt to load the inital datasets using the user directory and lab host defined in environmental variables
 
-    Also add an additional file log handler to '../target/log/loadInitialDatasets.log'
-    '''
-    meta_features_all = []
-    parser = argparse.ArgumentParser(description="Reads or creates 'DATASET_metadata.json' file given a dataset", add_help=False)
-    #parser.add_argument('DIRECTORY', type=str, help='Direcory to get get datafiles from')    
+	Also add an additional file log handler to '../target/log/loadInitialDatasets.log'
+	'''
+	meta_features_all = []
+	parser = argparse.ArgumentParser(description="Reads or creates 'DATASET_metadata.json' file given a dataset", add_help=False)
+	#parser.add_argument('DIRECTORY', type=str, help='Direcory to get get datafiles from')    
 
-    args = parser.parse_args()
+	args = parser.parse_args()
 
-    # set up the file logger
-    logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
-    if not os.path.exists(logpath):
-        os.makedirs(logpath)
+	# set up the file logger
+	logpath = os.path.join(os.environ['PROJECT_ROOT'], "target/logs")
+	if not os.path.exists(logpath):
+		os.makedirs(logpath)
 
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-    fhandler = logging.FileHandler(os.path.join(logpath, 'loadInitialDatasets.log'))
-    fhandler.setFormatter(formatter)
-    logger.addHandler(fhandler)
+	formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+	fhandler = logging.FileHandler(os.path.join(logpath, 'loadInitialDatasets.log'))
+	fhandler.setFormatter(formatter)
+	logger.addHandler(fhandler)
 
-    print("logpath: " + logpath)
-    print(os.path.join(logpath, 'loadInitialDatasets.log'))
+	print("logpath: " + logpath)
+	print(os.path.join(logpath, 'loadInitialDatasets.log'))
 
-    apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
-    directory = os.environ['STARTUP_DATASET_PATH']
+	apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
+	directory = os.environ['STARTUP_DATASET_PATH']
 
-    registerDatafiles(directory, apiPath)   
+	registerDatafiles(directory, apiPath)   
 
 if __name__ == '__main__':
-    main()
+	main()
