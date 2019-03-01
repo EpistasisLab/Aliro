@@ -1,0 +1,4 @@
+{
+	"target_column": "target_class", 
+	"categorical_features" : ["cat"]
+}
