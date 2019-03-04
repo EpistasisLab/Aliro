@@ -532,7 +532,7 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_6(self, mock_get):
-        """Test main function when applying LogisticRegression on appendicitis dateset without categorical features and ordinal features."""
+        """Test main function when applying LogisticRegression on dateset with more than 10 features."""
         obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
