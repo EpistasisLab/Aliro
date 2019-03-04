@@ -58,6 +58,14 @@ test_clf_input_df2 = pd.read_csv(test_clf_input2, sep='\t')
 # test input file with categorical feature
 test_clf_input3 = "machine/test/test_categories.tsv"
 test_clf_input_df3 = pd.read_csv(test_clf_input3, sep='\t')
+# test input file with categorical feature and ordinal feature
+test_clf_input4 = "data/datasets/test/integration/appendicitis_cat_ord.csv"
+test_clf_input_df4 = pd.read_csv(test_clf_input4, sep='\t')
+
+# test input file with categorical feature and ordinal feature
+test_clf_input5 = "data/datasets/test/integration/appendicitis_2.csv"
+test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
+
 # test inputfile for regression
 test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
@@ -148,6 +156,10 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id6"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id7': # with categorical features
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id7"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id8': # with categorical features
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id8"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id9':
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id9"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
@@ -173,6 +185,18 @@ def mocked_requests_get(*args, **kwargs):
                                     [{"_id":"test_file_id4",
                                     "dependent_col": "class",
                                     "filename": "test_clf_input"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id8':
+        return MockResponse(json.dumps({"files": [
+                            {"_id":"test_file_id5",
+                            "dependent_col": "target_class",
+                            "categorical_features" : ["cat"],
+	                        "ordinal_features" : {"ord" : ["first", "second", "third"]},
+                            "filename": "test_clf_input5"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id9':
+        return MockResponse(json.dumps({"files": [
+                            {"_id":"test_file_id6",
+                            "dependent_col": "target_class",
+                            "filename": "test_clf_input5"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -181,6 +205,10 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(open(test_clf_input3).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id4':
         return MockResponse(open(test_clf_input).read(), 200)
+    elif args[0] == 'http://lab:5080/api/v1/files/test_file_id5':
+        return MockResponse(open(test_clf_input4).read(), 200)
+    elif args[0] == 'http://lab:5080/api/v1/files/test_file_id6':
+        return MockResponse(open(test_clf_input5).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/projects':
         return MockResponse(json.dumps(projects_json_data), 200)
     else:
@@ -425,7 +453,7 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_4(self, mock_get):
-        """Test main function when applying LogisticRegression on dateset with categorical features."""
+        """Test main function when applying LogisticRegression on dateset with categorical features and ordinal features."""
         obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
@@ -438,10 +466,8 @@ class APITESTCLASS(unittest.TestCase):
             param_type = schema[param_name]["type"]
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
-            if param_name != 'n_estimators':
-                args[param_name] = conv_default_value
-            else:
-                args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
+            args[param_name] = conv_default_value
+
         main(args)
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
@@ -472,6 +498,75 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_5(self, mock_get):
+        """Test main function when applying LogisticRegression on appendicitis dateset with categorical features and ordinal features."""
+        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id8"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            args[param_name] = conv_default_value
+        main(args)
+        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_6(self, mock_get):
+        """Test main function when applying LogisticRegression on appendicitis dateset without categorical features and ordinal features."""
+        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id9"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            args[param_name] = conv_default_value
+        main(args)
+        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_7(self, mock_get):
         """Test main function do not export roc_curve for dataset without binary outcome. """
         obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
