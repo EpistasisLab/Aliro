@@ -63,7 +63,7 @@ test_clf_input4 = "data/datasets/test/integration/appendicitis_cat_ord.csv"
 test_clf_input_df4 = pd.read_csv(test_clf_input4, sep='\t')
 
 # test input file with categorical feature and ordinal feature
-test_clf_input5 = "data/datasets/test/integration/appendicitis_2.csv"
+test_clf_input5 = "data/datasets/test/test_mixed/backache.csv"
 test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
 
 # test inputfile for regression
@@ -195,8 +195,8 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id9':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id6",
-                            "dependent_col": "target_class",
-                            "filename": "test_clf_input5"}]}), 200)
+                            "dependent_col": "class",
+                            "filename": "test_clf_input6"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
