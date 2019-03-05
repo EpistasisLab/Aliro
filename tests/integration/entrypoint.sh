@@ -9,8 +9,8 @@ echo "waiting for machine to be responsive..."
 #npm test -- --json --outputFile="/results/jest.json"
 
 # for now, hardcode some time for the datasets to get loaded
-echo "hardcoded sleep to load datasets..."
-sleep 20s
+#echo "hardcoded sleep to load datasets..."
+#sleep 10s
 echo "starting tests..."
 npm test
 

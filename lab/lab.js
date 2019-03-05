@@ -197,7 +197,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 *    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
 *
 */
-app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
+app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     //console.log(`======app.put datasets ${req.get('Content-Type')}`)
     //console.log(`======app.put datasets ${req.body._metadata}`)
 
@@ -218,25 +218,34 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     }
 
     // Validate
+    var possibleMetadataKeys = ['name', 'username', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
     if (!metadata) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata"});
-    } else if (!metadata.hasOwnProperty('dependent_col')) {
+    } if (!metadata.hasOwnProperty('dependent_col')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.dependent_col"});
-    } else if (!metadata.hasOwnProperty('name')) {
+    } if (!metadata.hasOwnProperty('name')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.name"});
-    } else if (!metadata.hasOwnProperty('username')) {
+    } if (!metadata.hasOwnProperty('username')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.username"});
-    } else if (!req.hasOwnProperty('files')) {
+    } if (!req.hasOwnProperty('files')) {
         res.status(400);
         return res.send({error: "Missing parameter _files"});
-    } else if (req.files.length != 1) {
+    } if (req.files.length != 1) {
         res.status(400);
         return res.send({error: `_files does not have length 1`});
+    } if (req.files[0].size == 0) {
+        res.status(400);
+        return res.send({error: `_files[0] has size 0`});
     } 
+    var invalidKeys = Object.getOwnPropertyNames(metadata).filter(key => !(possibleMetadataKeys.includes(key)))
+    if (invalidKeys.length > 0) {
+        res.status(400);
+        return res.send({error: `invalid _metadata key: ${invalidKeys}`});
+    }
 
 
     // process dataset
