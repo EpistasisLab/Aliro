@@ -262,7 +262,8 @@ class AI():
             :param rec_payload: dictionary - the payload describing the experiment
             """
             logger.info("transfer_rec(" + str(rec_payload) + ")")
-            submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], payload=rec_payload)
+            submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], 
+                                                         payload=rec_payload)
 
             logger.debug("transfer_rec() starting loop, submitstatus: " + str(submitstatus))
             while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
@@ -300,7 +301,7 @@ class AI():
                 if self.verbose:
                     print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                         ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-
+                # TODO: check termination conditions 
                 q_utils.addExperimentToQueue(ai=self, datasetId=r['_id'], experimentPayload=rec_payload)
 
             #tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'finished') # h note - re-enable this once the queuing functionaity has been moved to lab server

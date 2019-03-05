@@ -22,9 +22,10 @@ class KNNMetaRecommender(BaseRecommender):
     ----------
     ml_type: str, 'classifier' or 'regressor'
         Recommending classifiers or regressors. Used to determine ML options.
-    
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
+    ml_p: Dataframe
+        Contains all the machine learning / algorithm combinations available for recommendation.
     """
     def __init__(self, ml_type='classifier', metric=None, ml_p = None): #, db_path='',api_key=''):
         """Initialize recommendation system."""
@@ -54,14 +55,18 @@ class KNNMetaRecommender(BaseRecommender):
         self.trained_dataset_models = set()
 
     def update(self, results_data, results_mf):
-        """Update ML / Parameter recommendations based on overall performance in results_data.
+        """Update ML / Parameter recommendations.
 
-        :param results_data: DataFrame with columns corresponding to:
-                'dataset'
+        Parameters
+        ----------
+        results_data: DataFrame 
+                columns corresponding to:
                 'algorithm'
                 'parameters'
                 self.metric
-        :param results_mf: metafeatures for the datasets in results_data 
+
+        results_mf: DataFrame 
+               columns corresponding to metafeatures of each dataset in results_data.
         """
 
         # update trained dataset models
