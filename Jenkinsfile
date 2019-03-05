@@ -32,7 +32,7 @@ pipeline {
             } 
             steps {
                 sh 'rm -fdr target'
-                dir ('ai') {
+                dir ('docs') {
                     sh 'make html'
                 }                
             }
