@@ -49,8 +49,7 @@ class Experiment:
             list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
                 while the 2nd one is testing dataset
         """
-        input_data, filename, dependent_col = get_input_data(self.args['_id'], self.tmpdir)
-        return input_data, filename, dependent_col
+        return get_input_data(self.args['_id'], self.tmpdir)
 
     def get_model(self):
         """Get scikit learn method.
@@ -67,16 +66,16 @@ class Experiment:
             'regression': regression model
         """
         projects = get_projects()
-        for pdict in projects:
-            if pdict['name'] == self.method_name:
-                params = pdict['schema']
-                import_path = pdict['path']
-                method_type = pdict['category']
+        pdict = next(item for item in projects if item["name"] == self.method_name)
+        params = pdict['schema']
+        import_path = pdict['path']
+        method_type = pdict['category']
+        encoding_strategy = pdict['categorical_encoding_strategy']
         method_args = {k:self.args[k] for k in params.keys()}
         exec('from {} import {}'.format(import_path, self.method_name))
         method = eval(self.method_name)
         model = method(**method_args)
-        return model, method_type
+        return model, method_type, encoding_strategy
 
 
 def get_projects():
@@ -147,11 +146,13 @@ def get_input_data(_id, tmpdir):
         pandas.DataFrame: PennAI will use train_test_split to make train/test splits
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
             while the 2nd one is testing dataset
-    filename: list
-        list fo filename(s) in one experiment
-    dependent_col: string
-        target column name
-
+    data_info: dict
+        target_name: string, target column name
+        filename: list, filename(s)
+        categories: list, categorical feature name(s)
+        ordinals: dict
+            keys: categorical feature name(s)
+            values: categorical values
     """
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
@@ -168,26 +169,37 @@ def get_input_data(_id, tmpdir):
     jsondata = json.loads(response.text)
     files = jsondata['files']
     filename = [file['filename'] for file in files]
-    dependent_col = ''
+    target_name = ''
+    categories = None
+    ordinals = None
     for file in files:
         if 'dependent_col' not in file:
             raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
-        if dependent_col and dependent_col != file['dependent_col']:
+        if target_name and target_name != file['dependent_col']:
             raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
         else:
-            dependent_col = file['dependent_col']
+            target_name = file['dependent_col']
+        if 'categorical_features' in file:
+            categories = file['categorical_features']
+        if 'ordinal_features' in file:
+            ordinals = file['ordinal_features']
 
     if len(files) == 1: # only 1 file
         input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
-        check_column(dependent_col, input_data)
+        check_column(target_name, input_data)
     else: # two files for cross-validation
         input_data = []
         for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
             indata = pd.read_csv(StringIO(get_file_data(file['_id'])), sep=None, engine='python')
-            check_column(dependent_col, indata)
+            check_column(target_name, indata)
             input_data.append(indata)
-
-    return input_data, filename, dependent_col
+    data_info = {
+                'target_name': target_name,
+                'filename': filename,
+                'categories': categories,
+                'ordinals': ordinals
+                }
+    return input_data, data_info
 
 def get_file_data(file_id):
     """

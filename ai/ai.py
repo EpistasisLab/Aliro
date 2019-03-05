@@ -26,8 +26,13 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 from collections import OrderedDict
 
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 class AI():

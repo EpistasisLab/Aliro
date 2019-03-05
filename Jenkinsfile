@@ -3,7 +3,7 @@ pipeline {
     agent any 
     parameters {
         //string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
-        string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu, weixuanf@pennmedicine.upenn.edu, lacava@upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
+        string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu, weixuanf@pennmedicine.upenn.edu, lacava@upenn.edu, josh.cohen@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
     }
     options {
         timeout(time: 1, unit: 'HOURS') 
