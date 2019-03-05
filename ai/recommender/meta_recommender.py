@@ -35,6 +35,13 @@ class MetaRecommender(BaseRecommender):
     
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
+    
+    ml_p: Dataframe
+        Contains all the machine learning / algorithm combinations available for recommendation.
+
+    sample_size: int
+        Number of ML/P combos to evaluate when making a recommendation. 
+
     """
     def __init__(self, ml_type='classifier', metric=None, ml_p=None,
                  sample_size=100):
