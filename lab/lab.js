@@ -254,7 +254,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     var ordinal_features = metadata['ordinal_features']
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, categorical_features, ordinal_features, metadata)})
+    .then((file_id) => {return registerDataset(file_id, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1136,18 +1136,22 @@ var stageDatasetFile = function(fileObj) {
     console.log(`stageDatasetFile: ${fileObj.originalname}`)
 
     var fileId
+    // validate the file meets size requirements
+    return validateStagingFile(fileObj)
     // open the gridStore
-    return new Promise((resolve, reject) => { 
-        fileId = new db.ObjectID()
+    .then((result) => {
+        return new Promise((resolve, reject) => { 
+            fileId = new db.ObjectID()
 
-        var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-            metadata: {
-                contentType: fileObj.mimetype
-            },
-            promiseLibrary: Promise
-        });
+            var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+                metadata: {
+                    contentType: fileObj.mimetype
+                },
+                promiseLibrary: Promise
+            });
 
-        resolve(gridStore)
+            resolve(gridStore)
+        })
     })
     // write and save the file
     .then((gridStore) => {
@@ -1162,6 +1166,23 @@ var stageDatasetFile = function(fileObj) {
     .catch((err) => {
         console.log(`error in stageDatasetFile: ${err}`)
         throw new Error(err)
+    })
+}
+
+
+
+/**
+* Verify that the size/num features/num rows is within acceptable parameters
+*
+*/
+var validateStagingFile = function(fileObj) {
+    var MAX_FILE_SIZE = 8 * 1000000
+
+    return new Promise((resolve, reject) => { 
+        console.log(`fileSize: ${fileObj.size}`)
+        if (fileObj.size > MAX_FILE_SIZE)
+            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${MAX_FILE_SIZE}.`)
+        resolve(true)
     })
 }
 
@@ -1197,7 +1218,7 @@ var validateDatasetMetadata = function(metadata) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileObj, fileId, dependent_col, categorical_features, ordinal_features, metadata) {
+var registerDataset = function(fileId, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)

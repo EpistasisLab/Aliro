@@ -53,8 +53,9 @@ describe('lab', () => {
 					expect(result).toHaveProperty('dataset_id');
 
 					expect(result.message).toEqual("Files uploaded");
-				} 
-			}
+				})
+			},
+			6000 // test timeout
 		)
 
 
