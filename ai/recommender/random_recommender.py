@@ -1,6 +1,3 @@
-"""
-Recommender system for Penn AI.
-"""
 import pandas as pd
 from .base import BaseRecommender
 import numpy as np
@@ -19,8 +16,9 @@ class RandomRecommender(BaseRecommender):
 
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
-
-    db_path: path to the server. 
+    
+    ml_p: Dataframe
+        Contains all the machine learning / algorithm combinations available for recommendation.
     """
 
 
@@ -45,17 +43,18 @@ class RandomRecommender(BaseRecommender):
         self.trained_dataset_models = set()
 
     def update(self, results_data, results_mf=None):
-        """Update ML / Parameter recommendations based on overall performance in results_data.
-
-        Updates self.scores
+        """Update ML / Parameter recommendations.
 
         Parameters
         ----------
-        results_data: DataFrame with columns corresponding to:
-                'dataset'
+        results_data: DataFrame 
+                columns corresponding to:
                 'algorithm'
                 'parameters'
                 self.metric
+
+        results_mf: DataFrame, optional 
+               columns corresponding to metafeatures of each dataset in results_data.
         """
         #self.ml = results_data['algorithm'].unique()
         #for ml in self.ml:
