@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import dataset from './dataset';
-import { 
-  FETCH_DATASETS_REQUEST, 
-  FETCH_DATASETS_SUCCESS, 
+import {
+  FETCH_DATASETS_REQUEST,
+  FETCH_DATASETS_SUCCESS,
   FETCH_DATASETS_FAILURE
 } from './actions';
 import {
@@ -11,7 +11,10 @@ import {
   TOGGLE_AI_SUCCESS,
   TOGGLE_AI_FAILURE,
   AI_UPDATE,
-  DATASET_UPDATE
+  DATASET_UPDATE,
+  UPLOAD_DATASET_REQUEST,
+  UPLOAD_DATASET_SUCCESS,
+  UPLOAD_DATASET_FAILURE
 } from './dataset/actions';
 
 const byId = (state = {}, action) => {
@@ -24,7 +27,7 @@ const byId = (state = {}, action) => {
     case DATASET_UPDATE:
       return Object.assign({}, state, {
         [action.dataset._id]: dataset(state[action.dataset._id], action)
-      });   
+      });
     case TOGGLE_AI_REQUEST:
     case TOGGLE_AI_SUCCESS:
     case TOGGLE_AI_FAILURE:
@@ -37,12 +40,31 @@ const byId = (state = {}, action) => {
   }
 };
 
+const fileUpload = (state = {}, action) => {
+  switch (action.type) {
+    case UPLOAD_DATASET_REQUEST:
+      let test = dataset(state, action);
+      //return {...state, dataset(state, action)};
+      return {...state, test};
+    case UPLOAD_DATASET_SUCCESS:
+      let test2 = dataset(state, action);
+      //return {...state, dataset(state, action)};
+      return {...state, test2};
+    case UPLOAD_DATASET_FAILURE:
+      let test3 = dataset(state, action);
+      //return {...state, dataset(state, action)};
+      return {...state, test3};
+    default:
+      return state;
+  }
+};
+
 const allIds = (state = [], action) => {
   switch(action.type) {
     case FETCH_DATASETS_SUCCESS:
       return action.payload.map(d => d._id);
     default:
-      return state;  
+      return state;
   }
 };
 
@@ -52,7 +74,7 @@ const isFetching = (state = false, action) => {
       return true;
     case FETCH_DATASETS_SUCCESS:
     case FETCH_DATASETS_FAILURE:
-      return false;   
+      return false;
     default:
       return state;
   }
@@ -63,7 +85,7 @@ const error = (state = null, action) => {
     case FETCH_DATASETS_FAILURE:
       return action.payload;
     default:
-      return state;  
+      return state;
   }
 };
 
@@ -75,8 +97,8 @@ const datasets = combineReducers({
 });
 
 // selector for alphabetizing
-const getAllIds = (state) => state.datasets.allIds; 
-const getById = (state) => state.datasets.byId; 
+const getAllIds = (state) => state.datasets.allIds;
+const getById = (state) => state.datasets.byId;
 export const getSortedDatasets = createSelector(
   [getAllIds, getById],
   (allIds, byId) =>

@@ -1,7 +1,11 @@
 //require('es6-promise').polyfill();
 //import fs = require('fs');
 import fetch from 'isomorphic-fetch';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
+import { getSortedDatasets } from 'data/datasets';
+import { fetchDatasets } from 'data/datasets/actions';
+import { uploadDataset } from 'data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import { Button, Input, Form, Segment } from 'semantic-ui-react';
@@ -17,6 +21,11 @@ class FileUpload extends Component {
     this.handleDepColField = this.handleDepColField.bind(this);
   }
 
+  componentDidMount() {
+    //this.props.fetchDatasets();
+    //window.console.log('FileUpload props', this.props);
+  }
+
   handleDepColField(e, props) {
     this.setState({dependentCol: props.value});
   }
@@ -29,6 +38,7 @@ class FileUpload extends Component {
   }
 
   handleUpload = () => {
+    const { uploadDataset } = this.props;
     const data = new FormData();
     //data.append('_files', this.state.selectedFile, this.state.selectedFile.name);
     //data.append('target_column', { target_column: 'test_target_column_name' });
@@ -49,20 +59,30 @@ class FileUpload extends Component {
 
         data.append('_files', this.state.selectedFile);
 
-        let myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'multipart/form-data');
+        uploadDataset(data).then(stuff => {
+          window.console.log('FileUpload props after download', this.props);
+          //this.setState({ serverFileUploadResp: json });
+          this.props.fetchDatasets();
+        });
 
-        fetch("/api/v1/datasets", {
-          method: 'PUT',
-          credentials: 'include',
-          body: data
-        }).then(response => {
-            return response.json();
-          })
-          .catch((err) => {
-                 throw(err);
-          })
-          .then(json => this.setState({ serverFileUploadResp: json }));
+        // let myHeaders = new Headers();
+        // myHeaders.append('Content-Type', 'multipart/form-data');
+
+        // fetch("/api/v1/datasets", {
+        //   method: 'PUT',
+        //   credentials: 'include',
+        //   body: data
+        // }).then(response => {
+        //     return response.json();
+        //   })
+        //   .catch((err) => {
+        //          throw(err);
+        //   })
+        //   .then((json) => {
+        //     window.console.log('FileUpload props after download', this.props);
+        //     this.setState({ serverFileUploadResp: json });
+        //     this.props.fetchDatasets();
+        //   });
       }
 
     } else {
@@ -119,4 +139,11 @@ class FileUpload extends Component {
   }
 }
 
-export default FileUpload;
+const mapStateToProps = (state) => ({
+  dataset: state.dataset
+});
+
+
+//export default FileUpload;
+export { FileUpload };
+export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);

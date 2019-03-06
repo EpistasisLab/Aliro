@@ -3,7 +3,10 @@ import {
   TOGGLE_AI_SUCCESS,
   TOGGLE_AI_FAILURE,
   AI_UPDATE,
-  DATASET_UPDATE
+  DATASET_UPDATE,
+  UPLOAD_DATASET_REQUEST,
+  UPLOAD_DATASET_SUCCESS,
+  UPLOAD_DATASET_FAILURE
 } from './actions';
 
 const dataset = (state = {}, action) => {
@@ -27,9 +30,30 @@ const dataset = (state = {}, action) => {
         ai: action.nextAIState
       });
     case DATASET_UPDATE:
-      return action.dataset;  
+      return action.dataset;
+    case UPLOAD_DATASET_REQUEST:
+      //window.console.log('UPLOAD_DATASET_REQUEST action', action);
+      //window.console.log('UPLOAD_DATASET_REQUEST state', state);
+      //return state;
+      return { ...state, isUploading: true };
+    case UPLOAD_DATASET_SUCCESS:
+      //window.console.log('UPLOAD_DATASET_SUCCESS action', action);
+      //window.console.log('UPLOAD_DATASET_SUCCESS state', state);
+      //return state;
+      let fileUploadResp = {
+        fileUploadResp: action.payload
+      }
+      return {...state, fileUploadResp, isUploading: false };
+    case UPLOAD_DATASET_FAILURE:
+      //window.console.log('UPLOAD_DATASET_FAILURE action', action);
+      //window.console.log('UPLOAD_DATASET_FAILURE state', state);
+      let fileUploadError = {
+        errorResp: action.payload
+      }
+      return {...state, fileUploadError, isUploading: false };
+      //return state;
     default:
-      return state;  
+      return state;
   }
 };
 
