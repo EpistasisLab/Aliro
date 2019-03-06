@@ -6,12 +6,14 @@ A tool to use artificial intelligence for easy and intuitive analysis of data us
 PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
 
 1. Install build requirements:
+
 #### Required
   - Docker (Version 17.06.0+)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
   - Docker-Compose (Version 1.22.0+, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
+
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (needed only to run unit tests locally)
   	- [Python 3.* ](https://www.python.org/downloads/)
@@ -31,6 +33,7 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 5. Build the service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
 
 ## Usage
+
 ### Starting and Stopping ###
 To start PennAI, from the PennAI directory run the command `docker-compose up --force-recreate`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
 
@@ -43,7 +46,8 @@ Labeled datasets for analyzing should be added to the `data/datasets/user` direc
 * Datasets can contain only numeric values and cannot have any null values
 * By default, the column with the label should be named 'class'
 * Datasets can optionally have a coresponding json configuration file in the same directory which can be used to specify the target column.  If the file is named `myDatafile.*sv`, the configuration file must be named `myDatafile_metadata.json`
-	* Example configuration file:
+* Example configuration file:
+
 ```
 {
 	"target_column":"my_custom_target_column_name"
@@ -80,12 +84,12 @@ Please check [Demo](docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.
 	- Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
 	- Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 - When developing the UI, webpack can be run in dev mode so that bundle.js will be automatically be rebuilt when changes to the web code are detected.  User will need to refresh with ctrl+5f for the changes to be seen in the browser.  To do so, after PennAi is up, do the following:
-```
-docker exec -it "pennai_lab_1" /bin/bash
-cd $PROJECT_ROOT/lab/webapp
-npm run build-dev
-```
 
+    ```
+    docker exec -it "pennai_lab_1" /bin/bash
+    cd $PROJECT_ROOT/lab/webapp
+    npm run build-dev
+    ```
 
 ## Tests
 
@@ -127,7 +131,8 @@ The default location of the test output is the `.\target\test-reports\` director
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
-	```
+
+    ```
 	nosetests -s -v ai/tests/test_recommender.py
 	```
 
@@ -135,14 +140,16 @@ The default location of the test output is the `.\target\test-reports\` director
 - Type: Python [nose](https://pypi.org/project/nose/)
 - Prereqs: install nose `pip install nose`
 - Usage:
-	```
+
+    ```
 	nosetests -s -v ai/tests/test_ai.py
 	```
 
 ##### Metafeature Generation
 - Type: Python
 - Usage:
-	```
+
+    ```
 	cd .\ai\metalearning
 	python tests_dataset_describe.py
 	```
@@ -153,12 +160,13 @@ The default location of the test output is the `.\target\test-reports\` director
     - install nose `pip install nose`
     - install mocha `npm install -g mocha`
 - Usage:
-	```
-  # test Python codes
-	nosetests -s -v machine/test/learn_tests.py
-  # test Javascript codes
-  cd machine
-  npm install
-  # note the path of test.js need to be updated in Windows environment
-  mocha ./test/test.js # or `npm test`
-	```
+
+    ```
+    # test Python codes
+    nosetests -s -v machine/test/learn_tests.py
+    # test Javascript codes
+    cd machine
+    npm install
+    # note the path of test.js need to be updated in Windows environment
+    mocha ./test/test.js # or `npm test`
+    ```
