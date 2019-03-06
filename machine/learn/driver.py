@@ -4,9 +4,8 @@ from os import environ
 
 # if system environments has a time limit setting for each experiment
 timeout = 300 # 5 mins by default
-if 'TIMEOUT' in environ:
-    timeout = int(environ['TIMEOUT'])*60
-
+if 'EXP_TIMEOUT' in environ:
+    timeout = int(environ['EXP_TIMEOUT'])*60
 
 def main(args, timeout=timeout):
     exp = Experiment(args)
