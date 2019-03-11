@@ -9,6 +9,7 @@ Welcome to PennAI's documentation!
 .. toctree::
    :maxdepth: 2
 
+   pennai
    ai
    recommenders
    api
