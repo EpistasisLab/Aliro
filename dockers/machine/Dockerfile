@@ -4,10 +4,12 @@ ARG docker_filepath=dockers/machine/files
 
 # install node_modules to an anon volume
 WORKDIR /appsrc/machine
-COPY machine/package.json /appsrc/machine/
-RUN dos2unix /appsrc/machine/package.json
-RUN npm install
+COPY machine /appsrc/machine/
+COPY config/machine_config.json /appsrc/config/machine_config.json
 
+#COPY machine/package.json /appsrc/machine/
+RUN dos2unix /appsrc/machine/package.json
+RUN npm install --silent --progress=false
 
 COPY ${docker_filepath}/entrypoint.sh /root/
 COPY ${docker_filepath}/wait-for-it.sh /root/

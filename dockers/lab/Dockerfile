@@ -1,12 +1,19 @@
 FROM pennai/base:latest
 
+# copy src for lab
+COPY lab /appsrc/lab
+COPY ai /appsrc/ai
+COPY metalearning /appsrc/metalearning
+COPY config /appsrc/config
+COPY data /appsrc/data
+
 WORKDIR /opt/
 ARG docker_filepath=dockers/lab/files
 
 ## Webserver
-RUN apt-get update \
+RUN apt-get update --fix-missing \
 	&& apt-get install -y --no-install-recommends \
-  		telnet  apache2 
+  		telnet apache2
 RUN rm -r /var/lib/apt/lists/* \
 	&& mkdir /files \
 	&& rm /etc/apache2/sites-enabled/*
@@ -23,14 +30,14 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
-COPY lab/webapp/package.json /appsrc/lab/webapp/
+#COPY lab/webapp/package.json /appsrc/lab/webapp/
 RUN dos2unix /appsrc/lab/webapp/package.json
 RUN npm install --silent --progress=false
 
 # install lab/node_modules to an anon volume
 WORKDIR /appsrc/lab
-COPY lab/package.json /appsrc/lab/
-COPY lab/package-lock.json /appsrc/lab/
+#COPY lab/package.json /appsrc/lab/
+#COPY lab/package-lock.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
@@ -39,10 +46,10 @@ RUN pip install simplejson
 RUN pip install xgboost
 ### my surprise fork
 RUN pip install numpy cython
-RUN git clone https://github.com/lacava/surprise.git 
+RUN git clone https://github.com/lacava/surprise.git
 WORKDIR surprise
 RUN python setup.py install
- 
+
 VOLUME /share
 
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
@@ -68,7 +75,7 @@ COPY ${docker_filepath}/env /opt/.env
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
-	&& dos2unix /root/entrypoint.sh 
+	&& dos2unix /root/entrypoint.sh
 
 
 # Start the webserver
