@@ -1,6 +1,3 @@
-# Ignore everything
-**
-
 # Allow files and directories
 !/lab/webapp/package.json
 !/lab/webapp/package-lock.json

@@ -1,47 +1,49 @@
 version: '3'
 
-services: 
+services:
   lab:
-    build: 
-      context: .
-      dockerfile: dockers/lab/Dockerfile
+    build:
+      context: ./
+      dockerfile: ./dockers/lab/Dockerfile
     tty: true
     stdin_open: true
-    volumes: 
-      - "./:/appsrc"
-      - "/appsrc/lab/webapp/node_modules"
-      - "/appsrc/lab/node_modules"
+    volumes:
+      #- "./:/appsrc"
+      - "/appsrc"
+      #- "/appsrc/lab/webapp/node_modules"
+      #- "/appsrc/lab/node_modules"
     ports:
       - "443:443"
       - "5080:5080"
-    env_file: 
+    env_file:
       - ./config/common.env
       - ./config/ai.env
-    depends_on: 
+    depends_on:
       - dbmongo
 
   machine:
-    build: 
-      context: .
-      dockerfile: dockers/machine/Dockerfile
+    build:
+      context: ./
+      dockerfile: ./dockers/machine/Dockerfile
     tty: true
     stdin_open: true
-    volumes: 
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
-    ports: 
+    volumes:
+      - "/appsrc"
+      #- "./:/appsrc"
+      #- "/appsrc/machine/node_modules"
+    ports:
       - "5081:5081"
     env_file: ./config/common.env
-    depends_on: 
+    depends_on:
       - lab
       - dbmongo
 
   dbmongo:
-    build: dockers/dbmongo
+    build:
+      context: ./
+      dockerfile: ./dockers/dbmongo/Dockerfile
     tty: true
     stdin_open: true
-    volumes: 
-      - "./:/appsrc"
-    ports:  
+    ports:
       - "27017:27017"
     env_file: ./config/common.env
