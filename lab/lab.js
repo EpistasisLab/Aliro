@@ -197,7 +197,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 *    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
 *
 */
-app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
+app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     //console.log(`======app.put datasets ${req.get('Content-Type')}`)
     //console.log(`======app.put datasets ${req.body._metadata}`)
 
@@ -218,25 +218,34 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     }
 
     // Validate
+    var possibleMetadataKeys = ['name', 'username', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
     if (!metadata) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata"});
-    } else if (!metadata.hasOwnProperty('dependent_col')) {
+    } if (!metadata.hasOwnProperty('dependent_col')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.dependent_col"});
-    } else if (!metadata.hasOwnProperty('name')) {
+    } if (!metadata.hasOwnProperty('name')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.name"});
-    } else if (!metadata.hasOwnProperty('username')) {
+    } if (!metadata.hasOwnProperty('username')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.username"});
-    } else if (!req.hasOwnProperty('files')) {
+    } if (!req.hasOwnProperty('files')) {
         res.status(400);
         return res.send({error: "Missing parameter _files"});
-    } else if (req.files.length != 1) {
+    } if (req.files.length != 1) {
         res.status(400);
         return res.send({error: `_files does not have length 1`});
+    } if (req.files[0].size == 0) {
+        res.status(400);
+        return res.send({error: `_files[0] has size 0`});
     } 
+    var invalidKeys = Object.getOwnPropertyNames(metadata).filter(key => !(possibleMetadataKeys.includes(key)))
+    if (invalidKeys.length > 0) {
+        res.status(400);
+        return res.send({error: `invalid _metadata key: ${invalidKeys}`});
+    }
 
 
     // process dataset
@@ -245,7 +254,7 @@ app.put("/api/v1/datasets", upload.array("_files"), (req, res, next) => {
     var ordinal_features = metadata['ordinal_features']
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(req.files[0], file_id, dependent_col, categorical_features, ordinal_features, metadata)})
+    .then((file_id) => {return registerDataset(file_id, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1127,18 +1136,22 @@ var stageDatasetFile = function(fileObj) {
     console.log(`stageDatasetFile: ${fileObj.originalname}`)
 
     var fileId
+    // validate the file meets size requirements
+    return validateStagingFile(fileObj)
     // open the gridStore
-    return new Promise((resolve, reject) => { 
-        fileId = new db.ObjectID()
+    .then((result) => {
+        return new Promise((resolve, reject) => { 
+            fileId = new db.ObjectID()
 
-        var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
-            metadata: {
-                contentType: fileObj.mimetype
-            },
-            promiseLibrary: Promise
-        });
+            var gridStore = new db.GridStore(db, fileId, fileObj.originalname, "w", {
+                metadata: {
+                    contentType: fileObj.mimetype
+                },
+                promiseLibrary: Promise
+            });
 
-        resolve(gridStore)
+            resolve(gridStore)
+        })
     })
     // write and save the file
     .then((gridStore) => {
@@ -1153,6 +1166,23 @@ var stageDatasetFile = function(fileObj) {
     .catch((err) => {
         console.log(`error in stageDatasetFile: ${err}`)
         throw new Error(err)
+    })
+}
+
+
+
+/**
+* Verify that the size/num features/num rows is within acceptable parameters
+*
+*/
+var validateStagingFile = function(fileObj) {
+    var MAX_FILE_SIZE = 8 * 1000000
+
+    return new Promise((resolve, reject) => { 
+        console.log(`fileSize: ${fileObj.size}`)
+        if (fileObj.size > MAX_FILE_SIZE)
+            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${MAX_FILE_SIZE}.`)
+        resolve(true)
     })
 }
 
@@ -1188,7 +1218,7 @@ var validateDatasetMetadata = function(metadata) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileObj, fileId, dependent_col, categorical_features, ordinal_features, metadata) {
+var registerDataset = function(fileId, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)

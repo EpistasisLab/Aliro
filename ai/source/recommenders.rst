@@ -1,3 +1,0 @@
-.. mdinclude::  ../recommender/README.md
-
-

@@ -656,7 +656,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
                                 max_depth=DT_MAX_DEPTH)
         scoring = SCORERS["neg_mean_squared_error"]
 
-    dtree.fit(training_features, training_classes)
+    dtree.fit(top_training_features, training_classes)
     dtree_test_score = scoring(
         dtree, top_testing_features, testing_classes)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
