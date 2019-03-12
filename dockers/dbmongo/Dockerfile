@@ -6,7 +6,7 @@ ARG docker_filepath=dockers/dbmongo/files
 
 #add repo for mongodb
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-RUN apt-get update && \
+RUN apt-get update --fix-missing && \
   apt-get install -y --allow-unauthenticated \
   vim mongodb-org npm openssh-client htop dos2unix \
   net-tools iputils-ping \
