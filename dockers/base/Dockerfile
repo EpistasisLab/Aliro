@@ -10,17 +10,12 @@ RUN apt-get update --fix-missing && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-#nodejs
-RUN  wget --quiet https://nodejs.org/dist/v6.12.3/node-v6.12.3-linux-x64.tar.xz -O ~/node.tar.xz && \
-    tar -xvf ~/node.tar.xz -C /opt/ && \
-    rm ~/node.tar.xz
-ENV PATH /opt/node-v6.12.3-linux-x64/bin:$PATH
-
-RUN npm install -g pm2
-
-
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
-RUN conda install --y scikit-learn=0.20.2 pymongo tqdm pandas matplotlib
+RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
+    pymongo tqdm pandas matplotlib && \
+    conda clean --all -y
+
+RUN npm install -g pm2 --silent --progress=false
 
 COPY files/version /
