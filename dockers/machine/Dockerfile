@@ -20,7 +20,7 @@ RUN apt-get update --fix-missing \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install mlxtend stopit pydot
+RUN pip install --no-cache-dir mlxtend stopit pydot
 
 VOLUME /share
 EXPOSE 5081
