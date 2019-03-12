@@ -38,13 +38,10 @@ RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
 ## ai/metalearning python packages
-RUN pip install simplejson
-RUN pip install xgboost
+RUN pip install --no-cache-dir simplejson xgboost \
+    numpy cython
 ### my surprise fork
-RUN pip install numpy cython
-RUN git clone https://github.com/lacava/surprise.git
-WORKDIR surprise
-RUN python setup.py install
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 
 VOLUME /share
 
