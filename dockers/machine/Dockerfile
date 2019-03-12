@@ -20,7 +20,12 @@ RUN apt-get update --fix-missing \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache-dir mlxtend stopit pydot
+
+## install dependencies for machine
+RUN conda install -y -c conda-forge mlxtend \
+    stopit pydot && \
+    conda clean --all -y
+
 
 VOLUME /share
 EXPOSE 5081
