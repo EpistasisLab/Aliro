@@ -3,7 +3,6 @@ WORKDIR /opt/
 
 ARG docker_filepath=dockers/dbmongo/files
 
-
 #add repo for mongodb
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update --fix-missing && \
@@ -24,7 +23,6 @@ RUN dos2unix /root/entrypoint.sh /root/sync.sh
 RUN dos2unix /root/users.json /root/projects.json
 RUN dos2unix /etc/mongod.conf
 
-VOLUME /share
 EXPOSE 27017
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]
