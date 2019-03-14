@@ -56,11 +56,11 @@ services:
       - dbmongo
 
   dbmongo:
-    build: ./dockers/dbmongo
+    build:
+      context: .
+      dockerfile: dockers/dbmongo/Dockerfile
     tty: true
     stdin_open: true
-    volumes:
-      - "./:/appsrc"
     ports:
       - "27017:27017"
     env_file: ./config/common.env
