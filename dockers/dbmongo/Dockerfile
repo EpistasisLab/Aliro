@@ -1,27 +1,28 @@
-#we started out with nothing
-FROM debian:jessie-slim
-
-#ubuntu wily rootfs
-ADD files/rootfs.tgz /
-
+FROM ubuntu:xenial
 WORKDIR /opt/
 
+ARG docker_filepath=dockers/dbmongo/files
+
 #add repo for mongodb
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv BC711F9BA15703C6
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-RUN apt-get update && apt-get install -y --allow-unauthenticated vim mongodb-org  npm git openssh-client htop dos2unix net-tools iputils-ping --no-install-recommends
+RUN apt-get update --fix-missing && \
+  apt-get install -y --allow-unauthenticated \
+  vim mongodb-org npm openssh-client htop dos2unix \
+  net-tools iputils-ping \
+  --no-install-recommends && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 #check if we need to rebuild
-COPY files/mongod.conf /etc/
-COPY files/users.json /root/
-COPY files/projects.json /root/
-COPY files/entrypoint.sh /root/
-COPY files/sync.sh /root/
+COPY ${docker_filepath}/mongod.conf /etc/
+COPY ${docker_filepath}/users.json /root/
+COPY ${docker_filepath}/projects.json /root/
+COPY ${docker_filepath}/entrypoint.sh /root/
+COPY ${docker_filepath}/sync.sh /root/
 RUN dos2unix /root/entrypoint.sh /root/sync.sh
 RUN dos2unix /root/users.json /root/projects.json
 RUN dos2unix /etc/mongod.conf
 
-VOLUME /share
 EXPOSE 27017
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]
