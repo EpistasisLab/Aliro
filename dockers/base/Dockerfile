@@ -11,7 +11,6 @@ RUN apt-get update --fix-missing && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # set up conda environment
-# ENV PATH /opt/conda/bin:$PATH
 RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
     pymongo tqdm pandas matplotlib && \
     conda clean --all -y

@@ -6,10 +6,10 @@ ARG docker_filepath=dockers/lab/files
 ## Webserver
 RUN apt-get update --fix-missing \
 	&& apt-get install -y --no-install-recommends \
-  		telnet apache2
-RUN rm -r /var/lib/apt/lists/* \
-	&& mkdir /files \
-	&& rm /etc/apache2/sites-enabled/*
+  		telnet apache2 && \
+	    apt-get clean && \
+	    rm -rf /var/lib/apt/lists/*
+RUN rm /etc/apache2/sites-enabled/*
 COPY ${docker_filepath}/ports.conf /etc/apache2/
 RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/ssl* /etc/apache2/mods-enabled \

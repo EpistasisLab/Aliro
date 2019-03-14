@@ -30,11 +30,16 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 
 4. Build the base docker image by running `docker build ./dockers/base -t pennai/base:latest` from the pennai directory.  It will take several minutes for the image to be built the first time this run.  
 
-5. Build the service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
+5. Build the production service images by running `docker-compose -f docker-compose-production.yml build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
+
+6. (For developer) Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
 
 ## Usage
 
-### Starting and Stopping ###
+### Starting and Stopping (Production Branch) ###
+To start PennAI, from the PennAI directory run the command `docker-compose -f docker-compose-production.yml up --force-recreate`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose -f docker-compose-production.yml down`.
+
+### Starting and Stopping (Developer) ###
 To start PennAI, from the PennAI directory run the command `docker-compose up --force-recreate`.  To stop PennAI, kill the process with `ctrl+c` and then run the command `docker-compose down`.
 
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
