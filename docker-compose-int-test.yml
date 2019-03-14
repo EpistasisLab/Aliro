@@ -1,16 +1,16 @@
 version: '3'
 
-services: 
+services:
 
   tester:
     build: ./tests/integration
-    depends_on: 
+    depends_on:
       - lab
       - machine
       - dbmongo
     tty: true
     stdin_open: true
-    volumes: 
+    volumes:
       - "./tests/integration/jest:/src/jest"
       - "./data/datasets/test/integration:/appsrc/data/datasets/test/integration"
       - "./target:/target"
@@ -18,12 +18,12 @@ services:
       - "./ai/metalearning/__pycache__:/appsrc/ai/metalearning/__pycache__"
 
   lab:
-    build: 
+    build:
       context: .
       dockerfile: dockers/lab/Dockerfile
     tty: true
     stdin_open: true
-    volumes: 
+    volumes:
       - "./:/appsrc"
       - "/appsrc/lab/webapp/node_modules"
       - "/appsrc/lab/node_modules"
@@ -34,24 +34,24 @@ services:
       - AI_AUTOSTART=0
       - STARTUP_DATASET_PATH=/appsrc/data/datasets/test/test_mixed
     env_file: ./config/common.env
-    depends_on: 
+    depends_on:
       - dbmongo
 
   machine:
-    build: 
+    build:
       context: .
       dockerfile: dockers/machine/Dockerfile
     tty: true
     stdin_open: true
-    volumes: 
+    volumes:
       - "./:/appsrc"
       - "/appsrc/machine/node_modules"
-    ports: 
+    ports:
       - "5081:5081"
     environment:
       - STARTUP_DATASET_PATH=/appsrc/data/datasets/test/test_mixed
     env_file: ./config/common.env
-    depends_on: 
+    depends_on:
       - lab
       - dbmongo
 
@@ -59,8 +59,8 @@ services:
     build: ./dockers/dbmongo
     tty: true
     stdin_open: true
-    volumes: 
+    volumes:
       - "./:/appsrc"
-    ports:  
+    ports:
       - "27017:27017"
     env_file: ./config/common.env

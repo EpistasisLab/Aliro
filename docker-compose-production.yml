@@ -4,13 +4,11 @@ services:
   lab:
     build:
       context: .
-      dockerfile: dockers/lab/Dockerfile
+      dockerfile: dockers/lab/Dockerfile_production
     tty: true
     stdin_open: true
     volumes:
-      - "./:/appsrc"
-      - "/appsrc/lab/webapp/node_modules"
-      - "/appsrc/lab/node_modules"
+      - "/appsrc"
     ports:
       - "443:443"
       - "5080:5080"
@@ -23,12 +21,11 @@ services:
   machine:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: dockers/machine/Dockerfile_production
     tty: true
     stdin_open: true
     volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
+      - "/appsrc"
     ports:
       - "5081:5081"
     env_file: ./config/common.env
