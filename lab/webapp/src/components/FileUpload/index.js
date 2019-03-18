@@ -8,29 +8,99 @@ import { fetchDatasets } from 'data/datasets/actions';
 import { uploadDataset } from 'data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
-import { Button, Input, Form, Segment } from 'semantic-ui-react';
+import Papa from 'papaparse';
+import { Button, Input, Form, Segment, Table, Popup, Checkbox } from 'semantic-ui-react';
 
 class FileUpload extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       selectedFile: null,
       dependentCol: '',
-      loaded: 0
+      catFeatures: [],
+      ordinalFeatures: {},
+      loaded: 0,
+      selectCol: '' // keep track of which metadata will be selected from table UI
     };
+
+    // enter info in text fields
     this.handleDepColField = this.handleDepColField.bind(this);
+    this.handleCatFeatures = this.handleCatFeatures.bind(this);
+    this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
+    // select columns in data preview table
+    this.handleDepColSelect = this.handleDepColSelect.bind(this);
+    this.handleOrdColSelect = this.handleOrdColSelect.bind(this);
+    this.handleCatColSelect = this.handleCatColSelect.bind(this);
+    // every table header (gets column name)
+    this.onSelectCol = this.onSelectCol.bind(this);
   }
 
-  componentDidMount() {
-    //this.props.fetchDatasets();
-    //window.console.log('FileUpload props', this.props);
-  }
-
+  // text field for entering dependent column
   handleDepColField(e, props) {
     this.setState({dependentCol: props.value});
   }
 
-  handleselectedFile = event => {
+  // text field/area for entering categorical features
+  handleCatFeatures(e, props) {
+    this.setState({catFeatures: e.target.value});
+  }
+
+  // text field/area for entering ordinal features
+  handleOrdinalFeatures(e, props) {
+    this.setState({ordinalFeatures: e.target.value});
+  }
+
+  // specify which type of metadata user is selecting from dataset preview table
+  handleOrdColSelect(e, props) {
+    this.setState({selectCol: 'ordinalFeatures'});
+  }
+  handleCatColSelect(e, props) {
+    this.setState({selectCol: 'catFeatures'});
+  }
+  handleDepColSelect(e, props) {
+    this.setState({selectCol: 'dependentCol'});
+  }
+
+  // generic click handler for selecting columns from dataset preview table
+  onSelectCol(e, props) {
+    window.console.log('onSelectCol props', this.props);
+    window.console.log('onSelectCol header val', e.target.innerHTML);
+    let datasetField = this.state.selectCol;
+
+    switch (datasetField) {
+      case "catFeatures":
+        let catFeats = this.state.catFeatures;
+        catFeats.push(e.target.innerHTML);
+        this.setState({ catFeatures: catFeats });
+        break;
+      case "ordinalFeatures":
+        let ordFeats = this.state.ordinalFeatures;
+        ordFeats[e.target.innerHTML] = 'test Ordinal feature'
+        this.setState({ ordinalFeatures: ordFeats });
+        break;
+      case "dependentCol":
+        this.setState({ dependentCol: e.target.innerHTML, selectCol: '' });
+        break;
+      default:
+        this.setState({ selectCol: '' });
+    }
+
+  }
+
+  handleSelectedFile = event => {
+    let papaConfig = {
+      header: true,
+      preview: 5,
+      complete: (result) => {
+        //window.console.log('preview of uploaded data: ', result);
+        this.setState({datasetPreview: result});
+      }
+    };
+    // immediately try to get dataset preview on file input html element change
+    // need to be mindful of garbage data/files
+    Papa.parse(event.target.files[0], papaConfig);
+
     this.setState({
       selectedFile: event.target.files[0],
       loaded: 0
@@ -46,44 +116,44 @@ class FileUpload extends Component {
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let depCol = this.state.dependentCol;
+      let ordFeatures = {};
+      let catFeatures = [];
       if(depCol === '') {
         window.console.log('please enter dependentCol value');
-      }else {
-        let metadata =  JSON.stringify({
-                  'name': this.state.selectedFile.name,
-                  'username': 'testuser',
-                  'timestamp': Date.now(),
-                  'dependent_col' : depCol
-                });
-        data.append('_metadata', metadata);
-
-        data.append('_files', this.state.selectedFile);
-
-        uploadDataset(data).then(stuff => {
-          window.console.log('FileUpload props after download', this.props);
-          //this.setState({ serverFileUploadResp: json });
-          this.props.fetchDatasets();
-        });
-
-        // let myHeaders = new Headers();
-        // myHeaders.append('Content-Type', 'multipart/form-data');
-
-        // fetch("/api/v1/datasets", {
-        //   method: 'PUT',
-        //   credentials: 'include',
-        //   body: data
-        // }).then(response => {
-        //     return response.json();
-        //   })
-        //   .catch((err) => {
-        //          throw(err);
-        //   })
-        //   .then((json) => {
-        //     window.console.log('FileUpload props after download', this.props);
-        //     this.setState({ serverFileUploadResp: json });
-        //     this.props.fetchDatasets();
-        //   });
       }
+      try {
+        ordFeatures = JSON.parse(this.state.ordinalFeatures);
+        window.console.log('ordinal features', ordFeatures);
+        catFeatures = this.state.catFeatures.split(",");
+        window.console.log('cat features', catFeatures);
+      } catch(e) {
+        window.console.log('not JSON')
+      }
+      let metadata =  JSON.stringify({
+                'name': this.state.selectedFile.name,
+                'username': 'testuser',
+                'timestamp': Date.now(),
+                'dependent_col' : depCol,
+                'categorical_features': catFeatures,
+                'ordinal_features': ordFeatures
+
+              });
+      data.append('_metadata', metadata);
+
+      data.append('_files', this.state.selectedFile);
+      // before upload get a preview of what is in dataset file
+
+      //window.console.log('preview of uploaded data: ', dataPrev);
+      // after uploading a dataset request new list of datasets to update the page
+      uploadDataset(data).then(stuff => {
+        window.console.log('FileUpload props after download', this.props);
+
+        //this.setState({ serverFileUploadResp: json });
+        // 'refresh' page when upload response from server is not an error
+        let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
+        resp !== 'error' ? this.props.fetchDatasets() : null;
+        //this.props.fetchDatasets();
+      });
 
     } else {
       window.console.log('no file available');
@@ -91,20 +161,41 @@ class FileUpload extends Component {
   }
 
   render() {
-    let serverResp;
-    this.state.serverFileUploadResp ?
-      window.console.log('file uploaded', this.state.serverFileUploadResp) :
-      window.console.log('no dice');
 
-    this.state.serverFileUploadResp && this.state.serverFileUploadResp.dataset_id ?
-      serverResp = this.state.serverFileUploadResp.dataset_id : null;
+    let dataPrev = this.state.datasetPreview;
+    let selectCol = this.state.selectCol;
 
-    let serverRespContent;
-    serverResp ? serverRespContent = (
-      <p className="file-upload-form-server-resp">
-        File uploaded: {serverResp}
-      </p>
-    ) : null;
+    window.console.log('prev: ', dataPrev);
+    let dataPrevTable = ( <p> hi </p> );
+    if(dataPrev) {
+      dataPrevTable = (
+        <div>
+          <br/>
+          <div style={{ overflowY: 'auto', maxHeight: '350px' }}>
+            <Table inverted celled compact unstackable singleLine>
+              <Table.Header>
+                <Table.Row>
+                  {dataPrev.meta.fields.map(field =>
+                    <Table.HeaderCell onClick={this.onSelectCol} key={field}>{field}</Table.HeaderCell>
+                  )}
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {dataPrev.data.slice(0, 100).map((row, i) =>
+                  <Table.Row key={i}>
+                    {dataPrev.meta.fields.map(field =>
+                      <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
+                    )}
+                  </Table.Row>
+                )}
+              </Table.Body>
+            </Table>
+          </div>
+          <br/>
+        </div>
+      )
+    }
+
     return (
       <div>
       <Form inverted>
@@ -113,13 +204,49 @@ class FileUpload extends Component {
             className="file-upload-form-text-input"
             type="file"
             label="Select new dataset"
-            onChange={this.handleselectedFile}
+            onChange={this.handleSelectedFile}
+          />
+          <br/>
+          <Button
+            compact
+            size="small"
+            icon="eject"
+            content="click here and then select depedent column"
+            onClick={this.handleDepColSelect}
           />
           <Form.Input
             label="Dependent Column"
-            placeholder="class"
+            placeholder={this.state.dependentCol ? this.state.dependentCol : "class"}
             type="text"
             onChange={this.handleDepColField}
+          />
+          <Button
+            compact
+            size="small"
+            icon="eject"
+            content="click here and then select column with ordinal features"
+            onClick={this.handleOrdColSelect}
+          />
+          <textarea
+            label="Ordinal Features"
+            placeholder={
+              Object.keys(this.state.ordinalFeatures).length ?
+                this.state.ordinalFeatures :
+                "{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"
+              }
+            onChange={this.handleOrdinalFeatures}
+          />
+          <Button
+            compact
+            size="small"
+            icon="eject"
+            content="click here and then select column with categorical features"
+            onClick={this.handleCatColSelect}
+          />
+          <textarea
+            label="Categorical Features"
+            placeholder={this.state.catFeatures.length ? this.state.catFeatures.join() : "\"cat_feat_1\", \"cat_feat_2\""}
+            onChange={this.handleCatFeatures}
           />
           <Button
             inverted
@@ -132,8 +259,12 @@ class FileUpload extends Component {
           />
         </Segment>
       </Form>
-      <br/>
-      {serverRespContent ? serverRespContent : ''}
+      <Popup trigger={dataPrevTable}>
+        <Popup.Header>dataset columns</Popup.Header>
+        <Popup.Content>
+          <p>select corresponding column</p>
+        </Popup.Content>
+      </Popup>
       </div>
     );
   }
@@ -143,7 +274,5 @@ const mapStateToProps = (state) => ({
   dataset: state.dataset
 });
 
-
-//export default FileUpload;
 export { FileUpload };
 export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);
