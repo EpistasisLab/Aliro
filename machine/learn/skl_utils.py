@@ -443,7 +443,12 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     # exporting/computing importance score
     if hasattr(model, 'coef_'):
         coefs = model.coef_
-        imp_score_type = "Coefficient"
+        if coefs.ndim > 1:
+            coefs = safe_sqr(coefs).sum(axis=0)
+            imp_score_type = "Sum of Squares of Coefficients"
+        else:
+            coefs = safe_sqr(coefs)
+            imp_score_type = "Squares of Coefficients"
     else:
         coefs = getattr(model, 'feature_importances_', None)
         imp_score_type = "Gini Importance"
@@ -458,9 +463,6 @@ def compute_imp_score(model, metric, training_features, training_classes, random
                                     )
         imp_score_type = "Permutation Feature Importance"
 
-    if coefs.ndim > 1:
-        coefs = safe_sqr(coefs).sum(axis=0)
-        imp_score_type = "Sum of Squares of Coefficients"
 
     return coefs, imp_score_type
 
