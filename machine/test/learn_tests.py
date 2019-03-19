@@ -985,7 +985,7 @@ def test_compute_imp_score_2():
                                         training_features_4,
                                         training_classes_4,
                                         42)
-    assert imp_score_type == "Coefficient"
+    assert imp_score_type == "Squares of Coefficients"
 
 def test_compute_imp_score_3():
     """Test compute_imp_score function returns 'Gini Importance' with DecisionTreeClassifier on multiclass dataset."""
