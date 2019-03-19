@@ -221,11 +221,12 @@ def generate_results(model, input_data,
 
 
     # exporting/computing importance score
-    coefs = compute_imp_score(model, metric, training_features, training_classes, random_state)
+    coefs, imp_score_type = compute_imp_score(model, metric, training_features, training_classes, random_state)
 
     feature_importances = {
         'feature_names': feature_names.tolist(),
-        'feature_importances': coefs.tolist()
+        'feature_importances': coefs.tolist(),
+        'feature_importance_type': imp_score_type
     }
 
     save_json_fmt(outdir=tmpdir, _id=_id,
@@ -233,7 +234,7 @@ def generate_results(model, input_data,
     dtree_test_score = None
 
     if figure_export:
-        top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names)
+        top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
         if not categories and not ordinals:
             dtree_test_score = plot_dot_plot(tmpdir, _id, training_features,
                             training_classes,
@@ -435,13 +436,17 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     -------
     coefs: np.darray
         feature importance scores
+    imp_score_type: string
+        importance score type
 
     """
     # exporting/computing importance score
     if hasattr(model, 'coef_'):
         coefs = model.coef_
+        imp_score_type = "Coefficient"
     else:
         coefs = getattr(model, 'feature_importances_', None)
+        imp_score_type = "Gini Importance"
     if coefs is None:
         coefs, _ = feature_importance_permutation(
                                     predict_method=model.predict,
@@ -451,11 +456,13 @@ def compute_imp_score(model, metric, training_features, training_classes, random
                                     metric=metric,
                                     seed=random_state,
                                     )
+        imp_score_type = "Permutation Feature Importance"
 
     if coefs.ndim > 1:
         coefs = safe_sqr(coefs).sum(axis=0)
+        imp_score_type = "Sum of Squares of Coefficients"
 
-    return coefs
+    return coefs, imp_score_type
 
 
 def save_json_fmt(outdir, _id, fname, content):
@@ -564,7 +571,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     plt.close()
 
 
-def plot_imp_score(tmpdir, _id, coefs, feature_names):
+def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     """Plot importance scores for features.
     Parameters
     ----------
@@ -576,6 +583,8 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
         feature importance scores
     feature_names: np.array
         list of feature names
+    imp_score_type: string
+        importance score type
 
     Returns
     -------
@@ -589,7 +598,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names):
     num_bar = min(max_bar_num, len(coefs))
     indices = np.argsort(coefs)[-num_bar:]
     h=plt.figure()
-    plt.title("Feature importances")
+    plt.title(imp_score_type)
     plt.barh(range(num_bar), coefs[indices], color="r", align="center")
     top_features = list(feature_names[indices])
     plt.yticks(range(num_bar), feature_names[indices])

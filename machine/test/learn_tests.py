@@ -8,13 +8,16 @@ os.environ['RANDOM_SEED'] = '42'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import check_X_y
 from tempfile import mkdtemp
 from shutil import rmtree
 Path = "machine/learn"
 if Path not in sys.path:
     sys.path.insert(0, Path)
-from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS, setup_model_params, plot_dot_plot
+from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS
+from skl_utils import setup_model_params, plot_dot_plot, compute_imp_score
 from io_utils import Experiment, get_projects, get_input_data, get_type
 from driver import main
 import json
@@ -960,6 +963,67 @@ def test_plot_dot_plot_2():
     assert os.path.isfile(dot_file)
     assert os.path.isfile(png_file)
     rmtree(tmpdir)
+
+
+def test_compute_imp_score():
+    """Test compute_imp_score function returns 'Sum of Squares of Coefficients' with LogisticRegression on multiclass dataset."""
+    model = LogisticRegression()
+    model.fit(training_features_1, training_classes_1)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'accuracy',
+                                        training_features_1,
+                                        training_classes_1,
+                                        42)
+    assert imp_score_type == "Sum of Squares of Coefficients"
+
+def test_compute_imp_score_2():
+    """Test compute_imp_score function returns 'Coefficient' with LinearRegression on regression dataset."""
+    model = LinearRegression()
+    model.fit(training_features_4, training_classes_4)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'r2',
+                                        training_features_4,
+                                        training_classes_4,
+                                        42)
+    assert imp_score_type == "Coefficient"
+
+def test_compute_imp_score_3():
+    """Test compute_imp_score function returns 'Gini Importance' with DecisionTreeClassifier on multiclass dataset."""
+    model = DecisionTreeClassifier()
+    model.fit(training_features_1, training_classes_1)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'accuracy',
+                                        training_features_1,
+                                        training_classes_1,
+                                        42)
+    assert imp_score_type == "Gini Importance"
+
+
+def test_compute_imp_score_4():
+    """Test compute_imp_score function returns 'Gini Importance' with DecisionTreeClassifier on multiclass dataset."""
+    model = KNeighborsClassifier()
+    model.fit(training_features_1, training_classes_1)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'accuracy',
+                                        training_features_1,
+                                        training_classes_1,
+                                        42)
+    assert imp_score_type == "Permutation Feature Importance"
+
+
+def test_compute_imp_score():
+    """Test compute_imp_score function returns 'Sum of Squares of Coefficients' with LogisticRegression on multiclass dataset."""
+    model = LogisticRegression()
+    model.fit(training_features_1, training_classes_1)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'accuracy',
+                                        training_features_1,
+                                        training_classes_1,
+                                        42)
+    assert imp_score_type == "Sum of Squares of Coefficients"
+
+
+
 
 
 def test_setup_model_params():
