@@ -7,7 +7,7 @@ import os
 import json
 import itertools
 from sklearn import metrics
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
@@ -88,7 +88,8 @@ def generate_results(model, input_data,
     filename=['test_dataset'],
     categories=None,
     ordinals=None,
-    encoding_strategy="OneHotEncoder"
+    encoding_strategy="OneHotEncoder",
+    grid_search=False
     ):
     """generate reaults for apply a model on a datasetself.
     Parameters
@@ -109,7 +110,7 @@ def generate_results(model, input_data,
         'classification': Run classification analysis
         'regression': Run regression analysis
     figure_export: boolean
-        If figure_export is True, the figures will be exported
+        If figure_export is True, the figures will be generated and exported.
     random_state: int
         random seed
     filename: list
@@ -121,6 +122,10 @@ def generate_results(model, input_data,
         values: categorical values
     encoding_strategy: string
         encoding strategy for categorical features
+    grid_search: boolean (default: False)
+        If grid_search is True, then the experiment will do parameter tuning and
+        report best result to UI and save all results to knowlegde base.
+
     Returns
     -------
     None
