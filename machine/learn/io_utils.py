@@ -123,8 +123,8 @@ def parse_args():
         subparser = subparsers.add_parser(method)
         subparser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
-        subparser.add_argument('--grid_search', action='store_const', dest='grid_search',
-                        const=True, default=False, help=('If grid_search is True, then '
+        subparser.add_argument('--grid_search', action='store', dest='grid_search',
+                        default=False, type=bool, help=('If grid_search is True, then '
                         'the experiment will perform GridSearchCV'))
         param_grid = {}
         # parse args for each parameter
