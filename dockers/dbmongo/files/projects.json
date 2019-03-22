@@ -149,7 +149,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "grid_search": [100]
             }
         },
         "criterion": {
@@ -179,7 +180,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
@@ -188,7 +190,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "bootstrap": {
@@ -216,7 +219,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "grid_search": [100]
             }
         },
         "learning_rate": {
@@ -243,7 +247,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
@@ -252,7 +257,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "subsample": {
@@ -411,7 +417,8 @@
             "default": 1.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]
+                "choices": [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25],
+                "grid_search": [0.0001, 0.01, 0.1, 0.5, 1, 10]
             }
         },
         "dual": {
@@ -449,7 +456,8 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250]
+                "choices": [100, 250],
+                "grid_search": [100]
             }
         },
         "criterion": {
@@ -478,7 +486,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
@@ -487,7 +496,8 @@
             "default": 5,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [5, 10, 20],
+                "grid_search": [10, 20]
             }
         },
         "bootstrap": {
@@ -506,7 +516,8 @@
             "default": 0.0,
             "ui": {
                 "style": "radio",
-                "choices": [0.0,   0.05, 0.1,  0.15, 0.2,  0.25, 0.3,  0.35, 0.4,  0.45, 0.5 ]
+                "choices": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5],
+                "grid_search": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
             }
         }
     },

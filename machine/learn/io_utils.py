@@ -106,6 +106,12 @@ def parse_args():
     -------
     args: dict
         Arguments of a experiment from PennAI API
+    param_grid: dict
+        Dictionary with parameters names (string) as keys and lists
+        of parameter settings to try as values, or a list of such dictionaries,
+        in which case the grids spanned by each dictionary in the list are explored.
+        This enables searching over any sequence of parameter settings.
+
     """
     projects = get_projects()
     parser = argparse.ArgumentParser(description='Driver for all machine learning algorithms in PennAI')
@@ -117,7 +123,10 @@ def parse_args():
         subparser = subparsers.add_parser(method)
         subparser.add_argument('--_id', action='store', dest='_id',
                         default=None, type=str, help="Experiment id in database")
-
+        subparser.add_argument('--grid_search', action='store_const', dest='grid_search',
+                        const=True, default=False, help=('If grid_search is True, then '
+                        'the experiment will perform GridSearchCV'))
+        param_grid = {}
         # parse args for each parameter
         for key, val in params.items():
             arg = '--' + key
@@ -127,9 +136,18 @@ def parse_args():
 
             subparser.add_argument(arg, action='store', dest=arg_dest,
                                 default=arg_default, type=arg_type)
+            if "grid_search" in val['ui']:
+                values = val['ui']["grid_search"]
+            elif "values" in val['ui']:
+                values = val['ui']["values"]
+            else:
+                values = val['ui']["choices"]
+            param_grid[key] = [arg_type(v) for v in values]
+
+
     args = vars(parser.parse_args())
     print('parsed args:', args)
-    return args
+    return args, param_grid
 
 
 def get_input_data(_id, tmpdir):
@@ -213,7 +231,11 @@ def get_file_data(file_id):
     res = requests.get(uri)
 
     if res.status_code != requests.codes.ok:
-        msg = "Unable to retrieve file '" + str(file_id) + "'.  Status code: '" + str(res.status_code) + "'. Response text: '" + str(res.text) + "'"
+        msg = ('Unable to retrieve file {file_id}.  '
+                'Status code: {status_code}. '
+                'Response text: {res_text}'.format(file_id=file_id,
+                                                    status_code=status_code,
+                                                    res_text=res.text))
         raise ValueError(msg)
 
     return res.text
@@ -233,7 +255,9 @@ def check_column(column_name, dataframe):
     """
     if column_name not in dataframe.columns.values:
         raise ValueError(
-            'The provided data file does not seem to have target column "' + column_name + '".')
+                        'The provided data file does '
+                        'not seem to have target column {}.'.format(column_name)
+                        )
 
 
 def bool_type(val):
