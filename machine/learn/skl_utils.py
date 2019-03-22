@@ -10,7 +10,7 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.utils import safe_sqr, check_X_y
 from mlxtend.evaluate import feature_importance_permutation
 from sklearn.externals import joblib
@@ -89,7 +89,7 @@ def generate_results(model, input_data,
     categories=None,
     ordinals=None,
     encoding_strategy="OneHotEncoder",
-    grid_search=False
+    param_grid={}
     ):
     """generate reaults for apply a model on a datasetself.
     Parameters
@@ -122,8 +122,8 @@ def generate_results(model, input_data,
         values: categorical values
     encoding_strategy: string
         encoding strategy for categorical features
-    grid_search: boolean (default: False)
-        If grid_search is True, then the experiment will do parameter tuning and
+    param_grid: dict
+        If grid_search is non-empty dictionary, then the experiment will do parameter tuning and
         report best result to UI and save all results to knowlegde base.
 
     Returns
@@ -195,9 +195,7 @@ def generate_results(model, input_data,
                                  )
         model = make_pipeline(ct, model)
 
-
-    print('Args used in model:', model.get_params())
-
+    #print('Args used in model:', model.get_params())
     if mode == "classification":
         scoring = SCORERS["balanced_accuracy"]
         metric = "accuracy"
@@ -206,8 +204,40 @@ def generate_results(model, input_data,
         metric = 'r2'
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
-        # fit model
-        model.fit(training_features, training_classes)
+        if param_grid:
+            if isinstance(model, Pipeline):
+                parameters = {}
+                for key, val in param_grid.items():
+                    step_name = model.steps[-1][0]
+                    pipe_key = "{}__{}".format(step_name, key)
+                    parameters[pipe_key] = val
+            else:
+                parameters = param_grid
+            clf = GridSearchCV(estimator=model,
+                                param_grid=parameters,
+                                scoring=scoring,
+                                cv=5,
+                                refit=True,
+                                verbose=0,
+                                error_score=-float('inf'),
+                                return_train_score=True)
+            clf.fit(training_features, training_classes)
+            cv_results = clf.cv_results_
+            # rename params name from pipeline object
+            fmt_result = []
+            for param, ts in zip(cv_results['params'], cv_results['mean_train_score']):
+                row_dict = {'mean_train_score': ts}
+                for key, val in param.items():
+                    row_dict[key.split('__')[-1]] = val
+                fmt_result.append(row_dict)
+            fmt_result = pd.DataFrame(fmt_result)
+            fmt_result_file = '{0}{1}/grid_search_results_{1}.csv'.format(tmpdir, _id)
+            fmt_result.to_csv(fmt_result_file, index=False)
+            model = clf.best_estimator_
+
+        else:
+            # fit model
+            model.fit(training_features, training_classes)
 
         # computing cross-validated metrics
         cv_scores = cross_val_score(
@@ -222,8 +252,6 @@ def generate_results(model, input_data,
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
-
-
 
     # exporting/computing importance score
     coefs, imp_score_type = compute_imp_score(model, metric, training_features, training_classes, random_state)

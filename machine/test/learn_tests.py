@@ -349,13 +349,15 @@ class APITESTCLASS(unittest.TestCase):
             _id = "test_id"
             args['_id'] = _id
             args["method"] = algorithm_name
+            args['grid_search'] = False
             for param_name in schema.keys():
                 default_value = schema[param_name]["default"]
                 param_type = schema[param_name]["type"]
                 conv_func = get_type(param_type)
                 conv_default_value = conv_func(default_value)
                 args[param_name] = conv_default_value
-            main(args)
+
+            main(args, {})
             outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
             value_json = '{}/value.json'.format(outdir)
             assert os.path.isfile(value_json)
@@ -385,27 +387,25 @@ class APITESTCLASS(unittest.TestCase):
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_2(self, mock_get):
         """Test main function raises RuntimeError when time limit (1 second) is reached."""
+        obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        args['grid_search'] = False
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            if param_name != 'n_estimators':
+                args[param_name] = conv_default_value
+            else:
+                args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
 
-        for obj in projects_json_data:
-            algorithm_name = obj["name"]
-            if algorithm_name != "GradientBoostingClassifier":
-                continue
-            schema = obj["schema"]
-            args = {}
-            _id = "test_id"
-            args['_id'] = _id
-            args["method"] = algorithm_name
-            for param_name in schema.keys():
-                default_value = schema[param_name]["default"]
-                param_type = schema[param_name]["type"]
-                conv_func = get_type(param_type)
-                conv_default_value = conv_func(default_value)
-                if param_name != 'n_estimators':
-                    args[param_name] = conv_default_value
-                else:
-                    args[param_name] = 10000 # set n_estimators to 1000 to raise time out.
-
-        assert_raises(RuntimeError, main, args, 1)
+        assert_raises(RuntimeError, main, args, {}, 1)
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_3(self, mock_get):
@@ -417,16 +417,14 @@ class APITESTCLASS(unittest.TestCase):
         _id = "test_id6"
         args['_id'] = _id
         args["method"] = algorithm_name
+        args['grid_search'] = False
         for param_name in schema.keys():
             default_value = schema[param_name]["default"]
             param_type = schema[param_name]["type"]
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
-            if param_name != 'n_estimators':
-                args[param_name] = conv_default_value
-            else:
-                args[param_name] = 1000 # set n_estimators to 1000 to raise time out.
-        main(args)
+            args[param_name] = conv_default_value
+        main(args, {})
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
         value_json = '{}/value.json'.format(outdir)
@@ -464,6 +462,7 @@ class APITESTCLASS(unittest.TestCase):
         _id = "test_id6"
         args['_id'] = _id
         args["method"] = algorithm_name
+        args['grid_search'] = False
         for param_name in schema.keys():
             default_value = schema[param_name]["default"]
             param_type = schema[param_name]["type"]
@@ -471,7 +470,7 @@ class APITESTCLASS(unittest.TestCase):
             conv_default_value = conv_func(default_value)
             args[param_name] = conv_default_value
 
-        main(args)
+        main(args, {})
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
         value_json = '{}/value.json'.format(outdir)
@@ -509,13 +508,14 @@ class APITESTCLASS(unittest.TestCase):
         _id = "test_id8"
         args['_id'] = _id
         args["method"] = algorithm_name
+        args['grid_search'] = False
         for param_name in schema.keys():
             default_value = schema[param_name]["default"]
             param_type = schema[param_name]["type"]
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
             args[param_name] = conv_default_value
-        main(args)
+        main(args, {})
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
         value_json = '{}/value.json'.format(outdir)
@@ -543,13 +543,14 @@ class APITESTCLASS(unittest.TestCase):
         _id = "test_id9"
         args['_id'] = _id
         args["method"] = algorithm_name
+        args['grid_search'] = False
         for param_name in schema.keys():
             default_value = schema[param_name]["default"]
             param_type = schema[param_name]["type"]
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
             args[param_name] = conv_default_value
-        main(args)
+        main(args, {})
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
 
         value_json = '{}/value.json'.format(outdir)
@@ -578,13 +579,14 @@ class APITESTCLASS(unittest.TestCase):
         _id = "test_id7"
         args['_id'] = _id
         args["method"] = algorithm_name
+        args['grid_search'] = False
         for param_name in schema.keys():
             default_value = schema[param_name]["default"]
             param_type = schema[param_name]["type"]
             conv_func = get_type(param_type)
             conv_default_value = conv_func(default_value)
             args[param_name] = conv_default_value
-        main(args)
+        main(args, {})
         outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
         value_json = '{}/value.json'.format(outdir)
         assert os.path.isfile(value_json)
@@ -610,8 +612,124 @@ class APITESTCLASS(unittest.TestCase):
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_8(self, mock_get):
+        """Test main function when tuning GradientBoostingClassifier on dateset with categorical features."""
+        obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id6"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        args['grid_search'] = True
+        param_grid = {}
+        for param_name in schema.keys():
+            val = schema[param_name]
+            default_value = val["default"]
+            param_type = val["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            args[param_name] = conv_default_value
+
+            if "grid_search" in val['ui']:
+                values = val['ui']["grid_search"]
+            elif "values" in val['ui']:
+                values = val['ui']["values"]
+            else:
+                values = val['ui']["choices"]
+            if param_name != 'n_estimators':
+                param_grid[param_name] = [conv_func(v) for v in values]
+            else:
+                param_grid[param_name] = [10]
+
+        main(args, param_grid)
+        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        # test reloaded model is the same
+        pickle_model = joblib.load(pickle_file)
+        load_clf = pickle_model['model']
+        load_clf_str = str(load_clf)
+        assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
+        load_clf_score = SCORERS['balanced_accuracy'](
+            load_clf, training_features_3, training_classes_3)
+        print(algorithm_name, train_score, load_clf_score)
+        assert train_score == load_clf_score
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_9(self, mock_get):
+        """Test main function when tuning LogisticRegression on Iris dateset."""
+        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        args['grid_search'] = True
+        param_grid = {}
+        for param_name in schema.keys():
+            val = schema[param_name]
+            default_value = val["default"]
+            param_type = val["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            args[param_name] = conv_default_value
+
+            if "grid_search" in val['ui']:
+                values = val['ui']["grid_search"]
+            elif "values" in val['ui']:
+                values = val['ui']["values"]
+            else:
+                values = val['ui']["choices"]
+            param_grid[param_name] = [conv_func(v) for v in values]
+        main(args, param_grid)
+        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+
+        value_json = '{}/value.json'.format(outdir)
+        assert os.path.isfile(value_json)
+        with open(value_json, 'r') as f:
+            value = json.load(f)
+        train_score = value['_scores']['train_score']
+        assert train_score
+        assert os.path.isfile('{}/prediction_values.json'.format(outdir))
+        assert os.path.isfile('{}/feature_importances.json'.format(outdir))
+        assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
+        # test pickle file
+        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+        assert os.path.isfile(pickle_file)
+        # test reloaded model is the same
+        pickle_model = joblib.load(pickle_file)
+        load_clf = pickle_model['model']
+        load_clf_str = str(load_clf)
+        print(load_clf)
+
+        load_clf_score = SCORERS['balanced_accuracy'](
+            load_clf, training_features_2, training_classes_2)
+        print(algorithm_name, train_score, load_clf_score)
+        assert train_score == load_clf_score
+
+
 def test_balanced_accuracy():
-    """Assert that the balanced_accuracy in TPOT returns correct accuracy."""
+    """Assert that the balanced_accuracy in PennAI returns correct accuracy."""
     y_true = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
     y_pred1 = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
     y_pred2 = np.array([3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])

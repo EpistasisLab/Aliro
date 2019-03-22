@@ -7,10 +7,12 @@ timeout = 300 # 5 mins by default
 if 'EXP_TIMEOUT' in environ:
     timeout = int(environ['EXP_TIMEOUT'])*60
 
-def main(args, timeout=timeout):
+def main(args, param_grid={}, timeout=timeout):
     exp = Experiment(args)
     input_data, data_info = exp.get_input()
     model, method_type, encoding_strategy = exp.get_model()
+    if not args['grid_search']:
+        param_grid = {}
     return_val = generate_results(model=model,
                     input_data=input_data,
                     tmpdir=exp.tmpdir,
@@ -21,6 +23,7 @@ def main(args, timeout=timeout):
                     categories=data_info['categories'],
                     ordinals=data_info['ordinals'],
                     encoding_strategy=encoding_strategy,
+                    param_grid=param_grid,
                     timeout=timeout
                     )
     if return_val == "Timeout":
@@ -28,5 +31,5 @@ def main(args, timeout=timeout):
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+    args, param_grid = parse_args()
+    main(args, param_grid)
