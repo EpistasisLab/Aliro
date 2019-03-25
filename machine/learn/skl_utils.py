@@ -30,7 +30,6 @@ if 'MAKEPLOTS' in os.environ:
 random_state = None
 if 'RANDOM_SEED' in os.environ:
     random_state = int(os.environ['RANDOM_SEED'])
-
 #max numbers of bar in importance_score plot and decision tree plot
 max_bar_num = 10
 
@@ -46,14 +45,14 @@ def balanced_accuracy(y_true, y_pred):
     Parameters
     ----------
     y_true: numpy.ndarray {n_samples}
-            True class labels
+        True class labels
     y_pred: numpy.ndarray {n_samples}
-            Predicted class labels by the estimator
+        Predicted class labels by the estimator
     Returns
     -------
     fitness: float
-            Returns a float value indicating the individual's balanced accuracy
-            0.5 is as good as chance, and 1.0 is perfect predictive accuracy
+        Returns a float value indicating the individual's balanced accuracy
+        0.5 is as good as chance, and 1.0 is perfect predictive accuracy
     """
     all_classes = list(set(np.append(y_true, y_pred)))
     all_class_accuracies = []
@@ -91,7 +90,8 @@ def generate_results(model, input_data,
     encoding_strategy="OneHotEncoder",
     param_grid={}
     ):
-    """generate reaults for apply a model on a datasetself.
+    """Generate reaults for applying a model on dataset in PennAI.
+
     Parameters
     ----------
     model: scikit-learn Estimator
@@ -99,11 +99,11 @@ def generate_results(model, input_data,
     input_data: pandas.Dataframe or list of two pandas.Dataframe
         pandas.DataFrame: PennAI will use train_test_split to make train/test splits
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
-            while the 2nd one is testing dataset
+        while the 2nd one is testing dataset
     target_name: string
         target name in input data
     tmpdir: string
-        Path of template directory
+        temporary directory for saving experiment results
     _id: string
         experiment id
     mode:  string
@@ -123,8 +123,9 @@ def generate_results(model, input_data,
     encoding_strategy: string
         encoding strategy for categorical features
     param_grid: dict
-        If grid_search is non-empty dictionary, then the experiment will do parameter tuning and
-        report best result to UI and save all results to knowlegde base.
+        If grid_search is non-empty dictionary, then the experiment will
+        do parameter tuning via GridSearchCV. It should report best result to UI
+        and save all results to knowlegde base.
 
     Returns
     -------
@@ -399,12 +400,11 @@ def generate_results(model, input_data,
 
 
 def get_col_idx(feature_names_list, columns):
-    """get unique indexes of columns based on list of column names
+    """Get unique indexes of columns based on list of column names.
     Parameters
     ----------
-
     feature_names_list: list
-        list of column names
+        list of column names on dataset
     columns: list
         list of selected column names
 
@@ -417,10 +417,9 @@ def get_col_idx(feature_names_list, columns):
 
 
 def setup_model_params(model, parameter_name, value):
-    """setup parameter in a model.
+    """Assign value to a parameter in a model.
     Parameters
     ----------
-
     model: scikit-learn Estimator
         a scikit-learn model
     parameter_name: string
@@ -447,7 +446,7 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     Parameters
     ----------
     tmpdir: string
-
+        temporary directory for saving experiment results
     model:  scikit-learn Estimator
         a fitted scikit-learn model
     metric: str, callable
@@ -501,18 +500,18 @@ def compute_imp_score(model, metric, training_features, training_classes, random
 
 
 def save_json_fmt(outdir, _id, fname, content):
-    """
-    Save results into json format.
+    """Save results into json format.
+
     Parameters
     ----------
     outdir: string
-            path of output directory
+        path of output directory
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     fname: string
-            file name
+        file name
     content: list or directory
-            content for results
+        content for results
     Returns
     -------
     None
@@ -523,22 +522,21 @@ def save_json_fmt(outdir, _id, fname, content):
 
 
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
-    """
-    Make plot for confusion matrix.
+    """Make plot for confusion matrix.
+
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     cnf_matrix: np.darray
-            confusion matrix
+        confusion matrix
     class_names: list
-            class names
+        class names
     Returns
     -------
     None
-
     """
     cm = cnf_matrix
     classes = class_names
@@ -572,18 +570,23 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     roc_curve: tuple
-            fpr : array, shape = [>2]
-                Increasing false positive rates such that element i is the false positive rate of predictions with score >= thresholds[i].
-            tpr : array, shape = [>2]
-                Increasing true positive rates such that element i is the true positive rate of predictions with score >= thresholds[i].
-            thresholds : array, shape = [n_thresholds]
-                Decreasing thresholds on the decision function used to compute fpr and tpr. thresholds[0] represents no instances being predicted and is arbitrarily set to max(y_score) + 1.
+        fpr : array, shape = [>2]
+            Increasing false positive rates such that element i is the false
+            positive rate of predictions with score >= thresholds[i].
+        tpr : array, shape = [>2]
+            Increasing true positive rates such that element i is the true
+            positive rate of predictions with score >= thresholds[i].
+        thresholds : array, shape = [n_thresholds]
+            Decreasing thresholds on the decision function used to compute
+            fpr and tpr. thresholds[0] represents no instances being predicted
+            and is arbitrarily set to max(y_score) + 1.
     roc_auc_score: float
-            Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+            Compute Area Under the Receiver Operating Characteristic Curve
+            (ROC AUC) from prediction scores.
     Returns
     -------
     None
@@ -611,9 +614,9 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     coefs: array
         feature importance scores
     feature_names: np.array
@@ -656,9 +659,9 @@ def plot_dot_plot(tmpdir, _id, training_features,
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     training_features: np.darray/pd.DataFrame
         training features
     training_classes: np.darray/pd.DataFrame
@@ -724,13 +727,13 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     model: scikit-learn estimator
-            a fitted scikit-learn model
+        a fitted scikit-learn model
     filename: string
-            file name of input dataset
+        file name of input dataset
     target_name: string
         target name in input data
     random_state: int
