@@ -8,6 +8,23 @@ if 'EXP_TIMEOUT' in environ:
     timeout = int(environ['EXP_TIMEOUT'])*60
 
 def main(args, param_grid={}, timeout=timeout):
+    """Main Driver for PennAI experiment.
+    Parameters
+    ----------
+    args: dict
+        arguments for PennAI experiment
+    param_grid: dict
+        If grid_search is non-empty dictionary, then the experiment will
+        do parameter tuning via GridSearchCV. It should report best result to UI
+        and save all results to knowlegde base.
+    timeout: int
+        maximum seconds for running the experiment
+
+    Returns
+    -------
+    None
+
+    """
     exp = Experiment(args)
     input_data, data_info = exp.get_input()
     model, method_type, encoding_strategy = exp.get_model()

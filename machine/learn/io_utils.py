@@ -144,7 +144,7 @@ def get_input_data(_id, tmpdir):
     Parameters
     ----------
     _id: string
-        Experiment ID in PennAI API
+        Experiment ID in PennAI
     tmpdir: string
         Path of temporary directory
 
