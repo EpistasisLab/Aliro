@@ -7,9 +7,10 @@ import requests
 import pandas as pd
 from io import StringIO
 
-LAB_HOST = os.environ['LAB_HOST']
-LAB_PORT = os.environ['LAB_PORT']
-basedir = os.environ['PROJECT_ROOT']
+# get PennAI environment information
+LAB_HOST = os.environ.get('LAB_HOST', 'lab')
+LAB_PORT = os.environ.get('LAB_PORT', '5080')
+basedir = os.environ.get('PROJECT_ROOT', '.')
 
 
 class Experiment:
@@ -37,10 +38,7 @@ class Experiment:
 
 
     def get_input(self):
-        """Get input data based on _id from API.
-        Parameters
-        ----------
-        None
+        """Get input data based on experiment ID (_id) from PennAI API.
 
         Returns
         -------
@@ -52,10 +50,7 @@ class Experiment:
         return get_input_data(self.args['_id'], self.tmpdir)
 
     def get_model(self):
-        """Get scikit learn method.
-        Parameters
-        ----------
-        None
+        """Build scikit learn method based on arguments from PennAI API.
 
         Returns
         -------
@@ -79,11 +74,8 @@ class Experiment:
 
 
 def get_projects():
-    """Get all machine learning algorithm's information from API
-    (the information should be the same with projects.json).
-    Parameters
-    ----------
-    None
+    """Get all machine learning algorithm's information from PennAI API
+    This information should be the same with projects.json.
 
     Returns
     -------
@@ -98,9 +90,6 @@ def get_projects():
 
 def parse_args():
     """Parse arguments for machine learning algorithm.
-    Parameters
-    ----------
-    None
 
     Returns
     -------
@@ -151,13 +140,14 @@ def parse_args():
 
 
 def get_input_data(_id, tmpdir):
-    """ Get input dataset from PennAI API
+    """ Get input dataset information from PennAI API.
     Parameters
     ----------
     _id: string
         Experiment ID in PennAI API
     tmpdir: string
         Path of temporary directory
+
     Returns
     -------
     input_data: pandas.Dataframe or list of two pandas.Dataframe
@@ -221,11 +211,17 @@ def get_input_data(_id, tmpdir):
 
 def get_file_data(file_id):
     """
-    Attempt to retrieve dataset file.  If the file is corrupt or an error response is returned, throw an error.
+    Attempt to retrieve dataset file.
+    If the file is corrupt or an error response is returned, it will rasie an ValueError.
+
     Parameters
     ----------
     file_id: string
         id of the file to retrieve from the server
+
+    Return: string
+        dataset strings
+
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file_id
     res = requests.get(uri)
@@ -248,7 +244,8 @@ def check_column(column_name, dataframe):
     column_name: string
         column name
     dataframe: pandas.DataFrame
-        pandas DataFrame
+        input dataset DataFrame
+
     Returns
     -------
     None
@@ -261,11 +258,12 @@ def check_column(column_name, dataframe):
 
 
 def bool_type(val):
-    """Convert argument to boolean type
+    """Convert argument to boolean type.
     Parameters
     ----------
     val: string
         value of a parameter
+
     Returns
     -------
     _: boolean
@@ -280,11 +278,12 @@ def bool_type(val):
 
 
 def str_or_none(val):
-    """Convert argument to str type or None
+    """Convert argument to str type or None.
     Parameters
     ----------
     val: string
         value of a parameter
+
     Returns
     -------
     _: string or None
@@ -301,11 +300,12 @@ def str_or_none(val):
 
 
 def get_type(type):
-    """Return convertion function for input type
+    """Return convertion function for input type.
     Parameters
     ----------
     type: string
         type of a parameter which is defined in projects.json
+
     Returns
     -------
     known_types[type]: function
@@ -317,7 +317,5 @@ def get_type(type):
         'string': str_or_none,  # change this later
         'bool': bool_type,
         'enum': str
-        # float between 1 and 0
-        # enum type
     }
     return known_types[type]

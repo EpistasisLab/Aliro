@@ -1,9 +1,6 @@
 import os
 import sys
 # mock os.environ in unittest
-os.environ['LAB_HOST'] = 'lab'
-os.environ['LAB_PORT'] = '5080'
-os.environ['PROJECT_ROOT'] = '.'
 os.environ['RANDOM_SEED'] = '42'
 from sklearn.datasets import load_digits, load_boston
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
