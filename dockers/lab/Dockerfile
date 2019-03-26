@@ -4,12 +4,12 @@ WORKDIR /opt/
 ARG docker_filepath=dockers/lab/files
 
 ## Webserver
-RUN apt-get update \
+RUN apt-get update --fix-missing \
 	&& apt-get install -y --no-install-recommends \
-  		telnet  apache2 
-RUN rm -r /var/lib/apt/lists/* \
-	&& mkdir /files \
-	&& rm /etc/apache2/sites-enabled/*
+  		telnet apache2 && \
+	    apt-get clean && \
+	    rm -rf /var/lib/apt/lists/*
+RUN rm /etc/apache2/sites-enabled/*
 COPY ${docker_filepath}/ports.conf /etc/apache2/
 RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/ssl* /etc/apache2/mods-enabled \
@@ -30,20 +30,16 @@ RUN npm install --silent --progress=false
 # install lab/node_modules to an anon volume
 WORKDIR /appsrc/lab
 COPY lab/package.json /appsrc/lab/
-COPY lab/package-lock.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
 ## ai/metalearning python packages
-RUN pip install simplejson
-RUN pip install xgboost
+RUN conda install -y -c conda-forge cython \
+    xgboost simplejson numpy && \
+    conda clean --all -y
+
 ### my surprise fork
-RUN pip install numpy cython
-RUN git clone https://github.com/lacava/surprise.git 
-WORKDIR surprise
-RUN python setup.py install
- 
-VOLUME /share
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
 COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd
@@ -59,8 +55,6 @@ COPY ${docker_filepath}/start.sh /root/
 COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
-## node modules as a zip for speed
-#COPY ${docker_filepath}/node_modules.tar.gz /root/
 
 ## FGLab server
 COPY ${docker_filepath}/entrypoint.sh /root/
@@ -68,7 +62,7 @@ COPY ${docker_filepath}/env /opt/.env
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
-	&& dos2unix /root/entrypoint.sh 
+	&& dos2unix /root/entrypoint.sh
 
 
 # Start the webserver
