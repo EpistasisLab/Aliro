@@ -1,6 +1,3 @@
-# Ignore everything
-**
-
 # Allow files and directories
 !/lab/webapp/package.json
 !/lab/webapp/package-lock.json
@@ -20,3 +17,8 @@
 **/*.log
 **/.DS_Store
 **/Thumbs.db
+**/node_modules
+**/__pycache__
+**/tmp
+**/.git
+data/pmlb*
