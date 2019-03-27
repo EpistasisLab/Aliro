@@ -20,6 +20,7 @@ class FileUpload extends Component {
       dependentCol: '',
       catFeatures: [],
       ordinalFeatures: {},
+      ordinalIndex: 0,
       loaded: 0,
       selectCol: '' // keep track of which metadata will be selected from table UI
     };
@@ -32,8 +33,9 @@ class FileUpload extends Component {
     this.handleDepColSelect = this.handleDepColSelect.bind(this);
     this.handleOrdColSelect = this.handleOrdColSelect.bind(this);
     this.handleCatColSelect = this.handleCatColSelect.bind(this);
-    // every table header (gets column name)
+    // every table header & cell (gets column name)
     this.onSelectCol = this.onSelectCol.bind(this);
+    this.onSelectCell = this.onSelectCell.bind(this);
   }
 
   // text field for entering dependent column
@@ -70,23 +72,67 @@ class FileUpload extends Component {
 
     switch (datasetField) {
       case "catFeatures":
-        let catFeats = this.state.catFeatures;
-        catFeats.push(e.target.innerHTML);
-        this.setState({ catFeatures: catFeats });
+        //let catFeats = this.state.catFeatures;
+        //catFeats.push(e.target.innerHTML);
+        //let dataPrev = this.state.datasetPreview.data;
+        let dataPrev;
+        let catColPrev = [];
+
+        this.state.datasetPreview ? dataPrev = this.state.datasetPreview.data : null;
+
+        dataPrev ? dataPrev.forEach(row => catColPrev.push(row[e.target.innerHTML])) : null;
+        this.setState({
+          catFeatures: catColPrev,
+          catFeatureCol: e.target.innerHTML
+         });
         break;
       case "ordinalFeatures":
-        let ordFeats = this.state.ordinalFeatures;
-        ordFeats[e.target.innerHTML] = 'test Ordinal feature'
+        let ordFeats = {
+          ...this.state.ordinalFeatures,
+          ['ordinal_header']: e.target.innerHTML
+        };
+        //ordFeats[e.target.innerHTML] = 'test Ordinal feature'
         this.setState({ ordinalFeatures: ordFeats });
         break;
       case "dependentCol":
         this.setState({ dependentCol: e.target.innerHTML, selectCol: '' });
         break;
       default:
+        //this.setState({ selectCol: '' });
+    }
+
+  }
+
+  // generic click handler for selecting columns from dataset preview table
+  onSelectCell(e, props) {
+    //window.console.log('onSelectCell props', this.props);
+    window.console.log('onSelectCell cell val', e.target.innerHTML);
+    let datasetField = this.state.selectCol;
+
+    switch (datasetField) {
+      case "catFeatures":
+
+        break;
+      case "ordinalFeatures":
+        let ordFeats = this.state.ordinalFeatures;
+        let ordIndex = this.state.ordinalIndex;
+        //ordFeats[e.target.innerHTML] = 'test Ordinal feature';
+        ordFeats[ordIndex] = e.target.innerHTML;
+
+        this.setState({
+          ordinalFeatures: ordFeats,
+          ordinalIndex: ++ordIndex
+         });
+        break;
+      case "dependentCol":
+
+        break;
+      default:
         this.setState({ selectCol: '' });
     }
 
   }
+
 
   handleSelectedFile = event => {
     let papaConfig = {
@@ -164,8 +210,15 @@ class FileUpload extends Component {
 
     let dataPrev = this.state.datasetPreview;
     let selectCol = this.state.selectCol;
+    let catFeats = this.state.catFeatures;
+    let ordFeatureSelection = "";
+    let catFeatureSelection = "";
 
     window.console.log('prev: ', dataPrev);
+    Object.keys(this.state.ordinalFeatures).forEach(ordFeat => {
+      ordFeatureSelection += ordFeat + " : " + this.state.ordinalFeatures[ordFeat] + ",";
+    });
+    //catFeats && catFeats.join();
     let dataPrevTable = ( <p> hi </p> );
     if(dataPrev) {
       dataPrevTable = (
@@ -184,7 +237,7 @@ class FileUpload extends Component {
                 {dataPrev.data.slice(0, 100).map((row, i) =>
                   <Table.Row key={i}>
                     {dataPrev.meta.fields.map(field =>
-                      <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
+                      <Table.Cell onClick={this.onSelectCell} key={`${i}-${field}`}>{row[field]}</Table.Cell>
                     )}
                   </Table.Row>
                 )}
@@ -216,7 +269,8 @@ class FileUpload extends Component {
           />
           <Form.Input
             label="Dependent Column"
-            placeholder={this.state.dependentCol ? this.state.dependentCol : "class"}
+            placeholder="class"
+            value={this.state.dependentCol ? this.state.dependentCol : ""}
             type="text"
             onChange={this.handleDepColField}
           />
@@ -229,11 +283,11 @@ class FileUpload extends Component {
           />
           <textarea
             label="Ordinal Features"
-            placeholder={
+            placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+            value={
               Object.keys(this.state.ordinalFeatures).length ?
-                this.state.ordinalFeatures :
-                "{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"
-              }
+                ordFeatureSelection : ""
+            }
             onChange={this.handleOrdinalFeatures}
           />
           <Button
@@ -245,7 +299,8 @@ class FileUpload extends Component {
           />
           <textarea
             label="Categorical Features"
-            placeholder={this.state.catFeatures.length ? this.state.catFeatures.join() : "\"cat_feat_1\", \"cat_feat_2\""}
+            placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
+            value={this.state.catFeatures.length ? this.state.catFeatures.join() : ""}
             onChange={this.handleCatFeatures}
           />
           <Button
