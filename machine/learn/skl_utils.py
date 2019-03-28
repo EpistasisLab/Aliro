@@ -95,33 +95,34 @@ def generate_results(model, input_data,
     Parameters
     ----------
     model: scikit-learn Estimator
-        a machine learning model with scikit-learn API
+        A machine learning model following scikit-learn API
     input_data: pandas.Dataframe or list of two pandas.Dataframe
         pandas.DataFrame: PennAI will use train_test_split to make train/test splits
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
         while the 2nd one is testing dataset
     target_name: string
-        target name in input data
+        Target name in input data
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
-        experiment id
+        Experiment id
     mode:  string
         'classification': Run classification analysis
         'regression': Run regression analysis
     figure_export: boolean
         If figure_export is True, the figures will be generated and exported.
     random_state: int
-        random seed
+        Random seed
     filename: list
-        filename for input dataset
+        Filename for input dataset
     categories: list
-        list of column names for one-hot encoding
+        List of column names for one-hot encoding
     ordinals: dict
-        keys: categorical feature name(s)
-        values: categorical values
+        Dictionary of ordinal features:
+            Keys of dictionary: categorical feature name(s)
+            Values of dictionary: categorical values
     encoding_strategy: string
-        encoding strategy for categorical features
+        Encoding strategy for categorical features defined in projects.json
     param_grid: dict
         If grid_search is non-empty dictionary, then the experiment will
         do parameter tuning via GridSearchCV. It should report best result to UI
@@ -404,9 +405,9 @@ def get_col_idx(feature_names_list, columns):
     Parameters
     ----------
     feature_names_list: list
-        list of column names on dataset
+        List of column names on dataset
     columns: list
-        list of selected column names
+        List of selected column names
 
     Returns
     -------
@@ -421,16 +422,16 @@ def setup_model_params(model, parameter_name, value):
     Parameters
     ----------
     model: scikit-learn Estimator
-        a scikit-learn model
+        Machine learning model following scikit-learn API
     parameter_name: string
-        parameter name in the scikit-learn model
+        Parameter name in the scikit-learn model
     value: object
-        values for assigning to the parameter
+        Values for assigning to the parameter
 
     Returns
     -------
     model: scikit-learn Estimator
-        a new scikit-learn model with a updated parameter
+        A new scikit-learn model with a updated parameter
     """
     # fix random_state
     if hasattr(model, parameter_name):
@@ -446,9 +447,9 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     model:  scikit-learn Estimator
-        a fitted scikit-learn model
+        A fitted scikit-learn model
     metric: str, callable
         The metric for evaluating the feature importance through
         permutation. By default, the strings 'accuracy' is
@@ -458,18 +459,18 @@ def compute_imp_score(model, metric, training_features, training_classes, random
         accepts two arguments, y_true and y_pred, which have
         similar shape to the `y` array.
     training_features: np.darray/pd.DataFrame
-        training features
+        Features in training dataset
     training_classes: np.darray/pd.DataFrame
-        training target
+        Target in training dataset
     random_state: int
-        random seed for permuation importances
+        Random seed for permuation importances
 
     Returns
     -------
     coefs: np.darray
-        feature importance scores
+        Feature importance scores
     imp_score_type: string
-        importance score type
+        Importance score type
 
     """
     # exporting/computing importance score
@@ -505,13 +506,13 @@ def save_json_fmt(outdir, _id, fname, content):
     Parameters
     ----------
     outdir: string
-        path of output directory
+        Path of output directory
     _id: string
         Experiment ID in PennAI
     fname: string
-        file name
+        File name
     content: list or directory
-        content for results
+        Content for results
     Returns
     -------
     None
@@ -527,13 +528,13 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
     cnf_matrix: np.darray
-        confusion matrix
+        Confusion matrix
     class_names: list
-        class names
+        List of class names
     Returns
     -------
     None
@@ -570,7 +571,7 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
     roc_curve: tuple
@@ -614,22 +615,22 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
     coefs: array
-        feature importance scores
+        Feature importance scores
     feature_names: np.array
-        list of feature names
+        List of feature names
     imp_score_type: string
-        importance score type
+        Importance score type
 
     Returns
     -------
     top_features: list
-        top features with high importance score
+        Top features with high importance score
     indices: ndarray
-        array of indices of top important features
+        Array of indices of top important features
 
     """
     # plot bar charts for top important features
@@ -659,23 +660,23 @@ def plot_dot_plot(tmpdir, _id, training_features,
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
     training_features: np.darray/pd.DataFrame
-        training features
+        Features in training dataset
     training_classes: np.darray/pd.DataFrame
-        training target
+        Target in training dataset
     testing_features: np.darray/pd.DataFrame
-        testing features
+        Features in test dataset
     testing_classes: np.darray/pd.DataFrame
-        testing target
+        Target in test dataset
     top_features: list
-        top feature_names
+        Top feature_names
     indices: ndarray
-        array of indices of top important features
+        Array of indices of top important features
     random_state: int
-        random seed for permuation importances
+        Random seed for permuation importances
     mode:  string
         'classification': Run classification analysis
         'regression': Run regression analysis
@@ -683,7 +684,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
     Returns
     -------
     dtree_test_score, float
-        test score from fitting decision tree on top important feat'
+        Test score from fitting decision tree on top important feat'
 
     """
     # plot bar charts for top important features
@@ -727,17 +728,17 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     Parameters
     ----------
     tmpdir: string
-        temporary directory for saving experiment results
+        Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
     model: scikit-learn estimator
-        a fitted scikit-learn model
+        A fitted scikit-learn model
     filename: string
-        file name of input dataset
+        File name of input dataset
     target_name: string
-        target name in input data
+        Target name in input data
     random_state: int
-        random seed
+        Random seed in model
 
     Returns
     -------
@@ -761,20 +762,20 @@ def generate_export_codes(pickle_file_name, model, filename, target_name, random
     Parameters
     ----------
     pickle_file_name: string
-        a pickle file for a fitted scikit-learn estimator
+        Pickle file name for a fitted scikit-learn estimator
+    model: scikit-learn estimator
+        A fitted scikit-learn model
+    filename: string
+        File name of input dataset
+    target_name: string
+        Target name in input data
+    random_state: int
+        Random seed in model
     Returns
     -------
     pipeline_text: String
-       The Python code that imports all required library used in the current
-       optimized pipeline
-    model: scikit-learn Estimator
-        a machine learning model with scikit-learn API
-    filename: list
-        filename for input dataset
-    target_name: string
-        target name in input data
-    random_state: int
-        random seed
+       The Python scripts for applying the current
+       optimized pipeline in stand-alone python environment
     """
     pipeline_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
