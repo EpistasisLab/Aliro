@@ -161,23 +161,37 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id9':
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id9"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
+                                                    "dependent_col": "class",
+                                                    "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2", "dependent_col": "class", "filename": "test_reg_input"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
+                                                    "dependent_col": "class",
+                                                    "filename": "test_clf_input"},
+                                                {"_id":"test_file_id2",
+                                                "dependent_col": "class",
+                                                "filename": "test_reg_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "class", "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2", "dependent_col": "target", "filename": "test_reg_input"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
+                                                "dependent_col": "class",
+                                                "filename": "test_clf_input"},
+                                                {"_id":"test_file_id2",
+                                                "dependent_col": "target",
+                                                "filename": "test_reg_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "filename": "test_clf_input"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
+                                                    "filename":
+                                                    "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id", "dependent_col": "NA_class","filename": "test_clf_input"}]}), 200)
+        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
+                                                    "dependent_col": "NA_class",
+                                                    "filename": "test_clf_input"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id3",
                             "dependent_col": "class",
                             "categorical_features":  ["test_categorical_feature_1",
-                                            "test_categorical_feature_2"],
+                                                    "test_categorical_feature_2"],
                             "ordinal_features":  {"test_ordinal_feature": [1, 3, 5, 7, 9]},
                             "filename": "test_clf_input3"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id7':
