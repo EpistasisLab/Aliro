@@ -22,7 +22,7 @@ class Experiment:
         args: dict
             Arguments of a experiment from PennAI API
         basedir: string
-            base directory for this project
+            Base directory for this project
 
         Returns
         -------
@@ -80,7 +80,7 @@ def get_projects():
     Returns
     -------
     projects: dict
-        a dict of all machine learning algorithm's information
+        A dict of all machine learning algorithm's information
 
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
@@ -217,10 +217,10 @@ def get_file_data(file_id):
     Parameters
     ----------
     file_id: string
-        id of the file to retrieve from the server
+        File ID from the PennAI database
 
     Return: string
-        dataset strings
+        Dataset strings which will be read by pandas and converted to pd.DataFrame
 
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file_id
@@ -262,12 +262,12 @@ def bool_type(val):
     Parameters
     ----------
     val: string
-        value of a parameter
+        Value of a parameter in string type
 
     Returns
     -------
     _: boolean
-        converted value
+        Converted value in boolean type
     """
     if(val.lower() == 'true'):
         return True
@@ -282,13 +282,13 @@ def str_or_none(val):
     Parameters
     ----------
     val: string
-        value of a parameter
+        Value of a parameter in string type
 
     Returns
     -------
     _: string or None
-        if input value if "none", then the function will return None
-        otherwise it will retune string
+        If input value if "none", then the function will return None,
+        otherwise it will retune string.
     """
     if(val.lower() == 'none'):
         return None
@@ -304,12 +304,13 @@ def get_type(type):
     Parameters
     ----------
     type: string
-        type of a parameter which is defined in projects.json
+        Type of a parameter which is defined in projects.json
 
     Returns
     -------
     known_types[type]: function
-        function for converting argument from PennAI UI before assigning to scikit-learn estimator
+        Function for converting argument from PennAI UI
+        for assigning to scikit-learn estimator
     """
     known_types = {
         'int': int,  # change this later
