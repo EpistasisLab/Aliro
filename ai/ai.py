@@ -16,6 +16,7 @@ import os
 import ai.q_utils as q_utils
 import ai.knowledgebase_loader as knowledgebase_loader
 import logging
+import sys
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
@@ -73,7 +74,6 @@ class AI():
         # recommender settings
         if api_path == None:
             api_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
-        self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
 
@@ -108,13 +108,22 @@ class AI():
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
         
-        if rec:
-            if hasattr(rec,'ml_p'):
-                self.rec.ml_p = self.labApi.get_all_ml_p()
-            if hasattr(rec,'mlp_combos'):
-                self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
-        else: # default to random recommender
+        # create a default recommender if not set
+        if (rec): 
+            self.rec = rec
+        else:
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
+
+        # set the registered ml parameters in the recommender
+        if hasattr(self.rec,'ml_p'):
+            ml_p = self.labApi.get_all_ml_p()
+            assert ml_p is not None
+            assert len(ml_p) > 0
+            self.rec.ml_p = ml_p
+        if hasattr(self.rec,'mlp_combos'):
+            self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
+
+
         # tmp = self.labApi.get_all_ml_p()
         # tmp.to_csv('ml_p_options.csv') 
         # build dictionary of ml ids to names conversion
@@ -446,17 +455,20 @@ def main():
             n = n + 1
             time.sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
-        print('Saving current AI state and closing....')
+        #logger.info("Exit command recieved")
+        logger.info('Exit command recieved')
     except:
-        #print("Unhanded exception caught:", sys.exc_info()[0])
-        print("Unhanded exception caught:")
+        print("Unhanded exception caught:", sys.exc_info()[0])
+        logger.error("Unhanded exception caught:", sys.exc_info()[0])
         raise
     finally:
         # tell queues to exit
-        print("foo")
-        logger.info("Exiting queue")
+        logger.info("Shutting down AI engine...")
+        logger.info("...Exiting queue")
         q_utils.exitFlag=1
+        logger.info("...Saving state")
         pennai.save_state()
+        logger.info("Goodbye")
 
 if __name__ == '__main__':
     main()

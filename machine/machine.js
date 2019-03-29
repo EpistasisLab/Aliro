@@ -68,107 +68,86 @@ var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
 var algorithms = machine_config["algorithms"]
 
 /* Machine specifications */
-// Attempt to read existing specs
-fs.readFile("specs.json", "utf-8")
-    .then((sp) => {
-        specs = JSON.parse(sp);
+// generate specification file
+specs = {
+    //internal_address: machineuri,
+    address: machineuri,
+    hostname: os.hostname(),
+    os: {
+        type: os.type(),
+        platform: os.platform(),
+        arch: os.arch(),
+        release: os.release()
+    },
+    cpus: os.cpus().map((cpu) => cpu.model), // Fat arrow has implicit return
+    mem: bytes(os.totalmem()),
+    gpus: []
+};
+// GPU models
+if (os.platform() === "linux") {
+    var lspci = spawnSync("lspci", []);
+    var grep = spawnSync("grep", ["-i", "vga"], {
+        input: lspci.stdout
+    });
+    var gpuStrings = grep.stdout.toString().split("\n");
+    for (var i = 0; i < gpuStrings.length - 1; i++) {
+        specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
+    }
+} else if (os.platform() === "darwin") {
+    var system_profiler = spawnSync("system_profiler", ["SPDisplaysDataType"]);
+    var profilerStrings = system_profiler.stdout.toString().split("\n");
+    for (var i = 0; i < profilerStrings.length - 1; i++) {
+        if (profilerStrings[i].indexOf("Chipset Model:") > -1) {
+            specs.gpus.push(profilerStrings[i].replace(/Chipset Model: /g, ""));
+        }
+    }
+}
+
+// Register details
+rp({
+        uri: laburi + "/api/v1/machines",
+        method: "POST",
+        json: specs,
+        gzip: true
     })
-    .catch(() => {
-        // Otherwise create specs
-        specs = {
-            address: machineuri,
-            hostname: os.hostname(),
-            os: {
-                type: os.type(),
-                platform: os.platform(),
-                arch: os.arch(),
-                release: os.release()
-            },
-            cpus: os.cpus().map((cpu) => cpu.model), // Fat arrow has implicit return
-            mem: bytes(os.totalmem()),
-            gpus: []
-        };
-        // GPU models
-        if (os.platform() === "linux") {
-            var lspci = spawnSync("lspci", []);
-            var grep = spawnSync("grep", ["-i", "vga"], {
-                input: lspci.stdout
-            });
-            var gpuStrings = grep.stdout.toString().split("\n");
-            for (var i = 0; i < gpuStrings.length - 1; i++) {
-                specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
-            }
-        } else if (os.platform() === "darwin") {
-            var system_profiler = spawnSync("system_profiler", ["SPDisplaysDataType"]);
-            var profilerStrings = system_profiler.stdout.toString().split("\n");
-            for (var i = 0; i < profilerStrings.length - 1; i++) {
-                if (profilerStrings[i].indexOf("Chipset Model:") > -1) {
-                    specs.gpus.push(profilerStrings[i].replace(/Chipset Model: /g, ""));
-                }
-            }
+    .then((body) => {
+        console.log("Registered with FGLab successfully");
+        // Save ID and specs
+        fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
+        // Reload specs with _id (prior to adding projects)
+        specs = body;
+        project_list = getProjects(algorithms);
+        var tmppath = project_root + "/machine/learn/tmp";
+        if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
+        for (var i in project_list) {
+            var algo = project_list[i].name;
+            var project_folder = tmppath + '/' + algo;
+            if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744);
         }
 
-        // Register details
+        // Register projects
         rp({
-                uri: laburi + "/api/v1/machines",
+                uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
                 method: "POST",
-                json: specs,
+                json: {
+                    projects: project_list
+                },
                 gzip: true
             })
-            .then((body) => {
-                console.log("Registered with FGLab successfully");
-                // Save ID and specs
-                fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
-                // Reload specs with _id (prior to adding projects)
-                specs = body;
-                project_list = getProjects(algorithms);
-                var tmppath = project_root + "/machine/learn/tmp";
-                if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
-                for (var i in project_list) {
-                    var algo = project_list[i].name;
-                    var project_folder = tmppath + '/' + algo;
-                    if (!fs.existsSync(project_folder)) fs.mkdirSync(project_folder, 0744);
+            .then((msg) => {
+                console.log("Projects registered with FGLab successfully");
+                if (msg.projects !== undefined) {
+                    projects = msg.projects;
                 }
-
-                // Register projects
-                rp({
-                        uri: laburi + "/api/v1/machines/" + specs._id + "/projects",
-                        method: "POST",
-                        json: {
-                            projects: project_list
-                        },
-                        gzip: true
-                    })
-                    .then((msg) => {
-                        console.log("Projects registered with FGLab successfully");
-                        if (msg.projects !== undefined) {
-                            projects = msg.projects;
-                        }
-                        //console.log("projects: ", projects)
-                    });
-            })
-            .catch((err) => {
-                console.log('catchup: nobody to talk to');
-                console.log(err);
-                process.exit();
+                //console.log("projects: ", projects)
             });
+    })
+    .catch((err) => {
+        console.log('catchup: nobody to talk to');
+        console.log(err);
+        process.exit();
     });
 
-    /*
-    datasets management
-chokidar.watch(datasets.datasets_path, {
-    awaitWriteFinish: true,
-    ignored: /metadata/,
-}).on("all", (event, path) => {
-    if (event == 'change') {
-        datasets.processChangedFile(path);
-    }
-});
-
-
-datasets.laburi = laburi
-datasets.loadInitialDatasets()
-*/
 
 //max capacity
 var maxCapacity = 1;
