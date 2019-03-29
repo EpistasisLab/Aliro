@@ -19,8 +19,16 @@ echo "datasets loaded..."
 if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "autostarting ai..."
 
-    echo "waiting for machine to be responsive..."
-    /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
+#   TODO: split ai to a seperate docker container; should be dependent on lab, db, and machine.
+#       For now, wait for the singular machine to be active, or wait a set amount of time in the case of 
+#       machine scaling.
+
+#    echo "waiting for machine to be responsive..."
+#    /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
+
+    echo "waiting set time to allow machines to start..."
+    sleep 10
+      
 
     echo "starting ai..."
 
