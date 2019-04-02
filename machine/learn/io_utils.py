@@ -7,10 +7,16 @@ import requests
 import pandas as pd
 from io import StringIO
 
-LAB_HOST = os.environ['LAB_HOST']
-LAB_PORT = os.environ['LAB_PORT']
-basedir = os.environ['PROJECT_ROOT']
-
+try:
+    LAB_HOST = os.environ['LAB_HOST']
+    LAB_PORT = os.environ['LAB_PORT']
+    basedir = os.environ['PROJECT_ROOT']
+except KeyError as ke:
+    print(ke)
+    print('Defining dummy env variables')
+    LAB_HOST = 'UNDEFINED'
+    LAB_PORT = 'UNDEFINED'
+    basedir = 'UNDEFINED'
 
 class Experiment:
     def __init__(self, args, basedir=basedir):
