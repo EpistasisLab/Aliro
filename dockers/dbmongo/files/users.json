@@ -3,7 +3,8 @@
     "firstname": "Penn",
     "lastname": "AI",
     "apikey": "Oed+kIyprDrUq/3oWU5Jpyd22PqhG/CsUvI8oc9l39E=",
-    "roles": ["ai"]
+    "roles": ["ai"],
+    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","SVC","LogisticRegression","RandomForestClassifier"]
 } {
     "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","SVC","LogisticRegression","RandomForestClassifier"],
     "username": "pmlb",
