@@ -21,21 +21,14 @@ class FileUpload extends Component {
       catFeatures: [],
       ordinalFeatures: {},
       ordinalIndex: 0,
-      loaded: 0,
-      selectCol: '' // keep track of which metadata will be selected from table UI
+      loaded: 0
     };
 
     // enter info in text fields
     this.handleDepColField = this.handleDepColField.bind(this);
     this.handleCatFeatures = this.handleCatFeatures.bind(this);
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
-    // select columns in data preview table
-    this.handleDepColSelect = this.handleDepColSelect.bind(this);
-    this.handleOrdColSelect = this.handleOrdColSelect.bind(this);
-    this.handleCatColSelect = this.handleCatColSelect.bind(this);
-    // every table header & cell (gets column name)
-    this.onSelectCol = this.onSelectCol.bind(this);
-    this.onSelectCell = this.onSelectCell.bind(this);
+
   }
 
   // text field for entering dependent column
@@ -53,92 +46,6 @@ class FileUpload extends Component {
     this.setState({ordinalFeatures: e.target.value});
   }
 
-  // specify which type of metadata user is selecting from dataset preview table
-  handleOrdColSelect(e, props) {
-    this.setState({selectCol: 'ordinalFeatures'});
-  }
-  handleCatColSelect(e, props) {
-    this.setState({selectCol: 'catFeatures'});
-  }
-  handleDepColSelect(e, props) {
-    this.setState({selectCol: 'dependentCol'});
-  }
-
-/*  onSelectCol, onSelectCell
-*
-*   Stuff to interact with table, header and cell callback functions to get
-*   content from datapreview table
-*
-*/
-
-  // generic click handler for selecting columns from dataset preview table
-  onSelectCol(e, props) {
-    window.console.log('onSelectCol props', this.props);
-    window.console.log('onSelectCol header val', e.target.innerHTML);
-    let datasetField = this.state.selectCol;
-
-    switch (datasetField) {
-      case "catFeatures":
-        //let catFeats = this.state.catFeatures;
-        //catFeats.push(e.target.innerHTML);
-        //let dataPrev = this.state.datasetPreview.data;
-        let dataPrev;
-        let catColPrev = [];
-
-        this.state.datasetPreview ? dataPrev = this.state.datasetPreview.data : null;
-
-        dataPrev ? dataPrev.forEach(row => catColPrev.push(row[e.target.innerHTML])) : null;
-        this.setState({
-          catFeatures: catColPrev,
-          catFeatureCol: e.target.innerHTML
-         });
-        break;
-      case "ordinalFeatures":
-        let ordFeats = {
-          ...this.state.ordinalFeatures,
-          ['ordinal_header']: e.target.innerHTML
-        };
-        //ordFeats[e.target.innerHTML] = 'test Ordinal feature'
-        this.setState({ ordinalFeatures: ordFeats });
-        break;
-      case "dependentCol":
-        this.setState({ dependentCol: e.target.innerHTML, selectCol: '' });
-        break;
-      default:
-        //this.setState({ selectCol: '' });
-    }
-
-  }
-
-  // generic click handler for selecting columns from dataset preview table
-  onSelectCell(e, props) {
-    //window.console.log('onSelectCell props', this.props);
-    window.console.log('onSelectCell cell val', e.target.innerHTML);
-    let datasetField = this.state.selectCol;
-
-    switch (datasetField) {
-      case "catFeatures":
-
-        break;
-      case "ordinalFeatures":
-        let ordFeats = this.state.ordinalFeatures;
-        let ordIndex = this.state.ordinalIndex;
-        //ordFeats[e.target.innerHTML] = 'test Ordinal feature';
-        ordFeats[ordIndex] = e.target.innerHTML;
-
-        this.setState({
-          ordinalFeatures: ordFeats,
-          ordinalIndex: ++ordIndex
-         });
-        break;
-      case "dependentCol":
-
-        break;
-      default:
-        this.setState({ selectCol: '' });
-    }
-
-  }
 
 
   handleSelectedFile = event => {
@@ -163,25 +70,21 @@ class FileUpload extends Component {
   handleUpload = () => {
     const { uploadDataset } = this.props;
     const data = new FormData();
-    //data.append('_files', this.state.selectedFile, this.state.selectedFile.name);
-    //data.append('target_column', { target_column: 'test_target_column_name' });
-    window.console.log('uploading file... ');
+
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let depCol = this.state.dependentCol;
       let ordFeatures = {};
       let catFeatures = [];
-      if(depCol === '') {
-        window.console.log('please enter dependentCol value');
-      }
+
       try {
         ordFeatures = JSON.parse(this.state.ordinalFeatures);
-        window.console.log('ordinal features', ordFeatures);
-        catFeatures = this.state.catFeatures.split(",");
-        window.console.log('cat features', catFeatures);
       } catch(e) {
         window.console.log('not JSON')
       }
+
+      //catFeatures = this.state.catFeatures;
+      catFeatures = this.state.catFeatures.split(",");
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
@@ -223,18 +126,7 @@ class FileUpload extends Component {
     let ordFeatureSelection = "";
     let catFeatureSelection = "";
 
-    window.console.log('prev: ', dataPrev);
-
-    // left over stuff from prototype for preview of selecting different items in
-    // dataset preview for ordinal data
-    // Object.keys(this.state.ordinalFeatures).forEach(ordFeat => {
-    //   ordFeatureSelection += ordFeat + " : " + this.state.ordinalFeatures[ordFeat] + ",";
-    // });
-    //catFeats && catFeats.join();
-
-    // for interactive UI in table
-    // header cell callback - onClick={this.onSelectCol}
-    // bodr/row cell - onClick={this.onSelectCell}
+    //window.console.log('prev: ', dataPrev);
 
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
     serverResp ? serverResp = ( <p style={{display: 'block', color: 'white'}}> {JSON.stringify(serverResp)} </p> ) :
@@ -267,48 +159,7 @@ class FileUpload extends Component {
         </div>
       )
     }
-/*
-<Button
-  compact
-  size="small"
-  icon="eject"
-  content="click here and then select depedent column"
-  onClick={this.handleDepColSelect}
-/>
-<Button
-  compact
-  size="small"
-  icon="eject"
-  content="click here and then select column with ordinal features"
-  onClick={this.handleOrdColSelect}
-/>
 
-<Button
-  compact
-  size="small"
-  icon="eject"
-  content="click here and then select column with categorical features"
-  onClick={this.handleCatColSelect}
-/>
-
-<textarea
-  label="Ordinal Features"
-  placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-  value={
-    Object.keys(this.state.ordinalFeatures).length ?
-      ordFeatureSelection : ""
-  }
-  onChange={this.handleOrdinalFeatures}
-/>
-
-<textarea
-  label="Categorical Features"
-  placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
-  value={this.state.catFeatures.length ? this.state.catFeatures.join() : ""}
-  onChange={this.handleCatFeatures}
-/>
-
-*/
     return (
       <div>
       <Form inverted>
