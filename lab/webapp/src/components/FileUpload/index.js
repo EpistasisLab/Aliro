@@ -64,6 +64,13 @@ class FileUpload extends Component {
     this.setState({selectCol: 'dependentCol'});
   }
 
+/*  onSelectCol, onSelectCell
+*
+*   Stuff to interact with table, header and cell callback functions to get
+*   content from datapreview table
+*
+*/
+
   // generic click handler for selecting columns from dataset preview table
   onSelectCol(e, props) {
     window.console.log('onSelectCol props', this.props);
@@ -208,6 +215,8 @@ class FileUpload extends Component {
 
   render() {
 
+    const { dataset } = this.props;
+    let serverResp = dataset.fileUploadResp;
     let dataPrev = this.state.datasetPreview;
     let selectCol = this.state.selectCol;
     let catFeats = this.state.catFeatures;
@@ -215,11 +224,21 @@ class FileUpload extends Component {
     let catFeatureSelection = "";
 
     window.console.log('prev: ', dataPrev);
-    Object.keys(this.state.ordinalFeatures).forEach(ordFeat => {
-      ordFeatureSelection += ordFeat + " : " + this.state.ordinalFeatures[ordFeat] + ",";
-    });
+
+    // left over stuff from prototype for preview of selecting different items in
+    // dataset preview for ordinal data
+    // Object.keys(this.state.ordinalFeatures).forEach(ordFeat => {
+    //   ordFeatureSelection += ordFeat + " : " + this.state.ordinalFeatures[ordFeat] + ",";
+    // });
     //catFeats && catFeats.join();
-    let dataPrevTable = ( <p> hi </p> );
+
+    // for interactive UI in table
+    // header cell callback - onClick={this.onSelectCol}
+    // bodr/row cell - onClick={this.onSelectCell}
+
+    let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
+    serverResp ? serverResp = ( <p style={{display: 'block', color: 'white'}}> {JSON.stringify(serverResp)} </p> ) :
+                 serverResp = ( <p style={{display: 'block', color: 'white'}}>please upload a file </p> );
     if(dataPrev) {
       dataPrevTable = (
         <div>
@@ -229,7 +248,7 @@ class FileUpload extends Component {
               <Table.Header>
                 <Table.Row>
                   {dataPrev.meta.fields.map(field =>
-                    <Table.HeaderCell onClick={this.onSelectCol} key={field}>{field}</Table.HeaderCell>
+                    <Table.HeaderCell  key={field}>{field}</Table.HeaderCell>
                   )}
                 </Table.Row>
               </Table.Header>
@@ -237,7 +256,7 @@ class FileUpload extends Component {
                 {dataPrev.data.slice(0, 100).map((row, i) =>
                   <Table.Row key={i}>
                     {dataPrev.meta.fields.map(field =>
-                      <Table.Cell onClick={this.onSelectCell} key={`${i}-${field}`}>{row[field]}</Table.Cell>
+                      <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
                     )}
                   </Table.Row>
                 )}
@@ -248,7 +267,48 @@ class FileUpload extends Component {
         </div>
       )
     }
+/*
+<Button
+  compact
+  size="small"
+  icon="eject"
+  content="click here and then select depedent column"
+  onClick={this.handleDepColSelect}
+/>
+<Button
+  compact
+  size="small"
+  icon="eject"
+  content="click here and then select column with ordinal features"
+  onClick={this.handleOrdColSelect}
+/>
 
+<Button
+  compact
+  size="small"
+  icon="eject"
+  content="click here and then select column with categorical features"
+  onClick={this.handleCatColSelect}
+/>
+
+<textarea
+  label="Ordinal Features"
+  placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+  value={
+    Object.keys(this.state.ordinalFeatures).length ?
+      ordFeatureSelection : ""
+  }
+  onChange={this.handleOrdinalFeatures}
+/>
+
+<textarea
+  label="Categorical Features"
+  placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
+  value={this.state.catFeatures.length ? this.state.catFeatures.join() : ""}
+  onChange={this.handleCatFeatures}
+/>
+
+*/
     return (
       <div>
       <Form inverted>
@@ -260,13 +320,6 @@ class FileUpload extends Component {
             onChange={this.handleSelectedFile}
           />
           <br/>
-          <Button
-            compact
-            size="small"
-            icon="eject"
-            content="click here and then select depedent column"
-            onClick={this.handleDepColSelect}
-          />
           <Form.Input
             label="Dependent Column"
             placeholder="class"
@@ -274,35 +327,24 @@ class FileUpload extends Component {
             type="text"
             onChange={this.handleDepColField}
           />
-          <Button
-            compact
-            size="small"
-            icon="eject"
-            content="click here and then select column with ordinal features"
-            onClick={this.handleOrdColSelect}
-          />
-          <textarea
+          <Form.Input
             label="Ordinal Features"
-            placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-            value={
-              Object.keys(this.state.ordinalFeatures).length ?
-                ordFeatureSelection : ""
-            }
-            onChange={this.handleOrdinalFeatures}
-          />
-          <Button
-            compact
-            size="small"
-            icon="eject"
-            content="click here and then select column with categorical features"
-            onClick={this.handleCatColSelect}
-          />
-          <textarea
+          >
+            <textarea
+              label="Ordinal Features"
+              placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+              onChange={this.handleOrdinalFeatures}
+            />
+          </Form.Input>
+          <Form.Input
             label="Categorical Features"
-            placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
-            value={this.state.catFeatures.length ? this.state.catFeatures.join() : ""}
-            onChange={this.handleCatFeatures}
-          />
+          >
+            <textarea
+              label="Categorical Features"
+              placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
+              onChange={this.handleCatFeatures}
+            />
+          </Form.Input>
           <Button
             inverted
             color="blue"
@@ -314,10 +356,11 @@ class FileUpload extends Component {
           />
         </Segment>
       </Form>
+      {serverResp}
       <Popup trigger={dataPrevTable}>
         <Popup.Header>dataset columns</Popup.Header>
         <Popup.Content>
-          <p>select corresponding column</p>
+          <p>Dataset preview, please enter corresponding metadata</p>
         </Popup.Content>
       </Popup>
       </div>

@@ -36,7 +36,7 @@ class Datasets extends Component {
       <div>
 
         <SceneHeader header="Datasets" />
-        <FileUpload />
+        {/*<FileUpload />*/}
         {/*<SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />*/}
         {datasets.length > 0 ? (
           <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
