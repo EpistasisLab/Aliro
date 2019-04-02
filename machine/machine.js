@@ -37,6 +37,7 @@ var experiments = {};
 var laburi;
 var machineuri;
 var project_root;
+var timeout;
 /* FGLab check */
 if (process.env.PROJECT_ROOT) {
     project_root = process.env.PROJECT_ROOT
@@ -66,6 +67,13 @@ var machine_config_file = process.env.MACHINE_CONFIG
 console.log("Machine config:", machine_config_file)
 var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
 var algorithms = machine_config["algorithms"]
+
+/* Timeout config */
+/* FGLab check */
+if (process.env.EXP_TIMEOUT) {
+    timeout = Number(process.env.EXP_TIMEOUT) * 60 * 1000  //convert from min to ms
+}
+
 
 /* Machine specifications */
 // generate specification file
@@ -305,6 +313,12 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         }
     });
 
+    // kill experiment after a time limit
+    setTimeout(() => {
+      experiment.kill(); // Does not terminate the node process in the shell
+      experimentErrorMessage = "TimeoutError: Experiment is killed due to timeout.";
+    }, timeout);
+
     // List of file promises (to make sure all files are uploaded before removing results folder)
     var filesP = [];
     // Results-sending function for JSON
@@ -362,6 +376,10 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         var status
         var statusMap
         if (exitCode === 0) { statusMap = {_status : "success" }}
+        else if (experimentErrorMessage.indexOf("TimeoutError") !== -1) { statusMap = {
+            _status : "fail",
+            errorMessage: experimentErrorMessage
+        }}
         else if (experiment.killed) { statusMap = {_status : "cancelled" }}
         else { statusMap = {
             _status : "fail",
@@ -383,7 +401,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             data: null
         }); // Set finished
 
-        // Finish watching for files after 100s
+        // Finish watching for files after timeout+10s
         setTimeout(() => {
             // Close experiment folder watcher
             watcher.close();
@@ -398,7 +416,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
                 .catch((err) => {
                     console.log(err);
                 });
-        }, 100000);
+        }, timeout+10000);
 
         // Delete experiment
         delete experiments[experimentId];
