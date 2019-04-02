@@ -47,7 +47,7 @@ if (process.env.LAB_HOST && process.env.LAB_PORT) {
 } else if (process.env.LAB_URL) {
     laburi = process.env.LAB_URL;
 } else {
-    console.log("Error: No FGLab address specified");
+    console.log("Error: No PennAiServer address specified");
     process.exit(1);
 }
 
@@ -111,7 +111,7 @@ rp({
         gzip: true
     })
     .then((body) => {
-        console.log("Registered with FGLab successfully");
+        console.log("Registered with PennAiServer successfully");
         // Save ID and specs
         fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
         // Reload specs with _id (prior to adding projects)
@@ -135,7 +135,7 @@ rp({
                 gzip: true
             })
             .then((msg) => {
-                console.log("Projects registered with FGLab successfully");
+                console.log("Projects registered with PennAiServer successfully");
                 if (msg.projects !== undefined) {
                     projects = msg.projects;
                 }
