@@ -102,7 +102,7 @@ class FileUpload extends Component {
       //window.console.log('preview of uploaded data: ', dataPrev);
       // after uploading a dataset request new list of datasets to update the page
       uploadDataset(data).then(stuff => {
-        window.console.log('FileUpload props after download', this.props);
+        //window.console.log('FileUpload props after download', this.props);
 
         //this.setState({ serverFileUploadResp: json });
         // 'refresh' page when upload response from server is not an error
@@ -192,7 +192,7 @@ class FileUpload extends Component {
           >
             <textarea
               label="Categorical Features"
-              placeholder={"\"cat_feat_1\", \"cat_feat_2\""}
+              placeholder={"cat_feat_1, cat_feat_2"}
               onChange={this.handleCatFeatures}
             />
           </Form.Input>
