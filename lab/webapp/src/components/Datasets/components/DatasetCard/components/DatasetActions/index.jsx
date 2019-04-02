@@ -19,7 +19,7 @@ function DatasetActions({ dataset, toggleAI }) {
 
   const aiToggleClass = `ai-switch ${(aiState === 'on' || aiState === 'queuing') ? 'active' : aiState }`;
 
-  const aiIsChecked = aiState === 'off' ? false : true;
+  const aiIsChecked = (aiState === 'off' || aiState === 'finished') ? false : true;
 
   const aiIsToggling = dataset.isTogglingAI;
 
