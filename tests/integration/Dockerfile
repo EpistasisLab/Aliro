@@ -1,4 +1,4 @@
-FROM node:8.11.2-slim
+FROM node:8.15.1-slim
 WORKDIR /src
 
 RUN apt-get update && apt-get install -y vim dos2unix
