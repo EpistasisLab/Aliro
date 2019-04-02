@@ -115,7 +115,8 @@ class AI():
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
         
-        if rec:
+        # if rec is not None:
+        if rec :
             if hasattr(rec,'ml_p'):
                 self.rec.ml_p = self.labApi.get_all_ml_p()
             if hasattr(rec,'mlp_combos'):
@@ -123,6 +124,7 @@ class AI():
                                        self.rec.ml_p['parameters'])
         else: # default to random recommender
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
+        logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.describe()))
         # tmp = self.labApi.get_all_ml_p()
         # tmp.to_csv('ml_p_options.csv') 
         # build dictionary of ml ids to names conversion
@@ -169,6 +171,11 @@ class AI():
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
+        self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
+        kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
+                                          lambda x: self.dataset_name_to_id[x]
+                                          if x in self.dataset_name_to_id.keys()
+                                          else x)
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
@@ -271,7 +278,8 @@ class AI():
                     'accuracy':d['_scores']['accuracy_score'],#! This is balanced
                     # accuracy!
                     'f1':d['_scores']['f1_score'],
-                    'parameters':str(d['_options']),
+                    #WGL: this parameters value might need to be sorted
+                    'parameters':str(d['_options']), 
                     }
                 if(hasattr(d['_scores'],'balanced_accuracy')):
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];

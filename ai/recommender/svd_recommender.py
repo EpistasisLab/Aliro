@@ -15,6 +15,13 @@ from surprise import Reader, Dataset, mySVD
 # from .svdedit import mySVD
 from collections import defaultdict
 import itertools as it
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 class SVDRecommender(BaseRecommender):
     """Penn AI SVD recommender.
@@ -66,6 +73,7 @@ class SVDRecommender(BaseRecommender):
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
         self.trained_dataset_models = set()
+        self.first_fit = True
 
     def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
@@ -85,10 +93,12 @@ class SVDRecommender(BaseRecommender):
         self.update_model(results_data)
 
     def set_trained_dataset_models(self, results_data):
+        # results_data['sorted_parameters'] = results_data['parameters'].apply(
+        #                                     lambda x: str(sorted(eval(x).items())))
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
                                        results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
+                                       results_data['sorted_parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
@@ -110,13 +120,17 @@ class SVDRecommender(BaseRecommender):
 
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
-        # print('updating model')
-        
+        logger.debug('updating SVD model')
+        if self.first_fit:
+            results_data = results_data.sample(frac=1)
+
         self.update_training_data(results_data)
 
         self.algo.partial_fit(self.trainset)
-        
-        # print('model updated') 
+        if self.first_fit:
+            self.init_results_data = results_data
+            self.first_fit=False
+        logger.debug('model SVD updated') 
 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
@@ -134,16 +148,25 @@ class SVDRecommender(BaseRecommender):
             predictions = []
             for alg_params in self.mlp_combos:
                 # this prevents repeat recommendations
-                if dataset_id+'|'+alg_params not in self.trained_dataset_models:  
-                    predictions.append(self.algo.predict(dataset_id, alg_params,clip=False))
-            
+                # print('filtering repeats')
+                # pdb.set_trace()
+                alg = alg_params.split('|')[0]
+                sorted_params = str(sorted(eval(alg_params.split('|')[-1]).items()))
+                if (dataset_id+'|'+alg+'|'+sorted_params not in 
+                    self.trained_dataset_models):  
+                    predictions.append(self.algo.predict(dataset_id, alg_params,
+                                                         clip=False))
+                else:
+                    print('skipping',dataset_id+'|'+alg_params,'which has already'
+                    'been run')
+            logger.debug('getting top n predictions') 
             ml_rec, p_rec, score_rec = self.get_top_n(predictions, n_recs)
-            
+            logger.debug('returning ml recs') 
             # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
             
         except Exception as e:
-            print( 'error running self.best_model_prediction for',dataset_id)
+            logger.error( 'error running self.best_model_prediction for',dataset_id)
             raise e 
 
         # update the recommender's memory with the new algorithm-parameter combos 
@@ -171,9 +194,11 @@ class SVDRecommender(BaseRecommender):
         top_n = [] 
         for uid, iid, true_r, est, _ in predictions:
             top_n.append((iid, est))
-
+        # shuffle top_n just to remove tie order bias when sorting
+        np.random.shuffle(top_n)
+        # logger.debug('top_n:',top_n) 
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
-        
+        logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
         p_rec = [n[0].split('|')[1] for n in top_n]
         score_rec = [n[1] for n in top_n]
