@@ -9,6 +9,8 @@ Welcome to PennAI's documentation!
 .. toctree::
    :maxdepth: 2
 
+   intro
+   guide
    pennai
    ai
    recommenders
