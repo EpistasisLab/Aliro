@@ -1,4 +1,4 @@
-#
+# 
 # AI agent for Penn AI.
 #
 from sklearn.tree import DecisionTreeClassifier
@@ -12,10 +12,11 @@ import pickle
 import pdb
 import ai.api_utils as api_utils
 from ai.api_utils import LabApi
-import os
 import ai.q_utils as q_utils
+import os
 import ai.knowledgebase_loader as knowledgebase_loader
 import logging
+import sys
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.weighted_recommender import WeightedRecommender
@@ -25,7 +26,7 @@ from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 from collections import OrderedDict
-
+from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
@@ -49,11 +50,14 @@ class AI():
     :param api_path: string - path to the lab api server
     :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
-    :param rec_score_file: file - pickled score file to keep persistent scores between sessions
+    :param rec_score_file: file - pickled score file to keep persistent scores 
+    between sessions
     :param verbose: Boolean
-    :param warm_start: Boolean - if true, attempt to load the ai state from the file provided by rec_score_file
+    :param warm_start: Boolean - if true, attempt to load the ai state from the file
+    provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
-    :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup 
+    :param datasets: str or False - if not false, a comma seperated list of datasets
+    to turn the ai on for at startup 
     :param use_pmlb_knowledgebase: Boolean
 
     """
@@ -68,16 +72,20 @@ class AI():
                 warm_start=False, 
                 n_recs=1, 
                 datasets=False,
-                use_knowledgebase=False):
+                use_knowledgebase=False,
+                term_condition='n_recs',
+                max_time=5):
         """initializes AI managing agent."""
         # recommender settings
         if api_path == None:
-            api_path = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
+            api_path = ('http://' + os.environ['LAB_HOST'] + ':' + 
+                        os.environ['LAB_PORT'])
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
         self.continous= n_recs<1
 
-        # api parameters, will be removed from self once the recommenders no longer call the api directly.
+        # api parameters, will be removed from self once the recommenders no longer
+        # call the api directly.
         # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
         self.user=user
         self.api_path=api_path
@@ -108,13 +116,23 @@ class AI():
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
         
-        if rec:
-            if hasattr(rec,'ml_p'):
-                self.rec.ml_p = self.labApi.get_all_ml_p()
-            if hasattr(rec,'mlp_combos'):
-                self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
-        else: # default to random recommender
+        # create a default recommender if not set
+        if (rec): 
+            self.rec = rec
+        else:
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
+
+        # set the registered ml parameters in the recommender
+        if hasattr(self.rec,'ml_p'):
+            ml_p = self.labApi.get_all_ml_p()
+            assert ml_p is not None
+            assert len(ml_p) > 0
+            self.rec.ml_p = ml_p
+        if hasattr(self.rec,'mlp_combos'):
+            self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
+
+        logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.describe()))
+
         # tmp = self.labApi.get_all_ml_p()
         # tmp.to_csv('ml_p_options.csv') 
         # build dictionary of ml ids to names conversion
@@ -122,12 +140,15 @@ class AI():
         # print('ml_id_to_name:',self.ml_id_to_name)
         # build dictionary of dataset ids to names conversion
         self.user_datasets = self.labApi.get_user_datasets(self.user)
-        # dictionary of dataset threads, initilized and used by q_utils.  Keys are datasetIds, values are q_utils.DatasetThread instances.
+        # dictionary of dataset threads, initilized and used by q_utils.  
+        # Keys are datasetIds, values are q_utils.DatasetThread instances.
+        #WGL: this should get moved to the request manager
         self.dataset_threads = {}
 
         # for comma-separated list of datasets in datasets, turn AI request on
         if datasets:
-            data_usersets = dict(zip(self.user_datasets.values(),self.user_datasets.keys()))
+            data_usersets = dict(zip(self.user_datasets.values(),
+                                     self.user_datasets.keys()))
             print(data_usersets)
             for ds in datasets.split(','):
                 tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], 
@@ -139,6 +160,14 @@ class AI():
         if use_knowledgebase:
             self.load_knowledgebase()
 
+        # request manager
+        self.RMlist = []
+        # set termination condition
+        self.term_condition = term_condition
+        if self.term_condition == 'n_recs':
+            self.term_value = self.n_recs
+        elif self.term_condition == 'time':
+            self.term_value = max_time
         
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
@@ -150,6 +179,11 @@ class AI():
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
+        self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
+        kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
+                                          lambda x: self.dataset_name_to_id[x]
+                                          if x in self.dataset_name_to_id.keys()
+                                          else x)
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
@@ -173,7 +207,8 @@ class AI():
 
 
     def check_requests(self):
-        """Check to see if any new AI requests have been submitted.  If so, add them to self.request_queue.
+        """Check to see if any new AI requests have been submitted.  
+        If so, add them to self.request_queue.
 
         :returns: Boolean - True if new AI requests have been submitted
         """
@@ -197,16 +232,22 @@ class AI():
             
             # set AI flag to 'on' to acknowledge requests received
             for r in self.request_queue:
-                tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'on')
-                q_utils.startQ(ai=self, datasetId=r['_id'])
+                tmp = self.labApi.set_ai_status(datasetId = r['_id'], 
+                                                aiStatus = 'on')
+                self.RMlist.append(RequestManager(ai=self, 
+                                                  dataset_id=r['_id'],
+                                                  dataset_name=r['name'],
+                                                  term_condition=self.term_condition,
+                                                  term_value=self.term_value)
+                                                  )
             return True
-
-        return False
+        return len([r for r in self.RMlist if r.active])>0
+        # return False
 
 
     def check_results(self):
-        """Checks to see if new experiment results have been posted since the previous
-        time step. If so, set them to self.new_data and return True.
+        """Checks to see if new experiment results have been posted since the 
+        previous time step. If so, set them to self.new_data and return True.
 
         :returns: Boolean - True if new results were found
         """
@@ -214,35 +255,39 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
 
-        newResultsDict = self.labApi.get_new_experiments(last_update=self.last_update)
+        newResultsDict = self.labApi.get_new_experiments(
+                                        last_update=self.last_update)
 
         if len(newResultsDict) > 0:
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                       ':',len(newResultsDict),' new results!')
-            
-            self.process_new_results(newResultsDict) # process new results as a dataframe and set them to self.new_data
+            # process new results as a dataframe and set them to self.new_data
+            self.process_new_results(newResultsDict)             
             self.last_update = int(time.time())*1000 # update timestamp
             return True
 
         return False
     
     def process_new_results(self, data):
-        """Transforms a dictionary of data representing new experiment results into a dataframe and
-        sets them to self.new_data
+        """Transforms a dictionary of data representing new experiment results into
+        a dataframe and sets them to self.new_data
 
         :param data: dictionary - results from labApi.get_new_experiments()
         """
 
         processed_data = []
         for d in data:
-            if '_options' in d.keys() and '_scores' in d.keys() and '_dataset_id' in d.keys():
+            if ('_options' in d.keys() and '_scores' in d.keys() 
+                and '_dataset_id' in d.keys()):
                 frame={
                     'dataset':d['_dataset_id'],
                     'algorithm':d['_project_id'],
-                    'accuracy':d['_scores']['accuracy_score'],
+                    'accuracy':d['_scores']['accuracy_score'],#! This is balanced
+                    # accuracy!
                     'f1':d['_scores']['f1_score'],
-                    'parameters':str(d['_options']),
+                    #WGL: this parameters value might need to be sorted
+                    'parameters':str(d['_options']), 
                     }
                 if(hasattr(d['_scores'],'balanced_accuracy')):
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
@@ -261,61 +306,73 @@ class AI():
           print("no new data")
 
     def transfer_rec(self, rec_payload):
-            """Attempt to send a recommendation to the lab server.
-            Continues until recommendation is successfully submitted or an unexpected error occurs.
+        """Attempt to send a recommendation to the lab server.
+        Continues until recommendation is successfully submitted or an 
+        unexpected error occurs.
 
-            :param rec_payload: dictionary - the payload describing the experiment
-            """
-            logger.info("transfer_rec(" + str(rec_payload) + ")")
-            submitstatus = self.labApi.launch_experiment(algorithmId=rec_payload['algorithm_id'], 
-                                                         payload=rec_payload)
+        :param rec_payload: dictionary - the payload describing the experiment
+        """
+        logger.info("transfer_rec(" + str(rec_payload) + ")")
+        submitstatus = self.labApi.launch_experiment(
+                            algorithmId=rec_payload['algorithm_id'], 
+                            payload=rec_payload)
 
-            logger.debug("transfer_rec() starting loop, submitstatus: " + str(submitstatus))
-            while('error' in submitstatus and submitstatus['error'] == 'No machine capacity available'):
-                print('slow it down pal', submitstatus['error'])
-                sleep(3)
-                submitstatus = self.labApi.launch_experiment(rec_payload['algorithm_id'], rec_payload)
+        logger.debug("transfer_rec() starting loop, submitstatus: " + 
+                     str(submitstatus))
+        while('error' in submitstatus 
+              and submitstatus['error'] == 'No machine capacity available'):
+            print('slow it down pal', submitstatus['error'])
+            sleep(3)
+            submitstatus = self.labApi.launch_experiment(
+                    rec_payload['algorithm_id'], rec_payload)
 
-            logger.debug("transfer_rec() exiting loop, submitstatus: " + str(submitstatus))
+        logger.debug("transfer_rec() exiting loop, submitstatus: " + 
+                     str(submitstatus))
 
-            if 'error' in submitstatus:
-                msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
-                logger.error(msg)
-                print(msg)
-                raise RuntimeError(msg)
-                #pdb.set_trace()
-
+        if 'error' in submitstatus:
+            msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
+            logger.error(msg)
+            print(msg)
+            raise RuntimeError(msg)
+            #pdb.set_trace()
 
     def process_rec(self):
-        """Generates requested experiment recommendations and adds them to the queue."""
+        """Generates requested experiment recommendations and adds them to the 
+        queue."""
 
         # get recommendation for dataset
-        for r in self.request_queue:
-            ml,p,ai_scores = self.rec.recommend(dataset_id=r['_id'], n_recs=self.n_recs,
-                                                dataset_mf=self.labApi.get_metafeatures(r['_id']))
-            self.rec.last_n = 0
-            for alg,params,score in zip(ml,p,ai_scores):
-                modified_params = eval(params) # turn params into a dictionary
-                
-                rec_payload = {'dataset_id':r['_id'],
-                        'algorithm_id':alg,
-                        'username':self.user,
-                        'parameters':modified_params,
-                        'ai_score':score,
-                        }
-                if self.verbose:
-                    print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                        ':','recommended',self.ml_id_to_name[alg],'with',params,'for',r['name'])
-                # TODO: check termination conditions 
-                q_utils.addExperimentToQueue(ai=self, datasetId=r['_id'], experimentPayload=rec_payload)
+        # for r in self.request_queue:
+        for r in self.RMlist:
+            print('RM:',r.name,'active:',r.active)
+        for RM in [r for r in self.RMlist if r.active]:
+            exp_request = RM.update()
+            if exp_request is not None:
+                ml,p,ai_scores = self.rec.recommend(dataset_id=RM.id,
+                                n_recs=self.n_recs,
+                                dataset_mf=self.labApi.get_metafeatures(RM.id))
+                self.rec.last_n = 0
+                for alg,params,score in zip(ml,p,ai_scores):
+                    modified_params = eval(params) # turn params into a dictionary
+                    
+                    rec_payload = {'dataset_id':RM.id,
+                            'algorithm_id':alg,
+                            'username':self.user,
+                            'parameters':modified_params,
+                            'ai_score':score,
+                            }
+                    if self.verbose:
+                        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
+                            ':','recommended',self.ml_id_to_name[alg],'with',params,
+                            'for',RM.name)
+                    
+                    RM.addExp(rec_payload)
 
-            #tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'finished') # h note - re-enable this once the queuing functionaity has been moved to lab server
-            tmp = self.labApi.set_ai_status(datasetId = r['_id'], aiStatus = 'queuing')
+            # tmp = self.labApi.set_ai_status(datasetId = RM.id, aiStatus = 'queuing')
 
 
     def update_recommender(self):
-        """Update recommender models based on new experiment results in self.new_data, 
-            and then clear self.new_data. 
+        """Update recommender models based on new experiment results in 
+        self.new_data, and then clear self.new_data. 
         """
 
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
@@ -335,10 +392,11 @@ class AI():
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
-            state['scores'] = self.rec.scores #TODO: make this a more generic. Maybe just save the 
-                                              # AI or rec object itself. 
-        # state['trained_dataset_models'] = self.rec.trained_dataset_models
-        state['last_update'] = self.last_update
+            #TODO: make this a more generic. Maybe just save the 
+            # AI or rec object itself. 
+            # state['trained_dataset_models'] = self.rec.trained_dataset_models
+            state['scores'] = self.rec.scores
+            state['last_update'] = self.last_update
         pickle.dump(state, out)
 
     def load_state(self):
@@ -362,9 +420,8 @@ class AI():
         :param results_data: experiment results with associated datasets
         
         """
-        print('in AI::update_dataset_mf')
-        print('results_data:',results_data.columns)
-        print('results_data:',results_data.head())
+        logger.debug('results_data:'+str(results_data.columns))
+        logger.debug('results_data:'+str(results_data.head()))
         dataset_metafeatures = []
         for d in results_data['dataset'].unique():
             if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
@@ -385,29 +442,39 @@ import argparse
 
 def main():
     """Handles command line arguments and runs Penn-AI."""
-    parser = argparse.ArgumentParser(description='PennAI is a recommendation system for data'
-                                    ' science. ', add_help=False)
+    parser = argparse.ArgumentParser(
+            description='PennAI is a recommendation system for data science. ', 
+            add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-                        choices = ['random','average','exhaustive','meta','knn','svd'],
-                        help='Recommender algorithm options.')
-    parser.add_argument('-api_path',action='store',dest='API_PATH',default='http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT'],
+            choices = ['random','average','exhaustive','meta','knn','svd'],
+            help='Recommender algorithm options.')
+    parser.add_argument('-api_path',action='store',dest='API_PATH',
+            default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
                         help='Path to the database.')
-    parser.add_argument('-u',action='store',dest='USER',default='testuser',help='user name')
-    parser.add_argument('-t',action='store',dest='DATASETS',help='turn on ai for these datasets')
-    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,help='Number of '
-                        ' recommendations to make at a time. If zero, will send continous '
-                        'recommendations until AI is turned off.')
-    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',default=True,
-                        help='Print out more messages.')
+    parser.add_argument('-u',action='store',dest='USER',default='testuser',
+            help='user name')
+    parser.add_argument('-t',action='store',dest='DATASETS',
+            help='turn on ai for these datasets')
+    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,
+            help=('Number of recommendations to make at a time. '
+                'If zero, will send continous recommendations.'))
+    parser.add_argument('-max_time',action='store',dest='MAX_TIME',type=int,
+            default=60, help=('Amount of time to allow recs in seconds. '
+                'Only works when term_condition set to "time".'))
+    parser.add_argument('-term_condition',action='store',dest='TERM_COND',
+            type=str, default='n_recs', choices=['n_recs','time'],
+            help=('Termination condition for the AI.'))
+    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',
+            default=True, help='Print out more messages.')
     parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
-                        help='Start from last saved session.')
-    parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4, 
-                        help='Time to wait for pinging the server for results/ recommendation requests')
-    parser.add_argument('--knowledgebase','-k', action='store_true',dest='USE_KNOWLEDGEBASE',
-                        default=False, 
-                        help='Load a knowledgebase for the recommender')
+            help='Start from last saved session.')
+    parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
+            type=float, help='Time between pinging the server for updates')
+    parser.add_argument('--knowledgebase','-k', action='store_true',
+            dest='USE_KNOWLEDGEBASE', default=False, 
+            help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
     print(args)
@@ -422,17 +489,15 @@ def main():
             'svd': SVDRecommender
             }
     
-    # if args.REC in ['random','exhaustive','meta']:
-    #     ml_p = api_utils.get_all_ml_p_from_db(args.API_PATH+'/api/preferences',os.environ['APIKEY'])
-    #     rec_args = {'ml_p':ml_p}
-        # rec_args = {'db_path':args.API_PATH,'api_key':os.environ['APIKEY']}
     rec_args['metric'] = 'accuracy'
 
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**rec_args),api_path=args.API_PATH, user=args.USER,
-                verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
-                datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE)
+    pennai = AI(rec=name_to_rec[args.REC](**rec_args),
+            api_path=args.API_PATH, user=args.USER,
+            verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
+            datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE,
+            term_condition=args.TERM_COND, max_time=args.MAX_TIME)
 
     n = 0;
     try:
@@ -446,17 +511,20 @@ def main():
             n = n + 1
             time.sleep(args.SLEEP_TIME)
     except (KeyboardInterrupt, SystemExit):
-        print('Saving current AI state and closing....')
+        #logger.info("Exit command recieved")
+        logger.info('Exit command recieved')
     except:
-        #print("Unhanded exception caught:", sys.exc_info()[0])
-        print("Unhanded exception caught:")
+        print("Unhanded exception caught:", sys.exc_info()[0])
+        logger.error("Unhanded exception caught:", sys.exc_info()[0])
         raise
     finally:
         # tell queues to exit
-        print("foo")
-        logger.info("Exiting queue")
+        logger.info("Shutting down AI engine...")
+        logger.info("...Exiting queue")
         q_utils.exitFlag=1
+        logger.info("...Saving state")
         pennai.save_state()
+        logger.info("Goodbye")
 
 if __name__ == '__main__':
     main()
