@@ -383,31 +383,6 @@ class APITESTCLASS(unittest.TestCase):
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_main_2(self, mock_get):
-        """Test main function raises RuntimeError when time limit (1 second) is reached."""
-
-        for obj in projects_json_data:
-            algorithm_name = obj["name"]
-            if algorithm_name != "GradientBoostingClassifier":
-                continue
-            schema = obj["schema"]
-            args = {}
-            _id = "test_id"
-            args['_id'] = _id
-            args["method"] = algorithm_name
-            for param_name in schema.keys():
-                default_value = schema[param_name]["default"]
-                param_type = schema[param_name]["type"]
-                conv_func = get_type(param_type)
-                conv_default_value = conv_func(default_value)
-                if param_name != 'n_estimators':
-                    args[param_name] = conv_default_value
-                else:
-                    args[param_name] = 10000 # set n_estimators to 1000 to raise time out.
-
-        assert_raises(RuntimeError, main, args, 1)
-
-    @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_3(self, mock_get):
         """Test main function when applying GradientBoostingClassifier on dateset with categorical features."""
         obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
@@ -845,19 +820,6 @@ def test_generate_results_7():
         load_clf, training_features, training_classes)
     assert train_score == load_clf_score
 
-    rmtree(tmpdir)
-
-
-def test_generate_results_8():
-    """Test generate results return 'Timeout' once the time limit is reached."""
-    tmpdir = mkdtemp() + '/'
-    _id = 'test_id'
-    outdir = tmpdir + _id
-    os.mkdir(outdir)
-    test_gbc_long = GradientBoostingClassifier(n_estimators=1000)
-    return_val = generate_results(model=test_gbc_long, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42, timeout=1)
-    assert return_val == "Timeout"
     rmtree(tmpdir)
 
 

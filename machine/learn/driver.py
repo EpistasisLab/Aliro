@@ -1,13 +1,7 @@
 from io_utils import Experiment, parse_args
 from skl_utils import generate_results
-from os import environ
 
-# if system environments has a time limit setting for each experiment
-timeout = 300 # 5 mins by default
-if 'EXP_TIMEOUT' in environ:
-    timeout = int(environ['EXP_TIMEOUT'])*60
-
-def main(args, timeout=timeout):
+def main(args):
     exp = Experiment(args)
     input_data, data_info = exp.get_input()
     model, method_type, encoding_strategy = exp.get_model()
@@ -20,8 +14,7 @@ def main(args, timeout=timeout):
                     filename=data_info['filename'],
                     categories=data_info['categories'],
                     ordinals=data_info['ordinals'],
-                    encoding_strategy=encoding_strategy,
-                    timeout=timeout
+                    encoding_strategy=encoding_strategy
                     )
     if return_val == "Timeout":
         raise RuntimeError("Experiment failed due to time out!")
