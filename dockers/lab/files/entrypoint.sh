@@ -32,7 +32,7 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
 
     echo "starting ai..."
 
-    PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER}"
+    PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER} -term_condition ${AI_TERM_COND} -max_time ${AI_MAX_TIME}"
     if [ ${AI_VERBOSE} -eq 1 ]; then
         PARMS+=" -v"
     fi
