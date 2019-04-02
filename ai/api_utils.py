@@ -229,14 +229,31 @@ class LabApi:
             return df
 
     def get_all_ml_p(self):
-        """ Returns a list of ml and parameter options from the server.
+        """ 
+        Returns a list of ml and parameter options for the user 'pennai' 
+        from the server.
         
-        :returns: dataframe - unique ml parameter options
+        :returns: pd.DataFrame - unique ml algorithm and parameter combinations
         """
-        logger.info("get_all_ml_p()")        
+        logger.info("get_all_ml_p()")
+        payload = {"username":"pennai"}
 
-        r = self.__request(path=self.api_path+'/api/preferences',method='GET')
+        # get the algorithm list for the user 'pennai'
+        r = self.__request(path=self.api_path+'/api/preferences', payload=payload, method='GET')
         response = json.loads(r.text)
+
+        if len(response) != 1:
+            msg = 'error: get_all_ml_p() got ' + str(len(response)) + ' user preferences, expected 1.'
+            logger.error(msg)
+            logger.error(response)
+            raise RuntimeError(msg)
+
+        if (response[0]['username'] != 'pennai'):
+            msg = 'error: get_all_ml_p() did not get user "pennai", got "' + str(response[0]['username']) + '"'
+            logger.error(msg)
+            logger.error(response)
+            raise RuntimeError(msg)
+
 
         algorithms = response[0]['algorithms']
         logger.debug('response.algorithms length(): ' + str(len(algorithms)))
