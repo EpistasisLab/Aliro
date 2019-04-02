@@ -98,7 +98,8 @@ class SVDRecommender(BaseRecommender):
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
                                        results_data['algorithm'].values + '|' +
-                                       results_data['sorted_parameters'].values)
+                                       results_data['parameters'].values)
+                                       # results_data['sorted_parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
@@ -150,15 +151,16 @@ class SVDRecommender(BaseRecommender):
                 # this prevents repeat recommendations
                 # print('filtering repeats')
                 # pdb.set_trace()
-                alg = alg_params.split('|')[0]
-                sorted_params = str(sorted(eval(alg_params.split('|')[-1]).items()))
-                if (dataset_id+'|'+alg+'|'+sorted_params not in 
+                # alg = alg_params.split('|')[0]
+                # sorted_params = str(sorted(eval(alg_params.split('|')[-1]).items()))
+                # if (dataset_id+'|'+alg+'|'+sorted_params not in 
+                if (dataset_id+'|'+alg_params not in 
                     self.trained_dataset_models):  
                     predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
-                else:
-                    print('skipping',dataset_id+'|'+alg_params,'which has already'
-                    'been run')
+                # else:
+                #     print('skipping',dataset_id+'|'+alg_params,'which has already'
+                #     'been run')
             logger.debug('getting top n predictions') 
             ml_rec, p_rec, score_rec = self.get_top_n(predictions, n_recs)
             logger.debug('returning ml recs') 
