@@ -22,6 +22,4 @@ RUN apt-get update --fix-missing \
 ## install dependencies for machine
 RUN pip install --no-cache-dir mlxtend stopit pydot
 
-EXPOSE 5081
-
 CMD ["/bin/bash", "/root/entrypoint.sh"]
