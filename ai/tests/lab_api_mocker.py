@@ -195,9 +195,9 @@ def handle_post_invalid_launch_experiment(path, data):
 api_preferences_data = [
     {
         "_id": "5ba41716dfe741699222870f",
-        "username": "testuser",
-        "firstname": "Test",
-        "lastname": "User",
+        "username": "pennai",
+        "firstname": "PennAi",
+        "lastname": "PennAi",
         "algorithms": [
             {
                 "_id": "5ba41716dfe741699222871b",
@@ -878,9 +878,9 @@ api_launch_experiment_error = {
 api_preferences_data_multi_machine = [
     {
         "_id": "5ca281b65ff80254b280f8e4",
-        "username": "testuser",
-        "firstname": "Test",
-        "lastname": "User",
+        "username": "pennai",
+        "firstname": "PennAi",
+        "lastname": "PennAi",
         "algorithms": [
             {
                 "_id": "5ca281b65ff80254b280f8ea",
@@ -1477,6 +1477,7 @@ api_preferences_data_multi_machine = [
     }
 ]
 
+'''
 api_preferences_data_multi_user = [{'_id': '5ca282caa0357a2783b0386e', 'username': 'pennai', 'firstname': 'Penn', 'lastname': 'AI', 'algorithms': []}, {'_id': '5ca282caa0357a2783b0386d', 'username': 'testuser', 'firstname': 'Test', 'lastname': 'User',
 'algorithms': [{'_id': '5ca282caa0357a2783b03871', 'name': 'DecisionTreeClassifier', 'path': 'sklearn.tree', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.", 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html', 'schema': {'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.', 'type': 'enum', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_depth': {'description': 'The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.', 'type': 'int', 'default': 2, 'ui': {'style': 'radio', 'choices': [2, 4, 6, 8]}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui':
 {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of the sum
@@ -1499,3 +1500,4 @@ only l2 penalties.', 'type': 'string', 'default': 'l2', 'ui': {'style': 'radio',
 'values': ['true', 'false']}}, 'fit_intercept': {'description': 'Fit intercept in addition to feature coefficients.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03878', 'name': 'RandomForestClassifier', 'path': 'sklearn.ensemble', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'An ensemble of decision trees that are trained on random sub-samples of the dataset.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html', 'schema': {'n_estimators': {'description': 'The number of trees in the forest.', 'type': 'int', 'default': 100, 'ui': {'style': 'radio', 'choices': [100, 250]}}, 'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.', 'type': 'string', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio',
 'choices': ['Square root', 'Log2'], 'values': ['sqrt', 'log2']}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'bootstrap': {'description': 'Whether bootstrap samples are used when building trees.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of the sum total of weights (of all the input samples) required to be
 at a leaf node.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]}}}, 'category': 'classification'}]}]
+'''
