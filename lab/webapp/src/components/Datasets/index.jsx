@@ -34,10 +34,8 @@ class Datasets extends Component {
 
     return (
       <div>
-
-        <SceneHeader header="Datasets" />
         {/*<FileUpload />*/}
-        {/*<SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" />*/}
+        <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" linkText='/upload_datasets' />
         {datasets.length > 0 ? (
           <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
             {datasets.map(dataset => (

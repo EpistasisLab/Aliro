@@ -9,7 +9,7 @@ import { uploadDataset } from 'data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
-import { Button, Input, Form, Segment, Table, Popup, Checkbox } from 'semantic-ui-react';
+import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header } from 'semantic-ui-react';
 
 class FileUpload extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class FileUpload extends Component {
     this.state = {
       selectedFile: null,
       dependentCol: '',
-      catFeatures: [],
+      catFeatures: '',
       ordinalFeatures: {},
       ordinalIndex: 0,
       loaded: 0
@@ -28,21 +28,37 @@ class FileUpload extends Component {
     this.handleDepColField = this.handleDepColField.bind(this);
     this.handleCatFeatures = this.handleCatFeatures.bind(this);
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
+    this.getDataTablePreview = this.getDataTablePreview.bind(this);
+    //this.cleanedInput = this.cleanedInput.bind(this)
 
+  }
+
+  // strip input of potentially troublesome characters, from here:
+  // https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
+  // need to figure out what characters will be allowed
+  purgeUserInput(inputText) {
+    let cleanedInput = inputText.replace(/[|&;$%@"<>()+,]/g, "");
+    return cleanedInput;
   }
 
   // text field for entering dependent column
   handleDepColField(e, props) {
+    let safeInput = this.purgeUserInput(props.value);
+    window.console.log('safe input: ', safeInput);
     this.setState({dependentCol: props.value});
   }
 
   // text field/area for entering categorical features
   handleCatFeatures(e, props) {
+    let safeInput = this.purgeUserInput(props.value);
+    window.console.log('safe input: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
   // text field/area for entering ordinal features
   handleOrdinalFeatures(e, props) {
+    let safeInput = this.purgeUserInput(props.value);
+    window.console.log('safe input: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
@@ -83,8 +99,8 @@ class FileUpload extends Component {
         window.console.log('not JSON')
       }
 
-      //catFeatures = this.state.catFeatures;
-      catFeatures = this.state.catFeatures.split(",");
+      catFeatures = this.state.catFeatures;
+      typeof catFeatures.split() === 'function' ? catFeatures = catFeatures.split(',') : null;
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
@@ -116,25 +132,17 @@ class FileUpload extends Component {
     }
   }
 
-  render() {
-
-    const { dataset } = this.props;
-    let serverResp = dataset.fileUploadResp;
+  getDataTablePreview() {
     let dataPrev = this.state.datasetPreview;
-    let selectCol = this.state.selectCol;
-    let catFeats = this.state.catFeatures;
-    let ordFeatureSelection = "";
-    let catFeatureSelection = "";
-
-    //window.console.log('prev: ', dataPrev);
-
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
-    serverResp ? serverResp = ( <p style={{display: 'block', color: 'white'}}> {JSON.stringify(serverResp)} </p> ) :
-                 serverResp = ( <p style={{display: 'block', color: 'white'}}>please upload a file </p> );
+
     if(dataPrev) {
       dataPrevTable = (
         <div>
           <br/>
+          <Header as='h2' inverted color='grey'>
+            Dataset preview
+          </Header>
           <div style={{ overflowY: 'auto', maxHeight: '350px' }}>
             <Table inverted celled compact unstackable singleLine>
               <Table.Header>
@@ -160,6 +168,29 @@ class FileUpload extends Component {
       )
     }
 
+    return dataPrevTable;
+  }
+
+  render() {
+    const { dataset } = this.props;
+
+    let serverResp = dataset.fileUploadResp;
+    let catFeats = this.state.catFeatures;
+    let ordFeatureSelection = "";
+    let catFeatureSelection = "";
+    let dataPrevTable = this.getDataTablePreview();
+    // default to hidden until a file is selected, then display input areas
+    let formInputClass = "file-upload-form-hide-inputs";
+    //window.console.log('prev: ', dataPrev);
+
+    // server message to display in popup (or other UI element)
+    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(serverResp)} </p> ) :
+                 null;
+
+    // check if file with filename has been selected, if so then use css to show form
+    this.state.selectedFile && this.state.selectedFile.name ?
+      formInputClass = "file-upload-form-show-inputs" : null;
+
     return (
       <div>
       <Form inverted>
@@ -171,49 +202,52 @@ class FileUpload extends Component {
             onChange={this.handleSelectedFile}
           />
           <br/>
-          <Form.Input
-            label="Dependent Column"
-            placeholder="class"
-            value={this.state.dependentCol ? this.state.dependentCol : ""}
-            type="text"
-            onChange={this.handleDepColField}
-          />
-          <Form.Input
-            label="Ordinal Features"
-          >
-            <textarea
+          <div className={formInputClass}>
+            <Form.Input
+              label="Dependent Column"
+              placeholder="class"
+              value={this.state.dependentCol ? this.state.dependentCol : ""}
+              type="text"
+              onChange={this.handleDepColField}
+            />
+            <Form.Input
               label="Ordinal Features"
-              placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-              onChange={this.handleOrdinalFeatures}
-            />
-          </Form.Input>
-          <Form.Input
-            label="Categorical Features"
-          >
-            <textarea
+            >
+              <textarea
+                label="Ordinal Features"
+                placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+                onChange={this.handleOrdinalFeatures}
+              />
+            </Form.Input>
+            <Form.Input
               label="Categorical Features"
-              placeholder={"cat_feat_1, cat_feat_2"}
-              onChange={this.handleCatFeatures}
+            >
+              <textarea
+                label="Categorical Features"
+                placeholder={"cat_feat_1, cat_feat_2"}
+                onChange={this.handleCatFeatures}
+              />
+            </Form.Input>
+            <Popup
+              header="Error submitting experiment:"
+              content={serverResp}
+              open={serverResp ? true : false}
+              trigger={
+                <Button
+                  inverted
+                  color="blue"
+                  compact
+                  size="small"
+                  icon="upload"
+                  content="Upload dataset"
+                  onClick={this.handleUpload}
+                />
+              }
             />
-          </Form.Input>
-          <Button
-            inverted
-            color="blue"
-            compact
-            size="small"
-            icon="upload"
-            content="Upload dataset"
-            onClick={this.handleUpload}
-          />
+          </div>
         </Segment>
       </Form>
-      {serverResp}
-      <Popup trigger={dataPrevTable}>
-        <Popup.Header>dataset columns</Popup.Header>
-        <Popup.Content>
-          <p>Dataset preview, please enter corresponding metadata</p>
-        </Popup.Content>
-      </Popup>
+      {dataPrevTable}
       </div>
     );
   }
