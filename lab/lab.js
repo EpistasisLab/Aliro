@@ -24,6 +24,9 @@ var Q = require("q");
 const assert = require("assert");
 
 /* App instantiation */
+// unregister any machine instances before starting the server
+db.machines.remove({});
+
 var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
 var upload = multer(); // Store files in memory as Buffer objects
@@ -289,7 +292,23 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
         });
 });
 
-
+// register new machine
+app.post("/api/v1/machines", jsonParser, (req, res, next) => {
+    console.log("=====/api/v1/machines...")
+    //console.log(req)
+    //var machineuri = 'http://' + process.env.MACHINE_HOST + ':' + req.port;
+    //req.body.address = machineuri
+    //console.log(machineuri)
+    console.log(req.body)
+    db.machines.insertAsync(req.body, {})
+        .then((result) => {
+            res.status(201);
+            res.send(result.ops[0]);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
 
 // Return all entries
 app.get("/api/v1/:collection", (req, res, next) => {

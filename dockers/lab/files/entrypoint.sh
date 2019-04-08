@@ -19,18 +19,32 @@ echo "datasets loaded..."
 if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "autostarting ai..."
 
-    echo "waiting for machine to be responsive..."
-    /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
+#   TODO: split ai to a seperate docker container; should be dependent on lab, db, and machine.
+#       For now, wait for the singular machine to be active, or wait a set amount of time in the case of 
+#       machine scaling.
+
+#    echo "waiting for machine to be responsive..."
+#    /root/wait-for-it.sh -t 40 ${MACHINE_HOST}:${MACHINE_PORT} -- echo "machine wait over"
+
+    echo "waiting set time to allow machines to start..."
+    sleep 10
+      
 
     echo "starting ai..."
 
-    PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER}"
-    if [ ${AI_VERBOSE} -eq 1 ]; then
-        PARMS+=" -v"
-    fi
-    if [ ${AI_PMLB_KNOWLEDGEBASE} -eq 1 ]; then
-        PARMS+=" --knowledgebase"
-    fi
+    #: "${AI_RECOMMENDER:?Need to set environmental variable AI_RECOMMENDER to be non-empty}"
+    [ -z "$AI_RECOMMENDER" ] && { echo "Need to set environmental variable AI_RECOMMENDER to be non-empty"; exit 1; }
+
+    #PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER} -term_condition ${AI_TERM_COND} -max_time ${AI_MAX_TIME}"
+    PARMS="-rec ${AI_RECOMMENDER}"
+
+    # optional parameters
+    [ -n "$AI_VERBOSE" ] && { PARMS+=" -v"; }
+    [ -n "$AI_PMLB_KNOWLEDGEBASE" ] && { PARMS+=" --knowledgebase"; }
+    [ -n "$AI_NUMRECOMMEND" ] && { PARMS+=" -n ${AI_NUMRECOMMEND}"; }
+    [ -n "$AI_TERM_COND" ] && { PARMS+=" -term_condition ${AI_TERM_COND}"; }
+    [ -n "$AI_MAX_TIME" ] && { PARMS+=" -max_time ${AI_MAX_TIME}"; }
+
 
     echo "python -m ai.ai $PARMS"
 
