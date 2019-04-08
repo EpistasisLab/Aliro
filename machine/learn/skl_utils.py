@@ -7,10 +7,10 @@ import os
 import json
 import itertools
 from sklearn import metrics
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.utils import safe_sqr, check_X_y
 from mlxtend.evaluate import feature_importance_permutation
 from sklearn.externals import joblib
@@ -29,7 +29,6 @@ if 'MAKEPLOTS' in os.environ:
 random_state = None
 if 'RANDOM_SEED' in os.environ:
     random_state = int(os.environ['RANDOM_SEED'])
-
 #max numbers of bar in importance_score plot and decision tree plot
 max_bar_num = 10
 
@@ -45,14 +44,14 @@ def balanced_accuracy(y_true, y_pred):
     Parameters
     ----------
     y_true: numpy.ndarray {n_samples}
-            True class labels
+        True class labels
     y_pred: numpy.ndarray {n_samples}
-            Predicted class labels by the estimator
+        Predicted class labels by the estimator
     Returns
     -------
     fitness: float
-            Returns a float value indicating the individual's balanced accuracy
-            0.5 is as good as chance, and 1.0 is perfect predictive accuracy
+        Returns a float value indicating the individual's balanced accuracy
+        0.5 is as good as chance, and 1.0 is perfect predictive accuracy
     """
     all_classes = list(set(np.append(y_true, y_pred)))
     all_class_accuracies = []
@@ -86,39 +85,47 @@ def generate_results(model, input_data,
     filename=['test_dataset'],
     categories=None,
     ordinals=None,
-    encoding_strategy="OneHotEncoder"
+    encoding_strategy="OneHotEncoder",
+    param_grid={}
     ):
-    """generate reaults for apply a model on a datasetself.
+    """Generate reaults for applying a model on dataset in PennAI.
+
     Parameters
     ----------
     model: scikit-learn Estimator
-        a machine learning model with scikit-learn API
+        A machine learning model following scikit-learn API
     input_data: pandas.Dataframe or list of two pandas.Dataframe
         pandas.DataFrame: PennAI will use train_test_split to make train/test splits
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
-            while the 2nd one is testing dataset
+        while the 2nd one is testing dataset
     target_name: string
-        target name in input data
+        Target name in input data
     tmpdir: string
-        Path of template directory
+        Temporary directory for saving experiment results
     _id: string
-        experiment id
+        Experiment id
     mode:  string
         'classification': Run classification analysis
         'regression': Run regression analysis
     figure_export: boolean
-        If figure_export is True, the figures will be exported
+        If figure_export is True, the figures will be generated and exported.
     random_state: int
-        random seed
+        Random seed
     filename: list
-        filename for input dataset
+        Filename for input dataset
     categories: list
-        list of column names for one-hot encoding
+        List of column names for one-hot encoding
     ordinals: dict
-        keys: categorical feature name(s)
-        values: categorical values
+        Dictionary of ordinal features:
+            Keys of dictionary: categorical feature name(s)
+            Values of dictionary: categorical values
     encoding_strategy: string
-        encoding strategy for categorical features
+        Encoding strategy for categorical features defined in projects.json
+    param_grid: dict
+        If grid_search is non-empty dictionary, then the experiment will
+        do parameter tuning via GridSearchCV. It should report best result to UI
+        and save all results to knowlegde base.
+
     Returns
     -------
     None
@@ -188,9 +195,7 @@ def generate_results(model, input_data,
                                  )
         model = make_pipeline(ct, model)
 
-
-    print('Args used in model:', model.get_params())
-
+    #print('Args used in model:', model.get_params())
     if mode == "classification":
         scoring = SCORERS["balanced_accuracy"]
         metric = "accuracy"
@@ -199,8 +204,40 @@ def generate_results(model, input_data,
         metric = 'r2'
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
-        # fit model
-        model.fit(training_features, training_classes)
+        if param_grid:
+            if isinstance(model, Pipeline):
+                parameters = {}
+                for key, val in param_grid.items():
+                    step_name = model.steps[-1][0]
+                    pipe_key = "{}__{}".format(step_name, key)
+                    parameters[pipe_key] = val
+            else:
+                parameters = param_grid
+            clf = GridSearchCV(estimator=model,
+                                param_grid=parameters,
+                                scoring=scoring,
+                                cv=5,
+                                refit=True,
+                                verbose=0,
+                                error_score=-float('inf'),
+                                return_train_score=True)
+            clf.fit(training_features, training_classes)
+            cv_results = clf.cv_results_
+            # rename params name from pipeline object
+            fmt_result = []
+            for param, ts in zip(cv_results['params'], cv_results['mean_train_score']):
+                row_dict = {'mean_train_score': ts}
+                for key, val in param.items():
+                    row_dict[key.split('__')[-1]] = val
+                fmt_result.append(row_dict)
+            fmt_result = pd.DataFrame(fmt_result)
+            fmt_result_file = '{0}{1}/grid_search_results_{1}.csv'.format(tmpdir, _id)
+            fmt_result.to_csv(fmt_result_file, index=False)
+            model = clf.best_estimator_
+
+        else:
+            # fit model
+            model.fit(training_features, training_classes)
 
         # computing cross-validated metrics
         cv_scores = cross_val_score(
@@ -215,8 +252,6 @@ def generate_results(model, input_data,
 
     # get predicted classes
     predicted_classes = model.predict(testing_features)
-
-
 
     # exporting/computing importance score
     coefs, imp_score_type = compute_imp_score(model, metric, training_features, training_classes, random_state)
@@ -364,14 +399,13 @@ def generate_results(model, input_data,
 
 
 def get_col_idx(feature_names_list, columns):
-    """get unique indexes of columns based on list of column names
+    """Get unique indexes of columns based on list of column names.
     Parameters
     ----------
-
     feature_names_list: list
-        list of column names
+        List of column names on dataset
     columns: list
-        list of selected column names
+        List of selected column names
 
     Returns
     -------
@@ -382,21 +416,20 @@ def get_col_idx(feature_names_list, columns):
 
 
 def setup_model_params(model, parameter_name, value):
-    """setup parameter in a model.
+    """Assign value to a parameter in a model.
     Parameters
     ----------
-
     model: scikit-learn Estimator
-        a scikit-learn model
+        Machine learning model following scikit-learn API
     parameter_name: string
-        parameter name in the scikit-learn model
+        Parameter name in the scikit-learn model
     value: object
-        values for assigning to the parameter
+        Values for assigning to the parameter
 
     Returns
     -------
     model: scikit-learn Estimator
-        a new scikit-learn model with a updated parameter
+        A new scikit-learn model with a updated parameter
     """
     # fix random_state
     if hasattr(model, parameter_name):
@@ -412,9 +445,9 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     Parameters
     ----------
     tmpdir: string
-
+        Temporary directory for saving experiment results
     model:  scikit-learn Estimator
-        a fitted scikit-learn model
+        A fitted scikit-learn model
     metric: str, callable
         The metric for evaluating the feature importance through
         permutation. By default, the strings 'accuracy' is
@@ -424,18 +457,18 @@ def compute_imp_score(model, metric, training_features, training_classes, random
         accepts two arguments, y_true and y_pred, which have
         similar shape to the `y` array.
     training_features: np.darray/pd.DataFrame
-        training features
+        Features in training dataset
     training_classes: np.darray/pd.DataFrame
-        training target
+        Target in training dataset
     random_state: int
-        random seed for permuation importances
+        Random seed for permuation importances
 
     Returns
     -------
     coefs: np.darray
-        feature importance scores
+        Feature importance scores
     imp_score_type: string
-        importance score type
+        Importance score type
 
     """
     # exporting/computing importance score
@@ -466,18 +499,18 @@ def compute_imp_score(model, metric, training_features, training_classes, random
 
 
 def save_json_fmt(outdir, _id, fname, content):
-    """
-    Save results into json format.
+    """Save results into json format.
+
     Parameters
     ----------
     outdir: string
-            path of output directory
+        Path of output directory
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     fname: string
-            file name
+        File name
     content: list or directory
-            content for results
+        Content for results
     Returns
     -------
     None
@@ -488,22 +521,21 @@ def save_json_fmt(outdir, _id, fname, content):
 
 
 def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
-    """
-    Make plot for confusion matrix.
+    """Make plot for confusion matrix.
+
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        Temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     cnf_matrix: np.darray
-            confusion matrix
+        Confusion matrix
     class_names: list
-            class names
+        List of class names
     Returns
     -------
     None
-
     """
     cm = cnf_matrix
     classes = class_names
@@ -537,18 +569,23 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        Temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     roc_curve: tuple
-            fpr : array, shape = [>2]
-                Increasing false positive rates such that element i is the false positive rate of predictions with score >= thresholds[i].
-            tpr : array, shape = [>2]
-                Increasing true positive rates such that element i is the true positive rate of predictions with score >= thresholds[i].
-            thresholds : array, shape = [n_thresholds]
-                Decreasing thresholds on the decision function used to compute fpr and tpr. thresholds[0] represents no instances being predicted and is arbitrarily set to max(y_score) + 1.
+        fpr : array, shape = [>2]
+            Increasing false positive rates such that element i is the false
+            positive rate of predictions with score >= thresholds[i].
+        tpr : array, shape = [>2]
+            Increasing true positive rates such that element i is the true
+            positive rate of predictions with score >= thresholds[i].
+        thresholds : array, shape = [n_thresholds]
+            Decreasing thresholds on the decision function used to compute
+            fpr and tpr. thresholds[0] represents no instances being predicted
+            and is arbitrarily set to max(y_score) + 1.
     roc_auc_score: float
-            Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+            Compute Area Under the Receiver Operating Characteristic Curve
+            (ROC AUC) from prediction scores.
     Returns
     -------
     None
@@ -576,22 +613,22 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        Temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     coefs: array
-        feature importance scores
+        Feature importance scores
     feature_names: np.array
-        list of feature names
+        List of feature names
     imp_score_type: string
-        importance score type
+        Importance score type
 
     Returns
     -------
     top_features: list
-        top features with high importance score
+        Top features with high importance score
     indices: ndarray
-        array of indices of top important features
+        Array of indices of top important features
 
     """
     # plot bar charts for top important features
@@ -621,23 +658,23 @@ def plot_dot_plot(tmpdir, _id, training_features,
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        Temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     training_features: np.darray/pd.DataFrame
-        training features
+        Features in training dataset
     training_classes: np.darray/pd.DataFrame
-        training target
+        Target in training dataset
     testing_features: np.darray/pd.DataFrame
-        testing features
+        Features in test dataset
     testing_classes: np.darray/pd.DataFrame
-        testing target
+        Target in test dataset
     top_features: list
-        top feature_names
+        Top feature_names
     indices: ndarray
-        array of indices of top important features
+        Array of indices of top important features
     random_state: int
-        random seed for permuation importances
+        Random seed for permuation importances
     mode:  string
         'classification': Run classification analysis
         'regression': Run regression analysis
@@ -645,7 +682,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
     Returns
     -------
     dtree_test_score, float
-        test score from fitting decision tree on top important feat'
+        Test score from fitting decision tree on top important feat'
 
     """
     # plot bar charts for top important features
@@ -689,17 +726,17 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     Parameters
     ----------
     tmpdir: string
-            path of temporary  output directory
+        Temporary directory for saving experiment results
     _id: string
-            Job ID in FGlab
+        Experiment ID in PennAI
     model: scikit-learn estimator
-            a fitted scikit-learn model
+        A fitted scikit-learn model
     filename: string
-            file name of input dataset
+        File name of input dataset
     target_name: string
-        target name in input data
+        Target name in input data
     random_state: int
-        random seed
+        Random seed in model
 
     Returns
     -------
@@ -723,20 +760,20 @@ def generate_export_codes(pickle_file_name, model, filename, target_name, random
     Parameters
     ----------
     pickle_file_name: string
-        a pickle file for a fitted scikit-learn estimator
+        Pickle file name for a fitted scikit-learn estimator
+    model: scikit-learn estimator
+        A fitted scikit-learn model
+    filename: string
+        File name of input dataset
+    target_name: string
+        Target name in input data
+    random_state: int
+        Random seed in model
     Returns
     -------
     pipeline_text: String
-       The Python code that imports all required library used in the current
-       optimized pipeline
-    model: scikit-learn Estimator
-        a machine learning model with scikit-learn API
-    filename: list
-        filename for input dataset
-    target_name: string
-        target name in input data
-    random_state: int
-        random seed
+       The Python scripts for applying the current
+       optimized pipeline in stand-alone python environment
     """
     pipeline_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}

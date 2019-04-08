@@ -147,7 +147,7 @@ var retParams = function(req) {
         }
     }
  
-console.log(req.params);
+//console.log(req.params);
     if (req.params.user['roles'] !== undefined && req.params.user['roles'].indexOf('ai') >= 0) {
         is_ai = true;
     }

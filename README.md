@@ -45,7 +45,13 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 ### Adding Datasets ###
-Labeled datasets for analyzing should be added to the `data/datasets/user` directory.  Data can be placed in subfolders in this directory.  PennAI must be restarted if new datasets are added while it is running.  If errors are encountered when validating a dataset, they will appear in a log file in `target/logs/loadInitialDatasets.log` and that dataset will not be uploaded.  Datasets have the following restrictions:
+One can add new datasets using a UI form within the website or manually add new datasets to the project directory. 
+
+To upload new datasets from the website, click the "Add new Datasets" button on the Datasets page to navigate to the upload form. Select a file using the form's file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example ```{"ord" : ["first", "second", "third"]}```, and a comma separated list of categorical column names without quotes, such as `cat1, cat2`. Once uploaded, the dataset should be available to use within the system.
+
+Or 
+
+Labeled datasets for analyzing can be added to the `data/datasets/user` directory.  Data can be placed in subfolders in this directory.  PennAI must be restarted if new datasets are added while it is running.  If errors are encountered when validating a dataset, they will appear in a log file in `target/logs/loadInitialDatasets.log` and that dataset will not be uploaded.  Datasets have the following restrictions:
 
 * Datasets must have the extension .csv or .tsv
 * Datasets can contain only numeric values and cannot have any null values
