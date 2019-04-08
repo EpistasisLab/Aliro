@@ -79,7 +79,8 @@ class FileUpload extends Component {
 
     this.setState({
       selectedFile: event.target.files[0],
-      loaded: 0
+      loaded: 0,
+      errorResp: undefined
     })
   }
 
@@ -121,9 +122,12 @@ class FileUpload extends Component {
         //window.console.log('FileUpload props after download', this.props);
 
         //this.setState({ serverFileUploadResp: json });
-        // 'refresh' page when upload response from server is not an error
+        // 'refresh' page when upload response from server is not an error and
+        // redirect to dataset page, when error occurs set component state to use
+        // as flag to display popup containing server response
         let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
-        resp !== 'error' ? this.props.fetchDatasets() : null;
+        resp !== 'error' ? this.props.fetchDatasets() : this.setState({errorResp: resp});
+        resp !== 'error' ? window.location = '#/datasets' : null;
         //this.props.fetchDatasets();
       });
 
@@ -178,6 +182,8 @@ class FileUpload extends Component {
     dataset ? serverResp = dataset.fileUploadResp : null;
 
     let catFeats = this.state.catFeatures;
+    // set error message when
+    let errorMsg = this.state.errorResp;
     let ordFeatureSelection = "";
     let catFeatureSelection = "";
     let dataPrevTable = this.getDataTablePreview();
@@ -188,7 +194,6 @@ class FileUpload extends Component {
     // server message to display in popup (or other UI element)
     serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(serverResp)} </p> ) :
                  null;
-
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
@@ -231,9 +236,9 @@ class FileUpload extends Component {
               />
             </Form.Input>
             <Popup
-              header="Error submitting experiment:"
+              header="Error Submitting Dataset"
               content={serverResp}
-              open={serverResp ? true : false}
+              open={errorMsg ? true : false}
               trigger={
                 <Button
                   inverted
