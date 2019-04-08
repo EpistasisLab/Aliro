@@ -59,6 +59,9 @@ def _load_results_from_file(resultsFile):
                        #        'accuracy',
                        #        'macrof1',
                        #        'bal_accuracy']).fillna('')
+    # # sort params
+    # results_data['parameters'] = results_data['parameters'].apply(
+    #         lambda x: str(sorted(eval(x).items()))
     assert(not results_data.isna().any().any())
     logger.debug('results_data:')
     logger.debug(results_data.head())

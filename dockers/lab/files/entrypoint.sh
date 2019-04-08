@@ -32,13 +32,19 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
 
     echo "starting ai..."
 
-    PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER}"
-    if [ ${AI_VERBOSE} -eq 1 ]; then
-        PARMS+=" -v"
-    fi
-    if [ ${AI_PMLB_KNOWLEDGEBASE} -eq 1 ]; then
-        PARMS+=" --knowledgebase"
-    fi
+    #: "${AI_RECOMMENDER:?Need to set environmental variable AI_RECOMMENDER to be non-empty}"
+    [ -z "$AI_RECOMMENDER" ] && { echo "Need to set environmental variable AI_RECOMMENDER to be non-empty"; exit 1; }
+
+    #PARMS="-n ${AI_NUMRECOMMEND}  -rec ${AI_RECOMMENDER} -term_condition ${AI_TERM_COND} -max_time ${AI_MAX_TIME}"
+    PARMS="-rec ${AI_RECOMMENDER}"
+
+    # optional parameters
+    [ -n "$AI_VERBOSE" ] && { PARMS+=" -v"; }
+    [ -n "$AI_PMLB_KNOWLEDGEBASE" ] && { PARMS+=" --knowledgebase"; }
+    [ -n "$AI_NUMRECOMMEND" ] && { PARMS+=" -n ${AI_NUMRECOMMEND}"; }
+    [ -n "$AI_TERM_COND" ] && { PARMS+=" -term_condition ${AI_TERM_COND}"; }
+    [ -n "$AI_MAX_TIME" ] && { PARMS+=" -max_time ${AI_MAX_TIME}"; }
+
 
     echo "python -m ai.ai $PARMS"
 

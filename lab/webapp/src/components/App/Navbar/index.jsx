@@ -18,7 +18,7 @@ function Navbar({ preferences }) {
 
   return (
     <Menu inverted color="grey" fixed="top" size="large" borderless>
-      <Link to="datasets" className="link"> 
+      <Link to="datasets" className="link">
         <Menu.Item header name="PennAI" />
       </Link>
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
@@ -26,7 +26,7 @@ function Navbar({ preferences }) {
       </MediaQuery>
       {preferences &&
         <Menu.Menu position="right">
-          <Link to="datasets" className="link" activeClassName="active"> 
+          <Link to="datasets" className="link" activeClassName="active">
             <Menu.Item name="Datasets">
               <Icon name="file text outline" />
               <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
@@ -34,7 +34,7 @@ function Navbar({ preferences }) {
               </MediaQuery>
             </Menu.Item>
           </Link>
-          <Link to="experiments" className="link" activeClassName="active"> 
+          <Link to="experiments" className="link" activeClassName="active">
             <Menu.Item name="Experiments">
               <Icon name="lab" />
               <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
@@ -42,7 +42,7 @@ function Navbar({ preferences }) {
               </MediaQuery>
             </Menu.Item>
           </Link>
-          <Link to="admin" className="link" activeClassName="active"> 
+          <Link to="admin" className="link" activeClassName="active">
             <Menu.Item name="Admin">
               <Icon name="wrench" />
               <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
@@ -56,20 +56,6 @@ function Navbar({ preferences }) {
               {preferences.username}
             </MediaQuery>
           </Menu.Item>
-          {/*<Dropdown trigger={getUserTrigger()} icon={null}>
-            <Dropdown.Menu>
-              <Dropdown.Item 
-                as={Link} 
-                to="settings"
-                icon="setting" 
-                text="Settings" 
-              />
-              <Dropdown.Item
-                icon="sign out" 
-                text="Sign out" 
-              />
-            </Dropdown.Menu>
-          </Dropdown>*/}
         </Menu.Menu>
       }
     </Menu>
