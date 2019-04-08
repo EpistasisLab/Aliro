@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
 
+api_path = 'http://lab:5080'
+user = "testuser"
+extra_payload = dict()
 
 class MockResponse:
     def __init__(self, json_data, status_code):
@@ -51,6 +54,22 @@ def mocked_requests_request_invalid_launch_experiment(*args, **kwargs):
 
     if (args[0] == "POST"): return handle_post_invalid_launch_experiment(args[1], data)
     elif (args[0] == "GET"): return handle_get(args[1], data)
+    elif (args[0] == "PUT"): return handle_put(args[1], data)
+
+def mocked_requests_request_multi_machine(*args, **kwargs):
+    """This method will be used by mock to replace requests.request"""
+    logger.info("mocked_requests_invalid: " + str(args))
+    logger.debug("kwargs: " + str(kwargs))
+
+    if(kwargs and 'data' in kwargs.keys()) :
+        data = json.dumps(kwargs['data'])
+    else :
+        data = []
+
+    assert (args[0] in ["POST", "GET", "PUT"])
+
+    if (args[0] == "POST"): return handle_post(args[1], data)
+    elif (args[0] == "GET"): return handle_get_multi_machine(args[1], data)
     elif (args[0] == "PUT"): return handle_put(args[1], data)
 
 def mocked_requests_put(*args, **kwargs):
@@ -117,6 +136,19 @@ def handle_get(path, data):
         logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
+def handle_get_multi_machine(path, data):
+    """This method will be used by mock to replace requests.get"""
+    # print("handle_get: ", path)
+
+    if path == 'http://lab:5080/api/preferences':
+        return MockResponse(json.dumps(api_preferences_data_multi_machine), 200)
+    elif (path == 'http://lab:5080/api/datasets/5b58f9d506c14c003221b3f1' or 
+        path =='http://lab:5080/api/datasets/5ba417507831bf002bcbd59b'):
+        return MockResponse(json.dumps(api_dataset_metafeatures), 200)
+    else:
+        logger.error("Unhandled path: " + str(path))
+        return MockResponse(None, 404)
+
 def handle_post(path, data):
     """This method will be used by mock to replace requests.post"""
     #print("handle_post: ", path)
@@ -163,9 +195,9 @@ def handle_post_invalid_launch_experiment(path, data):
 api_preferences_data = [
     {
         "_id": "5ba41716dfe741699222870f",
-        "username": "testuser",
-        "firstname": "Test",
-        "lastname": "User",
+        "username": "pennai",
+        "firstname": "PennAi",
+        "lastname": "PennAi",
         "algorithms": [
             {
                 "_id": "5ba41716dfe741699222871b",
@@ -841,3 +873,631 @@ api_launch_experiment_error = {
         },
         "error": "An unrecoverable error occured"
        }
+
+
+api_preferences_data_multi_machine = [
+    {
+        "_id": "5ca281b65ff80254b280f8e4",
+        "username": "pennai",
+        "firstname": "PennAi",
+        "lastname": "PennAi",
+        "algorithms": [
+            {
+                "_id": "5ca281b65ff80254b280f8ea",
+                "name": "DecisionTreeClassifier",
+                "path": "sklearn.tree",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
+                "schema": {
+                    "criterion": {
+                        "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
+                        "type": "enum",
+                        "default": "gini",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Gini impurity",
+                                "Information gain"
+                            ],
+                            "values": [
+                                "gini",
+                                "entropy"
+                            ]
+                        }
+                    },
+                    "max_depth": {
+                        "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
+                        "type": "int",
+                        "default": 2,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                2,
+                                4,
+                                6,
+                                8
+                            ]
+                        }
+                    },
+                    "min_samples_split": {
+                        "description": "The minimum number of samples required to split an internal node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "min_samples_leaf": {
+                        "description": "The minimum number of samples required to be at a leaf node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "min_weight_fraction_leaf": {
+                        "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+                        "type": "float",
+                        "default": 0,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0,
+                                0.05,
+                                0.1,
+                                0.15,
+                                0.2,
+                                0.25,
+                                0.3,
+                                0.35,
+                                0.4,
+                                0.45,
+                                0.5
+                            ]
+                        }
+                    },
+                    "max_features": {
+                        "description": "The number of features to consider when looking for the best split.",
+                        "type": "string",
+                        "default": "sqrt",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Square root",
+                                "Log2",
+                                "None"
+                            ],
+                            "values": [
+                                "sqrt",
+                                "log2",
+                                "None"
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            },
+            {
+                "_id": "5ca281b65ff80254b280f8ef",
+                "name": "GradientBoostingClassifier",
+                "path": "sklearn.ensemble",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
+                "schema": {
+                    "n_estimators": {
+                        "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
+                        "type": "int",
+                        "default": 100,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                100,
+                                250
+                            ]
+                        }
+                    },
+                    "learning_rate": {
+                        "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
+                        "type": "float",
+                        "default": 0.1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.01,
+                                0.1,
+                                1
+                            ]
+                        }
+                    },
+                    "max_depth": {
+                        "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
+                        "type": "int",
+                        "default": 1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                1,
+                                5,
+                                10
+                            ]
+                        }
+                    },
+                    "min_samples_split": {
+                        "description": "The minimum number of samples required to split an internal node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "min_samples_leaf": {
+                        "description": "The minimum number of samples required to be at a leaf node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "subsample": {
+                        "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.",
+                        "type": "float",
+                        "default": 1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.5,
+                                1
+                            ]
+                        }
+                    },
+                    "max_features": {
+                        "description": "The number of features to consider when looking for the best split.",
+                        "type": "string",
+                        "default": "sqrt",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Square root",
+                                "Log2"
+                            ],
+                            "values": [
+                                "sqrt",
+                                "log2"
+                            ]
+                        }
+                    },
+                    "loss": {
+                        "description": "The loss function to be optimized.",
+                        "type": "string",
+                        "default": "deviance",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Deviance",
+                                "Exponential"
+                            ],
+                            "values": [
+                                "deviance",
+                                "exponential"
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            },
+            {
+                "_id": "5ca281b65ff80254b280f8eb",
+                "name": "KNeighborsClassifier",
+                "path": "sklearn.neighbors",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html",
+                "schema": {
+                    "n_neighbors": {
+                        "description": "Number of neighbors to use by default for k_neighbors queries.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                1,
+                                3,
+                                5,
+                                7,
+                                9,
+                                11
+                            ]
+                        }
+                    },
+                    "weights": {
+                        "description": "Weight function used in prediction.",
+                        "type": "string",
+                        "default": "uniform",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Uniform",
+                                "Distance"
+                            ],
+                            "values": [
+                                "uniform",
+                                "distance"
+                            ]
+                        }
+                    },
+                    "p": {
+                        "description": "Power parameter for the Minkowski metric.",
+                        "type": "int",
+                        "default": 2,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                1,
+                                2
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            },
+            {
+                "_id": "5ca281b65ff80254b280f8f0",
+                "name": "SVC",
+                "path": "sklearn.svm",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
+                "schema": {
+                    "kernel": {
+                        "description": "Specifies the kernel type to be used in the algorithm",
+                        "type": "string",
+                        "default": "rbf",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Polynomial",
+                                "Radial basis function"
+                            ],
+                            "values": [
+                                "poly",
+                                "rbf"
+                            ]
+                        }
+                    },
+                    "tol": {
+                        "description": "Tolerance for stopping criteria.",
+                        "type": "float",
+                        "default": 0.0001,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.00001,
+                                0.0001,
+                                0.001,
+                                0.01,
+                                0.1
+                            ]
+                        }
+                    },
+                    "C": {
+                        "description": "Penalty parameter C of the error term.",
+                        "type": "float",
+                        "default": 1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.0001,
+                                0.001,
+                                0.01,
+                                0.1,
+                                0.5,
+                                1,
+                                10,
+                                25
+                            ]
+                        }
+                    },
+                    "gamma": {
+                        "description": "Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.",
+                        "type": "float",
+                        "default": 0.01,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.01,
+                                0.1,
+                                0.5,
+                                1,
+                                10,
+                                100,
+                                50
+                            ]
+                        }
+                    },
+                    "degree": {
+                        "description": "Degree of the 'poly' kernel.",
+                        "type": "int",
+                        "default": 3,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                2,
+                                3
+                            ]
+                        }
+                    },
+                    "coef0": {
+                        "description": "Independent term in kernel function.",
+                        "type": "float",
+                        "default": 0,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0,
+                                0.1,
+                                0.5,
+                                1,
+                                10,
+                                50,
+                                100
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            },
+            {
+                "_id": "5ca281b65ff80254b280f8ed",
+                "name": "LogisticRegression",
+                "categorical_encoding_strategy": "OneHotEncoder",
+                "path": "sklearn.linear_model",
+                "description": "Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html",
+                "invalidParameterCombinations": [
+                    [
+                        {
+                            "penalty": "l1"
+                        },
+                        {
+                            "dual": "true"
+                        }
+                    ]
+                ],
+                "schema": {
+                    "penalty": {
+                        "description": "Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.",
+                        "type": "string",
+                        "default": "l2",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "L1",
+                                "L2"
+                            ],
+                            "values": [
+                                "l1",
+                                "l2"
+                            ]
+                        }
+                    },
+                    "C": {
+                        "description": "Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.",
+                        "type": "float",
+                        "default": 1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0.0001,
+                                0.001,
+                                0.01,
+                                0.1,
+                                0.5,
+                                1,
+                                10,
+                                25
+                            ]
+                        }
+                    },
+                    "dual": {
+                        "description": "Select the algorithm to either solve the dual or primal optimization problem. Prefer dual=False when n_samples > n_features.",
+                        "type": "bool",
+                        "default": "false",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "True",
+                                "False"
+                            ],
+                            "values": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    },
+                    "fit_intercept": {
+                        "description": "Fit intercept in addition to feature coefficients.",
+                        "type": "bool",
+                        "default": "true",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "True",
+                                "False"
+                            ],
+                            "values": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            },
+            {
+                "_id": "5ca281b65ff80254b280f8ee",
+                "name": "RandomForestClassifier",
+                "path": "sklearn.ensemble",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",
+                "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html",
+                "schema": {
+                    "n_estimators": {
+                        "description": "The number of trees in the forest.",
+                        "type": "int",
+                        "default": 100,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                100,
+                                250
+                            ]
+                        }
+                    },
+                    "criterion": {
+                        "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.",
+                        "type": "string",
+                        "default": "gini",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Gini impurity",
+                                "Information gain"
+                            ],
+                            "values": [
+                                "gini",
+                                "entropy"
+                            ]
+                        }
+                    },
+                    "max_features": {
+                        "description": "The number of features to consider when looking for the best split.",
+                        "type": "string",
+                        "default": "sqrt",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Square root",
+                                "Log2"
+                            ],
+                            "values": [
+                                "sqrt",
+                                "log2"
+                            ]
+                        }
+                    },
+                    "min_samples_split": {
+                        "description": "The minimum number of samples required to split an internal node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "min_samples_leaf": {
+                        "description": "The minimum number of samples required to be at a leaf node.",
+                        "type": "int",
+                        "default": 5,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                5,
+                                10,
+                                20
+                            ]
+                        }
+                    },
+                    "bootstrap": {
+                        "description": "Whether bootstrap samples are used when building trees.",
+                        "type": "bool",
+                        "default": "true",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "True",
+                                "False"
+                            ],
+                            "values": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    },
+                    "min_weight_fraction_leaf": {
+                        "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+                        "type": "float",
+                        "default": 0,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0,
+                                0.05,
+                                0.1,
+                                0.15,
+                                0.2,
+                                0.25,
+                                0.3,
+                                0.35,
+                                0.4,
+                                0.45,
+                                0.5
+                            ]
+                        }
+                    }
+                },
+                "category": "classification"
+            }
+        ]
+    }
+]
+
+'''
+api_preferences_data_multi_user = [{'_id': '5ca282caa0357a2783b0386e', 'username': 'pennai', 'firstname': 'Penn', 'lastname': 'AI', 'algorithms': []}, {'_id': '5ca282caa0357a2783b0386d', 'username': 'testuser', 'firstname': 'Test', 'lastname': 'User',
+'algorithms': [{'_id': '5ca282caa0357a2783b03871', 'name': 'DecisionTreeClassifier', 'path': 'sklearn.tree', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.", 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html', 'schema': {'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.', 'type': 'enum', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_depth': {'description': 'The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.', 'type': 'int', 'default': 2, 'ui': {'style': 'radio', 'choices': [2, 4, 6, 8]}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui':
+{'style': 'radio', 'choices': [5, 10, 20]}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of the sum
+total of weights (of all the input samples) required to be at a leaf node.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]}}, 'max_features': {'description': 'The number of features
+to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio', 'choices': ['Square root', 'Log2', 'None'], 'values': ['sqrt', 'log2', 'None']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03875', 'name': 'GradientBoostingClassifier', 'path': 'sklearn.ensemble', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html', 'schema': {'n_estimators': {'description': 'The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.', 'type': 'int', 'default': 100, 'ui': {'style': 'radio', 'choices': [100, 250]}}, 'learning_rate': {'description': 'Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.', 'type': 'float', 'default': 0.1, 'ui': {'style': 'radio', 'choices': [0.01, 0.1, 1]}}, 'max_depth': {'description': 'Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.', 'type': 'int', 'default': 1, 'ui': {'style': 'radio', 'choices': [1, 5, 10]}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The
+minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'subsample': {'description': 'The fraction of samples to be used for fitting the individual base learners. If smaller than
+1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio', 'choices': [0.5, 1]}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio', 'choices': ['Square root', 'Log2'], 'values': ['sqrt', 'log2']}}, 'loss': {'description': 'The loss function to be optimized.', 'type': 'string', 'default': 'deviance', 'ui': {'style': 'radio', 'choices': ['Deviance', 'Exponential'], 'values': ['deviance', 'exponential']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03874', 'name': 'KNeighborsClassifier', 'path': 'sklearn.neighbors', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html', 'schema': {'n_neighbors': {'description': 'Number of neighbors to use by default for k_neighbors queries.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [1, 3, 5, 7, 9, 11]}}, 'weights': {'description': 'Weight function used in prediction.', 'type': 'string', 'default': 'uniform', 'ui': {'style': 'radio', 'choices': ['Uniform', 'Distance'], 'values': ['uniform', 'distance']}}, 'p': {'description': 'Power parameter for the Minkowski metric.', 'type': 'int', 'default': 2, 'ui': {'style': 'radio', 'choices': [1, 2]}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03879', 'name': 'SVC', 'path': 'sklearn.svm', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html', 'schema': {'kernel': {'description': 'Specifies the kernel type to be used in the algorithm', 'type': 'string', 'default': 'rbf',
+'ui': {'style': 'radio', 'choices': ['Polynomial', 'Radial basis function'], 'values': ['poly', 'rbf']}}, 'tol': {'description': 'Tolerance for stopping criteria.', 'type': 'float', 'default': 0.0001, 'ui': {'style': 'radio', 'choices': [1e-05, 0.0001, 0.001, 0.01, 0.1]}}, 'C': {'description': 'Penalty parameter C of the error term.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio',
+'choices': [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]}}, 'gamma': {'description': 'Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.', 'type': 'float', 'default': 0.01, 'ui': {'style': 'radio', 'choices': [0.01, 0.1, 0.5, 1, 10, 100, 50]}}, 'degree': {'description': "Degree of the 'poly' kernel.", 'type': 'int', 'default': 3, 'ui': {'style': 'radio', 'choices': [2, 3]}}, 'coef0': {'description': 'Independent term in kernel function.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.1, 0.5, 1, 10, 50, 100]}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03877', 'name': 'LogisticRegression', 'categorical_encoding_strategy': 'OneHotEncoder', 'path': 'sklearn.linear_model', 'description': 'Basic logistic regression that makes predictions
+about the outcome based on a linear combination of the features.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html', 'invalidParameterCombinations': [[{'penalty': 'l1'}, {'dual': 'true'}]], 'schema': {'penalty': {'description': 'Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2
+penalties.', 'type': 'string', 'default': 'l2', 'ui': {'style': 'radio', 'choices': ['L1', 'L2'], 'values': ['l1', 'l2']}}, 'C': {'description': 'Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio', 'choices': [0.0001, 0.001, 0.01, 0.1, 0.5, 1,
+10, 25]}}, 'dual': {'description': 'Select the algorithm to either solve the dual or primal optimization problem. Prefer dual=False when n_samples > n_features.', 'type': 'bool', 'default': 'false', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}, 'fit_intercept': {'description': 'Fit intercept in addition to feature coefficients.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03878', 'name': 'RandomForestClassifier', 'path': 'sklearn.ensemble', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'An ensemble of decision trees that are trained on random sub-samples of the dataset.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html', 'schema': {'n_estimators': {'description': 'The number of trees in the forest.', 'type': 'int', 'default': 100, 'ui': {'style': 'radio', 'choices': [100, 250]}}, 'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.', 'type': 'string', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio', 'choices': ['Square root', 'Log2'], 'values': ['sqrt', 'log2']}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'bootstrap': {'description': 'Whether bootstrap samples are used when building trees.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45,
+0.5]}}}, 'category': 'classification'}]}, {'_id': '5ca282caa0357a2783b0386c', 'username': 'pmlb', 'firstname': 'Pmlb', 'lastname':
+'User', 'algorithms': [{'_id': '5ca282caa0357a2783b03871', 'name': 'DecisionTreeClassifier', 'path': 'sklearn.tree', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.", 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html', 'schema': {'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.', 'type': 'enum', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_depth': {'description': 'The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.', 'type': 'int', 'default': 2, 'ui': {'style': 'radio', 'choices': [2, 4, 6, 8]}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of
+the sum total of weights (of all the input samples) required to be at a leaf node.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio', 'choices': ['Square root', 'Log2', 'None'], 'values': ['sqrt', 'log2', 'None']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03875', 'name': 'GradientBoostingClassifier', 'path': 'sklearn.ensemble', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html', 'schema': {'n_estimators': {'description': 'The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.', 'type': 'int', 'default': 100, 'ui': {'style': 'radio', 'choices': [100, 250]}}, 'learning_rate': {'description': 'Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.', 'type': 'float', 'default': 0.1, 'ui': {'style': 'radio', 'choices': [0.01, 0.1, 1]}}, 'max_depth': {'description': 'Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.', 'type': 'int', 'default': 1, 'ui': {'style': 'radio', 'choices': [1, 5, 10]}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'subsample': {'description': 'The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio', 'choices': [0.5, 1]}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio', 'choices': ['Square root', 'Log2'], 'values': ['sqrt', 'log2']}}, 'loss': {'description': 'The loss function to be optimized.', 'type': 'string', 'default': 'deviance', 'ui': {'style': 'radio', 'choices': ['Deviance', 'Exponential'], 'values': ['deviance', 'exponential']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03874', 'name': 'KNeighborsClassifier', 'path': 'sklearn.neighbors', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'Nearest-neighbor classifier that classifies new data points based on the most common class among the k nearest data points.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html', 'schema': {'n_neighbors': {'description': 'Number of neighbors to use by default for k_neighbors queries.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [1, 3, 5, 7, 9, 11]}}, 'weights': {'description': 'Weight function used in prediction.', 'type': 'string', 'default': 'uniform', 'ui': {'style': 'radio', 'choices': ['Uniform', 'Distance'], 'values': ['uniform', 'distance']}}, 'p': {'description': 'Power parameter for the Minkowski metric.', 'type': 'int', 'default': 2, 'ui': {'style': 'radio', 'choices': [1, 2]}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03879', 'name': 'SVC', 'path': 'sklearn.svm', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html', 'schema': {'kernel': {'description': 'Specifies the kernel type to be used in the algorithm', 'type': 'string', 'default': 'rbf', 'ui': {'style': 'radio', 'choices': ['Polynomial', 'Radial basis function'], 'values': ['poly', 'rbf']}}, 'tol': {'description': 'Tolerance for stopping criteria.', 'type': 'float', 'default': 0.0001, 'ui': {'style': 'radio', 'choices': [1e-05, 0.0001, 0.001, 0.01, 0.1]}}, 'C': {'description': 'Penalty parameter C of the error term.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio', 'choices': [0.0001, 0.001, 0.01, 0.1, 0.5, 1, 10, 25]}}, 'gamma': {'description': 'Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.', 'type': 'float', 'default': 0.01, 'ui': {'style': 'radio', 'choices': [0.01, 0.1, 0.5, 1, 10, 100, 50]}}, 'degree': {'description': "Degree of the 'poly' kernel.", 'type': 'int', 'default': 3, 'ui': {'style': 'radio', 'choices': [2, 3]}}, 'coef0':
+{'description': 'Independent term in kernel function.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.1, 0.5, 1, 10, 50, 100]}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03877', 'name': 'LogisticRegression', 'categorical_encoding_strategy': 'OneHotEncoder', 'path': 'sklearn.linear_model', 'description': 'Basic logistic regression that makes predictions about the outcome based on a linear combination of the features.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html', 'invalidParameterCombinations': [[{'penalty': 'l1'}, {'dual': 'true'}]], 'schema':
+{'penalty': {'description': 'Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support
+only l2 penalties.', 'type': 'string', 'default': 'l2', 'ui': {'style': 'radio', 'choices': ['L1', 'L2'], 'values': ['l1', 'l2']}}, 'C': {'description': 'Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.', 'type': 'float', 'default': 1, 'ui': {'style': 'radio', 'choices': [0.0001, 0.001, 0.01, 0.1,
+0.5, 1, 10, 25]}}, 'dual': {'description': 'Select the algorithm to either solve the dual or primal optimization problem. Prefer dual=False when n_samples > n_features.', 'type': 'bool', 'default': 'false', 'ui': {'style': 'radio', 'choices': ['True', 'False'],
+'values': ['true', 'false']}}, 'fit_intercept': {'description': 'Fit intercept in addition to feature coefficients.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}}, 'category': 'classification'}, {'_id': '5ca282caa0357a2783b03878', 'name': 'RandomForestClassifier', 'path': 'sklearn.ensemble', 'categorical_encoding_strategy': 'OrdinalEncoder', 'description': 'An ensemble of decision trees that are trained on random sub-samples of the dataset.', 'url': 'http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html', 'schema': {'n_estimators': {'description': 'The number of trees in the forest.', 'type': 'int', 'default': 100, 'ui': {'style': 'radio', 'choices': [100, 250]}}, 'criterion': {'description': 'The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain. Note: this parameter is tree-specific.', 'type': 'string', 'default': 'gini', 'ui': {'style': 'radio', 'choices': ['Gini impurity', 'Information gain'], 'values': ['gini', 'entropy']}}, 'max_features': {'description': 'The number of features to consider when looking for the best split.', 'type': 'string', 'default': 'sqrt', 'ui': {'style': 'radio',
+'choices': ['Square root', 'Log2'], 'values': ['sqrt', 'log2']}}, 'min_samples_split': {'description': 'The minimum number of samples required to split an internal node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'min_samples_leaf': {'description': 'The minimum number of samples required to be at a leaf node.', 'type': 'int', 'default': 5, 'ui': {'style': 'radio', 'choices': [5, 10, 20]}}, 'bootstrap': {'description': 'Whether bootstrap samples are used when building trees.', 'type': 'bool', 'default': 'true', 'ui': {'style': 'radio', 'choices': ['True', 'False'], 'values': ['true', 'false']}}, 'min_weight_fraction_leaf': {'description': 'The minimum weighted fraction of the sum total of weights (of all the input samples) required to be
+at a leaf node.', 'type': 'float', 'default': 0, 'ui': {'style': 'radio', 'choices': [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]}}}, 'category': 'classification'}]}]
+'''

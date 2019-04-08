@@ -20,7 +20,7 @@ services:
     depends_on:
       - dbmongo
 
-  machine:
+  machine_1:
     build:
       context: .
       dockerfile: dockers/machine/Dockerfile
@@ -34,6 +34,45 @@ services:
     env_file: ./config/common.env
     environment:
       - MACHINE_PORT=5081
+      - MACHINE_HOST=machine_1
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_2:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5082:5082"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5082
+      - MACHINE_HOST=machine_2
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_3:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5083:5083"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5083
+      - MACHINE_HOST=machine_3
     depends_on:
       - lab
       - dbmongo
