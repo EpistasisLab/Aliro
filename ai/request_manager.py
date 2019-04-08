@@ -10,6 +10,8 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+
 class RequestManager():
     """Handles requests for the AI.
 
@@ -43,7 +45,7 @@ class RequestManager():
         self.ai = ai
         self.n_recs = ai.n_recs # this is the n_recs made by the recommender each
                              # iteration.
-        q_utils.startQ(ai=self.ai, datasetId=dataset_id)
+        q_utils.startQ(ai=self.ai, datasetId=dataset_id, datasetName=dataset_name)
         self.queue = self.ai.dataset_threads[dataset_id].workQueue
         logger.debug('term_condition:'+self.term_condition)
         logger.debug('term_value:'+str(self.term_value))
