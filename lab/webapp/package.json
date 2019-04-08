@@ -28,9 +28,13 @@
     "babel-core": "^6.26.3",
     "babel-jest": "^23.0.1",
     "babel-loader": "^7.1.5",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-15": "^1.4.0",
+    "enzyme-adapter-react-15.4": "^1.4.0",
     "eslint": "^4.2.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.9.0",
@@ -40,7 +44,9 @@
     "jest-fetch-mock": "^2.1.1",
     "jest-html-reporter": "^2.4.1",
     "jest-junit": "^5.2.0",
-    "react-test-renderer": "^16.4.0",
+    "jest-react-native": "^18.0.0",
+    "react-native": "^0.38.1",
+    "react-test-renderer": "^15.4.2",
     "redux-logger": "^3.0.6",
     "redux-mock-store": "^1.5.3",
     "webpack": "^2.2.1"
@@ -48,6 +54,9 @@
   "jest": {
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
-    }
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fetch-mock)/)"
+    ]
   }
 }

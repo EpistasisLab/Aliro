@@ -3,9 +3,9 @@
 import fetch from 'isomorphic-fetch';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import { getSortedDatasets } from 'data/datasets';
-import { fetchDatasets } from 'data/datasets/actions';
-import { uploadDataset } from 'data/datasets/dataset/actions';
+import { getSortedDatasets } from '../../data/datasets';
+import { fetchDatasets } from '../../data/datasets/actions';
+import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
@@ -174,7 +174,9 @@ class FileUpload extends Component {
   render() {
     const { dataset } = this.props;
 
-    let serverResp = dataset.fileUploadResp;
+    let serverResp;
+    dataset ? serverResp = dataset.fileUploadResp : null;
+
     let catFeats = this.state.catFeatures;
     let ordFeatureSelection = "";
     let catFeatureSelection = "";
