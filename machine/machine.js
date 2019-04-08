@@ -20,7 +20,7 @@ var rp = require("request-promise");
 var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
-const getProjects = require('./getprojects.js');
+const machine_utils = require('./machine_utils.js');
 
 
 /* App instantiation */
@@ -75,6 +75,14 @@ if (process.env.EXP_TIMEOUT) {
 }
 
 
+/* check max capacity */
+var maxCapacity = 1;
+if (process.env.CAPACITY) {
+    maxCapacity = process.env.CAPACITY;
+}
+console.log("Maximum Capacity in the machine is", maxCapacity)
+
+
 /* Machine specifications */
 // generate specification file
 specs = {
@@ -119,12 +127,12 @@ rp({
         gzip: true
     })
     .then((body) => {
-        console.log("Registered with PennAiServer successfully");
+        console.log("Registered with PennAI server successfully");
         // Save ID and specs
         fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
         // Reload specs with _id (prior to adding projects)
         specs = body;
-        project_list = getProjects(algorithms);
+        project_list = machine_utils.getProjects(algorithms);
         var tmppath = project_root + "/machine/learn/tmp";
         if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
         for (var i in project_list) {
@@ -143,7 +151,7 @@ rp({
                 gzip: true
             })
             .then((msg) => {
-                console.log("Projects registered with PennAiServer successfully");
+                console.log("Projects registered with PennAI server successfully");
                 if (msg.projects !== undefined) {
                     projects = msg.projects;
                 }
@@ -151,28 +159,11 @@ rp({
             });
     })
     .catch((err) => {
-        console.log('catchup: nobody to talk to');
+        console.log('Error: nobody to talk to');
         console.log(err);
         process.exit();
     });
 
-
-//max capacity
-var maxCapacity = 1;
-if (process.env.CAPACITY) {
-    maxCapacity = process.env.CAPACITY;
-}
-console.log("capacity is", maxCapacity)
-//console.log("projects: ", projects)
-
-
-var getCapacity = function(projId) {
-    var capacity = 0;
-    if (projects[projId]) {
-        capacity = Math.floor(maxCapacity / projects[projId].capacity);
-    }
-    return capacity;
-};
 
 /* Routes */
 // Updates projects.json with new project ID
@@ -182,20 +173,13 @@ app.options("/projects", cors({
 
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
-    var capacity = getCapacity(req.params.id);
-    if(typeof projects[req.params.id] === 'undefined') {
+    var capacity_info = checkCapacity(req.params.id, maxCapacity, projects);
+    if(capacity_info.capacity === 0) {
         res.status(501);
-        res.send({
-            error: "Project '" + req.params.id + "' does not exist"
-        });
-    } else if (capacity === 0) {
-        res.status(501);
-        res.send({
-            error: "No capacity available"
-        });
+        res.send(capacity_info.error_msg);
     } else {
         res.send({
-            capacity: capacity,
+            capacity: capacity_info.capacity,
             address: specs.address,
             _id: specs._id
         });
@@ -214,16 +198,10 @@ app.get("/projects", (req, res) => {
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available
-    if(typeof projects[req.params.id] === 'undefined') {
+    var capacity_info = checkCapacity(req.params.id, maxCapacity, projects);
+    if(capacity_info.capacity === 0) {
         res.status(501);
-        res.send({
-            error: "Project '" + req.params.id + "' does not exist"
-        });
-    } else if (getCapacity(req.params.id) === 0) {
-        res.status(501);
-        return res.send({
-            error: "No capacity available"
-        });
+        res.send(capacity_info.error_msg);
     }
 
     // Process args
