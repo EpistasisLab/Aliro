@@ -47,7 +47,7 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 ### Adding Datasets ###
 One can add new datasets using a UI form within the website or manually add new datasets to the project directory. 
 
-To upload new datasets from the website, click the menu item "Upload Datasets" to navigate to the upload form. Select a file using the form's file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example ```{"ord" : ["first", "second", "third"]}```, and a comma separated list of categorical column names without quotes, such as `cat1, cat2`. Once uploaded through the form, the dataset should be available to use within the system.
+To upload new datasets from the website, click the "Add new Datasets" button on the Datasets page to navigate to the upload form. Select a file using the form's file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example ```{"ord" : ["first", "second", "third"]}```, and a comma separated list of categorical column names without quotes, such as `cat1, cat2`. Once uploaded, the dataset should be available to use within the system.
 
 Or 
 
