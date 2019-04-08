@@ -20,6 +20,6 @@ RUN apt-get update --fix-missing \
     rm -rf /var/lib/apt/lists/*
 
 ## install dependencies for machine
-RUN pip install --no-cache-dir mlxtend stopit pydot
+RUN pip install --no-cache-dir mlxtend pydot
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]

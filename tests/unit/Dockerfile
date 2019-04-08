@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 
 
 RUN pip install --no-cache-dir mlxtend \
-    stopit pydot sphinx coverage \
+    pydot sphinx coverage \
     nose nose-htmloutput parameterized \
     m2r sphinx_rtd_theme
 
