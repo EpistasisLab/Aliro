@@ -112,10 +112,13 @@ class AI():
         self.load_options() #loads algorithm parameters to self.ui_options 
 
         # if there is a pickle file, load it as the recommender scores
+        assert not (warm_start), "The `warm_start` option is not yet supported"
+        '''
         self.warm_start = warm_start
         if os.path.isfile(self.rec_score_file) and self.warm_start:
             self.load_state()
-        
+        '''
+
         # create a default recommender if not set
         if (rec): 
             self.rec = rec
@@ -138,21 +141,14 @@ class AI():
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
-        # build dictionary of dataset ids to names conversion
-        self.user_datasets = self.labApi.get_user_datasets(self.user)
+
         # dictionary of dataset threads, initilized and used by q_utils.  
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
 
         # for comma-separated list of datasets in datasets, turn AI request on
-        if datasets:
-            data_usersets = dict(zip(self.user_datasets.values(),
-                                     self.user_datasets.keys()))
-            print(data_usersets)
-            for ds in datasets.split(','):
-                tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], 
-                                                aiStatus = 'requested')
+        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
         
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
@@ -175,15 +171,21 @@ class AI():
         print('loading pmlb knowledgebase')
 
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
+
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
+
+        '''TODO: Verify that conversion from name to id is needed....
         self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
         kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
                                           lambda x: self.dataset_name_to_id[x]
                                           if x in self.dataset_name_to_id.keys()
                                           else x)
+        '''
+
+
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
@@ -389,6 +391,7 @@ class AI():
 
         TODO: test that this still works
         """
+        raise RuntimeError("save_state is not currently supported")
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
@@ -404,6 +407,7 @@ class AI():
 
         TODO: test that this still works
         """
+        raise RuntimeError("load_state is not currently supported")
         if os.stat(self.rec_score_file).st_size != 0:
             filehandler = open(self.rec_score_file,'rb')
             state = pickle.load(filehandler)
@@ -522,8 +526,8 @@ def main():
         logger.info("Shutting down AI engine...")
         logger.info("...Exiting queue")
         q_utils.exitFlag=1
-        logger.info("...Saving state")
-        pennai.save_state()
+        #logger.info("...Saving state")
+        #pennai.save_state()
         logger.info("Goodbye")
 
 if __name__ == '__main__':
