@@ -35,7 +35,7 @@ describe('Mocha Test for getCapacity function', function () {
   });
 
 
-describe('Mocha Test for getCapacity function', function () {
+describe('Mocha Test for checkCapacity function', function () {
   it('Test checkCapacity returns the correct values.', function () {
         ret = machine_utils.checkCapacity("DecisionTreeClassifier", 0, projects);
         assert.equal(ret.capacity, 0);
