@@ -41,7 +41,7 @@ class RequestManager():
         self.id = dataset_id
         self.name = dataset_name
         self.term_state = 'add experiment'
-        self.t0 = time.clock()
+        self.t0 = time.time()
         self.ai = ai
         self.n_recs = ai.n_recs # this is the n_recs made by the recommender each
                              # iteration.
@@ -100,11 +100,9 @@ class RequestManager():
                     logger.info('changing term_state to "process_queue"')
                     self.term_state = 'process queue'
         else:   #assume termination condition is time
-            # logger.debug('t0:',self.t0)
-            # logger.debug('clock:',time.clock())
-            runtime = time.clock() - self.t0
-            # logger.debug('current runtime:',runtime)
-            # logger.debug('self.term_value:',self.term_value)
+            runtime = time.time() - self.t0
+            logger.debug('current runtime:'+str(runtime))
+            logger.debug('self.term_value:'+str(self.term_value))
             if self.term_value < runtime:
                 logger.info('times up, setting term_state to terminate')
                 self.term_state = 'terminate queue'
