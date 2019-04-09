@@ -152,6 +152,45 @@ class LabApi:
         data = json.loads(res.text)
         return data
 
+    def get_new_experiments_as_dataframe(self, last_update):
+        """
+        Get experiments that occured after last_update and return a dataframe
+    
+        :param last_update: int -
+
+        :returns: dataframe - last experiments
+
+        """
+        logger.info("get_new_experiments_as_dataframe(" + str(last_update)+ ")")
+        
+        data = self.get_new_experiments(last_update)
+
+        processed_data = []
+        for d in data:
+            if ('_options' in d.keys() and '_scores' in d.keys() 
+                and '_dataset_id' in d.keys()):
+                frame={
+                    'dataset':d['_dataset_id'],
+                    'algorithm':d['_project_id'],
+                    'accuracy':d['_scores']['accuracy_score'],#! This is balanced
+                    # accuracy!
+                    'f1':d['_scores']['f1_score'],
+                    #WGL: this parameters value might need to be sorted
+                    'parameters':str(d['_options']), 
+                    }
+                if(hasattr(d['_scores'],'balanced_accuracy')):
+                    frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
+                processed_data.append(frame)
+            else:
+              logger.error("new results are missing these fields:",
+                      '_options' if '_options' not in d.keys() else '',
+                      '_scores' if '_scores' not in d.keys() else '',
+                      '_dataset_id' if '_dataset_id' not in d.keys() else '')
+
+        new_experiments = pd.DataFrame(processed_data)
+
+        return new_experiments
+
     def set_ai_status(self, datasetId, aiStatus):
         """set the ai status for the given dataset.
         
