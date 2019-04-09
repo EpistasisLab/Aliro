@@ -206,10 +206,14 @@ class FileUpload extends Component {
             className="file-upload-form-text-input"
             type="file"
             label="Select new dataset"
+            id="upload_dataset_file_browser_button"
             onChange={this.handleSelectedFile}
           />
           <br/>
-          <div className={formInputClass}>
+          <div
+            id="file-upload-form-input-area"
+            className={formInputClass}
+          >
             <Form.Input
               label="Dependent Column"
               placeholder="class"

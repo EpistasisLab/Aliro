@@ -53,7 +53,8 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.jsx?$": "babel-jest"
+      "^.+\\.jsx?$": "babel-jest",
+      "^.+\\.js?$": "babel-jest"
     },
     "transformIgnorePatterns": [
       "node_modules/(?!(fetch-mock)/)"
