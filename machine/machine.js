@@ -38,7 +38,8 @@ var laburi;
 var machineuri;
 var project_root;
 var timeout;
-/* FGLab check */
+/* environment variables check */
+/* Lab */
 if (process.env.PROJECT_ROOT) {
     project_root = process.env.PROJECT_ROOT
 }
@@ -52,13 +53,13 @@ if (process.env.LAB_HOST && process.env.LAB_PORT) {
     process.exit(1);
 }
 
-/* FGMachine var */
+/* Machine var */
 if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     machineuri = 'http://' + process.env.MACHINE_HOST + ':' + process.env.MACHINE_PORT;
 } else if (process.env.MACHINE_URL) {
     machineuri = process.env.MACHINE_URL;
 } else {
-    console.log("Error: No FGMachine address specified");
+    console.log("Error: No machine address specified");
     process.exit(1);
 }
 
@@ -69,7 +70,6 @@ var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
 var algorithms = machine_config["algorithms"]
 
 /* Timeout config */
-/* FGLab check */
 if (process.env.EXP_TIMEOUT) {
     timeout = Number(process.env.EXP_TIMEOUT) * 60 * 1000  //convert from min to ms
 }
@@ -134,6 +134,7 @@ rp({
         specs = body;
         project_list = machine_utils.getProjects(algorithms);
         var tmppath = project_root + "/machine/learn/tmp";
+        // make tmp folder if it is not available
         if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
         for (var i in project_list) {
             var algo = project_list[i].name;
@@ -423,16 +424,12 @@ app.post("/experiments/:id/kill", (req, res) => {
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
-if (!machineuri) {
-    console.log("Error: No FGMachine address specified");
-    process.exit(1);
-} else {
-    // Listen for connections
-    var port = url.parse(machineuri).port;
-    server.listen(port, () => {
-        console.log("Server listening on port " + port);
-    });
-}
+
+// Listen for connections
+var port = url.parse(machineuri).port;
+server.listen(port, () => {
+    console.log("Server listening on port " + port);
+});
 
 
 /* WebSocket server */
@@ -473,6 +470,6 @@ wss.on("connection", (ws) => {
     // Remove listeners
     ws.on("close", () => {
         mediator.removeListener("experiments:" + expId + ":stdout", sendStdout);
-        mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
+        mediator.removeListener("experiments:" + expId + ":stderr", sendStderr);
     });
 });
