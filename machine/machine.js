@@ -174,7 +174,7 @@ app.options("/projects", cors({
 
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
-    var capacity_info = checkCapacity(req.params.id, maxCapacity, projects);
+    var capacity_info = machine_utils.checkCapacity(req.params.id, maxCapacity, projects);
     if(capacity_info.capacity === 0) {
         res.status(501);
         res.send(capacity_info.error_msg);
@@ -199,7 +199,7 @@ app.get("/projects", (req, res) => {
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available
-    var capacity_info = checkCapacity(req.params.id, maxCapacity, projects);
+    var capacity_info = machine_utils.checkCapacity(req.params.id, maxCapacity, projects);
     if(capacity_info.capacity === 0) {
         res.status(501);
         res.send(capacity_info.error_msg);
