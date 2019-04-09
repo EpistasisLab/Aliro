@@ -111,14 +111,6 @@ class AI():
 
         self.load_options() #loads algorithm parameters to self.ui_options 
 
-        # if there is a pickle file, load it as the recommender scores
-        assert not (warm_start), "The `warm_start` option is not yet supported"
-        '''
-        self.warm_start = warm_start
-        if os.path.isfile(self.rec_score_file) and self.warm_start:
-            self.load_state()
-        '''
-
         # create a default recommender if not set
         if (rec): 
             self.rec = rec
@@ -146,9 +138,6 @@ class AI():
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
-
-        # for comma-separated list of datasets in datasets, turn AI request on
-        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
         
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
@@ -158,18 +147,25 @@ class AI():
 
         # request manager
         self.RMlist = []
+
         # set termination condition
         self.term_condition = term_condition
         if self.term_condition == 'n_recs':
             self.term_value = self.n_recs
         elif self.term_condition == 'time':
             self.term_value = max_time
+
+        # if there is a pickle file, load it as the recommender scores
+        assert not (warm_start), "The `warm_start` option is not yet supported"
+
+        # for comma-separated list of datasets in datasets, turn AI request on
+        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
+
         
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
         print('loading pmlb knowledgebase')
-
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
 
         # replace algorithm names with their ids
@@ -244,7 +240,6 @@ class AI():
                                                   )
             return True
         return len([r for r in self.RMlist if r.active])>0
-        # return False
 
 
     def check_results(self):
@@ -257,56 +252,19 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
 
-        newResultsDict = self.labApi.get_new_experiments(
+        newResults = self.labApi.get_new_experiments_as_dataframe(
                                         last_update=self.last_update)
 
-        if len(newResultsDict) > 0:
+        if len(newResults) > 0:
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                      ':',len(newResultsDict),' new results!')
-            # process new results as a dataframe and set them to self.new_data
-            self.process_new_results(newResultsDict)             
+                      ':',len(newResults),' new results!')           
             self.last_update = int(time.time())*1000 # update timestamp
+            self.new_data = newResults
             return True
 
         return False
     
-    def process_new_results(self, data):
-        """Transforms a dictionary of data representing new experiment results into
-        a dataframe and sets them to self.new_data
-
-        :param data: dictionary - results from labApi.get_new_experiments()
-        """
-
-        processed_data = []
-        for d in data:
-            if ('_options' in d.keys() and '_scores' in d.keys() 
-                and '_dataset_id' in d.keys()):
-                frame={
-                    'dataset':d['_dataset_id'],
-                    'algorithm':d['_project_id'],
-                    'accuracy':d['_scores']['accuracy_score'],#! This is balanced
-                    # accuracy!
-                    'f1':d['_scores']['f1_score'],
-                    #WGL: this parameters value might need to be sorted
-                    'parameters':str(d['_options']), 
-                    }
-                if(hasattr(d['_scores'],'balanced_accuracy')):
-                    frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
-                processed_data.append(frame)
-            else:
-              print("new results are missing these fields:",
-                      '_options' if '_options' not in d.keys() else '',
-                      '_scores' if '_scores' not in d.keys() else '',
-                      '_dataset_id' if '_dataset_id' not in d.keys() else '')
-        # TODO - grab and add metafeatures to dataframe
-        new_data = pd.DataFrame(processed_data)
-
-        if(len(new_data) >= 1):
-          self.new_data = new_data
-        else:
-          print("no new data")
-
     def transfer_rec(self, rec_payload):
         """Attempt to send a recommendation to the lab server.
         Continues until recommendation is successfully submitted or an 
@@ -524,7 +482,7 @@ def main():
     finally:
         # tell queues to exit
         logger.info("Shutting down AI engine...")
-        logger.info("...Exiting queue")
+        logger.info("...Shutting down Request Manager...")
         q_utils.exitFlag=1
         #logger.info("...Saving state")
         #pennai.save_state()
