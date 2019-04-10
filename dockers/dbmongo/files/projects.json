@@ -83,7 +83,7 @@
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
-            "type": "enum",
+            "type": "string",
             "default": "gini",
             "ui": {
                 "style": "radio",
@@ -129,7 +129,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -159,7 +159,7 @@
         },
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
-            "type": "enum",
+            "type": "string",
             "values": ["gini", "entropy"],
             "default": "gini",
             "ui": {
@@ -170,7 +170,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
