@@ -93,16 +93,16 @@
         },
         "max_depth": {
             "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
-            "type": "int",
-            "default": 2,
+            "type": ["int", "none"],
+            "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [2, 4, 6, 8]
+                "choices": [3, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -111,7 +111,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -129,7 +129,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": ["string", "none"],
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -170,7 +170,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": ["string", "none"],
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -180,7 +180,7 @@
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -190,7 +190,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -242,16 +242,16 @@
         },
         "max_depth": {
             "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
-            "type": "int",
-            "default": 1,
+            "type": ["int", "none"],
+            "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [1, 5, 10]
+                "choices": [3, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -261,7 +261,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -280,7 +280,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -484,7 +484,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -494,7 +494,7 @@
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
@@ -504,7 +504,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 5,
             "ui": {
                 "style": "radio",
