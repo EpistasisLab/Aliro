@@ -1,4 +1,4 @@
-{
+[{
     "name": "BernoulliNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -35,7 +35,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "GaussianNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -43,7 +44,8 @@
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
     "category": "classification"
-} {
+},
+{
     "name": "MultinomialNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -71,7 +73,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "DecisionTreeClassifier",
     "path": "sklearn.tree",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -136,7 +139,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "ExtraTreesClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -206,7 +210,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "GradientBoostingClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -295,7 +300,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "KNeighborsClassifier",
     "path": "sklearn.neighbors",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -332,7 +338,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "LinearSVC",
     "path": "sklearn.svm",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -394,7 +401,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "LogisticRegression",
     "categorical_encoding_strategy": "OneHotEncoder",
     "path": "sklearn.linear_model",
@@ -446,7 +454,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "RandomForestClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -525,7 +534,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "SVC",
     "path": "sklearn.svm",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -590,3 +600,4 @@
     },
     "category": "classification"
 }
+]
