@@ -296,11 +296,11 @@ def none(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid str value')
 
 
-def get_type(type):
+def get_type(param_type):
     """Return convertion function for input type.
     Parameters
     ----------
-    type: string or list
+    param_type: string or list
         string, type of a parameter which is defined in projects.json
         list, list of parameter types (for parameter supportting multiple input types)
 
@@ -317,15 +317,25 @@ def get_type(type):
         'bool': bool_type,
         'none': none
     }
-    if isinstance(type, list):
+    if isinstance(param_type, list):
         def convert_func(val):
             conv_val = ''
-            for t in type:
+            for t in param_type:
                 try:
+                    if isinstance(val, str):
+                        if val.lower() == 'none' and t == "none":
+                            conv_val = None
+                            break
+                        elif val.lower() in ["true", "false"] and t == "bool":
+                            conv_val = bool_type(val)
+                            break
                     conv_val = known_types[t](val)
-                    # convert to other types
-                    # it should be a string then keep it.
-                    if not isinstance(conv_val, type(val)):
+                    # for mixed type in tree-based model
+                    if isinstance(conv_val, (int, float)):
+                        if conv_val < 1:
+                            conv_val = float(conv_val)
+                        else:
+                            conv_val = int(conv_val)
                         break
                 except:
                     pass
@@ -334,4 +344,4 @@ def get_type(type):
             return conv_val
         return convert_func
     else:
-        return known_types[type]
+        return known_types[param_type]
