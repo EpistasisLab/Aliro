@@ -18,11 +18,11 @@ exitFlag = 0
 
 class DatasetThread (threading.Thread):
     """Thread for managing pending ml experiments for a particular dataset"""
-    def __init__(self, ai, datasetId):
+    def __init__(self, ai, datasetId, datasetName):
         threading.Thread.__init__(self)
         self.datasetId = datasetId
         # name of the dataset for the given datasetId
-        self.name = ai.user_datasets[datasetId]         
+        self.name = datasetName         
         self.workQueue = queue.Queue() # queue of experiment payloads
         self.queueLock = threading.Lock()
         self.ai = ai
@@ -49,7 +49,7 @@ class DatasetThread (threading.Thread):
         #raise #this will just terminate the thread; will not prop to the root thread
             logger.debug("Exiting queue for thread " + self.name)
 
-def startQ(ai, datasetId):
+def startQ(ai, datasetId, datasetName):
     """Start a threaded queue for experiments for a particular dataset
 
     :param ai: ai.AI - instance of AI class
@@ -58,7 +58,7 @@ def startQ(ai, datasetId):
     if(datasetId in ai.dataset_threads):
         thread = ai.dataset_threads[datasetId]
     else:
-        thread = DatasetThread(ai, datasetId)
+        thread = DatasetThread(ai, datasetId, datasetName)
         thread.start()
     ai.dataset_threads[datasetId] = thread
     
