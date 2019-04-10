@@ -46,7 +46,8 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 def load_pmlb_knowledgebase():
     """ load the PMBL knowledgebase"""
     return load_knowledgebase(
-            resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted-filtered.tsv.gz',
+            # resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted-filtered.tsv.gz',
+            resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz',
             datasetDirectory = "data/datasets/pmlb"
             )
 
@@ -59,9 +60,10 @@ def _load_results_from_file(resultsFile):
                        #        'accuracy',
                        #        'macrof1',
                        #        'bal_accuracy']).fillna('')
-    # # sort params
-    # results_data['parameters'] = results_data['parameters'].apply(
-    #         lambda x: str(sorted(eval(x).items()))
+    # convert params to dictionary 
+    results_data['parameters'] = results_data['parameters'].apply(
+            lambda x: eval(x))
+    print('returning results data ')
     assert(not results_data.isna().any().any())
     logger.debug('results_data:')
     logger.debug(results_data.head())

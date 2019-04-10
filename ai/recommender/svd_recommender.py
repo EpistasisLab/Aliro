@@ -50,13 +50,19 @@ class SVDRecommender(BaseRecommender):
         else:
             self.metric = metric
 
+        # maintain a parameter hash table for parameter settings
+        # self.param_htable = {}
         # get ml+p combos
-        self.ml_p = ml_p
-        self.mlp_combos = None
-        if ml_p is not None:
-            self.ml_p = ml_p.drop_duplicates()
-            # machine learning - parameter combinations
-            self.mlp_combos = self.ml_p['algorithm']+'|'+self.ml_p['parameters']
+        self._ml_p = ml_p
+        # self.mlp_combos = None
+        # if ml_p is not None:
+        #     self.ml_p = ml_p.drop_duplicates()
+        #     self.param_htable = {hash(frozenset(x.items())):x 
+        #             for x in self.ml_p['parameters'].values}
+        #     # machine learning - parameter combinations
+        #     self.mlp_combos = (self.ml_p['algorithm']+'|'+
+        #                        self.ml_p['parameters'].apply(lambda x:
+        #                            hash(frozenset(x.items()))))
         # get dataset names
         self.datasets = datasets
         # store results
@@ -64,16 +70,34 @@ class SVDRecommender(BaseRecommender):
         # reader for translating btw PennAI results and Suprise training set
         self.reader = Reader(rating_scale=(0,1))
         # algo is the online Surprise-based rec system
-        self.algo = mySVD(n_factors=100, n_epochs=20, biased=True, init_mean=0,
+        self.algo = mySVD(n_factors=40, n_epochs=100, biased=True, init_mean=0,
                           init_std_dev=.2, lr_all=.01,
-                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, lr_qi=None,
-                          reg_bu=None, reg_bi=None, reg_pu=None, reg_qi=None,
-                          random_state=None, verbose=False)
+                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
+                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
+                          reg_qi=None, random_state=None, verbose=False)
         
         # maintain a set of dataset-algorithm-parameter combinations that have already been 
         # evaluated
         self.trained_dataset_models = set()
         self.first_fit = True
+
+    @property
+    def ml_p(self):
+        print('getting ml_p')
+        return self._ml_p
+    @ml_p.setter
+    def ml_p(self, value):
+        print('setting ml_p')
+        if value is not None:
+            self._ml_p = value
+            print('setting hash table')
+            # maintain a parameter hash table for parameter settings
+            self.param_htable = {hash(frozenset(x.items())):x 
+                    for x in self._ml_p['parameters'].values}
+            # machine learning - parameter combinations
+            self.mlp_combos = (self._ml_p['algorithm']+'|'+
+                               self._ml_p['parameters'].apply(lambda x:
+                                   str(hash(frozenset(x.items())))))
 
     def update(self, results_data, results_mf=None):
         """Update ML / Parameter recommendations based on overall performance in results_data.
@@ -98,7 +122,7 @@ class SVDRecommender(BaseRecommender):
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
                                        results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
+                                       results_data['parameters'].apply(str).values)
                                        # results_data['sorted_parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
@@ -107,14 +131,23 @@ class SVDRecommender(BaseRecommender):
 
     def update_training_data(self,results_data):
         """Fill in new data from the results"""
-        results_data.loc[:, 'algorithm-parameters'] =  (results_data['algorithm'].values + '|' +
-                                                        results_data['parameters'].values)
+        pdb.set_trace()
+        # TODO: we need a better way of managing parameter dictionaries that doesn't
+        # rely on strings
+        self.param_htable.update({hash(frozenset(x.items())):x 
+                for x in results_data['parameters'].values})
+        results_data['parameter_hash'] = results_data['parameters'].apply(
+                lambda x: hash(frozenset(x.items())))
+        results_data.loc[:, 'algorithm-parameters'] =  (
+                results_data['algorithm'].values + '|' +
+                str(results_data['parameter_hash'].values))
         results_data.rename(columns={self.metric:'score'},inplace=True)
-        self.results_df = self.results_df.append(results_data[['algorithm-parameters',
-                                                              'dataset','score']]
+        self.results_df = self.results_df.append(
+                results_data[['algorithm-parameters','dataset','score']]
                                                 ).drop_duplicates()
 
-        data = Dataset.load_from_df(self.results_df[['dataset', 'algorithm-parameters', 
+        data = Dataset.load_from_df(self.results_df[['dataset', 
+                                                     'algorithm-parameters', 
                                                      'score']], self.reader)
         # build training set from the data
         self.trainset = data.build_full_trainset()
@@ -122,6 +155,8 @@ class SVDRecommender(BaseRecommender):
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.debug('updating SVD model')
+        # shuffle the results data the first time
+        pdb.set_trace()
         if self.first_fit:
             results_data = results_data.sample(frac=1)
 
@@ -162,8 +197,10 @@ class SVDRecommender(BaseRecommender):
                 #     print('skipping',dataset_id+'|'+alg_params,'which has already'
                 #     'been run')
             logger.debug('getting top n predictions') 
-            ml_rec, p_rec, score_rec = self.get_top_n(predictions, n_recs)
+            ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
+            p_rec = [self.param_htable[ph] for ph in phash_rec]
             logger.debug('returning ml recs') 
+            pdb.set_trace()
             # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
             
@@ -196,6 +233,7 @@ class SVDRecommender(BaseRecommender):
         top_n = [] 
         for uid, iid, true_r, est, _ in predictions:
             top_n.append((iid, est))
+        pdb.set_trace()
         # shuffle top_n just to remove tie order bias when sorting
         np.random.shuffle(top_n)
         # logger.debug('top_n:',top_n) 

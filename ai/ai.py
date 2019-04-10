@@ -118,13 +118,14 @@ class AI():
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
 
         # set the registered ml parameters in the recommender
+        print('ai:121')
         if hasattr(self.rec,'ml_p'):
             ml_p = self.labApi.get_all_ml_p()
             assert ml_p is not None
             assert len(ml_p) > 0
             self.rec.ml_p = ml_p
-        if hasattr(self.rec,'mlp_combos'):
-            self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
+        # if hasattr(self.rec,'mlp_combos'):
+        #     self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
 
         logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.describe()))
 
@@ -173,13 +174,16 @@ class AI():
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
 
-        '''TODO: Verify that conversion from name to id is needed....
+        #TODO: Verify that conversion from name to id is needed....
+        # WGL: yes at the moment we need this until hash is implemented. 
+        # we can add a check at dataset upload to prevent repeat dataset names in
+        # the mean time.
+        self.user_datasets = self.labApi.get_user_datasets(self.user)
         self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
         kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
                                           lambda x: self.dataset_name_to_id[x]
                                           if x in self.dataset_name_to_id.keys()
                                           else x)
-        '''
 
 
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
@@ -312,6 +316,7 @@ class AI():
                                 dataset_mf=self.labApi.get_metafeatures(RM.id))
                 self.rec.last_n = 0
                 for alg,params,score in zip(ml,p,ai_scores):
+                    # TODO: just return dictionaries of parameters from rec
                     modified_params = eval(params) # turn params into a dictionary
                     
                     rec_payload = {'dataset_id':RM.id,
