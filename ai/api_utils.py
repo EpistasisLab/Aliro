@@ -10,6 +10,7 @@ import requests
 import itertools as it
 import logging
 import sys
+from sklearn.model_selection import ParameterGrid # utility for hyperparams
 
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
@@ -176,7 +177,8 @@ class LabApi:
                     # accuracy!
                     'f1':d['_scores']['f1_score'],
                     #WGL: this parameters value might need to be sorted
-                    'parameters':str(d['_options']), 
+                    # 'parameters':str(d['_options']), 
+                    'parameters':d['_options'], 
                     }
                 if(hasattr(d['_scores'],'balanced_accuracy')):
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
@@ -310,31 +312,34 @@ class LabApi:
                 logger.debug('  Checking hyperparams: x[''schema''][h]' + str(x['schema'][h]))
                 if 'ui' in x['schema'][h]:
                     if 'values' in x['schema'][h]['ui']:
-                        hyperparam_dict.update({h: x['schema'][h]['ui']['values']})
+                        hyperparam_dict[h] = x['schema'][h]['ui']['values']
                     else:
-                        hyperparam_dict.update({h: x['schema'][h]['ui']['choices']})
+                        hyperparam_dict[h] = x['schema'][h]['ui']['choices']
                 else:
                     good_def = False
             if good_def:
-                sorted_hp = sorted(hyperparam_dict)
-                # enumerate all possible hyperparameter combinations
-                all_hyperparam_combos = [dict(zip(sorted_hp,prod))
-                                          for prod in it.product(*(hyperparam_dict[k]
-                                          for k in sorted_hp))]
-
+                # sorted_hp = sorted(hyperparam_dict)
+                # # enumerate all possible hyperparameter combinations
+                # all_hyperparam_combos = [dict(zip(sorted_hp,prod))
+                #                           for prod in it.product(*(hyperparam_dict[k]
+                #                           for k in sorted_hp))]
+                all_hyperparam_combos = list(ParameterGrid(hyperparam_dict))
                 #print('\thyperparams: ',hyperparam_dict)
-                #print(len(all_hyperparam_combos),' total hyperparameter combinations')
+                print(len(all_hyperparam_combos),' total hyperparameter combinations')
 
                 for ahc in all_hyperparam_combos:
                     result.append({'algorithm':x['_id'],
-                                   'parameters':str(ahc),
+                                   'parameters':ahc,
                                    'alg_name':x['name']})
             else:
                 logger.error('warning: ' + str(x['name']) + 'was skipped')
             good_def = True
 
         # convert to dataframe, making sure there are no duplicates
-        all_ml_p = pd.DataFrame(result).drop_duplicates()
+        all_ml_p = pd.DataFrame(result)
+        tmp = all_ml_p.copy()
+        tmp['parameters'] = tmp['parameters'].apply(str)
+        assert ( len(all_ml_p) == len(tmp.drop_duplicates()) )
 
         if (len(all_ml_p) > 0):
             logger.info(str(len(all_ml_p)) + ' ml-parameter options loaded')
