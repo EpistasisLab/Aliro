@@ -21,6 +21,8 @@ warnings.simplefilter("ignore")
 #using an intial knowledge base.
 def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     """generates recommendations for datasets, using the first n_init as knowledge base."""
+    # set seed
+    np.random.seed(trial)
     results = []
     kwargs = {'metric':'bal_accuracy'}
     if rec in ['random','meta','mlp','svd','knn']:
@@ -53,7 +55,7 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     dataset_mf = pd.concat(init_data_mf).set_index('dataset')
     print('initial training on',len(init_df),'results')
     recommender.update(init_df, dataset_mf)
-    #################################################### load first n_init results into recommender
+    #################################################### 
 
 
     ########################################################################## main experiment loop
@@ -66,13 +68,15 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
             ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
         holdout_rank_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
             ['algorithm', 'parameters']).loc[:, 'ranking'].to_dict()
-        # print('generating recommendation for',dataset)
+
+        print('generating ',n_recs,'recommendations for',dataset)
 
         # for each dataset, generate a recommendation
         mls, ps, scores = recommender.recommend(dataset_id=dataset,
-                                                n_recs=n_recs,
-                                                dataset_mf=local_get_metafeatures(dataset)
-                                                )
+                                        n_recs=n_recs,
+                                        dataset_mf=local_get_metafeatures(dataset)
+                                            )
+        print('got',len(mls),'recs')
         updates = []
         for i in np.arange(len(mls)):
             ml = mls[i]
@@ -123,11 +127,17 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
                             'ranking':actual_ranking,
                             'delta_bal_accuracy':(best_score-actual_score)/best_score})
 
-        # print('updating recommender...')
-        update_record = pd.concat(updates)
-        dataset_mf = update_dataset_mf(dataset_mf, update_record)
+        print('updating recommender...')
+        if len(updates)>0:
+            update_record = pd.concat(updates)
+            dataset_mf = update_dataset_mf(dataset_mf, update_record)
+            recommender.update(update_record,dataset_mf)
+        else:
+            print('WARNINING: got no updates for',dataset,'. There are ',
+                  len([r for r in results if r['dataset'] == dataset]),
+                  'results for this dataset already and',len(ml_p),
+                  'unique ml+p combos')
         
-        recommender.update(update_record,dataset_mf)
     ########################################################################## main experiment loop
     return results
 
@@ -183,8 +193,6 @@ if __name__ == '__main__':
                     + '_trial-{}'.format(args.trial) 
                     + '.csv')    
 
-        # set seed
-        np.random.seed(args.trial)
         # run experiment
         # np.random.shuffle(data_idx) # shuffle datasets
         print('rec:',args.rec,'n_recs:',args.n_recs,'n_init:',args.n_init,

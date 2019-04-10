@@ -26,14 +26,6 @@ function Navbar({ preferences }) {
       </MediaQuery>
       {preferences &&
         <Menu.Menu position="right">
-          <Link to="upload_datasets" className="link" activeClassName="active">
-            <Menu.Item name="Upload">
-              <Icon name="upload" />
-              <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
-                {'Upload Datasets'}
-              </MediaQuery>
-            </Menu.Item>
-          </Link>
           <Link to="datasets" className="link" activeClassName="active">
             <Menu.Item name="Datasets">
               <Icon name="file text outline" />
@@ -64,20 +56,6 @@ function Navbar({ preferences }) {
               {preferences.username}
             </MediaQuery>
           </Menu.Item>
-          {/*<Dropdown trigger={getUserTrigger()} icon={null}>
-            <Dropdown.Menu>
-              <Dropdown.Item
-                as={Link}
-                to="settings"
-                icon="setting"
-                text="Settings"
-              />
-              <Dropdown.Item
-                icon="sign out"
-                text="Sign out"
-              />
-            </Dropdown.Menu>
-          </Dropdown>*/}
         </Menu.Menu>
       }
     </Menu>
