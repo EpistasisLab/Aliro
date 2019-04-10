@@ -86,7 +86,7 @@ export const uploadFile = (route, body) => {
            throw(err);
     })
     .then((json) => {
-      window.console.log('api helper json', json);
+      //window.console.log('api helper json', json);
       return json;
     });
 }

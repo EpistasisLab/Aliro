@@ -1,0 +1,55 @@
+Quickstart Guide
+================
+
+This guide shows you how to construct your own experiment, construct an AI experiment, view and download results.
+
+===================
+Uploading a dataset
+===================
+
+ - TODO: add description
+ - Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
+ - For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
+
+============================
+Building your own experiment
+============================
+
+ - Click `Build New Experiment` at the bottom of your dataset box. 
+   This takes you to the experiment building page. 
+ - Select from one of the ML algorithms at the top. 
+   Its default parameters will be selected in blue.
+ - Choose the parameter settings for the algorithm and click `Launch Experiment`.
+ - You will be navigated to the **Experiments** page. 
+
+===========
+Experiments 
+===========
+
+ - The Experiments page lists information about current experiments, including start time, status, and performance. 
+ - By filtering by Algorithm, you can see the algorithm's parameters for each experiment. 
+ - In the Actions column on the right, you may download files to reproduce your results:
+    - **Download model** downloads a pickled model file that contains the trained model.
+     Use it to run analysis on more datasets.
+    - **Download script** gives you a Python script to reproduce the analysis in the experiment.
+ - Clicking on any experiment will navigate to the **Results** page. 
+
+=======
+Results
+=======
+
+The Results page summarizes the experiment results through figures and statistics. 
+The algorithm configuration and runtime information is displayed on the left.
+On the right, the training and testing balances accuracies are shown.
+For every experiment, the top 10 most important features are shown in a bar plot on the bottom left.
+For every classification problem, a confusion matrix is shown. 
+For binary classification, an ROC curve and AUC score is provided.
+
+===========
+AI analysis
+===========
+
+To allow the AI to choose experiments for you, simply toggle on the AI button in the upper right corner of the dataset box.
+The AI will then run one or more experiments for which it chooses its own algorithms to run.
+Progress can be viewed from the Experiments page.
+To configure the AI settings (for example, the number of experiments to run or time limits), see the configuration file in `config/ai.env`. 
