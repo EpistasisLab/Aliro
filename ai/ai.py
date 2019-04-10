@@ -111,11 +111,6 @@ class AI():
 
         self.load_options() #loads algorithm parameters to self.ui_options 
 
-        # if there is a pickle file, load it as the recommender scores
-        self.warm_start = warm_start
-        if os.path.isfile(self.rec_score_file) and self.warm_start:
-            self.load_state()
-        
         # create a default recommender if not set
         if (rec): 
             self.rec = rec
@@ -138,21 +133,11 @@ class AI():
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
-        # build dictionary of dataset ids to names conversion
-        self.user_datasets = self.labApi.get_user_datasets(self.user)
+
         # dictionary of dataset threads, initilized and used by q_utils.  
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
-
-        # for comma-separated list of datasets in datasets, turn AI request on
-        if datasets:
-            data_usersets = dict(zip(self.user_datasets.values(),
-                                     self.user_datasets.keys()))
-            print(data_usersets)
-            for ds in datasets.split(','):
-                tmp = self.labApi.set_ai_status(datasetId = data_usersets[ds], 
-                                                aiStatus = 'requested')
         
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
@@ -162,28 +147,41 @@ class AI():
 
         # request manager
         self.RMlist = []
+
         # set termination condition
         self.term_condition = term_condition
         if self.term_condition == 'n_recs':
             self.term_value = self.n_recs
         elif self.term_condition == 'time':
             self.term_value = max_time
+
+        # if there is a pickle file, load it as the recommender scores
+        assert not (warm_start), "The `warm_start` option is not yet supported"
+
+        # for comma-separated list of datasets in datasets, turn AI request on
+        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
+
         
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
         print('loading pmlb knowledgebase')
-
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
+
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
+
+        '''TODO: Verify that conversion from name to id is needed....
         self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
         kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
                                           lambda x: self.dataset_name_to_id[x]
                                           if x in self.dataset_name_to_id.keys()
                                           else x)
+        '''
+
+
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
@@ -242,7 +240,6 @@ class AI():
                                                   )
             return True
         return len([r for r in self.RMlist if r.active])>0
-        # return False
 
 
     def check_results(self):
@@ -255,56 +252,19 @@ class AI():
             print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
                   ':','checking results...')
 
-        newResultsDict = self.labApi.get_new_experiments(
+        newResults = self.labApi.get_new_experiments_as_dataframe(
                                         last_update=self.last_update)
 
-        if len(newResultsDict) > 0:
+        if len(newResults) > 0:
             if self.verbose:
                 print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                      ':',len(newResultsDict),' new results!')
-            # process new results as a dataframe and set them to self.new_data
-            self.process_new_results(newResultsDict)             
+                      ':',len(newResults),' new results!')           
             self.last_update = int(time.time())*1000 # update timestamp
+            self.new_data = newResults
             return True
 
         return False
     
-    def process_new_results(self, data):
-        """Transforms a dictionary of data representing new experiment results into
-        a dataframe and sets them to self.new_data
-
-        :param data: dictionary - results from labApi.get_new_experiments()
-        """
-
-        processed_data = []
-        for d in data:
-            if ('_options' in d.keys() and '_scores' in d.keys() 
-                and '_dataset_id' in d.keys()):
-                frame={
-                    'dataset':d['_dataset_id'],
-                    'algorithm':d['_project_id'],
-                    'accuracy':d['_scores']['accuracy_score'],#! This is balanced
-                    # accuracy!
-                    'f1':d['_scores']['f1_score'],
-                    #WGL: this parameters value might need to be sorted
-                    'parameters':str(d['_options']), 
-                    }
-                if(hasattr(d['_scores'],'balanced_accuracy')):
-                    frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
-                processed_data.append(frame)
-            else:
-              print("new results are missing these fields:",
-                      '_options' if '_options' not in d.keys() else '',
-                      '_scores' if '_scores' not in d.keys() else '',
-                      '_dataset_id' if '_dataset_id' not in d.keys() else '')
-        # TODO - grab and add metafeatures to dataframe
-        new_data = pd.DataFrame(processed_data)
-
-        if(len(new_data) >= 1):
-          self.new_data = new_data
-        else:
-          print("no new data")
-
     def transfer_rec(self, rec_payload):
         """Attempt to send a recommendation to the lab server.
         Continues until recommendation is successfully submitted or an 
@@ -389,6 +349,7 @@ class AI():
 
         TODO: test that this still works
         """
+        raise RuntimeError("save_state is not currently supported")
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
@@ -404,6 +365,7 @@ class AI():
 
         TODO: test that this still works
         """
+        raise RuntimeError("load_state is not currently supported")
         if os.stat(self.rec_score_file).st_size != 0:
             filehandler = open(self.rec_score_file,'rb')
             state = pickle.load(filehandler)
@@ -520,10 +482,10 @@ def main():
     finally:
         # tell queues to exit
         logger.info("Shutting down AI engine...")
-        logger.info("...Exiting queue")
+        logger.info("...Shutting down Request Manager...")
         q_utils.exitFlag=1
-        logger.info("...Saving state")
-        pennai.save_state()
+        #logger.info("...Saving state")
+        #pennai.save_state()
         logger.info("Goodbye")
 
 if __name__ == '__main__':
