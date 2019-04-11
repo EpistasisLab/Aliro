@@ -50,19 +50,8 @@ class SVDRecommender(BaseRecommender):
         else:
             self.metric = metric
 
-        # maintain a parameter hash table for parameter settings
-        # self.param_htable = {}
-        # get ml+p combos
         self._ml_p = ml_p
-        # self.mlp_combos = None
-        # if ml_p is not None:
-        #     self.ml_p = ml_p.drop_duplicates()
-        #     self.param_htable = {hash(frozenset(x.items())):x 
-        #             for x in self.ml_p['parameters'].values}
-        #     # machine learning - parameter combinations
-        #     self.mlp_combos = (self.ml_p['algorithm']+'|'+
-        #                        self.ml_p['parameters'].apply(lambda x:
-        #                            hash(frozenset(x.items()))))
+        
         # get dataset names
         self.datasets = datasets
         # store results
@@ -85,6 +74,7 @@ class SVDRecommender(BaseRecommender):
     def ml_p(self):
         print('getting ml_p')
         return self._ml_p
+
     @ml_p.setter
     def ml_p(self, value):
         print('setting ml_p')
@@ -100,7 +90,8 @@ class SVDRecommender(BaseRecommender):
                                    str(hash(frozenset(x.items())))))
 
     def update(self, results_data, results_mf=None):
-        """Update ML / Parameter recommendations based on overall performance in results_data.
+        """Update ML / Parameter recommendations based on overall performance in 
+        results_data.
 
         :param results_data: DataFrame with columns corresponding to:
                 'dataset'
@@ -117,12 +108,15 @@ class SVDRecommender(BaseRecommender):
         self.update_model(results_data)
 
     def set_trained_dataset_models(self, results_data):
+        '''stores the trained_dataset_models to aid in filtering repeats.'''
         # results_data['sorted_parameters'] = results_data['parameters'].apply(
         #                                     lambda x: str(sorted(eval(x).items())))
+        results_data['parameter_hash'] = results_data['parameters'].apply(
+                lambda x: str(hash(frozenset(x.items()))))
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['dataset'].values + '|' +
                                        results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].apply(str).values)
+                                       results_data['parameter_hash'].values)
                                        # results_data['sorted_parameters'].values)
 
         # get unique dataset / parameter / classifier combos in results_data
@@ -130,17 +124,15 @@ class SVDRecommender(BaseRecommender):
         self.trained_dataset_models.update(d_ml_p)
 
     def update_training_data(self,results_data):
-        """Fill in new data from the results"""
-        pdb.set_trace()
-        # TODO: we need a better way of managing parameter dictionaries that doesn't
-        # rely on strings
+        """Fill in new data from the results and set trainset for svd"""
         self.param_htable.update({hash(frozenset(x.items())):x 
                 for x in results_data['parameters'].values})
+        print('param_htable len:',len(self.param_htable))
         results_data['parameter_hash'] = results_data['parameters'].apply(
-                lambda x: hash(frozenset(x.items())))
+                lambda x: str(hash(frozenset(x.items()))))
         results_data.loc[:, 'algorithm-parameters'] =  (
                 results_data['algorithm'].values + '|' +
-                str(results_data['parameter_hash'].values))
+                results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
         self.results_df = self.results_df.append(
                 results_data[['algorithm-parameters','dataset','score']]
@@ -156,7 +148,7 @@ class SVDRecommender(BaseRecommender):
         """Stores new results and updates SVD."""
         logger.debug('updating SVD model')
         # shuffle the results data the first time
-        pdb.set_trace()
+        # pdb.set_trace()
         if self.first_fit:
             results_data = results_data.sample(frac=1)
 
@@ -182,6 +174,7 @@ class SVDRecommender(BaseRecommender):
         # TODO: raise error if dataset_mf is None 
         try:
             predictions = []
+            filtered =0
             for alg_params in self.mlp_combos:
                 # this prevents repeat recommendations
                 # print('filtering repeats')
@@ -193,14 +186,16 @@ class SVDRecommender(BaseRecommender):
                     self.trained_dataset_models):  
                     predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
-                # else:
-                #     print('skipping',dataset_id+'|'+alg_params,'which has already'
-                #     'been run')
+                else:
+                    filtered +=1
+                    print('skipping',dataset_id+'|'+alg_params.split('|')[0],
+                          self.param_htable[int(alg_params.split('|')[1])],
+                          'which has already been recommended')
+            print('filtered',filtered,'recommendations')
             logger.debug('getting top n predictions') 
             ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
             p_rec = [self.param_htable[ph] for ph in phash_rec]
             logger.debug('returning ml recs') 
-            pdb.set_trace()
             # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
             
@@ -211,7 +206,8 @@ class SVDRecommender(BaseRecommender):
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
         self.trained_dataset_models.update(
-                                    ['|'.join([dataset_id, ml, p])
+                                    ['|'.join([dataset_id, ml,
+                                        str(hash(frozenset(p)))])
                                     for ml, p in zip(ml_rec, p_rec)])
 
         return ml_rec, p_rec, score_rec
@@ -233,13 +229,12 @@ class SVDRecommender(BaseRecommender):
         top_n = [] 
         for uid, iid, true_r, est, _ in predictions:
             top_n.append((iid, est))
-        pdb.set_trace()
         # shuffle top_n just to remove tie order bias when sorting
         np.random.shuffle(top_n)
         # logger.debug('top_n:',top_n) 
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
         logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
-        p_rec = [n[0].split('|')[1] for n in top_n]
+        p_rec = [int(n[0].split('|')[1]) for n in top_n]
         score_rec = [n[1] for n in top_n]
         return ml_rec, p_rec, score_rec 

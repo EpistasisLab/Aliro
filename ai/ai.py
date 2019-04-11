@@ -317,12 +317,12 @@ class AI():
                 self.rec.last_n = 0
                 for alg,params,score in zip(ml,p,ai_scores):
                     # TODO: just return dictionaries of parameters from rec
-                    modified_params = eval(params) # turn params into a dictionary
+                    # modified_params = eval(params) # turn params into a dictionary
                     
                     rec_payload = {'dataset_id':RM.id,
                             'algorithm_id':alg,
                             'username':self.user,
-                            'parameters':modified_params,
+                            'parameters':params,
                             'ai_score':score,
                             }
                     if self.verbose:

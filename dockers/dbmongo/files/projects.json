@@ -1,4 +1,4 @@
-{
+[{
     "name": "BernoulliNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -35,7 +35,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "GaussianNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -43,7 +44,8 @@
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html",
     "schema": {},
     "category": "classification"
-} {
+},
+{
     "name": "MultinomialNB",
     "path": "sklearn.naive_bayes",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -71,7 +73,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "DecisionTreeClassifier",
     "path": "sklearn.tree",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -80,7 +83,7 @@
     "schema": {
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
-            "type": "enum",
+            "type": "string",
             "default": "gini",
             "ui": {
                 "style": "radio",
@@ -90,16 +93,16 @@
         },
         "max_depth": {
             "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
-            "type": "int",
-            "default": 2,
+            "type": ["int", "none"],
+            "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [2, 4, 6, 8, "None"]
+                "choices": [3, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 2,
             "ui": {
                 "style": "radio",
@@ -108,7 +111,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 1,
             "ui": {
                 "style": "radio",
@@ -126,7 +129,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -136,7 +139,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "ExtraTreesClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -155,7 +159,7 @@
         },
         "criterion": {
             "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
-            "type": "enum",
+            "type": "string",
             "values": ["gini", "entropy"],
             "default": "gini",
             "ui": {
@@ -166,7 +170,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -176,7 +180,7 @@
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 2,
             "ui": {
                 "style": "radio",
@@ -186,7 +190,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 1,
             "ui": {
                 "style": "radio",
@@ -206,12 +210,16 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "GradientBoostingClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
     "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
+    "invalidMultiClassificationCombinations" : [
+        [{"loss":"exponential"}]
+    ],
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -234,7 +242,7 @@
         },
         "max_depth": {
             "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
-            "type": "int",
+            "type": ["int", "none"],
             "default": 3,
             "ui": {
                 "style": "radio",
@@ -243,7 +251,7 @@
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 2,
             "ui": {
                 "style": "radio",
@@ -253,7 +261,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 1,
             "ui": {
                 "style": "radio",
@@ -272,7 +280,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -292,7 +300,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "KNeighborsClassifier",
     "path": "sklearn.neighbors",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -329,7 +338,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "LinearSVC",
     "path": "sklearn.svm",
     "categorical_encoding_strategy": "OneHotEncoder",
@@ -391,7 +401,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "LogisticRegression",
     "categorical_encoding_strategy": "OneHotEncoder",
     "path": "sklearn.linear_model",
@@ -443,7 +454,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "RandomForestClassifier",
     "path": "sklearn.ensemble",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -472,7 +484,7 @@
         },
         "max_features": {
             "description": "The number of features to consider when looking for the best split.",
-            "type": "string",
+            "type": ["int", "float", "string", "none"],
             "default": "sqrt",
             "ui": {
                 "style": "radio",
@@ -482,7 +494,7 @@
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 2,
             "ui": {
                 "style": "radio",
@@ -492,7 +504,7 @@
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
-            "type": "int",
+            "type": ["int", "float"],
             "default": 1,
             "ui": {
                 "style": "radio",
@@ -522,7 +534,8 @@
         }
     },
     "category": "classification"
-} {
+},
+{
     "name": "SVC",
     "path": "sklearn.svm",
     "categorical_encoding_strategy": "OrdinalEncoder",
@@ -587,3 +600,4 @@
     },
     "category": "classification"
 }
+]
