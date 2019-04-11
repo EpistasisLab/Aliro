@@ -6,8 +6,8 @@ fi
 mongod -f /etc/mongod.conf --fork
 #check to see if db was loaded
 if [ ! -f '/root/forum' ]; then
-    mongoimport -d FGLab -c users --file /root/users.json --type json
-    mongoimport -d FGLab -c projects --file /root/${PROJECTS_FILE} --type json
+    mongoimport -d FGLab -c users --file /root/users.json --type json --jsonArray
+    mongoimport -d FGLab -c projects --file /root/${PROJECTS_FILE} --type json --jsonArray
     mongo FGLab --eval 'db.projects.createIndex({name: 1})'
     mongo FGLab --eval 'db.users.createIndex({username: 1})'
     mongo FGLab --eval 'db.users.createIndex({apikey: 1})'

@@ -28,26 +28,8 @@ import unittest
 from unittest import mock
 from nose.tools import assert_raises, assert_equal, nottest
 from io import StringIO
-import re
-
 import warnings
 
-
-NOT_WHITESPACE = re.compile(r'[^\s]')
-
-def decode_stacked(document, pos=0, decoder=json.JSONDecoder()):
-    while True:
-        match = NOT_WHITESPACE.search(document, pos)
-        if not match:
-            return
-        pos = match.start()
-
-        try:
-            obj, pos = decoder.raw_decode(document, pos)
-        except json.JSONDecodeError:
-            # do something sensible if there's some error
-            raise
-        yield obj
 
 # test input file for multiclass classification
 test_clf_input = "machine/test/iris_full.tsv"
@@ -123,8 +105,11 @@ test_gbc = GradientBoostingClassifier()
 test_reg = DecisionTreeRegressor()
 # projects information
 projects_json = "dockers/dbmongo/files/projects.json"
-json_file = open(projects_json, encoding="utf8")
-projects_json_data = [obj for obj in decode_stacked(json_file.read())]
+# json_file = open(projects_json, encoding="utf8")
+# projects_json_data = [obj for obj in decode_stacked(json_file.read())]
+
+
+projects_json_data = json.load(open(projects_json, encoding="utf8"))
 # get all algorithms' name from projects_json_data
 algorithm_names = []
 for obj in projects_json_data:
