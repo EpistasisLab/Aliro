@@ -16,10 +16,15 @@ const datasets = {
   }
 }
 
-// hardcoded to return iris data
-export function uploadFile(url) {
+// hardcoded to only accept dependent_col of 'class'
+export function uploadFile(requestPayload) {
   return new Promise((resolve, reject) => {
-    resolve(datasets[7654321]);
+    //resolve(datasets[7654321]);
+    process.nextTick(() =>
+      requestPayload.dependent_col === 'class'
+        ? resolve({ Success: 'File uploaded', id: 7654321})
+        : reject({ error: 'dependent_col: ' +  requestPayload.dependent_col + ' invalid'})
+      )
     // process.nextTick(() =>
     //   url
     //     ? resolve(datasets[7654321])

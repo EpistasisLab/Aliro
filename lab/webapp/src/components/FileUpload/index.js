@@ -37,7 +37,7 @@ class FileUpload extends Component {
   // https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
   // need to figure out what characters will be allowed
   purgeUserInput(inputText) {
-    let cleanedInput = inputText.replace(/[|&;$%@"<>()+,]/g, "");
+    let cleanedInput = inputText.replace(/[|&;$%@<>()+]/g, "");
     return cleanedInput;
   }
 
@@ -200,65 +200,65 @@ class FileUpload extends Component {
 
     return (
       <div>
-      <Form inverted>
-        <Segment className="file-upload-segment">
-          <Input
-            className="file-upload-form-text-input"
-            type="file"
-            label="Select new dataset"
-            id="upload_dataset_file_browser_button"
-            onChange={this.handleSelectedFile}
-          />
-          <br/>
-          <div
-            id="file-upload-form-input-area"
-            className={formInputClass}
-          >
-            <Form.Input
-              label="Dependent Column"
-              placeholder="class"
-              value={this.state.dependentCol ? this.state.dependentCol : ""}
-              type="text"
-              onChange={this.handleDepColField}
+        <Form inverted>
+          <Segment className="file-upload-segment">
+            <Input
+              className="file-upload-form-text-input"
+              type="file"
+              label="Select new dataset"
+              id="upload_dataset_file_browser_button"
+              onChange={this.handleSelectedFile}
             />
-            <Form.Input
-              label="Ordinal Features"
+            <br/>
+            <div
+              id="file-upload-form-input-area"
+              className={formInputClass}
             >
-              <textarea
+              <Form.Input
+                label="Dependent Column"
+                placeholder="class"
+                value={this.state.dependentCol ? this.state.dependentCol : ""}
+                type="text"
+                onChange={this.handleDepColField}
+              />
+              <Form.Input
                 label="Ordinal Features"
-                placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-                onChange={this.handleOrdinalFeatures}
-              />
-            </Form.Input>
-            <Form.Input
-              label="Categorical Features"
-            >
-              <textarea
-                label="Categorical Features"
-                placeholder={"cat_feat_1, cat_feat_2"}
-                onChange={this.handleCatFeatures}
-              />
-            </Form.Input>
-            <Popup
-              header="Error Submitting Dataset"
-              content={serverResp}
-              open={errorMsg ? true : false}
-              trigger={
-                <Button
-                  inverted
-                  color="blue"
-                  compact
-                  size="small"
-                  icon="upload"
-                  content="Upload dataset"
-                  onClick={this.handleUpload}
+              >
+                <textarea
+                  label="Ordinal Features"
+                  placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+                  onChange={this.handleOrdinalFeatures}
                 />
-              }
-            />
-          </div>
-        </Segment>
-      </Form>
-      {dataPrevTable}
+              </Form.Input>
+              <Form.Input
+                label="Categorical Features"
+              >
+                <textarea
+                  label="Categorical Features"
+                  placeholder={"cat_feat_1, cat_feat_2"}
+                  onChange={this.handleCatFeatures}
+                />
+              </Form.Input>
+              <Popup
+                header="Error Submitting Dataset"
+                content={serverResp}
+                open={errorMsg ? true : false}
+                trigger={
+                  <Button
+                    inverted
+                    color="blue"
+                    compact
+                    size="small"
+                    icon="upload"
+                    content="Upload dataset"
+                    onClick={this.handleUpload}
+                  />
+                }
+              />
+            </div>
+          </Segment>
+        </Form>
+        {dataPrevTable}
       </div>
     );
   }
