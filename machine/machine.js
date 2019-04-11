@@ -20,7 +20,7 @@ var rp = require("request-promise");
 var chokidar = require("chokidar");
 var rimraf = require("rimraf");
 var WebSocketServer = require("ws").Server;
-const getProjects = require('./getprojects.js');
+const machine_utils = require('./machine_utils.js');
 
 
 /* App instantiation */
@@ -38,7 +38,8 @@ var laburi;
 var machineuri;
 var project_root;
 var timeout;
-/* FGLab check */
+/* environment variables check */
+/* Lab */
 if (process.env.PROJECT_ROOT) {
     project_root = process.env.PROJECT_ROOT
 }
@@ -52,13 +53,13 @@ if (process.env.LAB_HOST && process.env.LAB_PORT) {
     process.exit(1);
 }
 
-/* FGMachine var */
+/* Machine var */
 if (process.env.MACHINE_HOST && process.env.MACHINE_PORT) {
     machineuri = 'http://' + process.env.MACHINE_HOST + ':' + process.env.MACHINE_PORT;
 } else if (process.env.MACHINE_URL) {
     machineuri = process.env.MACHINE_URL;
 } else {
-    console.log("Error: No FGMachine address specified");
+    console.log("Error: No machine address specified");
     process.exit(1);
 }
 
@@ -69,10 +70,17 @@ var machine_config = JSON.parse(fs.readFileSync(machine_config_file, 'utf-8'));
 var algorithms = machine_config["algorithms"]
 
 /* Timeout config */
-/* FGLab check */
 if (process.env.EXP_TIMEOUT) {
     timeout = Number(process.env.EXP_TIMEOUT) * 60 * 1000  //convert from min to ms
 }
+
+
+/* check max capacity */
+var maxCapacity = 1;
+if (process.env.CAPACITY) {
+    maxCapacity = process.env.CAPACITY;
+}
+console.log("Maximum Capacity in the machine is", maxCapacity)
 
 
 /* Machine specifications */
@@ -119,13 +127,14 @@ rp({
         gzip: true
     })
     .then((body) => {
-        console.log("Registered with PennAiServer successfully");
+        console.log("Registered with PennAI server successfully");
         // Save ID and specs
         fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
         // Reload specs with _id (prior to adding projects)
         specs = body;
-        project_list = getProjects(algorithms);
+        project_list = machine_utils.getProjects(algorithms);
         var tmppath = project_root + "/machine/learn/tmp";
+        // make tmp folder if it is not available
         if (!fs.existsSync(tmppath)) fs.mkdirSync(tmppath, 0744);
         for (var i in project_list) {
             var algo = project_list[i].name;
@@ -143,7 +152,7 @@ rp({
                 gzip: true
             })
             .then((msg) => {
-                console.log("Projects registered with PennAiServer successfully");
+                console.log("Projects registered with PennAI server successfully");
                 if (msg.projects !== undefined) {
                     projects = msg.projects;
                 }
@@ -151,28 +160,11 @@ rp({
             });
     })
     .catch((err) => {
-        console.log('catchup: nobody to talk to');
+        console.log('Error: nobody to talk to');
         console.log(err);
         process.exit();
     });
 
-
-//max capacity
-var maxCapacity = 1;
-if (process.env.CAPACITY) {
-    maxCapacity = process.env.CAPACITY;
-}
-console.log("capacity is", maxCapacity)
-//console.log("projects: ", projects)
-
-
-var getCapacity = function(projId) {
-    var capacity = 0;
-    if (projects[projId]) {
-        capacity = Math.floor(maxCapacity / projects[projId].capacity);
-    }
-    return capacity;
-};
 
 /* Routes */
 // Updates projects.json with new project ID
@@ -182,20 +174,13 @@ app.options("/projects", cors({
 
 // Checks capacity
 app.get("/projects/:id/capacity", (req, res) => {
-    var capacity = getCapacity(req.params.id);
-    if(typeof projects[req.params.id] === 'undefined') {
+    var capacity_info = machine_utils.checkCapacity(req.params.id, maxCapacity, projects);
+    if(capacity_info.capacity === 0) {
         res.status(501);
-        res.send({
-            error: "Project '" + req.params.id + "' does not exist"
-        });
-    } else if (capacity === 0) {
-        res.status(501);
-        res.send({
-            error: "No capacity available"
-        });
+        res.send(capacity_info.error_msg);
     } else {
         res.send({
-            capacity: capacity,
+            capacity: capacity_info.capacity,
             address: specs.address,
             _id: specs._id
         });
@@ -214,16 +199,10 @@ app.get("/projects", (req, res) => {
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
     // Check if capacity still available
-    if(typeof projects[req.params.id] === 'undefined') {
+    var capacity_info = machine_utils.checkCapacity(req.params.id, maxCapacity, projects);
+    if(capacity_info.capacity === 0) {
         res.status(501);
-        res.send({
-            error: "Project '" + req.params.id + "' does not exist"
-        });
-    } else if (getCapacity(req.params.id) === 0) {
-        res.status(501);
-        return res.send({
-            error: "No capacity available"
-        });
+        res.send(capacity_info.error_msg);
     }
 
     // Process args
@@ -445,16 +424,12 @@ app.post("/experiments/:id/kill", (req, res) => {
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
-if (!machineuri) {
-    console.log("Error: No FGMachine address specified");
-    process.exit(1);
-} else {
-    // Listen for connections
-    var port = url.parse(machineuri).port;
-    server.listen(port, () => {
-        console.log("Server listening on port " + port);
-    });
-}
+
+// Listen for connections
+var port = url.parse(machineuri).port;
+server.listen(port, () => {
+    console.log("Server listening on port " + port);
+});
 
 
 /* WebSocket server */
@@ -495,6 +470,6 @@ wss.on("connection", (ws) => {
     // Remove listeners
     ws.on("close", () => {
         mediator.removeListener("experiments:" + expId + ":stdout", sendStdout);
-        mediator.removeListener("experiments:" + expId + ":stdout", sendStderr);
+        mediator.removeListener("experiments:" + expId + ":stderr", sendStderr);
     });
 });
