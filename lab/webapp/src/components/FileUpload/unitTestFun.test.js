@@ -16,15 +16,21 @@ import { shallow, mount, render, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 configure({ adapter: new Adapter() });
 
-describe('try testing react component', () => {
+describe('try testing fileupload react component', () => {
   let store = mockStore(initialState);
   let testFileUpload;
 
+  // basic bookkeeping before/after each test; mount/unmount component, should be
+  // similar to how piece will actually work in browser
   beforeEach(() => {
     testFileUpload = mount(<FileUpload store={store} testProp="hello" />);
   })
+  afterEach(() => {
+    testFileUpload.unmount();
+  })
 
-  it('create mock fileupload component', () => {
+  // test for existence
+  it('create mock fileupload component, test for existence', () => {
     //const testFileUpload = shallow(<FileUpload store={store} testProp="hello" />);
     testFileUpload.setProps({ name: 'bar' });
     //let tree = component.toJSON();
@@ -43,19 +49,47 @@ describe('try testing react component', () => {
   // trying to simulate UI element change - having trouble either accessing desired
   // piece (in this case file input), simulating change event or both
 
-  // it('click file upload button', () => {
-  //   //expect(testFileUpload.html()).toEqual("foo");
-  //   //testFileUpload.find('input').toEqual("foo");
-  //
-  //   //expect(testFileUpload.find('#upload_dataset_file_browser_button')).toEqual("foo");
-  //   //testFileUpload.find('#upload_dataset_file_browser_button').simulate("click");
-  //   //testFileUpload.find("input").simulate("click");
-  //   testFileUpload.find('#upload_dataset_file_browser_button').simulate("change", {
-  //     target: {
-  //       files: [ 'iris.csv' ]
-  //     }
-  //   });
-  // })
+  it('simulate use of file upload button/input', () => {
+    // asked about how to simulate user actions here, using enzyme simulate doesn't quite
+    // work, using 'onChange' prop to fake user action:
+    // https://stackoverflow.com/questions/55638365/how-to-access-internal-pieces-of-react-component-and-mock-api-call-with-jest-e/55641884#55641884
+
+    //testFileUpload.find("input").simulate("click");
+    // testFileUpload.find('#upload_dataset_file_browser_button').at(0).simulate('change', {
+    //   event: {
+    //     target: {
+    //       files: [{name: 'iris.csv'}]
+    //     }
+    //   }
+    // });
+
+    // these actions are supposed to tigger event handlers in the component being
+    // tested (which they do) & update component react state (which doesn't appear to happen)
+    let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+    testFileUpload.find('input').at(0).prop('onChange')(fakeFile);
+    // update() is supposed to forceUpdate/re-render the component but even after
+    // manually updating, component react state does not contain anything
+    // testFileUpload.update();
+    // enzyme documentation/resources are somewhat lacking
+    testFileUpload.find('textarea').at(0).prop('onChange')(
+      {target:{value: 'testHello'}},
+      {value:'test input'}
+    );
+    // cheating for now and just updating component state directly...
+    testFileUpload.setState({selectedFile: fakeFile.target.files[0]});
+    //console.log('test state: ', testFileUpload.state());
+    //console.log('test file: ', testFileUpload.state('selectedFile'));
+    // ...and checking for state which was just manually set above
+    expect(testFileUpload.state("selectedFile")).toEqual(fakeFile.target.files[0]);
+
+    // not sure how to check UI pieces which depend on react state here, using
+    // enzyme mount to create the component requires a different way to go about
+    // trying to access the pieces which would change UI based on state
+
+    // see unit test below for basic file upload flow where component is created
+    // differently (shallow, not mount) and allows for accessing inner elements
+    // to check UI
+  })
 
 
 })
@@ -69,6 +103,16 @@ describe('try testing react component', () => {
 // cheating and just importing fake apiHelper directly - probably not recommended
 import { uploadFile } from '../../utils/__mocks__/apiHelper';
 describe('mock network request', () => {
+  let store = mockStore(initialState);
+  let testFileUpload;
+
+  beforeEach(() => {
+    //testFileUpload = mount(<FileUpload store={store} testProp="hello" />);
+    testFileUpload = shallow(<FileUpload store={store} />).dive();
+  })
+  afterEach(() => {
+    //testFileUpload.unmount();
+  })
   //jest.mock('../../utils/apiHelper');
   let fakeDataset = {
     name: 'stuff'
@@ -92,24 +136,49 @@ describe('mock network request', () => {
     }
   ];
 
-  it('testing promise for successfully case, proper dependent_col', () => {
+  it('testing promise for successful case, proper dependent_col', () => {
     expect.assertions(1);
     //return uploadDataset(fakeDataset).then(data => expect(data.name).toEqual('iris.csv'));
     //return uploadFile('fakeurl').then(data => expect(data.name).toEqual('iris.csv'));
-    return uploadFile(fakeDatasets[0]).then(data => expect(data.id).toEqual(7654321));
+
+    // on successful upload, change window location/redirect the page, uses error
+    // flag in server response to control logic for UI or page redirection, not
+    // sure how to get at those pieces with this testing framework
+    return uploadFile(fakeDatasets[0])
+      .then(data => expect(data.id)
+      .toEqual(7654321));
   })
 
   it('testing promise for unsuccessful case, improper dependent_col', () => {
     expect.assertions(1);
+    return uploadFile(fakeDatasets[1])
+      .catch(e => {
+        expect(e).toEqual({"error": "dependent_col: target_class invalid"});
 
-    return uploadFile(fakeDatasets[1]).catch(e => expect(e).toEqual({"error": "dependent_col: target_class invalid"}));
+        // fake setting state, normally occurs in upload handler function in
+        // FileUpload component after promise making actual upload resolves
+
+        // testFileUpload.setState({
+        //   errorResp: e,
+        //   serverResp: e
+        // });
+
+        // this is not working correctly as it is, popup open prop should be set
+        // to 'true' in case of error response, not sure if this is incorrect method
+        // of testing
+
+        // testFileUpload = shallow(<FileUpload store={store} />).dive();
+        // testFileUpload.update();
+        // let popup = testFileUpload.find('Popup').at(0);
+        // console.log('popup props', popup.props());
+      });
   })
 })
 
 // go through basic file upload flow - select file & info, upload file
 // cover two scenarios - upload success and failure
 
-//
+// this test examines styling based on mock user input
 describe('basic file upload flow', () => {
 
   let store = mockStore(initialState);
@@ -165,10 +234,6 @@ describe('basic file upload flow', () => {
     // user info is entered in form, check if form input area is visible
     // look for css styling to display form
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
-  })
-
-  it('test handleUpload method', () => {
-    testFileUpload
   })
 
 })
