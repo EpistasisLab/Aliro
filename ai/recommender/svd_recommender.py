@@ -94,10 +94,12 @@ class SVDRecommender(BaseRecommender):
 
     def update_training_data(self,results_data):
         """Fill in new data from the results and set trainset for svd"""
+        # update parameter hash table
         self.param_htable.update({hash(frozenset(x.items())):x 
                 for x in results_data['parameters'].values})
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: str(hash(frozenset(x.items()))))
+
         results_data.loc[:, 'algorithm-parameters'] =  (
                 results_data['algorithm'].values + '|' +
                 results_data['parameter_hash'].values)

@@ -10,6 +10,14 @@ import numpy as np
 from collections import defaultdict, OrderedDict
 import pdb
 from sklearn.neighbors import NearestNeighbors
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 class KNNMetaRecommender(BaseRecommender):
     """Penn AI KNN meta recommender.
@@ -41,7 +49,7 @@ class KNNMetaRecommender(BaseRecommender):
             self.metric = metric
 
         # get ml+p combos (note: this triggers a property in base recommender)
-        self.ml_p = ml_p
+        self._ml_p = ml_p
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['dataset','algorithm','parameters',
             'score'])
@@ -81,7 +89,12 @@ class KNNMetaRecommender(BaseRecommender):
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        # print('updating model')
+        # update parameter hash table
+        self.param_htable.update({hash(frozenset(x.items())):x 
+                for x in results_data['parameters'].values})
+        results_data['parameter_hash'] = results_data['parameters'].apply(
+                lambda x: str(hash(frozenset(x.items()))))
+        logger.debug('len(self.param_htable)): ' + str(len(self.param_htable))) 
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -90,11 +103,10 @@ class KNNMetaRecommender(BaseRecommender):
                 dfg = dfg.reset_index()
                 idx = dfg[self.metric].idxmax()
                 # print('dfg:\n',dfg)
-                logger.info('new best for'+d+':'+
-                        dfg.loc[idx,'algorithm']+'idx:'+str(idx))
+                logger.info('new best for '+d+': '+
+                        dfg.loc[idx,'algorithm']+', idx:'+str(idx))
                 self.best_mlp.loc[d,'algorithm'] = dfg.loc[idx,'algorithm']
-                self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameters'].apply(
-                        lambda x: str(hash(frozenset(x))))
+                self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameter_hash']
             else:
                 print('skipping',d)
         # print('model updated')
@@ -110,7 +122,8 @@ class KNNMetaRecommender(BaseRecommender):
             Return a list of length n_recs in order of estimators and parameters 
             expected to do best.
         """
-        # TODO: raise error if dataset_mf is None 
+        if dataset_mf is None:
+            raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
@@ -138,7 +151,7 @@ class KNNMetaRecommender(BaseRecommender):
                            if subset[i]]),
                        'results for',dataset_id,'already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs], 
-                    [self.param_htable[p] for p in phash_rec[:n_recs]], 
+                    [self.param_htable[int(p)] for p in phash_rec[:n_recs]], 
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
             
