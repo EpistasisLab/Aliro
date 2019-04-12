@@ -8,7 +8,7 @@ import json
 import itertools
 from sklearn import metrics
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.utils import safe_sqr, check_X_y
@@ -327,9 +327,11 @@ def generate_results(model, input_data,
                 proba_estimates = model.predict_proba(testing_features)[:, 1];
             except AttributeError:
                 proba_estimates = model.decision_function(testing_features)
-
-            roc_curve = metrics.roc_curve(testing_classes, proba_estimates)
-            roc_auc_score = metrics.roc_auc_score(testing_classes, proba_estimates)
+            # encode binary classification to 0,1 for roc curve and roc score
+            le = LabelEncoder()
+            trans_testing_classes = le.fit_transform(testing_classes)
+            roc_curve = metrics.roc_curve(trans_testing_classes, proba_estimates)
+            roc_auc_score = metrics.roc_auc_score(trans_testing_classes, proba_estimates)
 
             fpr, tpr, _ = roc_curve
             roc_curve_dict = {
