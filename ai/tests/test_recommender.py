@@ -12,7 +12,7 @@ import pdb
 import json
 # set up data for tests.
 # print('loading pmlb results data...')
-data = pd.read_csv('data/knowledgebases/sklearn-benchmark5-data-short-formatted.tsv.gz',
+data = pd.read_csv('data/knowledgebases/sklearn-benchmark5-knowledgebase.tsv.gz',
                    compression='gzip', sep='\t')
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',

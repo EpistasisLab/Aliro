@@ -41,7 +41,8 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 
 
     resultsData = _load_results_from_file(resultsFile)
-    metafeaturesData = _generate_metadata_from_directory(datasetDirectory)
+    metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
+            targetField='target')
 
     # check that all result datasets have metadata
 

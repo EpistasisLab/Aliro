@@ -55,26 +55,7 @@ class RandomRecommender(BaseRecommender):
         results_mf: DataFrame, optional 
                columns corresponding to metafeatures of each dataset in results_data.
         """
-        #self.ml = results_data['algorithm'].unique()
-        #for ml in self.ml:
-        #    self.ml_p_dict[ml] = results_data.loc[results_data['algorithm']==ml,'parameters'].unique()
-
-        # make combined data columns of datasets, classifiers, and parameters
-
-        #results_data.loc[:, 'algorithm-parameters'] = (
-        #                               results_data['algorithm'].values + '|' +
-        #                               results_data['parameters'].values)
-
-        results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + '|' +
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
-        #pdb.set_trace()
-        # get unique dataset / parameter / classifier combos in results_data
-        #self.ml_p = results_data['algorithm-parameters'].unique()
-        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
-        self.trained_dataset_models.update(d_ml_p)
-
+        self.update_trained_dataset_models_from_df(results_data):
 
     def recommend(self, dataset_id=None, n_recs=1, dataset_mf=None):
         """Return a model and parameter values expected to do best on dataset.
