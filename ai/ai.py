@@ -184,9 +184,14 @@ class AI():
                                           lambda x: self.dataset_name_to_id[x]
                                           if x in self.dataset_name_to_id.keys()
                                           else x)
-
-
-        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        metafeatures = {}
+        for k,v in kb['metafeaturesData'].items():
+            if k in self.dataset_name_to_id.keys():
+                metafeatures[self.dataset_name_to_id[k]] = v
+            else:
+                metafeatures[k] = v
+        # all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
         # self.update_dataset_mf(kb['resultsData'])
@@ -394,7 +399,7 @@ class AI():
             if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
                 # fetch metafeatures from server for dataset and append
                 df = self.labApi.get_metafeatures(d)        
-                df['dataset'] = d
+                # df['dataset'] = d
                 # print('metafeatures:',df)
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
