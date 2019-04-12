@@ -16,8 +16,9 @@ from surprise import Reader, Dataset, mySVD
 from collections import defaultdict
 import itertools as it
 import logging
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -28,7 +29,8 @@ class SVDRecommender(BaseRecommender):
     Recommends machine learning algorithms and parameters using the SVD++ algorithm.
         - stores ML + P and every dataset.
         - learns a matrix factorization on the non-missing data.
-        - given a dataset, estimates the rankings of all ML+P and returns the top n_recs. 
+        - given a dataset, estimates the rankings of all ML+P and returns the top 
+        n_recs. 
 
     Parameters
     ----------
@@ -65,31 +67,13 @@ class SVDRecommender(BaseRecommender):
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
                           reg_qi=None, random_state=None, verbose=False)
         
-        # maintain a set of dataset-algorithm-parameter combinations that have already been 
-        # evaluated
+        # maintain a set of dataset-algorithm-parameter combinations that have 
+        # already been evaluated
         self.trained_dataset_models = set()
         self.first_fit = True
 
-    @property
-    def ml_p(self):
-        print('getting ml_p')
-        return self._ml_p
 
-    @ml_p.setter
-    def ml_p(self, value):
-        print('setting ml_p')
-        if value is not None:
-            self._ml_p = value
-            print('setting hash table')
-            # maintain a parameter hash table for parameter settings
-            self.param_htable = {hash(frozenset(x.items())):x 
-                    for x in self._ml_p['parameters'].values}
-            # machine learning - parameter combinations
-            self.mlp_combos = (self._ml_p['algorithm']+'|'+
-                               self._ml_p['parameters'].apply(lambda x:
-                                   str(hash(frozenset(x.items())))))
-
-    def update(self, results_data, results_mf=None):
+    def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations based on overall performance in 
         results_data.
 
@@ -102,32 +86,16 @@ class SVDRecommender(BaseRecommender):
         """
 
         # update trained dataset models
-        self.set_trained_dataset_models(results_data)
+        if source == 'pennai':
+            self.update_trained_dataset_models_from_df(results_data)
 
         # update internal model
         self.update_model(results_data)
-
-    def set_trained_dataset_models(self, results_data):
-        '''stores the trained_dataset_models to aid in filtering repeats.'''
-        # results_data['sorted_parameters'] = results_data['parameters'].apply(
-        #                                     lambda x: str(sorted(eval(x).items())))
-        results_data['parameter_hash'] = results_data['parameters'].apply(
-                lambda x: str(hash(frozenset(x.items()))))
-        results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + '|' +
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameter_hash'].values)
-                                       # results_data['sorted_parameters'].values)
-
-        # get unique dataset / parameter / classifier combos in results_data
-        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
-        self.trained_dataset_models.update(d_ml_p)
 
     def update_training_data(self,results_data):
         """Fill in new data from the results and set trainset for svd"""
         self.param_htable.update({hash(frozenset(x.items())):x 
                 for x in results_data['parameters'].values})
-        print('param_htable len:',len(self.param_htable))
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: str(hash(frozenset(x.items()))))
         results_data.loc[:, 'algorithm-parameters'] =  (
@@ -143,6 +111,9 @@ class SVDRecommender(BaseRecommender):
                                                      'score']], self.reader)
         # build training set from the data
         self.trainset = data.build_full_trainset()
+        logger.debug('self.trainset # of ML-P combos: ' + 
+                str(self.trainset.n_items))
+        logger.debug('self.trainset # of datasets: ' + str(self.trainset.n_users))
 
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
@@ -188,13 +159,13 @@ class SVDRecommender(BaseRecommender):
                                                          clip=False))
                 else:
                     filtered +=1
-                    print('skipping',dataset_id+'|'+alg_params.split('|')[0],
-                          self.param_htable[int(alg_params.split('|')[1])],
-                          'which has already been recommended')
-            print('filtered',filtered,'recommendations')
+                    logger.debug('skipping ' + str(dataset_id) +'|'+
+                            alg_params.split('|')[0] + 
+                          str(self.param_htable[int(alg_params.split('|')[1])]) +
+                          ' which has already been recommended')
+            logger.debug('filtered '+ str(filtered) + ' recommendations')
             logger.debug('getting top n predictions') 
             ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
-            p_rec = [self.param_htable[ph] for ph in phash_rec]
             logger.debug('returning ml recs') 
             # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
@@ -205,11 +176,9 @@ class SVDRecommender(BaseRecommender):
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        self.trained_dataset_models.update(
-                                    ['|'.join([dataset_id, ml,
-                                        str(hash(frozenset(p)))])
-                                    for ml, p in zip(ml_rec, p_rec)])
+        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
+        p_rec = [self.param_htable[int(ph)] for ph in phash_rec]
         return ml_rec, p_rec, score_rec
 
     def get_top_n(self,predictions, n=10):
@@ -235,6 +204,6 @@ class SVDRecommender(BaseRecommender):
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
         logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
-        p_rec = [int(n[0].split('|')[1]) for n in top_n]
+        p_rec = [n[0].split('|')[1] for n in top_n]
         score_rec = [n[1] for n in top_n]
         return ml_rec, p_rec, score_rec 
