@@ -44,21 +44,22 @@ class FileUpload extends Component {
   // text field for entering dependent column
   handleDepColField(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    window.console.log('safe input col: ', safeInput);
     this.setState({dependentCol: props.value});
   }
 
   // text field/area for entering categorical features
   handleCatFeatures(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    window.console.log('safe input cat: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
   // text field/area for entering ordinal features
   handleOrdinalFeatures(e, props) {
+    //window.console.log('ord props: ', props);
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    window.console.log('safe input ord: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
@@ -75,6 +76,10 @@ class FileUpload extends Component {
     };
     // immediately try to get dataset preview on file input html element change
     // need to be mindful of garbage data/files
+    //console.log(typeof event.target.files[0]);
+    //console.log(event.target.files[0]);
+
+    // TODO: Make sure only attempt to parse files, will break with garbage input
     Papa.parse(event.target.files[0], papaConfig);
 
     this.setState({
@@ -243,6 +248,7 @@ class FileUpload extends Component {
                 header="Error Submitting Dataset"
                 content={serverResp}
                 open={errorMsg ? true : false}
+                id="file_upload_popup_and_button"
                 trigger={
                   <Button
                     inverted
