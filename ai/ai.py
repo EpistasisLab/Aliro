@@ -190,7 +190,7 @@ class AI():
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
         # self.update_dataset_mf(kb['resultsData'])
-        self.rec.update(kb['resultsData'], self.dataset_mf)
+        self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
         
         print('pmlb knowledgebase loaded')
 
