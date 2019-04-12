@@ -127,7 +127,7 @@ class AI():
         # if hasattr(self.rec,'mlp_combos'):
         #     self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
 
-        logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.describe()))
+        logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.head()))
 
         # tmp = self.labApi.get_all_ml_p()
         # tmp.to_csv('ml_p_options.csv') 
