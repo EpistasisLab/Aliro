@@ -14,8 +14,10 @@ function ExperimentsTableBody({
     const status = experiment.status;
     const id = experiment._id;
 
-    if(status === 'suggested' || status === 'pending') {
+    if(status === 'suggested' || status === 'pending' && status !== 'fail') {
       return `/#/builder?experiment=${id}`;
+    } else if (status === 'fail') {
+      return `/#/experiments?status=fail`;
     } else {
       return `/#/results/${id}`;
     }
@@ -23,7 +25,7 @@ function ExperimentsTableBody({
 
   const renderStatusIcon = (status) => {
     switch(status) {
-      case 'suggested': 
+      case 'suggested':
         return (
           <Popup
             size="tiny"
@@ -37,7 +39,7 @@ function ExperimentsTableBody({
           <Popup
             size="tiny"
             position="top center"
-            content="Pending" 
+            content="Pending"
             trigger={<Icon inverted color="yellow" name="clock" />}
           />
         );
@@ -77,7 +79,7 @@ function ExperimentsTableBody({
             trigger={<Icon inverted color="red" name="warning sign" />}
           />
         );
-      default: 
+      default:
         return;
     }
   };
@@ -99,7 +101,7 @@ function ExperimentsTableBody({
           />
         );
       default:
-        return; 
+        return;
     }
   };
 
@@ -109,7 +111,7 @@ function ExperimentsTableBody({
       .then(response => {
         if(response.status >= 400) {
           throw new Error(`${response.status}: ${response.statusText}`);
-        }  
+        }
         return response.json();
       });
   };
@@ -119,7 +121,7 @@ function ExperimentsTableBody({
       .then(response => {
         if(response.status >= 400) {
           throw new Error(`${response.status}: ${response.statusText}`);
-        }  
+        }
         return response.json();
       })
       .then(json => {
@@ -132,7 +134,7 @@ function ExperimentsTableBody({
       .then(response => {
         if(response.status >= 400) {
           throw new Error(`${response.status}: ${response.statusText}`);
-        }  
+        }
         return response.json();
       })
       .then(json => {
@@ -145,42 +147,42 @@ function ExperimentsTableBody({
       {experiments.map(experiment => {
         const experimentLink = getExperimentLink(experiment);
         return (
-          <Table.Row 
+          <Table.Row
             key={experiment._id}
             className={experiment.notification}
           >
             <Table.Cell selectable>
               <a href={experimentLink}>
-                {renderStatusIcon(experiment.status)} 
+                {renderStatusIcon(experiment.status)}
                 {formatTime(experiment.started)}
-              </a>  
+              </a>
             </Table.Cell>
             {shouldDisplayQuality ? (
               <Table.Cell selectable>
                 <a href={experimentLink}>
                   {experiment.quality_metric.toFixed(2)}
-                </a>  
+                </a>
               </Table.Cell>
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.scores.accuracy_score ? 
+                  {experiment.scores.accuracy_score ?
                     experiment.scores.accuracy_score.toFixed(2) : '-'
                   }
                   {shouldDisplayAwards && renderAwardPopup(experiment)}
-                </a>  
+                </a>
               </Table.Cell>
             )}
             <Table.Cell selectable>
               <a href={experimentLink}>
                 {formatDataset(experiment.dataset_name)}
-              </a>  
+              </a>
             </Table.Cell>
             {shouldDisplayErrorMessage &&
               <Table.Cell selectable>
               <a href={experimentLink}>
                 {formatDataset(experiment.errorMessage)}
-              </a>  
+              </a>
             </Table.Cell>
             }
             {shouldDisplayParams ? (
@@ -195,34 +197,34 @@ function ExperimentsTableBody({
               <Table.Cell selectable>
                 <a href={experimentLink}>
                   {formatAlgorithm(experiment.algorithm)}
-                </a>  
-              </Table.Cell> 
+                </a>
+              </Table.Cell>
             )}
             <Table.Cell textAlign="center">
-              <Dropdown 
-                pointing="top right" 
+              <Dropdown
+                pointing="top right"
                 icon={<Icon inverted color="grey" size="large" name="caret down" />}
                 disabled={['cancelled', 'fail'].includes(experiment.status)}
               >
                 <Dropdown.Menu>
                   {experiment.status === 'running' &&
-                    <Dropdown.Item 
-                      icon="cancel" 
+                    <Dropdown.Item
+                      icon="cancel"
                       text="Cancel experiment"
                       onClick={() => cancelExperiment(experiment._id)}
                     />
                   }
                   {experiment.status === 'success' &&
                     [
-                      <Dropdown.Item 
-                        key="model" 
-                        icon="download" 
+                      <Dropdown.Item
+                        key="model"
+                        icon="download"
                         text="Download model"
                         onClick={() => downloadModel(experiment._id)}
                       />,
-                      <Dropdown.Item 
-                        key="script" 
-                        icon="download" 
+                      <Dropdown.Item
+                        key="script"
+                        icon="download"
                         text="Download script"
                         onClick={() => downloadScript(experiment._id)}
                       />
