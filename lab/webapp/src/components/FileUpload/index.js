@@ -12,6 +12,10 @@ import Papa from 'papaparse';
 import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header } from 'semantic-ui-react';
 
 class FileUpload extends Component {
+  /**
+ * FileUpload reac component - UI form for uploading datasets
+ * @constructor
+ */
   constructor(props) {
     super(props);
 
@@ -33,38 +37,69 @@ class FileUpload extends Component {
 
   }
 
-  // strip input of potentially troublesome characters, from here:
-  // https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
-  // need to figure out what characters will be allowed
+
+  /**
+   * Strip input of potentially troublesome characters, from here:
+   * https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
+   * need to figure out what characters will be allowed
+   *
+   * @param {string} inputText - user input.
+   * @returns {string} stripped user input of bad characters
+   */
   purgeUserInput(inputText) {
     let cleanedInput = inputText.replace(/[|&;$%@<>()+]/g, "");
     return cleanedInput;
   }
 
-  // text field for entering dependent column
+  /**
+   * Text field for entering dependent column, sets component react state with
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleDepColField(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input col: ', safeInput);
+    //window.console.log('safe input col: ', safeInput);
     this.setState({dependentCol: props.value});
   }
 
-  // text field/area for entering categorical features
+  /**
+   * text field/area for entering categorical features
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleCatFeatures(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input cat: ', safeInput);
+    //window.console.log('safe input cat: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
-  // text field/area for entering ordinal features
+  /**
+   * text field/area for entering ordinal features
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleOrdinalFeatures(e, props) {
     //window.console.log('ord props: ', props);
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input ord: ', safeInput);
+    //window.console.log('safe input ord: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
 
-
+  /**
+   * Event handler for selecting files, takes user file from html file input, stores
+   * selected file in component react state, generates file preview and stores that
+   * in the state as well. If file is valid does the abovementioned, else error
+   * is generated
+   * @param {Event} event - DOM Event from user interacting with UI text field
+   * @returns {void} - no return value
+   */
   handleSelectedFile = event => {
     let papaConfig = {
       header: true,
@@ -85,7 +120,7 @@ class FileUpload extends Component {
 
       //Papa.parse(event.target.files[0], papaConfig);
       // use try/catch block to deal with potential bad file input when trying to
-      // generate file/csv preview 
+      // generate file/csv preview
       try {
         Papa.parse(uploadFile, papaConfig);
       }
@@ -104,10 +139,15 @@ class FileUpload extends Component {
         errorResp: undefined
       })
     }
-
-
   }
 
+  /**
+   * Starts download process, takes user input, creates a request payload (new html Form)
+   * and sends data to server through redux action, uploadDataset, which is a promise.
+   * When promise resolves update UI or redirect page depending on success/error.
+   * Upon error display error message to user, on success redirect to dataset page
+   * @returns {void} - no return value
+   */
   handleUpload = () => {
     const { uploadDataset } = this.props;
     const data = new FormData();
@@ -160,6 +200,13 @@ class FileUpload extends Component {
     }
   }
 
+  /**
+   * Small helper method to create table for dataset preview upon selecting csv file.
+   * Copied from Dataset component - relies upon javascript library papaparse to
+   * partially read selected file and semantic ui to generate preview content,
+   * if no preview available return hidden paragraph, otherwise return table
+   * @returns {html} - html to display
+   */
   getDataTablePreview() {
     let dataPrev = this.state.datasetPreview;
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
