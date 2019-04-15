@@ -74,19 +74,38 @@ class FileUpload extends Component {
         this.setState({datasetPreview: result});
       }
     };
-    // immediately try to get dataset preview on file input html element change
-    // need to be mindful of garbage data/files
-    //console.log(typeof event.target.files[0]);
-    //console.log(event.target.files[0]);
 
-    // TODO: Make sure only attempt to parse files, will break with garbage input
-    Papa.parse(event.target.files[0], papaConfig);
+    // check for selected file
+    if(event.target.files && event.target.files[0]) {
+      // immediately try to get dataset preview on file input html element change
+      // need to be mindful of garbage data/files
+      //console.log(typeof event.target.files[0]);
+      //console.log(event.target.files[0]);
+      let uploadFile = event.target.files[0]
 
-    this.setState({
-      selectedFile: event.target.files[0],
-      loaded: 0,
-      errorResp: undefined
-    })
+      //Papa.parse(event.target.files[0], papaConfig);
+      // use try/catch block to deal with potential bad file input when trying to
+      // generate file/csv preview 
+      try {
+        Papa.parse(uploadFile, papaConfig);
+      }
+      catch(error) {
+        console.error('Error generating preview for selected file:', error);
+        this.setState({
+          selectedFile: undefined,
+          loaded: 0,
+          errorResp: error
+        })
+      }
+
+      this.setState({
+        selectedFile: event.target.files[0],
+        loaded: 0,
+        errorResp: undefined
+      })
+    }
+
+
   }
 
   handleUpload = () => {
@@ -221,6 +240,7 @@ class FileUpload extends Component {
             >
               <Form.Input
                 label="Dependent Column"
+                id="dependent_column_text_field_input"
                 placeholder="class"
                 value={this.state.dependentCol ? this.state.dependentCol : ""}
                 type="text"
@@ -230,6 +250,7 @@ class FileUpload extends Component {
                 label="Ordinal Features"
               >
                 <textarea
+                  id="ordinal_features_text_area_input"
                   label="Ordinal Features"
                   placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
                   onChange={this.handleOrdinalFeatures}
@@ -239,6 +260,7 @@ class FileUpload extends Component {
                 label="Categorical Features"
               >
                 <textarea
+                  id="categorical_features_text_area_input"
                   label="Categorical Features"
                   placeholder={"cat_feat_1, cat_feat_2"}
                   onChange={this.handleCatFeatures}
