@@ -3,7 +3,10 @@ import MediaQuery from 'react-responsive';
 import DeviceWatcher from '../../../utils/device-watcher';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
-
+/**
+* child component of menu bar - if preferences successfully retrieved, create
+* menu bar with links to other sections of site
+*/
 function Navbar({ preferences }) {
   const getUserTrigger = () => {
     return (
