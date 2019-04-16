@@ -1,3 +1,4 @@
+var fs = require("mz/fs");
 //Generate a list of projects based on machine_config.json
 var getProjects = function(algorithms) {
     var project_list = [];
@@ -51,6 +52,35 @@ var checkCapacity = function(projId, maxCapacity, projects) {
 };
 
 
+// Results-sending function for JSON
+var sendJSONResults = function(filename, uri) {
+    results = JSON.parse(fs.readFileSync(filename, "utf-8"));
+    return {
+        uri: uri, //laburi + "/api/v1/experiments/" + experimentId,
+        method: "PUT",
+        json: results,
+        gzip: true
+    };
+};
+// Results-sending function for other files
+var sendFileResults = function(filename, uri) {
+    // Create form data
+    var formData = {
+        files: []
+    };
+    // Add file
+    formData.files.push(fs.createReadStream(filename));
+    return {
+        uri: uri, //laburi + "/api/v1/experiments/" + experimentId + "/files",
+        method: "PUT",
+        formData: formData,
+        gzip: true
+    };
+};
+
+
 exports.getProjects = getProjects;
 exports.getCapacity = getCapacity;
 exports.checkCapacity = checkCapacity;
+exports.sendJSONResults = sendJSONResults;
+exports.sendFileResults = sendFileResults;
