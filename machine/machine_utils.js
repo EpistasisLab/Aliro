@@ -56,7 +56,7 @@ var checkCapacity = function(projId, maxCapacity, projects) {
 var sendJSONResults = function(filename, uri) {
     results = JSON.parse(fs.readFileSync(filename, "utf-8"));
     return {
-        uri: uri, //laburi + "/api/v1/experiments/" + experimentId,
+        uri: uri,
         method: "PUT",
         json: results,
         gzip: true
@@ -71,7 +71,7 @@ var sendFileResults = function(filename, uri) {
     // Add file
     formData.files.push(fs.createReadStream(filename));
     return {
-        uri: uri, //laburi + "/api/v1/experiments/" + experimentId + "/files",
+        uri: uri,
         method: "PUT",
         formData: formData,
         gzip: true
