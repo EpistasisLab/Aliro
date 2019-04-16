@@ -9,7 +9,19 @@ import DatasetCard from './components/DatasetCard';
 import FetchError from '../FetchError';
 import { Header, Loader } from 'semantic-ui-react';
 
+
+/**
+* This is the main 'Datasets' page - contains button to add/upload new datasets
+* and 0 or more dataset 'cards' with info about each dataset and UI for interacting
+* with each dataset: toggle AI recommender, view current experiment status, or build
+* new experiment
+*/
 class Datasets extends Component {
+  /**
+  * react lifecycle method, when component is done loading, after it is mounted in
+  * DOM, use dataset action creator, fetchDatasets, to request retrieval of all
+  * datasets
+  */
   componentDidMount() {
     this.props.fetchDatasets();
   }
