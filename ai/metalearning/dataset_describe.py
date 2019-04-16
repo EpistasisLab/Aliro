@@ -10,12 +10,15 @@ Methods range from but not restricted to:
 Contact: Harsh Nisar GH: harshnisar
 """
 
+from pandas.util import hash_pandas_object
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.decomposition import PCA
 import pdb
 from scipy.stats import kurtosis, skew
+import hashlib
+
 class Dataset:
     """
     Initialize the dataset and give user the option to set some
@@ -26,6 +29,8 @@ class Dataset:
 
     prediction_type = {'regression'|'classification'}
     """
+    VERSION = "1.0"
+
     df = None
     df_encoded = None
     categorical_cols = None
@@ -121,6 +126,21 @@ class Dataset:
                 # nominal - so make dummy"
                 self.df_encoded = pd.get_dummies(self.df_encoded, columns=[col])
         
+    def metafeature_version(self):
+        """
+        version of the code used to generate metafeatures.
+
+        If the way metafeatures are generated changes (in particular dataset_hash),
+        The version number should be updated.
+        """
+        return self.VERSION
+
+    def dataset_hash(self):
+        """
+        Generates a hash for the dataset
+        """
+        rowHashes = hash_pandas_object(self.df).values
+        return hashlib.sha256(rowHashes).hexdigest()
 
     def n_rows(self):
         return self.df.shape[0]

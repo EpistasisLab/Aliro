@@ -11,21 +11,44 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 class Dataset_Describe(unittest.TestCase):
  
     def setUp(self):
-        irisPath = os.path.join(package_directory, 'iris.csv')
+        irisPath = os.path.join(package_directory, 'iris.csv') 
         tipsPath = os.path.join(package_directory, 'tips.csv')
 
-        # classification problem.
+        #dataset that contains string values
+        appendicitisStringPath = os.path.join(package_directory, 'appendicitis_cat_ord.csv')
+
+        #row permutation of the iris dataset
+        irisPermutePath = os.path.join(package_directory, 'iris_permute.csv')
+
+        # classification problems
         iris = pd.read_csv(irisPath)
-        self.iris = Dataset(iris)   
+        self.iris = Dataset(iris)
+
+        irisPermute = pd.read_csv(irisPermutePath)
+        self.irisPermute = Dataset(irisPermute) 
+
+        appendicitisString = pd.read_csv(appendicitisStringPath)
+        self.appendicitisString = Dataset(appendicitisString)   
 
         # Regression problem
         tips = pd.read_csv(tipsPath)
         self.tips = Dataset(tips, dependent_col = 'tip')   
 
+    def test_dataset_hash(self):
+        irisResult = self.iris.dataset_hash()
+        irisPermuteResult = self.irisPermute.dataset_hash()
+        tipsResult = self.tips.dataset_hash()
+        appendicitisStringResult = self.appendicitisString.dataset_hash()
+        self.assertEqual(irisResult, "4761c082ca2f241c151d3ec57336ddf7627bfbf0893348ed21e8abb87620206b")
+        self.assertEqual(irisPermuteResult, "2a7d7049779206839faa99f28060f5645f856cf5bbccfee08b735cc261c151e8")
+        self.assertEqual(tipsResult, "6b5a7bde4f70028674093e87ddbfc2de39f7e2826b6027511199c89eaeb0c63e")
+        self.assertEqual(appendicitisStringResult, "49f6460511b2efe5bf7f5da425e0fbc6764b64a890fc3196bef1cb618f762477")
 
     def test_number_of_rows(self):
-        result = self.iris.n_rows()
-        self.assertEqual(150, result)
+        irisResult = self.iris.n_rows()
+        irisPermuteResult = self.iris.n_rows()
+        self.assertEqual(150, irisResult)
+        self.assertEqual(150, irisPermuteResult)
 
     def test_number_of_columns(self):
         result = self.iris.n_columns()
