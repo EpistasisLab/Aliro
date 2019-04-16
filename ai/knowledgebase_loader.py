@@ -39,9 +39,10 @@ def load_knowledgebase(resultsFile, datasetDirectory):
     metafeaturesData = _generate_metadata_from_directory(datasetDirectory)
 
     # check that all result datasets have metadata
+    warnings = _validate_knowledgebase(resultsData, metafeaturesData)
 
     # return
-    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData}
+    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 'warnings': warnings}
 
 def load_pmlb_knowledgebase():
     """ load the PMBL knowledgebase"""
@@ -49,6 +50,31 @@ def load_pmlb_knowledgebase():
             resultsFile = 'data/knowledgebases/sklearn-benchmark5-data-edited-formatted-filtered.tsv.gz',
             datasetDirectory = "data/datasets/pmlb"
             )
+
+def _validate_knowledgebase(resultsDf, metafeaturesDict):
+  """
+  Validate knowledgebase
+  """
+  requiredResultsFields = ['dataset', 'algorithm']
+
+  warnings = []
+
+  # check that resultsDf has required fields
+  for reqField in requiredResultsFields:
+    if not reqField in resultsDf.columns: warnings.append("Required field '" + reqField + "'' is not in the knowledgebase experiments.")
+
+  if warnings: return warnings
+
+
+  # check that all the datasets in resultsDf are in metafeaturesDict
+  missingMfDatasets = list(set(resultsDf.dataset.unique()) - set(metafeaturesDict.keys()))
+  if missingMfDatasets : warnings.append("Found experiment datasets with no associated metadata: " + str(missingMfDatasets))
+
+  # TODO: check that all the metafeatures were created with a version compatable
+  #       with the current version of datasest_describe.py
+
+  return warnings
+
 
 def _load_results_from_file(resultsFile):
     results_data = pd.read_csv(resultsFile,
