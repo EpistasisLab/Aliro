@@ -99,25 +99,16 @@ specs = {
     mem: bytes(os.totalmem()),
     gpus: []
 };
-// GPU models
-if (os.platform() === "linux") {
-    var lspci = spawnSync("lspci", []);
-    var grep = spawnSync("grep", ["-i", "vga"], {
-        input: lspci.stdout
-    });
-    var gpuStrings = grep.stdout.toString().split("\n");
-    for (var i = 0; i < gpuStrings.length - 1; i++) {
-        specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
-    }
-} else if (os.platform() === "darwin") {
-    var system_profiler = spawnSync("system_profiler", ["SPDisplaysDataType"]);
-    var profilerStrings = system_profiler.stdout.toString().split("\n");
-    for (var i = 0; i < profilerStrings.length - 1; i++) {
-        if (profilerStrings[i].indexOf("Chipset Model:") > -1) {
-            specs.gpus.push(profilerStrings[i].replace(/Chipset Model: /g, ""));
-        }
-    }
+// GPU models in Linux
+var lspci = spawnSync("lspci", []);
+var grep = spawnSync("grep", ["-i", "vga"], {
+    input: lspci.stdout
+});
+var gpuStrings = grep.stdout.toString().split("\n");
+for (var i = 0; i < gpuStrings.length - 1; i++) {
+    specs.gpus.push(gpuStrings[i].replace(/.*controller: /g, ""));
 }
+
 
 // Register details
 rp({
@@ -207,6 +198,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // Process args
     var experimentId = req.body._id;
+    var exp_url = laburi + "/api/v1/experiments/" + experimentId;
     var project = projects[req.params.id];
     var args = [];
     if (project.args !== undefined) {
@@ -224,8 +216,6 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         } else if (project.options === "single-dash") {
             args.push("-" + prop);
             args.push(options[prop]);
-        } else if (project.options === "double-dash-noequals") {
-            args.push("--" + prop + " " + options[prop]);
         } else if (project.options === "double-dash") {
             args.push("--" + prop + "=" + options[prop]);
         } else if (project.options === "function") {
@@ -239,10 +229,8 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     }
 
     // Spawn experiment
-    //  project.command = 'set'
-    //  args = []
-    //console.log("args")
-    //console.log(args)
+    console.log("args")
+    console.log(args)
     var experimentErrorMessage
     var experiment = spawn(project.command, args, {
             cwd: project_root + '/' + project.cwd
@@ -251,7 +239,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         .on("error", (er) => {
             // Notify of failure
             rp({
-                uri: laburi + "/api/v1/experiments/" + experimentId,
+                uri: exp_url,
                 method: "PUT",
                 json: {
                     _status: "fail",
@@ -267,7 +255,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     maxCapacity -= Number(project.capacity); // Reduce capacity of machine
 
     rp({
-        uri: laburi + "/api/v1/experiments/" + experimentId + "/started",
+        uri: exp_url + "/started",
         method: "PUT",
         data: null
     }); // Set started
@@ -300,30 +288,6 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // List of file promises (to make sure all files are uploaded before removing results folder)
     var filesP = [];
-    // Results-sending function for JSON
-    var sendJSONResults = function(results) {
-        return rp({
-            uri: laburi + "/api/v1/experiments/" + experimentId,
-            method: "PUT",
-            json: JSON.parse(results),
-            gzip: true
-        });
-    };
-    // Results-sending function for other files
-    var sendFileResults = function(filename) {
-        // Create form data
-        var formData = {
-            files: []
-        };
-        // Add file
-        formData.files.push(fs.createReadStream(filename));
-        return rp({
-            uri: laburi + "/api/v1/experiments/" + experimentId + "/files",
-            method: "PUT",
-            formData: formData,
-            gzip: true
-        });
-    };
 
     // Watch for experiment folder
     var resultsDir = path.join(project_root, project.results, experimentId);
@@ -334,14 +298,11 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             if (path.match(/\.json$/)) {
                 // Process JSON files
                 console.log('pushing ' + path);
-                filesP.push(fs.readFile(path, "utf-8").then(sendJSONResults));
-                //ugly hack to prevent input files from getting uploaded
-            } else if (path.match(/\.csv$/)) {
-                console.log('ignoring ' + path);
+                filesP.push(rp(machine_utils.sendJSONResults(path, exp_url)));
             } else {
                 // Store filenames for other files
                 console.log('pushing ' + path);
-                filesP.push(sendFileResults(path));
+                filesP.push(rp(machine_utils.sendFileResults(path, exp_url + "/files")));
             }
         }
     });
@@ -369,13 +330,13 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         //`Process ended with exit code ${exitCode}`
 
         rp({
-            uri: laburi + "/api/v1/experiments/" + experimentId,
+            uri: exp_url,
             method: "PUT",
             json: statusMap,
             gzip: true
         });
         rp({
-            uri: laburi + "/api/v1/experiments/" + experimentId + "/finished",
+            uri: exp_url + "/finished",
             method: "PUT",
             data: null
         }); // Set finished
