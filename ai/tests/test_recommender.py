@@ -61,6 +61,8 @@ def update_dataset_mf(dataset_mf,results_data):
         # print('df_mf:',df_mf['dataset'], df_mf)
         dataset_mf = dataset_mf.append(df_mf)
         # print('dataset_mf:\n',dataset_mf)
+    dataset_mf['metafeature_version'] = 1.0
+    dataset_mf['dataset_hash'] = 'test_hash'
 
     return dataset_mf
 
