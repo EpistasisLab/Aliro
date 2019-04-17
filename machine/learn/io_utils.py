@@ -277,8 +277,8 @@ def bool_type(val):
         raise argparse.ArgumentTypeError(val + ' is not a valid boolean value')
 
 
-def str_or_none(val):
-    """Convert argument to str type or None.
+def none(val):
+    """Convert nono argument to None.
     Parameters
     ----------
     val: string
@@ -286,25 +286,23 @@ def str_or_none(val):
 
     Returns
     -------
-    _: string or None
+    _: None
         If input value if "none", then the function will return None,
         otherwise it will retune string.
     """
     if(val.lower() == 'none'):
         return None
-    try:
-        str(val)
-    except Exception:
+    else:
         raise argparse.ArgumentTypeError(val + ' is not a valid str value')
-    return str(val)
 
 
-def get_type(type):
+def get_type(param_type):
     """Return convertion function for input type.
     Parameters
     ----------
-    type: string
-        Type of a parameter which is defined in projects.json
+    param_type: string or list
+        string, type of a parameter which is defined in projects.json
+        list, list of parameter types (for parameter supportting multiple input types)
 
     Returns
     -------
@@ -315,8 +313,35 @@ def get_type(type):
     known_types = {
         'int': int,  # change this later
         'float': float,
-        'string': str_or_none,  # change this later
+        'string': str,
         'bool': bool_type,
-        'enum': str
+        'none': none
     }
-    return known_types[type]
+    if isinstance(param_type, list):
+        def convert_func(val):
+            conv_val = ''
+            for t in param_type:
+                try:
+                    if isinstance(val, str):
+                        if val.lower() == 'none' and t == "none":
+                            conv_val = None
+                            break
+                        elif val.lower() in ["true", "false"] and t == "bool":
+                            conv_val = bool_type(val)
+                            break
+                    conv_val = known_types[t](val)
+                    # for mixed type in tree-based model
+                    if isinstance(conv_val, (int, float)):
+                        if conv_val < 1:
+                            conv_val = float(conv_val)
+                        else:
+                            conv_val = int(conv_val)
+                        break
+                except:
+                    pass
+            if conv_val == '':
+                raise argparse.ArgumentTypeError(val + ' is not a valid value')
+            return conv_val
+        return convert_func
+    else:
+        return known_types[param_type]

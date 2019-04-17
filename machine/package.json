@@ -5,7 +5,7 @@
   "main": "machine.js",
   "scripts": {
     "start": "node machine.js",
-    "test": "mocha './test/test.js'",
+    "test": "mocha ./test/test.js",
     "update": "git pull && npm install"
   },
   "repository": {
