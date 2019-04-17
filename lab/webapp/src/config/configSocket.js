@@ -3,7 +3,10 @@ import { updateAI, updateDataset } from 'data/datasets/dataset/actions';
 import { addExperiment, updateExperiment } from 'data/experiments/actions';
 
 let socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
-
+/**
+* Based on various network events, emit/dispatch corresponding redux action
+*
+*/
 const configSocket = (store) => {
   socket.on('updateAIToggle', data => {
     const parsed = JSON.parse(data);

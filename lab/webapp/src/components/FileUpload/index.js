@@ -12,6 +12,10 @@ import Papa from 'papaparse';
 import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header } from 'semantic-ui-react';
 
 class FileUpload extends Component {
+  /**
+ * FileUpload reac component - UI form for uploading datasets
+ * @constructor
+ */
   constructor(props) {
     super(props);
 
@@ -33,37 +37,69 @@ class FileUpload extends Component {
 
   }
 
-  // strip input of potentially troublesome characters, from here:
-  // https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
-  // need to figure out what characters will be allowed
+
+  /**
+   * Strip input of potentially troublesome characters, from here:
+   * https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters
+   * need to figure out what characters will be allowed
+   *
+   * @param {string} inputText - user input.
+   * @returns {string} stripped user input of bad characters
+   */
   purgeUserInput(inputText) {
-    let cleanedInput = inputText.replace(/[|&;$%@"<>()+,]/g, "");
+    let cleanedInput = inputText.replace(/[|&;$%@<>()+]/g, "");
     return cleanedInput;
   }
 
-  // text field for entering dependent column
+  /**
+   * Text field for entering dependent column, sets component react state with
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleDepColField(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //window.console.log('safe input col: ', safeInput);
     this.setState({dependentCol: props.value});
   }
 
-  // text field/area for entering categorical features
+  /**
+   * text field/area for entering categorical features
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleCatFeatures(e, props) {
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //window.console.log('safe input cat: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
-  // text field/area for entering ordinal features
+  /**
+   * text field/area for entering ordinal features
+   * user input
+   * @param {Event} e - DOM Event from user interacting with UI text field
+   * @param {Object} props - react props object
+   * @returns {void} - no return value
+   */
   handleOrdinalFeatures(e, props) {
+    //window.console.log('ord props: ', props);
     let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //window.console.log('safe input ord: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
 
-
+  /**
+   * Event handler for selecting files, takes user file from html file input, stores
+   * selected file in component react state, generates file preview and stores that
+   * in the state as well. If file is valid does the abovementioned, else error
+   * is generated
+   * @param {Event} event - DOM Event from user interacting with UI text field
+   * @returns {void} - no return value
+   */
   handleSelectedFile = event => {
     let papaConfig = {
       header: true,
@@ -73,17 +109,45 @@ class FileUpload extends Component {
         this.setState({datasetPreview: result});
       }
     };
-    // immediately try to get dataset preview on file input html element change
-    // need to be mindful of garbage data/files
-    Papa.parse(event.target.files[0], papaConfig);
 
-    this.setState({
-      selectedFile: event.target.files[0],
-      loaded: 0,
-      errorResp: undefined
-    })
+    // check for selected file
+    if(event.target.files && event.target.files[0]) {
+      // immediately try to get dataset preview on file input html element change
+      // need to be mindful of garbage data/files
+      //console.log(typeof event.target.files[0]);
+      //console.log(event.target.files[0]);
+      let uploadFile = event.target.files[0]
+
+      //Papa.parse(event.target.files[0], papaConfig);
+      // use try/catch block to deal with potential bad file input when trying to
+      // generate file/csv preview
+      try {
+        Papa.parse(uploadFile, papaConfig);
+      }
+      catch(error) {
+        console.error('Error generating preview for selected file:', error);
+        this.setState({
+          selectedFile: undefined,
+          loaded: 0,
+          errorResp: error
+        })
+      }
+
+      this.setState({
+        selectedFile: event.target.files[0],
+        loaded: 0,
+        errorResp: undefined
+      })
+    }
   }
 
+  /**
+   * Starts download process, takes user input, creates a request payload (new html Form)
+   * and sends data to server through redux action, uploadDataset, which is a promise.
+   * When promise resolves update UI or redirect page depending on success/error.
+   * Upon error display error message to user, on success redirect to dataset page
+   * @returns {void} - no return value
+   */
   handleUpload = () => {
     const { uploadDataset } = this.props;
     const data = new FormData();
@@ -136,6 +200,13 @@ class FileUpload extends Component {
     }
   }
 
+  /**
+   * Small helper method to create table for dataset preview upon selecting csv file.
+   * Copied from Dataset component - relies upon javascript library papaparse to
+   * partially read selected file and semantic ui to generate preview content,
+   * if no preview available return hidden paragraph, otherwise return table
+   * @returns {html} - html to display
+   */
   getDataTablePreview() {
     let dataPrev = this.state.datasetPreview;
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
@@ -200,65 +271,69 @@ class FileUpload extends Component {
 
     return (
       <div>
-      <Form inverted>
-        <Segment className="file-upload-segment">
-          <Input
-            className="file-upload-form-text-input"
-            type="file"
-            label="Select new dataset"
-            id="upload_dataset_file_browser_button"
-            onChange={this.handleSelectedFile}
-          />
-          <br/>
-          <div
-            id="file-upload-form-input-area"
-            className={formInputClass}
-          >
-            <Form.Input
-              label="Dependent Column"
-              placeholder="class"
-              value={this.state.dependentCol ? this.state.dependentCol : ""}
-              type="text"
-              onChange={this.handleDepColField}
+        <Form inverted>
+          <Segment className="file-upload-segment">
+            <Input
+              className="file-upload-form-text-input"
+              type="file"
+              label="Select new dataset"
+              id="upload_dataset_file_browser_button"
+              onChange={this.handleSelectedFile}
             />
-            <Form.Input
-              label="Ordinal Features"
+            <br/>
+            <div
+              id="file-upload-form-input-area"
+              className={formInputClass}
             >
-              <textarea
+              <Form.Input
+                label="Dependent Column"
+                id="dependent_column_text_field_input"
+                placeholder="class"
+                value={this.state.dependentCol ? this.state.dependentCol : ""}
+                type="text"
+                onChange={this.handleDepColField}
+              />
+              <Form.Input
                 label="Ordinal Features"
-                placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-                onChange={this.handleOrdinalFeatures}
-              />
-            </Form.Input>
-            <Form.Input
-              label="Categorical Features"
-            >
-              <textarea
-                label="Categorical Features"
-                placeholder={"cat_feat_1, cat_feat_2"}
-                onChange={this.handleCatFeatures}
-              />
-            </Form.Input>
-            <Popup
-              header="Error Submitting Dataset"
-              content={serverResp}
-              open={errorMsg ? true : false}
-              trigger={
-                <Button
-                  inverted
-                  color="blue"
-                  compact
-                  size="small"
-                  icon="upload"
-                  content="Upload dataset"
-                  onClick={this.handleUpload}
+              >
+                <textarea
+                  id="ordinal_features_text_area_input"
+                  label="Ordinal Features"
+                  placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+                  onChange={this.handleOrdinalFeatures}
                 />
-              }
-            />
-          </div>
-        </Segment>
-      </Form>
-      {dataPrevTable}
+              </Form.Input>
+              <Form.Input
+                label="Categorical Features"
+              >
+                <textarea
+                  id="categorical_features_text_area_input"
+                  label="Categorical Features"
+                  placeholder={"cat_feat_1, cat_feat_2"}
+                  onChange={this.handleCatFeatures}
+                />
+              </Form.Input>
+              <Popup
+                header="Error Submitting Dataset"
+                content={serverResp}
+                open={errorMsg ? true : false}
+                id="file_upload_popup_and_button"
+                trigger={
+                  <Button
+                    inverted
+                    color="blue"
+                    compact
+                    size="small"
+                    icon="upload"
+                    content="Upload dataset"
+                    onClick={this.handleUpload}
+                  />
+                }
+              />
+            </div>
+          </Segment>
+        </Form>
+        {dataPrevTable}
       </div>
     );
   }
