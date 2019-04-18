@@ -450,8 +450,6 @@ def main():
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
-            'exhaustive': ExhaustiveRecommender,
-            'meta': MetaRecommender,
             'knn': KNNMetaRecommender,
             'svd': SVDRecommender
             }
