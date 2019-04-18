@@ -307,20 +307,49 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         }
     });
 
+    // Kills experiment
+    app.post("/experiments/:id/kill", (req, res) => {
+        console.log(`/experiments/${req.params.id}/kill`)
+        if (experiments[req.params.id]) {
+            if (experiments[req.params.id].killed) {
+                console.log("experiment already killed")
+            }
+            else {
+                experiments[req.params.id].kill();
+                console.log("killing experiment")
+                experimentErrorMessage = "Experiment already killed"
+            }
+        }
+        else { console.log("experiment process does not exist") }
+        res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
+        res.send(JSON.stringify({
+            status: "killed"
+        }));
+    });
+
     // Processes results
     experiment.on("exit", (exitCode) => {
         console.log("on exit!")
         maxCapacity += Number(project.capacity); // Add back capacity
-
+        console.log(experimentErrorMessage)
         // Send status
         var status
         var statusMap
         if (exitCode === 0) { statusMap = {_status : "success" }}
-        else if (experimentErrorMessage.indexOf("TimeoutError") !== -1) { statusMap = {
-            _status : "fail",
-            errorMessage: experimentErrorMessage
-        }}
-        else if (experiment.killed) { statusMap = {_status : "cancelled" }}
+        else if (experiment.killed) {
+            if (typeof experimentErrorMessage == 'undefined'){
+                statusMap = {_status : "cancelled" }
+            }
+            else if (experimentErrorMessage.indexOf("TimeoutError") !== -1) {
+                statusMap = {
+                  _status : "fail",
+                  errorMessage: experimentErrorMessage
+                }
+            }
+            else{
+                statusMap = {_status : "cancelled" }
+                }
+            }
         else { statusMap = {
             _status : "fail",
             errorMessage: experimentErrorMessage
@@ -364,25 +393,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     res.send(req.body);
 });
 
-// Kills experiment
-app.post("/experiments/:id/kill", (req, res) => {
-    console.log(`/experiments/${req.params.id}/kill`)
-    if (experiments[req.params.id]) {
-        if (experiments[req.params.id].killed) {
-            console.log("experiment already killed")
-        }
-        else {
-            experiments[req.params.id].kill();
-            console.log("killing experiment")
-        }
-        experimentErrorMessage = "Experiment already killed"
-    }
-    else { console.log("experiment process does not exist") }
-    res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
-    res.send(JSON.stringify({
-        status: "killed"
-    }));
-});
+
 
 /* HTTP Server */
 var server = http.createServer(app); // Create HTTP server
