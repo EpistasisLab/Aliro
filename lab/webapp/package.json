@@ -67,18 +67,18 @@
       [
         "./node_modules/jest-html-reporter",
         {
-          "pageTitle": "Jest Integration Test Suite",
+          "pageTitle": "Jest Unit Test Suite",
           "includeFailureMsg": true,
           "includeConsoleLog": true,
-          "outputPath": "/target/test-reports/html/int_jest_test_report.html"
+          "outputPath": "/target/test-reports/html/unit_jest_test_report.html"
         }
       ],
       [
         "./node_modules/jest-junit",
         {
-          "suiteName": "Jest Integration Test Suite",
+          "suiteName": "Jest Unit Test Suite",
           "outputDirectory": "/target/test-reports",
-          "outputName": "int_jest_xunit.xml"
+          "outputName": "unit_jest_xunit.xml"
         }
       ]
     ]
