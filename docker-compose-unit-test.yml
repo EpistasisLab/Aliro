@@ -2,7 +2,9 @@ version: '3'
 
 services:
   unit_tester:
-    build: ./tests/unit
+    build:
+      context: .
+      dockerfile: tests/unit/Dockerfile
     working_dir: /appsrc
     command: bash -c "dos2unix tests/unit_test_runner.sh && sh tests/unit_test_runner.sh"
     tty: true
