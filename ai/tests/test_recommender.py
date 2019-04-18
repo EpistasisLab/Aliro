@@ -27,7 +27,7 @@ data.set_index('dataset')
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
     try:
-       with open('ai/tests/metafeatures/api/datasets/'+
+       with open('data/knowledgebases/metafeatures/'+
                d+'/metafeatures.json') as data_file:    
                data = json.load(data_file)
     except Exception as e:
@@ -35,10 +35,10 @@ def get_metafeatures(d):
         raise e
 
     df = pd.DataFrame.from_records(data,columns=data.keys(),index=[0])
-    df['dataset'] = d
-    df.sort_index(axis=1, inplace=True)
-    df['metafeature_version'] = 1.0
-    df['dataset_hash'] = 'test_hash'
+    # df['dataset'] = d
+    # df.sort_index(axis=1, inplace=True)
+    # df['metafeature_version'] = 1.0
+    # df['dataset_hash'] = 'test_hash'
 
     # print('df:',df)
     return df

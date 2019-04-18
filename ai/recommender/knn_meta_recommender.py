@@ -45,7 +45,7 @@ class KNNMetaRecommender(BaseRecommender):
         self.best_mlp.set_index('dataset',inplace=True)
 
         # local dataframe of datasets and their metafeatures
-        self.dataset_mf = pd.DataFrame()
+        self.all_dataset_mf = pd.DataFrame()
         # keep a list of metafeatures that should be removed from similarity
         # comparisons
         self.drop_mf = ['metafeature_version','dataset_hash']
@@ -68,7 +68,7 @@ class KNNMetaRecommender(BaseRecommender):
         super().update(results_data, results_mf, source)
 
         # save a copy of the results_mf with NaNs filled with zero 
-        self.dataset_mf = results_mf.drop(self.drop_mf,axis=1).fillna(0.0) 
+        self.all_dataset_mf = results_mf.drop(columns=self.drop_mf).fillna(0.0) 
 
         # update internal model
         self.update_model(results_data)
@@ -108,7 +108,7 @@ class KNNMetaRecommender(BaseRecommender):
         
 
         print('dataset_mf columns:',dataset_mf.columns)
-        dataset_mf = dataset_mf.drop(self.drop_mf,axis=1)
+        dataset_mf = dataset_mf.drop(columns=self.drop_mf)
         print('dataset_mf columns:',dataset_mf.columns)
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
@@ -158,27 +158,22 @@ class KNNMetaRecommender(BaseRecommender):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
         # df_mf = self.get_metafeatures(dataset_id) 
-        print('df_mf cols:',df_mf.columns)
-        mf = df_mf.drop('dataset',axis=1).fillna(0.0).values.flatten()
-        print('mf:',mf)
+        if 'dataset' in df_mf.columns:
+            df_mf = df_mf.drop('dataset',axis=1)
+        mf = df_mf.fillna(0.0).values.flatten()
         # compute the neighbors of past results 
-        nbrs = NearestNeighbors(n_neighbors=len(self.dataset_mf), 
+        nbrs = NearestNeighbors(n_neighbors=len(self.all_dataset_mf), 
                 algorithm='ball_tree')
-        # print('fitting nbrs to self.dataset_mf with shape',
-        #       self.dataset_mf.values.shape)
         rs = RobustScaler()
 
-        X = rs.fit_transform(
-                            self.dataset_mf.drop(['metafeature_version',
-                                                    'dataset_hash'], axis=1).values
-                                )
+        X = rs.fit_transform(self.all_dataset_mf.values)
         nbrs.fit(X)
         # find n_recs nearest neighbors to new dataset
         # print('querying neighbors with mf of shape',mf.shape)
         distances,indices = nbrs.kneighbors(rs.transform(mf.reshape(1,-1)))
         # print('distances:',distances)
         # print('indices:',indices)
-        dataset_idx = [self.dataset_mf.index[i] for i in indices[0]]
+        dataset_idx = [self.all_dataset_mf.index[i] for i in indices[0]]
         # recommend the mlp results closest to the dataset in metafeature space
         ml_recs, p_recs, scores = [],[],[]
 
