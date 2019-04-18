@@ -18,16 +18,19 @@ import lab_api_mocker as mocker
 
 
 @patch('ai.api_utils.LabApi')
-#@patch('requests.post', side_effect = mocker.mocked_requests_post)  #remove once api calls have been removed from recommenders
 def test_ai_init( mockLabApi): #, mockRequestsPost
-        labApiInstance = mockLabApi.return_value
+    labApiInstance = mockLabApi.return_value
 
-        labApiInstance.launch_experiment.return_value = {'launch_experiment'}
-        labApiInstance.get_projects.return_value = {'get_projects'}
-        labApiInstance.get_filtered_datasets.return_value = {'get_filtered_datasets'}
-        labApiInstance.get_new_experiments.return_value = {'get_new_experiments'}
-        labApiInstance.set_ai_status.return_value = {'set_ai_status'}
-        labApiInstance.get_all_ml_p.return_value = pd.DataFrame({'algorithm':'testAlgo', 'parameters':{'criterion': 'gini', 'max_depth': 2}})
+    labApiInstance.launch_experiment.return_value = {'launch_experiment'}
+    labApiInstance.get_projects.return_value = {'get_projects'}
+    labApiInstance.get_filtered_datasets.return_value = {'get_filtered_datasets'}
+    labApiInstance.get_new_experiments.return_value = {'get_new_experiments'}
+    labApiInstance.set_ai_status.return_value = {'set_ai_status'}
+    labApiInstance.get_all_ml_p.return_value = pd.DataFrame(
+            {'algorithm':['testAlgo','testAlgo'],
+             'parameters':[{'criterion':'gini','max_depth':2},
+                           {'criterion':'entropy','max_depth':3}]
+             })
 
-        lab_connection_args = {}
-        pennai = AI()
+    lab_connection_args = {}
+    pennai = AI()

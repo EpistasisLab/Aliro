@@ -29,7 +29,7 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -118,12 +118,10 @@ class AI():
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
 
         # set the registered ml parameters in the recommender
-        print('ai:121')
-        if hasattr(self.rec,'ml_p'):
-            ml_p = self.labApi.get_all_ml_p()
-            assert ml_p is not None
-            assert len(ml_p) > 0
-            self.rec.ml_p = ml_p
+        ml_p = self.labApi.get_all_ml_p()
+        assert ml_p is not None
+        assert len(ml_p) > 0
+        self.rec.ml_p = ml_p
         # if hasattr(self.rec,'mlp_combos'):
         #     self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
 
@@ -166,7 +164,7 @@ class AI():
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
-        print('loading pmlb knowledgebase')
+        logger.info('loading pmlb knowledgebase')
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
 
         # replace algorithm names with their ids
@@ -197,20 +195,20 @@ class AI():
         # self.update_dataset_mf(kb['resultsData'])
         self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
         
-        print('pmlb knowledgebase loaded')
+        logger.info('pmlb knowledgebase loaded')
 
     def load_options(self):
         """Loads algorithm UI parameters and sets them to self.ui_options."""
 
-        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-              ':','loading options...')
+        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+              ': loading options...')
 
         responses = self.labApi.get_projects()
 
         if len(responses) > 0:
             self.ui_options = responses
         else:
-            print("WARNING: no algorithms found by load_options()")
+            logger.warning("no algorithms found by load_options()")
 
 
     def check_requests(self):
@@ -220,8 +218,8 @@ class AI():
         :returns: Boolean - True if new AI requests have been submitted
         """
 
-        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-              ':','checking requests...')
+        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+              ': checking requests...')
 
         if self.continous:
             dsFilter = {'ai':['requested','finished']}
@@ -233,9 +231,9 @@ class AI():
         # if there are any requests, add them to the queue and return True
         if len(responses) > 0:
             self.request_queue = responses
-            if self.verbose:
-                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                      ':','new ai request for:',[r['name'] for r in responses])
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                      ': new ai request for:'+
+                      ';'.join([r['name'] for r in responses]))
             
             # set AI flag to 'on' to acknowledge requests received
             for r in self.request_queue:
@@ -257,17 +255,15 @@ class AI():
 
         :returns: Boolean - True if new results were found
         """
-        if self.verbose:
-            print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                  ':','checking results...')
+        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                  ': checking results...')
 
         newResults = self.labApi.get_new_experiments_as_dataframe(
                                         last_update=self.last_update)
 
         if len(newResults) > 0:
-            if self.verbose:
-                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                      ':',len(newResults),' new results!')           
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                  ': ' + str(len(newResults)) + ' new results!')           
             self.last_update = int(time.time())*1000 # update timestamp
             self.new_data = newResults
             return True
@@ -290,7 +286,7 @@ class AI():
                      str(submitstatus))
         while('error' in submitstatus 
               and submitstatus['error'] == 'No machine capacity available'):
-            print('slow it down pal', submitstatus['error'])
+            logger.debug(submitstatus['error'])
             sleep(3)
             submitstatus = self.labApi.launch_experiment(
                     rec_payload['algorithm_id'], rec_payload)
@@ -301,7 +297,6 @@ class AI():
         if 'error' in submitstatus:
             msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
             logger.error(msg)
-            print(msg)
             raise RuntimeError(msg)
             #pdb.set_trace()
 
@@ -312,7 +307,7 @@ class AI():
         # get recommendation for dataset
         # for r in self.request_queue:
         for r in self.RMlist:
-            print('RM:',r.name,'active:',r.active)
+            logger.debug('RM:'+r.name+', active:'+str(r.active))
         for RM in [r for r in self.RMlist if r.active]:
             exp_request = RM.update()
             if exp_request is not None:
@@ -330,10 +325,10 @@ class AI():
                             'parameters':params,
                             'ai_score':score,
                             }
-                    if self.verbose:
-                        print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                            ':','recommended',self.ml_id_to_name[alg],'with',params,
-                            'for',RM.name)
+                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",
+                        time.localtime())+
+                        ': recommended '+self.ml_id_to_name[alg]+' with '+
+                        str(params) + ' for '+RM.name)
                     
                     RM.addExp(rec_payload)
 
@@ -348,9 +343,8 @@ class AI():
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             self.update_dataset_mf(self.new_data)
             self.rec.update(self.new_data,self.dataset_mf)
-            if self.verbose:
-                print(time.strftime("%Y %I:%M:%S %p %Z",time.localtime()),
-                     'recommender updated')
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                    ': recommender updated')
             # reset new data
             self.new_data = pd.DataFrame()
 
@@ -383,8 +377,7 @@ class AI():
               self.rec.scores = state['scores']
               # self.rec.trained_dataset_models = state['trained_dataset_models']
               self.last_update = state['last_update']
-              if self.verbose:
-                  print('loaded previous state from ',self.last_update)
+              logger.info('loaded previous state from '+self.last_update)
 
     def update_dataset_mf(self,results_data):
         """Grabs metafeatures of datasets in results_data
@@ -449,9 +442,15 @@ def main():
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
-    print(args)
     rec_args={}
 
+    # set logging level
+    if args.VERBOSE:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    logger.debug(str(args))
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
@@ -486,8 +485,7 @@ def main():
         #logger.info("Exit command recieved")
         logger.info('Exit command recieved')
     except:
-        print("Unhanded exception caught:", sys.exc_info()[0])
-        logger.error("Unhanded exception caught:", sys.exc_info()[0])
+        logger.error("Unhanded exception caught: "+ str(sys.exc_info()[0]))
         raise
     finally:
         # tell queues to exit
