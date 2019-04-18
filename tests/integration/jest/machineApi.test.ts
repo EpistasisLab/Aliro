@@ -11,11 +11,6 @@ import * as util from "./util/testUtils";
 
 const db = dbBuilder.openDbConnection();
 
-const EXPECTED_MACHINE_ALGO_COUNT = 6; // number of algorithms a machine instance can run
-const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
-const MIN_EXPECTED_DATASET_COUNT = 4; // min number of datasets registered with the lab server
-
-
 afterAll(() => {
   db.close();
 });
@@ -31,41 +26,51 @@ describe('machine', () => {
 				expect(e).toBeFalsy() // break even if no message body returned
 			}
 
-			//console.log("machine.fetchProjects");
-		 	//console.log("data: ", data);
+			console.log("machine.fetchProjects");
+		 	console.log("data: ", data);
 
 		 	expect(data)
-		  	expect(Object.keys(data).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT);
+		  	expect(Object.keys(data).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT);
 		});
 
-		//Ref issue #52
-		it.skip('fetchCapacity for BernoulliNB by id', async () => {
+		it('fetchCapacity for KNeighborsClassifier by id', async () => {
+			var labAlgos = await labApi.fetchAlgorithms()
+			expect(labAlgos.length).toBeGreaterThan(10)
+			var algoId = labAlgos.find(function(element) {return element.name == 'KNeighborsClassifier';})._id;
+		 	expect(algoId).toBeTruthy();
+
 			try {
-				var data = await machineApi.fetchCapacity("5813bdaec1321420f8bbcc7f")
+				var data = await machineApi.fetchCapacity(algoId)
 			} catch (e) {
 				var json = await e.response.json() // get the specific error description
 				expect(json).toBeFalsy()
 				expect(e).toBeFalsy() // break even if no message body returned
 			}
 
-			console.log("machine.fetchCapacity BernoulliNB'");
-		 	console.log("data:", data);
-		  	expect(Object.keys(data).length).toEqual(1);
+			//console.log("machine.fetchCapacity KNeighborsClassifier'");
+		 	//console.log("data:", data);
+		 	expect(data).toHaveProperty('capacity')
+		 	expect(data.capacity).toEqual(1)
 		});
 
-		//Ref issue #52
-		it.skip('fetchCapacity for DecisionTreeClassifier by id', async () => {
+		it('fetchCapacity for DecisionTreeClassifier by id', async () => {
+			var labAlgos = await labApi.fetchAlgorithms()
+			expect(labAlgos.length).toBeGreaterThan(10)
+			var algoId = labAlgos.find(function(element) {return element.name == 'DecisionTreeClassifier';})._id;
+		 	expect(algoId).toBeTruthy();
+
 			try {
-				var data = await machineApi.fetchCapacity("5817660338215335404347c7")
+				var data = await machineApi.fetchCapacity(algoId)
 			} catch (e) {
 				var json = await e.response.json() // get the specific error description
 				expect(json).toBeFalsy()
 				expect(e).toBeFalsy() // break even if no message body returned
 			}
 
-			console.log("machine.fetchCapacity DecisionTreeClassifier");
-		 	console.log("data:", data);
-		  	expect(data.length).toEqual(1);
+			//console.log("machine.fetchCapacity DecisionTreeClassifier");
+		 	//console.log("data:", data);
+		  	expect(data).toHaveProperty('capacity')
+		 	expect(data.capacity).toEqual(1)
 		});
 
 	});
@@ -90,71 +95,6 @@ describe('machine', () => {
 		    }).toArrayAsync();
 
 		    expect(dbMachine.length).toEqual(0)
-		});
-
-		it.skip('kill experiment', async () => {
-			let algoName = 'LogisticRegression'
-			let algoParms = {
-				"penalty": "l1",
-				"C": 1.0,
-				"dual": false,
-			};
-
-			let datasetName = 'banana'
-
-			//-------------------
-		 	// get dataset
-		 	var datasets = await labApi.fetchDatasets();
-		 	expect(datasets.length).toBeGreaterThan(MIN_EXPECTED_DATASET_COUNT);
-		 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
-		 	expect(datasetId).toBeTruthy();
-
-		 	// get algorithm
-		 	var algorithms = await labApi.fetchAlgorithms();
-		 	expect(algorithms.length).toBeGreaterThan(MIN_EXPECTED_LAB_ALGO_COUNT);
-		 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
-		 	expect(algoId).toBeTruthy();
-
-		 	algoParms.dataset = datasetId
-
-		 	// no experiments
-			var experiments = await labApi.fetchExperiments()
-			expect(experiments).toHaveLength(0)
-
-			var capRes = await machineApi.fetchCapacity(algoId)
-			expect(capRes.capacity).toEqual(1)
-
-			// submit simple experiment
-			try {
-				var submitResult = await labApi.submitExperiment(algoId, algoParms)
-			} catch (e) {
-				console.log("submitExperiment exception")
-				var json = await e.response.json() // get the specific error description
-				expect(json).toBeFalsy()
-				expect(e).toBeFalsy() // break even if no message body returned
-			}
-
-			expect(submitResult).toBeTruthy()
-
-			// expect that the experiment started running
-			var experimentResults = await labApi.fetchExperiment(submitResult._id)
-			expect(experimentResults._status).toEqual('running')
-
-			//var capRes = await machineApi.fetchCapacity(algoId)
-			//expect(capRes.capacity).toEqual(0)
-
-			// kill experiment
-			var killResult = machineApi.killExperiment(submitResult._id)
-			expect(killResult)
-
-			//util.delay(5000)
-
-			// expect that the experiment started canceled
-			//var capRes = await machineApi.fetchCapacity(algoId)
-			//expect(capRes.capacity).toEqual(1)
-
-			var experimentResults = await labApi.fetchExperiment(submitResult._id)
-			expect(experimentResults._status).toEqual('cancelled')
 		});
 
 		it('local machine projectIds match db machine.projectIds', async () => {
@@ -188,9 +128,9 @@ describe('machine', () => {
 		  	//console.log("dbProjectsList:", dbProjectsList)
 
 		  	//---check server state against database state
-		  	expect(Object.keys(servMachineProjects).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT)
-		  	expect(Object.keys(dbMachineProjects).length).toEqual(EXPECTED_MACHINE_ALGO_COUNT)
-		  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(MIN_EXPECTED_DATASET_COUNT)
+		  	expect(Object.keys(servMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
+		  	expect(Object.keys(dbMachineProjects).length).toEqual(util.EXPECTED_MACHINE_ALGO_COUNT)
+		  	expect(Object.keys(dbProjectsList).length).toBeGreaterThan(util.MIN_EXPECTED_DATASET_COUNT)
 
 		  	// check that dbMachineProjects is a subset of servMachineProjects by id
 		  	for (let dbMacProjId of Object.keys(dbMachineProjects)) {
