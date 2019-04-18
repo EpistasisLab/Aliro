@@ -1,11 +1,12 @@
 version: '3'
 
-services: 
+services:
   unit_tester:
     build: ./tests/unit
     working_dir: /appsrc
     command: bash -c "dos2unix tests/unit_test_runner.sh && sh tests/unit_test_runner.sh"
     tty: true
     stdin_open: true
-    volumes: 
+    volumes:
       - "./:/appsrc"
+      - "/appsrc/lab/webapp/node_modules"
