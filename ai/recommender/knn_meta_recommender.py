@@ -1,10 +1,10 @@
 # Recommender system for Penn AI.
 import pandas as pd
-# import json 
+# import json
 # import urllib.request, urllib.parse
 from .base import BaseRecommender
 #from ..metalearning import get_metafeatures
-from sklearn.preprocessing import RobustScaler 
+from sklearn.preprocessing import RobustScaler
 from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
@@ -23,7 +23,7 @@ class KNNMetaRecommender(BaseRecommender):
     """Penn AI KNN meta recommender.
     Recommends machine learning algorithms and parameters as follows:
         - store the best ML + P on every dataset.
-        - given a new dataset, measure its distance to all results in metafeature space. 
+        - given a new dataset, measure its distance to all results in metafeature space.
         - recommend ML + P with best performance on closest dataset.
 
     Parameters
@@ -43,7 +43,7 @@ class KNNMetaRecommender(BaseRecommender):
         self.best_mlp = pd.DataFrame(columns=['dataset','algorithm','parameters',
             'score'])
         self.best_mlp.set_index('dataset',inplace=True)
-          
+
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
         # keep a list of metafeatures that should be removed from similarity
@@ -55,13 +55,13 @@ class KNNMetaRecommender(BaseRecommender):
 
         Parameters
         ----------
-        results_data: DataFrame 
+        results_data: DataFrame
                 columns corresponding to:
                 'algorithm'
                 'parameters'
                 self.metric
 
-        results_mf: DataFrame 
+        results_mf: DataFrame
                columns corresponding to metafeatures of each dataset in results_data.
         """
         # update trained dataset models and hash table
@@ -91,7 +91,7 @@ class KNNMetaRecommender(BaseRecommender):
             else:
                 logger.debug('skipping'+d)
         # print('model updated')
-                
+
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
 
@@ -113,7 +113,7 @@ class KNNMetaRecommender(BaseRecommender):
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
-            if len(ml_rec) < n_recs: 
+            if len(ml_rec) < n_recs:
                 print('len(ml_rec)=',len(ml_rec),'recommending random')
             iters = 0
             while len(ml_rec) < n_recs and iters < 1000:
@@ -140,7 +140,7 @@ class KNNMetaRecommender(BaseRecommender):
                     [self.param_htable[int(p)] for p in phash_rec[:n_recs]], 
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
-            
+
         except Exception as e:
             logger.error( 'error running self.best_model_prediction for'+dataset_id)
             raise e 
@@ -148,7 +148,7 @@ class KNNMetaRecommender(BaseRecommender):
             # logger.error('p_rec'+ p_rec)
             # logger.error('rec_score'+rec_score)
 
-        # update the recommender's memory with the new algorithm-parameter combos 
+        # update the recommender's memory with the new algorithm-parameter combos
         # that it recommended
         self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
@@ -167,7 +167,11 @@ class KNNMetaRecommender(BaseRecommender):
         # print('fitting nbrs to self.dataset_mf with shape',
         #       self.dataset_mf.values.shape)
         rs = RobustScaler()
-        X = rs.fit_transform(self.dataset_mf.values)
+
+        X = rs.fit_transform(
+                            self.dataset_mf.drop(['metafeature_version',
+                                                    'dataset_hash'], axis=1).values
+                                )
         nbrs.fit(X)
         # find n_recs nearest neighbors to new dataset
         # print('querying neighbors with mf of shape',mf.shape)
@@ -179,17 +183,16 @@ class KNNMetaRecommender(BaseRecommender):
         ml_recs, p_recs, scores = [],[],[]
 
         # print('self.best_mlp:',self.best_mlp)
-        for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):   
+        for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):
             if i < 10:
                 print('closest dataset:',d,'distance:',dist)
             if round(dist,6) > 0.0:    # don't recommend based on the same dataset
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
                 # only recommend if not already recommended
-                if dataset_id+'|'+alg_params not in self.trained_dataset_models:  
+                if dataset_id+'|'+alg_params not in self.trained_dataset_models:
                     ml_recs.append(self.best_mlp.loc[d,'algorithm'])
                     p_recs.append(self.best_mlp.loc[d,'parameters'])
                     scores.append(dist)
 
         return ml_recs,p_recs,scores
-        

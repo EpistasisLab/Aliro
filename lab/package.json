@@ -16,7 +16,7 @@
   "author": "University of Pennsylvania",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/pennai/Issues"
+    "url": "https://github.com/EpistasisLab/pennai/issues"
   },
   "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {

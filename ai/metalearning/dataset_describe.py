@@ -29,6 +29,8 @@ class Dataset:
 
     prediction_type = {'regression'|'classification'}
     """
+    VERSION = "1.0"
+
     df = None
     df_encoded = None
     categorical_cols = None
@@ -131,7 +133,7 @@ class Dataset:
         If the way metafeatures are generated changes (in particular dataset_hash),
         The version number should be updated.
         """
-        return "1.0"
+        return self.VERSION
 
     def dataset_hash(self):
         """
