@@ -22,6 +22,11 @@ class GaugeAll extends Component {
         //onmouseover: function (d, i) { console.log("onmouseover", d, i); },
         //onmouseout: function (d, i) { console.log("onmouseout", d, i); }
       },
+      colors: {
+        value: function(d) {
+          return '#'+(0xff0000+(d.value-25)*256*3).toString(16);
+        }
+      },
       gauge: {
         label: {
 
@@ -30,14 +35,7 @@ class GaugeAll extends Component {
         min: 0.5,
         max: 1.0
       },
-      color: {
-        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896',,'#CD853F'], // the three color levels for the percentage values.
-        threshold: {
-          unit: 'value', // percentage is default
-          max: 200, // 100 is default
-          values: [30, 60, 90, 100]
-        }
-      },
+
       interaction: {
         enabled: false
       }
