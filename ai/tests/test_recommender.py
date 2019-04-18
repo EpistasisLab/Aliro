@@ -24,24 +24,26 @@ data.set_index('dataset')
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
     try:
-       with open('ai/tests/metafeatures/api/datasets/'+d+'/metafeatures.json') as data_file:    
+       with open('ai/tests/metafeatures/api/datasets/'+d+'/metafeatures.json') as data_file:
                data = json.load(data_file)
     except Exception as e:
         print('exception when grabbing metafeature data for',d)
         raise e
-    
+
     df = pd.DataFrame.from_records(data,columns=data.keys(),index=[0])
     df['dataset'] = d
     df.sort_index(axis=1, inplace=True)
+    df['metafeature_version'] = 1.0
+    df['dataset_hash'] = 'test_hash'
 
     # print('df:',df)
     return df
 
 def update_dataset_mf(dataset_mf,results_data):
     """Grabs metafeatures of datasets in results_data
-    
+
     :param results_data: experiment results with associated datasets
-    
+
     """
     print('in update_dataset_mf')
     # print('results_data:',results_data.columns)
@@ -50,24 +52,26 @@ def update_dataset_mf(dataset_mf,results_data):
     for d in results_data['dataset'].unique():
         if len(dataset_mf)==0 or d not in dataset_mf.index:
             # fetch metafeatures from server for dataset and append
-            df = get_metafeatures(d)        
+            df = get_metafeatures(d)
             df['dataset'] = d
             # print('metafeatures:',df)
             dataset_metafeatures.append(df)
     if dataset_metafeatures:
         df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
-        # print('df_mf:',df_mf['dataset'], df_mf) 
+        # print('df_mf:',df_mf['dataset'], df_mf)
         dataset_mf = dataset_mf.append(df_mf)
         # print('dataset_mf:\n',dataset_mf)
+    dataset_mf['metafeature_version'] = 1.0
+    dataset_mf['dataset_hash'] = 'test_hash'
 
     return dataset_mf
 
 def check_rec(rec):
     """Recommender updates and recommends without error"""
     # test updating scores
-    epochs = 5 
+    epochs = 5
     datlen = int(data.shape[0] / float(epochs))
-    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
+    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates()
     if rec is AverageRecommender:
         rec_obj = rec()
     else:
@@ -80,7 +84,7 @@ def check_rec(rec):
     rec_obj.update(new_data, dataset_mf)
     # test making recommendations
     for n in np.arange(epochs):
-        for d in data.dataset.unique(): 
+        for d in data.dataset.unique():
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
@@ -88,13 +92,13 @@ def check_rec(rec):
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""
-    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender, 
+    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender,
                         SVDRecommender]:
         yield (check_rec, recommender)
 
 def check_n_recs(rec):
     """Recommender returns correct number of recommendations"""
-    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
+    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates()
     print(rec)
     if rec is AverageRecommender:
         rec_obj = rec()
@@ -105,7 +109,7 @@ def check_n_recs(rec):
     rec_obj.update(new_data, dataset_mf)
     # test updating scores
     for n_recs in np.arange(10):
-        for d in data.dataset.unique(): 
+        for d in data.dataset.unique():
             ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
                                              dataset_mf=get_metafeatures(d))
             assert(len(ml)==n_recs)
@@ -114,6 +118,6 @@ def check_n_recs(rec):
 
 def test_n_recs():
     """Recommender returns correct number of recommendations"""
-    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender, 
+    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender,
                         SVDRecommender]:
         yield (check_rec, recommender)
