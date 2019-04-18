@@ -31,3 +31,10 @@ RUN pip install --no-cache-dir mlxtend \
     m2r sphinx_rtd_theme
 
 RUN npm install -g mocha
+RUN npm install -g jest
+
+# install lab/webapp/node_modules to an anon volume
+WORKDIR /appsrc/lab/webapp
+COPY lab/webapp/package.json /appsrc/lab/webapp/
+RUN dos2unix /appsrc/lab/webapp/package.json
+RUN npm install --silent --progress=false
