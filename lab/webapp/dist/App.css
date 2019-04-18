@@ -36,10 +36,10 @@ body {
 }
 
 .pennai .file-upload-segment {
-    max-width: 650px;
+    max-width: 33%;
 }
 
-.pennai .file-upload-form-text-input {
+.pennai .file-upload-form-dataset-input {
     width: 40%;
 }
 
@@ -52,6 +52,20 @@ body {
 }
 .pennai .file-upload-form-show-inputs {
   display: block;
+}
+.pennai .file-upload-accordion-style {
+  color: rgba(255,255,255,.9) !important;
+}
+.pennai .file-upload-dependent-help-icon {
+  position: relative;
+  top: -50px;
+  left: 95%;
+}
+.pennai .file-upload-ordinal-help-icon {
+
+}
+.pennai .file-upload-categorical-help-icon {
+
 }
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
