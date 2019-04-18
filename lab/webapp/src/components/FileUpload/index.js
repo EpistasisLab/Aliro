@@ -226,15 +226,14 @@ class FileUpload extends Component {
     let dataPrev = this.state.datasetPreview;
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
     let innerContent;
-    let index = 0;
+    
     if(dataPrev && dataPrev.data) {
-
       innerContent = dataPrev.data.slice(0, 100).map((row, i) =>
         <Table.Row key={i}>
           {dataPrev.meta.fields.map(field => {
-              index++;
+              let tempKey = i + field;
               return (
-                <Table.Cell key={'dataTablePrev_' + {index}}>
+                <Table.Cell key={'dataTablePrev_' + tempKey.toString()}>
                   {row[field]}
                 </Table.Cell>
               )
