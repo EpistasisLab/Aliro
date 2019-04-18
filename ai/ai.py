@@ -19,10 +19,6 @@ import logging
 import sys
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
-from ai.recommender.weighted_recommender import WeightedRecommender
-from ai.recommender.time_recommender import TimeRecommender
-from ai.recommender.exhaustive_recommender import ExhaustiveRecommender
-from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 from collections import OrderedDict
