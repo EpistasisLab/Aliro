@@ -9,7 +9,7 @@ import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
-import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header } from 'semantic-ui-react';
+import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header, Accordion, Icon, Label } from 'semantic-ui-react';
 
 class FileUpload extends Component {
   /**
@@ -25,7 +25,8 @@ class FileUpload extends Component {
       catFeatures: '',
       ordinalFeatures: {},
       ordinalIndex: 0,
-      loaded: 0
+      loaded: 0,
+      activeAccordionIndex: -1
     };
 
     // enter info in text fields
@@ -33,6 +34,7 @@ class FileUpload extends Component {
     this.handleCatFeatures = this.handleCatFeatures.bind(this);
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
+    this.getAccordionInputs = this.getAccordionInputs.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
   }
@@ -151,7 +153,7 @@ class FileUpload extends Component {
   handleUpload = () => {
     const { uploadDataset } = this.props;
     const data = new FormData();
-
+    this.setState({errorResp: undefined});
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let depCol = this.state.dependentCol;
@@ -198,7 +200,20 @@ class FileUpload extends Component {
     } else {
       window.console.log('no file available');
     }
+
   }
+
+  handleAccordionClick = (e, titleProps) => {
+     const { index } = titleProps;
+     const { activeAccordionIndex } = this.state;
+     const newIndex = activeAccordionIndex === index ? -1 : index;
+     //let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
+     //resp !== 'error' ? resp = undefined : null;
+     this.setState({
+       activeAccordionIndex: newIndex,
+       errorResp: undefined
+     })
+   }
 
   /**
    * Small helper method to create table for dataset preview upon selecting csv file.
@@ -210,8 +225,25 @@ class FileUpload extends Component {
   getDataTablePreview() {
     let dataPrev = this.state.datasetPreview;
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
+    let innerContent;
+    let index = 0;
+    if(dataPrev && dataPrev.data) {
 
-    if(dataPrev) {
+      innerContent = dataPrev.data.slice(0, 100).map((row, i) =>
+        <Table.Row key={i}>
+          {dataPrev.meta.fields.map(field => {
+              index++;
+              return (
+                <Table.Cell key={'dataTablePrev_' + {index}}>
+                  {row[field]}
+                </Table.Cell>
+              )
+            }
+          )}
+        </Table.Row>
+      );
+//<Table.Cell key={`${i}-${field}`}>
+
       dataPrevTable = (
         <div>
           <br/>
@@ -223,18 +255,12 @@ class FileUpload extends Component {
               <Table.Header>
                 <Table.Row>
                   {dataPrev.meta.fields.map(field =>
-                    <Table.HeaderCell  key={field}>{field}</Table.HeaderCell>
+                    <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
                   )}
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {dataPrev.data.slice(0, 100).map((row, i) =>
-                  <Table.Row key={i}>
-                    {dataPrev.meta.fields.map(field =>
-                      <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
-                    )}
-                  </Table.Row>
-                )}
+                {innerContent}
               </Table.Body>
             </Table>
           </div>
@@ -246,24 +272,123 @@ class FileUpload extends Component {
     return dataPrevTable;
   }
 
+  /**
+   * Small helper method to create semantic ui accordion for categorical &
+   * ordinal text inputs
+   * @returns {html} - html ui input elements
+   */
+   getAccordionInputs() {
+     const { activeAccordionIndex } = this.state;
+     let accordionContent = (
+      <Accordion fluid >
+         <Accordion.Title
+           className="file-upload-accordion-style"
+           active={activeAccordionIndex === 0}
+           index={0}
+           onClick={this.handleAccordionClick}
+          >
+           <Icon name='dropdown' />
+           Enter Ordinal Features
+           <Popup
+             on="click"
+             position="right center"
+             header="Ordinal Features Help"
+             content={
+               <div className="content">
+                 <p>Ordinal Features help description</p>
+               </div>
+             }
+             trigger={
+               <Icon
+                 className="file-upload-ordinal-help-icon"
+                 inverted
+                 size="large"
+                 color="orange"
+                 name="info circle"
+               />
+             }
+           />
+         </Accordion.Title>
+         <Accordion.Content
+            active={activeAccordionIndex === 0}
+          >
+           <textarea
+             id="ordinal_features_text_area_input"
+             label="Ordinal Features"
+             placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+             onChange={this.handleOrdinalFeatures}
+           />
+         </Accordion.Content>
+         <Accordion.Title
+           className="file-upload-accordion-style"
+           active={activeAccordionIndex === 1}
+           index={1}
+           onClick={this.handleAccordionClick}
+          >
+           <Icon name='dropdown' />
+           Enter Categorical Features
+           <Popup
+             on="click"
+             position="right center"
+             header="Categorical Features Help"
+             content={
+               <div className="content">
+                 <p>Categorical Features help description</p>
+               </div>
+             }
+             trigger={
+               <Icon
+                 className="file-upload-categorical-help-icon"
+                 inverted
+                 size="large"
+                 color="orange"
+                 name="info circle"
+               />
+             }
+           />
+         </Accordion.Title>
+         <Accordion.Content
+           active={activeAccordionIndex === 1}
+          >
+           <textarea
+             id="categorical_features_text_area_input"
+             label="Categorical Features"
+             placeholder={"cat_feat_1, cat_feat_2"}
+             onChange={this.handleCatFeatures}
+           />
+         </Accordion.Content>
+       </Accordion>
+     )
+     return accordionContent;
+   }
   render() {
+
     const { dataset } = this.props;
-
+    const { activeAccordionIndex } = this.state;
+    let respKey;
+    let respBody;
     let serverResp;
-    dataset ? serverResp = dataset.fileUploadResp : null;
-
     let catFeats = this.state.catFeatures;
+    let popUpOffset = 0;
     // set error message when
     let errorMsg = this.state.errorResp;
     let ordFeatureSelection = "";
     let catFeatureSelection = "";
     let dataPrevTable = this.getDataTablePreview();
+    let accordionInputs = this.getAccordionInputs();
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
     //window.console.log('prev: ', dataPrev);
+    activeAccordionIndex !== -1 ? popUpOffset = 75 : null;
+    dataset ? serverResp = dataset.fileUploadResp : null;
+
+    if(serverResp) {
+      respKey =  Object.keys(serverResp)[0];
+      respBody = serverResp[respKey];
+    }
 
     // server message to display in popup (or other UI element)
-    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(serverResp)} </p> ) :
+    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(respBody)} </p> ) :
                  null;
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
@@ -271,10 +396,11 @@ class FileUpload extends Component {
 
     return (
       <div>
+        <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             <Input
-              className="file-upload-form-text-input"
+              className="ui blue small compact inverted button"
               type="file"
               label="Select new dataset"
               id="upload_dataset_file_browser_button"
@@ -293,31 +419,37 @@ class FileUpload extends Component {
                 type="text"
                 onChange={this.handleDepColField}
               />
+              <Popup
+                on="click"
+                position="right center"
+                header="Dependent Column Help"
+                content={
+                  <div className="content">
+                    <p>Dependent Col help description</p>
+                  </div>
+                }
+                trigger={
+                  <Icon
+                    className="file-upload-dependent-help-icon"
+                    inverted
+                    size="large"
+                    color="orange"
+                    name="info circle"
+                  />
+                }
+              />
               <Form.Input
-                label="Ordinal Features"
+                label="Categorical & Ordinal Features"
               >
-                <textarea
-                  id="ordinal_features_text_area_input"
-                  label="Ordinal Features"
-                  placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-                  onChange={this.handleOrdinalFeatures}
-                />
-              </Form.Input>
-              <Form.Input
-                label="Categorical Features"
-              >
-                <textarea
-                  id="categorical_features_text_area_input"
-                  label="Categorical Features"
-                  placeholder={"cat_feat_1, cat_feat_2"}
-                  onChange={this.handleCatFeatures}
-                />
+                {accordionInputs}
               </Form.Input>
               <Popup
                 header="Error Submitting Dataset"
                 content={serverResp}
                 open={errorMsg ? true : false}
                 id="file_upload_popup_and_button"
+                position='right center'
+                flowing
                 trigger={
                   <Button
                     inverted
@@ -325,7 +457,7 @@ class FileUpload extends Component {
                     compact
                     size="small"
                     icon="upload"
-                    content="Upload dataset"
+                    content="Upload Dataset"
                     onClick={this.handleUpload}
                   />
                 }

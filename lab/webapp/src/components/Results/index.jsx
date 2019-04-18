@@ -23,7 +23,7 @@ class Results extends Component {
 
   render() {
     const { experiment, fetchExperiment } = this.props;
-    
+
     if(experiment.isFetching || !experiment.data) {
       return (
         <Loader active inverted size="large" content="Retrieving results..." />
@@ -38,7 +38,7 @@ class Results extends Component {
       );
     } else if(experiment.error) {
       return (
-        <FetchError 
+        <FetchError
           message={experiment.error}
           onRetry={() => fetchExperiment()}
         />
@@ -59,8 +59,8 @@ class Results extends Component {
 
     return (
       <div>
-        <SceneHeader 
-          header={`Results: ${formatDataset(experiment.data.dataset_name)}`} 
+        <SceneHeader
+          header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
           subheader={`Experiment: #${experiment.data._id}`}
         />
         <Grid columns={3} stackable>
@@ -82,6 +82,13 @@ class Results extends Component {
               <ROCCurve file={rocCurve} />
             </Grid.Column>
             <Grid.Column>
+              <Score
+                scoreName="Test Graph"
+                scoreValue={-1}
+                scoreValueList={experiment.data.scores}
+                chartKey="all"
+                chartColor="#7D5BA6"
+              />
               <Score
                 scoreName="Training Accuracy"
                 scoreValue={experiment.data.scores.train_score}
