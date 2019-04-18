@@ -375,6 +375,7 @@ app.post("/experiments/:id/kill", (req, res) => {
             experiments[req.params.id].kill();
             console.log("killing experiment")
         }
+        experimentErrorMessage = "Experiment already killed"
     }
     else { console.log("experiment process does not exist") }
     res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
