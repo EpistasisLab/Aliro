@@ -15,8 +15,9 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
 
-# set up conda environment
-RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
+# set up conda environment, specify node version because of known issue with version 11.11
+# check here - https://github.com/facebook/jest/issues/8069
+RUN conda install -y -c conda-forge nodejs=11.10.0 scikit-learn=0.20.2 \
     pymongo tqdm pandas matplotlib \
     xgboost simplejson numpy cython && \
     conda clean --all -y
