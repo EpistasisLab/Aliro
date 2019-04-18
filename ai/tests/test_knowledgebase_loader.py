@@ -54,5 +54,9 @@ class TestResultUtils(unittest.TestCase):
 		self.assertGreater(len(result['resultsData']), 1)
 		self.assertGreater(len(result['metafeaturesData'].keys()), 1)
 
+		print("result.warnings:")
+		print(result['warnings'])
+		#assert len(result['warnings']) == 0
+
 		#assert expectedResultsData.equals(result['resultsData']) 
 		#assert expectedMetafeaturesData.equals(result['metafeaturesData'])

@@ -4,13 +4,10 @@
 */
 
 import * as labApi from './labApi';
+import * as util from "./util/testUtils";
 import fs = require('fs');
 import FormData = require('form-data');
 
-const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
-const EXPECTED_DATASET_COUNT = 4; // min number of datasets registered with the lab server
-
-const DATASET_PATH = '/appsrc/data/datasets/test/integration'
 
 describe('lab', () => {
 	describe('api', () => {
@@ -21,7 +18,8 @@ describe('lab', () => {
 			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${["cat"]}	| ${ {"ord" : ["first", "second", "third"]} }
 			`("putDatasetGood", ({testname, filename, categorical, ordinal}) => {
 				it(`${testname}`, async () => {
-					let filepath = `${DATASET_PATH}/${filename}`
+					jest.setTimeout(15000)
+					let filepath = `${util.DATASET_PATH}/${filename}`
 
 					console.log(`${testname} ${filename} ${categorical} ${ordinal}`)
 					let form = new FormData();
@@ -54,8 +52,7 @@ describe('lab', () => {
 
 					expect(result.message).toEqual("Files uploaded");
 				})
-			},
-			6000 // test timeout
+			}
 		)
 
 
@@ -63,7 +60,7 @@ describe('lab', () => {
 			it('string data in file', async () => {
 				expect.assertions(3);
 
-				let filepath = `${DATASET_PATH}/appendicitis_cat.csv`
+				let filepath = `${util.DATASET_PATH}/appendicitis_cat.csv`
 
 				let form = new FormData();
 
@@ -94,7 +91,7 @@ describe('lab', () => {
 			it('invalid metadata key', async () => {
 				expect.assertions(3);
 
-				let filepath = `${DATASET_PATH}/appendicitis_2.csv`
+				let filepath = `${util.DATASET_PATH}/appendicitis_2.csv`
 
 				let form = new FormData();
 
@@ -125,7 +122,7 @@ describe('lab', () => {
 			it('bad username', async () => {
 				expect.assertions(3);
 
-				let filepath = `${DATASET_PATH}/appendicitis_2.csv`
+				let filepath = `${util.DATASET_PATH}/appendicitis_2.csv`
 
 				let form = new FormData();
 
@@ -155,7 +152,7 @@ describe('lab', () => {
 			it('existing filename', async () => {
 				expect.assertions(3);
 
-				let filepath = `${DATASET_PATH}/banana.csv`
+				let filepath = `${util.DATASET_PATH}/banana.csv`
 
 				let form = new FormData();
 
@@ -244,8 +241,8 @@ describe('lab', () => {
 			it('multiple files', async () => {
 				expect.assertions(1);
 
-				let filepath1 = `${DATASET_PATH}/appendicitis_cat.csv`
-				let filepath2 = `${DATASET_PATH}/banana.csv`
+				let filepath1 = `${util.DATASET_PATH}/appendicitis_cat.csv`
+				let filepath2 = `${util.DATASET_PATH}/banana.csv`
 
 				var metadata = JSON.stringify({
 						'name': 'datasetName',
@@ -270,7 +267,7 @@ describe('lab', () => {
 			it('empty file', async () => {
 				expect.assertions(1);
 
-				let filepath = `${DATASET_PATH}/empty.csv`
+				let filepath = `${util.DATASET_PATH}/empty.csv`
 
 				var metadata = JSON.stringify({
 						'name': 'datasetName',
@@ -297,7 +294,7 @@ describe('lab', () => {
 		it('fetchDatasets', () => {
 			expect.assertions(5);
 			return labApi.fetchDatasets().then((data) => {
-				expect(data.length).toBeGreaterThanOrEqual(EXPECTED_DATASET_COUNT);
+				expect(data.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_DATASET_COUNT);
 				var banana = data.find(function(element) {
 				  return element.name == 'banana';
 				});
@@ -322,24 +319,6 @@ describe('lab', () => {
 		  		expect(data[0].metafeatures).toBeTruthy();
 				expect(data[0].metafeatures).toHaveProperty('n_rows')
 				expect(data[0].metafeatures).toHaveProperty('n_columns')
-			});
-		});
-
-
-		it.skip('fetchDatasetMetafeatures', async () => {
-			expect.assertions(4);
-
-			// get banana dataset
-		 	var datasets = await labApi.fetchDatasets();
-		 	expect(datasets.length).toBeGreaterThan(1);
-		 	var bananaId = datasets.find(function(element) {return element.name == 'banana';})._id;
-		 	expect(bananaId).toBeTruthy();
-
-
-		 	return labApi.fetchDatasetMetafeatures(bananaId).then((data) => {
-		 		//console.log(data)
-		 		expect(data).toBeTruthy()
-		  		//expect(data.length).toBeGreaterThan(4);
 			});
 		});
 

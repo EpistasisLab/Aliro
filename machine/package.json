@@ -1,7 +1,7 @@
 {
-  "name": "FGMachine",
-  "version": "0.7.1",
-  "description": "Future Gadget Machine",
+  "name": "pennai-machine",
+  "version": "1.0.0",
+  "description": "PennAI Machine",
   "main": "machine.js",
   "scripts": {
     "start": "node machine.js",
@@ -10,17 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kaixhin/FGMachine.git"
+    "url": "https://github.com/EpistasisLab/pennai.git"
   },
   "keywords": [
     "machine learning"
   ],
-  "author": "Kaixhin <design@kaixhin.com>",
+  "author": "University of Pennsylvania",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Kaixhin/FGMachine/issues"
+    "url": "https://github.com/EpistasisLab/pennai/issues"
   },
-  "homepage": "https://github.com/Kaixhin/FGMachine",
+  "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
     "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",

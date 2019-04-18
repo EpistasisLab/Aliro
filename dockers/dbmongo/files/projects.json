@@ -217,9 +217,6 @@
     "categorical_encoding_strategy": "OrdinalEncoder",
     "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
-    "invalidMultiClassificationCombinations" : [
-        [{"loss":"exponential"}]
-    ],
     "schema": {
         "n_estimators": {
             "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
@@ -286,16 +283,6 @@
                 "style": "radio",
                 "choices": ["Square root", "Log2"],
                 "values": ["sqrt", "log2"]
-            }
-        },
-        "loss": {
-            "description": "The loss function to be optimized.",
-            "type": "string",
-            "default": "deviance",
-            "ui": {
-                "style": "radio",
-                "choices": ["Deviance", "Exponential"],
-                "values": ["deviance", "exponential"]
             }
         }
     },
