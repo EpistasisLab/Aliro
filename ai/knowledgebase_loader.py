@@ -22,10 +22,12 @@ logger.addHandler(ch)
 
 
 def load_knowledgebase(resultsFile, datasetDirectory):
-    """Load experiment results from from file and generate metadata for the experiment datasets.
+    """Load experiment results from from file and generate metadata for the 
+    experiment datasets.
 
     :param resultsFile: string - a gzip file of experiment results in csv form
-    :param datasetDirectory: string - the directory that contains the datasets used in resultsFile
+    :param datasetDirectory: string - the directory that contains the datasets used
+        in resultsFile
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
     				'dataset',
@@ -34,7 +36,7 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 	                'accuracy',
 	                'macrof1',
 	                'bal_accuracy'
-				metafeaturesData: {String (datasetName): metafeatures}
+		   metafeaturesData: {String (datasetName): metafeatures}
 				}
     """
     logger.info("load_knowledgebase({0},{1})".format(resultsFile, datasetDirectory))
@@ -42,7 +44,7 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 
     resultsData = _load_results_from_file(resultsFile)
     metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
-            targetField='target')
+            targetField='class')
 
     # check that all result datasets have metadata
 

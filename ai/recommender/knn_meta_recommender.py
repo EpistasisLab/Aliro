@@ -13,7 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -38,18 +38,7 @@ class KNNMetaRecommender(BaseRecommender):
     """
     def __init__(self, ml_type='classifier', metric=None, ml_p = None): 
         """Initialize recommendation system."""
-        if ml_type not in ['classifier', 'regressor']:
-            raise ValueError('ml_type must be "classifier" or "regressor"')
-
-        self.ml_type = ml_type
-        
-        if metric is None:
-            self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
-        else:
-            self.metric = metric
-
-        # get ml+p combos (note: this triggers a property in base recommender)
-        self._ml_p = ml_p
+        super().__init__(ml_type, metric, ml_p)
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['dataset','algorithm','parameters',
             'score'])
@@ -57,10 +46,9 @@ class KNNMetaRecommender(BaseRecommender):
           
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
-      
-        # maintain a set of dataset-algorithm-parameter combinations that have 
-        # already been evaluated
-        self.trained_dataset_models = set()
+        # keep a list of metafeatures that should be removed from similarity
+        # comparisons
+        self.drop_mf = ['metafeature_version','dataset_hash']
 
     def update(self, results_data, results_mf, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -76,24 +64,17 @@ class KNNMetaRecommender(BaseRecommender):
         results_mf: DataFrame 
                columns corresponding to metafeatures of each dataset in results_data.
         """
-
-        # update trained dataset models
-        if source == 'pennai':
-            self.update_trained_dataset_models_from_df(results_data)
+        # update trained dataset models and hash table
+        super().update(results_data, results_mf, source)
 
         # save a copy of the results_mf with NaNs filled with zero 
-        self.dataset_mf = results_mf.fillna(0.0) 
+        self.dataset_mf = results_mf.drop(self.drop_mf,axis=1).fillna(0.0) 
 
         # update internal model
         self.update_model(results_data)
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        # update parameter hash table
-        self.param_htable.update({hash(frozenset(x.items())):x 
-                for x in results_data['parameters'].values})
-        results_data['parameter_hash'] = results_data['parameters'].apply(
-                lambda x: str(hash(frozenset(x.items()))))
         logger.debug('len(self.param_htable)): ' + str(len(self.param_htable))) 
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
@@ -103,12 +84,12 @@ class KNNMetaRecommender(BaseRecommender):
                 dfg = dfg.reset_index()
                 idx = dfg[self.metric].idxmax()
                 # print('dfg:\n',dfg)
-                logger.info('new best for '+d+': '+
+                logger.debug('new best for '+d+': '+
                         dfg.loc[idx,'algorithm']+', idx:'+str(idx))
                 self.best_mlp.loc[d,'algorithm'] = dfg.loc[idx,'algorithm']
                 self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameter_hash']
             else:
-                print('skipping',d)
+                logger.debug('skipping'+d)
         # print('model updated')
                 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
@@ -124,6 +105,11 @@ class KNNMetaRecommender(BaseRecommender):
         """
         if dataset_mf is None:
             raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
+        
+
+        print('dataset_mf columns:',dataset_mf.columns)
+        dataset_mf = dataset_mf.drop(self.drop_mf,axis=1)
+        print('dataset_mf columns:',dataset_mf.columns)
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
@@ -156,11 +142,11 @@ class KNNMetaRecommender(BaseRecommender):
             assert(len(ml_rec) == n_recs)
             
         except Exception as e:
-            print( 'error running self.best_model_prediction for',dataset_id)
-            print('ml_rec:', ml_rec)
-            print('p_rec', p_rec)
-            print('rec_score',rec_score)
+            logger.error( 'error running self.best_model_prediction for'+dataset_id)
             raise e 
+            # logger.error('ml_rec:'+ ml_rec)
+            # logger.error('p_rec'+ p_rec)
+            # logger.error('rec_score'+rec_score)
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
@@ -172,8 +158,9 @@ class KNNMetaRecommender(BaseRecommender):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
         # df_mf = self.get_metafeatures(dataset_id) 
+        print('df_mf cols:',df_mf.columns)
         mf = df_mf.drop('dataset',axis=1).fillna(0.0).values.flatten()
-
+        print('mf:',mf)
         # compute the neighbors of past results 
         nbrs = NearestNeighbors(n_neighbors=len(self.dataset_mf), 
                 algorithm='ball_tree')
@@ -195,7 +182,7 @@ class KNNMetaRecommender(BaseRecommender):
         for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):   
             if i < 10:
                 print('closest dataset:',d,'distance:',dist)
-            if dist > 0.0:    # don't recommend based on this same dataset
+            if round(dist,6) > 0.0:    # don't recommend based on the same dataset
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
                 # only recommend if not already recommended

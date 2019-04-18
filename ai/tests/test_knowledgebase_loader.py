@@ -13,10 +13,10 @@ import pandas as pd
 def load_test_data():
     return [
         ("benchmark5", 
-        	"data/knowledgebases/sklearn-benchmark5-data-short-formatted.tsv.gz", 
-        	"data/datasets/pmlb",
-        	pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
-        	{'apple':[1,2,3]},
+         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
+         "data/datasets/pmlb",
+         pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
+         {'apple':[1,2,3]},
 #        ("badPath", 
 #        	"ai/metalearning/sklearn-benchmarkfoo-data-short.tsv.gz", 
 #        	"data/datasets/pmlb/foooo",

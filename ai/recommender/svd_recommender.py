@@ -40,38 +40,23 @@ class SVDRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, datasets=None): 
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None): 
         """Initialize recommendation system."""
-        if ml_type not in ['classifier', 'regressor']:
-            raise ValueError('ml_type must be "classifier" or "regressor"')
-
-        self.ml_type = ml_type
+        super().__init__(ml_type, metric, ml_p)
         
-        if metric is None:
-            self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
-        else:
-            self.metric = metric
-
-        self._ml_p = ml_p
-        
-        # get dataset names
-        self.datasets = datasets
         # store results
         self.results_df = pd.DataFrame()
         # reader for translating btw PennAI results and Suprise training set
-        self.reader = Reader(rating_scale=(0,1))
+        self.reader = Reader()
         # algo is the online Surprise-based rec system
-        self.algo = mySVD(n_factors=40, n_epochs=100, biased=True, init_mean=0,
+        self.algo = mySVD(n_factors=20, n_epochs=20, biased=True, init_mean=0,
                           init_std_dev=.2, lr_all=.01,
                           reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
-                          reg_qi=None, random_state=None, verbose=False)
+                          reg_qi=None, random_state=None, verbose=True)
         
-        # maintain a set of dataset-algorithm-parameter combinations that have 
-        # already been evaluated
-        self.trained_dataset_models = set()
         self.first_fit = True
-
+        self.max_epochs = 100
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations based on overall performance in 
@@ -85,20 +70,14 @@ class SVDRecommender(BaseRecommender):
         :param results_mf: metafeatures for the datasets in results_data 
         """
 
-        # update trained dataset models
-        if source == 'pennai':
-            self.update_trained_dataset_models_from_df(results_data)
+        # update trained dataset models and hash table
+        super().update(results_data, results_mf, source)
 
         # update internal model
         self.update_model(results_data)
 
     def update_training_data(self,results_data):
         """Fill in new data from the results and set trainset for svd"""
-        # update parameter hash table
-        self.param_htable.update({hash(frozenset(x.items())):x 
-                for x in results_data['parameters'].values})
-        results_data['parameter_hash'] = results_data['parameters'].apply(
-                lambda x: str(hash(frozenset(x.items()))))
 
         results_data.loc[:, 'algorithm-parameters'] =  (
                 results_data['algorithm'].values + '|' +
@@ -110,7 +89,8 @@ class SVDRecommender(BaseRecommender):
 
         data = Dataset.load_from_df(self.results_df[['dataset', 
                                                      'algorithm-parameters', 
-                                                     'score']], self.reader)
+                                                     'score']], 
+                                    self.reader, rating_scale=(0,1))
         # build training set from the data
         self.trainset = data.build_full_trainset()
         logger.debug('self.trainset # of ML-P combos: ' + 
@@ -121,13 +101,16 @@ class SVDRecommender(BaseRecommender):
         """Stores new results and updates SVD."""
         logger.debug('updating SVD model')
         # shuffle the results data the first time
-        # pdb.set_trace()
         if self.first_fit:
             results_data = results_data.sample(frac=1)
 
         self.update_training_data(results_data)
-
+        logger.debug('fitting self.algo...')
+        # set the number of training iterations proportionally to the amount of
+        # results_data
+        self.algo.n_epochs = min(len(results_data),self.max_epochs)
         self.algo.partial_fit(self.trainset)
+        logger.debug('done.')
         if self.first_fit:
             self.init_results_data = results_data
             self.first_fit=False

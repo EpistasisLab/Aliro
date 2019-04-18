@@ -12,19 +12,23 @@ import pdb
 import json
 # set up data for tests.
 # print('loading pmlb results data...')
-data = pd.read_csv('data/knowledgebases/sklearn-benchmark5-knowledgebase.tsv.gz',
-                   compression='gzip', sep='\t')
+data = pd.read_csv(
+        'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz',
+        compression='gzip', sep='\t')
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
+data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data.set_index('dataset')
+#ml - param combos
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
     try:
-       with open('ai/tests/metafeatures/api/datasets/'+d+'/metafeatures.json') as data_file:    
+       with open('ai/tests/metafeatures/api/datasets/'+
+               d+'/metafeatures.json') as data_file:    
                data = json.load(data_file)
     except Exception as e:
         print('exception when grabbing metafeature data for',d)
@@ -67,12 +71,14 @@ def check_rec(rec):
     # test updating scores
     epochs = 5 
     datlen = int(data.shape[0] / float(epochs))
-    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
-    if rec is AverageRecommender:
-        rec_obj = rec()
-    else:
-        rec_obj = rec(ml_p=ml_p)
-
+    ml_p = data.loc[:,['algorithm','parameters']]
+    ml_p['parameters'] = ml_p['parameters'].apply(str)
+    ml_p = ml_p.drop_duplicates()
+    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
+    # print('ml_p:',ml_p)
+    rec_obj = rec(ml_p=ml_p)
+    print('param_htable:',len(rec_obj.param_htable),'objects')
+ 
     n_recs = 1
     dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
@@ -94,12 +100,16 @@ def test_recs_work():
 
 def check_n_recs(rec):
     """Recommender returns correct number of recommendations"""
-    ml_p = data.loc[:,['algorithm','parameters']].drop_duplicates() 
     print(rec)
-    if rec is AverageRecommender:
-        rec_obj = rec()
-    else:
-        rec_obj = rec(ml_p=ml_p)
+    ml_p = data.loc[:,['algorithm','parameters']]
+    ml_p['parameters'] = ml_p['parameters'].apply(str)
+    ml_p = ml_p.drop_duplicates()
+    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
+   
+    print('setting rec')
+    rec_obj = rec(ml_p=ml_p)
+    print('set rec')
+   
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
