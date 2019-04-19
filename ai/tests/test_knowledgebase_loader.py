@@ -16,47 +16,64 @@ def load_test_data():
          "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
          "data/datasets/pmlb",
          pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
-         {'apple':[1,2,3]},
-#        ("badPath", 
-#        	"ai/metalearning/sklearn-benchmarkfoo-data-short.tsv.gz", 
-#        	"data/datasets/pmlb/foooo",
-#        	pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
-#        	{'apple':[a,b,c]}
-		)
+         {'apple':[1,2,3]}
+         )
     ]
 
 class TestResultUtils(unittest.TestCase):
-	@parameterized.expand(load_test_data)
-	def test_load_results_from_file(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		data = knowledgebase_loader._load_results_from_file(testResultFile)
-		assert isinstance(data, pd.DataFrame)
+    @parameterized.expand(load_test_data)
+    def test_load_results_from_file(self, name, testResultFile, 
+        testResultsDataDirectory, expectedResultsData, 
+        expectedMetafeaturesData):
+        data = knowledgebase_loader._load_results_from_file(testResultFile)
+        assert isinstance(data, pd.DataFrame)
 
-		self.assertGreater(len(data), 1)
-		#assert expectedResultsData.equals(data)
+        self.assertGreater(len(data), 1)
+        #assert expectedResultsData.equals(data)
 
-	@parameterized.expand(load_test_data)
-	def test_generate_metadata_from_directory(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		data = knowledgebase_loader._generate_metadata_from_directory(testResultsDataDirectory)
-		assert isinstance(data, dict)
+    @parameterized.expand(load_test_data)
+    def test_generate_metadata_from_directory(self, name, testResultFile, 
+            testResultsDataDirectory, expectedResultsData, 
+            expectedMetafeaturesData):
+        data = knowledgebase_loader._generate_metadata_from_directory(testResultsDataDirectory)
+        assert isinstance(data, dict)
 
-		self.assertGreater(len(data.keys()), 1)
-		#assert expectedMetafeaturesData.equals(data)
+        self.assertGreater(len(data.keys()), 1)
+        #assert expectedMetafeaturesData.equals(data)
 
-	@parameterized.expand(load_test_data)
-	def test_load_knowledgebase(self, name, testResultFile, testResultsDataDirectory, expectedResultsData, expectedMetafeaturesData):
-		result = knowledgebase_loader.load_knowledgebase(testResultFile, testResultsDataDirectory)
-		assert 'resultsData' in result
-		assert 'metafeaturesData' in result
+    @parameterized.expand(load_test_data)
+    def test_load_knowledgebase(self, name, testResultFile, 
+            testResultsDataDirectory, expectedResultsData, 
+            expectedMetafeaturesData):
+        result = knowledgebase_loader.load_knowledgebase(testResultFile, 
+                testResultsDataDirectory)
+        assert 'resultsData' in result
+        assert 'metafeaturesData' in result
 
-		assert isinstance(result['resultsData'], pd.DataFrame)
-		assert isinstance(result['metafeaturesData'], dict)
+        assert isinstance(result['resultsData'], pd.DataFrame)
+        assert isinstance(result['metafeaturesData'], dict)
 
-		self.assertGreater(len(result['resultsData']), 1)
-		self.assertGreater(len(result['metafeaturesData'].keys()), 1)
+        self.assertGreater(len(result['resultsData']), 1)
+        self.assertGreater(len(result['metafeaturesData'].keys()), 1)
 
-		print("result.warnings:")
-		print(result['warnings'])
-		#assert len(result['warnings']) == 0
+        print("result.warnings:")
+        print(result['warnings'])
+        #assert len(result['warnings']) == 0
 
-		#assert expectedResultsData.equals(result['resultsData']) 
-		#assert expectedMetafeaturesData.equals(result['metafeaturesData'])
+        #assert expectedResultsData.equals(result['resultsData']) 
+        #assert expectedMetafeaturesData.equals(result['metafeaturesData'])
+    
+    def test_load_pmlb_knowledgebase(self):
+        """the PMLB knowledgebase is loaded correctly"""
+        result = knowledgebase_loader.load_pmlb_knowledgebase()
+        assert 'resultsData' in result
+        assert 'metafeaturesData' in result
+
+        assert isinstance(result['resultsData'], pd.DataFrame)
+        assert isinstance(result['metafeaturesData'], dict)
+
+        self.assertGreater(len(result['resultsData']), 1)
+        self.assertGreater(len(result['metafeaturesData'].keys()), 1)
+
+        print("result.warnings:")
+        print(result['warnings'])
