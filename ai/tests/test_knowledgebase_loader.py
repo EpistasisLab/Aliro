@@ -14,7 +14,7 @@ def load_test_data():
     return [
         ("benchmark5", 
          "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
-         "data/datasets/pmlb",
+         "data/datasets/pmlb_small",
          pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
          {'apple':[1,2,3]}
          )
@@ -35,7 +35,8 @@ class TestResultUtils(unittest.TestCase):
     def test_generate_metadata_from_directory(self, name, testResultFile, 
             testResultsDataDirectory, expectedResultsData, 
             expectedMetafeaturesData):
-        data = knowledgebase_loader._generate_metadata_from_directory(testResultsDataDirectory)
+        data = knowledgebase_loader._generate_metadata_from_directory(
+                testResultsDataDirectory)
         assert isinstance(data, dict)
 
         self.assertGreater(len(data.keys()), 1)
