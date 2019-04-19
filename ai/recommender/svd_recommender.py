@@ -53,7 +53,7 @@ class SVDRecommender(BaseRecommender):
                           init_std_dev=.2, lr_all=.01,
                           reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
-                          reg_qi=None, random_state=None, verbose=True)
+                          reg_qi=None, random_state=None, verbose=False)
         
         self.first_fit = True
         self.max_epochs = 100
