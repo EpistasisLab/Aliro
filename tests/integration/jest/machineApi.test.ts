@@ -39,6 +39,8 @@ describe('machine', () => {
 			var algoId = labAlgos.find(function(element) {return element.name == 'KNeighborsClassifier';})._id;
 		 	expect(algoId).toBeTruthy();
 
+		 	console.log("calling machine.fetchCapacity(", algoId,")")
+
 			try {
 				var data = await machineApi.fetchCapacity(algoId)
 			} catch (e) {
@@ -58,6 +60,8 @@ describe('machine', () => {
 			expect(labAlgos.length).toBeGreaterThan(10)
 			var algoId = labAlgos.find(function(element) {return element.name == 'DecisionTreeClassifier';})._id;
 		 	expect(algoId).toBeTruthy();
+
+		 	console.log("calling machine.fetchCapacity(", algoId,")")
 
 			try {
 				var data = await machineApi.fetchCapacity(algoId)
