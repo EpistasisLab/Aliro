@@ -52,7 +52,7 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
         logger.info('loading cached metafeatures from '+metafeatureDirectory)
         for d in np.unique(dataset_names):
             if os.path.exists(metafeatureDirectory+'/'+d+'/metafeatures.json'):
-                logger.info('loading '+metafeatureDirectory+'/'+
+                logger.debug('loading '+metafeatureDirectory+'/'+
                         d+'/metafeatures.json')
                 with open(metafeatureDirectory+'/'+d+
                         '/metafeatures.json') as data_file:    
