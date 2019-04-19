@@ -19,7 +19,7 @@ afterAll(() => {
 */
 
 describe('run experiment', () => {
-	it.skip('run decisionTree experiment on banana', async () => {	
+	it('run decisionTree experiment on banana', async () => {	
 		console.log('run decisionTree experiment on banana')
 
 		jest.setTimeout(15000)
@@ -107,7 +107,7 @@ describe('run experiment', () => {
 	});
 
 
-	it.skip('run decisionTree experiment with invalid parms on banana', async () => {	
+	it('run decisionTree experiment with invalid parms on banana', async () => {	
 		console.log('run decisionTree experiment with invalid parms on banana')
 
 		jest.setTimeout(15000)
@@ -190,7 +190,7 @@ describe('run experiment', () => {
 
 	it.skip('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(15000)
+		jest.setTimeout(20000)
 
 		let algoName = 'SVC'
 		let algoParms = {
