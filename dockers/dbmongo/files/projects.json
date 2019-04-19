@@ -103,19 +103,19 @@
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [2, 5, 10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20]
+                "choices": [1, 5, 10, 20]
             }
         },
         "min_weight_fraction_leaf": {
@@ -181,20 +181,20 @@
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [2, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [1, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },
@@ -243,26 +243,26 @@
             "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [3, 5, 10]
+                "choices": [1, 3, 5, 10]
             }
         },
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [2, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [1, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },
@@ -482,20 +482,20 @@
         "min_samples_split": {
             "description": "The minimum number of samples required to split an internal node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 2,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [2, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },
         "min_samples_leaf": {
             "description": "The minimum number of samples required to be at a leaf node.",
             "type": ["int", "float"],
-            "default": 5,
+            "default": 1,
             "ui": {
                 "style": "radio",
-                "choices": [5, 10, 20],
+                "choices": [1, 5, 10, 20],
                 "grid_search": [10, 20]
             }
         },

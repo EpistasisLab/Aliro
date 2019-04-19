@@ -64,7 +64,7 @@ pipeline {
                 // rebuild
                 sh 'cp config/ai.env-template config/ai.env'
                 sh 'docker build ./dockers/base -t pennai/base:latest'
-                sh 'docker-compose build'
+                sh 'docker-compose build -m 6g'
             }
 
         }
@@ -79,7 +79,7 @@ pipeline {
                 sh 'docker-compose -f ./docker-compose-int-test.yml stop'
 
                 // run the integration test instance
-                sh 'docker-compose -f ./docker-compose-int-test.yml build'
+                sh 'docker-compose -f ./docker-compose-int-test.yml build -m 6g'
                 sh 'docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate'
             }
             post {

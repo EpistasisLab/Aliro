@@ -9,7 +9,7 @@ COPY tsconfig.json .
 # RUN npm install --save-dev typescript jest ts-jest @types/jest
 # RUN npm install --save-dev babel-jest babel-preset-react react-test-renderer babel-preset-es2015
 # RUN npm install --save-dev babel-jest babel-preset-react react-test-renderer babel-preset-env 
-RUN npm install 
+RUN npm install --no-optional --progress=false
 
 COPY wait-for-it.sh /opt
 RUN dos2unix /opt/wait-for-it.sh

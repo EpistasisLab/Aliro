@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pmlb import dataset_names, fetch_data
 import os
-from ai.metalearning.get_metafeatures import get_metafeatures_from_file
+from ai.metalearning.get_metafeatures import generate_metafeatures_from_filepath
 import simplejson
 import sys
 from glob import glob
@@ -52,7 +52,8 @@ if __name__ == '__main__':
         assert(len(dataset_path)==1)
         dataset_path = dataset_path[0]
         print(dataset_path)
-        mf = get_metafeatures_from_file(dataset_path,args.label,compression = compression)
+        mf = generate_metafeatures_from_filepath(dataset_path,
+                args.label,compression = compression)
         meta_json = simplejson.dumps(mf, ignore_nan=True) #, ensure_ascii=False)    
         if not os.path.exists('mock_experiment/metafeatures/api/datasets/'+dataset):
                 os.makedirs('mock_experiment/metafeatures/api/datasets/'+dataset)

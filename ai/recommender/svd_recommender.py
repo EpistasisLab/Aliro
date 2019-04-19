@@ -16,8 +16,9 @@ from surprise import Reader, Dataset, mySVD
 from collections import defaultdict
 import itertools as it
 import logging
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -28,7 +29,8 @@ class SVDRecommender(BaseRecommender):
     Recommends machine learning algorithms and parameters using the SVD++ algorithm.
         - stores ML + P and every dataset.
         - learns a matrix factorization on the non-missing data.
-        - given a dataset, estimates the rankings of all ML+P and returns the top n_recs. 
+        - given a dataset, estimates the rankings of all ML+P and returns the top 
+        n_recs. 
 
     Parameters
     ----------
@@ -38,45 +40,27 @@ class SVDRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, datasets=None): 
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None): 
         """Initialize recommendation system."""
-        if ml_type not in ['classifier', 'regressor']:
-            raise ValueError('ml_type must be "classifier" or "regressor"')
-
-        self.ml_type = ml_type
+        super().__init__(ml_type, metric, ml_p)
         
-        if metric is None:
-            self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
-        else:
-            self.metric = metric
-
-        # get ml+p combos
-        self.ml_p = ml_p
-        self.mlp_combos = None
-        if ml_p is not None:
-            self.ml_p = ml_p.drop_duplicates()
-            # machine learning - parameter combinations
-            self.mlp_combos = self.ml_p['algorithm']+'|'+self.ml_p['parameters']
-        # get dataset names
-        self.datasets = datasets
         # store results
         self.results_df = pd.DataFrame()
         # reader for translating btw PennAI results and Suprise training set
-        self.reader = Reader(rating_scale=(0,1))
+        self.reader = Reader()
         # algo is the online Surprise-based rec system
-        self.algo = mySVD(n_factors=100, n_epochs=20, biased=True, init_mean=0,
+        self.algo = mySVD(n_factors=20, n_epochs=20, biased=True, init_mean=0,
                           init_std_dev=.2, lr_all=.01,
-                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, lr_qi=None,
-                          reg_bu=None, reg_bi=None, reg_pu=None, reg_qi=None,
-                          random_state=None, verbose=False)
+                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
+                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
+                          reg_qi=None, random_state=None, verbose=False)
         
-        # maintain a set of dataset-algorithm-parameter combinations that have already been 
-        # evaluated
-        self.trained_dataset_models = set()
         self.first_fit = True
+        self.max_epochs = 100
 
-    def update(self, results_data, results_mf=None):
-        """Update ML / Parameter recommendations based on overall performance in results_data.
+    def update(self, results_data, results_mf=None, source='pennai'):
+        """Update ML / Parameter recommendations based on overall performance in 
+        results_data.
 
         :param results_data: DataFrame with columns corresponding to:
                 'dataset'
@@ -86,48 +70,47 @@ class SVDRecommender(BaseRecommender):
         :param results_mf: metafeatures for the datasets in results_data 
         """
 
-        # update trained dataset models
-        self.set_trained_dataset_models(results_data)
+        # update trained dataset models and hash table
+        super().update(results_data, results_mf, source)
 
         # update internal model
         self.update_model(results_data)
 
-    def set_trained_dataset_models(self, results_data):
-        # results_data['sorted_parameters'] = results_data['parameters'].apply(
-        #                                     lambda x: str(sorted(eval(x).items())))
-        results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset'].values + '|' +
-                                       results_data['algorithm'].values + '|' +
-                                       results_data['parameters'].values)
-                                       # results_data['sorted_parameters'].values)
-
-        # get unique dataset / parameter / classifier combos in results_data
-        d_ml_p = results_data['dataset-algorithm-parameters'].unique()
-        self.trained_dataset_models.update(d_ml_p)
-
     def update_training_data(self,results_data):
-        """Fill in new data from the results"""
-        results_data.loc[:, 'algorithm-parameters'] =  (results_data['algorithm'].values + '|' +
-                                                        results_data['parameters'].values)
+        """Fill in new data from the results and set trainset for svd"""
+
+        results_data.loc[:, 'algorithm-parameters'] =  (
+                results_data['algorithm'].values + '|' +
+                results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
-        self.results_df = self.results_df.append(results_data[['algorithm-parameters',
-                                                              'dataset','score']]
+        self.results_df = self.results_df.append(
+                results_data[['algorithm-parameters','dataset','score']]
                                                 ).drop_duplicates()
 
-        data = Dataset.load_from_df(self.results_df[['dataset', 'algorithm-parameters', 
-                                                     'score']], self.reader)
+        data = Dataset.load_from_df(self.results_df[['dataset', 
+                                                     'algorithm-parameters', 
+                                                     'score']], 
+                                    self.reader, rating_scale=(0,1))
         # build training set from the data
         self.trainset = data.build_full_trainset()
+        logger.debug('self.trainset # of ML-P combos: ' + 
+                str(self.trainset.n_items))
+        logger.debug('self.trainset # of datasets: ' + str(self.trainset.n_users))
 
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.debug('updating SVD model')
+        # shuffle the results data the first time
         if self.first_fit:
             results_data = results_data.sample(frac=1)
 
         self.update_training_data(results_data)
-
+        logger.debug('fitting self.algo...')
+        # set the number of training iterations proportionally to the amount of
+        # results_data
+        self.algo.n_epochs = min(len(results_data),self.max_epochs)
         self.algo.partial_fit(self.trainset)
+        logger.debug('done.')
         if self.first_fit:
             self.init_results_data = results_data
             self.first_fit=False
@@ -147,6 +130,7 @@ class SVDRecommender(BaseRecommender):
         # TODO: raise error if dataset_mf is None 
         try:
             predictions = []
+            filtered =0
             for alg_params in self.mlp_combos:
                 # this prevents repeat recommendations
                 # print('filtering repeats')
@@ -158,11 +142,15 @@ class SVDRecommender(BaseRecommender):
                     self.trained_dataset_models):  
                     predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
-                # else:
-                #     print('skipping',dataset_id+'|'+alg_params,'which has already'
-                #     'been run')
+                else:
+                    filtered +=1
+                    logger.debug('skipping ' + str(dataset_id) +'|'+
+                            alg_params.split('|')[0] + 
+                          str(self.param_htable[int(alg_params.split('|')[1])]) +
+                          ' which has already been recommended')
+            logger.debug('filtered '+ str(filtered) + ' recommendations')
             logger.debug('getting top n predictions') 
-            ml_rec, p_rec, score_rec = self.get_top_n(predictions, n_recs)
+            ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
             logger.debug('returning ml recs') 
             # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
@@ -173,10 +161,9 @@ class SVDRecommender(BaseRecommender):
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        self.trained_dataset_models.update(
-                                    ['|'.join([dataset_id, ml, p])
-                                    for ml, p in zip(ml_rec, p_rec)])
+        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
+        p_rec = [self.param_htable[int(ph)] for ph in phash_rec]
         return ml_rec, p_rec, score_rec
 
     def get_top_n(self,predictions, n=10):
