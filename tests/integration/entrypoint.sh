@@ -13,7 +13,7 @@ echo "hardcoded sleep to load datasets..."
 sleep 10s
 
 echo "starting tests..."
-npm testSequential
+npm test
 
 echo "cleanup"
 rm -rf '/appsrc/ai/__pycache__/*'

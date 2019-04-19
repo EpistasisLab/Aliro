@@ -2,8 +2,7 @@
   "name": "integration-tests",
   "version": "0.0.1",
   "scripts": {
-    "test": "jest"
-    "testSequential" : "jest --bail --runInBand"
+    "test": "jest --bail --runInBand"
   },
   "jest": {
     "transform": {
