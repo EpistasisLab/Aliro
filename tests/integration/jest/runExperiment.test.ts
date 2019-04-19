@@ -22,7 +22,7 @@ describe('run experiment', () => {
 	it('run decisionTree experiment on banana', async () => {	
 		console.log('run decisionTree experiment on banana')
 
-		jest.setTimeout(15000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 	/*
 		let algoName = 'DecisionTreeClassifier'
 		let algoParms = {
@@ -110,7 +110,7 @@ describe('run experiment', () => {
 	it('run decisionTree experiment with invalid parms on banana', async () => {	
 		console.log('run decisionTree experiment with invalid parms on banana')
 
-		jest.setTimeout(15000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'LogisticRegression'
 		let algoParms = {
@@ -190,7 +190,7 @@ describe('run experiment', () => {
 
 	it.skip('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(20000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'SVC'
 		let algoParms = {

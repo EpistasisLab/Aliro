@@ -31,7 +31,9 @@ services:
       - "443:443"
       - "5080:5080"
     environment:
-      - AI_AUTOSTART=0
+      - AI_RECOMMENDER=random
+      - AI_NUMRECOMMEND=1
+      - AI_AUTOSTART=1
       - STARTUP_DATASET_PATH=/appsrc/data/datasets/test/test_mixed
     env_file: ./config/common.env
     depends_on:
