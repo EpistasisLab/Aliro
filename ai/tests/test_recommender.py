@@ -12,6 +12,8 @@ import pdb
 import json
 # set up data for tests.
 # print('loading pmlb results data...')
+# TODO: replace this dataset loading and metafeature loading with calls to 
+# knowledgebase loader
 data = pd.read_csv(
         'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz',
         compression='gzip', sep='\t')

@@ -8,10 +8,12 @@ the metafeatures of the datasets in those experiments.
 """
 
 import pandas as pd
+import numpy as np
 import os
 import ai.metalearning.get_metafeatures as mf
 import logging
 import pdb
+import json 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -44,19 +46,23 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
 
     resultsData = _load_results_from_file(resultsFile)
     dataset_names = resultsData['dataset']
+    metafeaturesData = {}
     # try loading metafeatures from metafeatureDirectory
     if metafeatureDirectory != '':
-        logger.info('loading cached metafeatures from '+meteafeatureDirectory)
-        for d in dataset_names:
+        logger.info('loading cached metafeatures from '+metafeatureDirectory)
+        for d in np.unique(dataset_names):
             if os.path.exists(metafeatureDirectory+'/'+d+'/metafeatures.json'):
-                with open('data/knowledgebases/metafeatures/'+d+
+                logger.info('loading '+metafeatureDirectory+'/'+
+                        d+'/metafeatures.json')
+                with open(metafeatureDirectory+'/'+d+
                         '/metafeatures.json') as data_file:    
                     data = json.load(data_file)
-                
                 metafeaturesData[d] = data 
+            else:
+                raise ValueError("couldn't find metafeature file for " + d)
     else:
-        if datasetDirectory='':
-            raise ValueError('One of datasetDirectory or meteafeatureDirectory '
+        if datasetDirectory=='':
+            raise ValueError('One of datasetDirectory or metafeatureDirectory '
                              'has to be specified')
 
         logger.info('generating metafeatures from '+datasetDirectory)
@@ -76,7 +82,7 @@ def load_pmlb_knowledgebase():
             resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
                 'knowledgebase.tsv.gz'),
             # datasetDirectory = "data/datasets/pmlb",
-            meteafeatureDirectory = 'data/knowledgebases/metafeatures'
+            metafeatureDirectory = 'data/knowledgebases/metafeatures'
             )
 
 def _validate_knowledgebase(resultsDf, metafeaturesDict):
@@ -89,8 +95,8 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
 
     # check that resultsDf has required fields
     for reqField in requiredResultsFields:
-    if not reqField in resultsDf.columns: 
-        warnings.append("Required field '" + reqField + 
+        if not reqField in resultsDf.columns: 
+            warnings.append("Required field '" + reqField + 
                 "'' is not in the knowledgebase experiments.")
 
     # if warnings: 
@@ -107,11 +113,11 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
     # with the current version of datasest_describe.py
     versions=[]
     for k,v in metafeaturesDict.items():
-        versions.append(v['metafeatures_version'])
+        versions.append(v['metafeature_version'])
     versions = np.array(versions)
-    if len(versions.unique()) != 1:
+    if len(np.unique(versions)) != 1:
         warnings.append('Different metafeatures versions present: '+
-                        str(versions.unique()))
+                        str(np.unique(versions)))
     return warnings
 
 
