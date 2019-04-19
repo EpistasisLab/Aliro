@@ -44,13 +44,13 @@ describe('run experiment', () => {
 		//-------------------
 	 	// get dataset
 	 	var datasets = await labApi.fetchDatasets();
-	 	expect(datasets.length).toBeGreaterThan(util.MIN_EXPECTED_DATASET_COUNT);
+	 	expect(datasets.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_DATASET_COUNT);
 	 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
 	 	expect(datasetId).toBeTruthy();
 
 	 	// get algorithm
 	 	var algorithms = await labApi.fetchAlgorithms();
-	 	expect(algorithms.length).toBeGreaterThan(util.MIN_EXPECTED_LAB_ALGO_COUNT);
+	 	expect(algorithms.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_LAB_ALGO_COUNT);
 	 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
 	 	expect(algoId).toBeTruthy();
 
@@ -126,13 +126,13 @@ describe('run experiment', () => {
 		//-------------------
 	 	// get dataset
 	 	var datasets = await labApi.fetchDatasets();
-	 	expect(datasets.length).toBeGreaterThan(util.MIN_EXPECTED_DATASET_COUNT);
+	 	expect(datasets.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_DATASET_COUNT);
 	 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
 	 	expect(datasetId).toBeTruthy();
 
 	 	// get algorithm
 	 	var algorithms = await labApi.fetchAlgorithms();
-	 	expect(algorithms.length).toBeGreaterThan(util.MIN_EXPECTED_LAB_ALGO_COUNT);
+	 	expect(algorithms.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_LAB_ALGO_COUNT);
 	 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
 	 	expect(algoId).toBeTruthy();
 
