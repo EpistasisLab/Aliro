@@ -21,7 +21,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def load_knowledgebase(resultsFile, datasetDirectory):
+def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
@@ -43,46 +43,76 @@ def load_knowledgebase(resultsFile, datasetDirectory):
 
 
     resultsData = _load_results_from_file(resultsFile)
-    metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
-            targetField='class')
+    dataset_names = resultsData['dataset']
+    # try loading metafeatures from metafeatureDirectory
+    if metafeatureDirectory != '':
+        logger.info('loading cached metafeatures from '+meteafeatureDirectory)
+        for d in dataset_names:
+            if os.path.exists(metafeatureDirectory+'/'+d+'/metafeatures.json'):
+                with open('data/knowledgebases/metafeatures/'+d+
+                        '/metafeatures.json') as data_file:    
+                    data = json.load(data_file)
+                
+                metafeaturesData[d] = data 
+    else:
+        if datasetDirectory='':
+            raise ValueError('One of datasetDirectory or meteafeatureDirectory '
+                             'has to be specified')
+
+        logger.info('generating metafeatures from '+datasetDirectory)
+        metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
+                targetField='class')
 
     # check that all result datasets have metadata
     warnings = _validate_knowledgebase(resultsData, metafeaturesData)
 
     # return
-    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 'warnings': warnings}
+    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
+            'warnings': warnings}
 
 def load_pmlb_knowledgebase():
     """ load the PMBL knowledgebase"""
     return load_knowledgebase(
             resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
                 'knowledgebase.tsv.gz'),
-            datasetDirectory = "data/datasets/pmlb"
+            # datasetDirectory = "data/datasets/pmlb",
+            meteafeatureDirectory = 'data/knowledgebases/metafeatures'
             )
 
 def _validate_knowledgebase(resultsDf, metafeaturesDict):
-  """
-  Validate knowledgebase
-  """
-  requiredResultsFields = ['dataset', 'algorithm']
+    """
+    Validate knowledgebase
+    """
+    requiredResultsFields = ['dataset', 'algorithm']
 
-  warnings = []
+    warnings = []
 
-  # check that resultsDf has required fields
-  for reqField in requiredResultsFields:
-    if not reqField in resultsDf.columns: warnings.append("Required field '" + reqField + "'' is not in the knowledgebase experiments.")
+    # check that resultsDf has required fields
+    for reqField in requiredResultsFields:
+    if not reqField in resultsDf.columns: 
+        warnings.append("Required field '" + reqField + 
+                "'' is not in the knowledgebase experiments.")
 
-  if warnings: return warnings
+    # if warnings: 
+    #     return warnings
 
+    # check that all the datasets in resultsDf are in metafeaturesDict
+    missingMfDatasets = list(set(resultsDf.dataset.unique()) 
+          - set(metafeaturesDict.keys()))
+    if missingMfDatasets : 
+      warnings.append("Found experiment datasets with no associated metadata: " + 
+              str(missingMfDatasets))
 
-  # check that all the datasets in resultsDf are in metafeaturesDict
-  missingMfDatasets = list(set(resultsDf.dataset.unique()) - set(metafeaturesDict.keys()))
-  if missingMfDatasets : warnings.append("Found experiment datasets with no associated metadata: " + str(missingMfDatasets))
-
-  # TODO: check that all the metafeatures were created with a version compatable
-  #       with the current version of datasest_describe.py
-
-  return warnings
+    # check that all the metafeatures were created with a version compatable
+    # with the current version of datasest_describe.py
+    versions=[]
+    for k,v in metafeaturesDict.items():
+        versions.append(v['metafeatures_version'])
+    versions = np.array(versions)
+    if len(versions.unique()) != 1:
+        warnings.append('Different metafeatures versions present: '+
+                        str(versions.unique()))
+    return warnings
 
 
 def _load_results_from_file(resultsFile):
