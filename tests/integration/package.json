@@ -34,15 +34,16 @@
         {
           "suiteName": "Jest Integration Test Suite",
           "outputDirectory": "/target/test-reports",
-          "outputName": "int_jest_xunit.xml"
+          "outputName": "int_jest_xunit.xml",
+          "classNameTemplate": "JestIntegration.{classname}",
+          "titleTemplate": "{title}"
         }
       ]
     ]
   },
   "babel": {
     "presets": [
-      "env",
-      "react"
+      "env"
     ]
   },
   "devDependencies": {
@@ -50,11 +51,9 @@
     "@types/node": "^10.12.10",
     "babel-jest": "^23.0.1",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
     "jest": "^23.1.0",
     "jest-html-reporter": "^2.4.1",
     "jest-junit": "^5.2.0",
-    "react-test-renderer": "^16.4.0",
     "ts-jest": "^22.4.6",
     "typescript": "^2.9.1"
   },
