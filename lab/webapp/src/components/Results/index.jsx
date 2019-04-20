@@ -89,7 +89,7 @@ class Results extends Component {
                 chartKey="all"
                 chartColor="#7D5BA6"
               />
-              <Score
+              {/*<Score
                 scoreName="Training Accuracy"
                 scoreValue={experiment.data.scores.train_score}
                 chartKey="training"
@@ -100,7 +100,7 @@ class Results extends Component {
                 scoreValue={experiment.data.scores.test_score}
                 chartKey="testing"
                 chartColor="#55D6BE"
-              />
+              />*/}
               <Score
                 scoreName="AUC"
                 scoreValue={experiment.data.scores.roc_auc_score}

@@ -6,30 +6,34 @@ class GaugeAll extends Component {
     const { expList, chartKey, chartColor } = this.props;
     expList && this.renderChart(expList, chartKey, chartColor);
   }
-
+/*
+colors: {
+  'test_score': '#0072b2',  ---- light blue
+  'train_score': '#f0e442'  ---- light yellow
+}
+*/
   renderChart(expList, chartKey, chartColor) {
     c3.generate({
       bindto: `.${chartKey}`,
       data: {
         columns: [
-          [expList[0][0], expList[0][1]],
-          [expList[1][0], expList[1][1]],
-          [expList[2][0], expList[2][1]]
-
+          [expList[0][0].toString(), expList[0][1]],
+          [expList[1][0].toString(), expList[1][1]]
         ],
+        colors: {
+          'test_score': '#55D6BE',
+          'train_score': '#7D5BA6'
+        },
         type: 'gauge',
         //onclick: function (d, i) { console.log("onclick", d, i); },
         //onmouseover: function (d, i) { console.log("onmouseover", d, i); },
         //onmouseout: function (d, i) { console.log("onmouseout", d, i); }
       },
-      colors: {
-        value: function(d) {
-          return '#'+(0xff0000+(d.value-25)*256*3).toString(16);
-        }
-      },
       gauge: {
         label: {
-
+          format: function(value) {
+            return value.toFixed(2);
+          },
           show: true
         },
         min: 0.5,
