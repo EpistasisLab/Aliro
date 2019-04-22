@@ -32,7 +32,9 @@ colors: {
       gauge: {
         label: {
           format: function(value) {
-            return value.toFixed(2);
+            let retVal;
+            value ? retVal = value.toFixed(2) : retVal = value;
+            return retVal;
           },
           show: true
         },
