@@ -4,7 +4,7 @@ import { Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
 function DatasetActions({ dataset, toggleAI }) {
   const onToggleAI = () => {
     const aiState = dataset.ai;
-    const aiNextState = aiState === 'off' ? 'requested' : 'off';
+    const aiNextState = aiState === 'off' || aiState === 'finished' ? 'requested' : 'off';
 
     toggleAI(dataset._id, aiNextState);
   };
