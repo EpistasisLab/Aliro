@@ -72,9 +72,17 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	'''
 	num_df = df
 
-	if (target_column != None) and not(target_column in df.columns):
-		logger.warn("Target column '" + target_column + "' not in data")
-		return False, "Target column '" + target_column + "' not in data"
+	# target column validation
+	if (target_column != None):
+		if not(target_column in df.columns):
+			logger.warn("Target column '" + target_column + "' not in data")
+			return False, "Target column '" + target_column + "' not in data"
+		if categories and target_column in categories:
+			logger.warn("Target column '" + target_column + "' cannot be a categorical feature")
+			return False, "Target column '" + target_column + "' cannot be a categorical feature"
+		if ordinals and target_column in ordinals:
+			logger.warn("Target column '" + target_column + "' cannot be an ordinal feature")
+			return False, "Target column '" + target_column + "' cannot be an ordinal feature"
 
 	# check that cat columns can be encoded
 	if categories or ordinals:
