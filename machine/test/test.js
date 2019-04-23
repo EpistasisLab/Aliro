@@ -52,7 +52,7 @@ describe('Mocha Test for checkCapacity function', function () {
 
 describe('Mocha Test for sendJSONResults function', function () {
   it('Test sendJSONResults returns the correct values.', function () {
-        ret = machine_utils.sendJSONResults("./test/test_machine_config.json", "test_url");
+        ret = machine_utils.sendJSONResults("machine/test/test_machine_config.json", "test_url");
         assert.equal(ret.uri, "test_url");
         assert.equal(ret.method, "PUT");
         assert.equal(ret.gzip, true);
@@ -67,7 +67,7 @@ describe('Mocha Test for sendJSONResults function', function () {
 
 describe('Mocha Test for sendFileResults function', function () {
   it('Test sendFileResults returns the correct values.', function () {
-        ret = machine_utils.sendFileResults("./test/iris_binary.tsv", "test_url");
+        ret = machine_utils.sendFileResults("machine/test/iris_binary.tsv", "test_url");
         assert.equal(ret.uri, "test_url");
         assert.equal(ret.method, "PUT");
         assert.equal(ret.gzip, true);
