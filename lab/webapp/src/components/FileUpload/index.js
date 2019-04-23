@@ -63,7 +63,7 @@ class FileUpload extends Component {
   handleDepColField(e) {
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input col: ', safeInput);
-    this.setState({dependentCol: props.value});
+    this.setState({dependentCol: e.target.value});
   }
 
   /**
