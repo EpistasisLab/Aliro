@@ -27,3 +27,4 @@ experiment*csv
 experiment*pdf
 */*metafeatures.json
 ai/tests/metafeatures/
+.ipynb_checkpoints/
