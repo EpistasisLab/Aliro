@@ -69,6 +69,18 @@ def load_bad_test_data():
 			["cat"],
 			{"ord" : ["first", "second"]},
 			"encode_data() failed: Found unknown categories ['third'] in column 0 during fit"),
+		("appendicitis_ord_target", 
+			"data/datasets/test/test_bad/appendicitis_ord_target.csv",
+			"target_class",
+			None,
+			{"target_class" : ["true", "false"]},
+			"Target column 'target_class' cannot be an ordinal feature"),
+		("appendicitis_cat_target", 
+			"data/datasets/test/test_bad/appendicitis_ord_target.csv",
+			"target_class",
+			["target_class"],
+			None,
+			"Target column 'target_class' cannot be a categorical feature")
 	]
 
 @nottest
@@ -121,6 +133,12 @@ def load_good_test_data():
 			"target_class",
 			["cat"],
 			{"ord" : ["first", "second", "third"]}
+			),
+		("appendicitis_str_target", 
+			"data/datasets/test/integration/appendicitis_string_target.csv",
+			"target_class",
+			None,
+			None
 			),
 	   ]
 
