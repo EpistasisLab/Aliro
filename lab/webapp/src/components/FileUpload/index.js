@@ -100,8 +100,13 @@ class FileUpload extends Component {
         window.console.log('not JSON')
       }
 
+      // get raw user input
       catFeatures = this.state.catFeatures;
+      // remove whitespace from list of categorical features
+      typeof catFeatures.replace === 'function' ? catFeatures = catFeatures.replace(/ /g, '') : null;
+      // parse list of categorical features on comma - ,
       typeof catFeatures.split === 'function' ? catFeatures = catFeatures.split(',') : null;
+      
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
