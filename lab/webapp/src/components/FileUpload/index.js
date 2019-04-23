@@ -60,8 +60,8 @@ class FileUpload extends Component {
    * @param {Object} props - react props object
    * @returns {void} - no return value
    */
-  handleDepColField(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
+  handleDepColField(e) {
+    //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input col: ', safeInput);
     this.setState({dependentCol: props.value});
   }
@@ -70,11 +70,10 @@ class FileUpload extends Component {
    * text field/area for entering categorical features
    * user input
    * @param {Event} e - DOM Event from user interacting with UI text field
-   * @param {Object} props - react props object
    * @returns {void} - no return value
    */
-  handleCatFeatures(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
+  handleCatFeatures(e) {
+    //let safeInput = this.purgeUserInput(e.target.value);
     //window.console.log('safe input cat: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
@@ -86,9 +85,9 @@ class FileUpload extends Component {
    * @param {Object} props - react props object
    * @returns {void} - no return value
    */
-  handleOrdinalFeatures(e, props) {
+  handleOrdinalFeatures(e) {
     //window.console.log('ord props: ', props);
-    let safeInput = this.purgeUserInput(props.value);
+    //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input ord: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
@@ -226,7 +225,7 @@ class FileUpload extends Component {
     let dataPrev = this.state.datasetPreview;
     let dataPrevTable = ( <p style={{display: 'none'}}> hi </p> );
     let innerContent;
-    
+
     if(dataPrev && dataPrev.data) {
       innerContent = dataPrev.data.slice(0, 100).map((row, i) =>
         <Table.Row key={i}>
