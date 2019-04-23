@@ -180,7 +180,7 @@ class KNNMetaRecommender(BaseRecommender):
         # print('self.best_mlp:',self.best_mlp)
         for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):
             if i < 10:
-                print('closest dataset:',d,'distance:',dist)
+                logger.debug('closest dataset:',d,'distance:',dist)
             if round(dist,6) > 0.0:    # don't recommend based on the same dataset
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
