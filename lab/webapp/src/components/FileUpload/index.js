@@ -237,6 +237,8 @@ class FileUpload extends Component {
               header="Error Submitting Dataset"
               content={serverResp}
               open={errorMsg ? true : false}
+              position='right center'
+              flowing
               trigger={
                 <Button
                   inverted
