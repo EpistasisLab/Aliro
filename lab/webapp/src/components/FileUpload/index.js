@@ -43,22 +43,22 @@ class FileUpload extends Component {
 
   // text field for entering dependent column
   handleDepColField(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
     this.setState({dependentCol: props.value});
   }
 
   // text field/area for entering categorical features
   handleCatFeatures(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
   // text field/area for entering ordinal features
   handleOrdinalFeatures(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
