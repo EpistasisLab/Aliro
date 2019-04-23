@@ -62,7 +62,7 @@ class FileUpload extends Component {
    */
   handleDepColField(e) {
     //let safeInput = this.purgeUserInput(props.value);
-    //window.console.log('safe input col: ', safeInput);
+    //window.console.log('safe input: ', safeInput);
     this.setState({dependentCol: e.target.value});
   }
 
@@ -166,7 +166,7 @@ class FileUpload extends Component {
       }
 
       catFeatures = this.state.catFeatures;
-      typeof catFeatures.split() === 'function' ? catFeatures = catFeatures.split(',') : null;
+      typeof catFeatures.split === 'function' ? catFeatures = catFeatures.split(',') : null;
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
