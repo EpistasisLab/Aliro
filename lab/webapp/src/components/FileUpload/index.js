@@ -45,7 +45,7 @@ class FileUpload extends Component {
   handleDepColField(e, props) {
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input: ', safeInput);
-    this.setState({dependentCol: props.value});
+    this.setState({dependentCol: e.target.value});
   }
 
   // text field/area for entering categorical features
