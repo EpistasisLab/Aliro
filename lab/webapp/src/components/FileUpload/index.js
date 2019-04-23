@@ -101,7 +101,7 @@ class FileUpload extends Component {
       }
 
       catFeatures = this.state.catFeatures;
-      typeof catFeatures.split() === 'function' ? catFeatures = catFeatures.split(',') : null;
+      typeof catFeatures.split === 'function' ? catFeatures = catFeatures.split(',') : null;
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
