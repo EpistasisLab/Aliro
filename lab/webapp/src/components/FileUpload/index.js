@@ -63,7 +63,10 @@ class FileUpload extends Component {
   handleDepColField(e) {
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input: ', safeInput);
-    this.setState({dependentCol: e.target.value});
+    this.setState({
+      dependentCol: e.target.value,
+      errorResp: undefined
+    });
   }
 
   /**
@@ -75,7 +78,10 @@ class FileUpload extends Component {
   handleCatFeatures(e) {
     //let safeInput = this.purgeUserInput(e.target.value);
     //window.console.log('safe input cat: ', safeInput);
-    this.setState({catFeatures: e.target.value});
+    this.setState({
+      catFeatures: e.target.value,
+      errorResp: undefined
+    });
   }
 
   /**
@@ -89,7 +95,10 @@ class FileUpload extends Component {
     //window.console.log('ord props: ', props);
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input ord: ', safeInput);
-    this.setState({ordinalFeatures: e.target.value});
+    this.setState({
+      ordinalFeatures: e.target.value,
+      errorResp: undefined
+    });
   }
 
 
@@ -285,47 +294,9 @@ class FileUpload extends Component {
    getAccordionInputs() {
      const { activeAccordionIndex } = this.state;
      let accordionContent = (
-      <Accordion fluid >
+      <Accordion fluid exclusive={false}>
          <Accordion.Title
-           className="file-upload-accordion-style"
-           active={activeAccordionIndex === 0}
-           index={0}
-           onClick={this.handleAccordionClick}
-          >
-           <Icon name='dropdown' />
-           Enter Ordinal Features
-           <Popup
-             on="click"
-             position="right center"
-             header="Ordinal Features Help"
-             content={
-               <div className="content">
-                 <p>Ordinal Features help description</p>
-               </div>
-             }
-             trigger={
-               <Icon
-                 className="file-upload-ordinal-help-icon"
-                 inverted
-                 size="large"
-                 color="orange"
-                 name="info circle"
-               />
-             }
-           />
-         </Accordion.Title>
-         <Accordion.Content
-            active={activeAccordionIndex === 0}
-          >
-           <textarea
-             id="ordinal_features_text_area_input"
-             label="Ordinal Features"
-             placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-             onChange={this.handleOrdinalFeatures}
-           />
-         </Accordion.Content>
-         <Accordion.Title
-           className="file-upload-accordion-style"
+           className="file-upload-categorical-accord-title"
            active={activeAccordionIndex === 1}
            index={1}
            onClick={this.handleAccordionClick}
@@ -356,16 +327,57 @@ class FileUpload extends Component {
            active={activeAccordionIndex === 1}
           >
            <textarea
+             className="file-upload-categorical-text-area"
              id="categorical_features_text_area_input"
              label="Categorical Features"
              placeholder={"cat_feat_1, cat_feat_2"}
              onChange={this.handleCatFeatures}
            />
          </Accordion.Content>
+         <Accordion.Title
+           className="file-upload-ordinal-accord-title"
+           active={activeAccordionIndex === 0}
+           index={0}
+           onClick={this.handleAccordionClick}
+          >
+           <Icon name='dropdown' />
+           Enter Ordinal Features
+           <Popup
+             on="click"
+             position="right center"
+             header="Ordinal Features Help"
+             content={
+               <div className="content">
+                 <p>Ordinal Features help description</p>
+               </div>
+             }
+             trigger={
+               <Icon
+                 className="file-upload-ordinal-help-icon"
+                 inverted
+                 size="large"
+                 color="orange"
+                 name="info circle"
+               />
+             }
+           />
+         </Accordion.Title>
+         <Accordion.Content
+            active={activeAccordionIndex === 0}
+          >
+           <textarea
+             className="file-upload-ordinal-text-area"
+             id="ordinal_features_text_area_input"
+             label="Ordinal Features"
+             placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+             onChange={this.handleOrdinalFeatures}
+           />
+         </Accordion.Content>
        </Accordion>
      )
      return accordionContent;
    }
+
   render() {
 
     const { dataset } = this.props;
@@ -405,7 +417,7 @@ class FileUpload extends Component {
         <Form inverted>
           <Segment className="file-upload-segment">
             <Input
-              className="ui blue small compact inverted button"
+              className="file-upload-file-input-field"
               type="file"
               label="Select new dataset"
               id="upload_dataset_file_browser_button"
@@ -419,6 +431,7 @@ class FileUpload extends Component {
               <Form.Input
                 label="Dependent Column"
                 id="dependent_column_text_field_input"
+                className="file-upload-dependent-text-field"
                 placeholder="class"
                 value={this.state.dependentCol ? this.state.dependentCol : ""}
                 type="text"
@@ -444,6 +457,7 @@ class FileUpload extends Component {
                 }
               />
               <Form.Input
+                className="file-upload-accordion-title"
                 label="Categorical & Ordinal Features"
               >
                 {accordionInputs}
