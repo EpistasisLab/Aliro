@@ -30,4 +30,8 @@ RUN pip install --no-cache-dir mlxtend \
     nose nose-htmloutput parameterized \
     m2r sphinx_rtd_theme
 
-RUN npm install -g mocha mz
+RUN npm install -g mocha
+# install node_modules to an anon volume
+WORKDIR /appsrc/machine
+RUN npm install --silent --progress=false mz
+WORKDIR /appsrc
