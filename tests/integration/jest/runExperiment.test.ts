@@ -188,9 +188,9 @@ describe('run experiment', () => {
 		expect(capRes.capacity).toEqual(1)
 	});
 
-	it.skip('start and then kill experiment', async () => {
+	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(20000)
+		jest.setTimeout(80000)
 
 		let algoName = 'SVC'
 		let algoParms = {
@@ -237,7 +237,9 @@ describe('run experiment', () => {
 		//expect(capRes.capacity).toEqual(0)
 
 		// kill experiment
+		console.log("killing experiment...")
 		var killResult = machineApi.killExperiment(submitResult._id)
+		console.log("kill result: ", killResult)
 		expect(killResult)
 
 		// wait for the experiment to finish running, probably a better way to do this then delay...
