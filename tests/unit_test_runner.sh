@@ -17,7 +17,7 @@ nosetests -s --with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
 --cover-package=. --cover-xml \
 --cover-xml-file="${COVERAGE_PATH}/nose_cover.xml" \
 --cover-html --cover-html-dir="${COVERAGE_PATH}/html" $NOSE_TESTS
-cd /appsrc/machine && npm install --silent --progress=false --production --no-save && cd /appsrc/
+cd machine && npm install --silent --progress=false --production --no-save && cd ..
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
 
 rm .coverage
