@@ -289,21 +289,42 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     // List of file promises (to make sure all files are uploaded before removing results folder)
     var filesP = [];
 
+
+    // Results-sending function for other files
+    var sendResults = function(file_path, uri) {
+        console.log('pushing ' + file_path);
+        if (file_path.match(/\.json$/)) {
+            results = JSON.parse(fs.readFileSync(file_path, "utf-8"));
+            var ret = {
+                        uri: uri,
+                        method: "PUT",
+                        json: results,
+                        gzip: true
+                    };
+        } else {
+            // Create form data
+            var formData = {
+                files: []
+            };
+            // Add file
+            formData.files.push(fs.createReadStream(file_path));
+            var ret = {
+                      uri: uri + "/files",
+                      method: "PUT",
+                      formData: formData,
+                      gzip: true
+                    };
+        }
+        filesP.push(rp(ret));
+    };
+
     // Watch for experiment folder
     var resultsDir = path.join(project_root, project.results, experimentId);
     var watcher = chokidar.watch(resultsDir, {
         awaitWriteFinish: true
     }).on("all", (event, path) => {
         if (event === "add" || event === "change") {
-            if (path.match(/\.json$/)) {
-                // Process JSON files
-                console.log('pushing ' + path);
-                filesP.push(rp(machine_utils.sendJSONResults(path, exp_url)));
-            } else {
-                // Store filenames for other files
-                console.log('pushing ' + path);
-                filesP.push(rp(machine_utils.sendFileResults(path, exp_url + "/files")));
-            }
+            sendResults(path, exp_url);
         }
     });
 
