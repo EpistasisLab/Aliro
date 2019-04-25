@@ -33,5 +33,5 @@ RUN pip install --no-cache-dir mlxtend \
 RUN npm install -g mocha
 # install node_modules to an anon volume
 WORKDIR /appsrc/machine
-RUN npm install --silent --progress=false mz==2.4.0
+RUN npm install --silent --progress=false --production
 WORKDIR /appsrc
