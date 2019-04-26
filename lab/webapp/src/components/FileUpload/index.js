@@ -26,7 +26,7 @@ class FileUpload extends Component {
       ordinalFeatures: {},
       ordinalIndex: 0,
       loaded: 0,
-      activeAccordionIndex: -1
+      activeAccordionIndexes: []
     };
 
     // enter info in text fields
@@ -220,10 +220,15 @@ class FileUpload extends Component {
 
   handleAccordionClick = (e, titleProps) => {
      const { index } = titleProps;
-     const { activeAccordionIndex } = this.state;
-     const newIndex = activeAccordionIndex === index ? -1 : index;
-     //let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
-     //resp !== 'error' ? resp = undefined : null;
+     const { activeAccordionIndexes } = this.state;
+     const newIndex = activeAccordionIndexes;
+
+     const currentIndexPosition = activeAccordionIndexes.indexOf(index);
+     if (currentIndexPosition > -1) {
+       newIndex.splice(currentIndexPosition, 1);
+     } else {
+       newIndex.push(index);
+     }
      this.setState({
        activeAccordionIndex: newIndex,
        errorResp: undefined
@@ -292,12 +297,12 @@ class FileUpload extends Component {
    * @returns {html} - html ui input elements
    */
    getAccordionInputs() {
-     const { activeAccordionIndex } = this.state;
+     const { activeAccordionIndexes } = this.state;
      let accordionContent = (
       <Accordion fluid exclusive={false}>
          <Accordion.Title
            className="file-upload-categorical-accord-title"
-           active={activeAccordionIndex === 1}
+           active={activeAccordionIndexes.includes(1)}
            index={1}
            onClick={this.handleAccordionClick}
           >
@@ -324,7 +329,7 @@ class FileUpload extends Component {
            />
          </Accordion.Title>
          <Accordion.Content
-           active={activeAccordionIndex === 1}
+           active={activeAccordionIndexes.includes(1)}
           >
            <textarea
              className="file-upload-categorical-text-area"
@@ -336,7 +341,7 @@ class FileUpload extends Component {
          </Accordion.Content>
          <Accordion.Title
            className="file-upload-ordinal-accord-title"
-           active={activeAccordionIndex === 0}
+           active={activeAccordionIndexes.includes(0)}
            index={0}
            onClick={this.handleAccordionClick}
           >
@@ -363,7 +368,7 @@ class FileUpload extends Component {
            />
          </Accordion.Title>
          <Accordion.Content
-            active={activeAccordionIndex === 0}
+            active={activeAccordionIndexes.includes(0)}
           >
            <textarea
              className="file-upload-ordinal-text-area"

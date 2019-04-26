@@ -1,5 +1,5 @@
-import  FileUpload  from './';
-
+import FileUpload from './';
+//import SceneHeader from '../SceneHeader';
 // try getting react pieces and framework for test rendering
 import React from 'react';
 import renderer from 'react-test-renderer';
@@ -16,14 +16,19 @@ import { shallow, mount, render, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 configure({ adapter: new Adapter() });
 
+
+// mock out stuff fileupload depends on
+//jest.mock('../SceneHeader', () => 'Scene_Header');
+
 describe('try testing fileupload react component', () => {
   let store = mockStore(initialState);
   let testFileUpload;
-
+  let tree;
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
     testFileUpload = mount(<FileUpload store={store} testProp='hello' />);
+    //tree = renderer.create(<FileUpload store={store} />).toJSON();
   })
   afterEach(() => {
     testFileUpload.unmount();
@@ -37,9 +42,11 @@ describe('try testing fileupload react component', () => {
     expect(testFileUpload.name()).toEqual('Connect(FileUpload)');
     expect(testFileUpload.props().testProp).toEqual('hello');
     expect(testFileUpload.props().name).toEqual('bar');
+    // test snapshot
+    //expect(tree).toMatchSnapshot();
   })
 
-  it('change component state', () => {
+  it('simple change to component state', () => {
     expect(testFileUpload.props().name).toBeUndefined();
     expect(testFileUpload.state('dependentCol')).toBeUndefined();
     testFileUpload.setState({dependentCol: 'class'})
@@ -57,9 +64,16 @@ describe('try testing fileupload react component', () => {
 
     // these actions are supposed to tigger event handlers in the component being
     // tested (which they do) & update component react state (which doesn't appear to happen)
+    // this might be a limitation of enzyme
     let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+    // this should create a browser console error - using javascript library to
+    // create a file preview which attempts to parse given input, if input not a
+    // file/blob the error is generated. The file onChange handler attempts to
+    // create the file preview and set the selected file obj and file name in
+    // the component's react state
     testFileUpload.find('input').at(0).prop('onChange')(fakeFile);
-    // update() is supposed to forceUpdate/re-render the component but even after
+
+    // update() is supposed to forceUpdate/re-render the component
     testFileUpload.update();
     // manually updating, component react state does not contain anything, in any
     // case need to call update() to access elements by html dom ID
@@ -82,6 +96,8 @@ describe('try testing fileupload react component', () => {
     // or access by ID...
     // still need to access with 'at', using find('#dependent_column_text_field_input')
     // returns 4 nodes somehow
+
+    // this is a standin for user input entering metadata 
     let depColTextField = testFileUpload.find('#dependent_column_text_field_input').at(0);
     depColTextField.prop('onChange')(
       {target:{value: 'test_class'}},
