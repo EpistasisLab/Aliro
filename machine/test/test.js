@@ -49,28 +49,3 @@ describe('Mocha Test for checkCapacity function', function () {
     });
 
 });
-
-describe('Mocha Test for sendJSONResults function', function () {
-  it('Test sendJSONResults returns the correct values.', function () {
-        ret = machine_utils.sendJSONResults("./test/test_machine_config.json", "test_url");
-        assert.equal(ret.uri, "test_url");
-        assert.equal(ret.method, "PUT");
-        assert.equal(ret.gzip, true);
-        for (var i in ret.json["algorithms"]) {
-            var algo = project_list[i].name;
-            var algo_conf = algorithms[i];
-            assert.equal(algo_conf, algo);
-        }
-    });
-
-});
-
-describe('Mocha Test for sendFileResults function', function () {
-  it('Test sendFileResults returns the correct values.', function () {
-        ret = machine_utils.sendFileResults("./test/iris_binary.tsv", "test_url");
-        assert.equal(ret.uri, "test_url");
-        assert.equal(ret.method, "PUT");
-        assert.equal(ret.gzip, true);
-    });
-
-});
