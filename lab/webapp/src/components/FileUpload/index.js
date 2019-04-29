@@ -35,6 +35,7 @@ class FileUpload extends Component {
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
+    this.generateFileData = this.generateFileData.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
   }
@@ -101,6 +102,61 @@ class FileUpload extends Component {
     });
   }
 
+  /**
+   * Helper method to consolidate user input to send with file upload form
+   * @returns {FormData} - FormData object containing user input data
+   */
+  generateFileData = () => {
+
+    const data = new FormData();
+    this.setState({errorResp: undefined});
+    let depCol = this.state.dependentCol;
+    let ordFeatures = {};
+    let catFeatures = [];
+
+    if(this.state.selectedFile && this.state.selectedFile.name) {
+
+      try {
+        ordFeatures = JSON.parse(this.state.ordinalFeatures);
+      } catch(e) {
+        window.console.log('not JSON')
+      }
+
+      // get raw user input
+      catFeatures = this.state.catFeatures;
+      // remove whitespace from list of categorical features
+      typeof catFeatures.replace === 'function' && catFeatures !== ""
+        ? catFeatures = catFeatures.replace(/ /g, '') : null;
+      // parse list of categorical features on comma - ,
+      typeof catFeatures.split === 'function'  && catFeatures !== ""
+        ? catFeatures = catFeatures.split(',') : null;
+
+      // keys specified for server to upload repsective fields,
+      // filter
+      let metadata =  JSON.stringify({
+                'name': this.state.selectedFile.name,
+                'username': 'testuser',
+                'timestamp': Date.now(),
+                'dependent_col' : depCol,
+                'categorical_features': catFeatures.filter(item => {
+                  return item !== ""
+                }),
+                'ordinal_features': ordFeatures
+
+              });
+      data.append('_metadata', metadata);
+
+      data.append('_files', this.state.selectedFile);
+      // before upload get a preview of what is in dataset file
+
+      //window.console.log('preview of uploaded data: ', dataPrev);
+      // after uploading a dataset request new list of datasets to update the page
+    } else {
+      window.console.log('no file available');
+    }
+
+    return data;
+  }
 
   /**
    * Event handler for selecting files, takes user file from html file input, stores
@@ -160,44 +216,9 @@ class FileUpload extends Component {
    */
   handleUpload = () => {
     const { uploadDataset } = this.props;
-    const data = new FormData();
-    this.setState({errorResp: undefined});
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
-      let depCol = this.state.dependentCol;
-      let ordFeatures = {};
-      let catFeatures = [];
-
-      try {
-        ordFeatures = JSON.parse(this.state.ordinalFeatures);
-      } catch(e) {
-        window.console.log('not JSON')
-      }
-
-      // get raw user input
-      catFeatures = this.state.catFeatures;
-      // remove whitespace from list of categorical features
-      typeof catFeatures.replace === 'function' && catFeatures !== ""
-        ? catFeatures = catFeatures.replace(/ /g, '') : null;
-      // parse list of categorical features on comma - ,
-      typeof catFeatures.split === 'function'  && catFeatures !== ""
-        ? catFeatures = catFeatures.split(',') : null;
-
-      let metadata =  JSON.stringify({
-                'name': this.state.selectedFile.name,
-                'username': 'testuser',
-                'timestamp': Date.now(),
-                'dependent_col' : depCol,
-                'categorical_features': catFeatures,
-                'ordinal_features': ordFeatures
-
-              });
-      data.append('_metadata', metadata);
-
-      data.append('_files', this.state.selectedFile);
-      // before upload get a preview of what is in dataset file
-
-      //window.console.log('preview of uploaded data: ', dataPrev);
+      let data = this.generateFileData();
       // after uploading a dataset request new list of datasets to update the page
       uploadDataset(data).then(stuff => {
         //window.console.log('FileUpload props after download', this.props);
