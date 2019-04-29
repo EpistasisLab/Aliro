@@ -34,15 +34,13 @@ body {
 .pennai .ui.segment {
     background-color: rgba(255,255,255,.08);
 }
-
+/* file upload form styling */
 .pennai .file-upload-segment {
-    max-width: 33%;
+    max-width: 495px;
 }
-
 .pennai .file-upload-form-dataset-input {
     width: 40%;
 }
-
 .pennai .file-upload-form-server-resp {
     max-width: 650px;
     background-color: white;

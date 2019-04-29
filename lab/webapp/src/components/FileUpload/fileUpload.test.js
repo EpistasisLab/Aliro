@@ -20,10 +20,11 @@ configure({ adapter: new Adapter() });
 // mock out stuff fileupload depends on
 //jest.mock('../SceneHeader', () => 'Scene_Header');
 
-describe('try testing fileupload react component', () => {
+describe('basic testing of fileupload react component', () => {
   let store = mockStore(initialState);
   let testFileUpload;
   let tree;
+  let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
@@ -53,11 +54,7 @@ describe('try testing fileupload react component', () => {
     expect(testFileUpload.state('dependentCol')).toEqual('class');
   })
 
-  // trying to simulate UI element change - having trouble either accessing desired
-  // piece (in this case file input), simulating change event or both
-
-
-  it('simulate use of file upload button/input', () => {
+  it('simulate user entering data with file upload form inputs', () => {
     // asked about how to simulate user actions here, using enzyme simulate doesn't quite
     // work, using 'onChange' prop to fake user action:
     // https://stackoverflow.com/questions/55638365/how-to-access-internal-pieces-of-react-component-and-mock-api-call-with-jest-e/55641884#55641884
@@ -65,7 +62,7 @@ describe('try testing fileupload react component', () => {
     // these actions are supposed to tigger event handlers in the component being
     // tested (which they do) & update component react state (which doesn't appear to happen)
     // this might be a limitation of enzyme
-    let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+
     // this should create a browser console error - using javascript library to
     // create a file preview which attempts to parse given input, if input not a
     // file/blob the error is generated. The file onChange handler attempts to
@@ -78,27 +75,12 @@ describe('try testing fileupload react component', () => {
     // manually updating, component react state does not contain anything, in any
     // case need to call update() to access elements by html dom ID
 
-    // enzyme documentation/resources are somewhat lacking, can access elements
-    // for tests by knowing order of different input types by getting
-    // list of 'textarea' and accessing corresponding index with 'at'
 
-    // ordinal text area
-    // testFileUpload.find('textarea').at(0).prop('onChange')(
-    //   {target:{value: {testOrdKey: 'testHello'}}},
-    //   {value:'test input'}
-    // );
-    // categorical text area
-    // testFileUpload.find('textarea').at(1).prop('onChange')(
-    //   {target:{value: 'testCatHello1, testCatHello2'}},
-    //   {value:'test cat input'}
-    // );
+    // the following is a standin for user input entering metadata
 
-    // or access by ID...
+    let depColTextField = testFileUpload.find('#dependent_column_text_field_input').at(0);
     // still need to access with 'at', using find('#dependent_column_text_field_input')
     // returns 4 nodes somehow
-
-    // this is a standin for user input entering metadata 
-    let depColTextField = testFileUpload.find('#dependent_column_text_field_input').at(0);
     depColTextField.prop('onChange')(
       {target:{value: 'test_class'}},
       {value:'test dep input'}
@@ -127,15 +109,94 @@ describe('try testing fileupload react component', () => {
     expect(testFileUpload.state('ordinalFeatures')).toEqual({testOrdKey: 'testHello'});
     expect(testFileUpload.state('catFeatures')).toEqual('testCatHello1, testCatHello2');
     expect(testFileUpload.state('dependentCol')).toEqual('test_class');
-    // not sure how to check UI pieces which depend on react state here, using
-    // enzyme mount to create the component requires a different way to go about
-    // trying to access the pieces which would change UI based on state
-
-    // see unit test below for basic file upload flow where component is created
-    // differently (shallow, not mount) and allows for accessing inner elements
-    // to check UI
   })
 
+  it('try testing generateFileData - good input', () => {
+    // use dive() to get at inner FileUpload class functions -
+    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
+    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
+    // all input from user will be read as strings
+    const fakeUserInput = {
+      depCol: 'target_class',
+      catCols: 'a, b, c',
+      ordFeats: '{"species": ["cat", "dog", "bird"]}'
+    };
+    // add fake file with filename so generateFileData will do something, if
+    // no file & filename present generateFileData returns blank/empty formData
+    shallowFileUpload.setState({
+      selectedFile: fakeFile.target.files[0],
+      dependentCol: fakeUserInput.depCol,
+      catFeatures: fakeUserInput.catCols,
+      ordinalFeatures: fakeUserInput.ordFeats
+    });
+
+    // expect list of comma separated cat cols to get parsed with string split
+    // dependent columns will be stored as is (type string)
+    // ordFeats will parse given JSON
+    const expectedInput = {
+      depCol: 'target_class',
+      catCols: ['a', 'b', 'c'],
+      ordFeats: {
+        species: ["cat", "dog", "bird"]
+      }
+    };
+    // use instance to get access to inner function
+    const instance = shallowFileUpload.instance();
+    // create spy, check function gets called
+    const spy = jest.spyOn(instance, 'generateFileData');
+    const testData = instance.generateFileData(); // FormData
+    // get stuff stored in returned formdata, stingified in preparation to make
+    // network request
+    const metadata = JSON.parse(testData.get('_metadata'));
+    expect(spy).toBeCalled();
+    // value of _metadata defined in generateFileData
+    expect(metadata.dependent_col).toEqual(expectedInput.depCol);
+    expect(metadata.categorical_features).toEqual(expectedInput.catCols);
+    expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
+  })
+
+  it('try testing generateFileData - bad input', () => {
+    // use dive() to get at inner FileUpload class functions -
+    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
+    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
+    // all input from user will be read as strings
+    const fakeUserInput = {
+      depCol: 'target_c@#$@#$',
+      catCols: 'a, b, c   , 4,,, ,',
+      ordFeats: '{"species": ["cat", "dog", "bird"]}{"missing_comma": ["one","two"]}'
+    };
+    // add fake file with filename so generateFileData will do something, if
+    // no file & filename present generateFileData returns blank/empty formData
+    shallowFileUpload.setState({
+      selectedFile: fakeFile.target.files[0],
+      dependentCol: fakeUserInput.depCol,
+      catFeatures: fakeUserInput.catCols,
+      ordinalFeatures: fakeUserInput.ordFeats
+    });
+
+    // expect list of comma separated cat cols to get parsed with string split
+    //  (remove whitespace and empty strings)
+    // dependent columns will be stored as is (type string)
+    // ordFeats will parse given JSON, if not proper JSON return empty obj
+    const expectedInput = {
+      depCol: 'target_c@#$@#$',
+      catCols: ['a', 'b', 'c', '4'],
+      ordFeats: {}
+    };
+    // use instance to get access to inner function
+    const instance = shallowFileUpload.instance();
+    // create spy, check function gets called
+    const spy = jest.spyOn(instance, 'generateFileData');
+    const testData = instance.generateFileData(); // FormData
+    // get stuff stored in returned formdata, stingified in preparation to make
+    // network request
+    const metadata = JSON.parse(testData.get('_metadata'));
+    expect(spy).toBeCalled();
+    // value of _metadata defined in generateFileData
+    expect(metadata.dependent_col).toEqual(expectedInput.depCol);
+    expect(metadata.categorical_features).toEqual(expectedInput.catCols);
+    expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
+  })
 
 })
 
