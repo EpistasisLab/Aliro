@@ -1,0 +1,4 @@
+{
+	"target_column": "target_class", 
+	"ordinal_features" : {"target_class" : ["true", "false"]}
+}

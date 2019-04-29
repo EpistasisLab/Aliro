@@ -43,22 +43,22 @@ class FileUpload extends Component {
 
   // text field for entering dependent column
   handleDepColField(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
-    this.setState({dependentCol: props.value});
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
+    this.setState({dependentCol: e.target.value});
   }
 
   // text field/area for entering categorical features
   handleCatFeatures(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
     this.setState({catFeatures: e.target.value});
   }
 
   // text field/area for entering ordinal features
   handleOrdinalFeatures(e, props) {
-    let safeInput = this.purgeUserInput(props.value);
-    window.console.log('safe input: ', safeInput);
+    //let safeInput = this.purgeUserInput(props.value);
+    //window.console.log('safe input: ', safeInput);
     this.setState({ordinalFeatures: e.target.value});
   }
 
@@ -100,8 +100,16 @@ class FileUpload extends Component {
         window.console.log('not JSON')
       }
 
+      // get raw user input
       catFeatures = this.state.catFeatures;
-      typeof catFeatures.split() === 'function' ? catFeatures = catFeatures.split(',') : null;
+      // remove whitespace from list of categorical features
+      typeof catFeatures.replace === 'function' && catFeatures !== ""
+        ? catFeatures = catFeatures.replace(/ /g, '') : null;
+      // parse list of categorical features on comma - ,
+      typeof catFeatures.split === 'function'  && catFeatures !== ""
+        ? catFeatures = catFeatures.split(',') : null;
+
+
       let metadata =  JSON.stringify({
                 'name': this.state.selectedFile.name,
                 'username': 'testuser',
@@ -237,6 +245,8 @@ class FileUpload extends Component {
               header="Error Submitting Dataset"
               content={serverResp}
               open={errorMsg ? true : false}
+              position='right center'
+              flowing
               trigger={
                 <Button
                   inverted
