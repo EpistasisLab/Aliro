@@ -11,6 +11,7 @@ rm -f "${REPORT_PATH}/mocha_xunit.xml"
 rm -drf "${COVERAGE_PATH}"
 
 mkdir -p target/test-reports/cobertura/html
+mkdir -p target/test-reports/html
 
 nosetests -s \
 --with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
