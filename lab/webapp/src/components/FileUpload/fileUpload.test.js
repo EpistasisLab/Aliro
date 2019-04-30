@@ -155,7 +155,7 @@ describe('basic testing of fileupload react component', () => {
     expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
   })
 
-  it('try testing generateFileData - bad input', () => {
+  it('try testing generateFileData - bad input, no ordinal features', () => {
     // use dive() to get at inner FileUpload class functions -
     // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
     const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
@@ -163,7 +163,7 @@ describe('basic testing of fileupload react component', () => {
     const fakeUserInput = {
       depCol: 'target_c@#$@#$',
       catCols: 'a, b, c   , 4,,, ,',
-      ordFeats: '{"species": ["cat", "dog", "bird"]}{"missing_comma": ["one","two"]}'
+      ordFeats: ''
     };
     // add fake file with filename so generateFileData will do something, if
     // no file & filename present generateFileData returns blank/empty formData
@@ -198,6 +198,44 @@ describe('basic testing of fileupload react component', () => {
     expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
   })
 
+  it('try testing generateFileData - bad input, with ordinal features', () => {
+    // use dive() to get at inner FileUpload class functions -
+    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
+    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
+    // all input from user will be read as strings
+    const fakeUserInput = {
+      depCol: 'target_c@#$@#$',
+      catCols: 'a, b, c   , 4,,, ,',
+      ordFeats: '{"species": ["cat", "dog", "bird"]}{"missing_comma": ["one","two"]}'
+    };
+    // add fake file with filename so generateFileData will do something, if
+    // no file & filename present generateFileData returns blank/empty formData
+    shallowFileUpload.setState({
+      selectedFile: fakeFile.target.files[0],
+      dependentCol: fakeUserInput.depCol,
+      catFeatures: fakeUserInput.catCols,
+      ordinalFeatures: fakeUserInput.ordFeats
+    });
+
+    // expect list of comma separated cat cols to get parsed with string split
+    //  (remove whitespace and empty strings)
+    // dependent columns will be stored as is (type string)
+    // ordFeats will parse given JSON, if not proper JSON return empty obj
+    const expectedInput = {
+      depCol: 'target_c@#$@#$',
+      catCols: ['a', 'b', 'c', '4'],
+      ordFeats: {}
+    };
+    // use instance to get access to inner function
+    const instance = shallowFileUpload.instance();
+    // create spy, check function gets called
+    const spy = jest.spyOn(instance, 'generateFileData');
+    const testData = instance.generateFileData(); // FormData
+    // returned content from generateFileData should be object containing error
+    //console.log('error test: ', testData);
+    expect(testData.errorResp).toBeDefined();
+    expect(testData.errorResp).toEqual('SyntaxError: Unexpected token { in JSON at position 35');
+  })
 })
 
 // https://jestjs.io/docs/en/tutorial-async
