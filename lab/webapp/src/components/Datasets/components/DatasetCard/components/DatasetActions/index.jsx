@@ -40,15 +40,15 @@ function DatasetActions({ dataset, toggleAI }) {
             hideOnScroll
             trigger={
               <Checkbox
-                toggle 
+                toggle
                 checked={aiIsChecked}
                 className={aiToggleClass}
                 onChange={onToggleAI}
                 disabled={aiIsToggling}
               />
-            } 
+            }
           />
-        </span> 
+        </span>
       }
       {/*<Dropdown pointing="top right" icon={dropdownIcon}>
         <Dropdown.Menu>

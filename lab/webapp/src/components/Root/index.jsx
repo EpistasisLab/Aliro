@@ -12,6 +12,9 @@ import Results from '../Results';
 import Admin from '../Admin';
 import NotFound from '../NotFound';
 
+/**
+* Use react router to delineate different parts of website; essentially links
+*/
 function Root({ store }) {
   return (
     <Provider store={store}>
