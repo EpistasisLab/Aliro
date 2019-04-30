@@ -29,14 +29,15 @@ pipeline {
                 sh 'cp config/ai.env-template config/ai.env'
                 sh 'docker build ./dockers/base -t pennai/base:latest'
                 sh 'docker-compose build -m 6g'
-                sh 'docker-compose -f ./docker-compose-unit-test.yml build -m 6g'
+                //sh 'docker build -f ./docker-compose-unit-test.yml build -m 6g'
             }
 
         }
         stage('Build Docs') {
             agent {
-                docker { 
-                    image 'pennai_unit_tester'
+                dockerfile { 
+                    filename 'tests/unit/Dockerfile'
+                    dir '.'
                     args '-u root'
                 }
             } 
@@ -54,8 +55,9 @@ pipeline {
         }
         stage('Unit Tests') { 
             agent {
-                docker { 
-                    image 'pennai_unit_tester'
+                dockerfile { 
+                    filename 'tests/unit/Dockerfile'
+                    dir '.'
                     args '-u root'
                 }
             }   
