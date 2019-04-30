@@ -25,7 +25,6 @@ class FileUpload extends Component {
       catFeatures: '',
       ordinalFeatures: {},
       ordinalIndex: 0,
-      loaded: 0,
       activeAccordionIndexes: []
     };
 
@@ -40,6 +39,20 @@ class FileUpload extends Component {
 
   }
 
+  /**
+  * React lifecycle method, when component loads into html dom, 'reset' state
+  */
+  componentDidMount() {
+    this.setState({
+      selectedFile: null,
+      dependentCol: '',
+      catFeatures: '',
+      ordinalFeatures: '',
+      ordinalIndex: 0,
+      activeAccordionIndexes: [],
+      errorResp: undefined
+    });
+  }
 
   /**
    * Strip input of potentially troublesome characters, from here:
@@ -115,21 +128,31 @@ class FileUpload extends Component {
     let catFeatures = [];
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
+      // get raw user input from state
 
-      try {
-        ordFeatures = JSON.parse(this.state.ordinalFeatures);
-      } catch(e) {
-        window.console.log('not JSON')
+      // try to parse ord features input as JSON if not empty
+      if(this.state.ordinalFeatures !== '') {
+        try {
+          ordFeatures = JSON.parse(this.state.ordinalFeatures);
+        } catch(e) {
+          // if expecting oridinal stuff, return error to stop upload process
+          return { errorResp: e.toString() };
+        }
       }
 
-      // get raw user input
       catFeatures = this.state.catFeatures;
-      // remove whitespace from list of categorical features
-      typeof catFeatures.replace === 'function' && catFeatures !== ""
-        ? catFeatures = catFeatures.replace(/ /g, '') : null;
-      // parse list of categorical features on comma - ,
-      typeof catFeatures.split === 'function'  && catFeatures !== ""
-        ? catFeatures = catFeatures.split(',') : null;
+
+      if(catFeatures !== "") {
+        // remove all whitespace
+        catFeatures = catFeatures.replace(/ /g, '');
+        // parse on comma
+        catFeatures = catFeatures.split(',');
+        // if input contains empty items - ex: 'one,,two,three'
+        // filter out resulting empty item
+        catFeatures = catFeatures.filter(item => {
+          return item !== ""
+        })
+      }
 
       // keys specified for server to upload repsective fields,
       // filter
@@ -138,9 +161,7 @@ class FileUpload extends Component {
                 'username': 'testuser',
                 'timestamp': Date.now(),
                 'dependent_col' : depCol,
-                'categorical_features': catFeatures.filter(item => {
-                  return item !== ""
-                }),
+                'categorical_features': catFeatures,
                 'ordinal_features': ordFeatures
 
               });
@@ -194,14 +215,12 @@ class FileUpload extends Component {
         console.error('Error generating preview for selected file:', error);
         this.setState({
           selectedFile: undefined,
-          loaded: 0,
           errorResp: error
         })
       }
 
       this.setState({
         selectedFile: event.target.files[0],
-        loaded: 0,
         errorResp: undefined
       })
     }
@@ -218,23 +237,33 @@ class FileUpload extends Component {
     const { uploadDataset } = this.props;
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
-      let data = this.generateFileData();
-      // after uploading a dataset request new list of datasets to update the page
-      uploadDataset(data).then(stuff => {
-        //window.console.log('FileUpload props after download', this.props);
+      let data = this.generateFileData(); // should be FormData
+      // if trying to create FormData results in error, don't attempt upload
+      if (data.errorResp) {
+        this.setState({errorResp: data.errorResp});
+      } else {
+        // after uploading a dataset request new list of datasets to update the page
+        uploadDataset(data).then(stuff => {
+          //window.console.log('FileUpload props after download', this.props);
 
-        //this.setState({ serverFileUploadResp: json });
-        // 'refresh' page when upload response from server is not an error and
-        // redirect to dataset page, when error occurs set component state to use
-        // as flag to display popup containing server response
-        let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
-        resp !== 'error' ? this.props.fetchDatasets() : this.setState({errorResp: resp});
-        resp !== 'error' ? window.location = '#/datasets' : null;
-        //this.props.fetchDatasets();
-      });
+          // 'refresh' page when upload response from server is not an error and
+          // redirect to dataset page, when error occurs set component state
+          // to display popup containing server/error response
+          let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
+          resp !== 'error' ? this.props.fetchDatasets()
+                           : this.setState({
+                              errorResp: this.props.dataset.fileUploadResp.error
+                             });
+          resp !== 'error' ? window.location = '#/datasets' : null;
+        });
+      }
+
 
     } else {
       window.console.log('no file available');
+      this.setState({
+        errorResp: 'No file available'
+      });
     }
 
   }
@@ -251,7 +280,6 @@ class FileUpload extends Component {
        newIndex.push(index);
      }
      this.setState({
-       activeAccordionIndex: newIndex,
        errorResp: undefined
      })
    }
@@ -407,22 +435,15 @@ class FileUpload extends Component {
   render() {
 
     const { dataset } = this.props;
-    const { activeAccordionIndex } = this.state;
     let respKey;
     let respBody;
     let serverResp;
-    let catFeats = this.state.catFeatures;
-    let popUpOffset = 0;
-    // set error message when
     let errorMsg = this.state.errorResp;
-    let ordFeatureSelection = "";
-    let catFeatureSelection = "";
     let dataPrevTable = this.getDataTablePreview();
     let accordionInputs = this.getAccordionInputs();
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
     //window.console.log('prev: ', dataPrev);
-    activeAccordionIndex !== -1 ? popUpOffset = 75 : null;
     dataset ? serverResp = dataset.fileUploadResp : null;
 
     if(serverResp) {
@@ -431,8 +452,8 @@ class FileUpload extends Component {
     }
 
     // server message to display in popup (or other UI element)
-    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(respBody)} </p> ) :
-                 null;
+    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(errorMsg)} </p> )
+               : null;
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
@@ -493,7 +514,7 @@ class FileUpload extends Component {
                 content={serverResp}
                 open={errorMsg ? true : false}
                 id="file_upload_popup_and_button"
-                position='right center'
+                position='bottom left'
                 flowing
                 trigger={
                   <Button
