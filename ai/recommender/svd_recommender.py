@@ -128,26 +128,22 @@ class SVDRecommender(BaseRecommender):
             best.
         """
         # TODO: raise error if dataset_mf is None 
+        # print('dataset bias:',
+        #         self.algo.bu[self.algo.trainset.to_inner_uid(dataset_id)])
         try:
             predictions = []
             filtered =0
             for alg_params in self.mlp_combos:
-                # this prevents repeat recommendations
-                # print('filtering repeats')
-                # pdb.set_trace()
-                # alg = alg_params.split('|')[0]
-                # sorted_params = str(sorted(eval(alg_params.split('|')[-1]).items()))
-                # if (dataset_id+'|'+alg+'|'+sorted_params not in 
                 if (dataset_id+'|'+alg_params not in 
                     self.trained_dataset_models):  
                     predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
                 else:
                     filtered +=1
-                    logger.debug('skipping ' + str(dataset_id) +'|'+
-                            alg_params.split('|')[0] + 
-                          str(self.param_htable[int(alg_params.split('|')[1])]) +
-                          ' which has already been recommended')
+                    # logger.debug('skipping ' + str(dataset_id) +'|'+
+                    #         alg_params.split('|')[0] + 
+                    #       str(self.param_htable[int(alg_params.split('|')[1])]) +
+                    #       ' which has already been recommended')
             logger.debug('filtered '+ str(filtered) + ' recommendations')
             logger.debug('getting top n predictions') 
             ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
@@ -158,7 +154,14 @@ class SVDRecommender(BaseRecommender):
         except Exception as e:
             logger.error( 'error running self.best_model_prediction for',dataset_id)
             raise e 
-
+        # debug: print the biases for each learner
+        # pdb.set_trace()
+        logger.debug('agorithm biases:')
+        bis = np.argsort(self.algo.bi)[::-1]
+        for i in bis:
+            logger.debug(str(self.algo.trainset.to_raw_iid(i))+'\t'
+                    +str(self.algo.bi[i]))
+        # pdb.set_trace()
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
         self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
@@ -185,7 +188,6 @@ class SVDRecommender(BaseRecommender):
             top_n.append((iid, est))
         # shuffle top_n just to remove tie order bias when sorting
         np.random.shuffle(top_n)
-        # logger.debug('top_n:',top_n) 
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
         logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]

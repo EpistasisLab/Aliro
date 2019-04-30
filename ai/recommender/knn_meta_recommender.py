@@ -121,7 +121,7 @@ class KNNMetaRecommender(BaseRecommender):
                 new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
                 new_phash_rec = str(hash(frozenset(np.random.choice(
                         self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
-                                              ['parameters'].unique()))))
+                                              ['parameters'].values).items())))
                 if (dataset_id + '|' + new_ml_rec + '|' + new_phash_rec
                         not in self.trained_dataset_models):
                     ml_rec.append(new_ml_rec)
