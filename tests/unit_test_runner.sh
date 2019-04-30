@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPORT_PATH="target/test-reports"
-COVERAGE_PATH="target/test-reports/cobertura"
+REPORT_PATH="/appsrc/target/test-reports"
+COVERAGE_PATH="/appsrc/target/test-reports/cobertura"
 
 NOSE_TESTS="ai/tests/test_recommender.py ai/tests/test_ai.py ai/tests/test_ai_and_api_utils.py machine/test/learn_tests.py ai/tests/test_knowledgebase_loader.py ai/metalearning/tests/test_dataset_describe.py lab/pyutils/tests/test_loadInitialDatasets.py lab/pyutils/tests/test_validateDataset.py"
 MOCHA_TESTS="machine/test/test.js"
-
+#lab/webapp/src/components/FileUpload/FileUpload.test.js
 rm -f "${REPORT_PATH}/nose_xunit.xml"
 rm -f "${REPORT_PATH}/mocha_xunit.xml"
 rm -drf "${COVERAGE_PATH}"
@@ -24,3 +24,13 @@ nosetests -s \
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
 
 rm .coverage
+
+cd "lab/webapp/"
+
+export JEST_HTML_REPORTER_OUTPUT_PATH="${REPORT_PATH}/html/unit_webapp_jest_test_report.html"
+export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
+
+npm run test
+
+# todo: check for generated files and potentially remove
+#       jest - snapshots, potentially use or disable
