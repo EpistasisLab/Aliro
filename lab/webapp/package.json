@@ -78,7 +78,9 @@
         {
           "suiteName": "Jest Unit Test Suite",
           "outputDirectory": "/target/test-reports",
-          "outputName": "unit_jest_xunit.xml"
+          "outputName": "unit_jest_xunit.xml",
+          "classNameTemplate": "JestWebUnit.{classname}",
+          "titleTemplate": "{title}"
         }
       ]
     ]
