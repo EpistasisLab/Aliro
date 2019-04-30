@@ -98,7 +98,8 @@ class KNNMetaRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating recommendations.
+            ID of the dataset for which the recommender is generating 
+            recommendations.
         n_recs: int (default: 1), optional
             Return a list of length n_recs in order of estimators and parameters 
             expected to do best.
