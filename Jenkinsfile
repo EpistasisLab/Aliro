@@ -23,16 +23,6 @@ pipeline {
                 dir ('target/test-reports/cobertura') {echo 'target/test-reports/cobertura'}
             }
         }
-        stage('Rebuild') {
-            steps {
-                // rebuild
-                sh 'cp config/ai.env-template config/ai.env'
-                sh 'docker build ./dockers/base -t pennai/base:latest'
-                sh 'docker-compose build -m 6g'
-                //sh 'docker build -f ./docker-compose-unit-test.yml build -m 6g'
-            }
-
-        }
         stage('Build Docs') {
             agent {
                 dockerfile { 
@@ -53,23 +43,25 @@ pipeline {
                 }
             }
         }
-        stage('Unit Tests') { 
-            agent {
-                dockerfile { 
-                    filename 'tests/unit/Dockerfile'
-                    dir '.'
-                    args '-u root'
-                }
-            }   
+        stage('Unit Tests') {  
             steps {
                 sh 'rm -fdr target'
-                sh 'sh tests/unit_test_runner.sh'
+                sh 'docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit'
             }
             post {
                 always {
                     stash includes: 'target/**', name: 'testresult-unittest'
                 }
             }
+        }
+        stage('Rebuild') {
+            steps {
+                // rebuild
+                sh 'cp config/ai.env-template config/ai.env'
+                sh 'docker build ./dockers/base -t pennai/base:latest -m 6g'
+                sh 'docker-compose build -m 6g'
+            }
+
         }
         stage('Stop PennAI Locally') {
             steps {
