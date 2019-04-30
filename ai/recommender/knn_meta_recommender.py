@@ -107,9 +107,9 @@ class KNNMetaRecommender(BaseRecommender):
             raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
         
 
-        print('dataset_mf columns:',dataset_mf.columns)
+        logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         dataset_mf = dataset_mf.drop(columns=self.drop_mf)
-        print('dataset_mf columns:',dataset_mf.columns)
+        logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
