@@ -16,7 +16,7 @@ import pdb
 import json 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -47,6 +47,7 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
     resultsData = _load_results_from_file(resultsFile)
     dataset_names = resultsData['dataset']
     metafeaturesData = {}
+    
     # try loading metafeatures from metafeatureDirectory
     if metafeatureDirectory != '':
         logger.info('loading cached metafeatures from '+metafeatureDirectory)
@@ -133,7 +134,7 @@ def _load_results_from_file(resultsFile):
     # convert params to dictionary 
     results_data['parameters'] = results_data['parameters'].apply(
             lambda x: eval(x))
-    print('returning results data ')
+    logger.info('returning results data ')
     assert(not results_data.isna().any().any())
     logger.debug('results_data:')
     logger.debug(results_data.head())
