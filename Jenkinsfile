@@ -23,6 +23,16 @@ pipeline {
                 dir ('target/test-reports/cobertura') {echo 'target/test-reports/cobertura'}
             }
         }
+        stage('Rebuild') {
+            steps {
+                // rebuild
+                sh 'cp config/ai.env-template config/ai.env'
+                sh 'docker build ./dockers/base -t pennai/base:latest'
+                sh 'docker-compose build -m 6g'
+                sh 'docker-compose -f ./docker-compose-unit-test.yml build -m 6g'
+            }
+
+        }
         stage('Build Docs') {
             agent {
                 dockerfile { 
@@ -58,15 +68,6 @@ pipeline {
                     stash includes: 'target/**', name: 'testresult-unittest'
                 }
             }
-        }
-        stage('Rebuild') {
-            steps {
-                // rebuild
-                sh 'cp config/ai.env-template config/ai.env'
-                sh 'docker build ./dockers/base -t pennai/base:latest'
-                sh 'docker-compose build -m 6g'
-            }
-
         }
         stage('Stop PennAI Locally') {
             steps {
