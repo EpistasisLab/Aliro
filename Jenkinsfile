@@ -35,7 +35,7 @@ pipeline {
         }
         stage('Build Docs') {
             agent {
-                dockerfile { 
+                docker { 
                     image 'pennai_unit_tester'
                     args '-u root'
                 }
@@ -54,7 +54,7 @@ pipeline {
         }
         stage('Unit Tests') { 
             agent {
-                dockerfile { 
+                docker { 
                     image 'pennai_unit_tester'
                     args '-u root'
                 }
