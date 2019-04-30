@@ -40,6 +40,7 @@
     "ws": "^1.1.0"
   },
   "devDependencies": {
+    "mz": "^2.4.0",
     "conventional-github-releaser": "^1.1.2",
     "conventional-recommended-bump": "^0.2.1",
     "gulp": "^3.9.1",
