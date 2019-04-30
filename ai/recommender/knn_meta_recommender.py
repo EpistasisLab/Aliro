@@ -98,7 +98,8 @@ class KNNMetaRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating recommendations.
+            ID of the dataset for which the recommender is generating 
+            recommendations.
         n_recs: int (default: 1), optional
             Return a list of length n_recs in order of estimators and parameters 
             expected to do best.
@@ -121,7 +122,7 @@ class KNNMetaRecommender(BaseRecommender):
                 new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
                 new_phash_rec = str(hash(frozenset(np.random.choice(
                         self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
-                                              ['parameters'].unique()))))
+                                              ['parameters'].values).items())))
                 if (dataset_id + '|' + new_ml_rec + '|' + new_phash_rec
                         not in self.trained_dataset_models):
                     ml_rec.append(new_ml_rec)
