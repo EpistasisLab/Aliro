@@ -8,8 +8,14 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 #from ai.ai import AI
 import pdb
+import logging
 
 import json
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 # set up data for tests.
 # print('loading pmlb results data...')
 # TODO: replace this dataset loading and metafeature loading with calls to 
@@ -33,7 +39,7 @@ def get_metafeatures(d):
                d+'/metafeatures.json') as data_file:    
                data = json.load(data_file)
     except Exception as e:
-        print('exception when grabbing metafeature data for',d)
+        logger.error('exception when grabbing metafeature data for',d)
         raise e
 
     df = pd.DataFrame.from_records(data,columns=data.keys(),index=[0])
@@ -51,7 +57,7 @@ def update_dataset_mf(dataset_mf,results_data):
     :param results_data: experiment results with associated datasets
 
     """
-    print('in update_dataset_mf')
+    logger.info('in update_dataset_mf')
     # print('results_data:',results_data.columns)
     # print('results_data:',results_data.head())
     dataset_metafeatures = []
@@ -83,7 +89,7 @@ def check_rec(rec):
     ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
     # print('ml_p:',ml_p)
     rec_obj = rec(ml_p=ml_p)
-    print('param_htable:',len(rec_obj.param_htable),'objects')
+    logger.info('param_htable:'+str(len(rec_obj.param_htable))+'objects')
  
     n_recs = 1
     dataset_mf = pd.DataFrame()
@@ -96,7 +102,7 @@ def check_rec(rec):
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
-            print(rec.__name__,str(n),d, ': ml:', ml,', p:', p, 'scores=', scores)
+            logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(rec.__name__,n,d,ml,p,scores))
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""
@@ -106,15 +112,15 @@ def test_recs_work():
 
 def check_n_recs(rec):
     """Recommender returns correct number of recommendations"""
-    print(rec)
+    logger.info(rec)
     ml_p = data.loc[:,['algorithm','parameters']]
     ml_p['parameters'] = ml_p['parameters'].apply(str)
     ml_p = ml_p.drop_duplicates()
     ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
    
-    print('setting rec')
+    logger.info('setting rec')
     rec_obj = rec(ml_p=ml_p)
-    print('set rec')
+    logger.info('set rec')
    
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
