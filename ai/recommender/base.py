@@ -110,6 +110,8 @@ class BaseRecommender:
             self.mlp_combos = (self._ml_p['algorithm']+'|'+
                                self._ml_p['parameters'].apply(lambda x:
                                    str(hash(frozenset(x.items())))))
+            # filter out duplicates
+            self.mlp_combos = self.mlp_combos.drop_duplicates()
         else:
             logger.error('value of ml_p is None')
         print('param_htable:',len(self.param_htable),'objects')

@@ -7,9 +7,9 @@ import numpy as np
 import argparse
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
-from ai.recommender.meta_recommender import MetaRecommender
+# from ai.recommender.meta_recommender import MetaRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
+# from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
 
 from joblib import Parallel, delayed
@@ -24,15 +24,13 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     # set seed
     np.random.seed(trial)
     results = []
-    kwargs = {'metric':'bal_accuracy'}
-    if rec in ['random','meta','mlp','svd','knn']:
-        kwargs.update({'ml_p':ml_p})
-    if rec == 'svd': 
-        kwargs.update({'datasets':knowledge_base.dataset.unique()})
+    kwargs = {'metric':'bal_accuracy','ml_p':ml_p}
+    # if rec == 'svd': 
+    #     kwargs.update({'datasets':knowledge_base.dataset.unique()})
     rec_choice = {'random': RandomRecommender,
             'average': AverageRecommender,
-            'meta': MetaRecommender,
-            'mlp': MLPMetaRecommender,
+            # 'meta': MetaRecommender,
+            # 'mlp': MLPMetaRecommender,
             'knn': KNNMetaRecommender,
             'svd': SVDRecommender
             }
@@ -40,8 +38,16 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
     #################################################### load first n_init results into recommender
-    train_subset = np.random.choice(knowledge_base.index, size = n_init, replace=False)
-    # print('setting training data for recommender:',train_subset)
+    subset_ml = np.random.choice(ml_p['algorithm'].unique(), size= n_init)
+    train_subset = []
+    for s in subset_ml:
+        train_subset.append(np.random.choice(
+                knowledge_base.loc[knowledge_base.algorithm==s].index))
+    print('setting training data for recommender:')
+    tmp = knowledge_base.iloc[train_subset]
+    for _,row in tmp.iterrows():
+        print(row.algorithm,':',row.dataset,':',row.bal_accuracy)
+
     init_data = []
     init_data_mf = []
     # for i in train_subset:
@@ -64,10 +70,12 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     # for it,dataset in enumerate(rec_subset):
     for it in np.arange(iters):
         dataset = np.random.choice(datasets)
-        holdout_accuracy_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
-            ['algorithm', 'parameters']).loc[:, 'bal_accuracy'].to_dict()
-        holdout_rank_lookup = knowledge_base.loc[knowledge_base['dataset'] == dataset].set_index(
-            ['algorithm', 'parameters']).loc[:, 'ranking'].to_dict()
+        holdout_accuracy_lookup = knowledge_base.loc[
+                knowledge_base['dataset'] == dataset].set_index(
+            ['algorithm', 'parameter_hash']).loc[:, 'bal_accuracy'].to_dict()
+        holdout_rank_lookup = knowledge_base.loc[
+                knowledge_base['dataset'] == dataset].set_index(
+            ['algorithm', 'parameter_hash']).loc[:, 'ranking'].to_dict()
 
         print('generating ',n_recs,'recommendations for',dataset)
 
@@ -80,24 +88,17 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
         updates = []
         for i in np.arange(len(mls)):
             ml = mls[i]
-            if 'Meta' in type(recommender).__name__:
-                tmp = eval(ps[i])
-                for mfs in ['C','gamma','coef0','learning_rate','min_weight_fraction_leaf',
-                            'min_impurity_decrease']:
-                    if mfs in tmp.keys():
-                        tmp[mfs] = float(tmp[mfs])
-                    p = str(OrderedDict(sorted(tmp.items())))
-            else:
-                p = ps[i]
+            p = ps[i]
+            phash = hash(frozenset(p.items()))
 
             print('recommending',ml,'with',p,'for',dataset)
-            if (ml,p) not in holdout_accuracy_lookup:
-                raise ValueError((ml,p),'not found')
+            if (ml,phash) not in holdout_accuracy_lookup:
+                raise ValueError((ml,phash),'not found')
             
             # n = n+1
             # retreive the performance of the recommended learner
-            actual_score = holdout_accuracy_lookup[(ml, p)]
-            actual_ranking = holdout_rank_lookup[(ml,p)]
+            actual_score = holdout_accuracy_lookup[(ml, phash)]
+            actual_ranking = holdout_rank_lookup[(ml,phash)]
             # find all top ranking algorithms
             dataset_results = knowledge_base.loc[knowledge_base['dataset'] == dataset]
             best_score = dataset_results['bal_accuracy'].max()
@@ -178,8 +179,15 @@ if __name__ == '__main__':
         print(70*'=','\n','loading',data_file,'\n'+70*'=','\n')
         knowledge_base = pd.read_csv(data_file,
                                 compression='gzip', sep='\t').fillna('')#,
-        ml_p = knowledge_base.loc[:,['algorithm','parameters']]                      
-        
+        ml_p = knowledge_base.loc[:,['algorithm','parameters']].drop_duplicates()
+        ml_p['parameters'] = ml_p['parameters'].apply(
+                lambda x: eval(x))
+        knowledge_base['parameters'] = knowledge_base['parameters'].apply(
+                lambda x: eval(x))
+        knowledge_base['parameter_hash'] = knowledge_base['parameters'].apply(
+                lambda x: hash(frozenset(x.items())))
+
+        print('len ml_p:',len(ml_p)) 
         data_idx = np.unique(knowledge_base['dataset'])  # datasets 
         
 
