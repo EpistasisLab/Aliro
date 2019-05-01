@@ -268,7 +268,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     .catch((err) => {
         console.log(`error: ${err}`)
         res.status(400);
-        res.send({error:"Unable to upload files: " + err})
+        res.send({error:"Unable to upload file. " + err})
     });
 
 });
@@ -1184,7 +1184,7 @@ var stageDatasetFile = function(fileObj) {
     })
     .catch((err) => {
         console.log(`error in stageDatasetFile: ${err}`)
-        throw new Error(err)
+        throw err
     })
 }
 
@@ -1269,7 +1269,7 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
             gridStore.open((err, gridStore) => {
                 if (err) {
                     console.log(err);
-                    throw new Error(err)
+                    throw err
                 } 
                 resolve(gridStore)
             })
@@ -1294,7 +1294,7 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
     .then((res) => { return dataset_id })
     .catch((err) => {
         console.log(`error in registerDataset: ${err}`)
-        throw new Error(err)
+        throw err
     })
 };
 

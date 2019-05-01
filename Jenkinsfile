@@ -26,7 +26,8 @@ pipeline {
         stage('Build Docs') {
             agent {
                 dockerfile { 
-                    dir 'tests/unit'
+                    filename 'tests/unit/Dockerfile'
+                    dir '.'
                     args '-u root'
                 }
             } 
@@ -42,16 +43,10 @@ pipeline {
                 }
             }
         }
-        stage('Unit Tests') { 
-            agent {
-                dockerfile { 
-                    dir 'tests/unit'
-                    args '-u root'
-                }
-            }   
+        stage('Unit Tests') {  
             steps {
                 sh 'rm -fdr target'
-                sh 'sh tests/unit_test_runner.sh'
+                sh 'docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit'
             }
             post {
                 always {
@@ -63,7 +58,7 @@ pipeline {
             steps {
                 // rebuild
                 sh 'cp config/ai.env-template config/ai.env'
-                sh 'docker build ./dockers/base -t pennai/base:latest'
+                sh 'docker build ./dockers/base -t pennai/base:latest -m 6g'
                 sh 'docker-compose build -m 6g'
             }
 

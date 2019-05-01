@@ -118,7 +118,7 @@ function validateDatafileByFileIdAsync(fileid, dependent_col, categorical_featur
 	.then((result) => {
 		return new Promise((resolve, reject) => {
 			if (result.success == true) { resolve(result) }
-			else throw new Error(`Datafile validation failed: ${result.errorMessage}`)
+			else throw new Error(`Datafile validation failed, ${result.errorMessage}`)
 		})
 	})
 }
