@@ -5,7 +5,16 @@ import Navbar from './Navbar';
 import FetchError from '../FetchError';
 import { Container, Loader } from 'semantic-ui-react';
 
+
+/**
+* Main menu bar of website - parent component of navbar
+*/
 class App extends Component {
+  /**
+  * react lifecycle method, when component is done loading, after it is mounted in
+  * DOM, use preferences action creator, fetchPreferences, to request retrieval of
+  * user preferences - user info and available machine learning algorithms
+  */
   componentDidMount() {
     this.props.fetchPreferences();
   }
@@ -21,7 +30,7 @@ class App extends Component {
 
     if(preferences.error) {
       return (
-        <FetchError 
+        <FetchError
           message={preferences.error}
           onRetry={() => fetchPreferences()}
         />
