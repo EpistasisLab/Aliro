@@ -156,7 +156,9 @@ class AI():
         # for comma-separated list of datasets in datasets, turn AI request on
         assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
 
-        
+    ##-----------------
+    ## Init methods
+    ##-----------------       
     def load_knowledgebase(self):
         """ Bootstrap the recommenders with the knowledgebase
         """
@@ -207,6 +209,68 @@ class AI():
             logger.warning("no algorithms found by load_options()")
 
 
+    ##-----------------
+    ## Utility methods
+    ##-----------------
+    def update_dataset_mf(self, results_data):
+        """Grabs metafeatures of datasets in results_data
+        
+        :param results_data: experiment results with associated datasets
+        
+        """
+        logger.debug('results_data:'+str(results_data.columns))
+        logger.debug('results_data:'+str(results_data.head()))
+        dataset_metafeatures = []
+        for d in results_data['dataset'].unique():
+            if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
+                # fetch metafeatures from server for dataset and append
+                df = self.labApi.get_metafeatures(d)        
+                # df['dataset'] = d
+                # print('metafeatures:',df)
+                dataset_metafeatures.append(df)
+        if dataset_metafeatures:
+            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
+            # print('df_mf:',df_mf['dataset'], df_mf) 
+            self.dataset_mf = self.dataset_mf.append(df_mf)
+            # print('self.dataset_mf:\n',self.dataset_mf)
+
+    ##-----------------
+    ## Loop methods
+    ##-----------------
+    def check_results(self):
+        """Checks to see if new experiment results have been posted since the 
+        previous time step. If so, set them to self.new_data and return True.
+
+        :returns: Boolean - True if new results were found
+        """
+        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                  ': checking results...')
+
+        newResults = self.labApi.get_new_experiments_as_dataframe(
+                                        last_update=self.last_update)
+
+        if len(newResults) > 0:
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                  ': ' + str(len(newResults)) + ' new results!')           
+            self.last_update = int(time.time())*1000 # update timestamp
+            self.new_data = newResults
+            return True
+
+        return False
+
+    def update_recommender(self):
+        """Update recommender models based on new experiment results in 
+        self.new_data, and then clear self.new_data. 
+        """
+
+        if(hasattr(self,'new_data') and len(self.new_data) >= 1):
+            self.update_dataset_mf(self.new_data)
+            self.rec.update(self.new_data,self.dataset_mf)
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                    ': recommender updated')
+            # reset new data
+            self.new_data = pd.DataFrame()
+
     def check_requests(self):
         """Check to see if any new AI requests have been submitted.  
         If so, add them to self.request_queue.
@@ -244,28 +308,61 @@ class AI():
             return True
         return len([r for r in self.RMlist if r.active])>0
 
+    def process_rec(self):
+        """Generates requested experiment recommendations and adds them to the 
+        queue."""
 
-    def check_results(self):
-        """Checks to see if new experiment results have been posted since the 
-        previous time step. If so, set them to self.new_data and return True.
+        # get recommendation for dataset
+        for r in self.RMlist:
+            logger.debug('RM:'+r.name+', active:'+str(r.active))
 
-        :returns: Boolean - True if new results were found
+        for RM in [r for r in self.RMlist if r.active]:
+            exp_request = RM.update()
+            if exp_request is not None:
+                for rec_payload in self.generate_recommendations(RM.id, self.n_recs):
+                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",
+                        time.localtime())+
+                        ': recommended '+self.ml_id_to_name[alg]+' with '+
+                        str(params) + ' for '+RM.name)
+                    
+                    RM.addExp(rec_payload)
+
+            # tmp = self.labApi.set_ai_status(datasetId = RM.id, aiStatus = 'queuing')    
+
+    ##-----------------
+    ## Syncronous actions an AI request can take
+    ##-----------------
+    def generate_recommendations(self, datasetId, numOfRecs):
+        """Generate recommendations for the given dataset
+
+        :param datasetId
+        :param numOfRecs
+
+        :returns list of maps that represent request payload objects
         """
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': checking results...')
+        logger.info("generate_recommendations({},{})".format(datasetId, numOfRecs))
 
-        newResults = self.labApi.get_new_experiments_as_dataframe(
-                                        last_update=self.last_update)
+        recommendations = []
 
-        if len(newResults) > 0:
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': ' + str(len(newResults)) + ' new results!')           
-            self.last_update = int(time.time())*1000 # update timestamp
-            self.new_data = newResults
-            return True
+        metafeatures = self.labApi.get_metafeatures(datasetId)
 
-        return False
-    
+        ml, p, ai_scores = self.rec.recommend(dataset_id=datasetId,
+            n_recs=self.numOfRecs,
+            dataset_mf=metafeatures)
+
+        for alg,params,score in zip(ml,p,ai_scores):
+            # TODO: just return dictionaries of parameters from rec
+            # modified_params = eval(params) # turn params into a dictionary
+            
+            recommendations.append({'dataset_id':RM.id,
+                    'algorithm_id':alg,
+                    'username':self.user,
+                    'parameters':params,
+                    'ai_score':score,
+                    })
+
+        return recommendations
+
     def transfer_rec(self, rec_payload):
         """Attempt to send a recommendation to the lab server.
         Continues until recommendation is successfully submitted or an 
@@ -296,54 +393,10 @@ class AI():
             raise RuntimeError(msg)
             #pdb.set_trace()
 
-    def process_rec(self):
-        """Generates requested experiment recommendations and adds them to the 
-        queue."""
 
-        # get recommendation for dataset
-        # for r in self.request_queue:
-        for r in self.RMlist:
-            logger.debug('RM:'+r.name+', active:'+str(r.active))
-        for RM in [r for r in self.RMlist if r.active]:
-            exp_request = RM.update()
-            if exp_request is not None:
-                ml,p,ai_scores = self.rec.recommend(dataset_id=RM.id,
-                                n_recs=self.n_recs,
-                                dataset_mf=self.labApi.get_metafeatures(RM.id))
-                self.rec.last_n = 0
-                for alg,params,score in zip(ml,p,ai_scores):
-                    # TODO: just return dictionaries of parameters from rec
-                    # modified_params = eval(params) # turn params into a dictionary
-                    
-                    rec_payload = {'dataset_id':RM.id,
-                            'algorithm_id':alg,
-                            'username':self.user,
-                            'parameters':params,
-                            'ai_score':score,
-                            }
-                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",
-                        time.localtime())+
-                        ': recommended '+self.ml_id_to_name[alg]+' with '+
-                        str(params) + ' for '+RM.name)
-                    
-                    RM.addExp(rec_payload)
-
-            # tmp = self.labApi.set_ai_status(datasetId = RM.id, aiStatus = 'queuing')
-
-
-    def update_recommender(self):
-        """Update recommender models based on new experiment results in 
-        self.new_data, and then clear self.new_data. 
-        """
-
-        if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            self.update_dataset_mf(self.new_data)
-            self.rec.update(self.new_data,self.dataset_mf)
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                    ': recommender updated')
-            # reset new data
-            self.new_data = pd.DataFrame()
-
+    ##-----------------
+    ## Save/load ai state
+    ##-----------------
     def save_state(self):
         """Save ML+P scores in pickle or to DB
 
@@ -375,27 +428,6 @@ class AI():
               self.last_update = state['last_update']
               logger.info('loaded previous state from '+self.last_update)
 
-    def update_dataset_mf(self,results_data):
-        """Grabs metafeatures of datasets in results_data
-        
-        :param results_data: experiment results with associated datasets
-        
-        """
-        logger.debug('results_data:'+str(results_data.columns))
-        logger.debug('results_data:'+str(results_data.head()))
-        dataset_metafeatures = []
-        for d in results_data['dataset'].unique():
-            if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
-                # fetch metafeatures from server for dataset and append
-                df = self.labApi.get_metafeatures(d)        
-                # df['dataset'] = d
-                # print('metafeatures:',df)
-                dataset_metafeatures.append(df)
-        if dataset_metafeatures:
-            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
-            # print('df_mf:',df_mf['dataset'], df_mf) 
-            self.dataset_mf = self.dataset_mf.append(df_mf)
-            # print('self.dataset_mf:\n',self.dataset_mf)
          
 
 ####################################################################### Manager
