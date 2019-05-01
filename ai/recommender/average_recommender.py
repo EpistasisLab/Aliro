@@ -3,6 +3,7 @@ Recommender system for Penn AI.
 """
 import pandas as pd
 from .base import BaseRecommender
+import pdb
 import logging
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
@@ -58,7 +59,7 @@ class AverageRecommender(BaseRecommender):
         # make combined data columns of classifiers and parameters
         results_data.loc[:, 'algorithm-parameters'] = (
                 results_data['algorithm'].values + '|' +
-                results_data['parameters'].apply(str).values)
+                results_data['parameter_hash'].apply(str).values)
 
         # ml_p = results_data['algorithm-parameters'].unique()
         # get average balanced accuracy by classifier-parameter combo
@@ -85,7 +86,6 @@ class AverageRecommender(BaseRecommender):
         # return ML+P for best average y
         try:
             rec = self.scores.sort_values(ascending=False).index.values
-
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
@@ -96,25 +96,21 @@ class AverageRecommender(BaseRecommender):
                 else:
                     logger.warning("can't filter recommendations, sending repeats")
 
-            ml_rec = [r.split('|')[0] for r in rec]
-            p_rec = [r.split('|')[1] for r in rec]
-            rec_score = [self.scores[r] for r in rec]
+            ml_rec = [r.split('|')[0] for r in rec[:n_recs]]
+            phash_rec = [r.split('|')[1] for r in rec[:n_recs]]
+            rec_score = [self.scores[r] for r in rec[:n_recs]]
         except AttributeError:
             logger.error('rec:', rec)
             logger.error('self.scores:', self.scores)
             logger.error('self.w:', self.w)
             raise AttributeError
 
+        # get parameters from hash table
+        p_rec = [self.param_htable[int(p)] for p in phash_rec]
+
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        ml_rec = ml_rec[:n_recs]
-        p_rec = p_rec[:n_recs]
-        rec_score = rec_score[:n_recs]
-
-        if dataset_id is not None:
-            self.trained_dataset_models.update(
-                                        ['|'.join([dataset_id, ml, p])
-                                        for ml, p in zip(ml_rec, p_rec)])
+        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
         return ml_rec, p_rec, rec_score
 

@@ -98,7 +98,8 @@ class KNNMetaRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating recommendations.
+            ID of the dataset for which the recommender is generating 
+            recommendations.
         n_recs: int (default: 1), optional
             Return a list of length n_recs in order of estimators and parameters 
             expected to do best.
@@ -107,9 +108,9 @@ class KNNMetaRecommender(BaseRecommender):
             raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
         
 
-        print('dataset_mf columns:',dataset_mf.columns)
+        logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         dataset_mf = dataset_mf.drop(columns=self.drop_mf)
-        print('dataset_mf columns:',dataset_mf.columns)
+        logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
                                                                   dataset_mf)
@@ -121,7 +122,7 @@ class KNNMetaRecommender(BaseRecommender):
                 new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
                 new_phash_rec = str(hash(frozenset(np.random.choice(
                         self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
-                                              ['parameters'].unique()))))
+                                              ['parameters'].values).items())))
                 if (dataset_id + '|' + new_ml_rec + '|' + new_phash_rec
                         not in self.trained_dataset_models):
                     ml_rec.append(new_ml_rec)

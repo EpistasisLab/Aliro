@@ -90,8 +90,8 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 			encode_data(df, target_column, categories, ordinals, "OneHotEncoder")
 			encode_data(df, target_column, categories, ordinals, "OrdinalEncoder")
 		except Exception as e:
-			logger.warn("encode_data() failed: " + str(e))
-			return False, "encode_data() failed: " + str(e)
+			logger.warn("encode_data() failed, " + str(e))
+			return False, "encode_data() failed, " + str(e)
 		
 		if categories: num_df = num_df.drop(columns=categories)
 		if ordinals: num_df = num_df.drop(columns=list(ordinals.keys()))
@@ -100,8 +100,8 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	try:
 		check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
 	except Exception as e:
-		logger.warn("sklearn.check_array() validation failed: " + str(e))
-		return False, "sklearn.check_array() validation failed: " + str(e)
+		logger.warn("sklearn.check_array() validation " + str(e))
+		return False, "sklearn.check_array() validation " + str(e)
 
 	return True, None
 

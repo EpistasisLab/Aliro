@@ -84,7 +84,7 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload files: Error: Error: Datafile validation failed: sklearn.check_array() validation failed: could not convert string to float: 'b'")
+					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, sklearn.check_array() validation could not convert string to float: 'b'")
 				}
 			});
 
@@ -145,7 +145,7 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload files: Error: Error: Metadata validation failed, username 'testUser' does not exist.")
+					expect(json.error).toEqual("Unable to upload file. Error: Metadata validation failed, username 'testUser' does not exist.")
 				}
 			});
 
@@ -175,7 +175,7 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload files: Error: Error: Metadata validation failed, dataset with name 'banana' has already been registered, count: 1.")
+					expect(json.error).toEqual("Unable to upload file. Error: Metadata validation failed, dataset with name 'banana' has already been registered, count: 1.")
 				}
 			});
 
