@@ -13,6 +13,7 @@ class Dataset extends Component {
       dataset: 'fetching',
       dataPreview: null
     };
+    this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +42,93 @@ class Dataset extends Component {
     }
   }
 
+  getCatAndOrdTable() {
+    const { dataset } = this.state;
+
+    if(dataset === 'fetching') { return null; }
+
+    // categorical_features & ordinal_features
+    let cat_feats = dataset.files[0].categorical_features;
+    let ord_feats = dataset.files[0].ordinal_features;
+    let ord_body = [];
+    Object.entries(ord_feats) && Object.entries(ord_feats).forEach(([key,value]) => {
+      // window.console.log("ord feats key: ", key);
+      // window.console.log("ord feats val: ", value);
+      ord_body.push(
+        <Table.Row key={key}>
+          <Table.Cell>{key}</Table.Cell>
+          <Table.Cell>{value.join(",")}</Table.Cell>
+        </Table.Row>
+      )
+    })
+    // { ord_body.map(ord_item => ord_item) }
+    return (
+      <Grid >
+        <Grid.Row columns={2}>
+        <Grid.Column floated='right'>
+          { Object.keys(cat_feats).length ?
+            <div>
+              <Segment inverted attached="top" >
+                <Header as="h3" content="Categorical Features" style={{ display: 'inline', marginRight: '0.5em' }} />
+                <span className="muted">{`${Object.keys(cat_feats).length} total`}</span>
+              </Segment>
+              <Segment inverted attached="bottom">
+                <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+                  <Table inverted celled compact unstackable>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell>Feature</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {cat_feats.map(field =>
+                        <Table.Row key={field}>
+                          <Table.Cell>{field}</Table.Cell>
+                        </Table.Row>
+                      )}
+                    </Table.Body>
+                  </Table>
+                </div>
+              </Segment>
+            </div>
+            : <Segment inverted attached="top">
+                <Header as="h3" content="No Categorical Features" style={{ display: 'inline', marginRight: '0.5em' }} />
+              </Segment>
+          }
+          </Grid.Column>
+          <Grid.Column floated='right'>
+            { Object.keys(ord_feats).length ?
+              <div>
+                <Segment inverted attached="top" >
+                  <Header as="h3" content="Ordinal Features" style={{ display: 'inline', marginRight: '0.5em' }} />
+                  <span className="muted">{`${Object.keys(ord_feats).length} total`}</span>
+                </Segment>
+                <Segment inverted attached="bottom">
+                  <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+                    <Table inverted celled compact unstackable>
+                      <Table.Header>
+                        <Table.Row>
+                          <Table.HeaderCell>Field</Table.HeaderCell>
+                          <Table.HeaderCell>Value</Table.HeaderCell>
+                        </Table.Row>
+                      </Table.Header>
+                      <Table.Body>
+                        {ord_body}
+                      </Table.Body>
+                    </Table>
+                  </div>
+                </Segment>
+              </div>
+              : <Segment inverted attached="top" className="cat-and-ord-dataset-table">
+                  <Header as="h3" content="No Ordinal Features" style={{ display: 'inline', marginRight: '0.5em' }} />
+                </Segment>
+            }
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    );
+  }
+
   render() {
     const { dataset, dataPreview } = this.state;
 
@@ -50,6 +138,15 @@ class Dataset extends Component {
     let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
     let empty = []; // metafeatures that have no value
     let rest = [];  // rest of metafeatures
+
+    // categorical_features & ordinal_features
+    let cat_feats = dataset.files[0].categorical_features;
+    let ord_feats = dataset.files[0].ordinal_features;
+
+    window.console.log("cat feats: ", cat_feats);
+    window.console.log("ord feats: ", ord_feats);
+
+    let catAndOrdTable = this.getCatAndOrdTable();
 
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
       if(first.includes(key)) { return; }
@@ -158,6 +255,8 @@ class Dataset extends Component {
             </Segment>
           </Grid.Column>
         </Grid>
+        <br/>
+        {catAndOrdTable}
       </div>
     );
   }

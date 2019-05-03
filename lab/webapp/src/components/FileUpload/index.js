@@ -267,21 +267,29 @@ class FileUpload extends Component {
     }
 
   }
-
+  /**
+   * Accordion click handler which updates active index for different text areas
+   * in dataset upload form, use react state to keep track of which indicies are
+   * active & also clear any error message
+   */
   handleAccordionClick = (e, titleProps) => {
      const { index } = titleProps;
      const { activeAccordionIndexes } = this.state;
-     const newIndex = activeAccordionIndexes;
-
+     // make copy of array in state
+     const newIndex = [...activeAccordionIndexes];
      const currentIndexPosition = activeAccordionIndexes.indexOf(index);
+
      if (currentIndexPosition > -1) {
        newIndex.splice(currentIndexPosition, 1);
      } else {
        newIndex.push(index);
      }
+
      this.setState({
+       activeAccordionIndexes: newIndex,
        errorResp: undefined
      })
+
    }
 
   /**
@@ -310,7 +318,6 @@ class FileUpload extends Component {
           )}
         </Table.Row>
       );
-//<Table.Cell key={`${i}-${field}`}>
 
       dataPrevTable = (
         <div>
