@@ -364,6 +364,7 @@ class FileUpload extends Component {
           >
            <Icon name='dropdown' />
            Enter Categorical Features
+         </Accordion.Title>
            <Popup
              on="click"
              position="right center"
@@ -383,7 +384,6 @@ class FileUpload extends Component {
                />
              }
            />
-         </Accordion.Title>
          <Accordion.Content
            active={activeAccordionIndexes.includes(1)}
           >
@@ -403,6 +403,7 @@ class FileUpload extends Component {
           >
            <Icon name='dropdown' />
            Enter Ordinal Features
+         </Accordion.Title>
            <Popup
              on="click"
              position="right center"
@@ -422,7 +423,6 @@ class FileUpload extends Component {
                />
              }
            />
-         </Accordion.Title>
          <Accordion.Content
             active={activeAccordionIndexes.includes(0)}
           >
@@ -430,7 +430,7 @@ class FileUpload extends Component {
              className="file-upload-ordinal-text-area"
              id="ordinal_features_text_area_input"
              label="Ordinal Features"
-             placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+             placeholder={"{\"ord_feat_1\": [\"SHORT\", \"TALL\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
              onChange={this.handleOrdinalFeatures}
            />
          </Accordion.Content>
@@ -459,7 +459,7 @@ class FileUpload extends Component {
     }
 
     // server message to display in popup (or other UI element)
-    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(errorMsg)} </p> )
+    serverResp ? serverResp = ( <p style={{display: 'block'}}> {errorMsg} </p> )
                : null;
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
