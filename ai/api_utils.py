@@ -29,6 +29,8 @@ class NumpyJsonEncoder(json.JSONEncoder):
             return float(obj)
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif obj is None:
+            return "None"
         else:
             return super(NumpyJsonEncoder, self).default(obj)
 
