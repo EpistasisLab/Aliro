@@ -1,3 +1,1 @@
-.. mdinclude::  ../../ai/recommender/README.md
-
-
+.. mdinclude::  ../../ai/recommender/README.md 
