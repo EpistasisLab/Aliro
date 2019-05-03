@@ -237,6 +237,68 @@ describe('basic testing of fileupload react component', () => {
     expect(testData.errorResp).toEqual('SyntaxError: Unexpected token { in JSON at position 35');
   })
 })
+// 
+// describe('testing user input with table', () => {
+//   describe.each`
+//     testname | dependent_column | categorical_cols | ordinal_features | expected_cat | expected_ord
+//     ${`Good input - no cat or ord`} | ${`test_class`} | ${""} | ${""} | ${[]} | ${{}}
+//     ${`Good input - cat no ord`} | ${`test_class`} | ${"cat1, cat2"} | ${""} | ${["cat1","cat2"]} | ${{}}
+//     ${`Good input - cat and ord`} | ${`test_class`} | ${"cat1, cat2"} | ${'{"species": ["cat", "dog", "bird"]}'}| ${["cat1","cat2"]} | ${{'species': ["cat", "dog", "bird"]}}
+//     `("test good input", ({testname, dependent_column, categorical_cols, ordinal_features, expected_cat, expected_ord}) => {
+//       it(`${testname}`, () => {
+//         //console.log(`${testname} test`);
+//
+//         let store = mockStore(initialState);
+//         const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
+//         let testFileUpload;
+//         let tree;
+//         let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+//         const expectedInput = {
+//           depCol: 'test_class',
+//           catCols: ['cat1', 'cat2'],
+//           ordFeats: {
+//             species: ["cat", "dog", "bird"]
+//           }
+//         };
+//
+//         shallowFileUpload.setState({
+//           selectedFile: fakeFile.target.files[0],
+//           dependentCol: `${dependent_column}`,
+//           catFeatures: `${categorical_cols}`,
+//           ordinalFeatures: `${ordinal_features}`
+//         });
+//
+//
+//         // use instance to get access to inner function
+//         const instance = shallowFileUpload.instance();
+//         // create spy, check function gets called
+//         const spy = jest.spyOn(instance, 'generateFileData');
+//         const testData = instance.generateFileData(); // FormData
+//         console.log(`test data: `, testData);
+//         // get stuff stored in returned formdata, stingified in preparation to make
+//         // network request
+//         const metadata = JSON.parse(testData.get('_metadata'));
+//         console.log(`test data: `, metadata);
+//         expect(spy).toBeCalled();
+//         // value of _metadata defined in generateFileData
+//         expect(metadata.dependent_col).toEqual(`${dependent_column}`);
+//         expect(metadata.categorical_features).toEqual(`${expected_cat}`);
+//         expect(metadata.ordinal_features).toEqual(`${expected_ord}`);
+//       })
+//     })
+//
+//   // describe.each`
+//   //   testname | dependent_column | categoricals | ordinal
+//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${[]} | ${{}}
+//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${"cat1, cat2"} | ${{}}
+//   // `('test good input', ({testname, dependent_column, categorical, ordinal}) => {
+//   //   it(`${testname}`, () => {
+//   //          console.log(`${testname} test`);
+//   //        })
+//   // });
+// })
+//
+
 
 // https://jestjs.io/docs/en/tutorial-async
 // jest mock is not working, not returning promise, must be improperly configured and/or
