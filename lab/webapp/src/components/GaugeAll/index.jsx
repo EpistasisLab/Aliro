@@ -10,19 +10,25 @@ class GaugeAll extends Component {
 colors: {
   'test_score': '#0072b2',  ---- light blue
   'train_score': '#f0e442'  ---- light yellow
+  '#55D6BE' ----- light sea green
 }
 */
   renderChart(expList, chartKey, chartColor) {
+    let trainKey = expList[0][0].toString().slice(0,5) + '(' + expList[0][1].toFixed(2) + ')';
+    let testKey = expList[1][0].toString().slice(0,4) + '(' + expList[1][1].toFixed(2) + ')';
     c3.generate({
       bindto: `.${chartKey}`,
       data: {
         columns: [
-          [expList[0][0].toString(), expList[0][1]],
-          [expList[1][0].toString(), expList[1][1]]
+          [`${trainKey}`, expList[0][1]],
+          [`${testKey}`, expList[1][1]]
         ],
         colors: {
-          'test_score': '#55D6BE',
-          'train_score': '#7D5BA6'
+          [trainKey]: '#55D6BE',
+          [testKey]: '#7D5BA6'
+        },
+        color: function (color, data) {
+          return data.id && data.id.includes('test') ? '#55D6BE' : color;
         },
         type: 'gauge',
         //onclick: function (d, i) { console.log("onclick", d, i); },
