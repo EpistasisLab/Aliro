@@ -290,7 +290,7 @@ def none(val):
         If input value if "none", then the function will return None,
         otherwise it will retune string.
     """
-    if(val.lower() == 'none'):
+    if(val.lower() == 'none' or 'null'):
         return None
     else:
         raise argparse.ArgumentTypeError(val + ' is not a valid str value')

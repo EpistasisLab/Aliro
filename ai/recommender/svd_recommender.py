@@ -184,11 +184,33 @@ class SVDRecommender(BaseRecommender):
 
         # grabs the ml ids and their estimated scores for this dataset 
         top_n = [] 
+        ml_dist = {}
         for uid, iid, true_r, est, _ in predictions:
             top_n.append((iid, est))
-        # shuffle top_n just to remove tie order bias when sorting
-        np.random.shuffle(top_n)
+            ml = iid.split('|')[0]
+            if ml in ml_dist.keys():
+                ml_dist[ml] += 1
+            else:
+                ml_dist[ml] = 1
+        n_ml = len(ml_dist.keys())
+
+        ######
+        # Shuffle top_n just to remove tied algorithm bias when sorting
+        # Make uniform random choices from the Algorithms, then uniform random
+        # choices from their parameters to shuffle top_n
+        # the probability for each ML method is 1/total_methods/(# instances of that
+        # method)
+        inv_ml_dist = {k:1/n_ml/v for k,v in ml_dist.items()}
+        top_n_dist = np.array([inv_ml_dist[tn[0].split('|')[0]] for tn in top_n])
+        top_n_idx = np.arange(len(top_n))
+        top_n_idx_s = np.random.choice(top_n_idx, len(top_n), replace=False, 
+                                       p=top_n_dist)
+        top_n = [top_n[i] for i in top_n_idx_s]
+        #####
+        
+        # sort top_n
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
+
         logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
         p_rec = [n[0].split('|')[1] for n in top_n]
