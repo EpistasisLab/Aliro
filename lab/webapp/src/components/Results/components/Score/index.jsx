@@ -8,9 +8,15 @@ import { Header } from 'semantic-ui-react';
 function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList }) {
   const getCardContent = () => {
     if(typeof(scoreValue) !== 'number') {
-      return (
-        <Header inverted size="tiny" content={`${scoreName} is not available.`} />
-      );
+      if (scoreName === 'AUC') {
+        return (
+          <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
+        );
+      } else {
+        return (
+          <Header inverted size="tiny" content={`${scoreName} is not available.`} />
+        );
+      }
     } else if (scoreValueList) {
       let gaugeList = [];
       let testList = [];

@@ -83,11 +83,29 @@ class Results extends Component {
             </Grid.Column>
             <Grid.Column>
               <Score
-                scoreName="Test Graph"
+                scoreName="Balanced Accuracy"
                 scoreValue={-1}
                 scoreValueList={experiment.data.scores}
                 chartKey="all"
                 chartColor="#7D5BA6"
+              />
+              <Score
+                scoreName="Precision Score"
+                scoreValue={experiment.data.scores.precision_score}
+                chartKey="precision"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="Recall Score"
+                scoreValue={experiment.data.scores.recall_score}
+                chartKey="recall"
+                chartColor="#7D5BA6"
+              />
+              <Score
+                scoreName="F1 Score"
+                scoreValue={experiment.data.scores.f1_score}
+                chartKey="f1_score"
+                chartColor="#55D6BE"
               />
               {/*<Score
                 scoreName="Training Accuracy"
@@ -105,7 +123,7 @@ class Results extends Component {
                 scoreName="AUC"
                 scoreValue={experiment.data.scores.roc_auc_score}
                 chartKey="auc"
-                chartColor="#59ABE3"
+                chartColor="#7D5BA6"
               />
             </Grid.Column>
           </Grid.Row>
