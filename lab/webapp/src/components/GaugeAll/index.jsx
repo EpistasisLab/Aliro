@@ -28,7 +28,7 @@ colors: {
           [testKey]: '#7D5BA6'
         },
         color: function (color, data) {
-          return data.id && data.id.includes('test') ? '#55D6BE' : color;
+          return data.id && data.id.includes('test') ? '#7D5BA6' : color;
         },
         type: 'gauge',
         //onclick: function (d, i) { console.log("onclick", d, i); },
