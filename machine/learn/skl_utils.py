@@ -253,8 +253,14 @@ def generate_results(model, input_data,
     # get predicted classes
     predicted_classes = model.predict(testing_features)
 
+    # get training prediction
+    train_predicted_classes = model.predict(training_features)
+
     # exporting/computing importance score
-    coefs, imp_score_type = compute_imp_score(model, metric, training_features, training_classes, random_state)
+    coefs, imp_score_type = compute_imp_score(model, metric,
+                                                training_features,
+                                                training_classes,
+                                                random_state)
 
     feature_importances = {
         'feature_names': feature_names.tolist(),
@@ -286,6 +292,15 @@ def generate_results(model, input_data,
         else:
             average = 'binary'
 
+        train_classes_encoded = np.array(
+                                        [list(model.classes_).index(c)
+                                         for c in training_classes], dtype=np.int
+                                         )
+        train_predicted_classes_encoded = np.array(
+                                        [list(model.classes_).index(c)
+                                         for c in train_predicted_classes], dtype=np.int
+                                         )
+
         testing_classes_encoded = np.array(
                                         [list(model.classes_).index(c)
                                          for c in testing_classes], dtype=np.int
@@ -296,11 +311,22 @@ def generate_results(model, input_data,
                                          )
 
         # get metrics and plots
-        train_score = SCORERS['balanced_accuracy'](
-            model, training_features, training_classes)
-        test_score = SCORERS['balanced_accuracy'](
-            model, testing_features, testing_classes)
-        accuracy_score = balanced_accuracy(testing_classes_encoded, predicted_classes_encoded)
+        # training score
+        train_score = balanced_accuracy(train_classes_encoded,
+                                        train_predicted_classes_encoded)
+        train_precision_score = metrics.precision_score(
+            train_classes_encoded, train_predicted_classes_encoded, average=average)
+        train_recall_score = metrics.recall_score(
+            train_classes_encoded, train_predicted_classes_encoded, average=average)
+        train_f1_score = metrics.f1_score(
+            train_classes_encoded, train_predicted_classes_encoded, average=average)
+
+
+        # test metrics
+        # test_score and accuracy_score are the same
+        accuracy_score = balanced_accuracy(testing_classes_encoded,
+                                            predicted_classes_encoded)
+        test_score = accuracy_score
         precision_score = metrics.precision_score(
             testing_classes_encoded, predicted_classes_encoded, average=average)
         recall_score = metrics.recall_score(
@@ -321,17 +347,20 @@ def generate_results(model, input_data,
             plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
         roc_auc_score = 'not supported for multiclass'
+        train_roc_auc_score = 'not supported for multiclass'
         if(average == 'binary'):
             # choose correct scoring function based on model
             try:
-                proba_estimates = model.predict_proba(testing_features)[:, 1];
+                test_proba_estimates = model.predict_proba(testing_features)[:, 1];
+                train_proba_estimates = model.predict_proba(training_features)[:, 1];
             except AttributeError:
-                proba_estimates = model.decision_function(testing_features)
-            # encode binary classification to 0,1 for roc curve and roc score
-            le = LabelEncoder()
-            trans_testing_classes = le.fit_transform(testing_classes)
-            roc_curve = metrics.roc_curve(trans_testing_classes, proba_estimates)
-            roc_auc_score = metrics.roc_auc_score(trans_testing_classes, proba_estimates)
+                test_proba_estimates = model.decision_function(testing_features)
+                train_proba_estimates = model.decision_function(training_features)
+
+            roc_curve = metrics.roc_curve(testing_classes_encoded, test_proba_estimates)
+            roc_auc_score = metrics.roc_auc_score(testing_classes_encoded, test_proba_estimates)
+
+            train_roc_auc_score = metrics.roc_auc_score(train_classes_encoded, train_proba_estimates)
 
             fpr, tpr, _ = roc_curve
             roc_curve_dict = {
@@ -351,6 +380,10 @@ def generate_results(model, input_data,
         # save metrics
         metrics_dict = {'_scores': {
             'train_score': train_score,
+            'train_precision_score': train_precision_score,
+            'train_recall_score': train_recall_score,
+            'train_f1_score': train_f1_score,
+            'train_roc_auc_score': train_roc_auc_score,
             'test_score': test_score,
             'dtree_test_score': dtree_test_score,
             'abs_diff_test_score': abs_diff_test_score,
@@ -368,6 +401,9 @@ def generate_results(model, input_data,
         # get metrics and plots
         train_score = model.score(training_features, training_classes)
         test_score = model.score(testing_features, testing_classes)
+        train_r2_score = metrics.r2_score(training_classes, train_predicted_classes)
+        train_mean_squared_error = metrics.mean_squared_error(
+            training_classes, train_predicted_classes)
         r2_score = metrics.r2_score(testing_classes, predicted_classes)
         mean_squared_error = metrics.mean_squared_error(
             testing_classes, predicted_classes)
@@ -384,6 +420,8 @@ def generate_results(model, input_data,
             'test_score': test_score,
             'dtree_test_score': dtree_test_score,
             'abs_diff_test_score': abs_diff_test_score,
+            'train_r2_score': train_r2_score,
+            'train_mean_squared_error': train_mean_squared_error,
             'r2_score': r2_score,
             'mean_squared_error': mean_squared_error,
             'cv_scores_mean': cv_scores.mean(),
