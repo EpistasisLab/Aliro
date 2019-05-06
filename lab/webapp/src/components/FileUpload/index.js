@@ -20,8 +20,7 @@ import {
   Header,
   Accordion,
   Icon,
-  Label,
-  Transition
+  Label
 } from 'semantic-ui-react';
 
 class FileUpload extends Component {
