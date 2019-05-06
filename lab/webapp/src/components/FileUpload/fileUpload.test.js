@@ -25,6 +25,7 @@ describe('basic testing of fileupload react component', () => {
   let testFileUpload;
   let tree;
   let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+  let fakeFileTsv = {target: {files: [{name: 'iris.tsv'}]}};
   let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
@@ -112,7 +113,7 @@ describe('basic testing of fileupload react component', () => {
     expect(testFileUpload.state('dependentCol')).toEqual('test_class');
   })
 
-  it('try uploading non csv file type', () => {
+  it('try uploading non csv/tsv file type', () => {
     testFileUpload.find('input').at(0).prop('onChange')(badFakeFile);
     testFileUpload.update();
     //expect(testFileUpload.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
@@ -168,6 +169,22 @@ describe('basic testing of fileupload react component', () => {
     expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
   })
 
+  it('Select tsv file - expect form to be displayed', () => {
+    testFileUpload.find('input').at(0).prop('onChange')(fakeFileTsv);
+
+    // update() is supposed to forceUpdate/re-render the component
+    testFileUpload.update();
+    testFileUpload.setState({
+      selectedFile: fakeFileTsv.target.files[0]
+    });
+    let formBody = testFileUpload.find('#file-upload-form-input-area');
+
+    // check for CSS style which hides form
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(false);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
+    expect(testFileUpload.state('selectedFile')).toEqual(fakeFileTsv.target.files[0]);
+  })
+
   it('try testing generateFileData - bad input, no ordinal features', () => {
     // use dive() to get at inner FileUpload class functions -
     // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
@@ -181,7 +198,7 @@ describe('basic testing of fileupload react component', () => {
     // add fake file with filename so generateFileData will do something, if
     // no file & filename present generateFileData returns blank/empty formData
     shallowFileUpload.setState({
-      selectedFile: fakeFile.target.files[0],
+      selectedFile: fakeFileTsv.target.files[0],
       dependentCol: fakeUserInput.depCol,
       catFeatures: fakeUserInput.catCols,
       ordinalFeatures: fakeUserInput.ordFeats

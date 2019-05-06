@@ -199,6 +199,8 @@ class FileUpload extends Component {
    * @returns {void} - no return value
    */
   handleSelectedFile = event => {
+
+    const fileExtList = ['csv', 'tsv'];
     let papaConfig = {
       header: true,
       preview: 5,
@@ -215,11 +217,12 @@ class FileUpload extends Component {
       //console.log(typeof event.target.files[0]);
       //console.log(event.target.files[0]);
       let uploadFile = event.target.files[0]
+      let fileExt = uploadFile.name.split('.').pop();
 
       //Papa.parse(event.target.files[0], papaConfig);
       // use try/catch block to deal with potential bad file input when trying to
       // generate file/csv preview, use filename to check file extension
-      if (uploadFile.name.split('.').pop() === 'csv') {
+      if (fileExtList.includes(fileExt)) {
 
         try {
           Papa.parse(uploadFile, papaConfig);
