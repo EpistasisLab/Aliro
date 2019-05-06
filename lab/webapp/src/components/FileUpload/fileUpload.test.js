@@ -25,6 +25,7 @@ describe('basic testing of fileupload react component', () => {
   let testFileUpload;
   let tree;
   let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+  let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
@@ -111,6 +112,18 @@ describe('basic testing of fileupload react component', () => {
     expect(testFileUpload.state('dependentCol')).toEqual('test_class');
   })
 
+  it('try uploading non csv file type', () => {
+    testFileUpload.find('input').at(0).prop('onChange')(badFakeFile);
+    testFileUpload.update();
+    //expect(testFileUpload.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
+    expect(testFileUpload.state('selectedFile')).toBeUndefined();
+    let formBody = testFileUpload.find('#file-upload-form-input-area');
+
+    // check for CSS style which hides form
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
+  })
+
   it('try testing generateFileData - good input', () => {
     // use dive() to get at inner FileUpload class functions -
     // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
@@ -181,7 +194,7 @@ describe('basic testing of fileupload react component', () => {
     const expectedInput = {
       depCol: 'target_c@#$@#$',
       catCols: ['a', 'b', 'c', '4'],
-      ordFeats: {}
+      ordFeats: ''
     };
     // use instance to get access to inner function
     const instance = shallowFileUpload.instance();
@@ -224,7 +237,7 @@ describe('basic testing of fileupload react component', () => {
     const expectedInput = {
       depCol: 'target_c@#$@#$',
       catCols: ['a', 'b', 'c', '4'],
-      ordFeats: {}
+      ordFeats: ''
     };
     // use instance to get access to inner function
     const instance = shallowFileUpload.instance();
@@ -324,7 +337,7 @@ describe('mock network request', () => {
       'username': 'testuser',
       'dependent_col' : 'class',
       'categorical_features': '',
-      'ordinal_features': {},
+      'ordinal_features': '',
       'timestamp': Date.now(),
     },
     {
@@ -332,7 +345,7 @@ describe('mock network request', () => {
       'username': 'testuser',
       'dependent_col' : 'target_class',
       'categorical_features': '',
-      'ordinal_features': {},
+      'ordinal_features': '',
       'timestamp': Date.now(),
     }
   ];

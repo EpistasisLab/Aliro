@@ -9,7 +9,20 @@ import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
-import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header, Accordion, Icon, Label } from 'semantic-ui-react';
+import {
+  Button,
+  Input,
+  Form,
+  Segment,
+  Table,
+  Popup,
+  Checkbox,
+  Header,
+  Accordion,
+  Icon,
+  Label,
+  Transition
+} from 'semantic-ui-react';
 
 class FileUpload extends Component {
   /**
@@ -35,6 +48,7 @@ class FileUpload extends Component {
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
+    this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
   }
@@ -124,14 +138,14 @@ class FileUpload extends Component {
     const data = new FormData();
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
-    let ordFeatures = {};
-    let catFeatures = [];
+    let ordFeatures = this.state.ordinalFeatures;
+    let catFeatures = this.state.catFeatures;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
       // get raw user input from state
 
       // try to parse ord features input as JSON if not empty
-      if(this.state.ordinalFeatures !== '') {
+      if(ordFeatures !== '') {
         try {
           ordFeatures = JSON.parse(this.state.ordinalFeatures);
         } catch(e) {
@@ -139,8 +153,6 @@ class FileUpload extends Component {
           return { errorResp: e.toString() };
         }
       }
-
-      catFeatures = this.state.catFeatures;
 
       if(catFeatures !== "") {
         // remove all whitespace
@@ -163,8 +175,8 @@ class FileUpload extends Component {
                 'dependent_col' : depCol,
                 'categorical_features': catFeatures,
                 'ordinal_features': ordFeatures
-
               });
+
       data.append('_metadata', metadata);
 
       data.append('_files', this.state.selectedFile);
@@ -207,22 +219,42 @@ class FileUpload extends Component {
 
       //Papa.parse(event.target.files[0], papaConfig);
       // use try/catch block to deal with potential bad file input when trying to
-      // generate file/csv preview
-      try {
-        Papa.parse(uploadFile, papaConfig);
-      }
-      catch(error) {
-        console.error('Error generating preview for selected file:', error);
-        this.setState({
-          selectedFile: undefined,
-          errorResp: error
-        })
-      }
+      // generate file/csv preview, use filename to check file extension
+      if (uploadFile.name.split('.').pop() === 'csv') {
 
+        try {
+          Papa.parse(uploadFile, papaConfig);
+        }
+        catch(error) {
+          console.error('Error generating preview for selected file:', error);
+          this.setState({
+            selectedFile: undefined,
+            errorResp: JSON.stringify(error),
+            datasetPreview: null
+          });
+        }
+
+        this.setState({
+          selectedFile: event.target.files[0],
+          errorResp: undefined,
+          datasetPreview: null
+        });
+
+      } else {
+        console.warn('Filetype not csv:', uploadFile);
+        this.setState({
+          selectedFile: null,
+          datasetPreview: null,
+          errorResp: undefined
+        });
+      }
+    } else {
+      // reset state as fallback
       this.setState({
-        selectedFile: event.target.files[0],
+        selectedFile: null,
+        datasetPreview: null,
         errorResp: undefined
-      })
+      });
     }
   }
 
@@ -246,15 +278,23 @@ class FileUpload extends Component {
         uploadDataset(data).then(stuff => {
           //window.console.log('FileUpload props after download', this.props);
 
+
+          //let resp = Object.keys(this.props.dataset.fileUploadResp);
+          let resp = this.props.dataset.fileUploadResp;
+          let errorRespObj = this.props.dataset.fileUploadError;
+
+          // if no error message and successful upload (indicated by presence of dataset_id)
           // 'refresh' page when upload response from server is not an error and
           // redirect to dataset page, when error occurs set component state
           // to display popup containing server/error response
-          let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
-          resp !== 'error' ? this.props.fetchDatasets()
-                           : this.setState({
-                              errorResp: this.props.dataset.fileUploadResp.error
-                             });
-          resp !== 'error' ? window.location = '#/datasets' : null;
+          if (!errorRespObj && resp.dataset_id) {
+            this.props.fetchDatasets();
+            window.location = '#/datasets';
+          } else {
+            this.setState({
+               errorResp: errorRespObj.errorResp.error || "Something went wrong"
+              })
+          }
         });
       }
 
@@ -439,28 +479,30 @@ class FileUpload extends Component {
      return accordionContent;
    }
 
+   /**
+   *  Simple timeout function, resets error message
+   */
+   errorPopupTimeout() {
+     this.setState({
+       errorResp: undefined
+     });
+   }
+
   render() {
 
-    const { dataset } = this.props;
-    let respKey;
-    let respBody;
-    let serverResp;
+    //const { dataset } = this.props;
+
     let errorMsg = this.state.errorResp;
+    let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let accordionInputs = this.getAccordionInputs();
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
-    //window.console.log('prev: ', dataPrev);
-    dataset ? serverResp = dataset.fileUploadResp : null;
-
-    if(serverResp) {
-      respKey =  Object.keys(serverResp)[0];
-      respBody = serverResp[respKey];
+    // if error message present, display for 4.5 seconds
+    if (errorMsg) {
+      errorContent = ( <p style={{display: 'block'}}> {errorMsg} </p> );
+      window.setTimeout(this.errorPopupTimeout, 4555);
     }
-
-    // server message to display in popup (or other UI element)
-    serverResp ? serverResp = ( <p style={{display: 'block'}}> {errorMsg} </p> )
-               : null;
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
@@ -516,25 +558,25 @@ class FileUpload extends Component {
               >
                 {accordionInputs}
               </Form.Input>
-              <Popup
-                header="Error Submitting Dataset"
-                content={serverResp}
-                open={errorMsg ? true : false}
-                id="file_upload_popup_and_button"
-                position='bottom left'
-                flowing
-                trigger={
-                  <Button
-                    inverted
-                    color="blue"
-                    compact
-                    size="small"
-                    icon="upload"
-                    content="Upload Dataset"
-                    onClick={this.handleUpload}
-                  />
-                }
-              />
+                <Popup
+                  header="Error Submitting Dataset"
+                  content={errorContent}
+                  open={errorMsg ? true : false}
+                  id="file_upload_popup_and_button"
+                  position='bottom left'
+                  flowing
+                  trigger={
+                    <Button
+                      inverted
+                      color="blue"
+                      compact
+                      size="small"
+                      icon="upload"
+                      content="Upload Dataset"
+                      onClick={this.handleUpload}
+                    />
+                  }
+                />
             </div>
           </Segment>
         </Form>
