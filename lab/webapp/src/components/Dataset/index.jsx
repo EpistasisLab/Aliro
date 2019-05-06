@@ -2,6 +2,7 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
+import DatasetModal from './components/DatasetModal';
 import { Grid, Segment, Header, Table, Loader } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
@@ -13,7 +14,9 @@ class Dataset extends Component {
       dataset: 'fetching',
       dataPreview: null
     };
+    this.fileDetailsClick = this.fileDetailsClick.bind(this);
     this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
+    this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
   }
 
   componentDidMount() {
@@ -40,6 +43,24 @@ class Dataset extends Component {
           this.setState({ dataPreview: Papa.parse(text, { header: true, preview: 100 }) });
         });
     }
+  }
+
+  fileDetailsClick(e) {
+    //e.preventDefault();
+    //window.console.log('clicked file details');
+    const { dataset } = this.state;
+    const tempFile = dataset.files[0];
+    let testObj = {
+      name: 'metadataStuff',
+      schema: tempFile
+    };
+    this.setState({
+      metadataStuff: testObj
+    });
+  }
+
+  handleCloseFileDetails() {
+    this.setState({ metadataStuff: null });
   }
 
   getCatAndOrdTable() {
@@ -130,7 +151,7 @@ class Dataset extends Component {
   }
 
   render() {
-    const { dataset, dataPreview } = this.state;
+    const { dataset, dataPreview, metadataStuff } = this.state;
 
     if(dataset === 'fetching') { return null; }
 
@@ -143,8 +164,8 @@ class Dataset extends Component {
     let cat_feats = dataset.files[0].categorical_features;
     let ord_feats = dataset.files[0].ordinal_features;
 
-    window.console.log("cat feats: ", cat_feats);
-    window.console.log("ord feats: ", ord_feats);
+    //window.console.log("cat feats: ", cat_feats);
+    //window.console.log("ord feats: ", ord_feats);
 
     let catAndOrdTable = this.getCatAndOrdTable();
 
@@ -159,9 +180,10 @@ class Dataset extends Component {
 
     return (
       <div>
+        <DatasetModal project={metadataStuff} handleClose={this.handleCloseFileDetails} />
         <SceneHeader header={formatDataset(dataset.name)} />
         <Grid columns={2}>
-          <Grid.Column>
+          <Grid.Column onClick={(e) => this.fileDetailsClick(e)}>
             <Segment inverted attached="top" className="panel-header">
               <Header as="h3" content="File Details" />
             </Segment>
@@ -255,8 +277,6 @@ class Dataset extends Component {
             </Segment>
           </Grid.Column>
         </Grid>
-        <br/>
-        {catAndOrdTable}
       </div>
     );
   }
