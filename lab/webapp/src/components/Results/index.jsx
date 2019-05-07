@@ -39,8 +39,12 @@ class Results extends Component {
 
     keyList.forEach(scoreKey => {
         if(typeof expScores[scoreKey].toFixed === 'function'){
+          let tempLabel;
+          scoreKey.includes('train')
+            ? tempLabel = 'train (' + expScores[scoreKey].toFixed(2) + ')'
+            : tempLabel = 'test (' + expScores[scoreKey].toFixed(2) + ')';
           testList.push(
-            [scoreKey + '(' + expScores[scoreKey].toFixed(2) + ')', expScores[scoreKey]]
+            [tempLabel, expScores[scoreKey]]
           )
         }
       }
@@ -88,16 +92,21 @@ class Results extends Component {
     // --- get lists of scores ---
 
     // balanced accuracy
-    let balancedAccKeys = ['train_score', 'test_score'];
-    // train scores
-    let trainKeys = ['train_precision_score', 'train_recall_score', 'train_f1_score']
+    let balancedAccKeys = ['train_score', 'accuracy_score'];
+    // precision scores
+    let precisionKeys = ['train_precision_score', 'precision_score']
     // AUC
     let aucKeys = ['roc_auc_score', 'train_roc_auc_score'];
+    // f1 score
+    let f1Keys = ['train_f1_score', 'f1_score'];
+    // recall
+    let recallKeys = ['train_recall_score', 'recall_score'];
 
     let balancedAccList = this.getGaugeArray(balancedAccKeys);
-    let trainList = this.getGaugeArray(trainKeys);
+    let precisionList = this.getGaugeArray(precisionKeys);
     let aucList = this.getGaugeArray(aucKeys);
-
+    let recallList = this.getGaugeArray(recallKeys);
+    let f1List = this.getGaugeArray(f1Keys);
     return (
       <div>
         <SceneHeader
@@ -130,15 +139,27 @@ class Results extends Component {
                 chartColor="#7D5BA6"
               />
               <Score
-                scoreName="Train Score"
-                scoreValueList={trainList}
-                chartKey="train_scores"
+                scoreName="AUROC"
+                scoreValueList={aucList}
+                chartKey="auc_scores"
                 chartColor="#55D6BE"
               />
               <Score
-                scoreName="AUC Score"
-                scoreValueList={aucList}
-                chartKey="auc_scores"
+                scoreName="Precision"
+                scoreValueList={precisionList}
+                chartKey="precision_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="Recall"
+                scoreValueList={recallList}
+                chartKey="recall_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="F1 Score"
+                scoreValueList={f1List}
+                chartKey="f1_scores"
                 chartColor="#55D6BE"
               />
               {/*<Score
