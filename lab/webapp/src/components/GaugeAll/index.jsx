@@ -22,23 +22,17 @@ colors: {
       data: {
         columns: expList,
         color: function (color, data) {
-          //let tempScore = data.slice(-5,-1);
-          //window.console.log("is even? ", tempIndex % 2);
           tempIndex++;
-          switch (tempIndex % 3) {
+          switch (tempIndex % 2) {
             case 0:
               return '#55d6be'; // sea foam green
               break;
             case 1:
               return '#7D5BA6'; // purple
               break;
-            case 2:
-              return '#59ABE3'; // light pale blue
-              break;
             default:
               return color;
           }
-          //return tempIndex % 2 ? '#7D5BA6' : "#55d6be";
         },
         type: 'gauge',
       },
