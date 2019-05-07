@@ -13,12 +13,40 @@ import { Header, Grid, Loader } from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 
 class Results extends Component {
+  constructor(props) {
+    super(props);
+    this.getGaugeArray = this.getGaugeArray.bind(this);
+  }
+
   componentDidMount() {
     this.props.fetchExperiment(this.props.params.id);
   }
 
   componentWillUnmount() {
     this.props.clearExperiment();
+  }
+
+  /**
+  * Basic helped method to create array containing [key,val] entries where
+  *   key - name of given score
+  *   value - actual score
+  * passed to Score component which uses javascript library C3 to create graphic
+  */
+  getGaugeArray(keyList) {
+    const { experiment } = this.props;
+    let testList = [];
+    let expScores = experiment.data.scores;
+
+    keyList.forEach(scoreKey => {
+        if(typeof expScores[scoreKey].toFixed === 'function'){
+          testList.push(
+            [scoreKey + '(' + expScores[scoreKey].toFixed(2) + ')', expScores[scoreKey]]
+          )
+        }
+      }
+    );
+
+    return testList;
   }
 
   render() {
@@ -57,6 +85,19 @@ class Results extends Component {
       }
     });
 
+    // --- get lists of scores ---
+
+    // balanced accuracy
+    let balancedAccKeys = ['train_score', 'test_score'];
+    // train scores
+    let trainKeys = ['train_precision_score', 'train_recall_score', 'train_f1_score']
+    // AUC
+    let aucKeys = ['roc_auc_score', 'train_roc_auc_score'];
+
+    let balancedAccList = this.getGaugeArray(balancedAccKeys);
+    let trainList = this.getGaugeArray(trainKeys);
+    let aucList = this.getGaugeArray(aucKeys);
+
     return (
       <div>
         <SceneHeader
@@ -84,12 +125,23 @@ class Results extends Component {
             <Grid.Column>
               <Score
                 scoreName="Balanced Accuracy"
-                scoreValue={-1}
-                scoreValueList={experiment.data.scores}
+                scoreValueList={balancedAccList}
                 chartKey="all"
                 chartColor="#7D5BA6"
               />
               <Score
+                scoreName="Train Score"
+                scoreValueList={trainList}
+                chartKey="train_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="AUC Score"
+                scoreValueList={aucList}
+                chartKey="auc_scores"
+                chartColor="#55D6BE"
+              />
+              {/*<Score
                 scoreName="Precision Score"
                 scoreValue={experiment.data.scores.precision_score}
                 chartKey="precision"
@@ -106,7 +158,7 @@ class Results extends Component {
                 scoreValue={experiment.data.scores.f1_score}
                 chartKey="f1_score"
                 chartColor="#55D6BE"
-              />
+              />*/}
               {/*<Score
                 scoreName="Training Accuracy"
                 scoreValue={experiment.data.scores.train_score}
@@ -118,13 +170,19 @@ class Results extends Component {
                 scoreValue={experiment.data.scores.test_score}
                 chartKey="testing"
                 chartColor="#55D6BE"
-              />*/}
+              />
               <Score
                 scoreName="AUC"
                 scoreValue={experiment.data.scores.roc_auc_score}
                 chartKey="auc"
                 chartColor="#7D5BA6"
               />
+              <Score
+                scoreName="Train AUC"
+                scoreValue={experiment.data.scores.train_roc_auc_score}
+                chartKey="train_auc"
+                chartColor="#55D6BE"
+              />*/}
             </Grid.Column>
           </Grid.Row>
         </Grid>

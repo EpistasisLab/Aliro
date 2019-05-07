@@ -4,11 +4,15 @@ import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
 import GaugeAll from '../../../GaugeAll';
 import { Header } from 'semantic-ui-react';
-
+/**
+* Hijacking this component to do two things:
+*   1.) create single Gauge component or basic message based on given props
+*   2.) make multi gauge (GuageAll) component to display chart with several entries
+*/
 function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList }) {
   const getCardContent = () => {
-    if(typeof(scoreValue) !== 'number') {
-      if (scoreName === 'AUC') {
+    if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
+      if (scoreName.includes('AUC') ) {
         return (
           <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
         );
@@ -18,21 +22,10 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList }) 
         );
       }
     } else if (scoreValueList) {
-      let gaugeList = [];
-      let testList = [];
-      let keyList = ['train_score', 'test_score', 'accuracy_score'];
 
-      Object.keys(scoreValueList).forEach(scoreKey => gaugeList.push(
-        [scoreKey, scoreValueList[scoreKey]]
-      ))
-      keyList.forEach(scoreKey => testList.push(
-        [scoreKey, scoreValueList[scoreKey]]
-      ))
-      //return gaugeList;
-      window.console.log(gaugeList);
       return (
         <GaugeAll
-          expList={testList}
+          expList={scoreValueList}
           chartKey={chartKey}
           chartColor={chartColor}
         />
