@@ -25,7 +25,7 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -92,8 +92,6 @@ class AI():
         # file name of stored scores for the recommender
         self.rec_score_file = rec_score_file
 
-        # queue of datasets requesting ai recommendations
-        self.request_queue = []
         # timestamp of the last time new experiments were processed
         self.last_update = 0
 
@@ -286,28 +284,38 @@ class AI():
         logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
               ': checking requests...')
 
-        if self.continous:
-            dsFilter = {'ai':['requested','finished']}
-        else:
-            dsFilter = {'ai':['requested', 'dummy']}
 
-        responses = self.labApi.get_filtered_datasets(dsFilter)
+        # get all dtasets that have an ai 'requested' status
+        # and initilize a new request        
+        dsFilter = {'ai':['requested', 'dummy']}
+        aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
-        # if there are any requests, add them to the queue and return True
-        if len(responses) > 0:
-            self.request_queue = responses
+        if len(aiOnRequests) > 0:
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                       ': new ai request for:'+
-                      ';'.join([r['name'] for r in responses]))
+                      ';'.join([r['name'] for r in aiOnRequests]))
             
             # set AI flag to 'on' to acknowledge requests received
-            for r in self.request_queue:
-                tmp = self.labApi.set_ai_status(datasetId = r['_id'], 
-                                                aiStatus = 'on')
+            for r in aiOnRequests:
+                self.labApi.set_ai_status(datasetId = r['_id'], 
+                                            aiStatus = 'on')
 
                 self.requestManager.add_request(datasetId=r['_id'],
                                                 datasetName=r['name'])
-            return True
+
+        # get all datasets that have a manual 'off' status
+        # and terminate their ai requests
+        dsFilter = {'ai':['off', 'dummy']}
+        aiOffRequests = self.labApi.get_filtered_datasets(dsFilter)
+
+        if len(aiOffRequests) > 0:
+            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                      ': ai termination request for:'+
+                      ';'.join([r['name'] for r in aiOffRequests]))
+            
+            for r in aiOffRequests:
+                self.requestManager.terminate_request(datasetId=r['_id'])
+
         return True
 
     def process_rec(self):

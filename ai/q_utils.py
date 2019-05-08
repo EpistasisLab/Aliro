@@ -27,7 +27,8 @@ class DatasetThread (threading.Thread):
         self.queueLock = threading.Lock()
         self.ai = ai
 
-        self.processingRequest = False
+        self.processingRequest = False # true if process_data() is actively processing a request
+        self.processFlag = True # true if process_data() is allowed to process requests
 
         # Handle thread exceptions 
         # see <https://stackoverflow.com/questions/2829329/catch-a-threads-
@@ -85,12 +86,18 @@ def addExperimentToQueue(ai, datasetId, experimentPayload):
     workQueue.put(experimentPayload)
 
 def removeAllExperimentsFromQueue(ai, datasetId):
-    dataset_thread = ai.dataset_threads[datasetId]
-    workQueue = dataset_thread.workQueue    
+    datasetThread = ai.dataset_threads[datasetId]    
 
-    # thread safe clear
-    with workQueue.mutex:
-        workQueue.queue.clear()
+    datasetThread.processFlag = False
+    workQueue = datasetThread.workQueue
+
+    try:
+        while True:
+            workQueue.get_nowait()
+    except queue.Empty:
+        pass
+
+    datasetThread.processFlag = True
 
 def isQueueEmpty(ai, datasetId):
     dataset_thread = ai.dataset_threads[datasetId]
@@ -106,22 +113,23 @@ def process_data(dsThread):
     logger.debug("process_data("+ str(dsThread) + ") exitFlag:" + str(exitFlag))
 
     while not exitFlag:
-        dsThread.queueLock.acquire()
+        if dsThread.processFlag:
+            dsThread.queueLock.acquire()
 
-        dsThread.processingRequest = False
-        if not dsThread.workQueue.empty():
-            dsThread.processingRequest = True
-            data = dsThread.workQueue.get()
-            logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
-            dsThread.ai.transfer_rec(data)
-            if(dsThread.workQueue.qsize() % 10 == 0):
-                logger.debug(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
-                      dsThread.name)
+            dsThread.processingRequest = False
+            if not dsThread.workQueue.empty():
+                dsThread.processingRequest = True
+                data = dsThread.workQueue.get()
+                logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
+                dsThread.ai.transfer_rec(data)
+                if(dsThread.workQueue.qsize() % 10 == 0):
+                    logger.debug(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
+                          dsThread.name)
 
-        # true if the queue has just cleared
-        if dsThread.workQueue.empty() and dsThread.processingRequest:
-            msg = (str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' 
-                      + dsThread.name)
+            # true if the queue has just cleared
+            if dsThread.workQueue.empty() and dsThread.processingRequest:
+                msg = (str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' 
+                          + dsThread.name)
 
-        dsThread.processingRequest = False
-        dsThread.queueLock.release()
+            dsThread.processingRequest = False
+            dsThread.queueLock.release()

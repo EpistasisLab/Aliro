@@ -70,14 +70,13 @@ class RequestManager:
 
         :param datasetId:
         """
-        if not(datasetId in self.aiRequests):
+        if (datasetId in self.aiRequests):
+            req = self.aiRequests[datasetId]
+            req.terminate_request()
+        else:
             msg = 'Tried to terminate a dataset ai request before it had been initilized.  DatasetId: "' + str(datasetId) + '"'
-            logger.error(msg)
-            raise RuntimeError(msg)
-
-        req = self.aiRequests[datasetId]
-        req.terminate_request()
-
+            logger.info(msg)
+        
 
     def process_requests(self):
         """ Process all active requests
@@ -139,14 +138,24 @@ class AiRequest:
         self.state = AiState.INITILIZE
 
 
-    def terminate_request(self, setServerAiState = False):
+    def terminate_request(self, setServerAiState = True):
         # get rid of everything in the queue
         # set state to inactive
+        ##logger.debug("=======")
+        ##logger.debug("=======")
+        ##logger.debug("=======")
         logger.info("AiRequest terminate_request ({},{})".format(self.datasetName, self.datasetId))
+        logger.debug("queue size: {}".format(self.datasetThread.workQueue.qsize()))
         
         q_utils.removeAllExperimentsFromQueue(ai=self.ai,
                                     datasetId=self.datasetId)
-        
+
+        logger.debug("Removed experiments from queue, isQueueEmpty()={}".format(q_utils.isQueueEmpty(self.ai, self.datasetId)))
+        logger.debug("queue size: {}".format(self.datasetThread.workQueue.qsize()))
+        ##logger.debug("=======")
+        ##logger.debug("=======")
+        ##logger.debug("=======")
+
         if (setServerAiState):
             self.ai.labApi.set_ai_status(self.datasetId, 'finished')
 
