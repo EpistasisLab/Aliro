@@ -27,6 +27,8 @@ class DatasetThread (threading.Thread):
         self.queueLock = threading.Lock()
         self.ai = ai
 
+        self.processingRequest = False
+
         # Handle thread exceptions 
         # see <https://stackoverflow.com/questions/2829329/catch-a-threads-
         # exception-in-the-caller-thread-in-python>
@@ -92,7 +94,7 @@ def removeAllExperimentsFromQueue(ai, datasetId):
 
 def isQueueEmpty(ai, datasetId):
     dataset_thread = ai.dataset_threads[datasetId]
-    return dataset_thread.workQueue.empty()
+    return dataset_thread.workQueue.empty() and dataset_thread.processingRequest
 
 
 def process_data(dsThread):
@@ -105,21 +107,21 @@ def process_data(dsThread):
 
     while not exitFlag:
         dsThread.queueLock.acquire()
-        workDone = False
+
+        dsThread.processingRequest = False
         if not dsThread.workQueue.empty():
-            workDone = True
+            dsThread.processingRequest = True
             data = dsThread.workQueue.get()
             logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
             dsThread.ai.transfer_rec(data)
             if(dsThread.workQueue.qsize() % 10 == 0):
-                print(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
+                logger.debug(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
                       dsThread.name)
-        #hacky way to know if the queue has just cleared
-        if dsThread.workQueue.empty() and workDone:
+
+        # true if the queue has just cleared
+        if dsThread.workQueue.empty() and dsThread.processingRequest:
             msg = (str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' 
                       + dsThread.name)
-            #logger.debug(msg)
-            #print(msg)
-            ##TODO: manage ai status with request manager
-            #dsThread.ai.labApi.set_ai_status(dsThread.datasetId, 'finished')
+
+        dsThread.processingRequest = False
         dsThread.queueLock.release()
