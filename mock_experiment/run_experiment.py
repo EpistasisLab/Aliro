@@ -34,7 +34,8 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
             'svd': SVDRecommender,
             'cocluster': CoClusteringRecommender,
             'knnmeans': KNNWithMeansRecommender,
-            'knnbasic': KNNBasicRecommender,
+            'knnml': KNNMLRecommender,
+            'knndataset': KNNDatasetRecommender,
             'slopeone': SlopeOneRecommender
             }
     # rec_choice = {'random': RandomRecommender,
