@@ -140,8 +140,6 @@ class AI():
         if use_knowledgebase:
             self.load_knowledgebase()
 
-        # request manager
-        self.RMlist = []
 
         # set termination condition
         self.term_condition = term_condition
@@ -149,6 +147,12 @@ class AI():
             self.term_value = self.n_recs
         elif self.term_condition == 'time':
             self.term_value = max_time
+
+        # start the request manager
+        self.requestManager = RequestManager(
+            ai=self,
+            defaultTermConditionStr=self.term_condition,
+            defaultTermParam=self.term_value)
 
         # if there is a pickle file, load it as the recommender scores
         assert not (warm_start), "The `warm_start` option is not yet supported"
@@ -214,6 +218,7 @@ class AI():
     ##-----------------
     def update_dataset_mf(self, results_data):
         """Grabs metafeatures of datasets in results_data
+        and concatinates them to result_data
         
         :param results_data: experiment results with associated datasets
         
@@ -299,41 +304,20 @@ class AI():
             for r in self.request_queue:
                 tmp = self.labApi.set_ai_status(datasetId = r['_id'], 
                                                 aiStatus = 'on')
-                self.RMlist.append(RequestManager(ai=self, 
-                                                  dataset_id=r['_id'],
-                                                  dataset_name=r['name'],
-                                                  term_condition=self.term_condition,
-                                                  term_value=self.term_value)
-                                                  )
+
+                self.requestManager.add_request(datasetId=r['_id'],
+                                                datasetName=r['name'])
             return True
-        return len([r for r in self.RMlist if r.active])>0
+        return True
 
     def process_rec(self):
-        """Generates requested experiment recommendations and adds them to the 
-        queue."""
-
-        # get recommendation for dataset
-        for r in self.RMlist:
-            logger.debug('RM:'+r.name+', active:'+str(r.active))
-
-        for RM in [r for r in self.RMlist if r.active]:
-            exp_request = RM.update()
-            if exp_request is not None:
-                for rec_payload in self.generate_recommendations(RM.id, self.n_recs):
-                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",
-                        time.localtime())+
-                        ': recommended '+self.ml_id_to_name[alg]+' with '+
-                        str(params) + ' for '+RM.name)
-                    
-                    RM.addExp(rec_payload)
-
-            # tmp = self.labApi.set_ai_status(datasetId = RM.id, aiStatus = 'queuing')    
+        self.requestManager.process_requests()
 
     ##-----------------
     ## Syncronous actions an AI request can take
     ##-----------------
     def generate_recommendations(self, datasetId, numOfRecs):
-        """Generate recommendations for the given dataset
+        """Generate ml recommendation payloads for the given dataset.
 
         :param datasetId
         :param numOfRecs
@@ -347,14 +331,14 @@ class AI():
         metafeatures = self.labApi.get_metafeatures(datasetId)
 
         ml, p, ai_scores = self.rec.recommend(dataset_id=datasetId,
-            n_recs=self.numOfRecs,
+            n_recs=numOfRecs,
             dataset_mf=metafeatures)
 
         for alg,params,score in zip(ml,p,ai_scores):
             # TODO: just return dictionaries of parameters from rec
             # modified_params = eval(params) # turn params into a dictionary
             
-            recommendations.append({'dataset_id':RM.id,
+            recommendations.append({'dataset_id':datasetId,
                     'algorithm_id':alg,
                     'username':self.user,
                     'parameters':params,
@@ -502,24 +486,26 @@ def main():
             # check for new experiment results
             if pennai.check_results():
                 pennai.update_recommender()
-            # check for new recommendation requests
-            if pennai.check_requests():
-               pennai.process_rec()
+
+            # check for user updates to request states
+            pennai.check_requests()
+
+            # process any active requests 
+            pennai.process_rec()
+
             n = n + 1
             time.sleep(args.SLEEP_TIME)
+
     except (KeyboardInterrupt, SystemExit):
-        #logger.info("Exit command recieved")
         logger.info('Exit command recieved')
     except:
         logger.error("Unhanded exception caught: "+ str(sys.exc_info()[0]))
         raise
     finally:
-        # tell queues to exit
+        # shut down gracefully
         logger.info("Shutting down AI engine...")
         logger.info("...Shutting down Request Manager...")
-        q_utils.exitFlag=1
-        #logger.info("...Saving state")
-        #pennai.save_state()
+        pennai.requestManager.shutdown()
         logger.info("Goodbye")
 
 if __name__ == '__main__':

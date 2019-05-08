@@ -50,10 +50,13 @@ class DatasetThread (threading.Thread):
             logger.debug("Exiting queue for thread " + self.name)
 
 def startQ(ai, datasetId, datasetName):
-    """Start a threaded queue for experiments for a particular dataset
+    """Get or start a threaded queue for experiments for a 
+    particular dataset.  Only one queue is created per dataset.
 
     :param ai: ai.AI - instance of AI class
-    :param datasetId: string - datasetId to start a queue for
+    :param datasetId: string - datasetId for which to start a queue
+
+    :returns: DatasetThread
     """
     if(datasetId in ai.dataset_threads):
         thread = ai.dataset_threads[datasetId]
@@ -61,8 +64,13 @@ def startQ(ai, datasetId, datasetName):
         thread = DatasetThread(ai, datasetId, datasetName)
         thread.start()
     ai.dataset_threads[datasetId] = thread
+
+    return thread
     
- 
+def addExperimentsToQueue(ai, datasetId, experimentPayloads):
+    for payload in experimentPayloads:
+        addExperimentToQueue(ai, datasetId, payload)
+
 def addExperimentToQueue(ai, datasetId, experimentPayload):
     """Add ml experiment to the queue for a particular dataset
 
@@ -72,7 +80,19 @@ def addExperimentToQueue(ai, datasetId, experimentPayload):
     """
     dataset_thread = ai.dataset_threads[datasetId]
     workQueue = dataset_thread.workQueue
-    workQueue.put(experimentPayload); 
+    workQueue.put(experimentPayload)
+
+def removeAllExperimentsFromQueue(ai, datasetId):
+    dataset_thread = ai.dataset_threads[datasetId]
+    workQueue = dataset_thread.workQueue    
+
+    # thread safe clear
+    with workQueue.mutex:
+        workQueue.queue.clear()
+
+def isQueueEmpty(ai, datasetId):
+    dataset_thread = ai.dataset_threads[datasetId]
+    return dataset_thread.workQueue.empty()
 
 
 def process_data(dsThread):

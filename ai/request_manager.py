@@ -2,6 +2,8 @@
 import time
 import ai.q_utils as q_utils
 import logging
+from enum import Enum, auto, unique
+import ai.q_utils as q_utils
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -12,104 +14,210 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-class RequestManager():
-    """Handles requests for the AI.
 
-    Responsible for:
-        - adding experiments to the queue
-        - processing experiments in the queue
-        - terminating the queue
+@unique
+class TerminalCondition(Enum):
+    NUM_RECS = auto()   # generate a static number of recomendations
+    TIME = auto()       # generate reccomendations for a set period of time
+    CONTINUOUS = auto() # generate recomencations until the ai recommender is turned off by the user
 
-    :param ai: the ai agent
-    :param term_condition: 'n_recs' (n_recs,time): the type of termination condition
-    :param term_value: 5 : the value of the termination condition. if term_condition
-        is n_recs, value is 5. if time, value is 600 (seconds)
-    """
-    def __init__(self, ai, dataset_id, dataset_name,
-                 term_condition='n_recs', term_value=None):
-        self.active=True
-        self.term_condition = term_condition
-        if term_value:
-            self.term_value = term_value
-        elif self.term_condition == 'n_recs':
-            self.term_value = 5
-        elif self.term_condition == 'time':
-            self.term_value = 600
-        else:
-            raise ValueError('Incorrect term_condition'
-                    'specified:',self.term_condition)
-        self.id = dataset_id
-        self.name = dataset_name
-        self.term_state = 'add experiment'
-        self.t0 = time.time()
+
+class RequestManager:
+    def __init__(self,
+                ai,
+                defaultTermConditionStr,
+                defaultTermParam):
         self.ai = ai
-        self.n_recs = ai.n_recs # this is the n_recs made by the recommender each
-                             # iteration.
-        q_utils.startQ(ai=self.ai, datasetId=dataset_id, datasetName=dataset_name)
-        self.queue = self.ai.dataset_threads[dataset_id].workQueue
-        logger.debug('term_condition:'+self.term_condition)
-        logger.debug('term_value:'+str(self.term_value))
+        self.defaultTermParam = defaultTermParam
 
-    def update(self):
-        """Checks the state and performs actions"""
-        if self.term_state == 'add experiment':
-            #request an experiment to add to Q
-            # or directly get experiment from AI
-            logger.debug('adding exp to queue')
-            self.update_term_state()
-            return self.id
-        elif self.term_condition=='n_recs' and self.term_state == 'process queue': 
-            # if queue empty, set self.active to false
-            logger.debug('processing queue')
-            if self.queue.empty():
-                logger.info('setting '+
-                            self.name+' queue to inactive since q is empty')
-                self.active=False
-                msg = (str(self.queue.qsize()) + ' Jobs in queue for ' + self.name)
-                logger.info(msg)
-                
-                logger.info('marking AI as finished for'+str(self.id))
-                self.ai.labApi.set_ai_status(self.id, 'finished')
-                #logger.debug(msg)
-            self.update_term_state()
-            return None
-        elif self.term_state == 'terminate queue':
-            logger.debug('term_state:'+self.term_state)
-            #logger.debug(msg)
-            # kill the Q, set self.active to false
-            logger.info('terminating queue')
-            self.active=False
-            with self.queue.mutex: 
-                self.queue.queue.clear()
-            logger.info('marking AI as finished for'+str(self.id))
-            self.ai.labApi.set_ai_status(self.id, 'finished')
-            return None
+        if (defaultTermConditionStr == 'n_recs'):
+            self.defaultTermCondition = TerminalCondition.NUM_RECS
+        elif (defaultTermConditionStr == 'time'):
+            self.defaultTermCondition = TerminalCondition.TIME
+        elif (defaultTermConditionStr == 'continuous'):
+            self.defaultTermCondition = TerminalCondition.CONTINUOUS
         else:
-            raise ValueError('invalid term_state:'+self.term_state)
+            msg = 'Unable to start RequestManager, unknown terminal condition: "' + str(defaultTermConditionStr) + '"'
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        self.aiRequests = {} # dict of datasetId:aiRequest
+
+        logger.info("initilized RequestManager.  defaultTermCondition:{}, defaultTermParam:{}".format(self.defaultTermCondition, self.defaultTermParam))
+
+    def add_request(self, datasetId, datasetName):
+        """ Add a new ai request for the given datasetId
+
+        :param datasetId:
+        """
+        if(datasetId in self.aiRequests):
+            req = self.aiRequests[datasetId]
+        else:
+            req = AiRequest(
+                ai=self.ai,
+                datasetId=datasetId,
+                datasetName=datasetName)
+            self.aiRequests[datasetId] = req
+
+
+        req.new_request(
+            termCondition=self.defaultTermCondition,
+            termParam=self.defaultTermParam)
+
+
+    def terminate_request(self, datasetId):
+        """ Terminate requests for the given dataset id
+
+        :param datasetId:
+        """
+        if not(datasetId in self.aiRequests):
+            msg = 'Tried to terminate a dataset ai request before it had been initilized.  DatasetId: "' + str(datasetId) + '"'
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        req = self.aiRequests[datasetId]
+        req.terminate_request()
+
+
+    def process_requests(self):
+        """ Process all active requests
+        """
+        for dataId, req in self.aiRequests.items():
+            req.process_request()
+
+
+    def shutdown(self):
+        """ Terminate all requests and release all request threads
+        """
+        for dataId, req in self.aiRequests.items(): 
+            req.terminate_request()
+
+        # release all datasetThreads
+        q_utils.exitFlag = 1
+
+
+@unique
+class AiState(Enum):
+    INITILIZE = auto()
+    WAIT_FOR_QUEUE_EMPTY = auto()
+    ADD_RECOMMENDATIONS = auto()
+    TERMINATE = auto()
+    INACTIVE = auto()
+
+
+class AiRequest:
+    def __init__(self, 
+                ai, 
+                datasetId, 
+                datasetName):
+
+        self.ai = ai
+        self.datasetId = datasetId
+        self.datasetName = datasetName
+        self.datasetThread = q_utils.startQ(
+            ai=self.ai, 
+            datasetId=datasetId, 
+            datasetName=datasetName)
+
+        self.defaultRecBatchSize = 5
+        self.state = AiState.INACTIVE
+
+        logger.info("AiRequest initilized ({},{})".format(self.datasetName, self.datasetId))
+
+
+    def new_request(self, termCondition, termParam):
+        logger.info("AiRequest new_request ({},{})".format(self.datasetName, self.datasetId))
+        self.termCondition = termCondition
+        self.termParam = termParam
+        self.startTime = time.time()
+
+        if termCondition == TerminalCondition.NUM_RECS:
+            self.recBatchSize = self.termParam
+        else:
+            self.recBatchSize = defaultRecBatchSize
+
+        self.state = AiState.INITILIZE
+
+
+    def terminate_request(self, setServerAiState = False):
+        # get rid of everything in the queue
+        # set state to inactive
+        logger.info("AiRequest terminate_request ({},{})".format(self.datasetName, self.datasetId))
         
-        self.update_term_state()
-        return None
+        q_utils.removeAllExperimentsFromQueue(ai=self.ai,
+                                    datasetId=self.datasetId)
+        
+        if (setServerAiState):
+            self.ai.labApi.set_ai_status(self.datasetId, 'finished')
 
-    def update_term_state(self):
-        """Check termination conditions and adjust as necessary"""
-        if self.term_condition == 'n_recs':
-            if self.term_state == 'add experiment':
-                self.term_value -= self.n_recs
-                logger.debug('term_value:'+str(self.term_value))
-                if self.term_value == 0:
-                    logger.info('changing term_state to "process_queue"')
-                    self.term_state = 'process queue'
-        else:   #assume termination condition is time
-            runtime = time.time() - self.t0
-            logger.debug('current runtime:'+str(runtime))
-            logger.debug('self.term_value:'+str(self.term_value))
-            if self.term_value < runtime:
-                logger.info('times up, setting term_state to terminate')
-                self.term_state = 'terminate queue'
+        self.state = AiState.INACTIVE
 
-    def addExp(self,rec_payload):
-        # adds experiment to queue
-        q_utils.addExperimentToQueue(ai=self.ai, 
-                                     datasetId=self.id, 
-                                     experimentPayload=rec_payload)
-        self.ai.labApi.set_ai_status(datasetId = self.id, aiStatus = 'queuing')
+
+    def process_request(self):
+        if (self.state == AiState.INACTIVE):
+            return
+
+        # update state as per termination strategy
+        self.update_state()
+
+        if (self.state == AiState.TERMINATE):
+            self.terminate_request(setServerAiState=True)
+
+        elif (self.state == AiState.WAIT_FOR_QUEUE_EMPTY):
+            return
+
+        elif (self.state == AiState.ADD_RECOMMENDATIONS):
+            logger.debug("AiRequest adding recs ({},{})".format(self.datasetName, self.datasetId))
+            recs = self.ai.generate_recommendations(self.datasetId, 
+                        self.recBatchSize)
+
+            q_utils.addExperimentsToQueue(ai=self.ai, 
+                                     datasetId=self.datasetId, 
+                                     experimentPayloads=recs)
+            self.state = AiState.WAIT_FOR_QUEUE_EMPTY
+
+
+    def update_state(self):
+        if self.state == AiState.INACTIVE:
+            msg = 'Tried to run update_state() when state was INACTIVE.  DatasetId: "' + str(datasetId) + '"  DatasetName: "' + str(datasetName) + '"'
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        # always start by adding recommendations
+        if self.state == AiState.INITILIZE:
+            self.state = AiState.ADD_RECOMMENDATIONS
+            return
+
+
+        ###########
+        # terminal conditions that only run set number of experiments
+        ###########
+        if self.termCondition == TerminalCondition.NUM_RECS:
+            if (q_utils.isQueueEmpty(self.ai, self.datasetId) == True):
+                logger.debug("AiRequest NUM_RECS terminal cond reached ({},{})".format(self.datasetName, self.datasetId))
+                self.state=AiState.TERMINATE
+                return
+            else:
+                return
+
+        ###########
+        # terminal conditions that continue until a terminal condition met
+        #
+        #   if the terminal condition is met, exit immediately.
+        #
+        #   if the terminal condition is not met and the queue is
+        #   empty, add experiments.
+        #
+        #   otherwise, wait and let the queue continue processing
+        ###########
+        if (self.termCondition == TerminalCondition.TIME and
+                time.time() - startTime() > self.termParam):
+            logger.debug("AiRequest TIME terminal cond reached ({},{})".format(self.datasetName, self.datasetId))
+            self.state=AiState.TERMINATE
+            return
+
+        # add experiments if the queue is empty
+        if (q_utils.isQueueEmpty(self.ai, self.datasetId) == True):
+            logger.debug("AiRequest refilling queue ({},{})".format(self.datasetName, self.datasetId))
+            self.state=AiState.ADD_RECOMMENDATIONS
+            return
