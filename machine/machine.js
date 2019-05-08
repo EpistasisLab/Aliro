@@ -1,5 +1,4 @@
 /* Modules */
-require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
