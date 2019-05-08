@@ -261,7 +261,7 @@ class FileUpload extends Component {
         });
 
       } else {
-        console.warn('Filetype not csv:', uploadFile);
+        console.warn('Filetype not csv or tsv:', uploadFile);
         this.setState({
           selectedFile: null,
           datasetPreview: null,
