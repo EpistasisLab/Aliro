@@ -18,6 +18,7 @@ class Admin extends Component {
 
   componentDidMount() {
     this.props.fetchMachines();
+    this.props.fetchEnvVars();
   }
 
   componentDidUpdate(prevProps) {
@@ -63,13 +64,13 @@ class Admin extends Component {
   render() {
     const { status, activeProject } = this.state;
     const { machines } = this.props;
+    const envVarList = [];
 
-    // mock server response with fake Environmental variables 
-    const mockEnvVars = [
-      {key1: 'val1'},
-      {key2: 'val2'},
-      {testThing: 'Some_kind_of_value'}
-    ]
+    machines.envVarStuff && Object.entries(machines.envVarStuff).forEach(([key,value]) => {
+      envVarList.push(
+        {[key]: value}
+      );
+    });
 
     return (
       <div className="admin-scene">
@@ -89,7 +90,7 @@ class Admin extends Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {mockEnvVars.map((envObj, index) => {
+              {envVarList.length && envVarList.map((envObj, index) => {
                   let tempKey = 'envObj_' + index;
                   let envKey = Object.keys(envObj)[0];
                   return (
