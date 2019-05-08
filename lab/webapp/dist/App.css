@@ -78,11 +78,13 @@ body {
   top: 53%;
   left: 94%;
 }
+/* no text area/accordion expanded */
 .pennai .file-upload-ordinal-help-icon {
   position: absolute;
   top: 61%;
   left: 94%;
 }
+/* only ordinal text area/accordion expanded */
 .pennai .file-upload-just-ordinal-help-icon {
   position: absolute;
   top: 17.5%;
