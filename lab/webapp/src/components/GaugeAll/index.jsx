@@ -12,6 +12,9 @@ colors: {
   'train_score': '#f0e442'  ---- light yellow
   '#55D6BE' ----- light sea green
 }
+
+use anonymous function to 'disable' interaction
+look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
   renderChart(expList, chartKey, chartColor) {
@@ -20,6 +23,7 @@ colors: {
     c3.generate({
       bindto: `.${chartKey}`,
       data: {
+        onclick: () => {},
         columns: expList,
         color: function (color, data) {
           tempIndex++;
@@ -35,6 +39,9 @@ colors: {
           }
         },
         type: 'gauge',
+      },
+      legend: {
+        item: { onclick: () => {} }
       },
       gauge: {
         label: {
