@@ -51,7 +51,7 @@ class Dataset extends Component {
     const { dataset } = this.state;
     const tempFile = dataset.files[0];
     let testObj = {
-      name: 'metadataStuff',
+      name: tempFile.filename,
       schema: tempFile
     };
     this.setState({
@@ -183,9 +183,14 @@ class Dataset extends Component {
         <DatasetModal project={metadataStuff} handleClose={this.handleCloseFileDetails} />
         <SceneHeader header={formatDataset(dataset.name)} />
         <Grid columns={2}>
-          <Grid.Column onClick={(e) => this.fileDetailsClick(e)}>
-            <Segment inverted attached="top" className="panel-header">
+          <Grid.Column >
+            <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
               <Header as="h3" content="File Details" />
+              <Icon
+                name="info circle"
+                onClick={(e) => this.fileDetailsClick(e)}
+                style={{position: 'absolute', top: '11px', left: '95%', cursor: 'pointer'}}
+              />
             </Segment>
             <Segment inverted attached="bottom">
               <Grid>
