@@ -13,12 +13,44 @@ import { Header, Grid, Loader } from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 
 class Results extends Component {
+  constructor(props) {
+    super(props);
+    this.getGaugeArray = this.getGaugeArray.bind(this);
+  }
+
   componentDidMount() {
     this.props.fetchExperiment(this.props.params.id);
   }
 
   componentWillUnmount() {
     this.props.clearExperiment();
+  }
+
+  /**
+  * Basic helped method to create array containing [key,val] entries where
+  *   key - name of given score
+  *   value - actual score
+  * passed to Score component which uses javascript library C3 to create graphic
+  */
+  getGaugeArray(keyList) {
+    const { experiment } = this.props;
+    let testList = [];
+    let expScores = experiment.data.scores;
+
+    keyList.forEach(scoreKey => {
+        if(typeof expScores[scoreKey].toFixed === 'function'){
+          let tempLabel;
+          scoreKey.includes('train')
+            ? tempLabel = 'train (' + expScores[scoreKey].toFixed(2) + ')'
+            : tempLabel = 'test (' + expScores[scoreKey].toFixed(2) + ')';
+          testList.push(
+            [tempLabel, expScores[scoreKey]]
+          )
+        }
+      }
+    );
+
+    return testList;
   }
 
   render() {
@@ -57,6 +89,24 @@ class Results extends Component {
       }
     });
 
+    // --- get lists of scores ---
+
+    // balanced accuracy
+    let balancedAccKeys = ['train_score', 'accuracy_score'];
+    // precision scores
+    let precisionKeys = ['train_precision_score', 'precision_score']
+    // AUC
+    let aucKeys = ['train_roc_auc_score', 'roc_auc_score'];
+    // f1 score
+    let f1Keys = ['train_f1_score', 'f1_score'];
+    // recall
+    let recallKeys = ['train_recall_score', 'recall_score'];
+
+    let balancedAccList = this.getGaugeArray(balancedAccKeys);
+    let precisionList = this.getGaugeArray(precisionKeys);
+    let aucList = this.getGaugeArray(aucKeys);
+    let recallList = this.getGaugeArray(recallKeys);
+    let f1List = this.getGaugeArray(f1Keys);
     return (
       <div>
         <SceneHeader
@@ -83,12 +133,53 @@ class Results extends Component {
             </Grid.Column>
             <Grid.Column>
               <Score
-                scoreName="Test Graph"
-                scoreValue={-1}
-                scoreValueList={experiment.data.scores}
+                scoreName="Balanced Accuracy"
+                scoreValueList={balancedAccList}
                 chartKey="all"
                 chartColor="#7D5BA6"
               />
+              <Score
+                scoreName="AUROC"
+                scoreValueList={aucList}
+                chartKey="auc_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="Precision"
+                scoreValueList={precisionList}
+                chartKey="precision_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="Recall"
+                scoreValueList={recallList}
+                chartKey="recall_scores"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="F1 Score"
+                scoreValueList={f1List}
+                chartKey="f1_scores"
+                chartColor="#55D6BE"
+              />
+              {/*<Score
+                scoreName="Precision Score"
+                scoreValue={experiment.data.scores.precision_score}
+                chartKey="precision"
+                chartColor="#55D6BE"
+              />
+              <Score
+                scoreName="Recall Score"
+                scoreValue={experiment.data.scores.recall_score}
+                chartKey="recall"
+                chartColor="#7D5BA6"
+              />
+              <Score
+                scoreName="F1 Score"
+                scoreValue={experiment.data.scores.f1_score}
+                chartKey="f1_score"
+                chartColor="#55D6BE"
+              />*/}
               {/*<Score
                 scoreName="Training Accuracy"
                 scoreValue={experiment.data.scores.train_score}
@@ -100,13 +191,19 @@ class Results extends Component {
                 scoreValue={experiment.data.scores.test_score}
                 chartKey="testing"
                 chartColor="#55D6BE"
-              />*/}
+              />
               <Score
                 scoreName="AUC"
                 scoreValue={experiment.data.scores.roc_auc_score}
                 chartKey="auc"
-                chartColor="#59ABE3"
+                chartColor="#7D5BA6"
               />
+              <Score
+                scoreName="Train AUC"
+                scoreValue={experiment.data.scores.train_roc_auc_score}
+                chartKey="train_auc"
+                chartColor="#55D6BE"
+              />*/}
             </Grid.Column>
           </Grid.Row>
         </Grid>
