@@ -45,6 +45,7 @@ class RequestManager:
 
         logger.info("initilized RequestManager.  defaultTermCondition:{}, defaultTermParam:{}".format(self.defaultTermCondition, self.defaultTermParam))
 
+
     def add_request(self, datasetId, datasetName):
         """ Add a new ai request for the given datasetId
 
@@ -133,7 +134,7 @@ class AiRequest:
         if termCondition == TerminalCondition.NUM_RECS:
             self.recBatchSize = self.termParam
         else:
-            self.recBatchSize = defaultRecBatchSize
+            self.recBatchSize = self.defaultRecBatchSize
 
         self.state = AiState.INITILIZE
 
@@ -220,7 +221,7 @@ class AiRequest:
         #   otherwise, wait and let the queue continue processing
         ###########
         if (self.termCondition == TerminalCondition.TIME and
-                time.time() - startTime() > self.termParam):
+                time.time() - self.startTime > self.termParam):
             logger.debug("AiRequest TIME terminal cond reached ({},{})".format(self.datasetName, self.datasetId))
             self.state=AiState.TERMINATE
             return

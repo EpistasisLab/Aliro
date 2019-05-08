@@ -9,7 +9,7 @@ export const MIN_EXPECTED_DATASET_COUNT = 4; // min number of datasets registere
 export const DATASET_PATH = '/appsrc/data/datasets/test/integration'  // datasets for testing
 export const NUM_AI_RECS = 1
 //export const NUM_AI_RECS = os.environ['AI_NUMRECOMMEND']
-export const JEST_TIMEOUT = 30000
+export const JEST_TIMEOUT = 50000
 
 // hacky delay
 export const delay = (ms) => {
