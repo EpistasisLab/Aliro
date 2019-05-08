@@ -62,11 +62,30 @@ body {
   max-width: 350px;
 }
 .pennai .file-upload-categorical-help-icon {
-  position: relative;
+  position: absolute;
+  top: 7px;
+  left: 94%;
+}
+/* just category text area expanded */
+.pennai .file-upload-ord-with-cat-help-icon {
+  position: absolute;
+  top: 89%;
+  left: 94%;
+}
+/* category & ordinal text areas both expanded */
+.pennai .file-upload-ord-and-cat-help-icon {
+  position: absolute;
+  top: 53%;
   left: 94%;
 }
 .pennai .file-upload-ordinal-help-icon {
-  position: relative;
+  position: absolute;
+  top: 61%;
+  left: 94%;
+}
+.pennai .file-upload-just-ordinal-help-icon {
+  position: absolute;
+  top: 17.5%;
   left: 94%;
 }
 .pennai .file-upload-dependent-help-icon {

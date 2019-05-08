@@ -414,6 +414,17 @@ class FileUpload extends Component {
    */
    getAccordionInputs() {
      const { activeAccordionIndexes } = this.state;
+     
+     let ordIconClass; // CSS class to position help icon
+     // determine which combos of accordions are open and set respective CSS class
+     activeAccordionIndexes.includes(1)
+       ? ordIconClass = "file-upload-ord-with-cat-help-icon"
+       : ordIconClass = "file-upload-ordinal-help-icon";
+     activeAccordionIndexes.includes(0)
+       ? ordIconClass = "file-upload-just-ordinal-help-icon" : null;
+     activeAccordionIndexes.includes(1) && activeAccordionIndexes.includes(0)
+       ? ordIconClass = "file-upload-ord-and-cat-help-icon" : null;
+
      let accordionContent = (
       <Accordion fluid exclusive={false}>
          <Accordion.Title
@@ -475,7 +486,7 @@ class FileUpload extends Component {
              }
              trigger={
                <Icon
-                 className="file-upload-ordinal-help-icon"
+                 className={ordIconClass}
                  inverted
                  size="large"
                  color="orange"
