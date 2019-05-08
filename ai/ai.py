@@ -21,6 +21,7 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import *
 from collections import OrderedDict
 from ai.request_manager import RequestManager
 
@@ -409,7 +410,8 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','exhaustive','meta','knn','svd'],
+            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
+                       'knnbasic','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
             default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
@@ -450,8 +452,12 @@ def main():
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
-            'knn': KNNMetaRecommender,
-            'svd': SVDRecommender
+            'knnmeta': KNNMetaRecommender,
+            'svd': SVDRecommender,
+            'cocluster': CoClusterRecommender,
+            'knnmeans': KNNWithMeansRecommender,
+            'knnbasic': KNNBasicRecommender,
+            'slopeone': SlopeOneRecommender
             }
     
     rec_args['metric'] = 'accuracy'
