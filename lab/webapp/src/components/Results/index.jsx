@@ -96,7 +96,7 @@ class Results extends Component {
     // precision scores
     let precisionKeys = ['train_precision_score', 'precision_score']
     // AUC
-    let aucKeys = ['roc_auc_score', 'train_roc_auc_score'];
+    let aucKeys = ['train_roc_auc_score', 'roc_auc_score'];
     // f1 score
     let f1Keys = ['train_f1_score', 'f1_score'];
     // recall

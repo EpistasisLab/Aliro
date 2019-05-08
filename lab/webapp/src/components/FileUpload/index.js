@@ -50,6 +50,24 @@ class FileUpload extends Component {
     this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
+    // help text for dataset upload form - dependent column, categorical & ordinal features
+    this.depColHelpText = `The column that describes how each row is classified.
+    For example, if analyzing a dataset of patients with different types of diabetes,
+    this column may have the values "type1", "type2", or "none".`;
+
+    this.catFeatHelpText = (<p>Categorical features have a discrete number of categories that do not have an intrinsic order.
+    Some examples include sex ("male", "female") or eye color ("brown", "green", "blue"...).
+    <br/><br/>
+    Describe these features using a comma separated list of the field names:
+    <i>sex, eye_color</i></p>);
+
+    this.ordFeatHelpText = (<p>Ordinal features have a discrete number of categories,
+    and the categories have a logical order. Some examples include size ("small",
+    "medium", "large"), or rank results ("first", "second", "third").
+    <br/><br/>
+    Describe these features using a json map. The map key is the name of the field,
+     and the map value is an ordered list of the values the field can take:
+    <i>{"{\"rank\":[\"first\", \"second\", \"third\"], \"size\":[\"small\", \"medium\", \"large\"]}"}</i></p>);
   }
 
   /**
@@ -413,7 +431,7 @@ class FileUpload extends Component {
              header="Categorical Features Help"
              content={
                <div className="content">
-                 <p>Categorical Features help description</p>
+                {this.catFeatHelpText}
                </div>
              }
              trigger={
@@ -452,7 +470,7 @@ class FileUpload extends Component {
              header="Ordinal Features Help"
              content={
                <div className="content">
-                 <p>Ordinal Features help description</p>
+                {this.ordFeatHelpText}
                </div>
              }
              trigger={
@@ -541,7 +559,9 @@ class FileUpload extends Component {
                 header="Dependent Column Help"
                 content={
                   <div className="content">
-                    <p>Dependent Col help description</p>
+                    <p>
+                      {this.depColHelpText}
+                    </p>
                   </div>
                 }
                 trigger={
