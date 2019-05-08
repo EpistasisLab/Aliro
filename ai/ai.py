@@ -145,6 +145,8 @@ class AI():
             self.term_value = self.n_recs
         elif self.term_condition == 'time':
             self.term_value = max_time
+        else:
+            self.term_value = None
 
         # start the request manager
         self.requestManager = RequestManager(
@@ -449,7 +451,7 @@ def main():
             default=60, help=('Amount of time to allow recs in seconds. '
                 'Only works when term_condition set to "time".'))
     parser.add_argument('-term_condition',action='store',dest='TERM_COND',
-            type=str, default='n_recs', choices=['n_recs','time'],
+            type=str, default='n_recs', choices=['n_recs','time','continuous'],
             help=('Termination condition for the AI.'))
     parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',
             default=True, help='Print out more messages.')

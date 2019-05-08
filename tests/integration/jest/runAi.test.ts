@@ -58,11 +58,14 @@ describe('ai', () => {
 
 		var count = 0
 		console.log("starting timeout...")
-		while (dataset[0].ai === ('requested') && count < 10) {
+		while ((dataset[0].ai === ('requested') || (dataset[0].ai === ('on'))) 
+				&& count < 6) {
 			util.delay(10000)
 			count = count + 1
+
+			var experiments = await labApi.fetchExperiments()
 			dataset = await labApi.fetchDataset(datasetId)
-			console.log("dataset[0].ai, count (" + count + "): ", dataset[0].ai)
+			console.log("dataset[0].ai, count (" + count + "): ", dataset[0].ai, " total experiment count: ", experiments.length)
 		}
 		console.log("finished timeout...")
 		console.log("dataset[0].ai: ", dataset[0].ai)
