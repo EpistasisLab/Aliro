@@ -89,11 +89,13 @@ class RequestManager:
     def shutdown(self):
         """ Terminate all requests and release all request threads
         """
+        
+        # release all datasetThreads
+        q_utils.exitFlag = 1
+        
         for dataId, req in self.aiRequests.items(): 
             req.terminate_request()
 
-        # release all datasetThreads
-        q_utils.exitFlag = 1
 
 
 @unique
