@@ -848,10 +848,10 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                             .then((body) => {
                                                 resolve(body);
                                             })
-                                            .catch(() => {
+                                            .catch((err) => {
                                                 db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
                                                 reject({
-                                                    error: "Experiment failed to run"
+                                                    error: `Experiment failed to run: project '${projId}' failed on machine ${availableMac.address}.`
                                                 });
                                             });
                                     })
