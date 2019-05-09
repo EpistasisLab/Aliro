@@ -70,7 +70,7 @@ def test_main_command_line_exit_with_exception(mock_request, mock_post, mock_sle
     with patch.object(sys, 'argv', testargs):
         aiProc = ai.ai.main()
 
-@patch('requests.request', side_effect=mocker.mocked_requests)
+@patch('requests.request', side_effect=mocker.mocked_requests_request)
 @patch('requests.post', side_effect=mocker.mocked_requests_post)
 @patch('time.sleep', side_effect=[None, None, SystemExit]) #Third time time.sleep() is called, SystemExit exception is raised
 @patch('sys.argv', ["a", "b"])
