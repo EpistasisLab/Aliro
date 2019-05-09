@@ -10,24 +10,38 @@ class GaugeAll extends Component {
 colors: {
   'test_score': '#0072b2',  ---- light blue
   'train_score': '#f0e442'  ---- light yellow
+  '#55D6BE' ----- light sea green
 }
+
+use anonymous function to 'disable' interaction
+look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
+
   renderChart(expList, chartKey, chartColor) {
+    //window.console.log('exp list: ', expList);
+    let tempIndex = 0;
     c3.generate({
       bindto: `.${chartKey}`,
       data: {
-        columns: [
-          [expList[0][0].toString(), expList[0][1]],
-          [expList[1][0].toString(), expList[1][1]]
-        ],
-        colors: {
-          'test_score': '#55D6BE',
-          'train_score': '#7D5BA6'
+        onclick: () => {},
+        columns: expList,
+        color: function (color, data) {
+          tempIndex++;
+          switch (tempIndex % 2) {
+            case 0:
+              return '#55d6be'; // sea foam green
+              break;
+            case 1:
+              return '#7D5BA6'; // purple
+              break;
+            default:
+              return color;
+          }
         },
         type: 'gauge',
-        //onclick: function (d, i) { console.log("onclick", d, i); },
-        //onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-        //onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+      },
+      legend: {
+        item: { onclick: () => {} }
       },
       gauge: {
         label: {
@@ -41,7 +55,6 @@ colors: {
         min: 0.5,
         max: 1.0
       },
-
       interaction: {
         enabled: false
       }

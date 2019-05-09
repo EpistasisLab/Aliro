@@ -18,6 +18,7 @@ class Admin extends Component {
 
   componentDidMount() {
     this.props.fetchMachines();
+    this.props.fetchEnvVars();
   }
 
   componentDidUpdate(prevProps) {
@@ -63,6 +64,13 @@ class Admin extends Component {
   render() {
     const { status, activeProject } = this.state;
     const { machines } = this.props;
+    const envVarList = [];
+
+    machines.envVarStuff && Object.entries(machines.envVarStuff).forEach(([key,value]) => {
+      envVarList.push(
+        {[key]: value}
+      );
+    });
 
     return (
       <div className="admin-scene">
@@ -70,6 +78,32 @@ class Admin extends Component {
         <div className="scene-header">
           <Header inverted size="huge" content="Admin" />
         </div>
+        <Segment inverted attached="top" className="panel-header">
+          <Header as="h3" content="Environmental Variables" style={{ display: 'inline', marginRight: '0.5em' }} />
+        </Segment>
+        <Segment inverted attached="bottom">
+          <Table inverted celled compact unstackable>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Key</Table.HeaderCell>
+                <Table.HeaderCell>Value</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {envVarList.length && envVarList.map((envObj, index) => {
+                  let tempKey = 'envObj_' + index;
+                  let envKey = Object.keys(envObj)[0];
+                  return (
+                    <Table.Row key={tempKey}>
+                      <Table.Cell>{envKey}</Table.Cell>
+                      <Table.Cell>{envObj[envKey]}</Table.Cell>
+                    </Table.Row>
+                  )
+                }
+              )}
+            </Table.Body>
+          </Table>
+        </Segment>
         <p>{`Total machines: ${machines.list.length}`}</p>
         {machines.list.map(m =>
           <div key={m._id}>
@@ -77,13 +111,13 @@ class Admin extends Component {
               <Header as="h3" inverted content={`Machine: ${m.hostname}`} />
               <span className="muted">{m._id}</span>
               <span className="float-right">
-                <span className="muted">Status: </span>
+                {/*<span className="muted">Status: </span>
                 <Popup
                   size="tiny"
                   position="top center"
                   content="Unknown"
                   trigger={<Icon link inverted name="circle" color={status[m._id]} />}
-                />
+                />*/}
               </span>
             </Segment>
             <Segment inverted attached="bottom">

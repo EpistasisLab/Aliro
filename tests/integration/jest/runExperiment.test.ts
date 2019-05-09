@@ -197,7 +197,7 @@ describe('run experiment', () => {
 			"tol":1e-05
 		};
 
-		let datasetName = 'banana'
+		let datasetName = 'magic'
 
 		//-------------------
 	 	// get dataset
@@ -257,6 +257,8 @@ describe('run experiment', () => {
 		var experimentResults = await labApi.fetchExperiment(submitResult._id)
 		expect(experimentResults._status).toEqual('cancelled')
 
+		// hacky... 
+		util.delay(20000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});

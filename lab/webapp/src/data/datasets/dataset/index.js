@@ -43,14 +43,19 @@ const dataset = (state = {}, action) => {
       let fileUploadResp = {
         fileUploadResp: action.payload
       }
-      return {...state, fileUploadResp: action.payload, isUploading: false };
+      return {
+        ...state,
+        fileUploadResp: action.payload,
+        fileUploadError: undefined,
+        isUploading: false
+      };
     case UPLOAD_DATASET_FAILURE:
       //window.console.log('UPLOAD_DATASET_FAILURE action', action);
       //window.console.log('UPLOAD_DATASET_FAILURE state', state);
       let fileUploadError = {
         errorResp: action.payload
       }
-      return {...state, fileUploadResp: action.payload, isUploading: false };
+      return {...state, fileUploadError, isUploading: false };
       //return state;
     default:
       return state;
