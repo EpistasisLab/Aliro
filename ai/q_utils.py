@@ -111,26 +111,28 @@ def process_data(dsThread):
     logger.debug("process_data("+ str(dsThread) + ") exitFlag:" + str(exitFlag))
 
     while not exitFlag:
-        dsThread.queueLock.acquire()
-        dsThread.processingRequest = False
-
-        try:
-            # if the queue is empty, a queue.Empty exception will be thrown
-            # otherwise, set the processingRequest flag untill the active 
-            # request is successfully sent
-            data = dsThread.workQueue.get() 
-            dsThread.processingRequest = True
-
-            logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
-            dsThread.ai.transfer_rec(data) # blocking
-            if(dsThread.workQueue.qsize() % 10 == 0):
-                logger.debug(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
-                      dsThread.name)
-
+        time.sleep(.001)
+        if not dsThread.workQueue.empty():
+            dsThread.queueLock.acquire()
             dsThread.processingRequest = False
 
-        except queue.Empty:
-            pass
+            try:
+                # if the queue is empty, a queue.Empty exception will be thrown
+                # otherwise, set the processingRequest flag untill the active 
+                # request is successfully sent
+                data = dsThread.workQueue.get() 
+                dsThread.processingRequest = True
 
-        finally:
-            dsThread.queueLock.release()
+                logger.debug("process_data("+ str(dsThread) + ") - transfer_rec")
+                dsThread.ai.transfer_rec(data) # blocking
+                if(dsThread.workQueue.qsize() % 10 == 0):
+                    logger.debug(str(dsThread.workQueue.qsize()) + ' Jobs in queue for ' + 
+                          dsThread.name)
+
+                dsThread.processingRequest = False
+
+            except queue.Empty:
+                pass
+
+            finally:
+                dsThread.queueLock.release()
