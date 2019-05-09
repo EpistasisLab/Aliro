@@ -131,6 +131,37 @@ app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
     res.send(metafeatures)
 });
 
+// Get environmental vars
+app.get("/api/environment", (req, res, next) => {
+    var envVars = [
+        "AI_AUTOSTART",
+        "AI_RECOMMENDER",
+        "AI_VERBOSE",
+        "AI_PMLB_KNOWLEDGEBASE",
+        "AI_TERM_COND",
+        "AI_NUMRECOMMEND",
+        "AI_MAX_TIME",
+        "STARTUP_DATASET_PATH",
+        "EXP_TIMEOUT",
+        "DT_MAX_DEPTH"
+    ]
+
+    var payload = {}
+
+    console.log(payload)
+
+    envVars.forEach(function(envVar) {
+      if (envVar in process.env) {
+          console.log(`env var: ${envVar}`)
+          console.log(`val: ${process.env[envVar]}`)
+          payload[envVar] = process.env[envVar]
+      }
+        else payload[envVar] = "-NOT SET-"
+    });
+
+    res.send(payload);
+});
+
 
 // Get collection for all API db-based endpoints
 app.param("apipath", (req, res, next, apipath) => {

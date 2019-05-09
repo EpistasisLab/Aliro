@@ -56,10 +56,39 @@ body {
 }
 .pennai .file-upload-accordion-title {
   position: relative;
-  left: 55%;
 }
 .pennai .file-upload-dependent-text-field {
   margin-top: 15px;
+  max-width: 350px;
+}
+.pennai .file-upload-categorical-help-icon {
+  position: absolute;
+  top: 7px;
+  left: 94%;
+}
+/* just category text area expanded */
+.pennai .file-upload-ord-with-cat-help-icon {
+  position: absolute;
+  top: 89%;
+  left: 94%;
+}
+/* category & ordinal text areas both expanded */
+.pennai .file-upload-ord-and-cat-help-icon {
+  position: absolute;
+  top: 53%;
+  left: 94%;
+}
+/* no text area/accordion expanded */
+.pennai .file-upload-ordinal-help-icon {
+  position: absolute;
+  top: 61%;
+  left: 94%;
+}
+/* only ordinal text area/accordion expanded */
+.pennai .file-upload-just-ordinal-help-icon {
+  position: absolute;
+  top: 17.5%;
+  left: 94%;
 }
 .pennai .file-upload-dependent-help-icon {
   position: relative;
@@ -73,12 +102,10 @@ body {
   color: rgba(255,255,255,.9) !important;
 }
 .pennai .file-upload-categorical-text-area {
-  position: relative;
-  right: 55%;
+
 }
 .pennai .file-upload-ordinal-text-area {
-  position: relative;
-  right: 55%;
+
 }
 .pennai .file-upload-categorical-accord-title {
   color: rgba(255,255,255,.9) !important;
@@ -96,6 +123,10 @@ body {
 
 .pennai .dataset-card .panel-header {
     max-height: 57px;
+}
+
+.pennai .dataset-card .ui.grid.cat-and-ord-dataset-table{
+  max-width: 400px
 }
 
 .pennai .dataset-card .ui.header.title {

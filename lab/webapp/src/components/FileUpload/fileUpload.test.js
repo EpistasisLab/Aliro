@@ -25,6 +25,8 @@ describe('basic testing of fileupload react component', () => {
   let testFileUpload;
   let tree;
   let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+  let fakeFileTsv = {target: {files: [{name: 'iris.tsv'}]}};
+  let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
@@ -111,6 +113,18 @@ describe('basic testing of fileupload react component', () => {
     expect(testFileUpload.state('dependentCol')).toEqual('test_class');
   })
 
+  it('try uploading non csv/tsv file type', () => {
+    testFileUpload.find('input').at(0).prop('onChange')(badFakeFile);
+    testFileUpload.update();
+    //expect(testFileUpload.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
+    expect(testFileUpload.state('selectedFile')).toBeUndefined();
+    let formBody = testFileUpload.find('#file-upload-form-input-area');
+
+    // check for CSS style which hides form
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
+  })
+
   it('try testing generateFileData - good input', () => {
     // use dive() to get at inner FileUpload class functions -
     // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
@@ -155,6 +169,22 @@ describe('basic testing of fileupload react component', () => {
     expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
   })
 
+  it('Select tsv file - expect form to be displayed', () => {
+    testFileUpload.find('input').at(0).prop('onChange')(fakeFileTsv);
+
+    // update() is supposed to forceUpdate/re-render the component
+    testFileUpload.update();
+    testFileUpload.setState({
+      selectedFile: fakeFileTsv.target.files[0]
+    });
+    let formBody = testFileUpload.find('#file-upload-form-input-area');
+
+    // check for CSS style which hides form
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(false);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
+    expect(testFileUpload.state('selectedFile')).toEqual(fakeFileTsv.target.files[0]);
+  })
+
   it('try testing generateFileData - bad input, no ordinal features', () => {
     // use dive() to get at inner FileUpload class functions -
     // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
@@ -168,7 +198,7 @@ describe('basic testing of fileupload react component', () => {
     // add fake file with filename so generateFileData will do something, if
     // no file & filename present generateFileData returns blank/empty formData
     shallowFileUpload.setState({
-      selectedFile: fakeFile.target.files[0],
+      selectedFile: fakeFileTsv.target.files[0],
       dependentCol: fakeUserInput.depCol,
       catFeatures: fakeUserInput.catCols,
       ordinalFeatures: fakeUserInput.ordFeats
@@ -181,7 +211,7 @@ describe('basic testing of fileupload react component', () => {
     const expectedInput = {
       depCol: 'target_c@#$@#$',
       catCols: ['a', 'b', 'c', '4'],
-      ordFeats: {}
+      ordFeats: ''
     };
     // use instance to get access to inner function
     const instance = shallowFileUpload.instance();
@@ -224,7 +254,7 @@ describe('basic testing of fileupload react component', () => {
     const expectedInput = {
       depCol: 'target_c@#$@#$',
       catCols: ['a', 'b', 'c', '4'],
-      ordFeats: {}
+      ordFeats: ''
     };
     // use instance to get access to inner function
     const instance = shallowFileUpload.instance();
@@ -237,6 +267,68 @@ describe('basic testing of fileupload react component', () => {
     expect(testData.errorResp).toEqual('SyntaxError: Unexpected token { in JSON at position 35');
   })
 })
+// 
+// describe('testing user input with table', () => {
+//   describe.each`
+//     testname | dependent_column | categorical_cols | ordinal_features | expected_cat | expected_ord
+//     ${`Good input - no cat or ord`} | ${`test_class`} | ${""} | ${""} | ${[]} | ${{}}
+//     ${`Good input - cat no ord`} | ${`test_class`} | ${"cat1, cat2"} | ${""} | ${["cat1","cat2"]} | ${{}}
+//     ${`Good input - cat and ord`} | ${`test_class`} | ${"cat1, cat2"} | ${'{"species": ["cat", "dog", "bird"]}'}| ${["cat1","cat2"]} | ${{'species': ["cat", "dog", "bird"]}}
+//     `("test good input", ({testname, dependent_column, categorical_cols, ordinal_features, expected_cat, expected_ord}) => {
+//       it(`${testname}`, () => {
+//         //console.log(`${testname} test`);
+//
+//         let store = mockStore(initialState);
+//         const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
+//         let testFileUpload;
+//         let tree;
+//         let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+//         const expectedInput = {
+//           depCol: 'test_class',
+//           catCols: ['cat1', 'cat2'],
+//           ordFeats: {
+//             species: ["cat", "dog", "bird"]
+//           }
+//         };
+//
+//         shallowFileUpload.setState({
+//           selectedFile: fakeFile.target.files[0],
+//           dependentCol: `${dependent_column}`,
+//           catFeatures: `${categorical_cols}`,
+//           ordinalFeatures: `${ordinal_features}`
+//         });
+//
+//
+//         // use instance to get access to inner function
+//         const instance = shallowFileUpload.instance();
+//         // create spy, check function gets called
+//         const spy = jest.spyOn(instance, 'generateFileData');
+//         const testData = instance.generateFileData(); // FormData
+//         console.log(`test data: `, testData);
+//         // get stuff stored in returned formdata, stingified in preparation to make
+//         // network request
+//         const metadata = JSON.parse(testData.get('_metadata'));
+//         console.log(`test data: `, metadata);
+//         expect(spy).toBeCalled();
+//         // value of _metadata defined in generateFileData
+//         expect(metadata.dependent_col).toEqual(`${dependent_column}`);
+//         expect(metadata.categorical_features).toEqual(`${expected_cat}`);
+//         expect(metadata.ordinal_features).toEqual(`${expected_ord}`);
+//       })
+//     })
+//
+//   // describe.each`
+//   //   testname | dependent_column | categoricals | ordinal
+//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${[]} | ${{}}
+//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${"cat1, cat2"} | ${{}}
+//   // `('test good input', ({testname, dependent_column, categorical, ordinal}) => {
+//   //   it(`${testname}`, () => {
+//   //          console.log(`${testname} test`);
+//   //        })
+//   // });
+// })
+//
+
 
 // https://jestjs.io/docs/en/tutorial-async
 // jest mock is not working, not returning promise, must be improperly configured and/or
@@ -262,7 +354,7 @@ describe('mock network request', () => {
       'username': 'testuser',
       'dependent_col' : 'class',
       'categorical_features': '',
-      'ordinal_features': {},
+      'ordinal_features': '',
       'timestamp': Date.now(),
     },
     {
@@ -270,7 +362,7 @@ describe('mock network request', () => {
       'username': 'testuser',
       'dependent_col' : 'target_class',
       'categorical_features': '',
-      'ordinal_features': {},
+      'ordinal_features': '',
       'timestamp': Date.now(),
     }
   ];

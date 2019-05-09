@@ -1,4 +1,4 @@
-# 
+#
 # AI agent for Penn AI.
 #
 from sklearn.tree import DecisionTreeClassifier
@@ -7,7 +7,6 @@ import pandas as pd
 from time import sleep
 import time
 import datetime
-import json
 import pickle
 import pdb
 import ai.api_utils as api_utils
@@ -46,14 +45,14 @@ class AI():
     :param api_path: string - path to the lab api server
     :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
-    :param rec_score_file: file - pickled score file to keep persistent scores 
+    :param rec_score_file: file - pickled score file to keep persistent scores
     between sessions
     :param verbose: Boolean
     :param warm_start: Boolean - if true, attempt to load the ai state from the file
     provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
     :param datasets: str or False - if not false, a comma seperated list of datasets
-    to turn the ai on for at startup 
+    to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
 
     """
@@ -62,11 +61,11 @@ class AI():
                 rec=None,
                 api_path=None,
                 extra_payload=dict(),
-                user='testuser', 
+                user='testuser',
                 rec_score_file='rec_state.obj',
                 verbose=True,
-                warm_start=False, 
-                n_recs=1, 
+                warm_start=False,
+                n_recs=1,
                 datasets=False,
                 use_knowledgebase=False,
                 term_condition='n_recs',
@@ -74,7 +73,7 @@ class AI():
         """initializes AI managing agent."""
         # recommender settings
         if api_path == None:
-            api_path = ('http://' + os.environ['LAB_HOST'] + ':' + 
+            api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
                         os.environ['LAB_PORT'])
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
@@ -97,16 +96,16 @@ class AI():
 
         # api
         self.labApi = api_utils.LabApi(
-            api_path=self.api_path, 
-            user=self.user, 
-            api_key=self.api_key, 
+            api_path=self.api_path,
+            user=self.user,
+            api_key=self.api_key,
             extra_payload=extra_payload,
             verbose=self.verbose)
 
-        self.load_options() #loads algorithm parameters to self.ui_options 
+        self.load_options() #loads algorithm parameters to self.ui_options
 
         # create a default recommender if not set
-        if (rec): 
+        if (rec):
             self.rec = rec
         else:
             self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
@@ -122,16 +121,16 @@ class AI():
         logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.head()))
 
         # tmp = self.labApi.get_all_ml_p()
-        # tmp.to_csv('ml_p_options.csv') 
+        # tmp.to_csv('ml_p_options.csv')
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
 
-        # dictionary of dataset threads, initilized and used by q_utils.  
+        # dictionary of dataset threads, initilized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
-        
+
         # local dataframe of datasets and their metafeatures
         self.dataset_mf = pd.DataFrame()
 
@@ -175,7 +174,7 @@ class AI():
                                           lambda x: self.ml_name_to_id[x])
 
         #TODO: Verify that conversion from name to id is needed....
-        # WGL: yes at the moment we need this until hash is implemented. 
+        # WGL: yes at the moment we need this until hash is implemented.
         # we can add a check at dataset upload to prevent repeat dataset names in
         # the mean time.
         self.user_datasets = self.labApi.get_user_datasets(self.user)
@@ -193,10 +192,10 @@ class AI():
         # all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
-        self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique()) 
+        self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique())
         # self.update_dataset_mf(kb['resultsData'])
         self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
-        
+
         logger.info('pmlb knowledgebase loaded')
 
     def load_options(self):
@@ -277,7 +276,7 @@ class AI():
             self.new_data = pd.DataFrame()
 
     def check_requests(self):
-        """Check to see if any new AI requests have been submitted.  
+        """Check to see if any new AI requests have been submitted.
         If so, add them to self.request_queue.
 
         :returns: Boolean - True if new AI requests have been submitted
@@ -296,7 +295,7 @@ class AI():
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                       ': new ai request for:'+
                       ';'.join([r['name'] for r in aiOnRequests]))
-            
+
             # set AI flag to 'on' to acknowledge requests received
             for r in aiOnRequests:
                 self.labApi.set_ai_status(datasetId = r['_id'], 
@@ -359,26 +358,26 @@ class AI():
 
     def transfer_rec(self, rec_payload):
         """Attempt to send a recommendation to the lab server.
-        Continues until recommendation is successfully submitted or an 
+        Continues until recommendation is successfully submitted or an
         unexpected error occurs.
 
         :param rec_payload: dictionary - the payload describing the experiment
         """
         logger.info("transfer_rec(" + str(rec_payload) + ")")
         submitstatus = self.labApi.launch_experiment(
-                            algorithmId=rec_payload['algorithm_id'], 
+                            algorithmId=rec_payload['algorithm_id'],
                             payload=rec_payload)
 
-        logger.debug("transfer_rec() starting loop, submitstatus: " + 
+        logger.debug("transfer_rec() starting loop, submitstatus: " +
                      str(submitstatus))
-        while('error' in submitstatus 
+        while('error' in submitstatus
               and submitstatus['error'] == 'No machine capacity available'):
             logger.debug(submitstatus['error'])
             sleep(3)
             submitstatus = self.labApi.launch_experiment(
                     rec_payload['algorithm_id'], rec_payload)
 
-        logger.debug("transfer_rec() exiting loop, submitstatus: " + 
+        logger.debug("transfer_rec() exiting loop, submitstatus: " +
                      str(submitstatus))
 
         if 'error' in submitstatus:
@@ -400,8 +399,8 @@ class AI():
         out = open(self.rec_score_file,'wb')
         state={}
         if(hasattr(self.rec, 'scores')):
-            #TODO: make this a more generic. Maybe just save the 
-            # AI or rec object itself. 
+            #TODO: make this a more generic. Maybe just save the
+            # AI or rec object itself.
             # state['trained_dataset_models'] = self.rec.trained_dataset_models
             state['scores'] = self.rec.scores
             state['last_update'] = self.last_update
@@ -422,7 +421,7 @@ class AI():
               self.last_update = state['last_update']
               logger.info('loaded previous state from '+self.last_update)
 
-         
+
 
 ####################################################################### Manager
 import argparse
@@ -430,7 +429,7 @@ import argparse
 def main():
     """Handles command line arguments and runs Penn-AI."""
     parser = argparse.ArgumentParser(
-            description='PennAI is a recommendation system for data science. ', 
+            description='PennAI is a recommendation system for data science. ',
             add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
@@ -460,7 +459,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=False, 
+            dest='USE_KNOWLEDGEBASE', default=False,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -479,7 +478,7 @@ def main():
             'knn': KNNMetaRecommender,
             'svd': SVDRecommender
             }
-    
+
     rec_args['metric'] = 'accuracy'
 
     print('=======','Penn AI','=======')#,sep='\n')
