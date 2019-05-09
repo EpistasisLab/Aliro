@@ -132,4 +132,5 @@ def process_data(dsThread):
         except queue.Empty:
             pass
 
-        dsThread.queueLock.release()
+        finally:
+            dsThread.queueLock.release()
