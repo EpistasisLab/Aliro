@@ -131,6 +131,7 @@ def check_n_recs(rec):
     rec_obj = rec(ml_p=ml_p)
     logger.info('set rec')
    
+    dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
@@ -148,4 +149,4 @@ def test_n_recs():
     logger.info("test_n_recs")
     print("test_n_recs")
     for recommender in test_recommenders:
-        yield (check_rec, recommender)
+        yield (check_n_recs, recommender)
