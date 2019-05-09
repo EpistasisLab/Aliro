@@ -304,6 +304,7 @@ class AI():
                 self.requestManager.add_request(datasetId=r['_id'],
                                                 datasetName=r['name'])
 
+        time.sleep(.1)
         # get all datasets that have a manual 'off' status
         # and terminate their ai requests
         dsFilter = {'ai':['off', 'dummy']}
