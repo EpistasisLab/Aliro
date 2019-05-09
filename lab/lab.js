@@ -25,7 +25,16 @@ const assert = require("assert");
 
 /* App instantiation */
 // unregister any machine instances before starting the server
+// reset ai status of current datasets
+console.log("unregistering machines")
 db.machines.remove({});
+console.log("resetting ai status")
+db.datasets.updateMany(
+    {}, 
+    {"$unset" : {ai:""}}
+);
+console.log("cleaning up experiments")
+db.experiments.remove({ "_status": "running" })
 
 var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
@@ -39,6 +48,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
+
+/* Startup */
+//emitEvent('updateAllAiStatus', null);
 
 /* API */
 
@@ -304,6 +316,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
 
 });
 
+
 //toggles ai for dataset
 app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
@@ -323,66 +336,6 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
         });
 });
 
-
-//get data dictionary for dataset
-app.get("/api/userdatasets/:id/dictionary", jsonParser, (req, res, next) => {
-
-        db.datasets.find({
-            _project_id: db.toObjectID(req.params.id)
-        }).toArrayAsync() // Get experiments for project
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            next(err);
-        });
-
-db.getCollection('datasets').find({
-    _id:"5ccc7f3745fe26003dd41284"
-})
-
-
-        db.datasets.findByIdAsync(datasetId, {
-            files: 1
-        })
-        .then((dataset) => {
-            if (dataset && (dataset['files'] !== undefined)) {
-            //if (dataset['files'] !== undefined) {
-                untrimmed = dataset['files'];
-                //sort and trim to get latest unique files
-                sorted = sortObjArray(sortObjArray(untrimmed, 'filename'), 'timestamp');
-                files = removeDuplicatesFromObjArray(sorted, 'filename');
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file['mimetype'] && file['mimetype'] == "text/csv") {
-                        //console.log(file['mimetype']);
-                        filesP[i] = db.experiments.updateByIdAsync(experiment._id, {
-                            $push: {
-                                files: file
-                            }
-                        });
-                    }
-                };
-            }
-        })
-    return filesP;
-
-    db.datasets.updateByIdAsync(req.params.id, {
-            $set: {
-                ai: req.body.ai
-            }
-        })
-        .then((result) => {
-            emitEvent('aiToggled', req);
-
-            res.send({
-                message: "AI toggled for " + req.params.id
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
-});
 
 // register new machine
 app.post("/api/v1/machines", jsonParser, (req, res, next) => {
