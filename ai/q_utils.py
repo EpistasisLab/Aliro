@@ -111,7 +111,7 @@ def process_data(dsThread):
     logger.debug("process_data("+ str(dsThread) + ") exitFlag:" + str(exitFlag))
 
     while not exitFlag:
-        time.sleep(.001)
+        time.sleep(.3)
         if not dsThread.workQueue.empty():
             dsThread.queueLock.acquire()
             dsThread.processingRequest = False
