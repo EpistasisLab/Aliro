@@ -139,7 +139,7 @@ class Results extends Component {
                 chartColor="#7D5BA6"
               />
               <Score
-                scoreName="AUROC"
+                scoreName="AUC"
                 scoreValueList={aucList}
                 chartKey="auc_scores"
                 chartColor="#55D6BE"
