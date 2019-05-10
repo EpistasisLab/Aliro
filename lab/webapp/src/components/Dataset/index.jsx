@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
 import DatasetModal from './components/DatasetModal';
-import { Grid, Segment, Header, Table, Loader } from 'semantic-ui-react';
+import { Grid, Segment, Header, Table, Loader, Icon } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
 
