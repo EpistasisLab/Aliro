@@ -523,7 +523,7 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     else:
         coefs = getattr(model, 'feature_importances_', None)
         imp_score_type = "Gini Importance"
-    if coefs is None:
+    if coefs is None or np.isnan(coefs).any():
         coefs, _ = feature_importance_permutation(
                                     predict_method=model.predict,
                                     X=training_features,
