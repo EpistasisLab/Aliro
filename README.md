@@ -183,9 +183,10 @@ The default location of the test output is the `.\target\test-reports\` director
     ```
 
 # Generating and publishing production builds
+To create production builds merge the code into the production branch and create a github release, create a local production directory, add .tar files of the production docker images to the directory, zip it, and add the zipped directory as an asset to the github release:
 
 1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/)
-2. Push the code to github, merge it to the production branch and tag it with the tag in the .env file
+2. Push the code to github, merge it to the production branch using github create a release using the same version as the .env file
 3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
 4. Create a production directory and copy the config files, the .env file, and the production docker compose file, and make an images directory:
 ```
