@@ -60,7 +60,7 @@ function emitEvent(event, req) {
 				    })
 				    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		    })
-		    .catch(() => {console.log(`Error: ${err}`)}); // Ignore failures
+		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 	}
 }
 

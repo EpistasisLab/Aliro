@@ -77,6 +77,7 @@ class RequestManager:
         else:
             msg = 'Tried to terminate a dataset ai request before it had been initilized.  DatasetId: "' + str(datasetId) + '"'
             logger.info(msg)
+            self.ai.labApi.set_ai_status(datasetId, 'finished')
         
 
     def process_requests(self):
