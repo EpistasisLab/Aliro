@@ -435,7 +435,7 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','exhaustive','meta','knn','svd'],
+            choices = ['random','average','knn','svd'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
             default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
