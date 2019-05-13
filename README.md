@@ -181,3 +181,48 @@ The default location of the test output is the `.\target\test-reports\` director
     # note the path of test.js need to be updated in Windows environment
     mocha ./test/test.js # or `npm test`
     ```
+
+# Generating and publishing production builds
+
+1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/)
+2. Push the code to github, merge it to the production branch and tag it with the tag in the .env file
+3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
+4. Create a production directory and copy the config files, the .env file, and the production docker compose file, and make an images directory:
+```
+#!/bin/bash
+
+PROD_DIR = "pennai-${TAG}"
+
+mkdir -p $PROD_DIR
+mkdir -p "$PROD_DIR/images"
+
+cp -R config "${PROD_DIR}/config"
+cp config/ai.env-template "${PROD_DIR}/config/ai.env-template"
+cp .env "${PROD_DIR}/.env"
+cp docker-compose-production.yml "${PROD_DIR}/docker-compose.yml"
+```
+
+5. Export the production images into the images directory
+```
+cd PROD_DIR
+docker save --output pennai_lab.tar "pennai_lab:${TAG}"
+docker save --output pennai_machine.tar "pennai_machine:${TAG}"
+docker save --output pennai_dbmongo.tar "pennai_dbmongo:${TAG}"
+```
+
+5. Zip the production directory
+6. Create a github release using the tagged production commit, and attach the zipped production directory as an archive
+
+
+# Installing a production build
+1. Download a production build from github
+2. Unzip the archive
+3. Load the images into docker with the following commands:
+```
+docker load --input .\images\pennai_lab.tar
+docker load --input .\images\pennai_machine.tar
+docker load --input .\images\pennai_dbmongo.tar
+``` 
+
+# Running from production build
+1. From the pennai directory, run the command `docker-compose up` to start the PennAI server.

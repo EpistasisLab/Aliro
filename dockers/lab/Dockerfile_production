@@ -3,7 +3,6 @@ FROM pennai/base:latest
 # copy src for lab
 COPY lab /appsrc/lab
 COPY ai /appsrc/ai
-COPY data /appsrc/data
 
 WORKDIR /opt/
 ARG docker_filepath=dockers/lab/files
@@ -48,6 +47,9 @@ COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
 COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd
 COPY ${docker_filepath}/certs/* /usr/lib/ssl/private/
 
+# data directories
+WORKDIR /
+COPY data /appsrc/data
 
 WORKDIR /root/
 
@@ -66,7 +68,6 @@ COPY ${docker_filepath}/env /opt/.env
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
 	&& dos2unix /root/entrypoint.sh
-
 
 # Start the webserver
 CMD ["/bin/bash", "/root/start.sh"]
