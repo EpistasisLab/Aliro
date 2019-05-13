@@ -165,7 +165,7 @@ if __name__ == '__main__':
     #                     help='Recommender to run.') 
     parser.add_argument('-rec',action='store',dest='rec',default='random',
             choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
-                       'knnbasic','slopeone'],
+                       'knnml','knndataset','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
@@ -181,6 +181,9 @@ if __name__ == '__main__':
     parser.add_argument('-data',action='store',dest='KNOWL',type=str,
                         default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
                         help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-resdir',action='store',dest='RESDIR',type=str,
+                        default='results',
+                        help='results directory')
 
     args = parser.parse_args()
     
@@ -207,7 +210,7 @@ if __name__ == '__main__':
         
 
         # output file
-        out_file = ('mock_experiment/results/experiment_' 
+        out_file = ('mock_experiment/' + args.RESDIR + '/experiment_' 
                     + data_file.split('/')[-1].split('.')[0]
                     + '_rec-{}'.format(args.rec) 
                     + '_ninit-{}'.format(args.n_init)
