@@ -45,6 +45,9 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
+### User Interface ###
+By default, the web interface of PennAI is available at `http://localhost:5080`.
+
 ### Adding Datasets ###
 One can add new datasets using a UI form within the website or manually add new datasets to the project directory. 
 
