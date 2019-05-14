@@ -46,7 +46,7 @@ To start PennAI, from the PennAI directory run the command `docker-compose up --
 - Note: If `docker-compose up` was previously run but `docker-compose down` was not, when running `docker-compose up` again without flag `--force-recreate` the webserver will start but no experiments will be able to be run.  Try stopping the containers, then run `docker-compose down` followed by `docker-compose up`, or use the `--force-recreate` flag when running `docker-compose up`.  See issue [#52](https://github.com/EpistasisLab/pennai/issues/52).
 
 ### User Interface ###
-By default, the web interface of PennAI is available at `http://localhost:5080`.
+Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with the datasets in the `data/datasets/user` directory.  
 
 ### Adding Datasets ###
 One can add new datasets using a UI form within the website or manually add new datasets to the project directory. 
@@ -70,7 +70,7 @@ Labeled datasets for analyzing can be added to the `data/datasets/user` director
 ```
 
 ### Analyzing Data ###
-Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with the datasets in the `data/datasets/user` directory.  To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
+To run an experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
 
 From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page.
 
