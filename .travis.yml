@@ -3,10 +3,10 @@ language: python - "3.6"
 # before_install will simply setup a conda enviroment for installing python packages, if you
 # have project dependencies it's usually recommended to go this route
 before_install:
-    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+    - wget https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
     - "./miniconda.sh -b"
-    - export PATH=/home/travis/miniconda2/bin:$PATH
+    - export PATH=/home/travis/miniconda/bin:$PATH
     - conda update --yes conda
     - sudo rm -rf /dev/shm
     - sudo ln -s /run/shm /dev/shm
