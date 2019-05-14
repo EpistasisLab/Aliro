@@ -744,8 +744,8 @@ var submitJob = (projId, options, files, datasetId, username) => {
                 address: 1
             }).toArrayAsync() // Get machine hostnames
             .then((machines) => {
-                console.log("===machines: ", machines)
-                console.log("===machines.projects: ", machines.projects)
+                //console.log("===machines: ", machines)
+                //console.log("===machines.projects: ", machines.projects)
 
                 if (machines.length == 0) {
                     reject({
