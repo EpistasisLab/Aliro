@@ -1,3 +1,5 @@
 {
-	"target_column":"my_custom_target_column_name"
+	"target_column":"my_custom_target_column_name", 
+	"categorical_features" : ["cat1", "cat2"], 
+	"ordinal_features" : {"ord" : ["first", "second", "third"]}
 }
