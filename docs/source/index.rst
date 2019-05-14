@@ -11,7 +11,8 @@ Welcome to PennAI's documentation!
 
    intro
    guide
-   pennai
+   userguide
+   developerguide
    ai
    recommenders
    api
