@@ -10,9 +10,10 @@ PennAI is a docker project that uses ([Docker-Compose](https://docs.docker.com/c
 #### Required
   - Docker 
 	- Most recent stable release, minimum version is 17.06.0
+	- Memory: We recommend docker to be configured with at least 6GB of runtime memory [Mac](https://docs.docker.com/docker-for-mac/#advanced) [Windows](https://docs.docker.com/docker-for-windows/#advanced)
   	- [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
 	- [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - Docker-Compose (Version 1.22.0+, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
+  - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
 #### Optional dependencies for development/testing:
