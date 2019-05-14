@@ -36,7 +36,7 @@ body {
 }
 /* file upload form styling */
 .pennai .file-upload-segment {
-    max-width: 495px;
+    max-width: 605px;
 }
 .pennai .file-upload-form-dataset-input {
     width: 40%;
@@ -397,7 +397,9 @@ body {
 .c3-chart-arcs-gauge-min, .c3-chart-arcs-gauge-max {
     font-size: 0.8rem;
 }
-
+.c3-legend-item {
+  cursor:default !important;
+}
 .pennai .ui.menu .link.active > .item {
     background-color: rgba(0,0,0,.1)!important;
 }

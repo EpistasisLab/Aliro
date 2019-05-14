@@ -238,10 +238,10 @@ class FileUpload extends Component {
       let fileExt = uploadFile.name.split('.').pop();
 
       //Papa.parse(event.target.files[0], papaConfig);
-      // use try/catch block to deal with potential bad file input when trying to
-      // generate file/csv preview, use filename to check file extension
+      // check file extensions
       if (fileExtList.includes(fileExt)) {
-
+        // use try/catch block to deal with potential bad file input when trying to
+        // generate file/csv preview, use filename to check file extension
         try {
           Papa.parse(uploadFile, papaConfig);
         }
@@ -250,14 +250,16 @@ class FileUpload extends Component {
           this.setState({
             selectedFile: undefined,
             errorResp: JSON.stringify(error),
-            datasetPreview: null
+            datasetPreview: null,
+            openFileTypePopup: false
           });
         }
 
         this.setState({
           selectedFile: event.target.files[0],
           errorResp: undefined,
-          datasetPreview: null
+          datasetPreview: null,
+          openFileTypePopup: false
         });
 
       } else {
@@ -265,7 +267,8 @@ class FileUpload extends Component {
         this.setState({
           selectedFile: null,
           datasetPreview: null,
-          errorResp: undefined
+          errorResp: undefined,
+          openFileTypePopup: true
         });
       }
     } else {
@@ -273,7 +276,8 @@ class FileUpload extends Component {
       this.setState({
         selectedFile: null,
         datasetPreview: null,
-        errorResp: undefined
+        errorResp: undefined,
+        openFileTypePopup: false
       });
     }
   }
@@ -414,7 +418,7 @@ class FileUpload extends Component {
    */
    getAccordionInputs() {
      const { activeAccordionIndexes } = this.state;
-     
+
      let ordIconClass; // CSS class to position help icon
      // determine which combos of accordions are open and set respective CSS class
      activeAccordionIndexes.includes(1)
@@ -537,18 +541,36 @@ class FileUpload extends Component {
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
+    // display file extension Popup
+    let openFileTypePop;
+    this.state.openFileTypePopup ? openFileTypePop = this.state.openFileTypePopup : openFileTypePop = false;
+    // file input
+    let fileInputElem = (
+      <Input
+        style={{width: '65%', backgroundColor: '#2185d0'}}
+        type="file"
+        label={
+          <div style={{color: 'white', paddingRight: '10px', paddingLeft: '5px'}}>
+            <p>Please select new dataset
+            <br/>
+            Supported file types: (<i>csv, tsv</i>)</p>
+          </div>
+        }
+        id="upload_dataset_file_browser_button"
+        onChange={this.handleSelectedFile}
+      />
+    );
 
     return (
       <div>
         <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
-            <Input
-              className="file-upload-file-input-field"
-              type="file"
-              label="Select new dataset"
-              id="upload_dataset_file_browser_button"
-              onChange={this.handleSelectedFile}
+            <Popup
+              open={openFileTypePop}
+              header="Please check file type"
+              content="Unsupported file extension detected"
+              trigger={fileInputElem}
             />
             <br/>
             <div
