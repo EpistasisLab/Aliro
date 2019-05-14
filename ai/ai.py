@@ -373,7 +373,7 @@ class AI():
                      str(submitstatus))
         while('error' in submitstatus
               and submitstatus['error'] == 'No machine capacity available'):
-            logger.debug(submitstatus['error'])
+            logger.debug("Waiting for server capacity: {}".format(submitstatus['error']))
             sleep(3)
             submitstatus = self.labApi.launch_experiment(
                     rec_payload['algorithm_id'], rec_payload)
