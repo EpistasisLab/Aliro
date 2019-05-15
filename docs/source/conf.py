@@ -24,9 +24,9 @@ copyright = '2018, Penn'
 author = 'University of Pennsylvania'
 
 # The short X.Y version
-version = ''
+version = '0.13'
 # The full version, including alpha/beta/rc tags
-release = '0.12'
+release = '0.13'
 
 
 # -- General configuration ---------------------------------------------------

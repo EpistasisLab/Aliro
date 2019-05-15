@@ -34,10 +34,10 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
 
 ## Development Notes
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.  If the code changes modified the base container, run `docker build ./dockers/base -t pennai/base:latest` before running `docker-compose build`.
-- To get the cpu and memory status of the running containers use `docker stats`
-- To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
 	- **NOTE:** docker-compose will **not** rebuild the base image; if you make changes to the base image rebuild with `docker build ./dockers/base -t pennai/base:latest`.
+- To get the cpu and memory status of the running containers use `docker stats`
+- To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build --no-cache lab` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
 - Use `docker rm $(docker ps -a -q)` to remove all docker containers
 - Use `docker rmi $(docker images -q)` to remove all docker images
@@ -59,8 +59,12 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
     npm run build-dev
     ```
 
-##  Architecture
-PennAI is designed as a multi-component architecture that uses a variety of technologies including Docker, Python, Node.js, scikit learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  A MongoDb database is used for persistent storage.  The UI component is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
+##  Architecture Overview
+PennAI is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  
+
+![PennAI Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true "PennAI Architecture Diagram")
+
+The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  A MongoDb database is used for persistent storage.  The UI component is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
 
 ##  Code Documentation
 - Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.  
@@ -73,7 +77,7 @@ PennAI is designed as a multi-component architecture that uses a variety of tech
 - Results:
 	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
 	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
-- Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/pennai_lite/tests/integration/readme.md) for details.
+- Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/master/tests/integration/readme.md) for details.
 
 
 ### Unit
@@ -150,8 +154,11 @@ The default location of the test output is the `.\target\test-reports\` director
 To create production builds merge the code into the production branch and create a github release, create a local production directory, add .tar files of the production docker images to the directory, zip it, and add the zipped directory as an asset to the github release:
 
 1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/)
+
 2. Push the code to github, merge it to the production branch using github create a release using the same version as the .env file
+
 3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
+
 4. Create a production directory and copy the config files, the .env file, and the production docker compose file, and make an images directory:
   ```
   #!/bin/bash
@@ -166,6 +173,7 @@ To create production builds merge the code into the production branch and create
   cp .env "${PROD_DIR}/.env"
   cp docker-compose-production.yml "${PROD_DIR}/docker-compose.yml"
   ```
+
 5. Export the production images into the images directory:
   ```
   cd PROD_DIR
@@ -173,15 +181,18 @@ To create production builds merge the code into the production branch and create
   docker save --output pennai_machine.tar "pennai_machine:${TAG}"
   docker save --output pennai_dbmongo.tar "pennai_dbmongo:${TAG}"
   ```
+
 6. Zip the production directory
+
 7. Create a github release using the tagged production commit, and attach the zipped production directory as an archive
 
 
 ### Installing a production build
 1. Download a production build from github
-2. Unzip the archive
-3. Load the images into docker with the following commands:
 
+2. Unzip the archive
+
+3. Load the images into docker with the following commands:
   ```
   docker load --input .\images\pennai_lab.tar
   docker load --input .\images\pennai_machine.tar
