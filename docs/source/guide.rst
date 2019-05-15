@@ -50,7 +50,7 @@ Experiments
 
  - The Experiments page lists information about current experiments, including start time, status, and performance. 
  - By filtering by Algorithm, you can see the algorithm's parameters for each experiment. 
- - In the Actions column on the right, you may download files to reproduce your results:
+ - In the Actions column on the right, you may download files to reproduce your results.
     - **Download model** downloads a pickled model file that contains the trained model.
      Use it to run analysis on more datasets.
     - **Download script** gives you a Python script to reproduce the analysis in the experiment.
