@@ -1,15 +1,18 @@
 Quickstart Guide
 ================
 
-This guide shows you how to construct your own experiment, construct an AI experiment, view and download results.
+This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results.
+
+The landing page for PennAI shows you your datasets. 
+For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
+Experiments that are running or finished will appear here as well. 
+Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
 
 ===================
 Uploading a dataset
 ===================
 
- - TODO: add description
- - Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
- - For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
+ - Upload a dataset by clicking the "+ Dataset" button.
 
 ============================
 Building your own experiment
