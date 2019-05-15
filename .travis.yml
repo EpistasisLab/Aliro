@@ -13,20 +13,20 @@ before_install:
     - sudo ln -s /run/shm /dev/shm
     - chmod +x gh-pages.sh
 install:
-- pip install sphinx
-- pip list
+    - pip install sphinx
+    - pip list
 script:
-  # Use Sphinx to make the html docs
-  - make -C docs/ html
-  # Tell GitHub not to use jekyll to compile the docs
-  - touch target/ai_docs/html/.nojekyll
+    # Use Sphinx to make the html docs
+    - make -C docs/ html
+    # Tell GitHub not to use jekyll to compile the docs
+    - touch target/ai_docs/html/.nojekyll
 
 # Tell Travis CI to copy the documentation to the gh-pages branch of
 # your GitHub repository.
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  on:
-    branch: master
-  local_dir: target/ai_docs/html/
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+    on:
+        branch: master
+    local_dir: target/ai_docs/html/
