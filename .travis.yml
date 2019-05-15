@@ -14,7 +14,7 @@ before_install:
 install:
     - pip install sphinx sphinx_rtd_theme m2r sklearn pandas simplejson xgboost 
     - pip install matplotlib 
-    - pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+    - pip install git+https://github.com/lacava/surprise.git@master
     - pip list
 script:
     # Use Sphinx to make the html docs
