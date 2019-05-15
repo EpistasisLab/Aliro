@@ -46,9 +46,12 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       gauge: {
         label: {
           format: function(value) {
-            let retVal;
-            value ? retVal = value.toFixed(2) : retVal = value;
-            return retVal;
+            // don't return anything to 'disable' floating label
+            // - they get cut off & are difficult to read when they overlap
+            // TODO: try to override styling
+            // let retVal;
+            // value ? retVal = value.toFixed(2) : retVal = value;
+            return;
           },
           show: true
         },
