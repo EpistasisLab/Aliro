@@ -8,7 +8,7 @@ For datasets with results, a blue bar indicates the best performance achieved so
 Experiments that are running or finished will appear here as well. 
 Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
 
-.. image:: figs/landing_page.png
+.. image:: https://github.com/EpistasisLab/pennai/blob/master/docs/figs/landing_page.png
     :width: 400
     :alt: Dataset elements on the landing page. 
 
@@ -21,7 +21,7 @@ This will take you to the Dataset Upload screen where you can select a .csv or .
 You will see a preview of the data. 
 Specify the name of the dependent column, as well as any nominal or ordinal features.
 
-.. image:: figs/dataset_upload.png
+.. image:: https://github.com/EpistasisLab/pennai/blob/master/docs/figs/dataset_upload.png
     :width: 400
     :alt: Dataset Upload. 
 
@@ -32,7 +32,7 @@ Building your own experiment
 Click `Build New Experiment` at the bottom of your dataset box. 
 This takes you to the experiment building page. 
 
-.. image:: figs/build_experiment.png
+.. image:: https://github.com/EpistasisLab/pennai/blob/master/docs/figs/build_experiment.png
     :width: 400
     :alt: Experiment building page. 
 
@@ -53,7 +53,7 @@ Experiments
     - **Download script** gives you a Python script to reproduce the analysis in the experiment.
  - Clicking on any experiment will navigate to the **Results** page. 
 
-.. image:: figs/expmnts.png
+.. image:: https://github.com/EpistasisLab/pennai/blob/master/docs/figs/expmnts.png
     :width: 600
     :alt: Experiment building page. 
 
@@ -77,6 +77,6 @@ The AI will then run one or more experiments for which it chooses its own algori
 Progress can be viewed from the Experiments page.
 To configure the AI settings (for example, the number of experiments to run or time limits), see the configuration file in `config/ai.env`. 
 
-.. image:: figs/ai_requested.png
+.. image:: https://github.com/EpistasisLab/pennai/blob/master/docs/figs/ai_requested.png
     :width: 600
     :alt: Experiment building page. 
