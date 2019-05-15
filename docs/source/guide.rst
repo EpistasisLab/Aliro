@@ -9,6 +9,8 @@ Experiments that are running or finished will appear here as well.
 Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
 
 .. image:: figs/landing_page.png
+    :width: 400
+    :alt: Dataset elements on the landing page. 
 
 ===================
 Uploading a dataset
@@ -20,6 +22,8 @@ You will see a preview of the data.
 Specify the name of the dependent column, as well as any nominal or ordinal features.
 
 .. image:: figs/dataset_upload.png
+    :width: 400
+    :alt: Dataset Upload. 
 
 ============================
 Building your own experiment
@@ -29,6 +33,8 @@ Click `Build New Experiment` at the bottom of your dataset box.
 This takes you to the experiment building page. 
 
 .. image:: figs/build_experiment.png
+    :width: 400
+    :alt: Experiment building page. 
 
 Select from one of the ML algorithms at the top. 
 Its default parameters will be selected in blue.
@@ -46,6 +52,10 @@ Experiments
      Use it to run analysis on more datasets.
     - **Download script** gives you a Python script to reproduce the analysis in the experiment.
  - Clicking on any experiment will navigate to the **Results** page. 
+
+.. image:: figs/expmnts.png
+    :width: 600
+    :alt: Experiment building page. 
 
 =======
 Results
@@ -66,3 +76,7 @@ To allow the AI to choose experiments for you, simply toggle on the AI button in
 The AI will then run one or more experiments for which it chooses its own algorithms to run.
 Progress can be viewed from the Experiments page.
 To configure the AI settings (for example, the number of experiments to run or time limits), see the configuration file in `config/ai.env`. 
+
+.. image:: figs/ai_requested.png
+    :width: 600
+    :alt: Experiment building page. 
