@@ -25,7 +25,7 @@ docker load --input .\images\pennai_machine.tar
 docker load --input .\images\pennai_dbmongo.tar
 ```
 
-## User Guide
+## Using PennAI
 
 ### Starting and Stopping
 To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the server to shut down.
