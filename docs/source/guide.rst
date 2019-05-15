@@ -8,22 +8,32 @@ For datasets with results, a blue bar indicates the best performance achieved so
 Experiments that are running or finished will appear here as well. 
 Click on the name of the dataset to see information about it, including a data preview and metafeatures. 
 
+.. image:: figs/landing_page.png
+
 ===================
 Uploading a dataset
 ===================
 
- - Upload a dataset by clicking the "+ Dataset" button.
+Upload a dataset by clicking the "+ Dataset" button.
+This will take you to the Dataset Upload screen where you can select a .csv or .tsv file to upload. 
+You will see a preview of the data. 
+Specify the name of the dependent column, as well as any nominal or ordinal features.
+
+.. image:: figs/dataset_upload.png
 
 ============================
 Building your own experiment
 ============================
 
- - Click `Build New Experiment` at the bottom of your dataset box. 
-   This takes you to the experiment building page. 
- - Select from one of the ML algorithms at the top. 
-   Its default parameters will be selected in blue.
- - Choose the parameter settings for the algorithm and click `Launch Experiment`.
- - You will be navigated to the **Experiments** page. 
+Click `Build New Experiment` at the bottom of your dataset box. 
+This takes you to the experiment building page. 
+
+.. image:: figs/build_experiment.png
+
+Select from one of the ML algorithms at the top. 
+Its default parameters will be selected in blue.
+Choose the parameter settings for the algorithm and click `Launch Experiment`.
+You will be navigated to the **Experiments** page. 
 
 ===========
 Experiments 
