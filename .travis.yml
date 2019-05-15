@@ -1,4 +1,4 @@
-#sudo: false
+sudo: true
 language: python
 python:
 - '3.6'
@@ -11,6 +11,7 @@ before_install:
     - conda update --yes conda
     - sudo rm -rf /dev/shm
     - sudo ln -s /run/shm /dev/shm
+    - chmod +x gh-pages.sh
 install:
 - pip install sphinx
 - pip list
