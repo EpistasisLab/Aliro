@@ -3,8 +3,8 @@
 # Note: This script is NOT intended to be run in your checkout directory. It is only run on the Travis CI
 # system (ephemeral instances) to push to the gh-pages branch. Use build.sh instead.
 
-#git config --global user.email "lacava@upenn.edu"
-#git config --global user.name "William La Cava"
+git config --global user.email "williamlacava@gmail.com"
+git config --global user.name "lacava"
 git remote add deploy "https://$GH_TOKEN@github.com/$GH_USER/$GH_REPO.git"
 git fetch deploy
 git reset -q deploy/gh-pages
