@@ -229,7 +229,7 @@ class KNNDatasetRecommender(SurpriseRecommender):
     algo = KNNBasic(sim_options={'user_based':True})
 
 class KNNMLRecommender(SurpriseRecommender):
-    algo = KNNBasic(sim_options={'item_based':False})
+    algo = KNNBasic(sim_options={'user_based':False})
 
 class SlopeOneRecommender(SurpriseRecommender):
     algo = SlopeOne()
