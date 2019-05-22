@@ -33,7 +33,7 @@ class ROCCurve extends Component {
 
     if(!file) {
       return (
-        <Header inverted size="tiny" content="ROC curve is not available." />
+        <Header inverted size="tiny" content="ROC curve only available for binary classification." />
       );
     }
 

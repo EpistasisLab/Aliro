@@ -36,7 +36,7 @@ class KNNMetaRecommender(BaseRecommender):
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p = None): 
+    def __init__(self, ml_type='classifier', metric=None, ml_p = None):
         """Initialize recommendation system."""
         super().__init__(ml_type, metric, ml_p)
         # lookup table: dataset name to best ML+P
@@ -67,15 +67,15 @@ class KNNMetaRecommender(BaseRecommender):
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
 
-        # save a copy of the results_mf with NaNs filled with zero 
-        self.all_dataset_mf = results_mf.drop(columns=self.drop_mf).fillna(0.0) 
+        # save a copy of the results_mf with NaNs filled with zero
+        self.all_dataset_mf = results_mf.drop(columns=self.drop_mf).fillna(0.0)
 
         # update internal model
         self.update_model(results_data)
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        logger.debug('len(self.param_htable)): ' + str(len(self.param_htable))) 
+        logger.debug('len(self.param_htable)): ' + str(len(self.param_htable)))
         for d,dfg in results_data.groupby('dataset'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -98,21 +98,21 @@ class KNNMetaRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating 
+            ID of the dataset for which the recommender is generating
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters 
+            Return a list of length n_recs in order of estimators and parameters
             expected to do best.
         """
         if dataset_mf is None:
             raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
-        
+
 
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         dataset_mf = dataset_mf.drop(columns=self.drop_mf)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
-            ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id, 
+            ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id,
                                                                   dataset_mf)
             if len(ml_rec) < n_recs:
                 print('len(ml_rec)=',len(ml_rec),'recommending random')
@@ -134,17 +134,17 @@ class KNNMetaRecommender(BaseRecommender):
                       'returning',len(ml_rec))
                 subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
                 print('btw, there are ',
-                       len([tdm for i,tdm in enumerate(self.trained_dataset_models) 
+                       len([tdm for i,tdm in enumerate(self.trained_dataset_models)
                            if subset[i]]),
                        'results for',dataset_id,'already')
-            ml_rec, p_rec, rec_score = (ml_rec[:n_recs], 
-                    [self.param_htable[int(p)] for p in phash_rec[:n_recs]], 
+            ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
+                    [self.param_htable[int(p)] for p in phash_rec[:n_recs]],
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
 
         except Exception as e:
             logger.error( 'error running self.best_model_prediction for'+dataset_id)
-            raise e 
+            raise e
             # logger.error('ml_rec:'+ ml_rec)
             # logger.error('p_rec'+ p_rec)
             # logger.error('rec_score'+rec_score)
@@ -158,12 +158,12 @@ class KNNMetaRecommender(BaseRecommender):
     def best_model_prediction(self, dataset_id, df_mf, n_recs=1):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
-        # df_mf = self.get_metafeatures(dataset_id) 
+        # df_mf = self.get_metafeatures(dataset_id)
         if 'dataset' in df_mf.columns:
             df_mf = df_mf.drop('dataset',axis=1)
         mf = df_mf.fillna(0.0).values.flatten()
-        # compute the neighbors of past results 
-        nbrs = NearestNeighbors(n_neighbors=len(self.all_dataset_mf), 
+        # compute the neighbors of past results
+        nbrs = NearestNeighbors(n_neighbors=len(self.all_dataset_mf),
                 algorithm='ball_tree')
         rs = RobustScaler()
 
@@ -180,6 +180,8 @@ class KNNMetaRecommender(BaseRecommender):
 
         # print('self.best_mlp:',self.best_mlp)
         for i,(d,dist) in enumerate(zip(dataset_idx,distances[0])):
+            if d not in self.best_mlp.index:
+                continue
             if i < 10:
                 logger.debug('closest dataset:',d,'distance:',dist)
             if round(dist,6) > 0.0:    # don't recommend based on the same dataset

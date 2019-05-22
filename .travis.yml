@@ -1,0 +1,32 @@
+sudo: true
+language: python
+python:
+- '3.6'
+
+before_install:
+    - wget https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O miniconda.sh
+    - chmod +x miniconda.sh
+    - "./miniconda.sh -b"
+    - export PATH=/home/travis/miniconda3/bin:$PATH
+    - conda update --yes conda
+    - sudo rm -rf /dev/shm
+    - sudo ln -s /run/shm /dev/shm
+install:
+    - pip install sphinx sphinx_rtd_theme m2r sklearn pandas simplejson xgboost 
+    - pip install matplotlib Cython mlxtend
+    - pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+script:
+    # Use Sphinx to make the html docs
+    - make -C docs/ html
+    # Tell GitHub not to use jekyll to compile the docs
+    - touch target/ai_docs/html/.nojekyll
+
+# Tell Travis CI to copy the documentation to the gh-pages branch of
+# your GitHub repository.
+deploy:
+    provider: pages
+    skip_cleanup: true
+    github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
+    on:
+        branch: master
+    local_dir: target/ai_docs/html/

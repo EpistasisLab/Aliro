@@ -9,7 +9,19 @@ import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
-import { Button, Input, Form, Segment, Table, Popup, Checkbox, Header, Accordion, Icon, Label } from 'semantic-ui-react';
+import {
+  Button,
+  Input,
+  Form,
+  Segment,
+  Table,
+  Popup,
+  Checkbox,
+  Header,
+  Accordion,
+  Icon,
+  Label
+} from 'semantic-ui-react';
 
 class FileUpload extends Component {
   /**
@@ -35,8 +47,27 @@ class FileUpload extends Component {
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
+    this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
+    // help text for dataset upload form - dependent column, categorical & ordinal features
+    this.depColHelpText = `The column that describes how each row is classified.
+    For example, if analyzing a dataset of patients with different types of diabetes,
+    this column may have the values "type1", "type2", or "none".`;
+
+    this.catFeatHelpText = (<p>Categorical features have a discrete number of categories that do not have an intrinsic order.
+    Some examples include sex ("male", "female") or eye color ("brown", "green", "blue"...).
+    <br/><br/>
+    Describe these features using a comma separated list of the field names:
+    <i>sex, eye_color</i></p>);
+
+    this.ordFeatHelpText = (<p>Ordinal features have a discrete number of categories,
+    and the categories have a logical order. Some examples include size ("small",
+    "medium", "large"), or rank results ("first", "second", "third").
+    <br/><br/>
+    Describe these features using a json map. The map key is the name of the field,
+     and the map value is an ordered list of the values the field can take:
+    <i>{"{\"rank\":[\"first\", \"second\", \"third\"], \"size\":[\"small\", \"medium\", \"large\"]}"}</i></p>);
   }
 
   /**
@@ -124,14 +155,14 @@ class FileUpload extends Component {
     const data = new FormData();
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
-    let ordFeatures = {};
-    let catFeatures = [];
+    let ordFeatures = this.state.ordinalFeatures;
+    let catFeatures = this.state.catFeatures;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
       // get raw user input from state
 
       // try to parse ord features input as JSON if not empty
-      if(this.state.ordinalFeatures !== '') {
+      if(ordFeatures !== '') {
         try {
           ordFeatures = JSON.parse(this.state.ordinalFeatures);
         } catch(e) {
@@ -139,8 +170,6 @@ class FileUpload extends Component {
           return { errorResp: e.toString() };
         }
       }
-
-      catFeatures = this.state.catFeatures;
 
       if(catFeatures !== "") {
         // remove all whitespace
@@ -163,8 +192,8 @@ class FileUpload extends Component {
                 'dependent_col' : depCol,
                 'categorical_features': catFeatures,
                 'ordinal_features': ordFeatures
-
               });
+
       data.append('_metadata', metadata);
 
       data.append('_files', this.state.selectedFile);
@@ -188,6 +217,8 @@ class FileUpload extends Component {
    * @returns {void} - no return value
    */
   handleSelectedFile = event => {
+
+    const fileExtList = ['csv', 'tsv'];
     let papaConfig = {
       header: true,
       preview: 5,
@@ -204,25 +235,50 @@ class FileUpload extends Component {
       //console.log(typeof event.target.files[0]);
       //console.log(event.target.files[0]);
       let uploadFile = event.target.files[0]
+      let fileExt = uploadFile.name.split('.').pop();
 
       //Papa.parse(event.target.files[0], papaConfig);
-      // use try/catch block to deal with potential bad file input when trying to
-      // generate file/csv preview
-      try {
-        Papa.parse(uploadFile, papaConfig);
-      }
-      catch(error) {
-        console.error('Error generating preview for selected file:', error);
-        this.setState({
-          selectedFile: undefined,
-          errorResp: error
-        })
-      }
+      // check file extensions
+      if (fileExtList.includes(fileExt)) {
+        // use try/catch block to deal with potential bad file input when trying to
+        // generate file/csv preview, use filename to check file extension
+        try {
+          Papa.parse(uploadFile, papaConfig);
+        }
+        catch(error) {
+          console.error('Error generating preview for selected file:', error);
+          this.setState({
+            selectedFile: undefined,
+            errorResp: JSON.stringify(error),
+            datasetPreview: null,
+            openFileTypePopup: false
+          });
+        }
 
+        this.setState({
+          selectedFile: event.target.files[0],
+          errorResp: undefined,
+          datasetPreview: null,
+          openFileTypePopup: false
+        });
+
+      } else {
+        console.warn('Filetype not csv or tsv:', uploadFile);
+        this.setState({
+          selectedFile: null,
+          datasetPreview: null,
+          errorResp: undefined,
+          openFileTypePopup: true
+        });
+      }
+    } else {
+      // reset state as fallback
       this.setState({
-        selectedFile: event.target.files[0],
-        errorResp: undefined
-      })
+        selectedFile: null,
+        datasetPreview: null,
+        errorResp: undefined,
+        openFileTypePopup: false
+      });
     }
   }
 
@@ -246,15 +302,23 @@ class FileUpload extends Component {
         uploadDataset(data).then(stuff => {
           //window.console.log('FileUpload props after download', this.props);
 
+
+          //let resp = Object.keys(this.props.dataset.fileUploadResp);
+          let resp = this.props.dataset.fileUploadResp;
+          let errorRespObj = this.props.dataset.fileUploadError;
+
+          // if no error message and successful upload (indicated by presence of dataset_id)
           // 'refresh' page when upload response from server is not an error and
           // redirect to dataset page, when error occurs set component state
           // to display popup containing server/error response
-          let resp = Object.keys(this.props.dataset.fileUploadResp)[0];
-          resp !== 'error' ? this.props.fetchDatasets()
-                           : this.setState({
-                              errorResp: this.props.dataset.fileUploadResp.error
-                             });
-          resp !== 'error' ? window.location = '#/datasets' : null;
+          if (!errorRespObj && resp.dataset_id) {
+            this.props.fetchDatasets();
+            window.location = '#/datasets';
+          } else {
+            this.setState({
+               errorResp: errorRespObj.errorResp.error || "Something went wrong"
+              })
+          }
         });
       }
 
@@ -267,21 +331,29 @@ class FileUpload extends Component {
     }
 
   }
-
+  /**
+   * Accordion click handler which updates active index for different text areas
+   * in dataset upload form, use react state to keep track of which indicies are
+   * active & also clear any error message
+   */
   handleAccordionClick = (e, titleProps) => {
      const { index } = titleProps;
      const { activeAccordionIndexes } = this.state;
-     const newIndex = activeAccordionIndexes;
-
+     // make copy of array in state
+     const newIndex = [...activeAccordionIndexes];
      const currentIndexPosition = activeAccordionIndexes.indexOf(index);
+
      if (currentIndexPosition > -1) {
        newIndex.splice(currentIndexPosition, 1);
      } else {
        newIndex.push(index);
      }
+
      this.setState({
+       activeAccordionIndexes: newIndex,
        errorResp: undefined
      })
+
    }
 
   /**
@@ -310,7 +382,6 @@ class FileUpload extends Component {
           )}
         </Table.Row>
       );
-//<Table.Cell key={`${i}-${field}`}>
 
       dataPrevTable = (
         <div>
@@ -347,6 +418,17 @@ class FileUpload extends Component {
    */
    getAccordionInputs() {
      const { activeAccordionIndexes } = this.state;
+
+     let ordIconClass; // CSS class to position help icon
+     // determine which combos of accordions are open and set respective CSS class
+     activeAccordionIndexes.includes(1)
+       ? ordIconClass = "file-upload-ord-with-cat-help-icon"
+       : ordIconClass = "file-upload-ordinal-help-icon";
+     activeAccordionIndexes.includes(0)
+       ? ordIconClass = "file-upload-just-ordinal-help-icon" : null;
+     activeAccordionIndexes.includes(1) && activeAccordionIndexes.includes(0)
+       ? ordIconClass = "file-upload-ord-and-cat-help-icon" : null;
+
      let accordionContent = (
       <Accordion fluid exclusive={false}>
          <Accordion.Title
@@ -357,13 +439,14 @@ class FileUpload extends Component {
           >
            <Icon name='dropdown' />
            Enter Categorical Features
+         </Accordion.Title>
            <Popup
              on="click"
              position="right center"
              header="Categorical Features Help"
              content={
                <div className="content">
-                 <p>Categorical Features help description</p>
+                {this.catFeatHelpText}
                </div>
              }
              trigger={
@@ -376,7 +459,6 @@ class FileUpload extends Component {
                />
              }
            />
-         </Accordion.Title>
          <Accordion.Content
            active={activeAccordionIndexes.includes(1)}
           >
@@ -396,18 +478,19 @@ class FileUpload extends Component {
           >
            <Icon name='dropdown' />
            Enter Ordinal Features
+         </Accordion.Title>
            <Popup
              on="click"
              position="right center"
              header="Ordinal Features Help"
              content={
                <div className="content">
-                 <p>Ordinal Features help description</p>
+                {this.ordFeatHelpText}
                </div>
              }
              trigger={
                <Icon
-                 className="file-upload-ordinal-help-icon"
+                 className={ordIconClass}
                  inverted
                  size="large"
                  color="orange"
@@ -415,7 +498,6 @@ class FileUpload extends Component {
                />
              }
            />
-         </Accordion.Title>
          <Accordion.Content
             active={activeAccordionIndexes.includes(0)}
           >
@@ -423,7 +505,7 @@ class FileUpload extends Component {
              className="file-upload-ordinal-text-area"
              id="ordinal_features_text_area_input"
              label="Ordinal Features"
-             placeholder={"{\"ord_feat_1\": [\"MALE\", \"FEMALE\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
+             placeholder={"{\"ord_feat_1\": [\"SHORT\", \"TALL\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
              onChange={this.handleOrdinalFeatures}
            />
          </Accordion.Content>
@@ -432,43 +514,63 @@ class FileUpload extends Component {
      return accordionContent;
    }
 
+   /**
+   *  Simple timeout function, resets error message
+   */
+   errorPopupTimeout() {
+     this.setState({
+       errorResp: undefined
+     });
+   }
+
   render() {
 
-    const { dataset } = this.props;
-    let respKey;
-    let respBody;
-    let serverResp;
+    //const { dataset } = this.props;
+
     let errorMsg = this.state.errorResp;
+    let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let accordionInputs = this.getAccordionInputs();
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
-    //window.console.log('prev: ', dataPrev);
-    dataset ? serverResp = dataset.fileUploadResp : null;
-
-    if(serverResp) {
-      respKey =  Object.keys(serverResp)[0];
-      respBody = serverResp[respKey];
+    // if error message present, display for 4.5 seconds
+    if (errorMsg) {
+      errorContent = ( <p style={{display: 'block'}}> {errorMsg} </p> );
+      window.setTimeout(this.errorPopupTimeout, 4555);
     }
-
-    // server message to display in popup (or other UI element)
-    serverResp ? serverResp = ( <p style={{display: 'block'}}> {JSON.stringify(errorMsg)} </p> )
-               : null;
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
+    // display file extension Popup
+    let openFileTypePop;
+    this.state.openFileTypePopup ? openFileTypePop = this.state.openFileTypePopup : openFileTypePop = false;
+    // file input
+    let fileInputElem = (
+      <Input
+        style={{width: '65%', backgroundColor: '#2185d0'}}
+        type="file"
+        label={
+          <div style={{color: 'white', paddingRight: '10px', paddingLeft: '5px'}}>
+            <p>Please select new dataset
+            <br/>
+            Supported file types: (<i>csv, tsv</i>)</p>
+          </div>
+        }
+        id="upload_dataset_file_browser_button"
+        onChange={this.handleSelectedFile}
+      />
+    );
 
     return (
       <div>
         <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
-            <Input
-              className="file-upload-file-input-field"
-              type="file"
-              label="Select new dataset"
-              id="upload_dataset_file_browser_button"
-              onChange={this.handleSelectedFile}
+            <Popup
+              open={openFileTypePop}
+              header="Please check file type"
+              content="Unsupported file extension detected"
+              trigger={fileInputElem}
             />
             <br/>
             <div
@@ -490,7 +592,9 @@ class FileUpload extends Component {
                 header="Dependent Column Help"
                 content={
                   <div className="content">
-                    <p>Dependent Col help description</p>
+                    <p>
+                      {this.depColHelpText}
+                    </p>
                   </div>
                 }
                 trigger={
@@ -509,25 +613,25 @@ class FileUpload extends Component {
               >
                 {accordionInputs}
               </Form.Input>
-              <Popup
-                header="Error Submitting Dataset"
-                content={serverResp}
-                open={errorMsg ? true : false}
-                id="file_upload_popup_and_button"
-                position='bottom left'
-                flowing
-                trigger={
-                  <Button
-                    inverted
-                    color="blue"
-                    compact
-                    size="small"
-                    icon="upload"
-                    content="Upload Dataset"
-                    onClick={this.handleUpload}
-                  />
-                }
-              />
+                <Popup
+                  header="Error Submitting Dataset"
+                  content={errorContent}
+                  open={errorMsg ? true : false}
+                  id="file_upload_popup_and_button"
+                  position='bottom left'
+                  flowing
+                  trigger={
+                    <Button
+                      inverted
+                      color="blue"
+                      compact
+                      size="small"
+                      icon="upload"
+                      content="Upload Dataset"
+                      onClick={this.handleUpload}
+                    />
+                  }
+                />
             </div>
           </Segment>
         </Form>

@@ -40,10 +40,19 @@ export const uploadDataset = (dataset) => (dispatch) => {
 
   return api.uploadDataset(dataset).then(
     response => {
-      dispatch({
-        type: UPLOAD_DATASET_SUCCESS,
-        payload: response
-      });
+      // if error response present emit repsective redux action; this occurs when
+      // server attempts to upload selected file but something goes wrong
+      // and content not added as expected, otherwise assume dataset uploaded
+
+      response.error
+        ? dispatch({
+          type: UPLOAD_DATASET_FAILURE,
+          payload: response || 'Something went wrong.'
+          })
+        : dispatch({
+          type: UPLOAD_DATASET_SUCCESS,
+          payload: response
+        });
     },
     error => {
       dispatch({

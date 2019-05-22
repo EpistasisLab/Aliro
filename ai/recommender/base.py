@@ -114,7 +114,7 @@ class BaseRecommender:
             self.mlp_combos = self.mlp_combos.drop_duplicates()
         else:
             logger.error('value of ml_p is None')
-        print('param_htable:',len(self.param_htable),'objects')
+        logger.debug('param_htable:{} objects'.format(len(self.param_htable)))
 
     def update_trained_dataset_models_from_df(self, results_data):
         '''stores the trained_dataset_models to aid in filtering repeats.'''
