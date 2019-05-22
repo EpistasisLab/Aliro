@@ -21,7 +21,9 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
-from ai.recommender.surprise_recommenders import *
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
+        SlopeOneRecommender)
 from collections import OrderedDict
 from ai.request_manager import RequestManager
 
@@ -411,7 +413,7 @@ def main():
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
             choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
-                       'knnbasic','slopeone'],
+                       'knnml','knndata','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
             default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
@@ -435,8 +437,8 @@ def main():
             help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
-    parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=False, 
+    parser.add_argument('--no-knowledgebase','-k', action='store_false',
+            dest='USE_KNOWLEDGEBASE', default=True, 
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -454,9 +456,10 @@ def main():
             'average': AverageRecommender,
             'knnmeta': KNNMetaRecommender,
             'svd': SVDRecommender,
-            'cocluster': CoClusterRecommender,
+            'cocluster': CoClusteringRecommender,
             'knnmeans': KNNWithMeansRecommender,
-            'knnbasic': KNNBasicRecommender,
+            'knndata': KNNDatasetRecommender,
+            'knnml': KNNMLRecommender,
             'slopeone': SlopeOneRecommender
             }
     
