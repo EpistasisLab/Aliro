@@ -228,8 +228,15 @@ class KNNWithMeansRecommender(SurpriseRecommender):
 class KNNDatasetRecommender(SurpriseRecommender):
     algo = KNNBasic(sim_options={'user_based':True})
 
+    @property
+    def algo_name(self):
+        return 'KNN-Dataset' 
+
 class KNNMLRecommender(SurpriseRecommender):
     algo = KNNBasic(sim_options={'user_based':False})
+    @property
+    def algo_name(self):
+        return 'KNN-ML' 
 
 class SlopeOneRecommender(SurpriseRecommender):
     algo = SlopeOne()
