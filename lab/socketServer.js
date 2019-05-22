@@ -23,6 +23,16 @@ function emitEvent(event, req) {
 	console.log(`serverSocket.emitEvent('${event}', '${req}')`)
 
 	switch(event) {
+		case 'updateAllAiStatus':
+			return rp(FGLAB_URL + "/api/datasets")
+		  	.then(datasets => {
+		  		datasets.forEach(dataset =>
+		  			//sockets.forEach(socket => socket.emit('updateDataset', dataset))
+		  			sockets.forEach(socket => socket.emit('updateAIToggle', dataset._id, dataset.ai))
+		  		)
+		    })
+		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
+
 		case 'aiToggled':
 			return sockets.forEach(socket => 
 				socket.emit('updateAIToggle', JSON.stringify({ _id: req.params.id, nextAIState: req.body.ai }))
@@ -50,7 +60,7 @@ function emitEvent(event, req) {
 				    })
 				    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		    })
-		    .catch(() => {console.log(`Error: ${err}`)}); // Ignore failures
+		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 	}
 }
 

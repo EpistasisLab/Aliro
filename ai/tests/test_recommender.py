@@ -32,6 +32,9 @@ data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data.set_index('dataset')
 #ml - param combos
 
+test_recommenders = [AverageRecommender, RandomRecommender, KNNMetaRecommender,
+                        SVDRecommender]
+
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
     try:
@@ -81,6 +84,9 @@ def update_dataset_mf(dataset_mf,results_data):
 def check_rec(rec):
     """Recommender updates and recommends without error"""
     # test updating scores
+    logger.info("check_rec({})".format(rec))
+    print("check_rec({})".format(rec))
+
     epochs = 5
     datlen = int(data.shape[0] / float(epochs))
     ml_p = data.loc[:,['algorithm','parameters']]
@@ -106,13 +112,16 @@ def check_rec(rec):
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""
-    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender,
-                        SVDRecommender]:
+    logger.info("test_recs_work")
+    print("test_recs_work")
+    for recommender in test_recommenders:
         yield (check_rec, recommender)
 
 def check_n_recs(rec):
     """Recommender returns correct number of recommendations"""
-    logger.info(rec)
+    logger.info("check_n_recs({})".format(rec))
+    print("check_n_recs({})".format(rec))
+
     ml_p = data.loc[:,['algorithm','parameters']]
     ml_p['parameters'] = ml_p['parameters'].apply(str)
     ml_p = ml_p.drop_duplicates()
@@ -122,6 +131,7 @@ def check_n_recs(rec):
     rec_obj = rec(ml_p=ml_p)
     logger.info('set rec')
    
+    dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
@@ -136,6 +146,7 @@ def check_n_recs(rec):
 
 def test_n_recs():
     """Recommender returns correct number of recommendations"""
-    for recommender in [AverageRecommender, RandomRecommender, KNNMetaRecommender,
-                        SVDRecommender]:
-        yield (check_rec, recommender)
+    logger.info("test_n_recs")
+    print("test_n_recs")
+    for recommender in test_recommenders:
+        yield (check_n_recs, recommender)

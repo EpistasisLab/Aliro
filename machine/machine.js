@@ -1,5 +1,4 @@
 /* Modules */
-require("./env"); // Load configuration variables
 var os = require("os");
 var path = require("path");
 var fs = require("mz/fs");
@@ -350,9 +349,9 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // Processes results
     experiment.on("exit", (exitCode) => {
-        console.log("on exit!")
+        //console.debug("on exit!")
         maxCapacity += Number(project.capacity); // Add back capacity
-        console.log(experimentErrorMessage)
+        //console.debug(experimentErrorMessage)
         // Send status
         var status
         var statusMap
@@ -376,7 +375,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             errorMessage: experimentErrorMessage
         }}
 
-        console.log(`Exit code: ${exitCode}, status: ${status}`)
+        console.log(`Experiment process ended, exit code: ${exitCode}, status: ${status}`)
         //`Process ended with exit code ${exitCode}`
 
         rp({

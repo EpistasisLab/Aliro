@@ -1078,7 +1078,7 @@ def test_compute_imp_score_3():
 
 
 def test_compute_imp_score_4():
-    """Test compute_imp_score function returns 'Gini Importance' with DecisionTreeClassifier on multiclass dataset."""
+    """Test compute_imp_score function returns 'Permutation Feature Importance' with KNeighborsClassifier on multiclass dataset."""
     model = KNeighborsClassifier()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
@@ -1089,7 +1089,7 @@ def test_compute_imp_score_4():
     assert imp_score_type == "Permutation Feature Importance"
 
 
-def test_compute_imp_score():
+def test_compute_imp_score_5():
     """Test compute_imp_score function returns 'Sum of Squares of Coefficients' with LogisticRegression on multiclass dataset."""
     model = LogisticRegression()
     model.fit(training_features_1, training_classes_1)
@@ -1099,6 +1099,22 @@ def test_compute_imp_score():
                                         training_classes_1,
                                         42)
     assert imp_score_type == "Sum of Squares of Coefficients"
+
+
+def test_compute_imp_score_6():
+    """Test compute_imp_score function returns 'Permutation Feature Importance' with object if one of gini importances is Nan."""
+    class C(DecisionTreeClassifier):
+        @property
+        def feature_importances_(self):
+            return np.array([1.0, np.nan])
+    model = C()
+    model.fit(training_features_1, training_classes_1)
+    coefs, imp_score_type = compute_imp_score(model,
+                                        'accuracy',
+                                        training_features_1,
+                                        training_classes_1,
+                                        42)
+    assert imp_score_type == "Permutation Feature Importance"
 
 
 

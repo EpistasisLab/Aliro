@@ -22,7 +22,7 @@ describe('run experiment', () => {
 	it('run decisionTree experiment on banana', async () => {	
 		console.log('run decisionTree experiment on banana')
 
-		jest.setTimeout(15000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 	/*
 		let algoName = 'DecisionTreeClassifier'
 		let algoParms = {
@@ -82,7 +82,7 @@ describe('run experiment', () => {
 		// wait for the experiment to finish running, probably a better way to do this then delay...
 		var count = 0
 		console.log("starting timeout...")
-		while (experimentResults._status === ('running') && count < 4) {
+		while (experimentResults._status === ('running') && count < 10) {
 			util.delay(10000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
@@ -110,7 +110,7 @@ describe('run experiment', () => {
 	it('run decisionTree experiment with invalid parms on banana', async () => {	
 		console.log('run decisionTree experiment with invalid parms on banana')
 
-		jest.setTimeout(15000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'LogisticRegression'
 		let algoParms = {
@@ -190,14 +190,14 @@ describe('run experiment', () => {
 
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(80000)
+		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'SVC'
 		let algoParms = {
 			"tol":1e-05
 		};
 
-		let datasetName = 'banana'
+		let datasetName = 'magic'
 
 		//-------------------
 	 	// get dataset
@@ -257,6 +257,8 @@ describe('run experiment', () => {
 		var experimentResults = await labApi.fetchExperiment(submitResult._id)
 		expect(experimentResults._status).toEqual('cancelled')
 
+		// hacky... 
+		util.delay(20000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});

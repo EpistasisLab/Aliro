@@ -56,6 +56,22 @@ def mocked_requests_request_invalid_launch_experiment(*args, **kwargs):
     elif (args[0] == "GET"): return handle_get(args[1], data)
     elif (args[0] == "PUT"): return handle_put(args[1], data)
 
+def mocked_requests_request_no_datasets(*args, **kwargs):
+    """This method will be used by mock to replace requests.request"""
+    logger.info("mocked_requests_invalid: " + str(args))
+    logger.debug("kwargs: " + str(kwargs))
+
+    if(kwargs and 'data' in kwargs.keys()) :
+        data = json.dumps(kwargs['data'])
+    else :
+        data = []
+
+    assert (args[0] in ["POST", "GET", "PUT"])
+
+    if (args[0] == "POST"): return handle_post_no_datasets(args[1], data)
+    elif (args[0] == "GET"): return handle_get(args[1], data)
+    elif (args[0] == "PUT"): return handle_put(args[1], data)
+
 def mocked_requests_request_multi_machine(*args, **kwargs):
     """This method will be used by mock to replace requests.request"""
     logger.info("mocked_requests_invalid: " + str(args))
@@ -188,6 +204,23 @@ def handle_post_invalid_launch_experiment(path, data):
         logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
 
+def handle_post_no_datasets(path, data):
+    """This method will be used by mock to replace requests.post"""
+    #print("handle_post: ", path)
+
+    if path == 'http://lab:5080/api/v1/projects' or path == 'http://lab:5080/api/projects' :
+        return MockResponse(json.dumps(api_projects_data), 200)
+    elif path == 'http://lab:5080/api/preferences':
+        return MockResponse(json.dumps(api_preferences_data), 200)
+    elif path == 'http://lab:5080/api/userdatasets' or path == 'http://lab:5080/api/datasets' :
+        return MockResponse(json.dumps(api_datasets_data_empty), 200)
+    elif path == 'http://lab:5080/api/experiments':
+        return MockResponse(json.dumps(api_experiments_data), 200)
+    #elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
+    #    return MockResponse(json.dumps(api_launch_experiment_running), 200)
+    else:
+        logger.error("Unhandled path: " + str(path))
+        return MockResponse(None, 404)
 
 #===========================================
 # Mock lab api data
@@ -633,6 +666,8 @@ api_dataset_metafeatures = [{"name":"ring","metafeatures": {
             "symbols_std": None,
             "symbols_sum": None
         }}]
+
+api_datasets_data_empty = []        
 api_datasets_data = [
     {
         "_id": "5ba417507831bf002bcbd59b",

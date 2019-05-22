@@ -306,21 +306,29 @@ describe('lab', () => {
 		});
 
 
-		it('fetchDataset', async () => {
-			// get banana dataset
-		 	var datasets = await labApi.fetchDatasets();
-		 	expect(datasets.length).toBeGreaterThan(1);
-		 	var bananaId = datasets.find(function(element) {return element.name == 'banana';})._id;
-		 	expect(bananaId).toBeTruthy();
+		describe.each`
+			datasetName
+			${'banana'}
+			${'appendicitis'}
+			${'allbp'}
+			${'magic'}
+			`("fetchDataset", ({datasetName}) => {
+				it(`${datasetName}`, async () => {
+					// get dataset
+				 	var datasets = await labApi.fetchDatasets();
+				 	expect(datasets.length).toBeGreaterThan(1);
+				 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
+				 	expect(datasetId).toBeTruthy();
 
-		 	return labApi.fetchDataset(bananaId).then((data) => {
-		 		//console.log(data)
-		  		expect(data.length).toEqual(1);
-		  		expect(data[0].metafeatures).toBeTruthy();
-				expect(data[0].metafeatures).toHaveProperty('n_rows')
-				expect(data[0].metafeatures).toHaveProperty('n_columns')
+				 	return labApi.fetchDataset(datasetId).then((data) => {
+				 		//console.log(data)
+				  		expect(data.length).toEqual(1);
+				  		expect(data[0].metafeatures).toBeTruthy();
+						expect(data[0].metafeatures).toHaveProperty('n_rows')
+						expect(data[0].metafeatures).toHaveProperty('n_columns')
+					});
+				});
 			});
-		});
 
 
 		it('fetchMachines', () => {

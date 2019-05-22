@@ -25,7 +25,16 @@ const assert = require("assert");
 
 /* App instantiation */
 // unregister any machine instances before starting the server
+// reset ai status of current datasets
+console.log("unregistering machines")
 db.machines.remove({});
+console.log("resetting ai status")
+db.datasets.updateMany(
+    {}, 
+    {"$unset" : {ai:""}}
+);
+console.log("cleaning up experiments")
+db.experiments.remove({ "_status": "running" })
 
 var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
@@ -39,6 +48,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
+
+/* Startup */
+//emitEvent('updateAllAiStatus', null);
 
 /* API */
 
@@ -129,6 +141,37 @@ app.get("/api/v1/files/:id", (req, res, next) => {
 app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
     var metafeatures = db.datasets.findByIdAsync(req.params.id, {metafeatures: 1})
     res.send(metafeatures)
+});
+
+// Get environmental vars
+app.get("/api/environment", (req, res, next) => {
+    var envVars = [
+        "AI_AUTOSTART",
+        "AI_RECOMMENDER",
+        "AI_VERBOSE",
+        "AI_PMLB_KNOWLEDGEBASE",
+        "AI_TERM_COND",
+        "AI_NUMRECOMMEND",
+        "AI_MAX_TIME",
+        "STARTUP_DATASET_PATH",
+        "EXP_TIMEOUT",
+        "DT_MAX_DEPTH"
+    ]
+
+    var payload = {}
+
+    console.log(payload)
+
+    envVars.forEach(function(envVar) {
+      if (envVar in process.env) {
+          console.log(`env var: ${envVar}`)
+          console.log(`val: ${process.env[envVar]}`)
+          payload[envVar] = process.env[envVar]
+      }
+        else payload[envVar] = "-NOT SET-"
+    });
+
+    res.send(payload);
 });
 
 
@@ -273,6 +316,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
 
 });
 
+
 //toggles ai for dataset
 app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
     db.datasets.updateByIdAsync(req.params.id, {
@@ -291,6 +335,7 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
             next(err);
         });
 });
+
 
 // register new machine
 app.post("/api/v1/machines", jsonParser, (req, res, next) => {
@@ -699,8 +744,8 @@ var submitJob = (projId, options, files, datasetId, username) => {
                 address: 1
             }).toArrayAsync() // Get machine hostnames
             .then((machines) => {
-                console.log("===machines: ", machines)
-                console.log("===machines.projects: ", machines.projects)
+                //console.log("===machines: ", machines)
+                //console.log("===machines.projects: ", machines.projects)
 
                 if (machines.length == 0) {
                     reject({
@@ -756,10 +801,10 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                             .then((body) => {
                                                 resolve(body);
                                             })
-                                            .catch(() => {
+                                            .catch((err) => {
                                                 db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
                                                 reject({
-                                                    error: "Experiment failed to run"
+                                                    error: `Experiment failed to run: project '${projId}' failed on machine ${availableMac.address}.`
                                                 });
                                             });
                                     })
