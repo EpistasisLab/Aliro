@@ -246,4 +246,5 @@ class TestResultUtils(unittest.TestCase):
 		self.assertEqual(list(objResult), ["success", "errorMessage"])
 		self.assertEqual(objResult['success'], False)
 		#self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")
-		self.assertRegex(objResult['errorMessage'], "^Exception: ConnectTimeout\(MaxRetryError")
+		#self.assertRegex(objResult['errorMessage'], "^Exception: ConnectTimeout\(MaxRetryError")
+		self.assertRegex(objResult['errorMessage'], "^Exception: Connect.*\(MaxRetryError")
