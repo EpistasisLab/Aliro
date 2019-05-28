@@ -19,6 +19,10 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
+MIN_ROWS = 10
+MIN_COLS = 2
+MIN_ROW_PER_CLASS = 2
+
 
 def validate_data_from_server(file_id, target_field, categories = None, ordinals = None, **kwargs):
 	# Read the data set into memory
@@ -72,6 +76,16 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	'''
 	num_df = df
 
+	# dimension validation
+	if df.shape[0] < MIN_ROWS:
+		logger.warn("Dataset has dimensions {}, classification datasets must have at least {} rows.".format(df.shape, MIN_ROWS))
+		return False, "Dataset has dimensions {}, classification datasets must have at least {} rows.".format(df.shape, MIN_ROWS)
+
+	if df.shape[1] < MIN_COLS:
+		logger.warn("Dataset has dimensions {}, classification datasets must have at least {} columns.".format(df.shape, MIN_COLS))
+		return False, "Dataset has dimensions {}, classification datasets must have at least {} columns.".format(df.shape, MIN_COLS)
+
+
 	# target column validation
 	if (target_column != None):
 		if not(target_column in df.columns):
@@ -96,12 +110,23 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 		if categories: num_df = num_df.drop(columns=categories)
 		if ordinals: num_df = num_df.drop(columns=list(ordinals.keys()))
 
-	# check that non-cat columns contain only numeric data
-	try:
-		check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
-	except Exception as e:
-		logger.warn("sklearn.check_array() validation " + str(e))
-		return False, "sklearn.check_array() validation " + str(e)
+	# check only check if target is specified
+	if target_column:
+		# check that non-cat feature columns contain only numeric data
+		num_df = num_df.drop(columns=target_column, axis=1)
+		try:
+			check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
+		except Exception as e:
+			logger.warn("sklearn.check_array() validation " + str(e))
+			return False, "sklearn.check_array() validation " + str(e)
+
+		# Check rows per class
+		counts = df.groupby(target_column).count()
+		fails_validation = counts[counts[counts.columns[1]] < MIN_ROW_PER_CLASS]
+		if (not fails_validation.empty):
+			msg = "Classification datasets must have at least 2 rows per class, class(es) '{}' have only 1 row.".format(list(fails_validation.index.values))
+			logger.warn(msg)
+			return False, msg
 
 	return True, None
 
