@@ -11,6 +11,7 @@ from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 # from ai.recommender.mlp_meta_recommender import MLPMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import *
 
 from joblib import Parallel, delayed
 from collections import OrderedDict
@@ -29,11 +30,21 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     #     kwargs.update({'datasets':knowledge_base.dataset.unique()})
     rec_choice = {'random': RandomRecommender,
             'average': AverageRecommender,
-            # 'meta': MetaRecommender,
-            # 'mlp': MLPMetaRecommender,
-            'knn': KNNMetaRecommender,
-            'svd': SVDRecommender
+            'knnmeta': KNNMetaRecommender,
+            'svd': SVDRecommender,
+            'cocluster': CoClusteringRecommender,
+            'knnmeans': KNNWithMeansRecommender,
+            'knnml': KNNMLRecommender,
+            'knndataset': KNNDatasetRecommender,
+            'slopeone': SlopeOneRecommender
             }
+    # rec_choice = {'random': RandomRecommender,
+    #         'average': AverageRecommender,
+    #         # 'meta': MetaRecommender,
+    #         # 'mlp': MLPMetaRecommender,
+    #         'knn': KNNMetaRecommender,
+    #         'svd': SVDRecommender
+    #         }
 
     recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
@@ -150,8 +161,12 @@ if __name__ == '__main__':
                                      add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
-    parser.add_argument('-rec',action='store',dest='rec',default='random', 
-                        help='Recommender to run.') 
+    # parser.add_argument('-rec',action='store',dest='rec',default='random', 
+    #                     help='Recommender to run.') 
+    parser.add_argument('-rec',action='store',dest='rec',default='random',
+            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
+                       'knnml','knndataset','slopeone'],
+            help='Recommender algorithm options.')
     parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=1,help='Number of '
                         ' recommendations to make at a time. If zero, will send continous '
                         'recommendations until AI is turned off.')
@@ -166,6 +181,9 @@ if __name__ == '__main__':
     parser.add_argument('-data',action='store',dest='KNOWL',type=str,
                         default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
                         help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-resdir',action='store',dest='RESDIR',type=str,
+                        default='results',
+                        help='results directory')
 
     args = parser.parse_args()
     
@@ -192,7 +210,7 @@ if __name__ == '__main__':
         
 
         # output file
-        out_file = ('mock_experiment/results/experiment_' 
+        out_file = ('mock_experiment/' + args.RESDIR + '/experiment_' 
                     + data_file.split('/')[-1].split('.')[0]
                     + '_rec-{}'.format(args.rec) 
                     + '_ninit-{}'.format(args.n_init)
