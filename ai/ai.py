@@ -20,6 +20,9 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
+        SlopeOneRecommender)
 from collections import OrderedDict
 from ai.request_manager import RequestManager
 
@@ -435,7 +438,8 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','knn','svd'],
+            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
+                       'knnml','knndata','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
             default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
@@ -459,8 +463,8 @@ def main():
             help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
-    parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=False,
+    parser.add_argument('--no-knowledgebase','-k', action='store_false',
+            dest='USE_KNOWLEDGEBASE', default=True, 
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -476,8 +480,13 @@ def main():
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
-            'knn': KNNMetaRecommender,
-            'svd': SVDRecommender
+            'knnmeta': KNNMetaRecommender,
+            'svd': SVDRecommender,
+            'cocluster': CoClusteringRecommender,
+            'knnmeans': KNNWithMeansRecommender,
+            'knndata': KNNDatasetRecommender,
+            'knnml': KNNMLRecommender,
+            'slopeone': SlopeOneRecommender
             }
 
     rec_args['metric'] = 'accuracy'
