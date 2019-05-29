@@ -85,10 +85,10 @@ class SVDRecommender(BaseRecommender):
                 results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
         self.results_df = self.results_df.append(
-                results_data[['algorithm-parameters','dataset','score']]
+                results_data[['algorithm-parameters','dataset_hash','score']]
                                                 ).drop_duplicates()
 
-        data = Dataset.load_from_df(self.results_df[['dataset', 
+        data = Dataset.load_from_df(self.results_df[['dataset_hash', 
                                                      'algorithm-parameters', 
                                                      'score']], 
                                     self.reader, rating_scale=(0,1))
@@ -128,16 +128,20 @@ class SVDRecommender(BaseRecommender):
             Return a list of length n_recs in order of estimators and parameters expected to do 
             best.
         """
+        # dataset hash table
+        super().recommend(dataset_id, n_recs, dataset_mf)
+
         # TODO: raise error if dataset_mf is None 
         # print('dataset bias:',
         #         self.algo.bu[self.algo.trainset.to_inner_uid(dataset_id)])
+        dataset_hash = self.dataset_id_to_hash[dataset_id]
         try:
             predictions = []
             filtered =0
             for alg_params in self.mlp_combos:
-                if (dataset_id+'|'+alg_params not in 
+                if (dataset_hash+'|'+alg_params not in 
                     self.trained_dataset_models):  
-                    predictions.append(self.algo.predict(dataset_id, alg_params,
+                    predictions.append(self.algo.predict(dataset_hash, alg_params,
                                                          clip=False))
                 else:
                     filtered +=1

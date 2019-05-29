@@ -83,13 +83,17 @@ class AverageRecommender(BaseRecommender):
             expected to do best.
         """
 
+        # dataset hash table
+        super().recommend(dataset_id, n_recs, dataset_mf)
+        dataset_hash = self.dataset_id_to_hash[dataset_id]
+
         # return ML+P for best average y
         try:
             rec = self.scores.sort_values(ascending=False).index.values
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
             if dataset_id is not None:
-                rec_filt = [r for r in rec if dataset_id + '|' + r not in
+                rec_filt = [r for r in rec if dataset_hash + '|' + r not in
                        self.trained_dataset_models]
                 if len(rec_filt) >= n_recs:
                     rec = rec_filt
