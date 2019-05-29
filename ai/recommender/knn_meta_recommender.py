@@ -147,7 +147,7 @@ class KNNMetaRecommender(BaseRecommender):
             assert(len(ml_rec) == n_recs)
 
         except Exception as e:
-            logger.error( 'error running self.best_model_prediction for'+dataset_hash)
+            logger.error('error running self.best_model_prediction for'+dataset_hash)
             raise e
             # logger.error('ml_rec:'+ ml_rec)
             # logger.error('p_rec'+ p_rec)
@@ -187,7 +187,7 @@ class KNNMetaRecommender(BaseRecommender):
             if d not in self.best_mlp.index:
                 continue
             if i < 10:
-                logger.debug('closest dataset:',d,'distance:',dist)
+                logger.debug('closest dataset:'+d+'; distance:'+ str(dist))
             if round(dist,6) > 0.0:    # don't recommend based on the same dataset
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])

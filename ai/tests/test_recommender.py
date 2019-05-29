@@ -5,7 +5,9 @@ import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
+        SlopeOneRecommender, SVDRecommender)
 #from ai.ai import AI
 import pdb
 import logging
@@ -32,8 +34,10 @@ data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data.set_index('dataset')
 #ml - param combos
 
-test_recommenders = [AverageRecommender, RandomRecommender, KNNMetaRecommender,
-                        SVDRecommender]
+test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
+        CoClusteringRecommender, KNNWithMeansRecommender, 
+        KNNDatasetRecommender, KNNMLRecommender, SlopeOneRecommender, 
+        SVDRecommender ]
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
