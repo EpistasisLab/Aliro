@@ -10,7 +10,7 @@ import numpy as np
 from collections import defaultdict, OrderedDict
 import pdb
 from surprise import (Reader, Dataset, CoClustering, SlopeOne, KNNWithMeans,
-                      KNNBasic) 
+                      KNNBasic, mySVD) 
 # import pyximport
 # pyximport.install()
 # from .svdedit import mySVD
@@ -92,10 +92,10 @@ class SurpriseRecommender(BaseRecommender):
                 results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
         self.results_df = self.results_df.append(
-                results_data[['algorithm-parameters','dataset','score']]
+                results_data[['algorithm-parameters','dataset_hash','score']]
                                                 ).drop_duplicates()
 
-        data = Dataset.load_from_df(self.results_df[['dataset', 
+        data = Dataset.load_from_df(self.results_df[['dataset_hash', 
                                                      'algorithm-parameters', 
                                                      'score']], 
                                     self.reader, rating_scale=(0,1))
@@ -134,13 +134,16 @@ class SurpriseRecommender(BaseRecommender):
             Return a list of length n_recs in order of estimators and parameters expected to do 
             best.
         """
+        # dataset hash table
+        super().recommend(dataset_id, n_recs, dataset_mf)
+        dataset_hash = self.dataset_id_to_hash[dataset_id]
         try:
             predictions = []
             filtered =0
             for alg_params in self.mlp_combos:
-                if (dataset_id+'|'+alg_params not in 
+                if (dataset_hash+'|'+alg_params not in 
                     self.trained_dataset_models):  
-                    predictions.append(self.algo.predict(dataset_id, alg_params,
+                    predictions.append(self.algo.predict(dataset_hash, alg_params,
                                                          clip=False))
                 else:
                     filtered +=1
@@ -214,7 +217,6 @@ class SurpriseRecommender(BaseRecommender):
         return ml_rec, p_rec, score_rec 
 
 class CoClusteringRecommender(SurpriseRecommender):
-    # algo = CoClustering()
 
     def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None): 
         super().__init__(ml_type, metric, ml_p, algo)
@@ -240,3 +242,45 @@ class KNNMLRecommender(SurpriseRecommender):
 
 class SlopeOneRecommender(SurpriseRecommender):
     algo = SlopeOne()
+
+
+class SVDRecommender(SurpriseRecommender):
+    """Penn AI SVD recommender.
+    Recommends machine learning algorithms and parameters using the SVD algorithm.
+        - stores ML + P and every dataset.
+        - learns a matrix factorization on the non-missing data.
+        - given a dataset, estimates the rankings of all ML+P and returns the top 
+        n_recs. 
+
+    Parameters
+    ----------
+    ml_type: str, 'classifier' or 'regressor'
+        Recommending classifiers or regressors. Used to determine ML options.
+    
+    metric: str (default: accuracy for classifiers, mse for regressors)
+        The metric by which to assess performance on the datasets.
+    """
+    algo = mySVD(n_factors=20, biased=True, init_mean=0,
+                          init_std_dev=.2, lr_all=.01,
+                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
+                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
+                          reg_qi=None, random_state=None, verbose=False)
+    
+    def update_model(self,results_data):
+        """Stores new results and updates SVD."""
+        logger.info('updating SVD model')
+        # shuffle the results data the first time
+        if self.first_fit:
+            results_data = results_data.sample(frac=1)
+
+        self.update_training_data(results_data)
+        logger.debug('fitting self.algo...')
+        # set the number of training iterations proportionally to the amount of
+        # results_data
+        self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        self.algo.partial_fit(self.trainset)
+        logger.debug('done.')
+        if self.first_fit:
+            self.init_results_data = results_data
+            self.first_fit=False
+        logger.debug('model SVD updated') 
