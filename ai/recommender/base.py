@@ -68,6 +68,12 @@ class BaseRecommender:
         results_mf: DataFrame, optional 
             columns corresponding to metafeatures of each dataset in results_data.
         """
+        if results_data.isna().values.any():
+            logger.warning('There are NaNs in results_data.')
+            logger.warning(str(results_data))
+            logger.errort('Dropping NaN results.')
+            results_data.dropna(inplace=True) 
+
         # update parameter hash table
         self.param_htable.update({hash(frozenset(x.items())):x 
                 for x in results_data['parameters'].values})
@@ -124,7 +130,7 @@ class BaseRecommender:
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
         else:
-            logger.error('value of ml_p is None')
+            logger.warning('value of ml_p is None')
         logger.debug('param_htable:{} objects'.format(len(self.param_htable)))
 
     def update_trained_dataset_models_from_df(self, results_data):
