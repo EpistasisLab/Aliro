@@ -114,8 +114,8 @@ def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters,
                                                'bal_accuracy': [actual_score]})
                           )
             
-            print('ranking: ', actual_ranking)
-            score_delta = (best_actual_score-actual_score)/best_score
+            score_delta = (best_score-actual_score)/best_score
+            print('score_delta: ', score_delta)
             success_01 = score_delta <= 0.01
             success_02 = score_delta <= 0.02
             success_03 = score_delta <= 0.03
