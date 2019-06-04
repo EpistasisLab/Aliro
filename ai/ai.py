@@ -77,7 +77,7 @@ class AI():
                         os.environ['LAB_PORT'])
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
-        self.continous= n_recs<1
+        self.continuous= n_recs<1
 
         # api parameters, will be removed from self once the recommenders no longer
         # call the api directly.
@@ -447,7 +447,7 @@ def main():
             help='turn on ai for these datasets')
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,
             help=('Number of recommendations to make at a time. '
-                'If zero, will send continous recommendations.'))
+                'If zero, will send continuous recommendations.'))
     parser.add_argument('-max_time',action='store',dest='MAX_TIME',type=int,
             default=60, help=('Amount of time to allow recs in seconds. '
                 'Only works when term_condition set to "time".'))
