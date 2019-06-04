@@ -108,7 +108,7 @@ def check_rec(rec):
     rec_obj.update(new_data, dataset_mf)
     # test making recommendations
     for n in np.arange(epochs):
-        for d in data.dataset.unique():
+        for d in list(data.dataset.unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
@@ -141,8 +141,8 @@ def check_n_recs(rec):
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
     # test updating scores
-    for n_recs in np.arange(10):
-        for d in data.dataset.unique():
+    for n_recs in np.arange(5):
+        for d in list(data.dataset.unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
                                              dataset_mf=get_metafeatures(d))
             assert(len(ml)==n_recs)
