@@ -1,6 +1,3 @@
-#
-# AI agent for Penn AI.
-#
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
@@ -57,7 +54,7 @@ class AI():
     :param datasets: str or False - if not false, a comma seperated list of datasets
     to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-
+    
     """
 
     def __init__(self,
@@ -73,7 +70,7 @@ class AI():
                 use_knowledgebase=False,
                 term_condition='n_recs',
                 max_time=5):
-        """initializes AI managing agent."""
+        """Initializes AI managing agent."""
         # recommender settings
         if api_path == None:
             api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
@@ -166,8 +163,7 @@ class AI():
     ## Init methods
     ##-----------------       
     def load_knowledgebase(self):
-        """ Bootstrap the recommenders with the knowledgebase
-        """
+        """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
 

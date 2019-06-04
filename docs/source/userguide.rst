@@ -1,3 +1,3 @@
 .. _user-guide:
 
-.. mdinclude:: ../../README.md
+.. mdinclude:: ../guides/userGuide.md

@@ -55,7 +55,7 @@ def get_metafeatures(d):
     # df['metafeature_version'] = 1.0
     # df['dataset_hash'] = 'test_hash'
 
-    print('meatafeatures for',d,':',df)
+    # print('meatafeatures for',d,':',df)
     return df
 
 def update_dataset_mf(dataset_mf,results_data):
