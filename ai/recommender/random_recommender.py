@@ -3,6 +3,14 @@ from .base import BaseRecommender
 import numpy as np
 import pdb
 
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
 
@@ -57,6 +65,8 @@ class RandomRecommender(BaseRecommender):
             Return a list of len n_recs in order of estimators and parameters 
             expected to do best.
         """
+        # dataset hash table
+        super().recommend(dataset_id, n_recs, dataset_mf)
 
         # return ML+P for best average y
         #print(self.ml_p)
@@ -96,9 +106,9 @@ class RandomRecommender(BaseRecommender):
             #p_rec = [r.split('|')[1] for r in rec]
             #rec_score = [0 for r in rec]
         except AttributeError:
-            print('rec:', rec)
-            print('self.scores:', self.scores)
-            print('self.w:', self.w)
+            logger.error('rec:', rec)
+            logger.error('self.scores:', self.scores)
+            logger.error('self.w:', self.w)
             raise AttributeError
 
         self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)

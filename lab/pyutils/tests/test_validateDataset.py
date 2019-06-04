@@ -21,12 +21,32 @@ logger.setLevel(logging.DEBUG)
 @nottest
 def load_bad_test_data():
 	return [
+		("appendicitis_bad_rows", 
+			"data/datasets/test/test_bad/appendicitis_bad_rows.csv",
+			"target_class",
+			None,
+			None,
+			"Dataset has dimensions (5, 8), classification datasets must have at least 10 rows."),
+		# because the data has only one column, the file is not autoparsed properly
+		("appendicitis_bad_cols", 
+			"data/datasets/test/test_bad/appendicitis_bad_cols.csv",
+			"target_class",
+			None,
+			None,
+			"Target column 'target_class' not in data"),
+			#"Dataset has dimensions (5, 2), classification datasets must have at least 2 columns."),
+		("appendicitis_bad_cols_per_class", 
+			"data/datasets/test/test_bad/appendicitis_bad_cols_per_class.csv",
+			"target_class",
+			None,
+			None,
+			"Classification datasets must have at least 2 rows per class, class(es) '[3]' have only 1 row."),
 		("appendicitis_bad_dim", 
 			"data/datasets/test/test_bad/appendicitis_bad_dim.csv",
 			"class",
 			None,
 			None,
-			"sklearn.check_array() validation Input contains NaN, infinity or a value too large for dtype('float64')."),
+			"Classification datasets must have at least 2 rows per class, class(es) '[9999999.0]' have only 1 row."),
 		("appendicitis_bad_target_col", 
 			"data/datasets/test/test_bad/appendicitis_bad_target_col.csv",
 			"class",
@@ -146,31 +166,29 @@ class TestResultUtils(unittest.TestCase):
 	@parameterized.expand(load_bad_test_data)
 	def test_validate_data_file_bad(self, name, file_path, target_column, categories, ordinals, expectedMessage):
 		result, message = validateDataset.validate_data_from_filepath(file_path, target_column, categories, ordinals)
-		assert not(result)
 		assert(message)
 		self.assertEqual(message, expectedMessage)
+		assert not(result)
 
-	@parameterized.expand(load_bad_test_data_no_target)
-	def test_validate_data_file_bad_no_target(self, name, file_path, target_column, expectedMessage):
-		result, message = validateDataset.validate_data_from_filepath(file_path, None)
-		assert not(result)
-		assert(message)
-		self.assertEqual(message, expectedMessage)
+	#  NaN or string errors are only checked if the target column is specified.	
+##	@parameterized.expand(load_bad_test_data_no_target)
+##	def test_validate_data_file_bad_no_target(self, name, file_path, target_column, expectedMessage):
+##		result, message = validateDataset.validate_data_from_filepath(file_path, None)
+##		assert(message)
+##		self.assertEqual(message, expectedMessage)
+##		assert not(result)
 
 	@parameterized.expand(load_good_test_data)
 	def test_validate_data_file_good(self, name, file_path, target_column, categories, ordinals):
 		result, message = validateDataset.validate_data_from_filepath(file_path, target_column, categories, ordinals)
 		logger.debug("name: " + name + " file_path: " + file_path + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
 		self.assertTrue(result)
-		
+	
 	@parameterized.expand(load_good_test_data)
 	def test_validate_data_file_good_no_target(self, name, file_path, target_column, categories, ordinals):
 		result, message = validateDataset.validate_data_from_filepath(file_path, None, categories, ordinals)
 		logger.debug("name: " + name + " file_path: " + file_path + " target:" + target_column + " res: " + str(result) + " msg: " + str(message))
 		self.assertTrue(result)
-
-
-
 
 	@parameterized.expand(load_good_test_data)
 	def test_validate_data_main_file_good(self, name, file_path, target_column, categories, ordinals):
@@ -227,4 +245,6 @@ class TestResultUtils(unittest.TestCase):
 		self.assertIsInstance(objResult, dict)
 		self.assertEqual(list(objResult), ["success", "errorMessage"])
 		self.assertEqual(objResult['success'], False)
-		self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")
+		#self.assertRegex(objResult['errorMessage'], "^Exception: ConnectionError\(MaxRetryError")
+		#self.assertRegex(objResult['errorMessage'], "^Exception: ConnectTimeout\(MaxRetryError")
+		self.assertRegex(objResult['errorMessage'], "^Exception: Connect.*\(MaxRetryError")

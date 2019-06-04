@@ -106,6 +106,9 @@ html_static_path = ['_static','figs']
 #
 # html_sidebars = {}
 
+# favicon path
+html_favicon = '_static/logo_blank_small.png'
+html_logo = '_static/logo_blank_small.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
