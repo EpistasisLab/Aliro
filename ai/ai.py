@@ -460,7 +460,7 @@ def main():
             help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
-    parser.add_argument('--no-knowledgebase','-k', action='store_false',
+    parser.add_argument('--knowledgebase','-k', action='store_true',
             dest='USE_KNOWLEDGEBASE', default=True, 
             help='Load a knowledgebase for the recommender')
 
