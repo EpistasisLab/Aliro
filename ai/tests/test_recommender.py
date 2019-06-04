@@ -55,7 +55,7 @@ def get_metafeatures(d):
     # df['metafeature_version'] = 1.0
     # df['dataset_hash'] = 'test_hash'
 
-    # print('df:',df)
+    print('meatafeatures for',d,':',df)
     return df
 
 def update_dataset_mf(dataset_mf,results_data):
@@ -112,7 +112,8 @@ def check_rec(rec):
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
-            logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(rec.__name__,n,d,ml,p,scores))
+            logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
+                rec.__name__,n,d,ml,p,scores))
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""

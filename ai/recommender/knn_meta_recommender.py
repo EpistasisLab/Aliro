@@ -13,7 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
