@@ -26,8 +26,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 # define a comparison function that tests a recommender on the datasets, 
 #using an intial knowledge base.
-def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters,
-        success_threshold=0.01):
+def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters):
     """generates recommendations for datasets, using all other dataset results."""
     # set seed
     np.random.seed(trial)
@@ -149,6 +148,7 @@ def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters,
             if success_01:
                 print("we're done here, everyone can go home now ")
                 for final_its in np.arange(it+1,iters):
+                    print('appending it',final_its)
                     results.append({'iteration':final_its,
                                 'n_recs':n_recs,
                                 'iters':iters,
@@ -169,9 +169,9 @@ def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters,
                                 'success_04':success_04,
                                 'success_05':success_05,
                                 })
-                continue
+                break
         if success_01:
-            continue
+            break
         print('updating recommender...')
         if len(updates)>0:
             update_record = pd.concat(updates)
@@ -213,9 +213,6 @@ if __name__ == '__main__':
     parser.add_argument('-dataset',action='store',dest='DATASET',type=str,
                         default='appendicitis',
                         help='name of dataset to run leave-one-out analysis on')
-    parser.add_argument('-thresh',action='store',dest='THRESH',type=float,
-                        default=0.01,
-                        help='threshold for counting a success')
     parser.add_argument('-resdir',action='store',dest='RESDIR',type=str,
                         default='results',
                         help='results directory')

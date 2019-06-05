@@ -15,7 +15,7 @@ And, it has an *AI* assistant that can choose the analysis to run for you.
 .. toctree::
    :maxdepth: 2
 
-   guide
+   quickstart
    userguide
    developerguide
    ai
