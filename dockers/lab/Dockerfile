@@ -56,9 +56,8 @@ COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 
-## FGLab server
+## PennAI Lab server
 COPY ${docker_filepath}/entrypoint.sh /root/
-COPY ${docker_filepath}/env /opt/.env
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \

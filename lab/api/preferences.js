@@ -1,4 +1,3 @@
-require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
 
