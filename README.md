@@ -1,3 +1,7 @@
+[![Logo](./docs/source/_static/logo_blank_small.png)]()
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE)
+
 PennAI: AI-Driven Data Science
 ==================================
 
