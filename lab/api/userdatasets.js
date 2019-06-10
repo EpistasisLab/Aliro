@@ -1,4 +1,3 @@
-require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
 
@@ -173,4 +172,3 @@ var annotate_dataset = function(dataset) {
     return (validation);
 }
 exports.annotate_dataset = annotate_dataset
-

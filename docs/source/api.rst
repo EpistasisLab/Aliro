@@ -30,22 +30,16 @@ Average Recommender
 .. automodule:: ai.recommender.average_recommender
     :members:
 
-################
-Meta Recommender
-################
-.. automodule:: ai.recommender.meta_recommender
-    :members:
-
 ###############
 KNN Recommender
 ###############
 .. automodule:: ai.recommender.knn_meta_recommender
     :members:
 
-###############
-SVD Recommender
-###############
-.. automodule:: ai.recommender.svd_recommender
+#####################
+Surprise Recommenders
+#####################
+.. automodule:: ai.recommender.surprise_recommenders
     :members:
 
 =====

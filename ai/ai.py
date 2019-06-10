@@ -1,6 +1,3 @@
-#
-# AI agent for Penn AI.
-#
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
@@ -19,7 +16,10 @@ import sys
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.svd_recommender import SVDRecommender
+# from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
+        SlopeOneRecommender, SVDRecommender)
 from collections import OrderedDict
 from ai.request_manager import RequestManager
 
@@ -54,7 +54,7 @@ class AI():
     :param datasets: str or False - if not false, a comma seperated list of datasets
     to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-
+    
     """
 
     def __init__(self,
@@ -70,14 +70,14 @@ class AI():
                 use_knowledgebase=False,
                 term_condition='n_recs',
                 max_time=5):
-        """initializes AI managing agent."""
+        """Initializes AI managing agent."""
         # recommender settings
         if api_path == None:
             api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
                         os.environ['LAB_PORT'])
         self.rec = rec
         self.n_recs=n_recs if n_recs>0 else 1
-        self.continous= n_recs<1
+        self.continuous= n_recs<1
 
         # api parameters, will be removed from self once the recommenders no longer
         # call the api directly.
@@ -163,8 +163,7 @@ class AI():
     ## Init methods
     ##-----------------       
     def load_knowledgebase(self):
-        """ Bootstrap the recommenders with the knowledgebase
-        """
+        """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
         kb = knowledgebase_loader.load_pmlb_knowledgebase()
 
@@ -177,20 +176,21 @@ class AI():
         # WGL: yes at the moment we need this until hash is implemented.
         # we can add a check at dataset upload to prevent repeat dataset names in
         # the mean time.
-        self.user_datasets = self.labApi.get_user_datasets(self.user)
-        self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
-        kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
-                                          lambda x: self.dataset_name_to_id[x]
-                                          if x in self.dataset_name_to_id.keys()
-                                          else x)
-        metafeatures = {}
-        for k,v in kb['metafeaturesData'].items():
-            if k in self.dataset_name_to_id.keys():
-                metafeatures[self.dataset_name_to_id[k]] = v
-            else:
-                metafeatures[k] = v
-        # all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
-        all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
+        # pdb.set_trace()
+        # self.user_datasets = self.labApi.get_user_datasets(self.user)
+        # self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
+        # kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
+        #                                   lambda x: self.dataset_name_to_id[x]
+        #                                   if x in self.dataset_name_to_id.keys()
+        #                                   else x)
+        # metafeatures = {}
+        # for k,v in kb['metafeaturesData'].items():
+        #     if k in self.dataset_name_to_id.keys():
+        #         metafeatures[self.dataset_name_to_id[k]] = v
+        #     else:
+        #         metafeatures[k] = v
+        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
         self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique())
         # self.update_dataset_mf(kb['resultsData'])
@@ -229,7 +229,7 @@ class AI():
             if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
                 # fetch metafeatures from server for dataset and append
                 df = self.labApi.get_metafeatures(d)        
-                # df['dataset'] = d
+                df['dataset'] = d
                 # print('metafeatures:',df)
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
@@ -435,7 +435,8 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','knn','svd'],
+            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
+                       'knnml','knndata','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
             default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
@@ -446,7 +447,7 @@ def main():
             help='turn on ai for these datasets')
     parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,
             help=('Number of recommendations to make at a time. '
-                'If zero, will send continous recommendations.'))
+                'If zero, will send continuous recommendations.'))
     parser.add_argument('-max_time',action='store',dest='MAX_TIME',type=int,
             default=60, help=('Amount of time to allow recs in seconds. '
                 'Only works when term_condition set to "time".'))
@@ -460,7 +461,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=False,
+            dest='USE_KNOWLEDGEBASE', default=True, 
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -476,8 +477,13 @@ def main():
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
-            'knn': KNNMetaRecommender,
-            'svd': SVDRecommender
+            'knnmeta': KNNMetaRecommender,
+            'svd': SVDRecommender,
+            'cocluster': CoClusteringRecommender,
+            'knnmeans': KNNWithMeansRecommender,
+            'knndata': KNNDatasetRecommender,
+            'knnml': KNNMLRecommender,
+            'slopeone': SlopeOneRecommender
             }
 
     rec_args['metric'] = 'accuracy'

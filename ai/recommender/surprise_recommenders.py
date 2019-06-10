@@ -9,7 +9,8 @@ from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
 import pdb
-from surprise import Reader, Dataset, mySVD
+from surprise import (Reader, Dataset, CoClustering, SlopeOne, KNNWithMeans,
+                      KNNBasic, mySVD) 
 # import pyximport
 # pyximport.install()
 # from .svdedit import mySVD
@@ -24,13 +25,10 @@ formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-class SVDRecommender(BaseRecommender):
-    """Penn AI SVD recommender.
-    Recommends machine learning algorithms and parameters using the SVD++ algorithm.
-        - stores ML + P and every dataset.
-        - learns a matrix factorization on the non-missing data.
-        - given a dataset, estimates the rankings of all ML+P and returns the top 
-        n_recs. 
+
+class SurpriseRecommender(BaseRecommender):
+    """Class to support generic recommenders from the Surprise library.
+    Not intended to be used as a standalone class. 
 
     Parameters
     ----------
@@ -40,9 +38,11 @@ class SVDRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
-            max_epochs=100): 
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None): 
         """Initialize recommendation system."""
+        if self.__class__.__name__ == 'SurpriseRecommender':
+            raise RuntimeError('Do not instantiate the SurpriseRecommender class '
+            'directly; use one of the method-specific classes instead.')
         super().__init__(ml_type, metric, ml_p)
         
         # store results
@@ -50,14 +50,17 @@ class SVDRecommender(BaseRecommender):
         # reader for translating btw PennAI results and Suprise training set
         self.reader = Reader()
         # algo is the online Surprise-based rec system
-        self.algo = mySVD(n_factors=20, biased=True, init_mean=0,
-                          init_std_dev=.2, lr_all=.01,
-                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
-                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
-                          reg_qi=None, random_state=None, verbose=False)
+        # if algo is None:
+        #     self.algo = KNNBasic() 
+        # else:
+        #     self.algo = algo
         
-        self.max_epochs = max_epochs
         self.first_fit = True
+        self.max_epochs = 100
+    
+    @property
+    def algo_name(self):
+        return type(self.algo).__name__
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations based on overall performance in 
@@ -99,8 +102,8 @@ class SVDRecommender(BaseRecommender):
         logger.debug('self.trainset # of datasets: ' + str(self.trainset.n_users))
 
     def update_model(self,results_data):
-        """Stores new results and updates SVD."""
-        logger.info('updating SVD model')
+        """Stores new results and updates algo."""
+        logger.debug('updating '+self.algo_name+' model')
         # shuffle the results data the first time
         if self.first_fit:
             results_data = results_data.sample(frac=1)
@@ -109,13 +112,12 @@ class SVDRecommender(BaseRecommender):
         logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
-        self.algo.n_epochs = min(len(results_data),self.max_epochs)
-        self.algo.partial_fit(self.trainset)
+        self.algo.fit(self.trainset)
         logger.debug('done.')
         if self.first_fit:
             self.init_results_data = results_data
             self.first_fit=False
-        logger.debug('model SVD updated') 
+        logger.debug('model '+self.algo_name+' updated') 
 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
@@ -130,10 +132,6 @@ class SVDRecommender(BaseRecommender):
         """
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
-
-        # TODO: raise error if dataset_mf is None 
-        # print('dataset bias:',
-        #         self.algo.bu[self.algo.trainset.to_inner_uid(dataset_id)])
         dataset_hash = self.dataset_id_to_hash[dataset_id]
         try:
             predictions = []
@@ -159,14 +157,6 @@ class SVDRecommender(BaseRecommender):
         except Exception as e:
             logger.error( 'error running self.best_model_prediction for',dataset_id)
             raise e 
-        # debug: print the biases for each learner
-        # pdb.set_trace()
-        logger.debug('agorithm biases:')
-        bis = np.argsort(self.algo.bi)[::-1]
-        for i in bis:
-            logger.debug(str(self.algo.trainset.to_raw_iid(i))+'\t'
-                    +str(self.algo.bi[i]))
-        # pdb.set_trace()
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
         self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
@@ -221,3 +211,82 @@ class SVDRecommender(BaseRecommender):
         p_rec = [n[0].split('|')[1] for n in top_n]
         score_rec = [n[1] for n in top_n]
         return ml_rec, p_rec, score_rec 
+
+class CoClusteringRecommender(SurpriseRecommender):
+    """Generates recommendations via CoClustering, see
+    https://surprise.readthedocs.io/en/stable/co_clustering.html
+    """
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None): 
+        super().__init__(ml_type, metric, ml_p, algo)
+        # set n clusters for ML equal to # of ML methods
+        self.algo = CoClustering(n_cltr_i = self.ml_p.algorithm.nunique(),
+                                 n_cltr_u = 10)
+
+class KNNWithMeansRecommender(SurpriseRecommender):
+    """Generates recommendations via KNNWithMeans, see
+    https://surprise.readthedocs.io/en/stable/knn_inspired.html
+    """
+    algo = KNNWithMeans()
+
+class KNNDatasetRecommender(SurpriseRecommender):
+    """Generates recommendations via KNN with clusters defined over datasets, see
+    https://surprise.readthedocs.io/en/stable/knn_inspired.html
+    """
+    algo = KNNBasic(sim_options={'user_based':True})
+
+    @property
+    def algo_name(self):
+        return 'KNN-Dataset' 
+
+class KNNMLRecommender(SurpriseRecommender):
+    """Generates recommendations via KNN with clusters defined over algorithms, see
+    https://surprise.readthedocs.io/en/stable/knn_inspired.html
+    """
+    algo = KNNBasic(sim_options={'user_based':False})
+    @property
+    def algo_name(self):
+        return 'KNN-ML' 
+
+class SlopeOneRecommender(SurpriseRecommender):
+    """Generates recommendations via SlopeOne, see
+    https://surprise.readthedocs.io/en/stable/slope_one.html
+    """
+    algo = SlopeOne()
+
+
+class SVDRecommender(SurpriseRecommender):
+    """SVD recommender.
+    see https://surprise.readthedocs.io/en/stable/matrix_factorization.html 
+    Recommends machine learning algorithms and parameters using the SVD algorithm.
+        - stores ML + P and every dataset.
+        - learns a matrix factorization on the non-missing data.
+        - given a dataset, estimates the rankings of all ML+P and returns the top 
+        n_recs. 
+
+    Note that we use a custom online version of SVD found here:
+    https://github.com/lacava/surprise
+    """
+    algo = mySVD(n_factors=20, biased=True, init_mean=0,
+                          init_std_dev=.2, lr_all=.01,
+                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
+                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
+                          reg_qi=None, random_state=None, verbose=False)
+    
+    def update_model(self,results_data):
+        """Stores new results and updates SVD."""
+        logger.info('updating SVD model')
+        # shuffle the results data the first time
+        if self.first_fit:
+            results_data = results_data.sample(frac=1)
+
+        self.update_training_data(results_data)
+        logger.debug('fitting self.algo...')
+        # set the number of training iterations proportionally to the amount of
+        # results_data
+        self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        self.algo.partial_fit(self.trainset)
+        logger.debug('done.')
+        if self.first_fit:
+            self.init_results_data = results_data
+            self.first_fit=False
+        logger.debug('model SVD updated') 
