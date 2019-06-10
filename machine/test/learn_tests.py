@@ -1079,10 +1079,8 @@ def test_plot_dot_plot():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_1,
+    dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_1,
                     training_classes_1,
-                    testing_features_1,
-                    testing_classes_1,
                     feature_names_1,
                     indices=np.array([0,1,2,3]),
                     random_state=42,
@@ -1091,7 +1089,7 @@ def test_plot_dot_plot():
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     assert os.path.isfile(dot_file)
     assert os.path.isfile(png_file)
-    assert dtree_test_score > 0.7
+    assert dtree_train_score > 0.7
     rmtree(tmpdir)
 
 
@@ -1101,10 +1099,8 @@ def test_plot_dot_plot_2():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_4,
+    dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
                     training_classes_4,
-                    testing_features_4,
-                    testing_classes_4,
                     feature_names_4,
                     indices=np.array([0,1,2,3]),
                     random_state=42,

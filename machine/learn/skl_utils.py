@@ -281,26 +281,20 @@ def generate_results(model, input_data,
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="feature_importances.json", content=feature_importances)
-    dtree_test_score = None
-    abs_diff_test_score = None
+    dtree_train_score = None
     if figure_export:
         top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
         if not categories and not ordinals:
-            dtree_test_score = plot_dot_plot(tmpdir, _id, training_features,
-                            training_classes,
-                            testing_features,
-                            testing_classes,
+            dtree_train_score = plot_dot_plot(tmpdir, _id, features,
+                            target,
                             top_features,
                             indices,
                             random_state,
                             mode)
 
-    if dtree_test_score is not None:
-        abs_diff_test_score = abs(scores['test_score']-dtree_test_score)
-
     # save metrics
-    scores['dtree_test_score'] = dtree_test_score
-    scores['abs_diff_test_score'] = abs_diff_test_score
+    scores['dtree_train_score'] = dtree_train_score
+
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -615,8 +609,6 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
 
 def plot_dot_plot(tmpdir, _id, training_features,
                 training_classes,
-                testing_features,
-                testing_classes,
                 top_features,
                 indices,
                 random_state,
@@ -628,14 +620,10 @@ def plot_dot_plot(tmpdir, _id, training_features,
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    training_features: np.darray/pd.DataFrame
+    features: np.darray/pd.DataFrame
         Features in training dataset
     training_classes: np.darray/pd.DataFrame
         Target in training dataset
-    testing_features: np.darray/pd.DataFrame
-        Features in test dataset
-    testing_classes: np.darray/pd.DataFrame
-        Target in test dataset
     top_features: list
         Top feature_names
     indices: ndarray
@@ -648,7 +636,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
 
     Returns
     -------
-    dtree_test_score, float
+    dtree_train_score, float
         Test score from fitting decision tree on top important feat'
 
     """
@@ -657,7 +645,6 @@ def plot_dot_plot(tmpdir, _id, training_features,
     from sklearn.tree import export_graphviz
 
     top_training_features = training_features[:, indices]
-    top_testing_features = testing_features[:, indices]
     if mode == 'classification':
         from sklearn.tree import DecisionTreeClassifier
         dtree=DecisionTreeClassifier(random_state=random_state,
@@ -670,8 +657,8 @@ def plot_dot_plot(tmpdir, _id, training_features,
         scoring = SCORERS["neg_mean_squared_error"]
 
     dtree.fit(top_training_features, training_classes)
-    dtree_test_score = scoring(
-        dtree, top_testing_features, testing_classes)
+    dtree_train_score = scoring(
+        dtree, top_training_features, training_classes)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     class_names = None
@@ -684,7 +671,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
                      special_characters=True)
     (graph,) = pydot.graph_from_dot_file(dot_file)
     graph.write_png(png_file)
-    return dtree_test_score
+    return dtree_train_score
 
 
 
