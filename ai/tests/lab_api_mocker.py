@@ -5,7 +5,7 @@ import logging
 import json
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
 
 
 api_path = 'http://lab:5080'
@@ -664,7 +664,8 @@ api_dataset_metafeatures = [{"name":"ring","metafeatures": {
             "symbols_min": None,
             "symbols_skew": None,
             "symbols_std": None,
-            "symbols_sum": None
+            "symbols_sum": None,
+            "dataset_hash":'4x2x3x1',
         }}]
 
 api_datasets_data_empty = []        

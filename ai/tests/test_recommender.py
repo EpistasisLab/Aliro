@@ -5,7 +5,9 @@ import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.svd_recommender import SVDRecommender
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
+        SlopeOneRecommender, SVDRecommender)
 #from ai.ai import AI
 import pdb
 import logging
@@ -32,8 +34,10 @@ data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data.set_index('dataset')
 #ml - param combos
 
-test_recommenders = [AverageRecommender, RandomRecommender, KNNMetaRecommender,
-                        SVDRecommender]
+test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
+        CoClusteringRecommender, KNNWithMeansRecommender, 
+        KNNDatasetRecommender, KNNMLRecommender, SlopeOneRecommender, 
+        SVDRecommender ]
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
@@ -51,7 +55,7 @@ def get_metafeatures(d):
     # df['metafeature_version'] = 1.0
     # df['dataset_hash'] = 'test_hash'
 
-    # print('df:',df)
+    # print('meatafeatures for',d,':',df)
     return df
 
 def update_dataset_mf(dataset_mf,results_data):
@@ -104,11 +108,12 @@ def check_rec(rec):
     rec_obj.update(new_data, dataset_mf)
     # test making recommendations
     for n in np.arange(epochs):
-        for d in data.dataset.unique():
+        for d in list(data.dataset.unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
-            logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(rec.__name__,n,d,ml,p,scores))
+            logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
+                rec.__name__,n,d,ml,p,scores))
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""
@@ -136,8 +141,8 @@ def check_n_recs(rec):
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
     # test updating scores
-    for n_recs in np.arange(10):
-        for d in data.dataset.unique():
+    for n_recs in np.arange(5):
+        for d in list(data.dataset.unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
                                              dataset_mf=get_metafeatures(d))
             assert(len(ml)==n_recs)

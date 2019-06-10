@@ -16,12 +16,18 @@ from ai.recommender.surprise_recommenders import *
 from joblib import Parallel, delayed
 from collections import OrderedDict
 from mock_experiment.mf_utils import local_get_metafeatures, update_dataset_mf
-import warnings 
-warnings.simplefilter("ignore")
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 # define a comparison function that tests a recommender on the datasets, 
 #using an intial knowledge base.
-def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
-    """generates recommendations for datasets, using the first n_init as knowledge base."""
+def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters):
+    """generates recommendations for datasets, using all other dataset results."""
     # set seed
     np.random.seed(trial)
     results = []
@@ -35,36 +41,19 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
             'cocluster': CoClusteringRecommender,
             'knnmeans': KNNWithMeansRecommender,
             'knnml': KNNMLRecommender,
-            'knndataset': KNNDatasetRecommender,
+            'knndata': KNNDatasetRecommender,
             'slopeone': SlopeOneRecommender
             }
-    # rec_choice = {'random': RandomRecommender,
-    #         'average': AverageRecommender,
-    #         # 'meta': MetaRecommender,
-    #         # 'mlp': MLPMetaRecommender,
-    #         'knn': KNNMetaRecommender,
-    #         'svd': SVDRecommender
-    #         }
 
-    recommender = rec_choice[rec](**kwargs)
     #pdb.set_trace()
-    ##################################### load first n_init results into recommender
-    subset_ml = np.random.choice(ml_p['algorithm'].unique(), size= n_init)
-    train_subset = []
-    for s in subset_ml:
-        train_subset.append(np.random.choice(
-                knowledge_base.loc[knowledge_base.algorithm==s].index))
-    print('setting training data for recommender:')
-    tmp = knowledge_base.iloc[train_subset]
-    for _,row in tmp.iterrows():
-        print(row.algorithm,':',row.dataset,':',row.bal_accuracy)
+    dataset_successes = 0
 
-    init_data = []
+    ####################################################### main experiment loop
+    # for di,dataset in enumerate(data_idx):
+    recommender = rec_choice[rec](**kwargs)
+    ############################ load all other dataset results into recommender
+    init_df = knowledge_base.loc[knowledge_base['dataset']!=dataset]
     init_data_mf = []
-    # for i in train_subset:
-        # init_data.append(knowledge_base.loc[knowledge_base['dataset']==i])
-        # init_df = pd.concat(init_data)
-    init_df = knowledge_base.iloc[train_subset]
     # get the metafeatures for the initial datasets
     for i,_ in init_df.groupby('dataset'):
         init_data_mf.append(local_get_metafeatures(i))
@@ -72,15 +61,10 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
     dataset_mf = pd.concat(init_data_mf).set_index('dataset')
     print('initial training on',len(init_df),'results')
     recommender.update(init_df, dataset_mf)
-    #################################################### 
 
 
-    ########################################################### main experiment loop
-    datasets = data_idx
-    # loop thru rest of datasets
-    # for it,dataset in enumerate(rec_subset):
+    ####################################################### recs loop
     for it in np.arange(iters):
-        dataset = np.random.choice(datasets)
         holdout_accuracy_lookup = knowledge_base.loc[
                 knowledge_base['dataset'] == dataset].set_index(
             ['algorithm', 'parameter_hash']).loc[:, 'bal_accuracy'].to_dict()
@@ -90,12 +74,17 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
 
         print('generating ',n_recs,'recommendations for',dataset)
 
-        # for each dataset, generate a recommendation
-        mls, ps, scores = recommender.recommend(dataset_id=dataset,
+        try:
+            # for each dataset, generate a recommendation
+            mls, ps, scores = recommender.recommend(dataset_id=dataset,
                                         n_recs=n_recs,
                                         dataset_mf=local_get_metafeatures(dataset)
-                                            )
-        print('got',len(mls),'recs')
+                                        )
+            print('got',len(mls),'recs')
+        except Exception as e:
+            print('Caught exception in recommend():',e)
+            mls, ps, scores = [],[],[]
+
         updates = []
         for i in np.arange(len(mls)):
             ml = mls[i]
@@ -124,12 +113,20 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
                                                'bal_accuracy': [actual_score]})
                           )
             
+            score_delta = (best_score-actual_score)/best_score
+            print('score_delta: ', score_delta)
+            success_01 = score_delta <= 0.01
+            success_02 = score_delta <= 0.02
+            success_03 = score_delta <= 0.03
+            success_04 = score_delta <= 0.04
+            success_05 = score_delta <= 0.05
+            if success_01:
+                print(20*':) ','optimal',20*':) ')
+
             # store the trial, iteration, dataset, recommender, ml rec, param rec,
             # bal_accuracy	
-            results.append({'trial':trial,
-                            'iteration':it,
+            results.append({'iteration':it,
                             'n_recs':n_recs,
-                            'n_init':n_init,
                             'iters':iters,
                             'recommender':rec,
                             'dataset':dataset,
@@ -141,50 +138,81 @@ def run_experiment(rec,data_idx,n_recs,trial,knowledge_base,ml_p,n_init, iters):
                             'best_algorithm':best_algorithm,
                             'ranking':actual_ranking,
                             'delta_bal_accuracy':(best_score-
-                                    actual_score)/best_score})
-
+                                actual_score)/best_score,
+                            'success_01':success_01,
+                            'success_02':success_02,
+                            'success_03':success_03,
+                            'success_04':success_04,
+                            'success_05':success_05,
+                            })
+            if success_01:
+                print("we're done here, everyone can go home now ")
+                for final_its in np.arange(it+1,iters):
+                    print('appending it',final_its)
+                    results.append({'iteration':final_its,
+                                'n_recs':n_recs,
+                                'iters':iters,
+                                'recommender':rec,
+                                'dataset':dataset,
+                                'ml-rec':ml,
+                                'p-rec':p,
+                                'score-rec':scores[0],
+                                'bal_accuracy':actual_score,
+                                'max_bal_accuracy':best_score,
+                                'best_algorithm':best_algorithm,
+                                'ranking':actual_ranking,
+                                'delta_bal_accuracy':(best_score-
+                                    actual_score)/best_score,
+                                'success_01':success_01,
+                                'success_02':success_02,
+                                'success_03':success_03,
+                                'success_04':success_04,
+                                'success_05':success_05,
+                                })
+                break
+        if success_01:
+            break
         print('updating recommender...')
         if len(updates)>0:
             update_record = pd.concat(updates)
             dataset_mf = update_dataset_mf(dataset_mf, update_record)
             recommender.update(update_record,dataset_mf)
         else:
-            print('WARNINING: got no updates for',dataset,'. There are ',
-                  len([r for r in results if r['dataset'] == dataset]),
-                  'results for this dataset already and',len(ml_p),
-                  'unique ml+p combos')
-        
-    ########################################################### end main loop
-    return results
+            print('WARNING: got no updates for',dataset)
 
+    return results
 
 if __name__ == '__main__':
     """run experiment"""
 
-    parser = argparse.ArgumentParser(description='Run a PennAI a recommender '
-            'experiment.', add_help=False)
+    parser = argparse.ArgumentParser(description='Run a PennAI a '
+            'recommender experiment.', add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     # parser.add_argument('-rec',action='store',dest='rec',default='random', 
     #                     help='Recommender to run.') 
     parser.add_argument('-rec',action='store',dest='rec',default='random',
             choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
-                       'knnml','knndataset','slopeone'],
+                       'knnml','knndata','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-n_recs',action='store',dest='n_recs',type=int,default=1,
-            help='Number of recommendations to make at a time. If zero, will send '
-            'continous recommendations until AI is turned off.')
-    parser.add_argument('-v','-verbose',action='store_true',dest='verbose',
-            default=False, help='Print out more messages.')
+            help='Number of '
+            ' recommendations to make at a time. If zero, will send continous '
+            'recommendations until AI is turned off.')
+    parser.add_argument('-v','-verbose',action='store_true',dest='verbose',default=False,
+                        help='Print out more messages.')
     parser.add_argument('-n_init',action='store',dest='n_init',type=int,default=10,
-            help='Number of initial datasets to seed knowledge database')
-    parser.add_argument('-iters',action='store',dest='iters',type=int,default=100,
-            help='Number of initial datasets to seed knowledge database')
+                        help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-iters',action='store',dest='iters',type=int,default=10,
+                        help='Number of initial datasets to seed knowledge database')
     parser.add_argument('-t',action='store',dest='trial',type=int,default=0,
-            help='Trial number')
+                        help='Trial number')
     parser.add_argument('-data',action='store',dest='KNOWL',type=str,
-           default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
-            help='Number of initial datasets to seed knowledge database')
+                        default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
+                        help='Number of initial datasets to seed knowledge database')
+    parser.add_argument('-dataset',action='store',dest='DATASET',type=str,
+                        default='appendicitis',
+                        help='name of dataset to run leave-one-out analysis on')
     parser.add_argument('-resdir',action='store',dest='RESDIR',type=str,
                         default='results',
                         help='results directory')
@@ -214,13 +242,12 @@ if __name__ == '__main__':
         
 
         # output file
-        out_file = ('mock_experiment/' + args.RESDIR + '/experiment_' 
+        out_file = ('mock_experiment/' + args.RESDIR + '/leaveoneout_' 
                     + data_file.split('/')[-1].split('.')[0]
                     + '_rec-{}'.format(args.rec) 
-                    + '_ninit-{}'.format(args.n_init)
                     + '_nrecs-{}'.format(args.n_recs)
                     + '_iters-{}'.format(args.iters) 
-                    + '_trial-{}'.format(args.trial) 
+                    + '_{}'.format(args.DATASET) 
                     + '.csv')    
 
         # run experiment
@@ -228,12 +255,11 @@ if __name__ == '__main__':
         print('rec:',args.rec,'n_recs:',args.n_recs,'n_init:',args.n_init,
               'iters:',args.iters)
         results = run_experiment(args.rec,
-                                 data_idx,
+                                 args.DATASET,
                                  args.n_recs,
                                  args.trial,
                                  knowledge_base,
                                  ml_p,
-                                 args.n_init,
                                  args.iters)
 
         df_results = pd.DataFrame.from_records(results,columns=results[0].keys()) 
@@ -244,4 +270,4 @@ if __name__ == '__main__':
         else:
             df_results.to_csv(out_file,index=False)
 
-        print('done. results written to ', out_file)
+        print('results written to ', out_file)
