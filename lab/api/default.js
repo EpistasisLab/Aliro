@@ -1,4 +1,3 @@
-require("../env"); // Load configuration variables
 var db = require("../db").db;
 var user_collections = ['users', 'experiments', 'datasets'];
 var global_collections = ['projects'];
@@ -67,7 +66,7 @@ var responder = function(req, res) {
     for (param in params.match) {
         var vals = params.match[param]
         if (vals.length !== undefined && vals.length >= 2) {
-            //{ $or: [ { quantity: { $lt: 20 } }, { price: 10 } 
+            //{ $or: [ { quantity: { $lt: 20 } }, { price: 10 }
             query[param] = vals;
             vals = {
                 $in: vals
@@ -137,7 +136,7 @@ var retParams = function(req) {
             var val = req.query[param];
             if(param == 'limit') {
                limit = parseInt(val);
-            } 
+            }
             if(param == 'project_id') {
             params['_' + param] =val;
             }
@@ -146,7 +145,7 @@ var retParams = function(req) {
             }
         }
     }
- 
+
 //console.log(req.params);
     if (req.params.user['roles'] !== undefined && req.params.user['roles'].indexOf('ai') >= 0) {
         is_ai = true;
