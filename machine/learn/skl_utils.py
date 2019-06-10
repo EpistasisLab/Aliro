@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import os
 import json
 import itertools
-from sklearn import metrics
-from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split
+from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -75,8 +75,7 @@ def balanced_accuracy(y_true, y_pred):
 
 
 # make new SCORERS
-SCORERS = metrics.SCORERS
-SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
+SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 
 def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
@@ -148,9 +147,6 @@ def generate_results(model, input_data,
 
     features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-    training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
-
     # fix random_state
     model = setup_model_params(model, 'random_state', random_state)
     # set class_weight
@@ -180,6 +176,7 @@ def generate_results(model, input_data,
                                  )
         model = make_pipeline(ct, model)
 
+    scores = {}
     #print('Args used in model:', model.get_params())
     if mode == "classification":
         if(num_classes > 2):
@@ -187,11 +184,14 @@ def generate_results(model, input_data,
                         "precision_macro",
                         "recall_macro",
                         "f1_macro"]
+            scores['roc_auc_score'] = 'not supported for multiclass'
+            scores['train_roc_auc_score'] = 'not supported for multiclass'
         else:
             scoring = ["balanced_accuracy",
                         "precision",
                         "recall",
-                        "f1"]
+                        "f1",
+                        "roc_auc"]
 
         metric = "accuracy"
     else:
@@ -233,7 +233,6 @@ def generate_results(model, input_data,
         else:
             model.fit(features, target)
 
-
         # computing cross-validated metrics
         cv_scores = cross_validate(
                                     estimator=model,
@@ -241,9 +240,9 @@ def generate_results(model, input_data,
                                     y=target,
                                     scoring=scoring,
                                     cv=cv,
-                                    return_train_score=True
+                                    return_train_score=True,
+                                    return_estimator=True
                                     )
-    scores = {}
 
     for s in scoring:
         train_scores = cv_scores['train_' + s]
@@ -300,7 +299,7 @@ def generate_results(model, input_data,
         # determine if target is binary or multiclass
         class_names = model.classes_
 
-        cnf_matrix = metrics.confusion_matrix(
+        cnf_matrix = confusion_matrix(
             target, predicted_classes, labels=class_names)
         cnf_matrix_dict = {
             'cnf_matrix': cnf_matrix.tolist(),
@@ -313,40 +312,9 @@ def generate_results(model, input_data,
         if figure_export:
             plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
-        roc_auc_score = 'not supported for multiclass'
-        train_roc_auc_score = 'not supported for multiclass'
-        if num_classes==2:
-            # choose correct scoring function based on model
-            try:
-                test_proba_estimates = model.predict_proba(testing_features)[:, 1];
-                train_proba_estimates = model.predict_proba(training_features)[:, 1];
-            except AttributeError:
-                test_proba_estimates = model.decision_function(testing_features)
-                train_proba_estimates = model.decision_function(training_features)
-            testing_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in testing_classes], dtype=np.int
-                                         )
-            train_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in training_classes], dtype=np.int
-                                         )
-            roc_curve = metrics.roc_curve(testing_classes_encoded, test_proba_estimates)
-            roc_auc_score = metrics.roc_auc_score(testing_classes_encoded, test_proba_estimates)
-            train_roc_auc_score = metrics.roc_auc_score(train_classes_encoded, train_proba_estimates)
 
-            fpr, tpr, _ = roc_curve
-            roc_curve_dict = {
-                'fpr': fpr.tolist(),
-                'tpr': tpr.tolist(),
-                'roc_auc_score': roc_auc_score
-            }
-            save_json_fmt(outdir=tmpdir, _id=_id,
-                          fname="roc_curve.json", content=roc_curve_dict)
-            if figure_export:
-               plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
-        scores['roc_auc_score'] = roc_auc_score
-        scores['train_roc_auc_score'] = train_roc_auc_score
+        if num_classes==2:
+            plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
 
 
     metrics_dict = {'_scores': scores}
@@ -524,7 +492,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 # After switching to dynamic charts, possibly disable outputting graphs from this function
 
 
-def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
+def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     Plot ROC Curve.
     Parameters
@@ -533,40 +501,71 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    roc_curve: tuple
-        fpr : array, shape = [>2]
-            Increasing false positive rates such that element i is the false
-            positive rate of predictions with score >= thresholds[i].
-        tpr : array, shape = [>2]
-            Increasing true positive rates such that element i is the true
-            positive rate of predictions with score >= thresholds[i].
-        thresholds : array, shape = [n_thresholds]
-            Decreasing thresholds on the decision function used to compute
-            fpr and tpr. thresholds[0] represents no instances being predicted
-            and is arbitrarily set to max(y_score) + 1.
-    roc_auc_score: float
-            Compute Area Under the Receiver Operating Characteristic Curve
-            (ROC AUC) from prediction scores.
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    figure_export: boolean
+        If true, then export roc curve plot
     Returns
     -------
     None
     """
+    from scipy import interp
+    cv = StratifiedKFold(n_splits=10)
+    tprs = []
+    aucs = []
+    mean_fpr = np.linspace(0, 1, 100)
 
-    fpr, tpr, _ = roc_curve
-    plt.figure()
-    lw = 2
-    plt.plot(fpr, tpr, color='darkorange',
-             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc_score)
-    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend(loc="lower right")
+    #print(cv_scores['train_roc_auc'])
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        try:
+            probas_ = est.predict_proba(X[test])[:, 1]
+        except AttributeError:
+            probas_ = est.decision_function(X[test])
+        #print(SCORERS['roc_auc'](est, X[train], y[train]))
+        # Compute ROC curve and area the curve
+        fpr, tpr, thresholds = roc_curve(y[test], probas_)
+        tprs.append(interp(mean_fpr, fpr, tpr))
+        tprs[-1][0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        aucs.append(roc_auc)
+        if figure_export:
+            plt.plot(fpr, tpr, lw=1, alpha=0.3)
 
-    plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
-    plt.close()
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    std_auc = np.std(aucs)
+    std_tpr = np.std(tprs, axis=0)
+    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    if figure_export:
+        plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+                 label='Chance', alpha=.8)
+        plt.plot(mean_fpr, mean_tpr, color='b',
+                 label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
+                 lw=2, alpha=.8)
+        plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                         label=r'$\pm$ 1 std. dev.')
+        plt.xlim([-0.05, 1.05])
+        plt.ylim([-0.05, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('ROC curve')
+        plt.legend(loc="lower right")
+        plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+        plt.close()
+    roc_curve_dict = {
+        'fpr': mean_fpr.tolist(),
+        'tpr': mean_tpr.tolist(),
+        'roc_auc_score': mean_auc
+    }
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="roc_curve.json", content=roc_curve_dict)
 
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
