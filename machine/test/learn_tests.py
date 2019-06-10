@@ -1281,21 +1281,8 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-# Application 1: reproducing training score and testing score from PennAI
-features = input_data.drop(target_column, axis=1).values
-target = input_data[target_column].values
-# Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
-training_features, testing_features, training_classes, testing_classes = \\
-    train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
-scorer = make_scorer(balanced_accuracy)
-train_score = scorer(model, training_features, training_classes)
-print("Training score: ", train_score)
-test_score = scorer(model, testing_features, testing_classes)
-print("Testing score: ", test_score)
 
-
-# Application 2: cross validation of fitted model
+# Application 1: cross validation of fitted model
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -1303,7 +1290,7 @@ print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
-# Application 3: predict outcome by fitted model
+# Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
