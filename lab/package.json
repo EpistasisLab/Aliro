@@ -14,7 +14,7 @@
     "machine learning"
   ],
   "author": "University of Pennsylvania",
-  "license": "MIT",
+  "license": "GPL 3.0",
   "bugs": {
     "url": "https://github.com/EpistasisLab/pennai/issues"
   },
@@ -23,7 +23,6 @@
     "bluebird": "^3.4.7",
     "body-parser": "^1.15.0",
     "compression": "^1.6.2",
-    "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "lodash": "^4.17.10",
     "mongodb": "^2.2.35",
@@ -33,7 +32,7 @@
     "request-promise": "^3.0.0",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
-    "ws": "^3.3.1"
+    "ws": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^10.5.7",

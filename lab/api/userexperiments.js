@@ -1,4 +1,3 @@
-require("../env"); // Load configuration variables
 var db = require("../db").db;
 var api = require("./default");
 
@@ -157,10 +156,10 @@ exports.responder = function(req, res) {
             */
             res.send(formatted_experiments);
 
-        } else { 
+        } else {
             res.send([]);
         }
- 
+
         }
     );
 }
