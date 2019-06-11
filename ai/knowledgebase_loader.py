@@ -41,50 +41,43 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
 		   metafeaturesData: {String (datasetName): metafeatures}
 				}
     """
-    logger.info("load_knowledgebase({0},{1})".format(resultsFile, datasetDirectory))
+    logger.info(f"load_knowledgebase({resultsFile},{datasetDirectory})")
 
-
+    # load results
     resultsData = _load_results_from_file(resultsFile)
     dataset_names = resultsData['dataset']
     metafeaturesData = {}
     
-    # try loading metafeatures from metafeatureDirectory
-    if metafeatureDirectory != '':
-        logger.info('loading cached metafeatures from '+metafeatureDirectory)
-        for d in np.unique(dataset_names):
-            if os.path.exists(metafeatureDirectory+'/'+d+'/metafeatures.json'):
-                logger.debug('loading '+metafeatureDirectory+'/'+
-                        d+'/metafeatures.json')
-                with open(metafeatureDirectory+'/'+d+
-                        '/metafeatures.json') as data_file:    
-                    data = json.load(data_file)
-                metafeaturesData[d] = data 
-            else:
-                raise ValueError("couldn't find metafeature file for " + d)
-    else:
-        if datasetDirectory=='':
-            raise ValueError('One of datasetDirectory or metafeatureDirectory '
-                             'has to be specified')
-
-        logger.info('generating metafeatures from '+datasetDirectory)
+    # load or generate dataset metafeatures
+    if metafeatureDirectory:
+        metafeaturesData = _load_json_metadata_from_directory(metafeatureDirectory, dataset_names)
+    elif datasetDirectory:
         metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
                 targetField='class')
+    else:
+        raise ValueError('One of datasetDirectory or metafeatureDirectory '
+                             'has to be specified')
+
 
     # check that all result datasets have metadata
     warnings = _validate_knowledgebase(resultsData, metafeaturesData)
 
-    # return
+
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
             'warnings': warnings}
 
+
 def load_pmlb_knowledgebase():
-    """ load the PMBL knowledgebase"""
+    """ 
+    Convience method to load the PMBL knowledgebase
+    """
     return load_knowledgebase(
             resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
                 'knowledgebase.tsv.gz'),
             # datasetDirectory = "data/datasets/pmlb",
             metafeatureDirectory = 'data/knowledgebases/metafeatures'
             )
+
 
 def _validate_knowledgebase(resultsDf, metafeaturesDict):
     """
@@ -107,8 +100,7 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
     missingMfDatasets = list(set(resultsDf.dataset.unique()) 
           - set(metafeaturesDict.keys()))
     if missingMfDatasets : 
-      warnings.append("Found experiment datasets with no associated metadata: " + 
-              str(missingMfDatasets))
+      warnings.append(f"Found {len(missingMfDatasets)} of {len(resultsDf.dataset.unique())} experiment datasets with no associated metadata: {missingMfDatasets}")
 
     # check that all the metafeatures were created with a version compatable
     # with the current version of datasest_describe.py
@@ -123,6 +115,9 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
 
 
 def _load_results_from_file(resultsFile):
+    """
+    Load experiment results from file
+    """
     results_data = pd.read_csv(resultsFile,
                        compression='gzip', sep='\t')
                        # names=['dataset',
@@ -141,6 +136,33 @@ def _load_results_from_file(resultsFile):
     return results_data
 
 
+def _load_json_metadata_from_directory(metafeatureDirectory, datasetNames):
+    """Load .json metafeatures for datasets
+
+    Assumes metafeature files are named 'metafeatures.json' and are in
+    subdirectories for each datset:
+        metafeatureDirectory/dataset1/metadata.json
+        metafeatureDirectory/dataset2/metadata.json
+        metafeatureDirectory/dataset3/metadata.json
+
+    :param metafeatureDirectory
+    :param datasetNames - list of String dataset names
+    """
+    logger.info('loading cached metafeatures from '+ metafeatureDirectory)
+    
+    metafeaturesData = {}
+
+    for dataset in np.unique(datasetNames):
+        mfPath = os.path.join(metafeatureDirectory, dataset, 'metafeatures.json')
+        if os.path.exists(mfPath):
+            #logger.debug(f'loading {mfPath}')
+            with open(mfPath) as data_file:    
+                data = json.load(data_file)
+            metafeaturesData[dataset] = data 
+        else:
+            raise ValueError("couldn't find metafeature file for " + dataset)
+
+    return metafeaturesData
 
 def _generate_metadata_from_directory(datasetDirectory, targetField = 'class', 
     checkSubdirectories = True):
@@ -148,11 +170,17 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class',
 
     :returns dict: dataset name(str):metafeatures(dataFrame)
     """
+    logger.info(f"generating metafeatures for files in directory '{datasetDirectory}', targetField={targetField}, checkSubdirectories={checkSubdirectories}")
+
+    if (not datasetDirectory):
+        raise ValueError("Could not generate metadata from directory, 'datasetDirectory' must be specified")
+
     metafeaturesData = {}
 
     for root, dirs, files in os.walk(datasetDirectory):
         for name in files:
-            if not name.startswith('.') and name.endswith('.csv'):
+            extension = os.path.splitext(name)[1]
+            if not name.startswith('.') and (extension in ['.csv', '.tsv']):
                 dataset = os.path.splitext(name)[0]
                 logger.debug("Generating metadata for {}".format(os.path.join(root,
                         name)))
