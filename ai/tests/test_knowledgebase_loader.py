@@ -15,15 +15,16 @@ def load_test_data():
         ("benchmark5", 
          "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
          "data/datasets/pmlb_small",
+         None,
          pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]}),
          {'apple':[1,2,3]}
-         )
+         ),
     ]
 
 class TestResultUtils(unittest.TestCase):
     @parameterized.expand(load_test_data)
-    def test_load_results_from_file(self, name, testResultFile, 
-        testResultsDataDirectory, expectedResultsData, 
+    def test_load_results_from_file(self, name, testResultFile,
+        testResultsDataDirectory, targetField, expectedResultsData, 
         expectedMetafeaturesData):
         data = knowledgebase_loader._load_results_from_file(testResultFile)
         assert isinstance(data, pd.DataFrame)
@@ -32,19 +33,19 @@ class TestResultUtils(unittest.TestCase):
         #assert expectedResultsData.equals(data)
 
     @parameterized.expand(load_test_data)
-    def test_generate_metadata_from_directory(self, name, testResultFile, 
-            testResultsDataDirectory, expectedResultsData, 
+    def test_generate_metadata_from_directory(self, name, testResultFile,
+            testResultsDataDirectory, targetField, expectedResultsData, 
             expectedMetafeaturesData):
         data = knowledgebase_loader._generate_metadata_from_directory(
-                testResultsDataDirectory)
+                testResultsDataDirectory, targetField=targetField)
         assert isinstance(data, dict)
 
         self.assertGreater(len(data.keys()), 1)
         #assert expectedMetafeaturesData.equals(data)
 
     @parameterized.expand(load_test_data)
-    def test_load_knowledgebase(self, name, testResultFile, 
-            testResultsDataDirectory, expectedResultsData, 
+    def test_load_knowledgebase(self, name, testResultFile,
+            testResultsDataDirectory, targetField, expectedResultsData, 
             expectedMetafeaturesData):
         result = knowledgebase_loader.load_knowledgebase(testResultFile, 
                 testResultsDataDirectory)
@@ -78,3 +79,13 @@ class TestResultUtils(unittest.TestCase):
 
         print("result.warnings:")
         print(result['warnings'])
+
+    def test_load_json_metadata_from_directory(self):
+        testDirectory = "data/knowledgebases/test/metafeatures"
+        testDatasets = ["adult", "agaricus-lepiota", "allbp", "allhyper", "allhypo"]
+
+        result = knowledgebase_loader._load_json_metadata_from_directory(testDirectory, testDatasets)
+        assert len(result) == len(testDatasets)
+
+        for dataset in testDatasets:
+            assert dataset in result.keys()
