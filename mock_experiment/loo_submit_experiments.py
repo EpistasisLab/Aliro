@@ -19,13 +19,15 @@ if __name__ == '__main__':
                         help='Comma-separated list of recommenders to run.') 
     parser.add_argument('-n_recs_range',action='store',dest='n_recs_range',type=str,
                         default='',
-                        help='Comma-separated list of Number of initial datasets to seed knowledge database')
+                        help='Comma-separated list of Number of initial datasets to'
+                        ' seed knowledge database')
     parser.add_argument('-v','-verbose',action='store_true',dest='verbose',
                         default=False,
                         help='Print out more messages.')
     parser.add_argument('-iters_range',action='store',dest='iters_range',type=str,
                         default='',
-                        help='Comma-separated list of A range of number of total iterations')
+                        help='Comma-separated list of A range of number of total '
+                        'iterations')
     parser.add_argument('-data',action='store',dest='KNOWL',type=str,
             default='mock_experiment/sklearn-benchmark5-data-mock_experiment.tsv.gz',
                         help='Data to use as knowledge database')
@@ -54,7 +56,8 @@ if __name__ == '__main__':
    
     # get datasets
     data_df = pd.read_csv(args.KNOWL, compression='gzip', sep='\t')
-    datasets = data_df.dataset.unique()
+    # get datasets, removing promoters which is a copy of molecular-biology_promoters
+    datasets = [d for d in data_df.dataset.unique() if d != 'promoters']
 
     # write batch commands
     batch_cmds = []

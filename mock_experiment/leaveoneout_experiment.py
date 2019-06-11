@@ -62,7 +62,8 @@ def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters):
     print('initial training on',len(init_df),'results')
     recommender.update(init_df, dataset_mf)
 
-
+    success_01, success_02, success_03, success_04, success_05 = \
+        False,False,False,False,False
     ####################################################### recs loop
     for it in np.arange(iters):
         holdout_accuracy_lookup = knowledge_base.loc[
@@ -116,10 +117,10 @@ def run_experiment(rec,dataset,n_recs,trial,knowledge_base,ml_p, iters):
             score_delta = (best_score-actual_score)/best_score
             print('score_delta: ', score_delta)
             success_01 = score_delta <= 0.01
-            success_02 = score_delta <= 0.02
-            success_03 = score_delta <= 0.03
-            success_04 = score_delta <= 0.04
-            success_05 = score_delta <= 0.05
+            success_02 = success_02 or score_delta <= 0.02
+            success_03 = success_03 or score_delta <= 0.03
+            success_04 = success_04 or score_delta <= 0.04
+            success_05 = success_05 or score_delta <= 0.05
             if success_01:
                 print(20*':) ','optimal',20*':) ')
 
@@ -228,10 +229,11 @@ if __name__ == '__main__':
     for data_file in data_files:
         print(70*'=','\n','loading',data_file,'\n'+70*'=','\n')
         knowledge_base = pd.read_csv(data_file,
-                                compression='gzip', sep='\t').fillna('')#,
+                                compression='gzip', sep='\t').fillna('')
+        knowledge_base = knowledge_base.loc[
+                knowledge_base['dataset'] != 'promoters']
         ml_p = knowledge_base.loc[:,['algorithm','parameters']].drop_duplicates()
-        ml_p['parameters'] = ml_p['parameters'].apply(
-                lambda x: eval(x))
+        ml_p['parameters'] = ml_p['parameters'].apply( lambda x: eval(x) )
         knowledge_base['parameters'] = knowledge_base['parameters'].apply(
                 lambda x: eval(x))
         knowledge_base['parameter_hash'] = knowledge_base['parameters'].apply(
