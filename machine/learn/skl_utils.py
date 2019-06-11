@@ -289,11 +289,11 @@ def generate_results(model, input_data,
                   fname="feature_importances.json", content=feature_importances)
     dtree_train_score = None
     if figure_export:
-        top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
+        top_features_names, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
         if not categories and not ordinals:
             dtree_train_score = plot_dot_plot(tmpdir, _id, features,
                             target,
-                            top_features,
+                            top_features_names,
                             indices,
                             random_state,
                             mode)
@@ -373,7 +373,7 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def compute_imp_score(model, metric, training_features, training_classes, random_state):
+def compute_imp_score(model, metric, features, target, random_state):
     """compute importance scores for features.
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
@@ -392,9 +392,9 @@ def compute_imp_score(model, metric, training_features, training_classes, random
         scoring function (e.g., `metric=scoring_func`) that
         accepts two arguments, y_true and y_pred, which have
         similar shape to the `y` array.
-    training_features: np.darray/pd.DataFrame
+    features: np.darray/pd.DataFrame
         Features in training dataset
-    training_classes: np.darray/pd.DataFrame
+    target: np.darray/pd.DataFrame
         Target in training dataset
     random_state: int
         Random seed for permuation importances
@@ -422,8 +422,8 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     if coefs is None or np.isnan(coefs).any():
         coefs, _ = feature_importance_permutation(
                                     predict_method=model.predict,
-                                    X=training_features,
-                                    y=training_classes,
+                                    X=features,
+                                    y=target,
                                     num_rounds=5,
                                     metric=metric,
                                     seed=random_state,
@@ -618,9 +618,9 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     return top_features, indices
 
 
-def plot_dot_plot(tmpdir, _id, training_features,
-                training_classes,
-                top_features,
+def plot_dot_plot(tmpdir, _id, features,
+                target,
+                top_features_name,
                 indices,
                 random_state,
                 mode):
@@ -633,7 +633,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
         Experiment ID in PennAI
     features: np.darray/pd.DataFrame
         Features in training dataset
-    training_classes: np.darray/pd.DataFrame
+    target: np.darray/pd.DataFrame
         Target in training dataset
     top_features: list
         Top feature_names
@@ -655,7 +655,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
     import pydot
     from sklearn.tree import export_graphviz
 
-    top_training_features = training_features[:, indices]
+    top_features = features[:, indices]
     if mode == 'classification':
         from sklearn.tree import DecisionTreeClassifier
         dtree=DecisionTreeClassifier(random_state=random_state,
@@ -667,16 +667,16 @@ def plot_dot_plot(tmpdir, _id, training_features,
                                 max_depth=DT_MAX_DEPTH)
         scoring = SCORERS["neg_mean_squared_error"]
 
-    dtree.fit(top_training_features, training_classes)
+    dtree.fit(top_features, target)
     dtree_train_score = scoring(
-        dtree, top_training_features, training_classes)
+        dtree, top_features, target)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     class_names = None
     if mode == 'classification':
         class_names = [str(i) for i in dtree.classes_]
     export_graphviz(dtree, out_file=dot_file,
-                     feature_names=top_features,
+                     feature_names=top_features_name,
                      class_names=class_names,
                      filled=True, rounded=True,
                      special_characters=True)
