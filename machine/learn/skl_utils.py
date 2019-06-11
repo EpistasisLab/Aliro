@@ -254,9 +254,16 @@ def generate_results(model, input_data,
         if score_name in ["balanced_accuracy", "r2"]:
             scores['train_score'] = train_scores.mean()
             scores['test_score'] = test_scores.mean()
+        # for api will fix later
+        if score_name == "balanced_accuracy":
+            scores['accuracy_score'] =  scores['test_score']
+            scores['balanced_accuracy'] =  scores['test_score']
+        else:
+            scores['train_{}_score'.format(score_name)] = train_scores.mean()
+            scores['{}_score'.format(score_name)] = test_scores.mean()
 
-        scores['train_{}_score'.format(score_name)] = train_scores.mean()
-        scores['{}_score'.format(score_name)] = test_scores.mean()
+
+
 
 
     # dump fitted module as pickle file
@@ -528,7 +535,12 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
             probas_ = est.decision_function(X[test])
         #print(SCORERS['roc_auc'](est, X[train], y[train]))
         # Compute ROC curve and area the curve
-        fpr, tpr, thresholds = roc_curve(y[test], probas_)
+
+        classes_encoded = np.array(
+                                [list(est.classes_).index(c)
+                                 for c in y[test]], dtype=np.int
+                                 )
+        fpr, tpr, thresholds = roc_curve(classes_encoded, probas_)
         tprs.append(interp(mean_fpr, fpr, tpr))
         tprs[-1][0] = 0.0
         roc_auc = auc(fpr, tpr)
@@ -550,7 +562,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
                  label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
                  lw=2, alpha=.8)
         plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
-                         label=r'$\pm$ 1 std. dev.')
+                         label=r'$\pm$ 1 Standard Deviation')
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
         plt.xlabel('False Positive Rate')
