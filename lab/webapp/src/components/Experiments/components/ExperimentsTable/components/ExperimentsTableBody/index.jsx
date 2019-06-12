@@ -18,6 +18,8 @@ function ExperimentsTableBody({
       return `/#/builder?experiment=${id}`;
     } else if (status === 'fail') {
       return `/#/experiments?status=fail`;
+    } else if (status === 'cancelled') {
+      return `/#/experiments`;
     } else {
       return `/#/results/${id}`;
     }
