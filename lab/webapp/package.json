@@ -1,11 +1,25 @@
 {
   "name": "pennai-webapp",
   "version": "1.0.0",
+  "description": "your friendly machine learning assistant",
   "scripts": {
     "build": "webpack",
     "build-dev": "webpack --watch",
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EpistasisLab/pennai.git"
+  },
+  "keywords": [
+    "machine learning"
+  ],
+  "author": "University of Pennsylvania",
+  "license": "GPL 3.0",
+  "bugs": {
+    "url": "https://github.com/EpistasisLab/pennai/issues"
+  },
+  "homepage": "https://github.com/EpistasisLab/pennai",
   "dependencies": {
     "c3": "^0.4.11",
     "es6-promise": "^4.2.8",
@@ -25,11 +39,11 @@
     "twix": "^1.1.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.1",
+    "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.8.0",
-    "babel-loader": "^7.1.5",
+    "babel-loader": "^8.0.6",
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "enzyme": "^3.10.0",
@@ -46,12 +60,14 @@
     "jest-junit": "^6.4.0",
     "jest-react-native": "^18.0.0",
     "jsdoc": "^3.5.5",
-    "react-native": "^0.59.9",
+    "react-native": "^0.60.0-rc.1",
     "react-test-renderer": "^15.4.2",
     "redux-logger": "^3.0.6",
     "redux-mock-store": "^1.5.3",
     "sphinx-js": "0.0.9",
-    "webpack": "^2.2.1"
+    "webpack": "^4.18.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.8"
   },
   "jest": {
     "transform": {
