@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
 import DatasetModal from './components/DatasetModal';
-import { Grid, Segment, Header, Table, Loader, Icon } from 'semantic-ui-react';
+import { Grid, Segment, Header, Table, Loader, Icon, Menu } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
 
@@ -12,7 +12,8 @@ class Dataset extends Component {
     super(props);
     this.state = {
       dataset: 'fetching',
-      dataPreview: null
+      dataPreview: null,
+      activeItem: 'details'
     };
     this.fileDetailsClick = this.fileDetailsClick.bind(this);
     this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
@@ -44,7 +45,7 @@ class Dataset extends Component {
         });
     }
   }
-
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   fileDetailsClick(e) {
     //e.preventDefault();
     //window.console.log('clicked file details');
@@ -151,7 +152,7 @@ class Dataset extends Component {
   }
 
   render() {
-    const { dataset, dataPreview, metadataStuff } = this.state;
+    const { dataset, dataPreview, metadataStuff, activeItem } = this.state;
 
     if(dataset === 'fetching') { return null; }
 
@@ -177,11 +178,15 @@ class Dataset extends Component {
 
     // join the categorized metafeatures into one array
     const allMetafeatures = first.concat(rest).concat(empty);
-
+    // look at donormodal from hpap for tabular menu example
     return (
       <div>
         <DatasetModal project={metadataStuff} handleClose={this.handleCloseFileDetails} />
         <SceneHeader header={formatDataset(dataset.name)} />
+        <Menu>
+          <Menu.Item name='details' active={activeItem === 'details'} onClick={this.handleItemClick} />
+          <Menu.Item name='metafeatures' active={activeItem === 'metafeatures'} onClick={this.handleItemClick} />
+        </Menu>
         <Grid columns={2}>
           <Grid.Column >
             <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
