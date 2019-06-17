@@ -3,21 +3,24 @@ import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
 import DatasetModal from './components/DatasetModal';
-import { Grid, Segment, Header, Table, Loader, Icon, Menu } from 'semantic-ui-react';
+import { Grid, Segment, Header, Table, Loader, Icon, Menu, Tab } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
+import * as d3 from "d3";
 
 class Dataset extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dataset: 'fetching',
-      dataPreview: null,
-      activeItem: 'details'
+      dataPreview: null
     };
     this.fileDetailsClick = this.fileDetailsClick.bind(this);
     this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
     this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
+    this.getTabMenu = this.getTabMenu.bind(this);
+    this.getSummaryTab = this.getSummaryTab.bind(this);
+    this.createChart = this.createChart.bind(this);
   }
 
   componentDidMount() {
@@ -45,7 +48,7 @@ class Dataset extends Component {
         });
     }
   }
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  //handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   fileDetailsClick(e) {
     //e.preventDefault();
     //window.console.log('clicked file details');
@@ -62,6 +65,305 @@ class Dataset extends Component {
 
   handleCloseFileDetails() {
     this.setState({ metadataStuff: null });
+  }
+
+  createChart() {
+    const { dataset, dataPreview } = this.state;
+    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    // let svg = d3.select("#test_chart")
+    // .append("svg")
+    //   .attr("width", width + margin.left + margin.right)
+    //   .attr("height", height + margin.top + margin.bottom)
+    // .append("g")
+    //   .attr("transform",
+    //         "translate(" + margin.left + "," + margin.top + ")");
+    if(dataPreview) {
+      let dataStuff = dataPreview.data;
+      // grab dataset columns names from first entry
+      let dataKeys = Object.keys(dataStuff[0]);
+      let valByRowObj = {};
+
+      dataKeys.forEach(key => {
+        valByRowObj[key] = []
+      });
+
+      let valueTest = d3.values(dataStuff);
+      valueTest.forEach(entry => {
+        dataKeys.forEach(key => {
+          valByRowObj[key].push(entry[key])
+        })
+      });
+      window.console.log('val test ', valByRowObj);
+      //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
+      let svgCircle = d3.select("#test_circle")
+          .append("svg")
+          .attr("width", 100)
+          .attr("height", 100);
+
+      svgCircle.append("circle")
+        .style("stroke", "gray")
+        .style("fill", "white")
+        .attr("r", 40)
+        .attr("cx", 50)
+        .attr("cy", 50)
+        .on("mouseover", function(){d3.select(this).style("fill", "aliceblue");})
+        .on("mouseout", function(){d3.select(this).style("fill", "white");});
+
+      dataKeys.forEach(key => {
+        let svg = d3.select("#test_chart_" + key)
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        let data_sorted = valByRowObj[key].sort(d3.ascending);
+        let q1 = d3.quantile(data_sorted, .25);
+        let median = d3.quantile(data_sorted, .5);
+        let q3 = d3.quantile(data_sorted, .75);
+        let interQuantileRange = q3 - q1;
+        let min = q1 - 1.5 * interQuantileRange;
+        let max = q1 + 1.5 * interQuantileRange;
+        let y = d3.scaleLinear()
+          .domain([min, max])
+          .range([height, 0]);
+        svg.call(d3.axisLeft(y));
+        let center = 200;
+        let width = 200;
+        svg
+        .append("line")
+          .attr("x1", center)
+          .attr("x2", center)
+          .attr("y1", y(min) )
+          .attr("y2", y(max) )
+          .attr("stroke", "black")
+
+        // Show the box
+        svg
+        .append("rect")
+          .attr("x", center - width/2)
+          .attr("y", y(q3) )
+          .attr("height", (y(q1)-y(q3)) )
+          .attr("width", width )
+          .attr("stroke", "black")
+          .style("fill", "#69b3a2")
+
+        // show median, min and max horizontal lines
+        svg
+        .selectAll("toto")
+        .data([min, median, max])
+        .enter()
+        .append("line")
+          .attr("x1", center-width/2)
+          .attr("x2", center+width/2)
+          .attr("y1", function(d){ return(y(d))} )
+          .attr("y2", function(d){ return(y(d))} )
+          .attr("stroke", "black")
+      })
+
+    }
+  }
+
+  getSummaryTab() {
+    const { dataset, dataPreview } = this.state;
+    if(dataset === 'fetching') { return null; }
+    let dataKeys;
+    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    // let svg = d3.select("#test_chart")
+    // .append("svg")
+    //   .attr("width", width + margin.left + margin.right)
+    //   .attr("height", height + margin.top + margin.bottom)
+    // .append("g")
+    //   .attr("transform",
+    //         "translate(" + margin.left + "," + margin.top + ")");
+    if(dataPreview) {
+      let dataStuff = dataPreview.data;
+      // grab dataset columns names from first entry
+      dataKeys = Object.keys(dataStuff[0]);
+      let valByRowObj = {};
+
+      dataKeys.forEach(key => {
+        valByRowObj[key] = []
+      });
+
+      let valueTest = d3.values(dataStuff);
+      valueTest.forEach(entry => {
+        dataKeys.forEach(key => {
+          valByRowObj[key].push(entry[key])
+        })
+      });
+      window.console.log('val test ', valByRowObj);
+      this.createChart();
+      //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
+    }
+
+    return (
+      <div id="test_feature_stuff">
+        <p>
+          Hello
+        </p>
+        <div id="test_chart"></div>
+        {dataKeys && dataKeys.map(key => {
+          return (
+            <div id={"test_chart_" + key}>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  getTabMenu() {
+    const { dataset, dataPreview } = this.state;
+    // sort metafeatures in desired order
+    let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
+    let empty = []; // metafeatures that have no value
+    let rest = [];  // rest of metafeatures
+    Object.entries(dataset.metafeatures).forEach(([key, value]) => {
+      if(first.includes(key)) { return; }
+      if(value === null) { empty.push(key); }
+      else { rest.push(key); }
+    });
+    // join the categorized metafeatures into one array
+    const allMetafeatures = first.concat(rest).concat(empty);
+    if(dataset === 'fetching') { return null; }
+
+    // categorical_features & ordinal_features
+    let cat_feats = dataset.files[0].categorical_features;
+    let ord_feats = dataset.files[0].ordinal_features;
+
+    let testPain = [
+      {
+        menuItem: 'Summary',
+        render: () => (
+          <Tab.Pane>
+            <Segment inverted attached="bottom">
+              <span>{`# of Rows: ${dataset.metafeatures.n_rows}`}</span>
+              <br/>
+              <span>{`# of Columns: ${dataset.metafeatures.n_columns}`}</span>
+              <br/>
+              <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
+            </Segment>
+            {this.getSummaryTab()}
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: 'Details',
+        render: () => (
+          <Tab.Pane>
+            <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
+              <Header as="h3" content="File Details" />
+              <Icon
+                name="info circle"
+                onClick={(e) => this.fileDetailsClick(e)}
+                style={{position: 'absolute', top: '11px', left: '95%', cursor: 'pointer'}}
+              />
+            </Segment>
+            <Segment inverted attached="bottom">
+              <Grid>
+                <Grid.Row columns={2}>
+                  <Grid.Column>
+                    <Header
+                      as="h4"
+                      inverted
+                      color="grey"
+                      content="Upload Date"
+                      subheader={formatTime(dataset.files[0].timestamp)}
+                    />
+                  </Grid.Column>
+                  <Grid.Column>
+                    <Header
+                      as="h4"
+                      inverted
+                      color="grey"
+                      content="Filename"
+                      subheader={dataset.files[0].filename}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row columns={1}>
+                  <Grid.Column>
+                    <Header
+                      as="h4"
+                      inverted
+                      color="grey"
+                      content="Data Preview"
+                      style={{ display: 'inline', marginRight: '0.5em' }}
+                    />
+                    <span className="muted">(first 100 rows)</span>
+                    <Segment style={{ height: '500px' }}>
+                      {dataPreview ? (
+                        <div style={{ overflow: 'scroll', maxHeight: '470px' }}>
+                          <Table inverted celled compact unstackable singleLine>
+                            <Table.Header>
+                              <Table.Row>
+                                {dataPreview.meta.fields.map(field =>
+                                  <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
+                                )}
+                              </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                              {dataPreview.data.slice(0, 100).map((row, i) =>
+                                <Table.Row key={i}>
+                                  {dataPreview.meta.fields.map(field =>
+                                    <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
+                                  )}
+                                </Table.Row>
+                              )}
+                            </Table.Body>
+                          </Table>
+                        </div>
+                      ) : (
+                        <Loader inverted active content="Loading data preview" />
+                      )}
+                    </Segment>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            </Segment>
+          </Tab.Pane>
+        )
+      },{
+        menuItem: 'Metafeatures',
+        render: () => (
+          <Tab.Pane>
+            <Segment inverted attached="top" className="panel-header">
+              <Header as="h3" content="Metafeatures" style={{ display: 'inline', marginRight: '0.5em' }} />
+              <span className="muted">{`${Object.keys(dataset.metafeatures).length} total`}</span>
+            </Segment>
+            <Segment inverted attached="bottom">
+              <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+                <Table inverted celled compact unstackable>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Field</Table.HeaderCell>
+                      <Table.HeaderCell>Value</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {allMetafeatures.map(field =>
+                      <Table.Row key={field}>
+                        <Table.Cell>{field}</Table.Cell>
+                        <Table.Cell>{dataset.metafeatures[field]}</Table.Cell>
+                      </Table.Row>
+                    )}
+                  </Table.Body>
+                </Table>
+              </div>
+            </Segment>
+          </Tab.Pane>
+        )
+      }
+    ];
+
+    return testPain;
   }
 
   getCatAndOrdTable() {
@@ -152,23 +454,14 @@ class Dataset extends Component {
   }
 
   render() {
-    const { dataset, dataPreview, metadataStuff, activeItem } = this.state;
+    const { dataset, dataPreview, metadataStuff } = this.state;
 
     if(dataset === 'fetching') { return null; }
 
     // sort metafeatures in desired order
-    let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
+    /*let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
     let empty = []; // metafeatures that have no value
     let rest = [];  // rest of metafeatures
-
-    // categorical_features & ordinal_features
-    let cat_feats = dataset.files[0].categorical_features;
-    let ord_feats = dataset.files[0].ordinal_features;
-
-    //window.console.log("cat feats: ", cat_feats);
-    //window.console.log("ord feats: ", ord_feats);
-
-    let catAndOrdTable = this.getCatAndOrdTable();
 
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
       if(first.includes(key)) { return; }
@@ -177,114 +470,36 @@ class Dataset extends Component {
     });
 
     // join the categorized metafeatures into one array
-    const allMetafeatures = first.concat(rest).concat(empty);
+    const allMetafeatures = first.concat(rest).concat(empty);*/
+
+    // categorical_features & ordinal_features
+    let cat_feats = dataset.files[0].categorical_features;
+    let ord_feats = dataset.files[0].ordinal_features;
+    let testPain = this.getTabMenu();
+    //window.console.log("cat feats: ", cat_feats);
+    //window.console.log("ord feats: ", ord_feats);
+
+    let catAndOrdTable = this.getCatAndOrdTable();
+    //this.createChart();
     // look at donormodal from hpap for tabular menu example
     return (
       <div>
         <DatasetModal project={metadataStuff} handleClose={this.handleCloseFileDetails} />
         <SceneHeader header={formatDataset(dataset.name)} />
-        <Menu>
-          <Menu.Item name='details' active={activeItem === 'details'} onClick={this.handleItemClick} />
-          <Menu.Item name='metafeatures' active={activeItem === 'metafeatures'} onClick={this.handleItemClick} />
-        </Menu>
+        <Tab
+          menu={{ attached: 'top' }}
+          panes={testPain}
+          onTabChange={(e, d) => {
+            window.console.log('event ', e);
+            window.console.log('data ', d);
+          }}
+        />
         <Grid columns={2}>
           <Grid.Column >
-            <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
-              <Header as="h3" content="File Details" />
-              <Icon
-                name="info circle"
-                onClick={(e) => this.fileDetailsClick(e)}
-                style={{position: 'absolute', top: '11px', left: '95%', cursor: 'pointer'}}
-              />
-            </Segment>
-            <Segment inverted attached="bottom">
-              <Grid>
-                <Grid.Row columns={2}>
-                  <Grid.Column>
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Upload Date"
-                      subheader={formatTime(dataset.files[0].timestamp)}
-                    />
-                  </Grid.Column>
-                  <Grid.Column>
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Filename"
-                      subheader={dataset.files[0].filename}
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={1}>
-                  <Grid.Column>
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Data Preview"
-                      style={{ display: 'inline', marginRight: '0.5em' }}
-                    />
-                    <span className="muted">(first 100 rows)</span>
-                    <Segment style={{ height: '500px' }}>
-                      {dataPreview ? (
-                        <div style={{ overflow: 'scroll', maxHeight: '470px' }}>
-                          <Table inverted celled compact unstackable singleLine>
-                            <Table.Header>
-                              <Table.Row>
-                                {dataPreview.meta.fields.map(field =>
-                                  <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
-                                )}
-                              </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                              {dataPreview.data.slice(0, 100).map((row, i) =>
-                                <Table.Row key={i}>
-                                  {dataPreview.meta.fields.map(field =>
-                                    <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
-                                  )}
-                                </Table.Row>
-                              )}
-                            </Table.Body>
-                          </Table>
-                        </div>
-                      ) : (
-                        <Loader inverted active content="Loading data preview" />
-                      )}
-                    </Segment>
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
-            </Segment>
+            <div id="test_circle"></div>
           </Grid.Column>
           <Grid.Column>
-            <Segment inverted attached="top" className="panel-header">
-              <Header as="h3" content="Metafeatures" style={{ display: 'inline', marginRight: '0.5em' }} />
-              <span className="muted">{`${Object.keys(dataset.metafeatures).length} total`}</span>
-            </Segment>
-            <Segment inverted attached="bottom">
-              <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
-                <Table inverted celled compact unstackable>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.HeaderCell>Field</Table.HeaderCell>
-                      <Table.HeaderCell>Value</Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {allMetafeatures.map(field =>
-                      <Table.Row key={field}>
-                        <Table.Cell>{field}</Table.Cell>
-                        <Table.Cell>{dataset.metafeatures[field]}</Table.Cell>
-                      </Table.Row>
-                    )}
-                  </Table.Body>
-                </Table>
-              </div>
-            </Segment>
+
           </Grid.Column>
         </Grid>
       </div>
