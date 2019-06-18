@@ -11,3 +11,4 @@ services:
     stdin_open: true
     volumes:
       - "./:/appsrc"
+      - "/appsrc/lab/webapp/node_modules"
