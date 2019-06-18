@@ -45,8 +45,10 @@ class Dataset extends Component {
         })
         .then(text => {
           this.setState({ dataPreview: Papa.parse(text, { header: true, preview: 100 }) });
+          //this.createChart();
         });
     }
+    this.createChart();
   }
   //handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   fileDetailsClick(e) {
@@ -112,58 +114,121 @@ class Dataset extends Component {
         .on("mouseout", function(){d3.select(this).style("fill", "white");});
 
       dataKeys.forEach(key => {
-        let svg = d3.select("#test_chart_" + key)
-        .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-          .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+        let chartInnerHTML = "";
+        if(document.getElementById("test_chart_" + key)) {
+          chartInnerHTML = document.getElementById("test_chart_" + key).innerHTML;
+        };
+        // ignore dependent column, dont make boxplot
+        if(chartInnerHTML === "" && key !== dataset.files[0].dependent_col) {
+          width = 460 - margin.left - margin.right;
+          let svg = d3.select("#test_chart_" + key)
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .style("background-color", "aliceblue")
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
 
-        let data_sorted = valByRowObj[key].sort(d3.ascending);
-        let q1 = d3.quantile(data_sorted, .25);
-        let median = d3.quantile(data_sorted, .5);
-        let q3 = d3.quantile(data_sorted, .75);
-        let interQuantileRange = q3 - q1;
-        let min = q1 - 1.5 * interQuantileRange;
-        let max = q1 + 1.5 * interQuantileRange;
-        let y = d3.scaleLinear()
-          .domain([min, max])
-          .range([height, 0]);
-        svg.call(d3.axisLeft(y));
-        let center = 200;
-        let width = 200;
-        svg
-        .append("line")
-          .attr("x1", center)
-          .attr("x2", center)
-          .attr("y1", y(min) )
-          .attr("y2", y(max) )
-          .attr("stroke", "black")
+          let data_sorted = valByRowObj[key].sort(d3.ascending);
+          let q1 = d3.quantile(data_sorted, .25);
+          let median = d3.quantile(data_sorted, .5);
+          let q3 = d3.quantile(data_sorted, .75);
+          let interQuantileRange = q3 - q1;
+          let min = q1 - 1.5 * interQuantileRange;
+          let max = q1 + 1.5 * interQuantileRange;
+          let y = d3.scaleLinear()
+            .domain([min, max])
+            .range([height, 0]);
+          svg.call(d3.axisLeft(y));
+          let center = 200;
+          let width = 200;
+          svg
+          .append("line")
+            .attr("x1", center)
+            .attr("x2", center)
+            .attr("y1", y(min) )
+            .attr("y2", y(max) )
+            .attr("stroke", "black")
 
-        // Show the box
-        svg
-        .append("rect")
-          .attr("x", center - width/2)
-          .attr("y", y(q3) )
-          .attr("height", (y(q1)-y(q3)) )
-          .attr("width", width )
-          .attr("stroke", "black")
-          .style("fill", "#69b3a2")
+          // Show the box
+          svg
+          .append("rect")
+            .attr("x", center - width/2)
+            .attr("y", y(q3) )
+            .attr("height", (y(q1)-y(q3)) )
+            .attr("width", width )
+            .attr("stroke", "black")
+            .style("fill", "#69b3a2")
 
-        // show median, min and max horizontal lines
-        svg
-        .selectAll("toto")
-        .data([min, median, max])
-        .enter()
-        .append("line")
-          .attr("x1", center-width/2)
-          .attr("x2", center+width/2)
-          .attr("y1", function(d){ return(y(d))} )
-          .attr("y2", function(d){ return(y(d))} )
-          .attr("stroke", "black")
+          // show median, min and max horizontal lines
+          svg
+          .selectAll("toto")
+          .data([min, median, max])
+          .enter()
+          .append("line")
+            .attr("x1", center-width/2)
+            .attr("x2", center+width/2)
+            .attr("y1", function(d){ return(y(d))} )
+            .attr("y2", function(d){ return(y(d))} )
+            .attr("stroke", "black")
+
+          svg.enter()
+             .append("text")
+             .text("test text")
+             .attr("x", center)
+             .attr("dy", 12)
+             .style("text-anchor", "end");
+           //https://www.dashingd3js.com/svg-text-element
+           // var textLabels = svg
+           //                    .text( function (d) {
+           //                      window.console.log('test d', d);
+           //                      return "( " + d + ", " + d +" )";
+           //                    })
+           //                    .attr("font-family", "sans-serif")
+           //                    .attr("font-size", "20px")
+           //                    .attr("fill", "red");
+        } else {
+
+          width = 460 - margin.left - margin.right;
+          let data_sorted = valByRowObj[key].sort(d3.ascending);
+          let q1 = d3.quantile(data_sorted, .25);
+          let median = d3.quantile(data_sorted, .5);
+          let q3 = d3.quantile(data_sorted, .75);
+          let interQuantileRange = q3 - q1;
+          let min = q1 - 1.5 * interQuantileRange;
+          let max = q1 + 1.5 * interQuantileRange;
+
+
+          let svg = d3.select("#test_chart_" + key)
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .style("background-color", "aliceblue")
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+          let y = d3.scaleLinear()
+            .domain([0, data_sorted.length])
+            .range([height, 0]);
+
+          svg.call(d3.axisLeft(y));
+
+          let testSet = [... new Set(data_sorted)];
+
+          window.console.log('test set', testSet);
+          // if(testSet && testSet.length) {
+          //   let x = d3.scaleBand()
+          //     .range([0, testSet.length])
+          //     .domain(testSet.forEach(item => item))
+          //     .padding(0.2);
+          //   svg.call(d3.axisBottom(x));
+          // }
+
+        }
+
       })
-
     }
   }
 
@@ -199,7 +264,7 @@ class Dataset extends Component {
         })
       });
       window.console.log('val test ', valByRowObj);
-      this.createChart();
+      //this.createChart();
       //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
     }
 
@@ -209,12 +274,7 @@ class Dataset extends Component {
           Hello
         </p>
         <div id="test_chart"></div>
-        {dataKeys && dataKeys.map(key => {
-          return (
-            <div id={"test_chart_" + key}>
-            </div>
-          )
-        })}
+
       </div>
     )
   }
@@ -225,6 +285,7 @@ class Dataset extends Component {
     let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
     let empty = []; // metafeatures that have no value
     let rest = [];  // rest of metafeatures
+    let dataKeys = {};
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
       if(first.includes(key)) { return; }
       if(value === null) { empty.push(key); }
@@ -238,6 +299,13 @@ class Dataset extends Component {
     let cat_feats = dataset.files[0].categorical_features;
     let ord_feats = dataset.files[0].ordinal_features;
 
+    if(dataPreview) {
+      let dataStuff = dataPreview.data;
+      // grab dataset columns names from first entry
+      dataKeys = Object.keys(dataStuff[0]);
+
+    }
+
     let testPain = [
       {
         menuItem: 'Summary',
@@ -250,7 +318,19 @@ class Dataset extends Component {
               <br/>
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
-            {this.getSummaryTab()}
+            {/*this.getSummaryTab()*/}
+            {dataKeys && dataKeys.map(key => {
+              return (
+                <div key={"test_chart_" + key}>
+                  <p style={{color: "aliceblue"}}>
+                    {"test_chart_" + key}
+                  </p>
+                  <div id={"test_chart_" + key}>
+                  </div>
+                </div>
+              )
+            })}
+
           </Tab.Pane>
         )
       },
@@ -455,9 +535,20 @@ class Dataset extends Component {
 
   render() {
     const { dataset, dataPreview, metadataStuff } = this.state;
-
+    let dataKeys;
+    let testPain = [
+      {
+        menuItem: 'empty stuff',
+        pane: 'nothin\' here'
+      }
+    ];
     if(dataset === 'fetching') { return null; }
-
+    if(dataPreview) {
+      let dataStuff = dataPreview.data;
+      // grab dataset columns names from first entry
+      dataKeys = Object.keys(dataStuff[0]);
+      testPain = this.getTabMenu();
+    }
     // sort metafeatures in desired order
     /*let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
     let empty = []; // metafeatures that have no value
@@ -475,13 +566,13 @@ class Dataset extends Component {
     // categorical_features & ordinal_features
     let cat_feats = dataset.files[0].categorical_features;
     let ord_feats = dataset.files[0].ordinal_features;
-    let testPain = this.getTabMenu();
+
     //window.console.log("cat feats: ", cat_feats);
     //window.console.log("ord feats: ", ord_feats);
 
     let catAndOrdTable = this.getCatAndOrdTable();
     //this.createChart();
-    // look at donormodal from hpap for tabular menu example
+
     return (
       <div>
         <DatasetModal project={metadataStuff} handleClose={this.handleCloseFileDetails} />
@@ -489,9 +580,14 @@ class Dataset extends Component {
         <Tab
           menu={{ attached: 'top' }}
           panes={testPain}
+          renderActiveOnly={true}
           onTabChange={(e, d) => {
-            window.console.log('event ', e);
-            window.console.log('data ', d);
+            //window.console.log('event ', e);
+            //window.console.log('data ', d);
+            if(d.activeIndex === 0){
+              //this.createChart()
+              window.setTimeout(this.createChart, 0.5);
+            }
           }}
         />
         <Grid columns={2}>
@@ -499,7 +595,12 @@ class Dataset extends Component {
             <div id="test_circle"></div>
           </Grid.Column>
           <Grid.Column>
-
+            {/*dataKeys && dataKeys.map(key => {
+              return (
+                <div id={"test_chart_" + key}>
+                </div>
+              )
+            })*/}
           </Grid.Column>
         </Grid>
       </div>
