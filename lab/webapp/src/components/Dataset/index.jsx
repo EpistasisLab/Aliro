@@ -16,10 +16,9 @@ class Dataset extends Component {
       dataPreview: null
     };
     this.fileDetailsClick = this.fileDetailsClick.bind(this);
-    this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
+    //this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
     this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
     this.getTabMenu = this.getTabMenu.bind(this);
-    this.getSummaryTab = this.getSummaryTab.bind(this);
     this.createChart = this.createChart.bind(this);
   }
 
@@ -48,6 +47,10 @@ class Dataset extends Component {
           //this.createChart();
         });
     }
+
+    // call this to render/create chart when react page is updated, due to how
+    // semantic ui tabs aren't rendered immediately (not 100% sure) and how d3
+    // creates graphics, resorted to
     this.createChart();
   }
   //handleItemClick = (e, { name }) => this.setState({ activeItem: name });
@@ -74,13 +77,7 @@ class Dataset extends Component {
     let margin = { top: 10, right: 30, bottom: 50, left: 70 },
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
-    // let svg = d3.select("#test_chart")
-    // .append("svg")
-    //   .attr("width", width + margin.left + margin.right)
-    //   .attr("height", height + margin.top + margin.bottom)
-    // .append("g")
-    //   .attr("transform",
-    //         "translate(" + margin.left + "," + margin.top + ")");
+
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab dataset columns names from first entry
@@ -179,52 +176,114 @@ class Dataset extends Component {
              .attr("x", center)
              .attr("dy", 12)
              .style("text-anchor", "end");
-           //https://www.dashingd3js.com/svg-text-element
-           // var textLabels = svg
-           //                    .text( function (d) {
-           //                      window.console.log('test d', d);
-           //                      return "( " + d + ", " + d +" )";
-           //                    })
-           //                    .attr("font-family", "sans-serif")
-           //                    .attr("font-size", "20px")
-           //                    .attr("fill", "red");
+
         } else {
 
-          width = 460 - margin.left - margin.right;
-          let data_sorted = valByRowObj[key].sort(d3.ascending);
-          let q1 = d3.quantile(data_sorted, .25);
-          let median = d3.quantile(data_sorted, .5);
-          let q3 = d3.quantile(data_sorted, .75);
-          let interQuantileRange = q3 - q1;
-          let min = q1 - 1.5 * interQuantileRange;
-          let max = q1 + 1.5 * interQuantileRange;
+          let chartInnerHTML = "";
+          if(document.getElementById("test_chart_" + key)) {
+            chartInnerHTML = document.getElementById("test_chart_" + key).innerHTML;
+          };
+
+          if(chartInnerHTML === "") {
+            width = 460 - margin.left - margin.right;
+            let data_sorted = valByRowObj[key].sort(d3.ascending);
+
+            let classCountObj = {};
+            let tempData = [];
+
+            data_sorted.forEach(val => {
+              classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
+            })
+            //tempData.push(classCountObj);
+            let testSet = [... new Set(valByRowObj[key])];
+
+            testSet.forEach(key => tempData.push({
+              entry: {
+                testKey: key,
+                testValue: classCountObj[key]
+              }
+            }));
+
+            window.console.log("test set", tempData);
+
+            let svg = d3.select("#test_chart_" + key)
+              .append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .style("background-color", "aliceblue")
+              .append("g")
+              .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
 
 
-          let svg = d3.select("#test_chart_" + key)
-          .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .style("background-color", "aliceblue")
-          .append("g")
-            .attr("transform",
-                  "translate(" + margin.left + "," + margin.top + ")");
+            //window.console.log('test seort', data_sorted);
 
-          let y = d3.scaleLinear()
-            .domain([0, data_sorted.length])
-            .range([height, 0]);
+            // x - axis
+            let xStuff = d3.scaleBand()
+              .range([0, width])
+              .domain(testSet)
+              .padding(0.2);
 
-          svg.call(d3.axisLeft(y));
+            svg.append('g')
+              .attr('transform', `translate(0, ${height})`)
+              .call(d3.axisBottom(xStuff));
 
-          let testSet = [... new Set(data_sorted)];
+            // y - axis
+            let yStuff = d3.scaleLinear()
+              .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
+              .range([height, 0]);
 
-          window.console.log('test set', testSet);
-          // if(testSet && testSet.length) {
-          //   let x = d3.scaleBand()
-          //     .range([0, testSet.length])
-          //     .domain(testSet.forEach(item => item))
-          //     .padding(0.2);
-          //   svg.call(d3.axisBottom(x));
-          // }
+            svg.append('g')
+              .call(d3.axisLeft(yStuff));
+
+            svg.selectAll("rect")
+              .data(tempData).enter()
+              .append("rect").merge(svg)
+              .style("stroke", "gray")
+              .style("fill", "black")
+              .attr("x", (d, t, s, a) => {
+                window.console.log('x stuff', d);
+                return xStuff(d.entry.testKey);
+              })
+              .attr("y", (d, t, s) => {
+                window.console.log('y stuff', d);
+                //return yStuff(d.entry.testKey);
+                return yStuff(d.entry.testValue);
+              })
+              .attr('height', (d) => {
+                return height - yStuff(d.entry.testValue);
+              })
+              .attr('width', xStuff.bandwidth())
+              .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
+              .on("mouseout", function(){d3.select(this).style("fill", "black");});
+
+            // let testSvg = d3.select("#test_graph")
+            //     .append("svg")
+            //     .attr("width", 100)
+            //     .attr("height", 100);
+            //
+            // testSvg.selectAll("rect")
+            //   .data(tempData).enter()
+            //   .append("rect").merge(testSvg)
+            //   .style("stroke", "gray")
+            //   .style("fill", "white")
+            //   .attr("x", (d, t, s, a) => {
+            //     window.console.log('x stuff', d);
+            //     return xStuff(d.entry.testKey);
+            //   })
+            //   .attr("y", (d, t, s) => {
+            //     window.console.log('y stuff', d);
+            //     //return yStuff(d.entry.testKey);
+            //     return yStuff(d.entry.testValue);
+            //   })
+            //   .attr('height', (d) => {
+            //     return height - d.entry.testKey;
+            //   })
+            //   .attr('width', xStuff.bandwidth())
+            //   .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
+            //   .on("mouseout", function(){d3.select(this).style("fill", "black");});
+
+          }
 
         }
 
@@ -232,53 +291,7 @@ class Dataset extends Component {
     }
   }
 
-  getSummaryTab() {
-    const { dataset, dataPreview } = this.state;
-    if(dataset === 'fetching') { return null; }
-    let dataKeys;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-
-    // let svg = d3.select("#test_chart")
-    // .append("svg")
-    //   .attr("width", width + margin.left + margin.right)
-    //   .attr("height", height + margin.top + margin.bottom)
-    // .append("g")
-    //   .attr("transform",
-    //         "translate(" + margin.left + "," + margin.top + ")");
-    if(dataPreview) {
-      let dataStuff = dataPreview.data;
-      // grab dataset columns names from first entry
-      dataKeys = Object.keys(dataStuff[0]);
-      let valByRowObj = {};
-
-      dataKeys.forEach(key => {
-        valByRowObj[key] = []
-      });
-
-      let valueTest = d3.values(dataStuff);
-      valueTest.forEach(entry => {
-        dataKeys.forEach(key => {
-          valByRowObj[key].push(entry[key])
-        })
-      });
-      window.console.log('val test ', valByRowObj);
-      //this.createChart();
-      //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
-    }
-
-    return (
-      <div id="test_feature_stuff">
-        <p>
-          Hello
-        </p>
-        <div id="test_chart"></div>
-
-      </div>
-    )
-  }
-
+  // TODO - if keys have spaces in name does not work
   getTabMenu() {
     const { dataset, dataPreview } = this.state;
     // sort metafeatures in desired order
@@ -318,7 +331,6 @@ class Dataset extends Component {
               <br/>
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
-            {/*this.getSummaryTab()*/}
             {dataKeys && dataKeys.map(key => {
               return (
                 <div key={"test_chart_" + key}>
@@ -327,6 +339,7 @@ class Dataset extends Component {
                   </p>
                   <div id={"test_chart_" + key}>
                   </div>
+
                 </div>
               )
             })}
@@ -446,92 +459,6 @@ class Dataset extends Component {
     return testPain;
   }
 
-  getCatAndOrdTable() {
-    const { dataset } = this.state;
-
-    if(dataset === 'fetching') { return null; }
-
-    // categorical_features & ordinal_features
-    let cat_feats = dataset.files[0].categorical_features;
-    let ord_feats = dataset.files[0].ordinal_features;
-    let ord_body = [];
-    Object.entries(ord_feats) && Object.entries(ord_feats).forEach(([key,value]) => {
-      // window.console.log("ord feats key: ", key);
-      // window.console.log("ord feats val: ", value);
-      ord_body.push(
-        <Table.Row key={key}>
-          <Table.Cell>{key}</Table.Cell>
-          <Table.Cell>{value.join(",")}</Table.Cell>
-        </Table.Row>
-      )
-    })
-    // { ord_body.map(ord_item => ord_item) }
-    return (
-      <Grid >
-        <Grid.Row columns={2}>
-        <Grid.Column floated='right'>
-          { Object.keys(cat_feats).length ?
-            <div>
-              <Segment inverted attached="top" >
-                <Header as="h3" content="Categorical Features" style={{ display: 'inline', marginRight: '0.5em' }} />
-                <span className="muted">{`${Object.keys(cat_feats).length} total`}</span>
-              </Segment>
-              <Segment inverted attached="bottom">
-                <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
-                  <Table inverted celled compact unstackable>
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.HeaderCell>Feature</Table.HeaderCell>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {cat_feats.map(field =>
-                        <Table.Row key={field}>
-                          <Table.Cell>{field}</Table.Cell>
-                        </Table.Row>
-                      )}
-                    </Table.Body>
-                  </Table>
-                </div>
-              </Segment>
-            </div>
-            : <Segment inverted attached="top">
-                <Header as="h3" content="No Categorical Features" style={{ display: 'inline', marginRight: '0.5em' }} />
-              </Segment>
-          }
-          </Grid.Column>
-          <Grid.Column floated='right'>
-            { Object.keys(ord_feats).length ?
-              <div>
-                <Segment inverted attached="top" >
-                  <Header as="h3" content="Ordinal Features" style={{ display: 'inline', marginRight: '0.5em' }} />
-                  <span className="muted">{`${Object.keys(ord_feats).length} total`}</span>
-                </Segment>
-                <Segment inverted attached="bottom">
-                  <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
-                    <Table inverted celled compact unstackable>
-                      <Table.Header>
-                        <Table.Row>
-                          <Table.HeaderCell>Field</Table.HeaderCell>
-                          <Table.HeaderCell>Value</Table.HeaderCell>
-                        </Table.Row>
-                      </Table.Header>
-                      <Table.Body>
-                        {ord_body}
-                      </Table.Body>
-                    </Table>
-                  </div>
-                </Segment>
-              </div>
-              : <Segment inverted attached="top" className="cat-and-ord-dataset-table">
-                  <Header as="h3" content="No Ordinal Features" style={{ display: 'inline', marginRight: '0.5em' }} />
-                </Segment>
-            }
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    );
-  }
 
   render() {
     const { dataset, dataPreview, metadataStuff } = this.state;
@@ -549,29 +476,7 @@ class Dataset extends Component {
       dataKeys = Object.keys(dataStuff[0]);
       testPain = this.getTabMenu();
     }
-    // sort metafeatures in desired order
-    /*let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
-    let empty = []; // metafeatures that have no value
-    let rest = [];  // rest of metafeatures
 
-    Object.entries(dataset.metafeatures).forEach(([key, value]) => {
-      if(first.includes(key)) { return; }
-      if(value === null) { empty.push(key); }
-      else { rest.push(key); }
-    });
-
-    // join the categorized metafeatures into one array
-    const allMetafeatures = first.concat(rest).concat(empty);*/
-
-    // categorical_features & ordinal_features
-    let cat_feats = dataset.files[0].categorical_features;
-    let ord_feats = dataset.files[0].ordinal_features;
-
-    //window.console.log("cat feats: ", cat_feats);
-    //window.console.log("ord feats: ", ord_feats);
-
-    let catAndOrdTable = this.getCatAndOrdTable();
-    //this.createChart();
 
     return (
       <div>
@@ -582,11 +487,13 @@ class Dataset extends Component {
           panes={testPain}
           renderActiveOnly={true}
           onTabChange={(e, d) => {
-            //window.console.log('event ', e);
-            //window.console.log('data ', d);
             if(d.activeIndex === 0){
-              //this.createChart()
-              window.setTimeout(this.createChart, 0.5);
+              // this is real bad but temp solution, make chart for summary tab - index is 0
+              // try to delay call to create chart until tab is mounted in DOM?
+              // not sure but guessing that tab containing html DOM elements
+              // where d3 graphics will be displayed is not immediately available
+              // crudely setting timeout to wait until div for d3 is ready
+              window.setTimeout(this.createChart, 1.5);
             }
           }}
         />
@@ -595,12 +502,6 @@ class Dataset extends Component {
             <div id="test_circle"></div>
           </Grid.Column>
           <Grid.Column>
-            {/*dataKeys && dataKeys.map(key => {
-              return (
-                <div id={"test_chart_" + key}>
-                </div>
-              )
-            })*/}
           </Grid.Column>
         </Grid>
       </div>
