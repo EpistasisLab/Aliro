@@ -42,7 +42,7 @@
     "conventional-github-releaser": "^1.1.2",
     "conventional-recommended-bump": "^0.2.1",
     "minimist": "^1.2.0",
-    "mocha": "5.0.1",
+    "mocha": "^6.1.4",
     "run-sequence": "^1.2.0"
   },
   "engines": {

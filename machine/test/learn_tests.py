@@ -19,7 +19,7 @@ from io_utils import Experiment, get_projects, get_input_data, get_type
 from driver import main
 import json
 from sklearn.externals import joblib
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_validate
 import pandas as pd
 import numpy as np
 from sklearn import __version__ as skl_version
@@ -29,7 +29,7 @@ from unittest import mock
 from nose.tools import assert_raises, assert_equal, nottest
 from io import StringIO
 import warnings
-
+train_test_split=nottest(train_test_split)
 
 # test input file for multiclass classification
 test_clf_input = "machine/test/iris_full.tsv"
@@ -51,6 +51,7 @@ test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
 # test inputfile for regression
 test_reg_input = "machine/test/1027_ESL.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
+
 
 @nottest
 def make_train_test_split(input_data, target_name, random_state):
@@ -374,8 +375,17 @@ class APITESTCLASS(unittest.TestCase):
             # test reloaded model is the same
             pickle_model = joblib.load(pickle_file)
             load_clf = pickle_model['model']
-            load_clf_score = SCORERS['balanced_accuracy'](
-                load_clf, training_features_2, training_classes_2)
+            cv_scores = cross_validate(
+                                        estimator=load_clf,
+                                        X=test_clf_input_df2.drop('class', axis=1).values,
+                                        y=test_clf_input_df2['class'].values,
+                                        scoring=SCORERS['balanced_accuracy'],
+                                        cv=10,
+                                        return_train_score=True
+                                        )
+
+            load_clf_score = cv_scores['train_score'].mean()
+
             print(algorithm_name, train_score, load_clf_score)
             assert train_score == load_clf_score
 
@@ -419,8 +429,16 @@ class APITESTCLASS(unittest.TestCase):
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
         assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
-        load_clf_score = SCORERS['balanced_accuracy'](
-            load_clf, training_features_3, training_classes_3)
+        cv_scores = cross_validate(
+                                    estimator=load_clf,
+                                    X=test_clf_input_df3.drop('class', axis=1).values,
+                                    y=test_clf_input_df3['class'].values,
+                                    scoring=SCORERS['balanced_accuracy'],
+                                    cv=10,
+                                    return_train_score=True
+                                    )
+
+        load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
@@ -466,8 +484,16 @@ class APITESTCLASS(unittest.TestCase):
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
         assert load_clf_str.count('OneHotEncoder')
-        load_clf_score = SCORERS['balanced_accuracy'](
-            load_clf, training_features_3, training_classes_3)
+        cv_scores = cross_validate(
+                                    estimator=load_clf,
+                                    X=test_clf_input_df3.drop('class', axis=1).values,
+                                    y=test_clf_input_df3['class'].values,
+                                    scoring=SCORERS['balanced_accuracy'],
+                                    cv=10,
+                                    return_train_score=True
+                                    )
+
+        load_clf_score = cv_scores['train_score'].mean()
         assert train_score == load_clf_score
 
 
@@ -580,8 +606,16 @@ class APITESTCLASS(unittest.TestCase):
         # test reloaded model is the same
         pickle_model = joblib.load(pickle_file)
         load_clf = pickle_model['model']
-        load_clf_score = SCORERS['balanced_accuracy'](
-            load_clf, training_features_1, training_classes_1)
+        cv_scores = cross_validate(
+                                    estimator=load_clf,
+                                    X=test_clf_input_df.drop('class', axis=1).values,
+                                    y=test_clf_input_df['class'].values,
+                                    scoring=SCORERS['balanced_accuracy'],
+                                    cv=10,
+                                    return_train_score=True
+                                    )
+
+        load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
@@ -639,8 +673,16 @@ class APITESTCLASS(unittest.TestCase):
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
         assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
-        load_clf_score = SCORERS['balanced_accuracy'](
-            load_clf, training_features_3, training_classes_3)
+        cv_scores = cross_validate(
+                                    estimator=load_clf,
+                                    X=test_clf_input_df3.drop('class', axis=1).values,
+                                    y=test_clf_input_df3['class'].values,
+                                    scoring=SCORERS['balanced_accuracy'],
+                                    cv=10,
+                                    return_train_score=True
+                                    )
+
+        load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
@@ -694,9 +736,16 @@ class APITESTCLASS(unittest.TestCase):
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
         print(load_clf)
+        cv_scores = cross_validate(
+                                    estimator=load_clf,
+                                    X=test_clf_input_df2.drop('class', axis=1).values,
+                                    y=test_clf_input_df2['class'].values,
+                                    scoring=SCORERS['balanced_accuracy'],
+                                    cv=10,
+                                    return_train_score=True
+                                    )
 
-        load_clf_score = SCORERS['balanced_accuracy'](
-            load_clf, training_features_2, training_classes_2)
+        load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
@@ -773,8 +822,16 @@ def test_generate_results_2():
     # test reloaded model is the same
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_clf_score = SCORERS['balanced_accuracy'](
-        load_clf, training_features, training_classes)
+    cv_scores = cross_validate(
+                                estimator=load_clf,
+                                X=test_clf_input_df.drop('class', axis=1).values,
+                                y=test_clf_input_df['class'].values,
+                                scoring=SCORERS['balanced_accuracy'],
+                                cv=10,
+                                return_train_score=True
+                                )
+
+    load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
 
     rmtree(tmpdir)
@@ -890,8 +947,16 @@ def test_generate_results_6():
     # test reloaded model is the same
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_clf_score = SCORERS['balanced_accuracy'](
-        load_clf, training_features, training_classes)
+    cv_scores = cross_validate(
+                                estimator=load_clf,
+                                X=test_clf_input_df.drop('class', axis=1).values,
+                                y=test_clf_input_df['class'].values,
+                                scoring=SCORERS['balanced_accuracy'],
+                                cv=10,
+                                return_train_score=True
+                                )
+
+    load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
 
     rmtree(tmpdir)
@@ -932,8 +997,16 @@ def test_generate_results_7():
     # test reloaded model is the same
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_clf_score = SCORERS['balanced_accuracy'](
-        load_clf, training_features, training_classes)
+    cv_scores = cross_validate(
+                                estimator=load_clf,
+                                X=test_clf_input_df.drop('class', axis=1).values,
+                                y=test_clf_input_df['class'].values,
+                                scoring=SCORERS['balanced_accuracy'],
+                                cv=10,
+                                return_train_score=True
+                                )
+
+    load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
 
     rmtree(tmpdir)
@@ -1006,10 +1079,8 @@ def test_plot_dot_plot():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_1,
+    dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_1,
                     training_classes_1,
-                    testing_features_1,
-                    testing_classes_1,
                     feature_names_1,
                     indices=np.array([0,1,2,3]),
                     random_state=42,
@@ -1018,7 +1089,7 @@ def test_plot_dot_plot():
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     assert os.path.isfile(dot_file)
     assert os.path.isfile(png_file)
-    assert dtree_test_score > 0.7
+    assert dtree_train_score > 0.7
     rmtree(tmpdir)
 
 
@@ -1028,10 +1099,8 @@ def test_plot_dot_plot_2():
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    dtree_test_score = plot_dot_plot(tmpdir, _id, training_features_4,
+    dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
                     training_classes_4,
-                    testing_features_4,
-                    testing_classes_4,
                     feature_names_4,
                     indices=np.array([0,1,2,3]),
                     random_state=42,
@@ -1208,21 +1277,8 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-# Application 1: reproducing training score and testing score from PennAI
-features = input_data.drop(target_column, axis=1).values
-target = input_data[target_column].values
-# Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
-training_features, testing_features, training_classes, testing_classes = \\
-    train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
-scorer = make_scorer(balanced_accuracy)
-train_score = scorer(model, training_features, training_classes)
-print("Training score: ", train_score)
-test_score = scorer(model, testing_features, testing_classes)
-print("Testing score: ", test_score)
 
-
-# Application 2: cross validation of fitted model
+# Application 1: cross validation of fitted model
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -1230,7 +1286,7 @@ print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
-# Application 3: predict outcome by fitted model
+# Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)

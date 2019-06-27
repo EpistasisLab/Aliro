@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import os
 import json
 import itertools
-from sklearn import metrics
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -75,8 +75,7 @@ def balanced_accuracy(y_true, y_pred):
 
 
 # make new SCORERS
-SCORERS = metrics.SCORERS
-SCORERS['balanced_accuracy'] = metrics.make_scorer(balanced_accuracy)
+SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 
 def generate_results(model, input_data,
     tmpdir, _id, target_name='class',
@@ -95,7 +94,7 @@ def generate_results(model, input_data,
     model: scikit-learn Estimator
         A machine learning model following scikit-learn API
     input_data: pandas.Dataframe or list of two pandas.Dataframe
-        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+        pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
         while the 2nd one is testing dataset
     target_name: string
@@ -131,38 +130,22 @@ def generate_results(model, input_data,
     None
     """
     print('loading..')
-    if isinstance(input_data, pd.DataFrame):
-        feature_names = np.array([x for x in input_data.columns.values if x != target_name])
-
-        features = input_data.drop(target_name, axis=1).values
-        target = input_data[target_name].values
-
-        features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
-
-        training_features, testing_features, training_classes, testing_classes = \
-            train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
-    else: # two files for cross-validation
+    if isinstance(input_data, list):
         training_data = input_data[0]
         testing_data = input_data[1]
+        input_data = pd.concat([training_data, testing_data])
+        train_rows = training_data.shape[0]
+        total_rows = input_data.shape[0]
+        cv = [np.array(range(train_rows)), np.array(range(train_rows, total_rows))]
+    else:
+        cv=10
 
-        feature_names = np.array([x for x in training_data.columns.values if x != target_name])
+    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
+    num_classes = input_data[target_name].unique().shape[0]
+    features = input_data.drop(target_name, axis=1).values
+    target = input_data[target_name].values
 
-        training_features = training_data.drop(target_name, axis=1).values
-        testing_features = testing_data.drop(target_name, axis=1).values
-
-        training_classes = training_data[target_name].values
-        testing_classes = testing_data[target_name].values
-
-        training_features, training_classes = check_X_y(
-                                                        training_features,
-                                                        training_classes,
-                                                        dtype=None, order="C",
-                                                        force_all_finite=True)
-        testing_features, testing_classes = check_X_y(
-                                                        testing_features,
-                                                        testing_classes,
-                                                        dtype=None, order="C",
-                                                        force_all_finite=True)
+    features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
     # fix random_state
     model = setup_model_params(model, 'random_state', random_state)
@@ -186,8 +169,6 @@ def generate_results(model, input_data,
             transform_cols.append(("ordinalencoder",
                                     OrdinalEncoder(categories=ordinal_map),
                                     col_idx))
-
-
         ct = ColumnTransformer(
                                 transformers=transform_cols,
                                  remainder='passthrough',
@@ -195,13 +176,28 @@ def generate_results(model, input_data,
                                  )
         model = make_pipeline(ct, model)
 
+    scores = {}
     #print('Args used in model:', model.get_params())
     if mode == "classification":
-        scoring = SCORERS["balanced_accuracy"]
+        if(num_classes > 2):
+            scoring = ["balanced_accuracy",
+                        "precision_macro",
+                        "recall_macro",
+                        "f1_macro"]
+            scores['roc_auc_score'] = 'not supported for multiclass'
+            scores['train_roc_auc_score'] = 'not supported for multiclass'
+        else:
+            scoring = ["balanced_accuracy",
+                        "precision",
+                        "recall",
+                        "f1",
+                        "roc_auc"]
+
         metric = "accuracy"
     else:
-        scoring = SCORERS["neg_mean_squared_error"]
+        scoring = ["r2", "neg_mean_squared_error"]
         metric = 'r2'
+
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         if param_grid:
@@ -215,13 +211,13 @@ def generate_results(model, input_data,
                 parameters = param_grid
             clf = GridSearchCV(estimator=model,
                                 param_grid=parameters,
-                                scoring=scoring,
+                                scoring=metric,
                                 cv=5,
                                 refit=True,
                                 verbose=0,
                                 error_score=-float('inf'),
                                 return_train_score=True)
-            clf.fit(training_features, training_classes)
+            clf.fit(features, target)
             cv_results = clf.cv_results_
             # rename params name from pipeline object
             fmt_result = []
@@ -234,32 +230,53 @@ def generate_results(model, input_data,
             fmt_result_file = '{0}{1}/grid_search_results_{1}.csv'.format(tmpdir, _id)
             fmt_result.to_csv(fmt_result_file, index=False)
             model = clf.best_estimator_
-
         else:
-            # fit model
-            model.fit(training_features, training_classes)
+            model.fit(features, target)
 
         # computing cross-validated metrics
-        cv_scores = cross_val_score(
+        cv_scores = cross_validate(
                                     estimator=model,
-                                    X=training_features,
-                                    y=training_classes,
+                                    X=features,
+                                    y=target,
                                     scoring=scoring,
-                                    cv=5
+                                    cv=cv,
+                                    return_train_score=True,
+                                    return_estimator=True
                                     )
+
+    for s in scoring:
+        train_scores = cv_scores['train_' + s]
+        test_scores = cv_scores['test_' + s]
+
+        # remove _macro
+        score_name = s.replace('_macro', '')
+        # make balanced_accuracy as default score
+        if score_name in ["balanced_accuracy", "r2"]:
+            scores['train_score'] = train_scores.mean()
+            scores['test_score'] = test_scores.mean()
+        # for api will fix later
+        if score_name == "balanced_accuracy":
+            scores['accuracy_score'] =  scores['test_score']
+            scores['balanced_accuracy'] =  scores['test_score']
+        else:
+            scores['train_{}_score'.format(score_name)] = train_scores.mean()
+            scores['{}_score'.format(score_name)] = test_scores.mean()
+
+
+
+
+
     # dump fitted module as pickle file
     export_model(tmpdir, _id, model, filename, target_name, random_state)
 
     # get predicted classes
-    predicted_classes = model.predict(testing_features)
+    predicted_classes = model.predict(features)
 
-    # get training prediction
-    train_predicted_classes = model.predict(training_features)
 
     # exporting/computing importance score
     coefs, imp_score_type = compute_imp_score(model, metric,
-                                                training_features,
-                                                training_classes,
+                                                features,
+                                                target,
                                                 random_state)
 
     feature_importances = {
@@ -270,71 +287,27 @@ def generate_results(model, input_data,
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="feature_importances.json", content=feature_importances)
-    dtree_test_score = None
-
+    dtree_train_score = None
     if figure_export:
-        top_features, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
+        top_features_names, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
         if not categories and not ordinals:
-            dtree_test_score = plot_dot_plot(tmpdir, _id, training_features,
-                            training_classes,
-                            testing_features,
-                            testing_classes,
-                            top_features,
+            dtree_train_score = plot_dot_plot(tmpdir, _id, features,
+                            target,
+                            top_features_names,
                             indices,
                             random_state,
                             mode)
 
+    # save metrics
+    scores['dtree_train_score'] = dtree_train_score
+
+
     if mode == 'classification':
         # determine if target is binary or multiclass
         class_names = model.classes_
-        if(len(class_names) > 2):
-            average = 'macro'
-        else:
-            average = 'binary'
 
-        train_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in training_classes], dtype=np.int
-                                         )
-        train_predicted_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in train_predicted_classes], dtype=np.int
-                                         )
-
-        testing_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in testing_classes], dtype=np.int
-                                         )
-        predicted_classes_encoded = np.array(
-                                        [list(model.classes_).index(c)
-                                         for c in predicted_classes], dtype=np.int
-                                         )
-
-        # get metrics and plots
-        # training score
-        train_score = balanced_accuracy(train_classes_encoded,
-                                        train_predicted_classes_encoded)
-        train_precision_score = metrics.precision_score(
-            train_classes_encoded, train_predicted_classes_encoded, average=average)
-        train_recall_score = metrics.recall_score(
-            train_classes_encoded, train_predicted_classes_encoded, average=average)
-        train_f1_score = metrics.f1_score(
-            train_classes_encoded, train_predicted_classes_encoded, average=average)
-
-
-        # test metrics
-        # test_score and accuracy_score are the same
-        accuracy_score = balanced_accuracy(testing_classes_encoded,
-                                            predicted_classes_encoded)
-        test_score = accuracy_score
-        precision_score = metrics.precision_score(
-            testing_classes_encoded, predicted_classes_encoded, average=average)
-        recall_score = metrics.recall_score(
-            testing_classes_encoded, predicted_classes_encoded, average=average)
-        f1_score = metrics.f1_score(
-            testing_classes_encoded, predicted_classes_encoded, average=average)
-        cnf_matrix = metrics.confusion_matrix(
-            testing_classes, predicted_classes, labels=class_names)
+        cnf_matrix = confusion_matrix(
+            target, predicted_classes, labels=class_names)
         cnf_matrix_dict = {
             'cnf_matrix': cnf_matrix.tolist(),
             'class_names': class_names.tolist()
@@ -346,89 +319,12 @@ def generate_results(model, input_data,
         if figure_export:
             plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
-        roc_auc_score = 'not supported for multiclass'
-        train_roc_auc_score = 'not supported for multiclass'
-        if(average == 'binary'):
-            # choose correct scoring function based on model
-            try:
-                test_proba_estimates = model.predict_proba(testing_features)[:, 1];
-                train_proba_estimates = model.predict_proba(training_features)[:, 1];
-            except AttributeError:
-                test_proba_estimates = model.decision_function(testing_features)
-                train_proba_estimates = model.decision_function(training_features)
 
-            roc_curve = metrics.roc_curve(testing_classes_encoded, test_proba_estimates)
-            roc_auc_score = metrics.roc_auc_score(testing_classes_encoded, test_proba_estimates)
+        if num_classes==2:
+            plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
 
-            train_roc_auc_score = metrics.roc_auc_score(train_classes_encoded, train_proba_estimates)
 
-            fpr, tpr, _ = roc_curve
-            roc_curve_dict = {
-                'fpr': fpr.tolist(),
-                'tpr': tpr.tolist(),
-                'roc_auc_score': roc_auc_score
-            }
-            save_json_fmt(outdir=tmpdir, _id=_id,
-                          fname="roc_curve.json", content=roc_curve_dict)
-            if figure_export:
-               plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score)
-
-        abs_diff_test_score = None
-        if dtree_test_score is not None:
-            abs_diff_test_score = abs(test_score-dtree_test_score)
-
-        # save metrics
-        metrics_dict = {'_scores': {
-            'train_score': train_score,
-            'train_precision_score': train_precision_score,
-            'train_recall_score': train_recall_score,
-            'train_f1_score': train_f1_score,
-            'train_roc_auc_score': train_roc_auc_score,
-            'test_score': test_score,
-            'dtree_test_score': dtree_test_score,
-            'abs_diff_test_score': abs_diff_test_score,
-            'accuracy_score': accuracy_score,
-            'precision_score': precision_score,
-            'recall_score': recall_score,
-            'f1_score': f1_score,
-            'roc_auc_score': roc_auc_score,
-            'cv_scores_mean': cv_scores.mean(),
-            'cv_scores_std': cv_scores.std(),
-            'cv_scores': cv_scores.tolist()
-        }
-        }
-    elif mode == 'regression':
-        # get metrics and plots
-        train_score = model.score(training_features, training_classes)
-        test_score = model.score(testing_features, testing_classes)
-        train_r2_score = metrics.r2_score(training_classes, train_predicted_classes)
-        train_mean_squared_error = metrics.mean_squared_error(
-            training_classes, train_predicted_classes)
-        r2_score = metrics.r2_score(testing_classes, predicted_classes)
-        mean_squared_error = metrics.mean_squared_error(
-            testing_classes, predicted_classes)
-
-        # scatter plot of predicted vs true target values
-
-        abs_diff_test_score = None
-        if dtree_test_score is not None:
-            abs_diff_test_score = abs(test_score-dtree_test_score)
-
-        # save metrics
-        metrics_dict = {'_scores': {
-            'train_score': train_score,
-            'test_score': test_score,
-            'dtree_test_score': dtree_test_score,
-            'abs_diff_test_score': abs_diff_test_score,
-            'train_r2_score': train_r2_score,
-            'train_mean_squared_error': train_mean_squared_error,
-            'r2_score': r2_score,
-            'mean_squared_error': mean_squared_error,
-            'cv_scores_mean': cv_scores.mean(),
-            'cv_scores_std': cv_scores.std(),
-            'cv_scores': cv_scores.tolist()
-        }
-        }
+    metrics_dict = {'_scores': scores}
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="value.json", content=metrics_dict)
@@ -477,7 +373,7 @@ def setup_model_params(model, parameter_name, value):
     return model
 
 
-def compute_imp_score(model, metric, training_features, training_classes, random_state):
+def compute_imp_score(model, metric, features, target, random_state):
     """compute importance scores for features.
     If coef_ or feature_importances_ attribute is available for the model,
     the the importance scores will be based on the attribute. If not,
@@ -496,9 +392,9 @@ def compute_imp_score(model, metric, training_features, training_classes, random
         scoring function (e.g., `metric=scoring_func`) that
         accepts two arguments, y_true and y_pred, which have
         similar shape to the `y` array.
-    training_features: np.darray/pd.DataFrame
+    features: np.darray/pd.DataFrame
         Features in training dataset
-    training_classes: np.darray/pd.DataFrame
+    target: np.darray/pd.DataFrame
         Target in training dataset
     random_state: int
         Random seed for permuation importances
@@ -526,8 +422,8 @@ def compute_imp_score(model, metric, training_features, training_classes, random
     if coefs is None or np.isnan(coefs).any():
         coefs, _ = feature_importance_permutation(
                                     predict_method=model.predict,
-                                    X=training_features,
-                                    y=training_classes,
+                                    X=features,
+                                    y=target,
                                     num_rounds=5,
                                     metric=metric,
                                     seed=random_state,
@@ -603,7 +499,7 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
 # After switching to dynamic charts, possibly disable outputting graphs from this function
 
 
-def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
+def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     Plot ROC Curve.
     Parameters
@@ -612,40 +508,76 @@ def plot_roc_curve(tmpdir, _id, roc_curve, roc_auc_score):
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    roc_curve: tuple
-        fpr : array, shape = [>2]
-            Increasing false positive rates such that element i is the false
-            positive rate of predictions with score >= thresholds[i].
-        tpr : array, shape = [>2]
-            Increasing true positive rates such that element i is the true
-            positive rate of predictions with score >= thresholds[i].
-        thresholds : array, shape = [n_thresholds]
-            Decreasing thresholds on the decision function used to compute
-            fpr and tpr. thresholds[0] represents no instances being predicted
-            and is arbitrarily set to max(y_score) + 1.
-    roc_auc_score: float
-            Compute Area Under the Receiver Operating Characteristic Curve
-            (ROC AUC) from prediction scores.
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    figure_export: boolean
+        If true, then export roc curve plot
     Returns
     -------
     None
     """
+    from scipy import interp
+    cv = StratifiedKFold(n_splits=10)
+    tprs = []
+    aucs = []
+    mean_fpr = np.linspace(0, 1, 100)
 
-    fpr, tpr, _ = roc_curve
-    plt.figure()
-    lw = 2
-    plt.plot(fpr, tpr, color='darkorange',
-             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc_score)
-    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend(loc="lower right")
+    #print(cv_scores['train_roc_auc'])
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        try:
+            probas_ = est.predict_proba(X[test])[:, 1]
+        except AttributeError:
+            probas_ = est.decision_function(X[test])
+        #print(SCORERS['roc_auc'](est, X[train], y[train]))
+        # Compute ROC curve and area the curve
 
-    plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
-    plt.close()
+        classes_encoded = np.array(
+                                [list(est.classes_).index(c)
+                                 for c in y[test]], dtype=np.int
+                                 )
+        fpr, tpr, thresholds = roc_curve(classes_encoded, probas_)
+        tprs.append(interp(mean_fpr, fpr, tpr))
+        tprs[-1][0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        aucs.append(roc_auc)
+        if figure_export:
+            plt.plot(fpr, tpr, lw=1, alpha=0.3)
+
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    std_auc = np.std(aucs)
+    std_tpr = np.std(tprs, axis=0)
+    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    if figure_export:
+        plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+                 label='Chance', alpha=.8)
+        plt.plot(mean_fpr, mean_tpr, color='b',
+                 label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
+                 lw=2, alpha=.8)
+        plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                         label=r'$\pm$ 1 Standard Deviation')
+        plt.xlim([-0.05, 1.05])
+        plt.ylim([-0.05, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('ROC curve')
+        plt.legend(loc="lower right")
+        plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+        plt.close()
+    roc_curve_dict = {
+        'fpr': mean_fpr.tolist(),
+        'tpr': mean_tpr.tolist(),
+        'roc_auc_score': mean_auc
+    }
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="roc_curve.json", content=roc_curve_dict)
 
 
 def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
@@ -686,11 +618,9 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     return top_features, indices
 
 
-def plot_dot_plot(tmpdir, _id, training_features,
-                training_classes,
-                testing_features,
-                testing_classes,
-                top_features,
+def plot_dot_plot(tmpdir, _id, features,
+                target,
+                top_features_name,
                 indices,
                 random_state,
                 mode):
@@ -701,14 +631,10 @@ def plot_dot_plot(tmpdir, _id, training_features,
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    training_features: np.darray/pd.DataFrame
+    features: np.darray/pd.DataFrame
         Features in training dataset
-    training_classes: np.darray/pd.DataFrame
+    target: np.darray/pd.DataFrame
         Target in training dataset
-    testing_features: np.darray/pd.DataFrame
-        Features in test dataset
-    testing_classes: np.darray/pd.DataFrame
-        Target in test dataset
     top_features: list
         Top feature_names
     indices: ndarray
@@ -721,7 +647,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
 
     Returns
     -------
-    dtree_test_score, float
+    dtree_train_score, float
         Test score from fitting decision tree on top important feat'
 
     """
@@ -729,8 +655,7 @@ def plot_dot_plot(tmpdir, _id, training_features,
     import pydot
     from sklearn.tree import export_graphviz
 
-    top_training_features = training_features[:, indices]
-    top_testing_features = testing_features[:, indices]
+    top_features = features[:, indices]
     if mode == 'classification':
         from sklearn.tree import DecisionTreeClassifier
         dtree=DecisionTreeClassifier(random_state=random_state,
@@ -742,22 +667,22 @@ def plot_dot_plot(tmpdir, _id, training_features,
                                 max_depth=DT_MAX_DEPTH)
         scoring = SCORERS["neg_mean_squared_error"]
 
-    dtree.fit(top_training_features, training_classes)
-    dtree_test_score = scoring(
-        dtree, top_testing_features, testing_classes)
+    dtree.fit(top_features, target)
+    dtree_train_score = scoring(
+        dtree, top_features, target)
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     class_names = None
     if mode == 'classification':
         class_names = [str(i) for i in dtree.classes_]
     export_graphviz(dtree, out_file=dot_file,
-                     feature_names=top_features,
+                     feature_names=top_features_name,
                      class_names=class_names,
                      filled=True, rounded=True,
                      special_characters=True)
     (graph,) = pydot.graph_from_dot_file(dot_file)
     graph.write_png(png_file)
-    return dtree_test_score
+    return dtree_train_score
 
 
 
@@ -865,21 +790,8 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-# Application 1: reproducing training score and testing score from PennAI
-features = input_data.drop(target_column, axis=1).values
-target = input_data[target_column].values
-# Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
-training_features, testing_features, training_classes, testing_classes = \\
-    train_test_split(features, target, random_state=seed, stratify=input_data[target_column])
-scorer = make_scorer(balanced_accuracy)
-train_score = scorer(model, training_features, training_classes)
-print("Training score: ", train_score)
-test_score = scorer(model, testing_features, testing_classes)
-print("Testing score: ", test_score)
 
-
-# Application 2: cross validation of fitted model
+# Application 1: cross validation of fitted model
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -887,7 +799,7 @@ print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
 
 
-# Application 3: predict outcome by fitted model
+# Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
