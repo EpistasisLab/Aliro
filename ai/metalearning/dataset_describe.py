@@ -29,7 +29,7 @@ class Dataset:
 
     prediction_type = {'regression'|'classification'}
     """
-    VERSION = "1.0"
+    VERSION = 1.0
 
     df = None
     df_encoded = None
@@ -37,7 +37,7 @@ class Dataset:
     dependent_col = None
     prediction_type = None
     independent_col = None
-    def __init__(self, df, prediction_type = None, dependent_col = None,categorical_cols = None):
+    def __init__(self, df, prediction_type = None, dependent_col = None, categorical_cols = None):
         
         self.df = df
         self._set_dependent_col(dependent_col)

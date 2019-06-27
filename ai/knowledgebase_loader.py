@@ -13,7 +13,8 @@ import os
 import ai.metalearning.get_metafeatures as mf
 import logging
 import pdb
-import json 
+import json
+import csv
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -23,13 +24,15 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''):
+def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory='', metafeaturesFile=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
     :param resultsFile: string - a gzip file of experiment results in csv form
     :param datasetDirectory: string - the directory that contains the datasets used
         in resultsFile
+    :param metafeaturesDirectory - root of a directory structure that contains .json files for metafeatures
+    :param metafeaturesFile - file that contains metafeatures for the datasets with experiments
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
     				'dataset',
@@ -51,11 +54,13 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
     # load or generate dataset metafeatures
     if metafeatureDirectory:
         metafeaturesData = _load_json_metadata_from_directory(metafeatureDirectory, dataset_names)
+    elif metafeaturesFile:
+        metafeaturesData = _load_metadata_from_file(metafeaturesFile)
     elif datasetDirectory:
         metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
                 targetField='class')
     else:
-        raise ValueError('One of datasetDirectory or metafeatureDirectory '
+        raise ValueError('One of metafeaturesFile, datasetDirectory or metafeatureDirectory '
                              'has to be specified')
 
 
@@ -74,9 +79,34 @@ def load_pmlb_knowledgebase():
     return load_knowledgebase(
             resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
                 'knowledgebase.tsv.gz'),
-            # datasetDirectory = "data/datasets/pmlb",
-            metafeatureDirectory = 'data/knowledgebases/metafeatures'
-            )
+            metafeaturesFile = 'data/knowledgebases/pmlb_metafeatures.csv.gz')
+
+def generate_metafeatures_file(outputPath, 
+    datasetDirectory, 
+    outputFilename = "metafeatures.csv", 
+    targetField = 'class', 
+    checkSubdirectories = True, 
+    fileExtensions = ['.csv', '.tsv']):
+    """
+    Generate metafeatures file for all datsets in the given directory
+
+    """
+    logger.info(f"generate_metafeatures_file({outputPath}, {datasetDirectory}, {outputFilename}, ...)")
+
+    os.makedirs(outputPath, exist_ok=True)
+
+    metafeaturesData = _generate_metadata_from_directory(
+        datasetDirectory, targetField, checkSubdirectories, fileExtensions)
+
+    df = pd.DataFrame(metafeaturesData).transpose()
+
+    logger.debug(f"generated metafeatures for {len(metafeaturesData)} datasets")
+    #logger.debug(f"metafeaturesData: {metafeaturesData}")
+    logger.debug(df.head())
+
+    df.to_csv(os.path.join(outputPath, outputFilename), header=True) #, quoting=csv.QUOTE_NONNUMERIC)
+
+    return metafeaturesData
 
 
 def _validate_knowledgebase(resultsDf, metafeaturesDict):
@@ -164,13 +194,20 @@ def _load_json_metadata_from_directory(metafeatureDirectory, datasetNames):
 
     return metafeaturesData
 
+def _load_metadata_from_file(metafeaturesFile):
+    metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0, float_precision='round_trip') #, quoting=csv.QUOTE_NONNUMERIC)
+    logger.debug("loaded metafeature file as df:")
+    logger.debug(metafeaturesDf.head())
+
+    return metafeaturesDf.to_dict(orient='index')
+
 def _generate_metadata_from_directory(datasetDirectory, targetField = 'class', 
-    checkSubdirectories = True):
-    """Extract metafeatures for all .csv files in the directory
+    checkSubdirectories = True, fileExtensions = ['.csv', '.tsv']):
+    """Extract metafeatures for all dataset files in the directory
 
     :returns dict: dataset name(str):metafeatures(dataFrame)
     """
-    logger.info(f"generating metafeatures for files in directory '{datasetDirectory}', targetField={targetField}, checkSubdirectories={checkSubdirectories}")
+    logger.info(f"generating metafeatures for files in directory '{datasetDirectory}', targetField={targetField}, checkSubdirectories={checkSubdirectories}, fileExtensions={fileExtensions}")
 
     if (not datasetDirectory):
         raise ValueError("Could not generate metadata from directory, 'datasetDirectory' must be specified")
@@ -180,12 +217,14 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class',
     for root, dirs, files in os.walk(datasetDirectory):
         for name in files:
             extension = os.path.splitext(name)[1]
-            if not name.startswith('.') and (extension in ['.csv', '.tsv']):
-                dataset = os.path.splitext(name)[0]
-                logger.debug("Generating metadata for {}".format(os.path.join(root,
-                        name)))
+            if not name.startswith('.') and (extension in fileExtensions):
+                # split twice to handle double extensions, i.e.
+                #   'myfile.tsv.gz' => 'myfile'
+                dataset = os.path.splitext(os.path.splitext(name)[0])[0]  
+                datapath = os.path.join(root, name)
+                logger.debug(f"Generating metadata for {datapath}")
                 metafeatures = mf.generate_metafeatures_from_filepath(
-                        os.path.join(root, name), targetField)
+                        datapath, targetField)
                 metafeaturesData[dataset] = metafeatures
 
     return metafeaturesData

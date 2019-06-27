@@ -4,10 +4,12 @@ import ai.knowledgebase_loader as knowledgebase_loader
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
-from nose.tools import nottest, raises, assert_equals
+from nose.tools import nottest, raises, assert_equals, assert_is_instance, assert_dict_equal
 from parameterized import parameterized
 import pandas as pd
+import pprint
 
+TEST_OUTPUT_PATH = "target/test_output/test_knowledgebase_loader"
 
 @nottest
 def load_test_data():
@@ -58,7 +60,7 @@ class TestResultUtils(unittest.TestCase):
         self.assertGreater(len(result['resultsData']), 1)
         self.assertGreater(len(result['metafeaturesData'].keys()), 1)
 
-        print("result.warnings:")
+        print("test_load_knowledgebase result.warnings:")
         print(result['warnings'])
         #assert len(result['warnings']) == 0
 
@@ -77,8 +79,9 @@ class TestResultUtils(unittest.TestCase):
         self.assertGreater(len(result['resultsData']), 1)
         self.assertGreater(len(result['metafeaturesData'].keys()), 1)
 
-        print("result.warnings:")
+        print("test_load_pmlb_knowledgebase result.warnings:")
         print(result['warnings'])
+        assert len(result['warnings']) == 0
 
     def test_load_json_metadata_from_directory(self):
         testDirectory = "data/knowledgebases/test/metafeatures"
@@ -89,3 +92,33 @@ class TestResultUtils(unittest.TestCase):
 
         for dataset in testDatasets:
             assert dataset in result.keys()
+
+    def test_generate_metafeatures_file(self):
+        datasetDirectory = "data/datasets/pmlb_small"
+        outputFilename = 'metafeatures.csv.gz'
+
+        mfGen = knowledgebase_loader.generate_metafeatures_file(
+            outputFilename=outputFilename,
+            outputPath=TEST_OUTPUT_PATH, 
+            datasetDirectory=datasetDirectory,
+            fileExtensions = ['.csv', '.tsv', '.gz'],
+            targetField = 'class', 
+            checkSubdirectories = True)
+
+        assert len(mfGen) > 10
+
+        mfLoad = knowledgebase_loader._load_metadata_from_file(f"{TEST_OUTPUT_PATH}/{outputFilename}")
+
+        self.maxDiff = None
+        self.assertIsInstance(mfGen, dict)
+        self.assertIsInstance(mfLoad, dict)
+
+        ## mfLoad is of type <str:Dict>, mfGen is of type <str:OrderedDict>; cannot do direct dict equality
+        self.assertTrue(mfGen.keys() == mfLoad.keys())
+
+        for key in mfGen.keys():
+            for field in mfGen[key].keys():
+                gen = mfGen[key][field]
+                load = mfLoad[key][field]
+                #print(f"{key}:{field}  {type(gen)}:{type(load)}  {gen}:{load}")
+                return (gen == load) or (math.isnan(gen) and math.isnan(load))
