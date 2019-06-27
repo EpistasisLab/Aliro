@@ -19,7 +19,7 @@ import itertools as it
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -155,7 +155,8 @@ class SurpriseRecommender(BaseRecommender):
             #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
             
         except Exception as e:
-            logger.error( 'error running self.best_model_prediction for',dataset_id)
+            logger.error( 'error running self.best_model_prediction for'+
+                    str(dataset_id))
             raise e 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended

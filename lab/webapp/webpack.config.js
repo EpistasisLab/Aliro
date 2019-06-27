@@ -7,15 +7,6 @@ module.exports = {
   ],
   module: {
     rules: [
-      /*{
-        enforce: 'pre',
-        test: /\.(js|jsx)?$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          formatter: require("eslint-friendly-formatter")
-        }
-      },*/
       {
         test: /\.(js|jsx)?$/,
         exclude: /node_modules/,

@@ -8,16 +8,19 @@ RUN apt-get update --fix-missing \
 
 # Miniconda 4.5.4
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O ~/miniconda.sh && \
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh
 
 # set up conda environment
 ENV PATH /opt/conda/bin:$PATH
 
+# set conda config for faster build
+RUN conda config --set channel_priority strict
+
 # set up conda environment, specify node version because of known issue with version 11.11
 # check here - https://github.com/facebook/jest/issues/8069
-RUN conda install -y -c conda-forge nodejs=11.10.0 scikit-learn=0.20.2 \
+RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
     pymongo tqdm pandas matplotlib \
     xgboost simplejson numpy cython && \
     conda clean --all -y
@@ -32,7 +35,6 @@ RUN pip install --no-cache-dir mlxtend \
     m2r sphinx_rtd_theme
 
 RUN npm install -g mocha
-RUN npm install -g jest
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
