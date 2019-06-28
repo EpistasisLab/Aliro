@@ -24,14 +24,14 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory='', metafeaturesFile=''):
+def load_knowledgebase(resultsFile=[], metafeaturesFile='', datasetDirectory='', metafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
     :param resultsFile: string - a gzip file of experiment results in csv form
     :param datasetDirectory: string - the directory that contains the datasets used
         in resultsFile
-    :param metafeaturesDirectory - root of a directory structure that contains .json files for metafeatures
+    :param metafeatureDirectory - root of a directory structure that contains .json files for metafeatures
     :param metafeaturesFile - file that contains metafeatures for the datasets with experiments
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
@@ -44,16 +44,16 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
 		   metafeaturesData: {String (datasetName): metafeatures}
 				}
     """
-    logger.info(f"load_knowledgebase({resultsFile},{datasetDirectory})")
+    logger.info(f"load_knowledgebase('{resultsFile}',{metafeaturesFile}', {datasetDirectory}', '{metafeatureDirectory}')")
 
     # load results
     resultsData = _load_results_from_file(resultsFile)
     dataset_names = resultsData['dataset']
-    metafeaturesData = {}
     
     # load or generate dataset metafeatures
+    metafeaturesData = {}
     if metafeatureDirectory:
-        metafeaturesData = _load_json_metadata_from_directory(metafeatureDirectory, dataset_names)
+        metafeaturesData = _load_json_metafeatures_from_directory(metafeatureDirectory, dataset_names)
     elif metafeaturesFile:
         metafeaturesData = _load_metadata_from_file(metafeaturesFile)
     elif datasetDirectory:
@@ -74,7 +74,7 @@ def load_knowledgebase(resultsFile, datasetDirectory='', metafeatureDirectory=''
 
 def load_pmlb_knowledgebase():
     """ 
-    Convience method to load the PMBL knowledgebase
+    Convience method to load the default PMBL knowledgebase
     """
     return load_knowledgebase(
             resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
@@ -123,8 +123,6 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
             warnings.append("Required field '" + reqField + 
                 "'' is not in the knowledgebase experiments.")
 
-    # if warnings: 
-    #     return warnings
 
     # check that all the datasets in resultsDf are in metafeaturesDict
     missingMfDatasets = list(set(resultsDf.dataset.unique()) 
@@ -148,25 +146,19 @@ def _load_results_from_file(resultsFile):
     """
     Load experiment results from file
     """
-    results_data = pd.read_csv(resultsFile,
-                       compression='gzip', sep='\t')
-                       # names=['dataset',
-                       #        'algorithm',
-                       #        'parameters',
-                       #        'accuracy',
-                       #        'macrof1',
-                       #        'bal_accuracy']).fillna('')
+    results_data = pd.read_csv(resultsFile, sep='\t')
+
     # convert params to dictionary 
     results_data['parameters'] = results_data['parameters'].apply(
             lambda x: eval(x))
-    logger.info('returning results data ')
+    logger.info(f'returning {len(results_data)} results from {resultsFile}')
+    
     assert(not results_data.isna().any().any())
-    logger.debug('results_data:')
-    logger.debug(results_data.head())
+    logger.debug(f'results_data:\n{results_data.head()}')
     return results_data
 
 
-def _load_json_metadata_from_directory(metafeatureDirectory, datasetNames):
+def _load_json_metafeatures_from_directory(metafeatureDirectory, datasetNames):
     """Load .json metafeatures for datasets
 
     Assumes metafeature files are named 'metafeatures.json' and are in
@@ -178,7 +170,7 @@ def _load_json_metadata_from_directory(metafeatureDirectory, datasetNames):
     :param metafeatureDirectory
     :param datasetNames - list of String dataset names
     """
-    logger.info('loading cached metafeatures from '+ metafeatureDirectory)
+    logger.info(f"Loading json metafeatures from directory '{metafeatureDirectory}'")
     
     metafeaturesData = {}
 
@@ -190,11 +182,13 @@ def _load_json_metadata_from_directory(metafeatureDirectory, datasetNames):
                 data = json.load(data_file)
             metafeaturesData[dataset] = data 
         else:
-            raise ValueError("couldn't find metafeature file for " + dataset)
+            #raise ValueError(f"Couldn't find metafeature file for dataset '{dataset}'")
+            logger.warn(f"Couldn't find metafeature file for dataset '{dataset}'")
 
     return metafeaturesData
 
 def _load_metadata_from_file(metafeaturesFile):
+    logger.info(f"Loading metadata from file '{metafeaturesFile}")
     metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0, float_precision='round_trip') #, quoting=csv.QUOTE_NONNUMERIC)
     logger.debug("loaded metafeature file as df:")
     logger.debug(metafeaturesDf.head())
