@@ -24,15 +24,13 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def load_knowledgebase(resultsFile=[], metafeaturesFile='', datasetDirectory='', metafeatureDirectory=''):
+def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], metafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
-    :param resultsFile: string - a gzip file of experiment results in csv form
-    :param datasetDirectory: string - the directory that contains the datasets used
-        in resultsFile
+    :param resultsFiles: list<string> - list of experiment results in tsv form, can be compressed files.
+    :param metafeaturesFiles - list<string> - list of files that contain metafeatures for the experiment datasets in csv form, can be compressed files.
     :param metafeatureDirectory - root of a directory structure that contains .json files for metafeatures
-    :param metafeaturesFile - file that contains metafeatures for the datasets with experiments
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
     				'dataset',
@@ -41,26 +39,32 @@ def load_knowledgebase(resultsFile=[], metafeaturesFile='', datasetDirectory='',
 	                'accuracy',
 	                'macrof1',
 	                'bal_accuracy'
-		   metafeaturesData: {String (datasetName): metafeatures}
+	metafeaturesData: {String (datasetName): metafeatures}
+    warnings: <string>
 				}
     """
-    logger.info(f"load_knowledgebase('{resultsFile}',{metafeaturesFile}', {datasetDirectory}', '{metafeatureDirectory}')")
+    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '{metafeatureDirectory}')")
 
-    # load results
-    resultsData = _load_results_from_file(resultsFile)
+    # load experiment results
+    frames = []
+    for resultsFile in resultsFiles:
+        frames.append(_load_results_from_file(resultsFile))
+    
+    resultsData = pd.concat(frames)
     dataset_names = resultsData['dataset']
     
-    # load or generate dataset metafeatures
+    # load dataset metafeatures
     metafeaturesData = {}
     if metafeatureDirectory:
-        metafeaturesData = _load_json_metafeatures_from_directory(metafeatureDirectory, dataset_names)
-    elif metafeaturesFile:
-        metafeaturesData = _load_metadata_from_file(metafeaturesFile)
-    elif datasetDirectory:
-        metafeaturesData = _generate_metadata_from_directory(datasetDirectory,
-                targetField='class')
-    else:
-        raise ValueError('One of metafeaturesFile, datasetDirectory or metafeatureDirectory '
+        metafeaturesData.update(_load_json_metafeatures_from_directory(metafeatureDirectory, dataset_names))
+
+    if metafeaturesFiles:
+        assert isinstance(metafeaturesFiles, list), f"load_knowledgebase.metafeaturesFiles must be a list; got '{metafeaturesFiles}'"
+        for mfFile in metafeaturesFiles:
+            metafeaturesData.update(_load_metadata_from_file(mfFile))
+
+    if not(metafeatureDirectory or metafeaturesFiles):
+        raise ValueError('One of metafeaturesFile or metafeatureDirectory '
                              'has to be specified')
 
 
@@ -77,12 +81,14 @@ def load_pmlb_knowledgebase():
     Convience method to load the default PMBL knowledgebase
     """
     return load_knowledgebase(
-            resultsFile = ('data/knowledgebases/sklearn-benchmark5-data-'
-                'knowledgebase.tsv.gz'),
-            metafeaturesFile = 'data/knowledgebases/pmlb_metafeatures.csv.gz')
+            resultsFiles = (['data/knowledgebases/sklearn-benchmark5-data-'
+                'knowledgebase.tsv.gz']),
+            metafeaturesFiles = ['data/knowledgebases/pmlb_metafeatures.csv.gz'])
 
-def generate_metafeatures_file(outputPath, 
-    datasetDirectory, 
+
+def generate_metafeatures_file(
+    datasetDirectory,
+    outputPath,  
     outputFilename = "metafeatures.csv", 
     targetField = 'class', 
     checkSubdirectories = True, 
