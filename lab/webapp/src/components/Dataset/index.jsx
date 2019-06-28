@@ -19,7 +19,10 @@ class Dataset extends Component {
     //this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
     this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
     this.getTabMenu = this.getTabMenu.bind(this);
-    this.createChart = this.createChart.bind(this);
+    this.createCharts = this.createCharts.bind(this);
+    this.createBarGraph = this.createBarGraph.bind(this);
+    this.createBoxPlot = this.createBoxPlot.bind(this);
+    this.getDataValByRow = this.getDataValByRow.bind(this);
   }
 
   componentDidMount() {
@@ -43,16 +46,17 @@ class Dataset extends Component {
           return response.text();
         })
         .then(text => {
-          this.setState({ dataPreview: Papa.parse(text, { header: true, preview: 100 }) });
-          //this.createChart();
+          this.setState({ dataPreview: Papa.parse(text, { header: true }) });
+          //this.createCharts();
         });
     }
 
     // call this to render/create chart when react page is updated, due to how
     // semantic ui tabs aren't rendered immediately (not 100% sure) and how d3
     // creates graphics, resorted to
-    this.createChart();
+    this.createCharts();
   }
+
   //handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   fileDetailsClick(e) {
     //e.preventDefault();
@@ -72,226 +76,221 @@ class Dataset extends Component {
     this.setState({ metadataStuff: null });
   }
 
-  createChart() {
+  // aggregate all available column values grouped by row, i.e all values for
+  // column 'At1' into returned obj
+  getDataValByRow() {
     const { dataset, dataPreview } = this.state;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab dataset columns names from first entry
       let dataKeys = Object.keys(dataStuff[0]);
       let valByRowObj = {};
-
+      // initialize empty obj with dataset column names as keys
       dataKeys.forEach(key => {
-        valByRowObj[key] = []
+        let tempKey = key.replace(/ /g, "_");
+        valByRowObj[tempKey] = []
       });
-
       let valueTest = d3.values(dataStuff);
       valueTest.forEach(entry => {
         dataKeys.forEach(key => {
-          valByRowObj[key].push(entry[key])
+          let tempKey = key.replace(/ /g, "_");
+          // add some checks to prevent loading empty/garbage data
+          typeof entry[key] !== 'undefined'
+            && entry[key] !== ''
+            && valByRowObj[tempKey].push(entry[key])
         })
       });
-      window.console.log('val test ', valByRowObj);
-      //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
-      let svgCircle = d3.select("#test_circle")
-          .append("svg")
-          .attr("width", 100)
-          .attr("height", 100);
+      //window.console.log('val test ', valByRowObj);
+      return valByRowObj;
+    }
+  }
 
-      svgCircle.append("circle")
+  // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
+  createBarGraph(tempKey){
+    const { dataset, dataPreview } = this.state;
+    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    let chartInnerHTML = "";
+    let valByRowObj = this.getDataValByRow();
+    if(document.getElementById("test_chart_" + tempKey)) {
+      chartInnerHTML = document.getElementById("test_chart_" + tempKey).innerHTML;
+    };
+
+    if(chartInnerHTML === "") {
+      width = 460 - margin.left - margin.right;
+      let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
+
+      let classCountObj = {};
+      let tempData = [];
+
+      data_sorted.forEach(val => {
+        classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
+      })
+      //tempData.push(classCountObj);
+      let testSet = [... new Set(valByRowObj[tempKey])];
+
+      testSet.forEach(tempKey => tempData.push({
+        entry: {
+          testKey: tempKey,
+          testValue: classCountObj[tempKey]
+        }
+      }));
+
+      let svg = d3.select("#test_chart_" + tempKey)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("background-color", "aliceblue")
+        .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+      // x - axis
+      let xStuff = d3.scaleBand()
+        .range([0, width])
+        .domain(testSet)
+        .padding(0.2);
+
+      svg.append('g')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom(xStuff));
+
+      // y - axis
+      let yStuff = d3.scaleLinear()
+        .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
+        .range([height, 0]);
+
+      svg.append('g')
+        .call(d3.axisLeft(yStuff));
+
+      svg.selectAll("rect")
+        .data(tempData).enter()
+        .append("rect").merge(svg)
         .style("stroke", "gray")
-        .style("fill", "white")
-        .attr("r", 40)
-        .attr("cx", 50)
-        .attr("cy", 50)
-        .on("mouseover", function(){d3.select(this).style("fill", "aliceblue");})
-        .on("mouseout", function(){d3.select(this).style("fill", "white");});
+        .style("fill", "black")
+        .attr("x", (d, t, s, a) => {
+          //window.console.log('x stuff', d);
+          return xStuff(d.entry.testKey);
+        })
+        .attr("y", (d, t, s) => {
+          //window.console.log('y stuff', d);
+          //return yStuff(d.entry.testKey);
+          return yStuff(d.entry.testValue);
+        })
+        .attr('height', (d) => {
+          return height - yStuff(d.entry.testValue);
+        })
+        .attr('width', xStuff.bandwidth())
+        .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
+        .on("mouseout", function(){d3.select(this).style("fill", "black");});
+    }
+  }
 
-      dataKeys.forEach(key => {
+  createBoxPlot(tempKey){
+    const { dataset, dataPreview } = this.state;
+    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    let valByRowObj = this.getDataValByRow();
+    let dataKeys;
+    if(dataPreview) {
+      let dataStuff = dataPreview.data;
+      // grab dataset columns names from first entry
+      dataKeys = Object.keys(dataStuff[0]);
+    }
+
+    let svg = d3.select("#test_chart_" + tempKey)
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .style("background-color", "aliceblue")
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
+    let q1 = d3.quantile(data_sorted, .25);
+    let median = d3.quantile(data_sorted, .5);
+    let q3 = d3.quantile(data_sorted, .75);
+    let interQuantileRange = q3 - q1;
+    let min = q1 - 1.5 * interQuantileRange;
+    let max = q1 + 1.5 * interQuantileRange;
+    let y = d3.scaleLinear()
+      .domain([min, max])
+      .range([height, 0]);
+    svg.call(d3.axisLeft(y));
+    let center = 200;
+    width = 200;
+    svg.append("line")
+      .attr("x1", center)
+      .attr("x2", center)
+      .attr("y1", y(min) )
+      .attr("y2", y(max) )
+      .attr("stroke", "black");
+
+    // Show the box
+    svg.append("rect")
+      .attr("x", center - width/2)
+      .attr("y", y(q3) )
+      .attr("height", (y(q1)-y(q3)) )
+      .attr("width", width )
+      .attr("stroke", "black")
+      .style("fill", "#69b3a2");
+
+    // show median, min and max horizontal lines
+    svg.selectAll("toto")
+    .data([min, median, max])
+    .enter()
+    .append("line")
+      .attr("x1", center-width/2)
+      .attr("x2", center+width/2)
+      .attr("y1", function(d){ return(y(d))} )
+      .attr("y2", function(d){ return(y(d))} )
+      .attr("stroke", "black");
+
+    svg.enter()
+       .append("text")
+       .text("test text")
+       .attr("x", center)
+       .attr("dy", 12)
+       .style("text-anchor", "end");
+  }
+
+  createCharts() {
+    const { dataset, dataPreview } = this.state;
+    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    // only attempt to make charts if parsed data preview is available
+    if(dataPreview) {
+      let valByRowObj = this.getDataValByRow();
+      let dataKeys;
+      window.console.log('val test ', valByRowObj);
+      if(dataPreview) {
+        let dataStuff = dataPreview.data;
+        // grab dataset columns names from first entry
+        dataKeys = Object.keys(dataStuff[0]);
+      }
+      //https://www.d3-graph-gallery.com/graph/boxplot_basic.html
+      dataKeys && dataKeys.forEach(key => {
+        // only attempt to make charts once
+        let tempKey = key.replace(/ /g, "_");
         let chartInnerHTML = "";
-        if(document.getElementById("test_chart_" + key)) {
-          chartInnerHTML = document.getElementById("test_chart_" + key).innerHTML;
+        if(document.getElementById("test_chart_" + tempKey)) {
+          chartInnerHTML = document.getElementById("test_chart_" + tempKey).innerHTML;
         };
         // ignore dependent column, dont make boxplot
-        if(chartInnerHTML === "" && key !== dataset.files[0].dependent_col) {
-          width = 460 - margin.left - margin.right;
-          let svg = d3.select("#test_chart_" + key)
-          .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .style("background-color", "aliceblue")
-          .append("g")
-            .attr("transform",
-                  "translate(" + margin.left + "," + margin.top + ")");
-
-          let data_sorted = valByRowObj[key].sort(d3.ascending);
-          let q1 = d3.quantile(data_sorted, .25);
-          let median = d3.quantile(data_sorted, .5);
-          let q3 = d3.quantile(data_sorted, .75);
-          let interQuantileRange = q3 - q1;
-          let min = q1 - 1.5 * interQuantileRange;
-          let max = q1 + 1.5 * interQuantileRange;
-          let y = d3.scaleLinear()
-            .domain([min, max])
-            .range([height, 0]);
-          svg.call(d3.axisLeft(y));
-          let center = 200;
-          let width = 200;
-          svg
-          .append("line")
-            .attr("x1", center)
-            .attr("x2", center)
-            .attr("y1", y(min) )
-            .attr("y2", y(max) )
-            .attr("stroke", "black")
-
-          // Show the box
-          svg
-          .append("rect")
-            .attr("x", center - width/2)
-            .attr("y", y(q3) )
-            .attr("height", (y(q1)-y(q3)) )
-            .attr("width", width )
-            .attr("stroke", "black")
-            .style("fill", "#69b3a2")
-
-          // show median, min and max horizontal lines
-          svg
-          .selectAll("toto")
-          .data([min, median, max])
-          .enter()
-          .append("line")
-            .attr("x1", center-width/2)
-            .attr("x2", center+width/2)
-            .attr("y1", function(d){ return(y(d))} )
-            .attr("y2", function(d){ return(y(d))} )
-            .attr("stroke", "black")
-
-          svg.enter()
-             .append("text")
-             .text("test text")
-             .attr("x", center)
-             .attr("dy", 12)
-             .style("text-anchor", "end");
-
+        if(chartInnerHTML === "" && tempKey !== dataset.files[0].dependent_col) {
+          this.createBoxPlot(tempKey);
         } else {
-
-          let chartInnerHTML = "";
-          if(document.getElementById("test_chart_" + key)) {
-            chartInnerHTML = document.getElementById("test_chart_" + key).innerHTML;
-          };
-
-          if(chartInnerHTML === "") {
-            width = 460 - margin.left - margin.right;
-            let data_sorted = valByRowObj[key].sort(d3.ascending);
-
-            let classCountObj = {};
-            let tempData = [];
-
-            data_sorted.forEach(val => {
-              classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
-            })
-            //tempData.push(classCountObj);
-            let testSet = [... new Set(valByRowObj[key])];
-
-            testSet.forEach(key => tempData.push({
-              entry: {
-                testKey: key,
-                testValue: classCountObj[key]
-              }
-            }));
-
-            window.console.log("test set", tempData);
-
-            let svg = d3.select("#test_chart_" + key)
-              .append("svg")
-              .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
-              .style("background-color", "aliceblue")
-              .append("g")
-              .attr("transform",
-                    "translate(" + margin.left + "," + margin.top + ")");
-
-
-            //window.console.log('test seort', data_sorted);
-
-            // x - axis
-            let xStuff = d3.scaleBand()
-              .range([0, width])
-              .domain(testSet)
-              .padding(0.2);
-
-            svg.append('g')
-              .attr('transform', `translate(0, ${height})`)
-              .call(d3.axisBottom(xStuff));
-
-            // y - axis
-            let yStuff = d3.scaleLinear()
-              .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
-              .range([height, 0]);
-
-            svg.append('g')
-              .call(d3.axisLeft(yStuff));
-
-            svg.selectAll("rect")
-              .data(tempData).enter()
-              .append("rect").merge(svg)
-              .style("stroke", "gray")
-              .style("fill", "black")
-              .attr("x", (d, t, s, a) => {
-                window.console.log('x stuff', d);
-                return xStuff(d.entry.testKey);
-              })
-              .attr("y", (d, t, s) => {
-                window.console.log('y stuff', d);
-                //return yStuff(d.entry.testKey);
-                return yStuff(d.entry.testValue);
-              })
-              .attr('height', (d) => {
-                return height - yStuff(d.entry.testValue);
-              })
-              .attr('width', xStuff.bandwidth())
-              .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
-              .on("mouseout", function(){d3.select(this).style("fill", "black");});
-
-            // let testSvg = d3.select("#test_graph")
-            //     .append("svg")
-            //     .attr("width", 100)
-            //     .attr("height", 100);
-            //
-            // testSvg.selectAll("rect")
-            //   .data(tempData).enter()
-            //   .append("rect").merge(testSvg)
-            //   .style("stroke", "gray")
-            //   .style("fill", "white")
-            //   .attr("x", (d, t, s, a) => {
-            //     window.console.log('x stuff', d);
-            //     return xStuff(d.entry.testKey);
-            //   })
-            //   .attr("y", (d, t, s) => {
-            //     window.console.log('y stuff', d);
-            //     //return yStuff(d.entry.testKey);
-            //     return yStuff(d.entry.testValue);
-            //   })
-            //   .attr('height', (d) => {
-            //     return height - d.entry.testKey;
-            //   })
-            //   .attr('width', xStuff.bandwidth())
-            //   .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
-            //   .on("mouseout", function(){d3.select(this).style("fill", "black");});
-
-          }
-
+          this.createBarGraph(tempKey);
         }
-
       })
     }
   }
 
-  // TODO - if keys have spaces in name does not work
   getTabMenu() {
     const { dataset, dataPreview } = this.state;
     // sort metafeatures in desired order
@@ -316,7 +315,6 @@ class Dataset extends Component {
       let dataStuff = dataPreview.data;
       // grab dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
-
     }
 
     let testPain = [
@@ -332,18 +330,18 @@ class Dataset extends Component {
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
             {dataKeys && dataKeys.map(key => {
+              // loop through dataset column name/key for charts later on
+              let tempKey = key.replace(/ /g, "_");
               return (
-                <div key={"test_chart_" + key}>
+                <div key={"test_chart_" + tempKey}>
                   <p style={{color: "aliceblue"}}>
-                    {"test_chart_" + key}
+                    {"test_chart_" + tempKey}
                   </p>
-                  <div id={"test_chart_" + key}>
+                  <div id={"test_chart_" + tempKey}>
                   </div>
-
                 </div>
               )
             })}
-
           </Tab.Pane>
         )
       },
@@ -488,12 +486,14 @@ class Dataset extends Component {
           renderActiveOnly={true}
           onTabChange={(e, d) => {
             if(d.activeIndex === 0){
-              // this is real bad but temp solution, make chart for summary tab - index is 0
+              // make chart for summary tab - index is 0
+
+              // this is real bad but temp solution though,
               // try to delay call to create chart until tab is mounted in DOM?
               // not sure but guessing that tab containing html DOM elements
               // where d3 graphics will be displayed is not immediately available
               // crudely setting timeout to wait until div for d3 is ready
-              window.setTimeout(this.createChart, 1.5);
+              window.setTimeout(this.createCharts, 1.5);
             }
           }}
         />
