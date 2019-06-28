@@ -1,0 +1,653 @@
+dataset	algorithm	parameters	accuracy	macrof1	bal_accuracy
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'None', 'criterion': 'entropy'}	0.5375	0.53733734516	0.5375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'None', 'criterion': 'gini'}	0.519375	0.519257631258	0.519375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'entropy'}	0.491875	0.491631737843	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'gini'}	0.5225	0.522497015606	0.5225
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.491875	0.491631737843	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5225	0.522497015606	0.5225
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'None', 'criterion': 'entropy'}	0.526875	0.526865943918	0.526875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'None', 'criterion': 'gini'}	0.533125	0.533124817627	0.533125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'entropy'}	0.491875	0.491507733515	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'gini'}	0.491875	0.491507733515	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.491875	0.491507733515	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'gini'}	0.491875	0.491507733515	0.491875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'None', 'criterion': 'entropy'}	0.48625	0.485787208488	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'None', 'criterion': 'gini'}	0.48625	0.485787208488	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'entropy'}	0.513125	0.510230577503	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'gini'}	0.513125	0.510230577503	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.513125	0.510230577503	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'gini'}	0.513125	0.510230577503	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'None', 'criterion': 'entropy'}	0.495	0.493175431554	0.495
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'None', 'criterion': 'gini'}	0.495	0.493175431554	0.495
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'entropy'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'gini'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'gini'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'None', 'criterion': 'entropy'}	0.50125	0.501237530938	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'None', 'criterion': 'gini'}	0.50125	0.501237530938	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'entropy'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'gini'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'gini'}	0.480625	0.478628922684	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'None', 'criterion': 'entropy'}	0.505625	0.504477361827	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'None', 'criterion': 'gini'}	0.505625	0.504477361827	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'None', 'criterion': 'entropy'}	0.5025	0.502013685239	0.5025
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'None', 'criterion': 'gini'}	0.5025	0.502013685239	0.5025
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'None', 'criterion': 'entropy'}	0.50875	0.416563365227	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'None', 'criterion': 'gini'}	0.50875	0.416563365227	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.4675	0.466536431429	0.4675
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.4675	0.466536431429	0.4675
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.556875	0.556708592562	0.556875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.556875	0.556708592562	0.556875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.525	0.524535679374	0.525
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.525	0.524535679374	0.525
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.47625	0.475607619334	0.47625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.47625	0.475607619334	0.47625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.575	0.575	0.575
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.575	0.575	0.575
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.6025	0.602199163117	0.6025
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.6025	0.602199163117	0.6025
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.481875	0.481534554526	0.481875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.481875	0.481534554526	0.481875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.546875	0.546860662388	0.546875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.546875	0.546860662388	0.546875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.569375	0.569373486079	0.569375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.569375	0.569373486079	0.569375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.4675	0.466536431429	0.4675
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.4675	0.466536431429	0.4675
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.565	0.564847016529	0.565
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.565	0.564847016529	0.565
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.525	0.524497750749	0.525
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.525	0.524497750749	0.525
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.47875	0.478155586598	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.47875	0.478155586598	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.574375	0.574215164364	0.574375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.574375	0.574215164364	0.574375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.595625	0.595275767254	0.595625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.595625	0.595275767254	0.595625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.479375	0.479032911846	0.479375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.479375	0.479032911846	0.479375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.556875	0.556824969694	0.556875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.556875	0.556824969694	0.556875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.56375	0.563739093477	0.56375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.56375	0.563739093477	0.56375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 1, 'weights': 'distance'}	0.52	0.519699812383	0.52
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 1, 'weights': 'uniform'}	0.52	0.519699812383	0.52
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 11, 'weights': 'distance'}	0.56	0.559338318945	0.56
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 11, 'weights': 'uniform'}	0.56	0.559338318945	0.56
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 3, 'weights': 'distance'}	0.5325	0.531841652324	0.5325
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 3, 'weights': 'uniform'}	0.533125	0.532400037402	0.533125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 5, 'weights': 'distance'}	0.545625	0.545006315228	0.545625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 5, 'weights': 'uniform'}	0.545	0.544359255203	0.545
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 7, 'weights': 'distance'}	0.55125	0.550845761185	0.55125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 7, 'weights': 'uniform'}	0.55125	0.550845761185	0.55125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 9, 'weights': 'distance'}	0.5575	0.55706744868	0.5575
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 9, 'weights': 'uniform'}	0.5575	0.55706744868	0.5575
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'entropy'}	0.5625	0.562138079757	0.5625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'gini'}	0.55125	0.550811339198	0.55125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5625	0.562138079757	0.5625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'gini'}	0.55125	0.550811339198	0.55125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'entropy'}	0.536875	0.536860345972	0.536875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'gini'}	0.541875	0.541866231033	0.541875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.536875	0.536860345972	0.536875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'gini'}	0.541875	0.541866231033	0.541875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'entropy'}	0.501875	0.501831215634	0.501875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'gini'}	0.503125	0.503081325507	0.503125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.501875	0.501831215634	0.501875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'gini'}	0.503125	0.503081325507	0.503125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'log2', 'criterion': 'entropy'}	0.4975	0.497496859355	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'log2', 'criterion': 'gini'}	0.4975	0.497496859355	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.4975	0.497496859355	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'sqrt', 'criterion': 'gini'}	0.4975	0.497496859355	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'entropy'}	0.4875	0.487460758714	0.4875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'gini'}	0.4875	0.487460758714	0.4875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.4875	0.487460758714	0.4875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'gini'}	0.4875	0.487460758714	0.4875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'entropy'}	0.48625	0.485928705441	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'gini'}	0.48625	0.485928705441	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.48625	0.485928705441	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'gini'}	0.48625	0.485928705441	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'log2', 'criterion': 'entropy'}	0.4925	0.492487312183	0.4925
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'log2', 'criterion': 'gini'}	0.4925	0.492487312183	0.4925
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.4925	0.492487312183	0.4925
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'sqrt', 'criterion': 'gini'}	0.4925	0.492487312183	0.4925
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'log2', 'criterion': 'entropy'}	0.505625	0.505624806885	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'log2', 'criterion': 'gini'}	0.505625	0.505624806885	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.505625	0.505624806885	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'sqrt', 'criterion': 'gini'}	0.505625	0.505624806885	0.505625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'entropy'}	0.51	0.509987749694	0.51
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'gini'}	0.51	0.509987749694	0.51
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.51	0.509987749694	0.51
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'gini'}	0.51	0.509987749694	0.51
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'entropy'}	0.51125	0.510144764124	0.51125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'gini'}	0.51125	0.510144764124	0.51125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.51125	0.510144764124	0.51125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'gini'}	0.51125	0.510144764124	0.51125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'entropy'}	0.50125	0.448696093722	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'gini'}	0.50125	0.448696093722	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.50125	0.448696093722	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'gini'}	0.50125	0.448696093722	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.519375	0.426801413058	0.519375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.50875	0.504738380885	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.490625	0.490146813476	0.490625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.488125	0.487820693467	0.488125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.48	0.479999187499	0.48
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.480625	0.480376351965	0.480625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.4725	0.472261693171	0.4725
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.496875	0.368676657064	0.496875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51875	0.473723780167	0.51875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.490625	0.489380164691	0.490625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.49125	0.490791712541	0.49125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.4825	0.482318002423	0.4825
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.52	0.519669021935	0.52
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.501875	0.50163652529	0.501875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.484375	0.484155564613	0.484375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.519375	0.426801413058	0.519375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.518125	0.428034913239	0.518125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.523125	0.492174419451	0.523125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.514375	0.513064649363	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.496875	0.496634131567	0.496875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.495625	0.495383533136	0.495625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.495625	0.495410352294	0.495625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.50875	0.409484313018	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.508125	0.412679718747	0.508125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.53	0.529576618957	0.53
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.543125	0.540668834247	0.543125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.5675	0.566762819861	0.5675
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.58125	0.580736402093	0.58125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.574375	0.57379546172	0.574375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.521875	0.466614373958	0.521875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.589375	0.58895737427	0.589375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.5825	0.581987935221	0.5825
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.57375	0.573149741824	0.57375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.571875	0.571210208327	0.571875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.560625	0.559898660876	0.560625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.56125	0.560632138945	0.56125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.56125	0.560632138945	0.56125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.50375	0.503687185409	0.50375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.52375	0.523642819634	0.52375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.53	0.529834707514	0.53
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.536875	0.536653281355	0.536875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.549375	0.549159265664	0.549375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.546875	0.546577264211	0.546875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.54625	0.545966228893	0.54625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.5	0.450095288176	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.6	0.599509399014	0.6
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.595	0.594467104429	0.595
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.59	0.589599217986	0.59
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.584375	0.583846843122	0.584375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.579375	0.578840489355	0.579375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.5775	0.576944078078	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.578125	0.577588900914	0.578125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.50875	0.508746929668	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.510625	0.510623279535	0.510625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.530625	0.530620416215	0.530625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.5325	0.53249926953	0.5325
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.535	0.535	0.535
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.534375	0.534374818115	0.534375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.535	0.534999273436	0.535
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.501875	0.450088597316	0.501875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5975	0.597376696613	0.5975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.5775	0.577053262509	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.5775	0.577086999022	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.574375	0.573834135588	0.574375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.575	0.574440788599	0.575
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.57625	0.5756532624	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.576875	0.576298865762	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.5125	0.512462672923	0.5125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.53375	0.533749271483	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.534375	0.534360266868	0.534375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.500625	0.450554881977	0.500625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5975	0.597338935574	0.5975
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.576875	0.576337312472	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.57625	0.575570913462	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.578125	0.5775109055	0.578125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.576875	0.57625908596	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.57625	0.575692433338	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.578125	0.577588900914	0.578125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.5125	0.512462672923	0.5125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.5125	0.512462672923	0.5125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.52125	0.521249251952	0.52125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.50125	0.442348008386	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.596875	0.596742523618	0.596875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.575625	0.575193389846	0.575625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.578125	0.577550567784	0.578125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.57875	0.57811651558	0.57875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.57625	0.5756532624	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.5775	0.576864635805	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.57625	0.5756532624	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.5125	0.512462672923	0.5125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.514375	0.514332314364	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.51125	0.511237780945	0.51125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.533125	0.533110227316	0.533125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.5075	0.422447233262	0.5075
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.519375	0.426801413058	0.519375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.50875	0.504738380885	0.50875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.490625	0.490146813476	0.490625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.488125	0.487956785803	0.488125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.478125	0.47790290479	0.478125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.470625	0.470371564518	0.470625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.47375	0.473564925169	0.47375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.496875	0.368676657064	0.496875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51875	0.473723780167	0.51875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.490625	0.489380164691	0.490625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.49125	0.491115622719	0.49125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.52	0.519636725273	0.52
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.5625	0.561924341205	0.5625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.55875	0.558086439169	0.55875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.484375	0.484155564613	0.484375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5875	0.586879674011	0.5875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.5725	0.571481599238	0.5725
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.56875	0.568014950439	0.56875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.566875	0.566114174425	0.566875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.565	0.564387419809	0.565
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.563125	0.562446621344	0.563125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.563125	0.562489071029	0.563125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.49625	0.492797855403	0.49625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.538125	0.53634990838	0.538125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.55625	0.555816226784	0.55625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.564375	0.563931948046	0.564375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.580625	0.580092077797	0.580625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.575625	0.575258494537	0.575625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.57875	0.578304584217	0.57875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.521875	0.466614373958	0.521875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.60125	0.600828374971	0.60125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.585625	0.585267130895	0.585625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.5825	0.582154624682	0.5825
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.579375	0.579011733171	0.579375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.575625	0.575318266983	0.575625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.57625	0.575957808427	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.575625	0.575346155034	0.575625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.50625	0.506230712137	0.50625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.514375	0.514374810303	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.530625	0.530623349848	0.530625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.536875	0.536870477251	0.536875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.53375	0.533738343459	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.53375	0.533738343459	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.5	0.450095288176	0.5
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.599375	0.5991832029	0.599375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.576875	0.576509574082	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.579375	0.579042015657	0.579375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.58125	0.580840664712	0.58125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.57625	0.575835777126	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.576875	0.576444661158	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.576875	0.576444661158	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.52125	0.521249251952	0.52125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.53375	0.533749271483	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.53625	0.536243478424	0.53625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.53625	0.53623840596	0.53625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.501875	0.450088597316	0.501875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.596875	0.596742523618	0.596875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.575625	0.575122948015	0.575625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.57875	0.57811651558	0.57875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.5775	0.576864635805	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.576875	0.576298865762	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.5775	0.576905022688	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.5775	0.576864635805	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.513125	0.513092856521	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.5125	0.512462672923	0.5125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.514375	0.514342939046	0.514375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.529375	0.529374816162	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.53375	0.533749271483	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.534375	0.534360266868	0.534375
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.500625	0.450554881977	0.500625
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.596875	0.596682006038	0.596875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.58	0.579521048194	0.58
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.576875	0.576337312472	0.576875
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.578125	0.577550567784	0.578125
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.5775	0.576981802708	0.5775
+GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.57625	0.57573026958	0.57625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'None', 'criterion': 'entropy'}	0.58125	0.581244111245	0.58125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'None', 'criterion': 'gini'}	0.591875	0.591848055594	0.591875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'entropy'}	0.558125	0.55791345468	0.558125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'gini'}	0.55625	0.556193830782	0.55625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.558125	0.55791345468	0.558125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'gini'}	0.55625	0.556193830782	0.55625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'None', 'criterion': 'entropy'}	0.51375	0.513701370137	0.51375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'None', 'criterion': 'gini'}	0.51375	0.513701370137	0.51375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'entropy'}	0.4975	0.497386912055	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'gini'}	0.4975	0.497386912055	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.4975	0.497386912055	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'gini'}	0.4975	0.497386912055	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'None', 'criterion': 'entropy'}	0.486875	0.486656628542	0.486875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'None', 'criterion': 'gini'}	0.486875	0.486656628542	0.486875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'entropy'}	0.505	0.504825915361	0.505
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'gini'}	0.505	0.504825915361	0.505
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.505	0.504825915361	0.505
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'gini'}	0.505	0.504825915361	0.505
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'None', 'criterion': 'entropy'}	0.47875	0.472365624051	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'None', 'criterion': 'gini'}	0.47875	0.472365624051	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'entropy'}	0.48	0.479450169241	0.48
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'gini'}	0.48	0.479450169241	0.48
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.48	0.479450169241	0.48
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'gini'}	0.48	0.479450169241	0.48
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'None', 'criterion': 'entropy'}	0.481875	0.480964863779	0.481875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'None', 'criterion': 'gini'}	0.481875	0.480964863779	0.481875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'entropy'}	0.49375	0.49317269202	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'gini'}	0.49375	0.49317269202	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.49375	0.49317269202	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'gini'}	0.49375	0.49317269202	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'None', 'criterion': 'entropy'}	0.46375	0.462779645735	0.46375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'None', 'criterion': 'gini'}	0.46375	0.462779645735	0.46375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'entropy'}	0.48875	0.487712618052	0.48875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'gini'}	0.48875	0.487712618052	0.48875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.48875	0.487712618052	0.48875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'gini'}	0.48875	0.487712618052	0.48875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'None', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'None', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'None', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'None', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.333333333333	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.47875	0.477692326962	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.47875	0.477692326962	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.663125	0.663102759518	0.663125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.663125	0.663102759518	0.663125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.57875	0.578536634171	0.57875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.57875	0.578536634171	0.57875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.4825	0.482460375873	0.4825
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.4825	0.482460375873	0.4825
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.685	0.684999507812	0.685
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.685	0.684999507812	0.685
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.72875	0.727414330218	0.72875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.72875	0.727414330218	0.72875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.4575	0.457492370986	0.4575
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.4575	0.457492370986	0.4575
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.664375	0.664359135725	0.664375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.664375	0.664359135725	0.664375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.683125	0.683124876221	0.683125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'deviance', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.683125	0.683124876221	0.683125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.478125	0.477036377678	0.478125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.478125	0.477036377678	0.478125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.664375	0.664368575805	0.664375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.664375	0.664368575805	0.664375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.56875	0.568555175697	0.56875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.01, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.56875	0.568555175697	0.56875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.48625	0.486229930857	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.48625	0.486229930857	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.706875	0.706764922301	0.706875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.706875	0.706764922301	0.706875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.72	0.718945606878	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 0.1, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.72	0.718945606878	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'log2'}	0.455625	0.45560777509	0.455625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 1, 'max_features': 'sqrt'}	0.455625	0.45560777509	0.455625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'log2'}	0.660625	0.660480571618	0.660625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 10, 'max_features': 'sqrt'}	0.660625	0.660480571618	0.660625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'log2'}	0.6775	0.677497984362	0.6775
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	GradientBoostingClassifier	{'loss': 'exponential', 'learning_rate': 1.0, 'n_estimators': 100, 'max_depth': 5, 'max_features': 'sqrt'}	0.6775	0.677497984362	0.6775
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 1, 'weights': 'distance'}	0.58375	0.583747398421	0.58375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 1, 'weights': 'uniform'}	0.58375	0.583747398421	0.58375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 11, 'weights': 'distance'}	0.60625	0.60569550931	0.60625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 11, 'weights': 'uniform'}	0.608125	0.607591416297	0.608125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 3, 'weights': 'distance'}	0.585625	0.58542662016	0.585625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 3, 'weights': 'uniform'}	0.58625	0.586016487425	0.58625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 5, 'weights': 'distance'}	0.580625	0.580198475091	0.580625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 5, 'weights': 'uniform'}	0.58125	0.580772473646	0.58125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 7, 'weights': 'distance'}	0.598125	0.59797408324	0.598125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 7, 'weights': 'uniform'}	0.599375	0.5991832029	0.599375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 9, 'weights': 'distance'}	0.6	0.599543855423	0.6
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	KNeighborsClassifier	{'n_neighbors': 9, 'weights': 'uniform'}	0.6	0.599509399014	0.6
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'entropy'}	0.68	0.679607519211	0.68
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'log2', 'criterion': 'gini'}	0.686875	0.686741742874	0.686875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.68	0.679607519211	0.68
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'gini'}	0.686875	0.686741742874	0.686875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'entropy'}	0.641875	0.641639686059	0.641875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'gini'}	0.64375	0.643455293516	0.64375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.641875	0.641639686059	0.641875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.05, 'max_features': 'sqrt', 'criterion': 'gini'}	0.64375	0.643455293516	0.64375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'entropy'}	0.626875	0.626696368379	0.626875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'log2', 'criterion': 'gini'}	0.625625	0.62542469	0.625625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.626875	0.626696368379	0.626875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.1, 'max_features': 'sqrt', 'criterion': 'gini'}	0.625625	0.62542469	0.625625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'log2', 'criterion': 'entropy'}	0.59625	0.596219085524	0.59625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'log2', 'criterion': 'gini'}	0.59625	0.596219085524	0.59625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.59625	0.596219085524	0.59625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.15000000000000002, 'max_features': 'sqrt', 'criterion': 'gini'}	0.59625	0.596219085524	0.59625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'entropy'}	0.470625	0.470614867238	0.470625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'log2', 'criterion': 'gini'}	0.470625	0.470614867238	0.470625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.470625	0.470614867238	0.470625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.2, 'max_features': 'sqrt', 'criterion': 'gini'}	0.470625	0.470614867238	0.470625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'entropy'}	0.463125	0.462772234424	0.463125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'log2', 'criterion': 'gini'}	0.463125	0.462772234424	0.463125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.463125	0.462772234424	0.463125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.25, 'max_features': 'sqrt', 'criterion': 'gini'}	0.463125	0.462772234424	0.463125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'log2', 'criterion': 'entropy'}	0.471875	0.471864891164	0.471875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'log2', 'criterion': 'gini'}	0.471875	0.471864891164	0.471875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.471875	0.471864891164	0.471875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.30000000000000004, 'max_features': 'sqrt', 'criterion': 'gini'}	0.471875	0.471864891164	0.471875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'log2', 'criterion': 'entropy'}	0.468125	0.465911662825	0.468125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'log2', 'criterion': 'gini'}	0.468125	0.465911662825	0.468125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.468125	0.465911662825	0.468125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.35000000000000003, 'max_features': 'sqrt', 'criterion': 'gini'}	0.468125	0.465911662825	0.468125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'entropy'}	0.4625	0.459459459459	0.4625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'log2', 'criterion': 'gini'}	0.4625	0.459459459459	0.4625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.4625	0.459459459459	0.4625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.4, 'max_features': 'sqrt', 'criterion': 'gini'}	0.4625	0.459459459459	0.4625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'entropy'}	0.473125	0.446486969176	0.473125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'log2', 'criterion': 'gini'}	0.473125	0.446486969176	0.473125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.473125	0.446486969176	0.473125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.45, 'max_features': 'sqrt', 'criterion': 'gini'}	0.473125	0.446486969176	0.473125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'entropy'}	0.5	0.450549450549	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'log2', 'criterion': 'gini'}	0.5	0.450549450549	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'entropy'}	0.5	0.450549450549	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	RandomForestClassifier	{'n_estimators': 100, 'min_weight_fraction_leaf': 0.5, 'max_features': 'sqrt', 'criterion': 'gini'}	0.5	0.450549450549	0.5
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5025	0.461397018399	0.5025
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.526875	0.4951648446	0.526875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.50125	0.494565630463	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.49875	0.495314987635	0.49875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.488125	0.487225842503	0.488125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.485625	0.485455964245	0.485625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.488125	0.488	0.488125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.49375	0.448566016349	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.499375	0.487554934103	0.499375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.513125	0.493232597862	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.4975	0.489029871733	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.49	0.489843764653	0.49
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.55625	0.556166087651	0.55625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.51375	0.513621565695	0.51375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.01, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.4975	0.496590716983	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5025	0.460993099899	0.5025
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.498125	0.456048434044	0.498125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.525	0.504949688884	0.525
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.523125	0.515784405069	0.523125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.49375	0.493670886076	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.49625	0.496048419368	0.49625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.49625	0.496072838107	0.49625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.495625	0.454967030824	0.495625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.49875	0.460891075798	0.49875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.5575	0.542894773796	0.5575
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.573125	0.5719168356	0.573125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.72	0.717099831239	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.73125	0.727805032442	0.73125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.735625	0.732120699257	0.735625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.1, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.570625	0.556555153251	0.570625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.703125	0.702203575986	0.703125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.70375	0.702184607845	0.70375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.718125	0.716337817444	0.718125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.718125	0.715981436459	0.718125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.7175	0.71512799545	0.7175
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.7175	0.715061999231	0.7175
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.7175	0.715061999231	0.7175
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.52625	0.525953721076	0.52625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.565625	0.565461878463	0.565625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.603125	0.603117403419	0.603125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.613125	0.613106713247	0.613125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.633125	0.632949360534	0.633125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.633125	0.632883936679	0.633125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.63375	0.633543295515	0.63375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 0.5, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.53	0.448211088609	0.53
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.695625	0.694763541636	0.695625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.711875	0.709989820548	0.711875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.726875	0.723568075117	0.726875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.73125	0.727727043195	0.73125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.738125	0.734576516119	0.738125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.739375	0.735843453989	0.739375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.73875	0.735171085498	0.73875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.5275	0.527393663574	0.5275
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.53375	0.533743443267	0.53375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.5725	0.572387083464	0.5725
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.5875	0.587497421859	0.5875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.6125	0.612490312258	0.6125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.62625	0.626240656016	0.62625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.62375	0.623747648423	0.62375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 1.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.504375	0.413775625947	0.504375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.68875	0.687271870953	0.68875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.719375	0.716132591053	0.719375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.719375	0.716132591053	0.719375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.72	0.716726419688	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.723125	0.719849759157	0.723125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.721875	0.718661476656	0.721875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.7225	0.719255648083	0.7225
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.51625	0.516249244139	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51625	0.51625	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.520625	0.520620318558	0.520625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.528125	0.528110069108	0.528125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.58875	0.588697944584	0.58875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.618125	0.618121270716	0.618125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.609375	0.609356535993	0.609375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 10.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.49875	0.450525922741	0.49875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.6875	0.685961209929	0.6875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.716875	0.71360370545	0.716875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.716875	0.71360370545	0.716875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.718125	0.714944740916	0.718125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.72	0.716726419688	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.721875	0.718507536447	0.721875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.721875	0.718661476656	0.721875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.51625	0.516249244139	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51625	0.516249244139	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.516875	0.516874811279	0.516875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.51625	0.51625	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.528125	0.528110069108	0.528125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.58875	0.588697944584	0.58875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.565	0.564975529874	0.565
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 100.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.551875	0.512068769722	0.551875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.68875	0.687047833607	0.68875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.718125	0.714868148251	0.718125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.719375	0.716284159739	0.719375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.719375	0.716132591053	0.719375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.72125	0.717991033885	0.72125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.72125	0.717913891002	0.72125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.721875	0.718584972517	0.721875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.51625	0.516249244139	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51625	0.51625	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.51625	0.51625	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.52125	0.521249251952	0.52125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.54125	0.541243548737	0.54125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.598125	0.598055758824	0.598125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.58875	0.588697944584	0.58875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.01, 'gamma': 50.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.58	0.579240002254	0.58
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.5025	0.461397018399	0.5025
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.526875	0.4951648446	0.526875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.50125	0.494565630463	0.50125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.499375	0.496590318555	0.499375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.48625	0.486069321246	0.48625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.47875	0.478710088741	0.47875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.478125	0.478079128048	0.478125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.49375	0.448566016349	0.49375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.499375	0.487554934103	0.499375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.513125	0.493232597862	0.513125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.494375	0.492805669417	0.494375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.5575	0.557416324024	0.5575
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.72	0.717171717172	0.72
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.695625	0.694257638949	0.695625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.01, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.4975	0.496590716983	0.4975
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.689375	0.68900751865	0.689375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.68	0.679687194526	0.68
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.6775	0.67720948854	0.6775
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.67375	0.673377957079	0.67375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.670625	0.670145551405	0.670625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.67	0.669503739208	0.67
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.669375	0.668893731866	0.669375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.529375	0.52859700091	0.529375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.5725	0.572387083464	0.5725
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.66875	0.66769857753	0.66875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.70375	0.702184607845	0.70375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.714375	0.712387666182	0.714375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.710625	0.708731641896	0.710625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.714375	0.712447386563	0.714375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.1, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.570625	0.556555153251	0.570625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.689375	0.688229120231	0.689375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.720625	0.717320185876	0.720625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.725625	0.722225627612	0.725625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.726875	0.723413235737	0.726875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.729375	0.725866845201	0.729375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.730625	0.72713304915	0.730625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.73	0.726539009337	0.73
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.52625	0.526213725738	0.52625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.5475	0.547465352816	0.5475
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.585625	0.585611888501	0.585625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.59625	0.596247476547	0.59625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.6175	0.61748505801	0.6175
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.623125	0.623113075062	0.623125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.624375	0.62435724501	0.624375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 0.5, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.53	0.448211088609	0.53
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.696875	0.695613579871	0.696875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.72125	0.717991033885	0.72125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.7225	0.719178851132	0.7225
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.7225	0.719331515942	0.7225
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.7225	0.719406456179	0.7225
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.72125	0.718142521297	0.72125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.721875	0.718885412245	0.721875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.516875	0.516870281936	0.516875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.5275	0.527488187205	0.5275
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.565	0.564975529874	0.565
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.58875	0.588697944584	0.58875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.618125	0.618121270716	0.618125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.631875	0.631874856201	0.631875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.629375	0.629374855225	0.629375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 1.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.504375	0.413775625947	0.504375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.68875	0.687105347483	0.68875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.716875	0.713525825955	0.716875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.720625	0.717472947205	0.720625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.720625	0.717397033854	0.720625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.723125	0.719849759157	0.723125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 100.0}	0.72125	0.717991033885	0.72125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.7225	0.719255648083	0.7225
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.0}	0.51625	0.516249244139	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.1}	0.51625	0.51625	0.51625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 0.5}	0.520625	0.520620318558	0.520625
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 1.0}	0.528125	0.528110069108	0.528125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 10.0}	0.58875	0.588697944584	0.58875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 100.0}	0.618125	0.618121270716	0.618125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'poly', 'degree': 3, 'coef0': 50.0}	0.609375	0.609356535993	0.609375
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 10.0, 'kernel': 'rbf', 'degree': 2, 'coef0': 0.0}	0.49875	0.450525922741	0.49875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.0}	0.688125	0.686561603561	0.688125
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.1}	0.7175	0.714197191292	0.7175
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 0.5}	0.71875	0.71553869859	0.71875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 1.0}	0.716875	0.713525825955	0.716875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 10.0}	0.71875	0.71546180549	0.71875
+GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1	SVC	{'C': 0.1, 'gamma': 50.0, 'kernel': 'poly', 'degree': 2, 'coef0': 50.0}	0.721875	0.718584972517	0.721875
