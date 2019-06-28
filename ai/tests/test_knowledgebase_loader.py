@@ -24,8 +24,8 @@ def isClose(a, b, rel_tol=1e-09, abs_tol=0.0):
         print(f"not floats: '{a}', '{b}'")
         return a == b
 
-    if not(abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)):
-        print(f"tol check failed: {a}, {b}, {max(rel_tol * max(abs(a), abs(b)), abs_tol)}, {abs(a-b)}")
+    ##if not(abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)):
+    ##    print(f"tol check failed: {a}, {b}, {max(rel_tol * max(abs(a), abs(b)), abs_tol)}, {abs(a-b)}")
 
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
@@ -33,29 +33,18 @@ def isClose(a, b, rel_tol=1e-09, abs_tol=0.0):
 def load_test_data():
     '''
     testName
-    resultFile
+    resultsFiles
     datasetDirectory
     metafeatureDirectory
-    metafeaturesFile
+    metafeaturesFiles
     targetField
     expectedResultsCount
     expectedMetafeaturesCount
     expectedWarningCount
     '''
     return [
-        ("benchmark5-generateMetafeatures", 
-         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
-         "data/datasets/pmlb_small",
-         '',
-         '',
-         'class',
-         79608,
-         49,
-         1
-         ),
         ("benchmark5-metafeaturesFromDirectory", 
-         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
-         '',
+         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          'data/knowledgebases/test/metafeatures',
          '',
          'class',
@@ -64,10 +53,29 @@ def load_test_data():
          1
          ),
         ("benchmark5-metafeaturesFromFile", 
-         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz", 
+         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          '',
+         ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
+         'class',
+         79608,
+         165,
+         0
+         ),
+        ("multiResultFile-metafeaturesFromFile", 
+         ["data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered1.tsv",
+            "data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"], 
          '',
-         'data/knowledgebases/pmlb_metafeatures.csv.gz',
+         ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
+         'class',
+         1299,
+         165,
+         0
+         ),
+        ("benchmark5-metafeaturesFromMultiFile", 
+         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
+         '',
+         ['data/knowledgebases/test/pmlb_metafeatures1.csv',
+            'data/knowledgebases/test/pmlb_metafeatures2.csv'],
          'class',
          79608,
          165,
@@ -89,14 +97,13 @@ def results_files():
 class TestResultUtils(unittest.TestCase):
 
     @parameterized.expand(load_test_data)
-    def test_load_knowledgebase(self, testName, resultFile, 
-        datasetDirectory, metafeatureDirectory, metafeaturesFile, targetField, 
+    def test_load_knowledgebase(self, testName, resultsFiles, 
+        metafeatureDirectory, metafeaturesFiles, targetField, 
         expectedResultsCount, expectedMetafeaturesCount, expectedWarningCount):
 
         result = knowledgebase_loader.load_knowledgebase(
-            resultsFile=resultFile,
-            metafeaturesFile=metafeaturesFile,
-            datasetDirectory=datasetDirectory,
+            resultsFiles=resultsFiles,
+            metafeaturesFiles=metafeaturesFiles,
             metafeatureDirectory=metafeatureDirectory)
 
         assert 'resultsData' in result
@@ -117,8 +124,8 @@ class TestResultUtils(unittest.TestCase):
 
 
     @parameterized.expand(results_files)
-    def test_load_results_from_file(self, name, testResultFile):
-        data = knowledgebase_loader._load_results_from_file(testResultFile)
+    def test_load_results_from_file(self, name, testResultsFiles):
+        data = knowledgebase_loader._load_results_from_file(testResultsFiles)
         assert isinstance(data, pd.DataFrame)
 
         self.assertGreater(len(data), 1)
