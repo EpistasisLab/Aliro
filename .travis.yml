@@ -24,8 +24,7 @@ jobs:
       script:
         # Unit tests
         - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
-    - stage: deploy
-      script:
+        # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
         - sudo touch target/ai_docs/html/.nojekyll
       deploy:
