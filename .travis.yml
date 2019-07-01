@@ -1,7 +1,5 @@
 sudo: true
-language: python
-python:
-- '3.6'
+
 services:
   - docker
 
@@ -26,6 +24,7 @@ jobs:
         - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
+        # Tell GitHub not to use jekyll to compile the docs
         - sudo touch target/ai_docs/html/.nojekyll
       deploy:
           provider: pages
