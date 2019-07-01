@@ -5,23 +5,33 @@ python:
 services:
   - docker
 
-install:
-    - docker-compose -f ./docker-compose-unit-test.yml build
-
-script:
-    # Building Docs
-    - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
-    # Unit tests
-    - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
-    # Tell GitHub not to use jekyll to compile the docs
-    - sudo touch target/ai_docs/html/.nojekyll
-
-# Tell Travis CI to copy the documentation to the gh-pages branch of
-# your GitHub repository.
-deploy:
-    provider: pages
-    skip_cleanup: true
-    github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
-    on:
-        branch: master
-    local_dir: target/ai_docs/html/
+jobs:
+  include:
+    - stage: Test
+      before_install:
+        # Rebuild PennAI Base
+        - docker build ./dockers/base -t pennai/base:latest
+      install:
+        # Building Docker images
+        - docker-compose -f ./docker-compose-int-test.yml build
+      script:
+        # Unit tests
+        - docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate
+    - # stage name not required, will continue to use `Test`
+      install:
+        # Building Docker images
+        - docker-compose -f ./docker-compose-unit-test.yml build
+      script:
+        # Unit tests
+        - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
+    - stage: deploy
+      script:
+        - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
+        - sudo touch target/ai_docs/html/.nojekyll
+      deploy:
+          provider: pages
+          skip_cleanup: true
+          github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
+          on:
+              branch: master
+          local_dir: target/ai_docs/html/
