@@ -237,7 +237,9 @@ class Dataset extends Component {
       .attr("height", (y(q1)-y(q3)) )
       .attr("width", width )
       .attr("stroke", "black")
-      .style("fill", "#69b3a2");
+      .style("fill", "#69b3a2")
+      .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
+      .on("mouseout", function(){d3.select(this).style("fill", "#69b3a2");});
 
     // show median, min and max horizontal lines
     svg.selectAll("toto")
@@ -463,8 +465,8 @@ class Dataset extends Component {
     let dataKeys;
     let testPain = [
       {
-        menuItem: 'empty stuff',
-        pane: 'nothin\' here'
+        menuItem: 'Loading content',
+        pane: 'nothing here yet'
       }
     ];
     if(dataset === 'fetching') { return null; }
