@@ -6,8 +6,8 @@ services:
   - docker
 
 install:
-
     - docker-compose -f ./docker-compose-unit-test.yml build
+
 script:
     # Building Docs
     - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
