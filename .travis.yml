@@ -5,24 +5,14 @@ python:
 services:
   - docker
 
-before_install:
-    - wget https://repo.continuum.io/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O miniconda.sh
-    - chmod +x miniconda.sh
-    - "./miniconda.sh -b"
-    - export PATH=/home/travis/miniconda3/bin:$PATH
-    - conda update --yes conda
-    - sudo rm -rf /dev/shm
-    - sudo ln -s /run/shm /dev/shm
-    - docker-compose -f ./docker-compose-unit-test.yml build
 install:
-    - pip install sphinx sphinx_rtd_theme m2r sklearn pandas simplejson xgboost
-    - pip install matplotlib Cython mlxtend
-    - pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+
+    - docker-compose -f ./docker-compose-unit-test.yml build
 script:
+    # Building Docs
+    - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
     # Unit tests
     - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
-    # Use Sphinx to make the html docs
-    - make -C docs/ html
     # Tell GitHub not to use jekyll to compile the docs
     - touch target/ai_docs/html/.nojekyll
 
