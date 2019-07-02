@@ -165,7 +165,7 @@ class AI():
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
-        kb = knowledgebase_loader.load_pmlb_knowledgebase()
+        kb = knowledgebase_loader.load_default_knowledgebases()
 
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}

@@ -24,13 +24,19 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], metafeatureDirectory=''):
+PMLB_KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
+PMLB_KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
+
+USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
+USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
+
+def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
     :param resultsFiles: list<string> - list of experiment results in tsv form, can be compressed files.
     :param metafeaturesFiles - list<string> - list of files that contain metafeatures for the experiment datasets in csv form, can be compressed files.
-    :param metafeatureDirectory - root of a directory structure that contains .json files for metafeatures
+    :param jsonMetafeatureDirectory - root of a directory structure that contains .json files for metafeatures
 
     :returns dict {resultsData: DataFrame with columns corresponding to:
     				'dataset',
@@ -43,7 +49,7 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], metafeatureDirecto
     warnings: <string>
 				}
     """
-    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '{metafeatureDirectory}')")
+    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '{jsonMetafeatureDirectory}')")
 
     # load experiment results
     frames = []
@@ -55,16 +61,16 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], metafeatureDirecto
     
     # load dataset metafeatures
     metafeaturesData = {}
-    if metafeatureDirectory:
-        metafeaturesData.update(_load_json_metafeatures_from_directory(metafeatureDirectory, dataset_names))
+    if jsonMetafeatureDirectory:
+        metafeaturesData.update(_load_json_metafeatures_from_directory(jsonMetafeatureDirectory, dataset_names))
 
     if metafeaturesFiles:
         assert isinstance(metafeaturesFiles, list), f"load_knowledgebase.metafeaturesFiles must be a list; got '{metafeaturesFiles}'"
         for mfFile in metafeaturesFiles:
             metafeaturesData.update(_load_metadata_from_file(mfFile))
 
-    if not(metafeatureDirectory or metafeaturesFiles):
-        raise ValueError('One of metafeaturesFile or metafeatureDirectory '
+    if not(jsonMetafeatureDirectory or metafeaturesFiles):
+        raise ValueError('One of metafeaturesFile or jsonMetafeatureDirectory '
                              'has to be specified')
 
 
@@ -76,15 +82,43 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], metafeatureDirecto
             'warnings': warnings}
 
 
-def load_pmlb_knowledgebase():
-    """ 
-    Convience method to load the default PMBL knowledgebase
-    """
-    return load_knowledgebase(
-            resultsFiles = (['data/knowledgebases/sklearn-benchmark5-data-'
-                'knowledgebase.tsv.gz']),
-            metafeaturesFiles = ['data/knowledgebases/pmlb_metafeatures.csv.gz'])
 
+def load_default_knowledgebases(usePmlb=True, userKbResultsPath=USER_KB_RESULTS_PATH, userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
+    """
+    Convienence method to load the pmlb knowledgebase and any user-added knowledgebases
+    """
+    logger.info(f"load_default_knowledgebases('{usePmlb}', '{userKbResultsPath}', '{userKbMetafeaturesPath}'")
+
+    resFileExtensions = ['.tsv', '.gz']
+    mfFileExtensions = ['.csv', '.tsv', '.gz']
+
+    resultsFiles = []
+    metafeaturesFiles = []
+
+    # load pmlb
+    if usePmlb:
+        resultsFiles.append(PMLB_KB_RESULTS_PATH)
+        metafeaturesFiles.append(PMLB_KB_METAFEATURES_PATH)
+
+    # if additional directories for results or metafeatures provided, use them
+    if (userKbResultsPath):
+        for root, dirs, files in os.walk(userKbResultsPath):
+            for name in files:
+                extension = os.path.splitext(name)[1]
+                if not name.startswith('.') and (extension in resFileExtensions):
+                    resultsFiles.append(os.path.join(root, name))
+
+    if (userKbMetafeaturesPath):
+        for root, dirs, files in os.walk(userKbMetafeaturesPath):
+            for name in files:
+                extension = os.path.splitext(name)[1]
+                if not name.startswith('.') and (extension in mfFileExtensions):
+                    metafeaturesFiles.append(os.path.join(root, name))
+
+    return load_knowledgebase(
+            resultsFiles = resultsFiles,
+            metafeaturesFiles = metafeaturesFiles
+            )
 
 def generate_metafeatures_file(
     datasetDirectory,

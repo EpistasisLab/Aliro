@@ -35,7 +35,7 @@ def load_test_data():
     testName
     resultsFiles
     datasetDirectory
-    metafeatureDirectory
+    jsonMetafeatureDirectory
     metafeaturesFiles
     targetField
     expectedResultsCount
@@ -45,7 +45,7 @@ def load_test_data():
     return [
         ("benchmark5-metafeaturesFromDirectory", 
          ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
-         'data/knowledgebases/test/metafeatures',
+         'data/knowledgebases/test/jsonmetafeatures',
          '',
          'class',
          79608,
@@ -62,8 +62,8 @@ def load_test_data():
          0
          ),
         ("multiResultFile-metafeaturesFromFile", 
-         ["data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered1.tsv",
-            "data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"], 
+         ["data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered1.tsv",
+            "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"], 
          '',
          ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
          'class',
@@ -74,8 +74,8 @@ def load_test_data():
         ("benchmark5-metafeaturesFromMultiFile", 
          ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          '',
-         ['data/knowledgebases/test/pmlb_metafeatures1.csv',
-            'data/knowledgebases/test/pmlb_metafeatures2.csv'],
+         ['data/knowledgebases/test/metafeatures/pmlb_metafeatures1.csv',
+            'data/knowledgebases/test/metafeatures/pmlb_metafeatures2.csv'],
          'class',
          79608,
          165,
@@ -83,14 +83,21 @@ def load_test_data():
          ),
     ]
 
+def load_default_kb_data():
+    return [
+        ("pmlbOnly", True, None, None, 79608, 165),
+        ("userOnly", False, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 1299, 165),
+        ("pmlbAndUser", True, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 79608+1299, 165)
+    ]
+
 def results_files():
     return [
     (   "benchmark5", 
         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"),
     (   "test1",
-        "data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered1.tsv"),
+        "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered1.tsv"),
     (   "test2",
-        "data/knowledgebases/test/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"),
+        "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"),
     ]
 
 
@@ -98,13 +105,13 @@ class TestResultUtils(unittest.TestCase):
 
     @parameterized.expand(load_test_data)
     def test_load_knowledgebase(self, testName, resultsFiles, 
-        metafeatureDirectory, metafeaturesFiles, targetField, 
+        jsonMetafeatureDirectory, metafeaturesFiles, targetField, 
         expectedResultsCount, expectedMetafeaturesCount, expectedWarningCount):
 
         result = knowledgebase_loader.load_knowledgebase(
             resultsFiles=resultsFiles,
             metafeaturesFiles=metafeaturesFiles,
-            metafeatureDirectory=metafeatureDirectory)
+            jsonMetafeatureDirectory=jsonMetafeatureDirectory)
 
         assert 'resultsData' in result
         assert 'metafeaturesData' in result
@@ -143,26 +150,32 @@ class TestResultUtils(unittest.TestCase):
         self.assertGreater(len(data.keys()), 1)
         #assert expectedMetafeaturesData.equals(data)
 
-    
-    def test_load_pmlb_knowledgebase(self):
+    @parameterized.expand(load_default_kb_data)
+    def test_load_default_knowledgebases(self, name, usePmlb, userKbResultsPath, userKbMetafeaturesPath,
+        expectedResultsCount, expectedMetafeaturesCount):
         """the PMLB knowledgebase is loaded correctly"""
-        result = knowledgebase_loader.load_pmlb_knowledgebase()
+        result = knowledgebase_loader.load_default_knowledgebases(
+            usePmlb=usePmlb,
+            userKbResultsPath=userKbResultsPath,
+            userKbMetafeaturesPath=userKbMetafeaturesPath
+            )
+
         assert 'resultsData' in result
         assert 'metafeaturesData' in result
 
         assert isinstance(result['resultsData'], pd.DataFrame)
         assert isinstance(result['metafeaturesData'], dict)
 
-        self.assertGreater(len(result['resultsData']), 1)
-        self.assertGreater(len(result['metafeaturesData'].keys()), 1)
+        self.assertEquals(len(result['resultsData']), expectedResultsCount)
+        self.assertEquals(len(result['metafeaturesData']), expectedMetafeaturesCount)
 
-        print("test_load_pmlb_knowledgebase result.warnings:")
+        print("test_load_default_knowledgebases result.warnings:")
         print(result['warnings'])
         assert len(result['warnings']) == 0
 
 
     def test_load_json_metafeatures_from_directory(self):
-        testDirectory = "data/knowledgebases/test/metafeatures"
+        testDirectory = "data/knowledgebases/test/jsonmetafeatures"
         testDatasets = ["adult", "agaricus-lepiota", "allbp", "allhyper", "allhypo"]
 
         result = knowledgebase_loader._load_json_metafeatures_from_directory(testDirectory, testDatasets)
