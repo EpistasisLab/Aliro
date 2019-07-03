@@ -1,5 +1,5 @@
 sudo: true
-
+dist: xenial
 services:
   - docker
 
@@ -9,10 +9,10 @@ jobs:
       name: "Integration Tests"
       before_install:
         # Rebuild PennAI Base
-        - docker build ./dockers/base -t pennai/base:latest
+        - docker build ./dockers/base -t pennai/base:latest -m 6g
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-int-test.yml build
+        - docker-compose -f ./docker-compose-int-test.yml build -m 6g
       script:
         # Unit tests
         - docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate
@@ -20,7 +20,7 @@ jobs:
       name: "Unit Tests"
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-unit-test.yml build
+        - docker-compose -f ./docker-compose-unit-test.yml build -m 6g
       script:
         # Unit tests
         - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
