@@ -47,13 +47,13 @@ Learn
 =====
 
 This is the API for building ML models.
-PennAI uses scikit-learn to achieve this. 
+PennAI uses scikit-learn to achieve this.
 
 ==
 IO
 ==
 
-These methods control data flow from the server to and from sklearn models. 
+These methods control data flow from the server to and from sklearn models.
 
 .. autoclass:: machine.learn.io_utils.Experiment
     :members:
@@ -70,7 +70,7 @@ These methods control data flow from the server to and from sklearn models.
 
 .. autofunction:: machine.learn.io_utils.bool_type
 
-.. autofunction:: machine.learn.io_utils.str_or_none
+.. autofunction:: machine.learn.io_utils.none
 
 .. autofunction:: machine.learn.io_utils.get_type
 
@@ -79,7 +79,7 @@ These methods control data flow from the server to and from sklearn models.
 Scikit-learn Utils
 =============
 
-These methods generate sklearn models and evaluate them. 
+These methods generate sklearn models and evaluate them.
 
 .. autofunction:: machine.learn.skl_utils.balanced_accuracy
 
@@ -104,4 +104,3 @@ These methods generate sklearn models and evaluate them.
 .. autofunction:: machine.learn.skl_utils.export_model
 
 .. autofunction:: machine.learn.skl_utils.generate_export_codes
-

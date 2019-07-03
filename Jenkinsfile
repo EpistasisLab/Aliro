@@ -1,12 +1,12 @@
 #!groovy​
 pipeline {
-    agent any 
+    agent any
     parameters {
         //string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
         string(name: 'STATUS_EMAIL', defaultValue: 'hwilli@pennmedicine.upenn.edu, weixuanf@pennmedicine.upenn.edu, lacava@upenn.edu, josh.cohen@pennmedicine.upenn.edu', description: 'Comma sep list of email addresses that should recieve test status notifications.')
     }
     options {
-        timeout(time: 1, unit: 'HOURS') 
+        timeout(time: 1, unit: 'HOURS')
     }
     environment {
         LOCAL_PENNAI_DEPLOY_DIR = '/data/git/pennai'
@@ -25,17 +25,17 @@ pipeline {
         }
         stage('Build Docs') {
             agent {
-                dockerfile { 
+                dockerfile {
                     filename 'tests/unit/Dockerfile'
                     dir '.'
                     args '-u root'
                 }
-            } 
+            }
             steps {
                 sh 'rm -fdr target'
                 dir ('docs') {
                     sh 'make html'
-                }                
+                }
             }
             post {
                 always {
@@ -43,10 +43,11 @@ pipeline {
                 }
             }
         }
-        stage('Unit Tests') {  
+        stage('Unit Tests') {
             steps {
                 sh 'rm -fdr target'
-                sh 'docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit'
+                sh 'docker-compose -f ./docker-compose-unit-test.yml build -m 6g'
+                sh 'docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate'
             }
             post {
                 always {
@@ -68,7 +69,7 @@ pipeline {
                 sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} stop"
             }
         }
-        stage('Integration Tests') { 
+        stage('Integration Tests') {
             steps {
                 // stop any running pennai test or dev instances
                 sh 'docker-compose -f ./docker-compose-int-test.yml stop'
@@ -86,7 +87,7 @@ pipeline {
         stage('Start PennAI Locally') {
             steps {
                 sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} up --detach --force-recreate"
-            }   
+            }
         }
     }
     post {
@@ -104,10 +105,10 @@ pipeline {
         }
         failure {
             echo 'Pipeline Failure'
-            emailext attachLog: false, 
+            emailext attachLog: false,
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) failure',
-                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                body: '''${SCRIPT, template="groovy-html.template"}''',
                 mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()],
@@ -115,10 +116,10 @@ pipeline {
         }
         unstable {
             echo 'Pipeline Unstable'
-            emailext attachLog: false, 
+            emailext attachLog: false,
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) unstable',
-                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                body: '''${SCRIPT, template="groovy-html.template"}''',
                 mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
                 //recipientProviders: [culprits()],
@@ -126,13 +127,13 @@ pipeline {
         }
         fixed {
             echo 'Pipeline is back to normal'
-            emailext attachLog: false, 
+            emailext attachLog: false,
                 compressLog: false,
                 subject: 'Job \'${JOB_NAME}\' (${BUILD_NUMBER}) is back to normal',
-                body: '''${SCRIPT, template="groovy-html.template"}''', 
+                body: '''${SCRIPT, template="groovy-html.template"}''',
                 mimeType: 'text/html',
                 to: "${params.STATUS_EMAIL}",
-                //recipientProviders: [culprits()], 
+                //recipientProviders: [culprits()],
                 replyTo: "${params.STATUS_EMAIL}"
         }
     }
