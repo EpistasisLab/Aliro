@@ -257,7 +257,7 @@ class DatasetMenu extends Component {
     // categorical_features & ordinal_features
     let cat_feats = dataset.files[0].categorical_features;
     let ord_feats = dataset.files[0].ordinal_features;
-
+    let valByRowObj = this.getDataValByRow();
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab dataset columns names from first entry
@@ -401,7 +401,12 @@ class DatasetMenu extends Component {
       },{
         menuItem: 'Bar_Chart',
         render: () => (
-          <BarChart />
+          <BarChart
+            tempKey={dataset.files[0].dependent_col}
+            dataset={dataset}
+            dataPreview={dataPreview}
+            valByRowObj={valByRowObj}
+          />
         )
       }
     ];

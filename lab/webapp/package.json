@@ -4,7 +4,7 @@
   "description": "your friendly machine learning assistant",
   "scripts": {
     "build": "webpack",
-    "build-dev": "webpack --watch",
+    "build-dev": "webpack --watch --mode=development",
     "test": "jest"
   },
   "repository": {
