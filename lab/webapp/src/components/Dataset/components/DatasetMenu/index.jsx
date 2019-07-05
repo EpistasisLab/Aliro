@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { formatDataset, formatTime } from 'utils/formatter';
 import { Header, Tab, Segment, Grid, Loader, Table, Icon } from 'semantic-ui-react';
 import BarChart from '../BarChart/';
+import BoxPlot from '../BoxPlot/';
 import * as d3 from "d3";
 class DatasetMenu extends Component {
   constructor(props) {
@@ -165,7 +166,8 @@ class DatasetMenu extends Component {
         .on("mouseout", function(){d3.select(this).style("fill", "black");});
     }
   }
-
+  //TODO: check accuracy of calculated statistics - not sure if correct
+  //      look at 'banana' dataset
   createBoxPlot(tempKey){
     const { dataset, dataPreview } = this.props;
     let margin = { top: 10, right: 30, bottom: 50, left: 70 },
@@ -276,19 +278,32 @@ class DatasetMenu extends Component {
               <br/>
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
-            {dataKeys && dataKeys.map(key => {
-              // loop through dataset column name/key for charts later on
-              let tempKey = key.replace(/ /g, "_");
-              return (
-                <div key={"test_chart_" + tempKey}>
-                  <p style={{color: "aliceblue"}}>
-                    {"test_chart_" + tempKey}
-                  </p>
-                  <div id={"test_chart_" + tempKey}>
+            {
+              dataKeys && dataKeys.map(key => {
+                // loop through dataset column name/key for charts later on
+                let tempKey = key.replace(/ /g, "_");
+                let tempChart = (
+                  <div key={"test_chart_" + tempKey}>
+                    <p style={{color: "aliceblue"}}>
+                      {"test_chart_" + tempKey}
+                    </p>
+                    <div id={"test_chart_" + tempKey}>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+                key === dataset.files[0].dependent_col
+                  ? tempChart = (
+                      <BarChart
+                        tempKey={dataset.files[0].dependent_col}
+                        dataset={dataset}
+                        dataPreview={dataPreview}
+                        valByRowObj={valByRowObj}
+                      />
+                    )
+                  : null;
+                return tempChart;
+              })
+            }
           </Tab.Pane>
         )
       },
@@ -402,6 +417,16 @@ class DatasetMenu extends Component {
         menuItem: 'Bar_Chart',
         render: () => (
           <BarChart
+            tempKey={dataset.files[0].dependent_col}
+            dataset={dataset}
+            dataPreview={dataPreview}
+            valByRowObj={valByRowObj}
+          />
+        )
+      },{
+        menuItem: 'Box_Plot',
+        render: () => (
+          <BoxPlot
             tempKey={dataset.files[0].dependent_col}
             dataset={dataset}
             dataPreview={dataPreview}
