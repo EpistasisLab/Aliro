@@ -23,9 +23,9 @@ class BoxPlot extends Component {
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
     const { dataPreview, valByRowObj, tempKey } = this.props;
-    let margin = { top: 5, right: 80, bottom: 25, left: 220 },
-        width = 750 - margin.left - margin.right,
-        height = 275 - margin.top - margin.bottom;
+    let margin = { top: 5, right: 180, bottom: 25, left: 150 },
+        width = 850 - margin.left - margin.right,
+        height = 255 - margin.top - margin.bottom;
     //let valByRowObj = this.getDataValByRow();
     let dataKeys;
     if(dataPreview) {
@@ -53,6 +53,22 @@ class BoxPlot extends Component {
 
     let minData = Math.min(...data_sorted);
     let maxData = Math.max(...data_sorted);
+
+    /*
+    * -------------------- BOX PLOT --------------------
+    */
+    // TODO: learn min/max in boxplots & verify validity
+    //min = minData;
+    //max = maxData;
+    /*
+    * -------------------- BOX PLOT --------------------
+    */
+
+    // color scale
+    let myColor = d3.scaleSequential()
+      .interpolator(d3.interpolateInferno)
+      .domain([min, max]);
+
     // Y scale
     let y = d3.scaleBand()
       .range([height, 0])
@@ -64,7 +80,7 @@ class BoxPlot extends Component {
       .select(".domain").remove()
     // X scale
     let x = d3.scaleLinear()
-      .domain([minData, maxData])
+      .domain([min, max])
       .range([0, width]);
     svg.append("g").call(d3.axisBottom(x))
        .attr("transform", "translate(0," + (height) + ")");
@@ -87,8 +103,8 @@ class BoxPlot extends Component {
       .attr("width", (x(q3)-x(q1)) )
       .attr("stroke", "black")
       .style("fill", "#69b3a2")
-      .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
-      .on("mouseout", function(){d3.select(this).style("fill", "#69b3a2");});
+      //.on("mouseover", function(){d3.select(this).style("fill", "yellow");})
+      //.on("mouseout", function(){d3.select(this).style("fill", "#69b3a2");});
 
     // show median, min and max horizontal lines
     svg.selectAll("toto")
@@ -113,7 +129,7 @@ class BoxPlot extends Component {
         .duration(200)
         .style("opacity", 1)
       tooltip
-        .html("<span style='color:white'>data: </span>" + d)
+        .html(`<span style='color:white'>data: ${d}</span>`)
         .style("left", (d3.mouse(this)[0]+30) + "px")
         .style("top", (d3.mouse(this)[1]+30) + "px")
     }
@@ -123,7 +139,7 @@ class BoxPlot extends Component {
         .duration(200)
         .style("opacity", 0)
     }
-    window.console.log('sorted data for', tempKey);
+    //window.console.log('sorted data for', tempKey);
     window.console.log(data_sorted);
     // points with jitter
     let jitterWidth = 50;
@@ -140,7 +156,7 @@ class BoxPlot extends Component {
           return(x(d))
         })
         .attr("r", 3)
-        .style("fill", "white")
+        .style("fill", function(d){ return(myColor(d)) })
         .attr("stroke", "black")
         .on("mouseover", mouseover)
         .on("mouseleave", mouseleave)
@@ -151,7 +167,7 @@ class BoxPlot extends Component {
     return (
       <div>
         <Header style={{color: "aliceblue"}}>
-          Box_Plot for {tempKey}
+          Box_Plot with Jitter for: {tempKey}
         </Header>
         <div id={"test_box_plot_" + tempKey}>
         </div>

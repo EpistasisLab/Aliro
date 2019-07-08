@@ -61,7 +61,7 @@ class DatasetMenu extends Component {
     if(dataPreview) {
       let valByRowObj = this.getDataValByRow();
       let dataKeys;
-      window.console.log('val test ', valByRowObj);
+      //window.console.log('val test ', valByRowObj);
       if(dataPreview) {
         let dataStuff = dataPreview.data;
         // grab dataset columns names from first entry
@@ -209,10 +209,16 @@ class DatasetMenu extends Component {
                 let tempChart = (
                   <div key={"test_chart_" + tempKey}>
                     <p style={{color: "aliceblue"}}>
-                      {"test_chart_" + tempKey}
+                      {"old_test_chart_" + tempKey}
                     </p>
                     <div id={"test_chart_" + tempKey}>
                     </div>
+                    <BoxPlot
+                      key={tempKey}
+                      tempKey={tempKey}
+                      dataPreview={dataPreview}
+                      valByRowObj={valByRowObj}
+                    />
                   </div>
                 )
                 return tempChart;
