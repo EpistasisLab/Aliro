@@ -82,9 +82,14 @@ class Dataset extends Component {
 
     return (
       <div>
+        <DatasetModal
+          project={metadataStuff} 
+          handleClose={this.handleCloseFileDetails}
+        />
         <DatasetMenu
           dataset={dataset}
           dataPreview={dataPreview}
+          fileDetailsClick={this.fileDetailsClick}
         />
       </div>
     );

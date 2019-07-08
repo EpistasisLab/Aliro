@@ -5,6 +5,7 @@ import { Header, Tab, Segment, Grid, Loader, Table, Icon } from 'semantic-ui-rea
 import BarChart from '../BarChart/';
 import BoxPlot from '../BoxPlot/';
 import * as d3 from "d3";
+
 class DatasetMenu extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +16,6 @@ class DatasetMenu extends Component {
     this.getDataValByRow = this.getDataValByRow.bind(this);
 
     this.createCharts = this.createCharts.bind(this);
-    this.createBarGraph = this.createBarGraph.bind(this);
     this.createBoxPlot = this.createBoxPlot.bind(this);
   }
 
@@ -79,93 +79,12 @@ class DatasetMenu extends Component {
         if(chartInnerHTML === "" && tempKey !== dataset.files[0].dependent_col) {
           this.createBoxPlot(tempKey);
         } else {
-          this.createBarGraph(tempKey);
+          //this.createBarGraph(tempKey);
         }
       })
     }
   }
-  // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
-  createBarGraph(tempKey){
-    const { dataset, dataPreview } = this.props;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
 
-    let chartInnerHTML = "";
-    let valByRowObj = this.getDataValByRow();
-    if(document.getElementById("test_chart_" + tempKey)) {
-      chartInnerHTML = document.getElementById("test_chart_" + tempKey).innerHTML;
-    };
-
-    if(chartInnerHTML === "") {
-      width = 460 - margin.left - margin.right;
-      let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
-
-      let classCountObj = {};
-      let tempData = [];
-
-      data_sorted.forEach(val => {
-        classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
-      })
-      //tempData.push(classCountObj);
-      let testSet = [... new Set(valByRowObj[tempKey])];
-
-      testSet.forEach(tempKey => tempData.push({
-        entry: {
-          testKey: tempKey,
-          testValue: classCountObj[tempKey]
-        }
-      }));
-
-      let svg = d3.select("#test_chart_" + tempKey)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .style("background-color", "aliceblue")
-        .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
-
-      // x - axis
-      let xStuff = d3.scaleBand()
-        .range([0, width])
-        .domain(testSet)
-        .padding(0.2);
-
-      svg.append('g')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(xStuff));
-
-      // y - axis
-      let yStuff = d3.scaleLinear()
-        .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
-        .range([height, 0]);
-
-      svg.append('g')
-        .call(d3.axisLeft(yStuff));
-
-      svg.selectAll("rect")
-        .data(tempData).enter()
-        .append("rect").merge(svg)
-        .style("stroke", "gray")
-        .style("fill", "black")
-        .attr("x", (d, t, s, a) => {
-          //window.console.log('x stuff', d);
-          return xStuff(d.entry.testKey);
-        })
-        .attr("y", (d, t, s) => {
-          //window.console.log('y stuff', d);
-          //return yStuff(d.entry.testKey);
-          return yStuff(d.entry.testValue);
-        })
-        .attr('height', (d) => {
-          return height - yStuff(d.entry.testValue);
-        })
-        .attr('width', xStuff.bandwidth())
-        .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
-        .on("mouseout", function(){d3.select(this).style("fill", "black");});
-    }
-  }
   //TODO: check accuracy of calculated statistics - not sure if correct
   //      look at 'banana' dataset
   createBoxPlot(tempKey){
@@ -241,7 +160,7 @@ class DatasetMenu extends Component {
   }
 
   getTabMenu() {
-    const { dataset, dataPreview } = this.props;
+    const { dataset, dataPreview, fileDetailsClick } = this.props;
     // sort metafeatures in desired order
     let first = ['n_rows', 'n_columns', 'n_classes']; // priority metafeatures
     let empty = []; // metafeatures that have no value
@@ -262,8 +181,12 @@ class DatasetMenu extends Component {
     let valByRowObj = this.getDataValByRow();
     if(dataPreview) {
       let dataStuff = dataPreview.data;
-      // grab dataset columns names from first entry
+      // grab all dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
+
+      let depColIndex = dataKeys.indexOf(dataset.files[0].dependent_col);
+      // remove dependent_col from dataKeys list
+      dataKeys.splice(depColIndex, 1);
     }
 
     let testPain = [
@@ -279,6 +202,7 @@ class DatasetMenu extends Component {
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
             {
+              // display boxplots
               dataKeys && dataKeys.map(key => {
                 // loop through dataset column name/key for charts later on
                 let tempKey = key.replace(/ /g, "_");
@@ -291,18 +215,23 @@ class DatasetMenu extends Component {
                     </div>
                   </div>
                 )
-                key === dataset.files[0].dependent_col
-                  ? tempChart = (
-                      <BarChart
-                        tempKey={dataset.files[0].dependent_col}
-                        dataset={dataset}
-                        dataPreview={dataPreview}
-                        valByRowObj={valByRowObj}
-                      />
-                    )
-                  : null;
                 return tempChart;
+                // return (<BoxPlot
+                //   key={tempKey}
+                //   tempKey={tempKey}
+                //   dataPreview={dataPreview}
+                //   valByRowObj={valByRowObj}
+                // />)
               })
+            }
+            { // display bar chart for dependent column/target/class
+              valByRowObj && Object.keys(valByRowObj).length &&
+              <BarChart
+                tempKey={dataset.files[0].dependent_col}
+                dataset={dataset}
+                dataPreview={dataPreview}
+                valByRowObj={valByRowObj}
+              />
             }
           </Tab.Pane>
         )
@@ -315,7 +244,7 @@ class DatasetMenu extends Component {
               <Header as="h3" content="File Details" />
               <Icon
                 name="info circle"
-                onClick={(e) => this.fileDetailsClick(e)}
+                onClick={(e) => fileDetailsClick(e)}
                 style={{position: 'absolute', top: '11px', left: '95%', cursor: 'pointer'}}
               />
             </Segment>
@@ -426,12 +355,22 @@ class DatasetMenu extends Component {
       },{
         menuItem: 'Box_Plot',
         render: () => (
-          <BoxPlot
-            tempKey={dataset.files[0].dependent_col}
-            dataset={dataset}
-            dataPreview={dataPreview}
-            valByRowObj={valByRowObj}
-          />
+          <div>
+            {
+              valByRowObj
+              && Object.keys(valByRowObj).length
+              && dataKeys
+              && dataKeys.map(key => {
+                let tempKey = key.replace(/ /g, "_");
+                return (<BoxPlot
+                  key={tempKey}
+                  tempKey={tempKey}
+                  dataPreview={dataPreview}
+                  valByRowObj={valByRowObj}
+                />)
+              })
+            }
+          </div>
         )
       }
     ];

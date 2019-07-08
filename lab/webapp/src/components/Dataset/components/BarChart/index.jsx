@@ -22,7 +22,7 @@ class BarChart extends Component {
 
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
   createBarGraph(){
-    const { dataset, dataPreview, valByRowObj, tempKey } = this.props;
+    const { dataPreview, valByRowObj, tempKey } = this.props;
     let margin = { top: 10, right: 30, bottom: 50, left: 70 },
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -104,7 +104,7 @@ class BarChart extends Component {
   }
 
   render() {
-    const { dataset, dataPreview, valByRowObj, tempKey } = this.props;
+    const { dataPreview, valByRowObj, tempKey } = this.props;
     return (
       <div>
         <Header>

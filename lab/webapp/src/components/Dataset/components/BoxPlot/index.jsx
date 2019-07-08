@@ -13,19 +13,20 @@ class BoxPlot extends Component {
   }
 
   componentDidMount() {
-    //this.createBarGraph();
+    this.createBoxPlot();
   }
 
   componentDidUpdate(prevProps, prevState) {
     //this.createBarGraph();
   }
 
-  createBoxPlot(tempKey){
-    const { dataset, dataPreview } = this.props;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-    let valByRowObj = this.getDataValByRow();
+  // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
+  createBoxPlot(){
+    const { dataPreview, valByRowObj, tempKey } = this.props;
+    let margin = { top: 5, right: 80, bottom: 25, left: 220 },
+        width = 750 - margin.left - margin.right,
+        height = 275 - margin.top - margin.bottom;
+    //let valByRowObj = this.getDataValByRow();
     let dataKeys;
     if(dataPreview) {
       let dataStuff = dataPreview.data;
@@ -33,7 +34,7 @@ class BoxPlot extends Component {
       dataKeys = Object.keys(dataStuff[0]);
     }
 
-    let svg = d3.select("#test_chart_" + tempKey)
+    let svg = d3.select("#test_box_plot_" + tempKey)
     .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -41,7 +42,7 @@ class BoxPlot extends Component {
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-
+    // get stats
     let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
     let q1 = d3.quantile(data_sorted, .25);
     let median = d3.quantile(data_sorted, .5);
@@ -49,25 +50,41 @@ class BoxPlot extends Component {
     let interQuantileRange = q3 - q1;
     let min = q1 - 1.5 * interQuantileRange;
     let max = q1 + 1.5 * interQuantileRange;
-    let y = d3.scaleLinear()
-      .domain([min, max])
-      .range([height, 0]);
-    svg.call(d3.axisLeft(y));
-    let center = 200;
-    width = 200;
+
+    let minData = Math.min(...data_sorted);
+    let maxData = Math.max(...data_sorted);
+    // Y scale
+    let y = d3.scaleBand()
+      .range([height, 0])
+      .domain([tempKey])
+      .paddingInner(1)
+      .paddingOuter(.5)
+    svg.append("g")
+      .call(d3.axisLeft(y).tickSize(0))
+      .select(".domain").remove()
+    // X scale
+    let x = d3.scaleLinear()
+      .domain([minData, maxData])
+      .range([0, width]);
+    svg.append("g").call(d3.axisBottom(x))
+       .attr("transform", "translate(0," + (height) + ")");
+    // box features
+    let center = 150;
+    width = 100;
+    // main vertical line
     svg.append("line")
-      .attr("x1", center)
-      .attr("x2", center)
-      .attr("y1", y(min) )
-      .attr("y2", y(max) )
+      .attr("y1", center)
+      .attr("y2", center)
+      .attr("x1", x(min) )
+      .attr("x2", x(max) )
       .attr("stroke", "black");
 
     // Show the box
     svg.append("rect")
-      .attr("x", center - width/2)
-      .attr("y", y(q3) )
-      .attr("height", (y(q1)-y(q3)) )
-      .attr("width", width )
+      .attr("x", x(q1))
+      .attr("y", center - width/2 )
+      .attr("height",  width)
+      .attr("width", (x(q3)-x(q1)) )
       .attr("stroke", "black")
       .style("fill", "#69b3a2")
       .on("mouseover", function(){d3.select(this).style("fill", "yellow");})
@@ -78,26 +95,63 @@ class BoxPlot extends Component {
     .data([min, median, max])
     .enter()
     .append("line")
-      .attr("x1", center-width/2)
-      .attr("x2", center+width/2)
-      .attr("y1", function(d){ return(y(d))} )
-      .attr("y2", function(d){ return(y(d))} )
+      .attr("y1", center-width/2)
+      .attr("y2", center+width/2)
+      .attr("x1", function(d){ return(x(d))} )
+      .attr("x2", function(d){ return(x(d))} )
       .attr("stroke", "black");
 
-    svg.enter()
-       .append("text")
-       .text("test text")
-       .attr("x", center)
-       .attr("dy", 12)
-       .style("text-anchor", "end");
+    // tool tip
+    let tooltip = d3.select("#test_box_plot_" + tempKey)
+    .append("div")
+      .style("opacity", 0)
+      .style("font-size", "16px");
+
+    let mouseover = function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 1)
+      tooltip
+        .html("<span style='color:white'>data: </span>" + d)
+        .style("left", (d3.mouse(this)[0]+30) + "px")
+        .style("top", (d3.mouse(this)[1]+30) + "px")
+    }
+    let mouseleave = function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+    }
+    window.console.log('sorted data for', tempKey);
+    window.console.log(data_sorted);
+    // points with jitter
+    let jitterWidth = 50;
+    svg.selectAll("indPoints")
+      .data(data_sorted)
+      .enter()
+      .append("circle")
+        .attr("cy", function(d){
+          //window.console.log('y data', d);
+          return(center - jitterWidth/2 + Math.random()*jitterWidth)
+        })
+        .attr("cx", function(d){
+          //window.console.log('x data', d);
+          return(x(d))
+        })
+        .attr("r", 3)
+        .style("fill", "white")
+        .attr("stroke", "black")
+        .on("mouseover", mouseover)
+        .on("mouseleave", mouseleave)
   }
 
   render() {
-    const { dataset, dataPreview, valByRowObj, tempKey } = this.props;
+    const { dataPreview, valByRowObj, tempKey } = this.props;
     return (
       <div>
-        <Header>
-          Box_Plot
+        <Header style={{color: "aliceblue"}}>
+          Box_Plot for {tempKey}
         </Header>
         <div id={"test_box_plot_" + tempKey}>
         </div>
