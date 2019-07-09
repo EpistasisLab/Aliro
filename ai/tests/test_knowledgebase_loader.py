@@ -21,7 +21,7 @@ def isClose(a, b, rel_tol=1e-09, abs_tol=0.0):
         a = float(a)
         b = float(b)
     except (TypeError, ValueError):
-        print(f"not floats: '{a}', '{b}'")
+        #print(f"not floats: '{a}', '{b}'")
         return a == b
 
     ##if not(abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)):
@@ -62,12 +62,12 @@ def load_test_data():
          0
          ),
         ("multiResultFile-metafeaturesFromFile", 
-         ["data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered1.tsv",
-            "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"], 
+         ["data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered1.tsv",
+            "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered2.tsv"], 
          '',
          ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
          'class',
-         1299,
+         6,
          165,
          0
          ),
@@ -86,8 +86,8 @@ def load_test_data():
 def load_default_kb_data():
     return [
         ("pmlbOnly", True, None, None, 79608, 165),
-        ("userOnly", False, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 1299, 165),
-        ("pmlbAndUser", True, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 79608+1299, 165)
+        ("userOnly", False, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 6, 165),
+        ("pmlbAndUser", True, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 79608, 165) # /test/results contains dupes from pmlb
     ]
 
 def results_files():
@@ -95,9 +95,9 @@ def results_files():
     (   "benchmark5", 
         "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"),
     (   "test1",
-        "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered1.tsv"),
+        "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered1.tsv"),
     (   "test2",
-        "data/knowledgebases/test/results/sklearn-benchmark5-data-edited-formatted-filtered2.tsv"),
+        "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered2.tsv"),
     ]
 
 
