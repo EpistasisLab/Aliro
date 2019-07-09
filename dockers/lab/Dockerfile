@@ -31,8 +31,6 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
-# install pm2
-RUN npm install -g pm2 --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
