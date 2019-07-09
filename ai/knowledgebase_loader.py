@@ -17,7 +17,7 @@ import json
 import csv
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARN)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -57,6 +57,7 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
         frames.append(_load_results_from_file(resultsFile))
     
     resultsData = pd.concat(frames)
+    dedupe_results_dataframe(resultsData)
     dataset_names = resultsData['dataset']
     
     # load dataset metafeatures
@@ -81,6 +82,25 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
             'warnings': warnings}
 
+
+def dedupe_results_dataframe(resultsData):
+    resultsData['parmHash'] = resultsData.apply(lambda x: hash(frozenset(x['parameters'].items())), axis = 1)
+
+    rawCount = len(resultsData)
+    pd.set_option('display.max_columns', None)
+    #logger.debug(resultsData.head())
+
+    compCols = list(resultsData.columns)
+    compCols.remove("parameters")
+
+    resultsData.drop_duplicates(subset=compCols, inplace=True)
+    # drop duplicates with rounding
+    #resultsData.loc[resultsData.round().drop_duplicates(subset=compCols).index]
+
+    resultsData.drop(columns=['parmHash'], inplace=True)
+    logger.info(f"loaded {rawCount} experiments, {len(resultsData)} after dropDuplicates")
+
+    return resultsData
 
 
 def load_default_knowledgebases(usePmlb=True, userKbResultsPath=USER_KB_RESULTS_PATH, userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
