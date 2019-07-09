@@ -1,0 +1,4 @@
+dataset	algorithm	parameters	accuracy	macrof1	bal_accuracy
+GAMETES_Epistasis_2-Way_1000atts_0.4H_EDM-1_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.0, 'max_features': 'sqrt', 'criterion': 'gini', 'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2}	0.503	0.503109278067	0.503125
+GAMETES_Epistasis_2-Way_1000atts_0.4H_EDM-1_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'entropy', 'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2}	0.516	0.515156070885	0.51625
+GAMETES_Epistasis_2-Way_1000atts_0.4H_EDM-1_EDM-1_1	DecisionTreeClassifier	{'min_weight_fraction_leaf': 0.05, 'max_features': 'log2', 'criterion': 'gini', 'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2}	0.516	0.515156070885	0.51625
