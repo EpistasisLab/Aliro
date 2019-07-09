@@ -18,6 +18,10 @@ COPY ${docker_filepath}/environment.yml /appsrc/lab/
 RUN dos2unix /appsrc/lab/environment.yml && \
 		conda env update -f /appsrc/lab/environment.yml
 
+### bill's surprise fork
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+
+
 ## Webserver
 
 RUN rm /etc/apache2/sites-enabled/*
@@ -31,6 +35,8 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
+# install pm2
+RUN npm install -g pm2 --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
@@ -44,8 +50,6 @@ COPY lab/package.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
-### bill's surprise fork
-RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
 COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd

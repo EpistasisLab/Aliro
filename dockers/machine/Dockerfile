@@ -22,6 +22,10 @@ RUN dos2unix /appsrc/machine/environment.yml
 RUN dos2unix /appsrc/machine/environment.yml && \
 		conda env update -f /appsrc/machine/environment.yml
 
+## install dependencies for machine
+RUN pip install --no-cache-dir mlxtend==0.16.0 pydot==1.4.1
+
+
 # install pm2
 RUN npm install -g pm2 --silent --progress=false
 
