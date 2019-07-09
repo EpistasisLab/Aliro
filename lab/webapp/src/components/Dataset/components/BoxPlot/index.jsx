@@ -140,7 +140,7 @@ class BoxPlot extends Component {
         .style("opacity", 0)
     }
     //window.console.log('sorted data for', tempKey);
-    window.console.log(data_sorted);
+    //window.console.log(data_sorted);
     // points with jitter
     let jitterWidth = 50;
     svg.selectAll("indPoints")

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { formatDataset, formatTime } from 'utils/formatter';
 import { Header, Tab, Segment, Grid, Loader, Table, Icon } from 'semantic-ui-react';
 import BarChart from '../BarChart/';
+import BarCharts from '../BarCharts/';
 import BoxPlot from '../BoxPlot/';
 import * as d3 from "d3";
 
@@ -179,11 +180,12 @@ class DatasetMenu extends Component {
     let cat_feats = dataset.files[0].categorical_features;
     let ord_feats = dataset.files[0].ordinal_features;
     let valByRowObj = this.getDataValByRow();
+    let allKeys;
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab all dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
-
+      allKeys = [...dataKeys];
       let depColIndex = dataKeys.indexOf(dataset.files[0].dependent_col);
       // remove dependent_col from dataKeys list
       dataKeys.splice(depColIndex, 1);
@@ -213,12 +215,12 @@ class DatasetMenu extends Component {
                     </p>
                     <div id={"test_chart_" + tempKey}>
                     </div>
-                    <BoxPlot
+                    {/*<BoxPlot
                       key={tempKey}
                       tempKey={tempKey}
                       dataPreview={dataPreview}
                       valByRowObj={valByRowObj}
-                    />
+                    />*/}
                   </div>
                 )
                 return tempChart;
@@ -377,6 +379,17 @@ class DatasetMenu extends Component {
               })
             }
           </div>
+        )
+      },{
+        menuItem: 'Bar_Charts',
+        render: () => (
+          <BarCharts
+            tempKey={dataset.files[0].dependent_col}
+            dataset={dataset}
+            keys={allKeys}
+            dataPreview={dataPreview}
+            valByRowObj={valByRowObj}
+          />
         )
       }
     ];
