@@ -1,26 +1,22 @@
-FROM continuumio/miniconda3:4.6.14
+FROM pennai/base:latest
 
 RUN apt-get update --fix-missing && apt-get install -y \
-    vim openssh-client openssh-server htop net-tools iputils-ping xz-utils \
-    screen ngrep ca-cacert telnet apache2 \
-    mercurial subversion \
-    build-essential cmake lsb-core cpio mesa-common-dev \
-    libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
+    telnet apache2 \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 ARG docker_filepath=dockers/lab/files
 
-# set conda config for faster build
-RUN conda config --set channel_priority strict
-COPY ${docker_filepath}/environment.yml /appsrc/lab/
-RUN dos2unix /appsrc/lab/environment.yml && \
-		conda env update -f /appsrc/lab/environment.yml
+## ai/metalearning python packages
+RUN conda install -y -c conda-forge \
+		cython=0.29.12 \
+    xgboost=0.82 \
+		simplejson=3.16.0  && \
+    conda clean --all -y
 
 ### bill's surprise fork
 RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
-
 
 ## Webserver
 
