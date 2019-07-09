@@ -20,10 +20,7 @@ Install Docker and docker-compose as per the main installation requirements.
 2. Set up your local PennAI configuration file. From the pennai directory, copy `config\ai.env-template` to `config\ai.env`.
 
 
-3. Build the base docker image by running `docker build ./dockers/base -t pennai/base:latest` from the pennai directory.  It will take several minutes for the image to be built the first time this run.  
-
-
-4. Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
+3. Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
 
 ### Starting and Stopping ###
 To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the process to exit.
