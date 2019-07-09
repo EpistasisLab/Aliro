@@ -18,7 +18,10 @@ RUN conda config --set channel_priority strict
 RUN conda install -y -c conda-forge \
     nodejs=11.14.0 \
     scikit-learn=0.20.2 \
-    pymongo tqdm pandas matplotlib && \
+    tqdm=4.32.2 \
+    pymongo=3.8.0 \
+    pandas=0.24.2 \
+    matplotlib=3.1.1 && \
     conda clean --all -y
 
 RUN npm install -g pm2 --silent --progress=false
