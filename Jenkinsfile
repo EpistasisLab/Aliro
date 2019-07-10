@@ -59,7 +59,6 @@ pipeline {
             steps {
                 // rebuild
                 sh 'cp config/ai.env-template config/ai.env'
-                sh 'docker build ./dockers/base -t pennai/base:latest -m 6g'
                 sh 'docker-compose build -m 6g'
             }
 
