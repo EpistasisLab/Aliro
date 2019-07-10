@@ -46,10 +46,10 @@ class BarChart extends Component {
       //tempData.push(classCountObj);
       let testSet = [... new Set(valByRowObj[tempKey])];
 
-      testSet.forEach(tempKey => tempData.push({
+      testSet.forEach(tKey => tempData.push({
         entry: {
-          testKey: tempKey,
-          testValue: classCountObj[tempKey]
+          testKey: tKey,
+          testValue: classCountObj[tKey]
         }
       }));
 

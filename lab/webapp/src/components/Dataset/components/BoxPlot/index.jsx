@@ -142,7 +142,7 @@ class BoxPlot extends Component {
     //window.console.log('sorted data for', tempKey);
     //window.console.log(data_sorted);
     // points with jitter
-    let jitterWidth = 50;
+    /*let jitterWidth = 50;
     svg.selectAll("indPoints")
       .data(data_sorted)
       .enter()
@@ -159,7 +159,7 @@ class BoxPlot extends Component {
         .style("fill", function(d){ return(myColor(d)) })
         .attr("stroke", "black")
         .on("mouseover", mouseover)
-        .on("mouseleave", mouseleave)
+        .on("mouseleave", mouseleave)*/
   }
 
   render() {

@@ -177,10 +177,13 @@ class DatasetMenu extends Component {
     if(dataset === 'fetching') { return null; }
 
     // categorical_features & ordinal_features
-    let cat_feats = dataset.files[0].categorical_features;
+    let cat_feats = dataset.files[0].categorical_features; // list of column names
+    // object with key/val pair - key is column name, val is ordered list
     let ord_feats = dataset.files[0].ordinal_features;
+    let ordKeys =  Object.keys(ord_feats);
     let valByRowObj = this.getDataValByRow();
     let allKeys;
+
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab all dataset columns names from first entry
@@ -215,21 +218,33 @@ class DatasetMenu extends Component {
                     </p>
                     <div id={"test_chart_" + tempKey}>
                     </div>
-                    {/*<BoxPlot
+                    {<BoxPlot
                       key={tempKey}
                       tempKey={tempKey}
                       dataPreview={dataPreview}
                       valByRowObj={valByRowObj}
-                    />*/}
+                    />}
                   </div>
                 )
+                // check for categorical columns (display stacked bar chart)
+                cat_feats.indexOf(key) > -1 ? tempChart = (
+                  <div key={"cat_chart_" + tempKey}>
+                    <p style={{color: "aliceblue"}}>
+                      {"cat_chart_for: " + tempKey}
+                    </p>
+                    <br/>
+                  </div>
+                ) : null;
+                // check for ordinal columns (display stacked bar chart)
+                ordKeys.indexOf(key) > -1 ? tempChart = (
+                  <div key={"ord_chart_" + tempKey}>
+                    <p style={{color: "red"}}>
+                      {"ordinal_chart_for: " + tempKey}
+                    </p>
+                    <br/>
+                  </div>
+                ) : null;
                 return tempChart;
-                // return (<BoxPlot
-                //   key={tempKey}
-                //   tempKey={tempKey}
-                //   dataPreview={dataPreview}
-                //   valByRowObj={valByRowObj}
-                // />)
               })
             }
             { // display bar chart for dependent column/target/class
@@ -383,13 +398,30 @@ class DatasetMenu extends Component {
       },{
         menuItem: 'Bar_Charts',
         render: () => (
-          <BarCharts
-            tempKey={dataset.files[0].dependent_col}
-            dataset={dataset}
-            keys={allKeys}
-            dataPreview={dataPreview}
-            valByRowObj={valByRowObj}
-          />
+          <div>
+            {
+              dataKeys && dataKeys.map(key => {
+                let tempChart;
+                cat_feats.indexOf(key) > -1
+                  ? tempChart = (
+                    <div key={"bar_charts_for" + key}>
+                      <p style={{color: "aliceblue"}}>
+                        {"bar_charts_for: " + key}
+                      </p>
+                      <BarCharts
+                        tempKey={key}
+                        dep_col={dataset.files[0].dependent_col}
+                        keys={allKeys}
+                        dataPreview={dataPreview}
+                        valByRowObj={valByRowObj}
+                      />
+                    </div>
+                  )
+                  : tempChart = (<div/>);
+                return tempChart;
+              })
+            }
+          </div>
         )
       }
     ];
