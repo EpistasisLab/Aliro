@@ -409,8 +409,8 @@ class DatasetMenu extends Component {
                         {"bar_charts_for: " + key}
                       </p>
                       <BarCharts
-                        tempKey={key}
-                        dep_col={dataset.files[0].dependent_col}
+                        colKey={key}
+                        depCol={dataset.files[0].dependent_col}
                         keys={allKeys}
                         dataPreview={dataPreview}
                         valByRowObj={valByRowObj}
