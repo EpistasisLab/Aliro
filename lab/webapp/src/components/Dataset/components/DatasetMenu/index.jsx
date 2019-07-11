@@ -210,29 +210,29 @@ class DatasetMenu extends Component {
               // display boxplots
               dataKeys && dataKeys.map(key => {
                 // loop through dataset column name/key for charts later on
+                // need to be careful with this key - replace spaces with '_'
                 let tempKey = key.replace(/ /g, "_");
+
                 let tempChart = (
-                  <div key={"test_chart_" + tempKey}>
-                    <p style={{color: "aliceblue"}}>
-                      {"old_test_chart_" + tempKey}
-                    </p>
-                    <div id={"test_chart_" + tempKey}>
-                    </div>
-                    {<BoxPlot
-                      key={tempKey}
-                      tempKey={tempKey}
-                      dataPreview={dataPreview}
-                      valByRowObj={valByRowObj}
-                    />}
-                  </div>
-                )
+                  <BoxPlot
+                    key={tempKey}
+                    tempKey={tempKey}
+                    dataPreview={dataPreview}
+                    valByRowObj={valByRowObj}
+                  />);
                 // check for categorical columns (display stacked bar chart)
                 cat_feats.indexOf(key) > -1 ? tempChart = (
                   <div key={"cat_chart_" + tempKey}>
                     <p style={{color: "aliceblue"}}>
                       {"cat_chart_for: " + tempKey}
                     </p>
-                    <br/>
+                    <BarCharts
+                      colKey={key}
+                      depCol={dataset.files[0].dependent_col}
+                      keys={allKeys}
+                      dataPreview={dataPreview}
+                      valByRowObj={valByRowObj}
+                    />
                   </div>
                 ) : null;
                 // check for ordinal columns (display stacked bar chart)
@@ -446,7 +446,9 @@ class DatasetMenu extends Component {
               // not sure but guessing that tab containing html DOM elements
               // where d3 graphics will be displayed is not immediately available
               // crudely setting timeout to wait until div for d3 is ready
-              window.setTimeout(this.createCharts, 1.5);
+
+              // dont need this anymore
+              //window.setTimeout(this.createCharts, 1.5);
             }
           }}
         />

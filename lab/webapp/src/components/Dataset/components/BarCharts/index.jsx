@@ -9,15 +9,11 @@ class BarChart extends Component {
     this.state = {
 
     };
-  this.createBarGraph = this.createBarGraph.bind(this);
+    this.createBarGraph = this.createBarGraph.bind(this);
   }
 
   componentDidMount() {
     this.createBarGraph();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //this.createBarGraph();
   }
 
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
@@ -26,7 +22,7 @@ class BarChart extends Component {
   createBarGraph(){
     const { depCol, dataPreview, valByRowObj, colKey, keys } = this.props;
     let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
+        width = 560 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     let chartInnerHTML = "";
@@ -46,10 +42,10 @@ class BarChart extends Component {
       data_sorted.forEach(val => {
         classTotalCountObj[val] = classTotalCountObj[val] ? ++classTotalCountObj[val] : 1;
       });
+      let colorList = ['#e41a1c','#377eb8'];
       let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
       let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
       let proportionObjList = [];
-      let tempData = [];
       // find unique values for the given column key as well as dependent column
       let givenColSet = [... new Set(valByRowObj[colKey])];
       let depColSet = [... new Set(valByRowObj[depCol])]
@@ -82,20 +78,9 @@ class BarChart extends Component {
       // ex: [ {0: 21, 1: 6, cat: "a"}, {0: 22, 1: 5, cat: "b"} ... ]
       // for this example depCol is 'target_class' which can be '0' or '1'
       // and colKey is 'cat' which can be 'a', 'b' ...
-      //window.console.log('temp thing', proportionObjList);
 
       let stackedData = []; // stack data as per examples to use with d3
-
-      givenColSet.forEach(tKey => {
-        tempData.push({
-          entry: {
-            testKey: tKey,
-            testValue: classTotalCountObj[tKey],
-            proportion: proportionObj[tKey]
-          }
-        })
-      });
-
+      // having data formatted this way helps facilitating use of d3
       depColSet.forEach(classKey => {
         let tempObj = {"class": classKey};
         givenColSet.forEach(tKey => {
@@ -103,19 +88,6 @@ class BarChart extends Component {
         })
         stackedData.push(tempObj);
       })
-
-      /*var dataThing = [
-        { year: "2006", redDelicious: "10", mcintosh: "15", oranges: "9", pears: "6" },
-        { year: "2007", redDelicious: "12", mcintosh: "18", oranges: "9", pears: "4" },
-        { year: "2008", redDelicious: "05", mcintosh: "20", oranges: "8", pears: "2" },
-        { year: "2009", redDelicious: "01", mcintosh: "15", oranges: "5", pears: "4" }
-      ];
-      let fruitStack = d3.stack()
-        .keys(["redDelicious", "mcintosh", "oranges", "pears"])
-        .order(d3.stackOrderNone)
-        .offset(d3.stackOffsetNone);
-      let fruitThing = fruitStack(dataThing);
-      window.console.log('fruit stack', fruitThing);*/
 
       // Transpose the data into layers
       let stack = d3.stack()
@@ -134,50 +106,7 @@ class BarChart extends Component {
 
       let colorStack = d3.scaleOrdinal()
         .domain(depColSet)
-        .range(['#e41a1c','#377eb8']);
-
-      //window.console.log('stackedData', stackedData);
-      // let svg = d3.select("#test_bar_charts_" + colKey)
-      //   .append("svg")
-      //   .attr("width", width + margin.left + margin.right)
-      //   .attr("height", height + margin.top + margin.bottom)
-      //   .style("background-color", "tan")
-      //   .append("g")
-      //   .attr("transform",
-      //         "translate(" + margin.left + "," + margin.top + ")");
-
-      // color stuff
-      // let color = d3.scaleOrdinal()
-      //   .domain(givenColSet)
-      //   .range(['#e41a1c','#377eb8','#4daf4a']);
-      //
-      // svg.append('g')
-      //   .attr('transform', `translate(0, ${height})`)
-      //   .call(d3.axisBottom(xStuff));
-      //
-      // // y - axis
-      // let yStuff = d3.scaleLinear()
-      //   .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
-      //   .range([height, 0]);
-      //
-      // svg.append('g')
-      //   .call(d3.axisLeft(yStuff));
-
-      // svg.selectAll("rect")
-      //   .data(tempData).enter()
-      //   .append("rect").merge(svg)
-      //   .style("stroke", "gray")
-      //   .attr("fill", (d) => { return color(d.entry.testKey) })
-      //   .attr("x", (d, t, s, a) => {
-      //     return xStuff(d.entry.testKey);
-      //   })
-      //   .attr("y", (d, t, s) => {
-      //     return yStuff(d.entry.testValue);
-      //   })
-      //   .attr('height', (d) => {
-      //     return height - yStuff(d.entry.testValue);
-      //   })
-      //   .attr('width', xStuff.bandwidth())
+        .range(colorList);
 
 /* -------------------------------------this one works-------------------*/
       // stacked stuff
@@ -211,7 +140,7 @@ class BarChart extends Component {
         .data(stackThing)
         .enter().append("g")
         .style("fill", (d) => {
-          window.console.log('color thing', d);
+          //window.console.log('color thing', d);
           return colorStack(d.key)
         });
 
@@ -236,7 +165,7 @@ class BarChart extends Component {
           let y0 = stackedY(d[0]);
           let y1 = stackedY(d[1]);
 
-          window.console.log('height stuff', y0 - y1);
+          //window.console.log('height stuff', y0 - y1);
           return y0 - y1;
         })
         .attr('width', xStuff.bandwidth())
@@ -252,8 +181,33 @@ class BarChart extends Component {
           //window.setTimeout(() => tooltip.style("display", "none"), 2500);
         });
 
-        // tooltip
+        // legend
+        let legend = stackedSvg.selectAll(".legend")
+          .data(colorList)
+          .enter().append("g")
+          .attr("transform", function(d, i) {
+            window.console.log('legend transform');
+            return "translate(20,"+  (i * 19) + ")";
+          });
 
+        legend.append("rect")
+          .attr("x", -margin.left - 15)
+          .attr("y", height)
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", function(d, i) {return colorList.slice().reverse()[i];});
+
+        legend.append("text")
+          .attr("x", -margin.left + 5)
+          .attr("y", height + 9)
+          .attr("dy", ".35em")
+          .style("text-anchor", "start")
+          .text(function(d, i) {
+            window.console.log('legend stuff');
+            return depColSet[i];
+          });
+
+        // tooltip
         let tooltip = stackedSvg.append("g")
           .attr("class", "tooltip")
           .style("display", "none");
