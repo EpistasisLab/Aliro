@@ -22,19 +22,31 @@ rm -drf "${COVERAGE_PATH}"
 
 mkdir -p target/test-reports/cobertura/html
 mkdir -p target/test-reports/html
-export JEST_HTML_REPORTER_OUTPUT_PATH="${REPORT_PATH}/html/unit_webapp_jest_test_report.html"
-export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
 
 echo "starting nosetest"
 echo $NOSE_TESTS
 nosetests -s \
-  --with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
-  --with-html --html-file="${REPORT_PATH}/html/nose.html" \
-  --with-coverage --cover-inclusive \
-  --cover-package=. --cover-xml \
-  --cover-xml-file="${COVERAGE_PATH}/nose_cover.xml" \
-  --cover-html --cover-html-dir="${COVERAGE_PATH}/html" $NOSE_TESTS && \
-  rm .coverage && \
-  mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS && \
-  cd lab/webapp/ && \
-  npm run test
+--with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
+--with-html --html-file="${REPORT_PATH}/html/nose.html" \
+--with-coverage --cover-inclusive \
+--cover-package=. --cover-xml \
+--cover-xml-file="${COVERAGE_PATH}/nose_cover.xml" \
+--cover-html --cover-html-dir="${COVERAGE_PATH}/html" $NOSE_TESTS \
+#--verbosity=4
+#--verbosity=4 > $NOSE_LOG_PATH 2>&1
+
+rm .coverage
+
+echo "starting mocha tests"
+mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
+
+echo "starting jest reports"
+cd "lab/webapp/"
+
+export JEST_HTML_REPORTER_OUTPUT_PATH="${REPORT_PATH}/html/unit_webapp_jest_test_report.html"
+export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
+
+npm run test
+
+# todo: check for generated files and potentially remove
+#       jest - snapshots, potentially use or disable
