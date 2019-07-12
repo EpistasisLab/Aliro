@@ -20,7 +20,7 @@ RUN conda config --set channel_priority strict
 
 # set up conda environment, specify node version because of known issue with version 11.11
 # check here - https://github.com/facebook/jest/issues/8069
-RUN conda install -y -s -c conda-forge \
+RUN conda install -y -S -c conda-forge \
     nodejs=11.14.0 \
     scikit-learn=0.20.2 \
     tqdm=4.32.2 \
