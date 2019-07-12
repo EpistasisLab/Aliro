@@ -23,7 +23,9 @@ jobs:
         - docker-compose -f ./docker-compose-unit-test.yml build -m 6g
       script:
         # Unit tests
-        - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
+        - docker run -v ./:/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
+        - docker run -v ./:/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ npm run test
+        - docker run -v ./:/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/*.py machine/test/learn_tests.py lab/pyutils/tests/*.py
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
         # Tell GitHub not to use jekyll to compile the docs
