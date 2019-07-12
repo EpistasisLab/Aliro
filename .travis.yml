@@ -7,9 +7,6 @@ jobs:
   include:
     - stage: Test
       name: "Integration Tests"
-      before_install:
-        # Rebuild PennAI Base
-        - docker build ./dockers/base -t pennai/base:latest -m 8g
       install:
         # Building Docker images
         - docker-compose -f ./docker-compose-int-test.yml build -m 8g
