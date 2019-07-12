@@ -15,7 +15,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
 RUN conda config --set channel_priority strict
 
 # set up conda environment
-RUN conda install -y -c conda-forge \
+RUN conda install -y -S -c conda-forge \
     nodejs=11.14.0 \
     scikit-learn=0.20.2 \
     tqdm=4.32.2 \
