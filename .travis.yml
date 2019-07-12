@@ -7,9 +7,12 @@ jobs:
   include:
     - stage: Test
       name: "Integration Tests"
+      before_install:
+        # Rebuild PennAI Base
+        - docker build ./dockers/base -t pennai/base:latest -m 8g
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-int-test.yml build -m 6g
+        - docker-compose -f ./docker-compose-int-test.yml build -m 8g
       script:
         # Unit tests
         - docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate
@@ -17,10 +20,12 @@ jobs:
       name: "Unit Tests"
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-unit-test.yml build -m 6g
+        - docker-compose -f ./docker-compose-unit-test.yml build -m 8g
       script:
         # Unit tests
-        - docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit --force-recreate
+        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
+        - docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
+        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/*.py machine/test/learn_tests.py lab/pyutils/tests/*.py
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
         # Tell GitHub not to use jekyll to compile the docs

@@ -8,7 +8,7 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-#from ai.ai import AI
+
 import pdb
 import logging
 
@@ -22,9 +22,12 @@ logger.setLevel(logging.INFO)
 # print('loading pmlb results data...')
 # TODO: replace this dataset loading and metafeature loading with calls to 
 # knowledgebase loader
-data = pd.read_csv(
-        'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz',
-        compression='gzip', sep='\t')
+KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
+KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
+
+data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
+metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, float_precision='round_trip')
+
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
@@ -41,21 +44,7 @@ test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
-    try:
-       with open('data/knowledgebases/metafeatures/'+
-               d+'/metafeatures.json') as data_file:    
-               data = json.load(data_file)
-    except Exception as e:
-        logger.error('exception when grabbing metafeature data for',d)
-        raise e
-
-    df = pd.DataFrame.from_records(data,columns=data.keys(),index=[0])
-    # df['dataset'] = d
-    # df.sort_index(axis=1, inplace=True)
-    # df['metafeature_version'] = 1.0
-    # df['dataset_hash'] = 'test_hash'
-
-    # print('meatafeatures for',d,':',df)
+    df = metafeatures.loc[[d]]
     return df
 
 def update_dataset_mf(dataset_mf,results_data):
