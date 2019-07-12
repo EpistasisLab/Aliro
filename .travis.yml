@@ -9,10 +9,10 @@ jobs:
       name: "Integration Tests"
       before_install:
         # Rebuild PennAI Base
-        - docker build ./dockers/base -t pennai/base:latest -m 6g
+        - docker build ./dockers/base -t pennai/base:latest -m 8g
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-int-test.yml build -m 6g
+        - docker-compose -f ./docker-compose-int-test.yml build -m 8g
       script:
         # Unit tests
         - docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate
@@ -20,7 +20,7 @@ jobs:
       name: "Unit Tests"
       install:
         # Building Docker images
-        - docker-compose -f ./docker-compose-unit-test.yml build -m 6g
+        - docker-compose -f ./docker-compose-unit-test.yml build -m 8g
       script:
         # Unit tests
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
