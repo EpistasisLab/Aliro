@@ -1,4 +1,12 @@
-FROM continuumio/miniconda3:4.6.14
+FROM python:3
+
+#nodejs
+RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /opt/ && \
+    rm ~/node.tar.xz
+ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
+
+ARG docker_filepath=dockers/lab/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
     vim openssh-client openssh-server telnet apache2 \
@@ -11,26 +19,9 @@ RUN apt-get update --fix-missing && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# set conda config for faster build
-RUN conda config --set channel_priority strict
-
-# set up conda environment
-RUN conda install -y -S -c conda-forge \
-    nodejs=11.14.0 \
-    scikit-learn=0.20.2 \
-    tqdm=4.32.2 \
-    pymongo=3.8.0 \
-    pandas=0.24.2 \
-    matplotlib=3.1.1 \
-		cython=0.29.2 \
-		xgboost=0.82 \
-		simplejson=3.16.0 && \
-    conda clean --all -y
-
-RUN npm install -g pm2 --silent --progress=false
-
-ARG docker_filepath=dockers/lab/files
-
+# setup python environment
+COPY ${docker_filepath}/requirements.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements.txt
 ### bill's surprise fork
 RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 
@@ -47,6 +38,8 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
+# setup node environment
+RUN npm install -g pm2 --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
@@ -60,11 +53,9 @@ COPY lab/package.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
-
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
 COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd
 COPY ${docker_filepath}/certs/* /usr/lib/ssl/private/
-
 
 WORKDIR /root/
 
