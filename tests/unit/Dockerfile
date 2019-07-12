@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
 RUN npm install -g mocha
 
 # install lab/webapp/node_modules to an anon volume
-
+WORKDIR /appsrc/lab/webapp
 COPY lab/webapp/package.json /appsrc/lab/webapp/
 RUN dos2unix /appsrc/lab/webapp/package.json
 RUN npm install --silent --progress=false
