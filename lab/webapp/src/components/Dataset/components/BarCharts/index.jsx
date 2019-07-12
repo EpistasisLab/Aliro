@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Header } from 'semantic-ui-react';
 import * as d3 from "d3";
 
-class BarChart extends Component {
+class BarCharts extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,13 +42,27 @@ class BarChart extends Component {
       data_sorted.forEach(val => {
         classTotalCountObj[val] = classTotalCountObj[val] ? ++classTotalCountObj[val] : 1;
       });
-      let colorList = ['#e41a1c','#377eb8'];
+
       let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
       let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
       let proportionObjList = [];
       // find unique values for the given column key as well as dependent column
       let givenColSet = [... new Set(valByRowObj[colKey])];
-      let depColSet = [... new Set(valByRowObj[depCol])]
+      let depColSet = [... new Set(valByRowObj[depCol])].sort();
+
+      /**---- *************** ----**** ---- Color stuff here ----****---- *************** ----**/
+      let colorList = ['#55d6be','#7c5ba5'];
+      // for every entry in depColSet, map keys to color
+      //let colorObj = [{0:'#e41a1c'}, {1:'#377eb8'}];
+      let colorObjList = [];
+      depColSet.forEach((depVal, i) => {
+         i % 2 === 0
+          ? colorObjList.push({[depVal]: colorList[0]})
+          : colorObjList.push({[depVal]: colorList[1]});
+      })
+      //window.console.log('colorobjlist', colorObjList);
+      /**---- *************** ----****---- *************** ----****---- *************** ----**/
+
       // count proportion of given column name/key with dataset dependent_col
 
       // for every unique value of given colKey in dataset, collect all matches
@@ -95,8 +109,8 @@ class BarChart extends Component {
         .order(d3.stackOrderNone)
         .offset(d3.stackOffsetNone);
       let stackThing = stack(proportionObjList);
-
-      window.console.log('real data stack', stackThing);
+      let stackColorThing = stack(colorObjList);
+      //window.console.log('real data stack', stackThing);
 
       // x - axis
       let xStuff = d3.scaleBand()
@@ -108,32 +122,32 @@ class BarChart extends Component {
         .domain(depColSet)
         .range(colorList);
 
-/* -------------------------------------this one works-------------------*/
-      // stacked stuff
+      // stacked stuff - svg elem using stacked data
       let stackedSvg = d3.select("#stacked_bar_charts_" + colKey)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .style("background-color", "pink")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       stackedSvg.append('g')
         .attr('transform', `translate(0, ${height})`)
+        .style("color", "white")
         .call(d3.axisBottom(xStuff));
 
+      // y-axis
       let stackedY = d3.scaleLinear()
         .domain([0, d3.max(stackThing, (d) => {
           //window.console.log('y stacked thing 1', d);
           return d3.max(d, (d) => {
             //window.console.log('y stacked thing 2', d);
-            //return d[0] + d[1];
             return d[1];
           });
         })])
         .range([height, 0]);
 
       stackedSvg.append('g')
+        .style("color", "white")
         .call(d3.axisLeft(stackedY));
 
       let groups = stackedSvg.selectAll("g.stack")
@@ -156,20 +170,16 @@ class BarChart extends Component {
           return xStuff(d.data[colKey]);
         })
         .attr("y", (d, t, s) => {
-          //window.console.log('y stuff', d);
-          // window.console.log('y stuff 1', yStuff(d.entry.proportion[1][1]));
           return stackedY(d[1]);
         })
         .attr('height', (d) => {
-          //window.console.log('height stuff', stackedY(d[0]) - stackedY(d[0] + d[1]));
           let y0 = stackedY(d[0]);
           let y1 = stackedY(d[1]);
-
           //window.console.log('height stuff', y0 - y1);
           return y0 - y1;
         })
         .attr('width', xStuff.bandwidth())
-        .on("mouseover", function() { tooltip.style("display", null); })
+        .on("mouseover", () => { tooltip.style("display", null); }) // tooltip - hover over bars and display value
         .on("mouseout", function() {
           window.setTimeout(() => tooltip.style("display", "none"), 3500);
          })
@@ -178,15 +188,13 @@ class BarChart extends Component {
           let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
           tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
           tooltip.select("text").text(d[1] - d[0]);
-          //window.setTimeout(() => tooltip.style("display", "none"), 2500);
         });
 
         // legend
         let legend = stackedSvg.selectAll(".legend")
-          .data(colorList)
+          .data(stackColorThing)
           .enter().append("g")
           .attr("transform", function(d, i) {
-            window.console.log('legend transform');
             return "translate(20,"+  (i * 19) + ")";
           });
 
@@ -195,19 +203,24 @@ class BarChart extends Component {
           .attr("y", height)
           .attr("width", 18)
           .attr("height", 18)
-          .style("fill", function(d, i) {return colorList.slice().reverse()[i];});
+          .style("fill", function(d, i) {
+            //window.console.log('legend color stuff', d);
+            let color = d[d.index];
+            return color.data[d.key];
+          });
 
         legend.append("text")
           .attr("x", -margin.left + 5)
           .attr("y", height + 9)
           .attr("dy", ".35em")
           .style("text-anchor", "start")
+          .style("fill", "white")
           .text(function(d, i) {
-            window.console.log('legend stuff');
-            return depColSet[i];
+            //window.console.log('legend text stuff');
+            return d.key;
           });
 
-        // tooltip
+        // tooltip elem to display on mouseover
         let tooltip = stackedSvg.append("g")
           .attr("class", "tooltip")
           .style("display", "none");
@@ -230,12 +243,7 @@ class BarChart extends Component {
   render() {
     const { dataPreview, valByRowObj, colKey } = this.props;
     return (
-      <div>
-        <div id={"test_bar_charts_" + colKey}>
-        </div>
-        <div id={"stacked_bar_charts_" + colKey}>
-        </div>
-      </div>
+        <div id={"stacked_bar_charts_" + colKey} />
     );
   }
 }
@@ -244,5 +252,5 @@ const mapStateToProps = (state) => ({
 
 });
 
-export { BarChart };
-export default connect(mapStateToProps, {})(BarChart);
+export { BarCharts };
+export default connect(mapStateToProps, {})(BarCharts);

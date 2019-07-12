@@ -16,16 +16,12 @@ class BarChart extends Component {
     this.createBarGraph();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    //this.createBarGraph();
-  }
-
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
   createBarGraph(){
     const { dataPreview, valByRowObj, tempKey } = this.props;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    let margin = { top: 10, right: 30, bottom: 20, left: 40 },
+        width = 400 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
 
     let chartInnerHTML = "";
     //let valByRowObj = this.getDataValByRow();
@@ -55,9 +51,8 @@ class BarChart extends Component {
 
       let svg = d3.select("#test_bar_chart_" + tempKey)
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .style("background-color", "blue")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
@@ -68,23 +63,20 @@ class BarChart extends Component {
         .domain(testSet)
         .padding(0.2);
 
-      svg.append('g')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(xStuff));
-
       // y - axis
       let yStuff = d3.scaleLinear()
         .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
         .range([height, 0]);
 
       svg.append('g')
+        .style("color", "white")
         .call(d3.axisLeft(yStuff));
 
       svg.selectAll("rect")
         .data(tempData).enter()
         .append("rect").merge(svg)
         .style("stroke", "gray")
-        .style("fill", "black")
+        .style("fill", "rgb(125, 91, 166)")
         .attr("x", (d, t, s, a) => {
           //window.console.log('x stuff', d);
           return xStuff(d.entry.testKey);
@@ -98,21 +90,49 @@ class BarChart extends Component {
           return height - yStuff(d.entry.testValue);
         })
         .attr('width', xStuff.bandwidth())
-        .on("mouseover", function(){d3.select(this).style("fill", "red");})
-        .on("mouseout", function(){d3.select(this).style("fill", "black");});
+        .on("mouseover", () => { tooltip.style("display", null); }) // tooltip functions
+        .on("mouseout", function() {
+          window.setTimeout(() => tooltip.style("display", "none"), 3500);
+         })
+        .on("mousemove", function(d) {
+          let xPosition = d3.mouse(this)[0] - 15;
+          let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
+          tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+          tooltip.select("text").text(d.entry.testValue);
+          //window.setTimeout(() => tooltip.style("display", "none"), 2500);
+        });
+
+
+      // append x axis after making bars so axis line is above bars
+      svg.append('g')
+        .attr('transform', `translate(0, ${height})`)
+        .style("color", "white")
+        .call(d3.axisBottom(xStuff));
+
+      // tooltip element
+      let tooltip = svg.append("g")
+        .attr("class", "tooltip")
+        .style("display", "none");
+
+      tooltip.append("rect")
+        .attr("width", 30)
+        .attr("height", 20)
+        .attr("fill", "white")
+        .style("opacity", 0.5);
+
+      tooltip.append("text")
+        .attr("x", 15)
+        .attr("dy", "1.2em")
+        .style("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");
     }
   }
 
   render() {
-    const { dataPreview, valByRowObj, tempKey } = this.props;
+    const { tempKey } = this.props;
     return (
-      <div>
-        <Header>
-          Bar_Chart
-        </Header>
-        <div id={"test_bar_chart_" + tempKey}>
-        </div>
-      </div>
+      <div id={"test_bar_chart_" + tempKey} />
     );
   }
 }

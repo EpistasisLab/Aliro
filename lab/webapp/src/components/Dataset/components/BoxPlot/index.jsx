@@ -24,9 +24,8 @@ class BoxPlot extends Component {
   createBoxPlot(){
     const { dataPreview, valByRowObj, tempKey } = this.props;
     let margin = { top: 5, right: 180, bottom: 25, left: 150 },
-        width = 850 - margin.left - margin.right,
+        width = 650 - margin.left - margin.right,
         height = 255 - margin.top - margin.bottom;
-    //let valByRowObj = this.getDataValByRow();
     let dataKeys;
     if(dataPreview) {
       let dataStuff = dataPreview.data;
@@ -34,11 +33,14 @@ class BoxPlot extends Component {
       dataKeys = Object.keys(dataStuff[0]);
     }
 
+    // to make background of svg transparent set stroke & fill to none
+    // or do not specify background color
     let svg = d3.select("#test_box_plot_" + tempKey)
     .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-    .style("background-color", "aliceblue")
+      .attr("stroke", "none")
+    .style("fill", "none")
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
@@ -54,17 +56,7 @@ class BoxPlot extends Component {
     let minData = Math.min(...data_sorted);
     let maxData = Math.max(...data_sorted);
 
-    /*
-    * -------------------- BOX PLOT --------------------
-    */
-    // TODO: learn min/max in boxplots & verify validity
-    //min = minData;
-    //max = maxData;
-    /*
-    * -------------------- BOX PLOT --------------------
-    */
-
-    // color scale
+    // color scale for jitter points
     let myColor = d3.scaleSequential()
       .interpolator(d3.interpolateInferno)
       .domain([min, max]);
@@ -76,14 +68,18 @@ class BoxPlot extends Component {
       .paddingInner(1)
       .paddingOuter(.5)
     svg.append("g")
+      .style("color", "white")
       .call(d3.axisLeft(y).tickSize(0))
       .select(".domain").remove()
     // X scale
     let x = d3.scaleLinear()
       .domain([min, max])
       .range([0, width]);
-    svg.append("g").call(d3.axisBottom(x))
-       .attr("transform", "translate(0," + (height) + ")");
+    svg.append("g")
+      .attr("stroke", "white")
+      .style("color", "white")
+      .call(d3.axisBottom(x))
+      .attr("transform", "translate(0," + (height) + ")");
     // box features
     let center = 150;
     width = 100;
@@ -93,7 +89,7 @@ class BoxPlot extends Component {
       .attr("y2", center)
       .attr("x1", x(min) )
       .attr("x2", x(max) )
-      .attr("stroke", "black");
+      .attr("stroke", "white");
 
     // Show the box
     svg.append("rect")
@@ -101,10 +97,8 @@ class BoxPlot extends Component {
       .attr("y", center - width/2 )
       .attr("height",  width)
       .attr("width", (x(q3)-x(q1)) )
-      .attr("stroke", "black")
-      .style("fill", "#69b3a2")
-      //.on("mouseover", function(){d3.select(this).style("fill", "yellow");})
-      //.on("mouseout", function(){d3.select(this).style("fill", "#69b3a2");});
+      .attr("stroke", "white")
+      .style("fill", "rgb(85, 214, 190)")
 
     // show median, min and max horizontal lines
     svg.selectAll("toto")
@@ -115,7 +109,7 @@ class BoxPlot extends Component {
       .attr("y2", center+width/2)
       .attr("x1", function(d){ return(x(d))} )
       .attr("x2", function(d){ return(x(d))} )
-      .attr("stroke", "black");
+      .attr("stroke", "white");
 
     // tool tip
     let tooltip = d3.select("#test_box_plot_" + tempKey)
@@ -139,9 +133,9 @@ class BoxPlot extends Component {
         .duration(200)
         .style("opacity", 0)
     }
-    //window.console.log('sorted data for', tempKey);
-    //window.console.log(data_sorted);
-    // points with jitter
+
+    /**---- *************** ----**** ---- jitter stuff here ----****-----**/
+
     /*let jitterWidth = 50;
     svg.selectAll("indPoints")
       .data(data_sorted)
@@ -163,15 +157,9 @@ class BoxPlot extends Component {
   }
 
   render() {
-    const { dataPreview, valByRowObj, tempKey } = this.props;
+    const {tempKey } = this.props;
     return (
-      <div>
-        <Header style={{color: "aliceblue"}}>
-          Box_Plot with Jitter for: {tempKey}
-        </Header>
-        <div id={"test_box_plot_" + tempKey}>
-        </div>
-      </div>
+      <div id={"test_box_plot_" + tempKey} />
     );
   }
 }

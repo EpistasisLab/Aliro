@@ -182,17 +182,11 @@ class DatasetMenu extends Component {
     let ord_feats = dataset.files[0].ordinal_features;
     let ordKeys =  Object.keys(ord_feats);
     let valByRowObj = this.getDataValByRow();
-    let allKeys;
 
     if(dataPreview) {
       let dataStuff = dataPreview.data;
       // grab all dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
-      allKeys = [...dataKeys];
-      let depColIndex = dataKeys.indexOf(dataset.files[0].dependent_col);
-      // remove dependent_col from dataKeys list
-      dataKeys.splice(depColIndex, 1);
-    }
 
     let testPain = [
       {
@@ -206,56 +200,77 @@ class DatasetMenu extends Component {
               <br/>
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
-            {
-              // display boxplots
-              dataKeys && dataKeys.map(key => {
-                // loop through dataset column name/key for charts later on
-                // need to be careful with this key - replace spaces with '_'
-                let tempKey = key.replace(/ /g, "_");
+            <Grid columns='two' divided padded>
+              {
+                // display boxplots
+                dataKeys && dataKeys.map(key => {
+                  // loop through dataset column name/key for charts later on
+                  // need to be careful with this key - replace spaces with '_'
+                  let tempKey = key.replace(/ /g, "_");
 
-                let tempChart = (
-                  <BoxPlot
-                    key={tempKey}
-                    tempKey={tempKey}
-                    dataPreview={dataPreview}
-                    valByRowObj={valByRowObj}
-                  />);
-                // check for categorical columns (display stacked bar chart)
-                cat_feats.indexOf(key) > -1 ? tempChart = (
-                  <div key={"cat_chart_" + tempKey}>
-                    <p style={{color: "aliceblue"}}>
-                      {"cat_chart_for: " + tempKey}
-                    </p>
-                    <BarCharts
-                      colKey={key}
-                      depCol={dataset.files[0].dependent_col}
-                      keys={allKeys}
+                  let tempChart = (
+                    <BoxPlot
+                      key={tempKey}
+                      tempKey={tempKey}
                       dataPreview={dataPreview}
                       valByRowObj={valByRowObj}
-                    />
-                  </div>
-                ) : null;
-                // check for ordinal columns (display stacked bar chart)
-                ordKeys.indexOf(key) > -1 ? tempChart = (
-                  <div key={"ord_chart_" + tempKey}>
-                    <p style={{color: "red"}}>
-                      {"ordinal_chart_for: " + tempKey}
-                    </p>
-                    <br/>
-                  </div>
-                ) : null;
-                return tempChart;
-              })
-            }
-            { // display bar chart for dependent column/target/class
-              valByRowObj && Object.keys(valByRowObj).length &&
-              <BarChart
-                tempKey={dataset.files[0].dependent_col}
-                dataset={dataset}
-                dataPreview={dataPreview}
-                valByRowObj={valByRowObj}
-              />
-            }
+                    />);
+                  // check for categorical columns (display stacked bar chart)
+                  cat_feats.indexOf(key) > -1 ? tempChart = (
+                    <div key={"cat_chart_" + tempKey}>
+                      <BarCharts
+                        colKey={key}
+                        depCol={dataset.files[0].dependent_col}
+                        dataPreview={dataPreview}
+                        valByRowObj={valByRowObj}
+                      />
+                    </div>
+                  ) : null;
+                  // check for ordinal columns (display stacked bar chart)
+                  ordKeys.indexOf(key) > -1 ? tempChart = (
+                    <div key={"ord_chart_" + tempKey}>
+                      {/*<p style={{color: "green"}}>
+                        {"ordinal_chart_for: " + tempKey}
+                      </p>*/}
+                      <BarCharts
+                        colKey={key}
+                        depCol={dataset.files[0].dependent_col}
+                        dataPreview={dataPreview}
+                        valByRowObj={valByRowObj}
+                      />
+                    </div>
+                  ) : null;
+                  // create bar chart for dependent_col/target class
+                  key === dataset.files[0].dependent_col
+                    ? tempChart = (
+                      <BarChart
+                        tempKey={key}
+                        dataset={dataset}
+                        dataPreview={dataPreview}
+                        valByRowObj={valByRowObj}
+                      />
+                    ) : null;
+
+                  let gridList = [];
+                  gridList.push(
+                    <Grid.Row>
+                      <Grid.Column width={2}>
+                        <div style={{color: 'white'}}>
+                          {tempKey}
+                        </div>
+                      </Grid.Column>
+                      <Grid.Column width={7}>
+                        <Segment>
+                          {tempChart}
+                        </Segment>
+                      </Grid.Column>
+                    </Grid.Row>
+                  );
+
+                  return gridList;
+                })
+              }
+            </Grid>
           </Tab.Pane>
         )
       },
@@ -365,69 +380,11 @@ class DatasetMenu extends Component {
             </Segment>
           </Tab.Pane>
         )
-      },{
-        menuItem: 'Bar_Chart',
-        render: () => (
-          <BarChart
-            tempKey={dataset.files[0].dependent_col}
-            dataset={dataset}
-            dataPreview={dataPreview}
-            valByRowObj={valByRowObj}
-          />
-        )
-      },{
-        menuItem: 'Box_Plot',
-        render: () => (
-          <div>
-            {
-              valByRowObj
-              && Object.keys(valByRowObj).length
-              && dataKeys
-              && dataKeys.map(key => {
-                let tempKey = key.replace(/ /g, "_");
-                return (<BoxPlot
-                  key={tempKey}
-                  tempKey={tempKey}
-                  dataPreview={dataPreview}
-                  valByRowObj={valByRowObj}
-                />)
-              })
-            }
-          </div>
-        )
-      },{
-        menuItem: 'Bar_Charts',
-        render: () => (
-          <div>
-            {
-              dataKeys && dataKeys.map(key => {
-                let tempChart;
-                cat_feats.indexOf(key) > -1
-                  ? tempChart = (
-                    <div key={"bar_charts_for" + key}>
-                      <p style={{color: "aliceblue"}}>
-                        {"bar_charts_for: " + key}
-                      </p>
-                      <BarCharts
-                        colKey={key}
-                        depCol={dataset.files[0].dependent_col}
-                        keys={allKeys}
-                        dataPreview={dataPreview}
-                        valByRowObj={valByRowObj}
-                      />
-                    </div>
-                  )
-                  : tempChart = (<div/>);
-                return tempChart;
-              })
-            }
-          </div>
-        )
       }
     ];
-
     return testPain;
   }
+}
 
   render() {
     let stuff = this.getTabMenu();
@@ -437,23 +394,8 @@ class DatasetMenu extends Component {
           menu={{ attached: 'top' }}
           panes={stuff}
           renderActiveOnly={true}
-          onTabChange={(e, d) => {
-            if(d.activeIndex === 0){
-              // make chart for summary tab - index is 0
-
-              // this is real bad but temp solution though,
-              // try to delay call to create chart until tab is mounted in DOM?
-              // not sure but guessing that tab containing html DOM elements
-              // where d3 graphics will be displayed is not immediately available
-              // crudely setting timeout to wait until div for d3 is ready
-
-              // dont need this anymore
-              //window.setTimeout(this.createCharts, 1.5);
-            }
-          }}
         />
       </div>
-
     );
   }
 }
