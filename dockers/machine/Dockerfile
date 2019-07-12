@@ -1,4 +1,13 @@
-FROM continuumio/miniconda3:4.6.14
+FROM python:3
+
+
+#nodejs
+RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /opt/ && \
+    rm ~/node.tar.xz
+ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
+
+ARG docker_filepath=dockers/machine/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
     vim openssh-client openssh-server graphviz \
@@ -11,28 +20,15 @@ RUN apt-get update --fix-missing && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# set conda config for faster build
-RUN conda config --set channel_priority strict
+# setup python environment
+COPY ${docker_filepath}/requirements.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements.txt
 
-# set up conda environment
-RUN conda install -y -S -c conda-forge \
-    nodejs=11.14.0 \
-    scikit-learn=0.20.2 \
-    tqdm=4.32.2 \
-    pymongo=3.8.0 \
-    pandas=0.24.2 \
-    matplotlib=3.1.1 && \
-    conda clean --all -y
-
+# setup node environment
 RUN npm install -g pm2 --silent --progress=false
-
-ARG docker_filepath=dockers/machine/files
 
 # install node_modules to an anon volume
 WORKDIR /appsrc/machine
-
-## install dependencies for machine
-RUN pip install --no-cache-dir mlxtend==0.16.0 pydot==1.4.1
 
 COPY machine/package.json /appsrc/machine/
 RUN dos2unix /appsrc/machine/package.json

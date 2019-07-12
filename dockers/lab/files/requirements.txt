@@ -1,0 +1,9 @@
+scikit-learn==0.20.2
+tqdm==4.32.2
+pymongo==3.8.0
+pandas==0.24.2
+matplotlib==3.1.1
+cython==0.29.2
+xgboost==0.82
+simplejson==3.16.0
+requests==2.22.0
