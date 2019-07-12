@@ -7,7 +7,7 @@ import datetime
 import pickle
 import pdb
 import ai.api_utils as api_utils
-from ai.api_utils import LabApi
+from ai.api_utils import LabApi, AI_STATUS
 import ai.q_utils as q_utils
 import os
 import ai.knowledgebase_loader as knowledgebase_loader
@@ -288,7 +288,7 @@ class AI():
 
         # get all dtasets that have an ai 'requested' status
         # and initilize a new request        
-        dsFilter = {'ai':['requested', 'dummy']}
+        dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
         if len(aiOnRequests) > 0:
@@ -307,7 +307,7 @@ class AI():
         time.sleep(.1)
         # get all datasets that have a manual 'off' status
         # and terminate their ai requests
-        dsFilter = {'ai':['off', 'dummy']}
+        dsFilter = {'ai':[AI_STATUS.OFF.value, 'dummy']}
         aiOffRequests = self.labApi.get_filtered_datasets(dsFilter)
 
         if len(aiOffRequests) > 0:
@@ -367,6 +367,11 @@ class AI():
         :return bool - true if successfully sent, false if no machine capacity available
         """
         logger.info(f"transfer_rec({rec_payload})")
+
+        aiStatus = self.labApi.get_dataset_ai_status(rec_payload['dataset_id'])
+        if not(aiStatus == AI_STATUS.ON.value):
+            logger.debug("AI status is not on; not submitting experiment")
+            return False
 
         submitstatus = self.labApi.launch_experiment(
                             algorithmId=rec_payload['algorithm_id'],
