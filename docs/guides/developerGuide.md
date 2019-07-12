@@ -3,7 +3,7 @@
 ## Developer Installation
 
 ### Requirements
-Install Docker and docker-compose as per the main installation requirements.
+Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
 
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (needed only to run unit tests locally)
