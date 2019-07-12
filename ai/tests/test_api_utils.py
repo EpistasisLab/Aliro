@@ -40,4 +40,3 @@ class TestLabApi:
 		print("type: ", type(res))
 		assert_is_instance(res, pd.DataFrame)
 		assert len(res) > 0
-		assert len(res) == 0
