@@ -119,7 +119,7 @@ class KNNMetaRecommender(BaseRecommender):
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_hash,
                                                                   dataset_mf)
             if len(ml_rec) < n_recs:
-                print('len(ml_rec)=',len(ml_rec),'recommending random')
+                logger.info(f'len(ml_rec)={len(ml_rec)}, recommending random')
             iters = 0
             while len(ml_rec) < n_recs and iters < 1000:
                 # add random ml_p recommendations until n_recs is met
@@ -134,13 +134,12 @@ class KNNMetaRecommender(BaseRecommender):
                     rec_score.append(np.nan)
                 iters = iters+1
             if iters == 1000:
-                print('couldn''t find',n_recs,'unique recommendations! '
+                logger.info(f'couldn''t find {n_recs} unique recommendations! '
                       'returning',len(ml_rec))
                 subset = [dataset_hash in tdm for tdm in self.trained_dataset_models]
-                print('btw, there are ',
-                       len([tdm for i,tdm in enumerate(self.trained_dataset_models)
-                           if subset[i]]),
-                       'results for',dataset_hash,'already')
+                num_results = len([tdm for i,tdm in enumerate(self.trained_dataset_models)
+                           if subset[i]]) 
+                logger.info(f'btw, there are {num_results} results for {dataset_hash} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
                     [self.param_htable[int(p)] for p in phash_rec[:n_recs]],
                                        rec_score[:n_recs])
