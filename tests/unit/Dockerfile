@@ -20,9 +20,16 @@ RUN conda config --set channel_priority strict
 
 # set up conda environment, specify node version because of known issue with version 11.11
 # check here - https://github.com/facebook/jest/issues/8069
-RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
-    pymongo tqdm pandas matplotlib \
-    xgboost simplejson numpy cython && \
+RUN conda install -y -s -c conda-forge \
+    nodejs=11.14.0 \
+    scikit-learn=0.20.2 \
+    tqdm=4.32.2 \
+    pymongo=3.8.0 \
+    pandas=0.24.2 \
+    matplotlib=3.1.1 \
+    cython=0.29.2 \
+    xgboost=0.82 \
+    simplejson=3.16.0 && \
     conda clean --all -y
 
 ### my surprise fork
