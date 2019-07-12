@@ -5,3 +5,4 @@ pandas==0.24.2
 matplotlib==3.1.1
 mlxtend==0.16.0
 pydot==1.4.1
+requests==2.22.0
