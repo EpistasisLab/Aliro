@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.7.4-stretch
 
 #nodejs
 RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
@@ -8,7 +8,7 @@ ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
 
 ARG docker_filepath=dockers/machine/files
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update --fix-missing && apt-get install -y \
     vim openssh-client openssh-server graphviz \
     net-tools iputils-ping xz-utils \
     screen ngrep ca-cacert \
