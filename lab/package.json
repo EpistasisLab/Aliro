@@ -29,8 +29,9 @@
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
+    "q": "^1.5.1",
+    "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "request": "2.88.0",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
     "ws": "^3.3.3"
