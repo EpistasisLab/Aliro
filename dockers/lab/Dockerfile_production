@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.7.4-stretch
 
 # copy src for lab
 COPY lab /appsrc/lab
