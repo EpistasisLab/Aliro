@@ -29,17 +29,13 @@
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
-    "request-promise": "^3.0.0",
+    "request-promise": "^4.2.4",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
     "ws": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^10.5.7",
-    "conventional-github-releaser": "^1.1.2",
-    "conventional-recommended-bump": "^0.2.1",
-    "minimist": "^1.2.0",
-    "run-sequence": "^1.2.0",
     "typescript": "^3.0.1"
   },
   "engines": {
