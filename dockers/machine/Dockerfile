@@ -8,12 +8,7 @@ ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
 
 ARG docker_filepath=dockers/machine/files
 
-RUN add-apt-repository main && \
-    add-apt-repository universe && \
-    add-apt-repository restricted && \
-    add-apt-repository multiverse
-
-RUN apt-get update --fix-missing && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     vim openssh-client openssh-server graphviz \
     net-tools iputils-ping xz-utils \
     screen ngrep ca-cacert \
