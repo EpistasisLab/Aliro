@@ -1,6 +1,5 @@
 FROM python:3
 
-
 #nodejs
 RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /opt/ && \
