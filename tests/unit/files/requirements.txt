@@ -2,7 +2,7 @@ scikit-learn==0.20.2
 tqdm==4.32.2
 pymongo==3.8.0
 pandas==0.24.2
-matplotlib==3.1.1
+matplotlib==3.1.0
 cython==0.29.2
 xgboost==0.82
 simplejson==3.16.0
@@ -15,3 +15,4 @@ nose-htmloutput==0.6.0
 parameterized==0.7.0
 m2r==0.2.1
 sphinx-rtd-theme==0.4.3
+requests==2.22.0
