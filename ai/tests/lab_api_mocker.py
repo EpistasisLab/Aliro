@@ -148,6 +148,8 @@ def handle_get(path, data):
     elif (path == 'http://lab:5080/api/datasets/5b58f9d506c14c003221b3f1' or 
         path =='http://lab:5080/api/datasets/5ba417507831bf002bcbd59b'):
         return MockResponse(json.dumps(api_dataset_metafeatures), 200)
+    elif path == f'http://lab:5080/api/datasets/{test_dataset_id_ai_on}':
+        return MockResponse(json.dumps(api_dataset_ai_on), 200)
     else:
         logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
@@ -225,6 +227,9 @@ def handle_post_no_datasets(path, data):
 #===========================================
 # Mock lab api data
 #===========================================
+test_dataset_id_no_ai = '5b58f9d506c14c003221b3f1'
+test_dataset_id_ai_on = '5d28e7af736df2003bdd2702'
+
 api_preferences_data = [
     {
         "_id": "5ba41716dfe741699222870f",
@@ -1512,6 +1517,72 @@ api_preferences_data_multi_machine = [
         ]
     }
 ]
+
+api_dataset_ai_on = [{
+    "_id": "5d28e7af736df2003bdd2702",
+    "name": "appendicitis",
+    "username": "testuser",
+    "metafeatures": {
+        "class_prob_max": 0.8018867924528302,
+        "class_prob_mean": 0.5,
+        "class_prob_median": 0.5,
+        "class_prob_min": 0.19811320754716982,
+        "class_prob_std": 0.4269323961881042,
+        "corr_with_dependent_abs_25p": None,
+        "corr_with_dependent_abs_75p": None,
+        "corr_with_dependent_abs_kurtosis": None,
+        "corr_with_dependent_abs_max": None,
+        "corr_with_dependent_abs_mean": None,
+        "corr_with_dependent_abs_median": None,
+        "corr_with_dependent_abs_min": None,
+        "corr_with_dependent_abs_skew": None,
+        "corr_with_dependent_abs_std": None,
+        "dataset_hash": "db273af669a33c0303948622cf694a232519c3ca3aac8077fb008f4a60d30e17",
+        "diversity_fraction": 0.822528983974963,
+        "entropy_dependent": 0.49777562247179563,
+        "kurtosis_kurtosis": 4.4521501032930715,
+        "kurtosis_max": 5.319422971587894,
+        "kurtosis_mean": 1.337358676553602,
+        "kurtosis_median": 0.8241556149720961,
+        "kurtosis_min": -0.064662454053662,
+        "kurtosis_skew": 2.049814018854758,
+        "kurtosis_std": 1.7321483030218765,
+        "metafeature_version": 1,
+        "n_categorical": 0,
+        "n_classes": 2,
+        "n_columns": 8,
+        "n_numerical": 7,
+        "n_rows": 106,
+        "pca_fraction_95": 0.42857142857142855,
+        "ratio_rowcol": 13.25,
+        "skew_kurtosis": -0.807203871774552,
+        "skew_max": 2.0405760464786686,
+        "skew_mean": 0.23121482439885738,
+        "skew_median": 0.20576966206912586,
+        "skew_min": -1.2122210852887918,
+        "skew_skew": 0.24606691449283025,
+        "skew_std": 1.1148468812633117,
+        "symbols_kurtosis": 0,
+        "symbols_max": 0,
+        "symbols_mean": 0,
+        "symbols_min": 0,
+        "symbols_skew": 0,
+        "symbols_std": 0,
+        "symbols_sum": 0
+    },
+    "files": [
+        {
+            "_id": "5d28e7ad736df2003bdd2700",
+            "filename": "appendicitis.csv",
+            "mimetype": "text/plain",
+            "dependent_col": "class",
+            "categorical_features": [],
+            "ordinal_features": {},
+            "timestamp": 1562961839234
+        }
+    ],
+    "ai": "on"
+}]
 
 '''
 api_preferences_data_multi_user = [{'_id': '5ca282caa0357a2783b0386e', 'username': 'pennai', 'firstname': 'Penn', 'lastname': 'AI', 'algorithms': []}, {'_id': '5ca282caa0357a2783b0386d', 'username': 'testuser', 'firstname': 'Test', 'lastname': 'User',
