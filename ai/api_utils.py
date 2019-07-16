@@ -10,6 +10,7 @@ import requests
 import itertools as it
 import logging
 import sys
+from enum import Enum, auto, unique
 from sklearn.model_selection import ParameterGrid # utility for hyperparams
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,14 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+@unique
+class AI_STATUS(Enum):
+    ON = "on"
+    OFF = "off"
+    FINISHED = "finished"
+    REQUESTED = "requested"
+
 
 class NumpyJsonEncoder(json.JSONEncoder):
     """ Encoder for numpy in json
@@ -142,6 +151,26 @@ class LabApi:
         res = self.__request(path=self.data_path, payload=payload)
         data = json.loads(res.text)
         return data
+
+    def get_dataset_ai_status(self, datasetId):
+        """Get the ai status of a particular dataset
+        """
+        logger.info(f"get_dataset_ai_status('{datasetId}')")
+
+        payload = {}
+        path = '/'.join([self.data_path, datasetId])
+
+        res = self.__request(path=path, payload=payload, method="GET")
+        data = json.loads(res.text)
+        data = data[0]
+
+        logger.info(f"data: {data}")
+
+        if ("ai" in data): 
+            return data["ai"]
+        else: 
+            return None
+
 
     def get_new_experiments(self, last_update):
         """Get experiments that occurred after last_update
