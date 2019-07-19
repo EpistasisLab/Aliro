@@ -14,8 +14,6 @@ RUN npm install --no-optional --progress=false
 COPY wait-for-it.sh /opt
 RUN dos2unix /opt/wait-for-it.sh
 RUN ["chmod", "+x", "/opt/wait-for-it.sh"]
-COPY entrypoint.sh /root
+COPY wait_pennai.sh /root
 COPY int_test_runner.sh /root
 RUN dos2unix /root/*.sh
-
-CMD ["/bin/bash", "/root/entrypoint.sh"]
