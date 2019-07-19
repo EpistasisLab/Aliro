@@ -10,7 +10,7 @@ services:
       - dbmongo
     tty: true
     stdin_open: true
-    command: bash -c "sh /root/int_test_runner.sh"
+    command: bash -c "sh /root/wait_pennai.sh && sh /root/int_test_runner.sh"
     volumes:
       - "./tests/integration/jest:/src/jest"
       - "./data/datasets/test/integration:/appsrc/data/datasets/test/integration"
