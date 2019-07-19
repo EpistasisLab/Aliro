@@ -75,7 +75,9 @@ pipeline {
 
                 // run the integration test instance
                 sh 'docker-compose -f ./docker-compose-int-test.yml build -m 6g'
-                sh 'docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate'
+                sh 'docker-compose -f ./docker-compose-int-test.yml up -d'
+                sh 'docker exec -it "pennai_tester_1" bash /root/int_test_runner.sh'
+                sh 'docker-compose -f ./docker-compose-int-test.yml down'
             }
             post {
                 always {
