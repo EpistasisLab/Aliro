@@ -18,6 +18,4 @@ COPY entrypoint.sh /root
 COPY int_test_runner.sh /root
 RUN dos2unix /root/*.sh
 
-# COPY jest .
-
 CMD ["/bin/bash", "/root/entrypoint.sh"]
