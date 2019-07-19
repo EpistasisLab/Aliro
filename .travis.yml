@@ -13,7 +13,7 @@ jobs:
       script:
         # Integration tests
         - docker-compose -f ./docker-compose-int-test.yml up -d
-        - dosker ps
+        - docker ps
         - docker exec -it "pennai_tester_1" npm test
         - docker-compose -f ./docker-compose-int-test.yml down
     - # stage name not required, will continue to use 'Test'
