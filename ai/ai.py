@@ -7,7 +7,7 @@ import datetime
 import pickle
 import pdb
 import ai.api_utils as api_utils
-from ai.api_utils import LabApi
+from ai.api_utils import LabApi, AI_STATUS
 import ai.q_utils as q_utils
 import os
 import ai.knowledgebase_loader as knowledgebase_loader
@@ -24,7 +24,7 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -288,7 +288,7 @@ class AI():
 
         # get all dtasets that have an ai 'requested' status
         # and initilize a new request        
-        dsFilter = {'ai':['requested', 'dummy']}
+        dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
         if len(aiOnRequests) > 0:
@@ -307,7 +307,7 @@ class AI():
         time.sleep(.1)
         # get all datasets that have a manual 'off' status
         # and terminate their ai requests
-        dsFilter = {'ai':['off', 'dummy']}
+        dsFilter = {'ai':[AI_STATUS.OFF.value, 'dummy']}
         aiOffRequests = self.labApi.get_filtered_datasets(dsFilter)
 
         if len(aiOffRequests) > 0:
@@ -357,35 +357,38 @@ class AI():
 
         return recommendations
 
+
     def transfer_rec(self, rec_payload):
         """Attempt to send a recommendation to the lab server.
-        Continues until recommendation is successfully submitted or an
-        unexpected error occurs.
+        If any error other then a no capacity error occurs, throw an exception.
 
         :param rec_payload: dictionary - the payload describing the experiment
+
+        :return bool - true if successfully sent, false if no machine capacity available
         """
-        logger.info("transfer_rec(" + str(rec_payload) + ")")
+        logger.info(f"transfer_rec({rec_payload})")
+
+        aiStatus = self.labApi.get_dataset_ai_status(rec_payload['dataset_id'])
+        if not(aiStatus == AI_STATUS.ON.value):
+            logger.debug("AI status is not on; not submitting experiment")
+            return False
+
         submitstatus = self.labApi.launch_experiment(
                             algorithmId=rec_payload['algorithm_id'],
                             payload=rec_payload)
 
-        logger.debug("transfer_rec() starting loop, submitstatus: " +
-                     str(submitstatus))
-        while('error' in submitstatus
-              and submitstatus['error'] == 'No machine capacity available'):
-            logger.debug("Waiting for server capacity: {}".format(submitstatus['error']))
-            sleep(3)
-            submitstatus = self.labApi.launch_experiment(
-                    rec_payload['algorithm_id'], rec_payload)
-
-        logger.debug("transfer_rec() exiting loop, submitstatus: " +
-                     str(submitstatus))
+        logger.debug(f"transfer_rec() submitstatus: {submitstatus}")
 
         if 'error' in submitstatus:
-            msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
-            logger.error(msg)
-            raise RuntimeError(msg)
-            #pdb.set_trace()
+            if (submitstatus['error'] == 'No machine capacity available'):
+                logger.debug("No machine capacity available")
+                return False
+            else:
+                msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
+                logger.error(msg)
+                raise RuntimeError(msg)
+
+        return True
 
 
     ##-----------------

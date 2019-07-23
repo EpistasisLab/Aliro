@@ -1,14 +1,32 @@
-FROM pennai/base:latest
+FROM python:3.7.4-stretch
 
-WORKDIR /opt/
+#nodejs
+RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /opt/ && \
+    rm ~/node.tar.xz
+ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
+
 ARG docker_filepath=dockers/lab/files
 
+RUN apt-get update --fix-missing && apt-get install -y \
+    vim openssh-client openssh-server telnet apache2 \
+    net-tools iputils-ping xz-utils \
+    screen ngrep ca-cacert \
+    mercurial subversion \
+    build-essential cmake lsb-core cpio mesa-common-dev \
+    dos2unix \
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# setup python environment
+COPY ${docker_filepath}/requirements.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements.txt
+### bill's surprise fork
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+
 ## Webserver
-RUN apt-get update --fix-missing \
-	&& apt-get install -y --no-install-recommends \
-  		telnet apache2 && \
-	    apt-get clean && \
-	    rm -rf /var/lib/apt/lists/*
+
 RUN rm /etc/apache2/sites-enabled/*
 COPY ${docker_filepath}/ports.conf /etc/apache2/
 RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
@@ -20,6 +38,8 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/headers.load /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
+# setup node environment
+RUN npm install -g pm2 --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
@@ -33,18 +53,9 @@ COPY lab/package.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
 RUN npm install --silent --progress=false
 
-## ai/metalearning python packages
-RUN conda install -y -c conda-forge cython \
-    xgboost simplejson numpy && \
-    conda clean --all -y
-
-### my surprise fork
-RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
-
 COPY ${docker_filepath}/001-pennai.conf /etc/apache2/sites-enabled/
 COPY ${docker_filepath}/htpasswd /etc/apache2/htpasswd
 COPY ${docker_filepath}/certs/* /usr/lib/ssl/private/
-
 
 WORKDIR /root/
 
@@ -69,5 +80,5 @@ CMD ["/bin/bash", "/root/start.sh"]
 
 EXPOSE 443
 EXPOSE 5080
-
+WORKDIR /appsrc/lab/
 ENTRYPOINT ["/root/entrypoint.sh"]

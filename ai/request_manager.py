@@ -156,9 +156,6 @@ class AiRequest:
 
         logger.debug("Removed experiments from queue, isQueueEmpty()={}".format(q_utils.isQueueEmpty(self.ai, self.datasetId)))
         logger.debug("queue size: {}".format(self.datasetThread.workQueue.qsize()))
-        ##logger.debug("=======")
-        ##logger.debug("=======")
-        ##logger.debug("=======")
 
         if (setServerAiState):
             self.ai.labApi.set_ai_status(self.datasetId, 'finished')
@@ -167,6 +164,8 @@ class AiRequest:
 
 
     def process_request(self):
+        logger.debug(f"===={self.datasetName} AI.State={self.state}, queue={self.datasetThread.workQueue.qsize()}, processingRequest={self.datasetThread.processingRequest}====")
+        logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}")
         if (self.state == AiState.INACTIVE):
             return
 
