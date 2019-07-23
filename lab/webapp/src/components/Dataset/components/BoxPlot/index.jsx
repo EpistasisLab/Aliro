@@ -23,8 +23,8 @@ class BoxPlot extends Component {
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
     const { dataPreview, valByRowObj, tempKey } = this.props;
-    let margin = { top: 5, right: 180, bottom: 25, left: 150 },
-        width = 650 - margin.left - margin.right,
+    let margin = { top: 5, right: 60, bottom: 25, left: 30 },
+        width = 380 - margin.left - margin.right,
         height = 255 - margin.top - margin.bottom;
     let dataKeys;
     if(dataPreview) {
@@ -46,15 +46,29 @@ class BoxPlot extends Component {
             "translate(" + margin.left + "," + margin.top + ")");
     // get stats
     let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
+    //let data_sorted = valByRowObj[tempKey].sort();
+
     let q1 = d3.quantile(data_sorted, .25);
     let median = d3.quantile(data_sorted, .5);
     let q3 = d3.quantile(data_sorted, .75);
     let interQuantileRange = q3 - q1;
     let min = q1 - 1.5 * interQuantileRange;
-    let max = q1 + 1.5 * interQuantileRange;
-
+    let max = q3 + 1.5 * interQuantileRange;
+    // min = -1;
+    // median = 0;
+    // max = 1;
     let minData = Math.min(...data_sorted);
     let maxData = Math.max(...data_sorted);
+
+    // print stats
+    window.console.debug('temp key: ', tempKey);
+    window.console.debug('sorted data: ', data_sorted);
+    window.console.debug('q1: ', q1);
+    window.console.debug('q3: ', q3);
+    window.console.debug('interQuantileRange: ', interQuantileRange);
+    window.console.debug('median: ', median);
+    window.console.debug('min: ', min);
+    window.console.debug('max: ', max);
 
     // color scale for jitter points
     let myColor = d3.scaleSequential()
@@ -98,8 +112,10 @@ class BoxPlot extends Component {
       .attr("height",  width)
       .attr("width", (x(q3)-x(q1)) )
       .attr("stroke", "white")
-      .style("fill", "rgb(85, 214, 190)")
-
+      .style("fill", "#1678c2")
+      // orange - #f26202
+      // sea foam green - rgb(85, 214, 190)
+      // #1678c2
     // show median, min and max horizontal lines
     svg.selectAll("toto")
     .data([min, median, max])

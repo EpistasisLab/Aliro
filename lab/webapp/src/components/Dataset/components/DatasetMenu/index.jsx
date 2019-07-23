@@ -187,7 +187,7 @@ class DatasetMenu extends Component {
       let dataStuff = dataPreview.data;
       // grab all dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
-
+    let dataType;
     let testPain = [
       {
         menuItem: 'Summary',
@@ -200,14 +200,44 @@ class DatasetMenu extends Component {
               <br/>
               <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
             </Segment>
-            <Grid columns='two' divided padded>
+            <Grid columns={3} divided celled='internally'>
+              <Grid.Row columns={3} centered>
+                <Grid.Column width={2}>
+                  <Header
+                    as="h4"
+                    inverted
+                    color="grey"
+                    content="Name"
+                  />
+                </Grid.Column>
+                <Grid.Column width={2}>
+                  <Header
+                    as="h4"
+                    inverted
+                    color="grey"
+                    content="Type"
+                  />
+                </Grid.Column>
+                <Grid.Column width={5}>
+                  <Header
+                    as="h4"
+                    inverted
+                    color="grey"
+                    content="Chart"
+                  />
+                </Grid.Column>
+              </Grid.Row>
               {
+
                 // display boxplots
                 dataKeys && dataKeys.map(key => {
                   // loop through dataset column name/key for charts later on
                   // need to be careful with this key - replace spaces with '_'
                   let tempKey = key.replace(/ /g, "_");
-
+                  cat_feats.indexOf(key) > -1 || ordKeys.indexOf(key) > -1
+                    ? dataType = 'nominal' : dataType = 'numeric';
+                  key === dataset.files[0].dependent_col
+                    ? dataType = 'nominal' : null;
                   let tempChart = (
                     <BoxPlot
                       key={tempKey}
@@ -241,6 +271,7 @@ class DatasetMenu extends Component {
                     </div>
                   ) : null;
                   // create bar chart for dependent_col/target class
+                  // TODO: make this appear first
                   key === dataset.files[0].dependent_col
                     ? tempChart = (
                       <BarChart
@@ -253,16 +284,21 @@ class DatasetMenu extends Component {
 
                   let gridList = [];
                   gridList.push(
-                    <Grid.Row>
+                    <Grid.Row centered>
                       <Grid.Column width={2}>
                         <div style={{color: 'white'}}>
                           {tempKey}
                         </div>
                       </Grid.Column>
-                      <Grid.Column width={7}>
-                        <Segment>
+                      <Grid.Column width={2}>
+                        <div style={{color: 'white'}}>
+                          {dataType}
+                        </div>
+                      </Grid.Column>
+                      <Grid.Column width={5}>
+
                           {tempChart}
-                        </Segment>
+
                       </Grid.Column>
                     </Grid.Row>
                   );
@@ -391,7 +427,7 @@ class DatasetMenu extends Component {
     return (
       <div>
         <Tab
-          menu={{ attached: 'top' }}
+          menu={{ attached: 'top', inverted: 'true' }}
           panes={stuff}
           renderActiveOnly={true}
         />
