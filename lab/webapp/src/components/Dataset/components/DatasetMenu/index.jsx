@@ -18,7 +18,7 @@ class DatasetMenu extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.createCharts();
+    //this.createCharts();
   }
 
   // aggregate all available column values grouped by row, i.e all values for

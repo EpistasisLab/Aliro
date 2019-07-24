@@ -46,14 +46,16 @@ class BoxPlot extends Component {
             "translate(" + margin.left + "," + margin.top + ")");
     // get stats
     let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
-    //let data_sorted = valByRowObj[tempKey].sort();
+    let data_sorted_AB = valByRowObj[tempKey].sort( (a, b) => {
+      return a - b;
+    });
 
     let q1 = d3.quantile(data_sorted, .25);
     let median = d3.quantile(data_sorted, .5);
     let q3 = d3.quantile(data_sorted, .75);
     let interQuantileRange = q3 - q1;
-    let min = q1 - 1.5 * interQuantileRange;
-    let max = q3 + 1.5 * interQuantileRange;
+    let min = q1 - (1.5 * interQuantileRange);
+    let max = q3 + (1.5 * interQuantileRange);
     // min = -1;
     // median = 0;
     // max = 1;
@@ -76,23 +78,23 @@ class BoxPlot extends Component {
       .domain([min, max]);
 
     // Y scale
-    let y = d3.scaleBand()
+    let yScale = d3.scaleBand()
       .range([height, 0])
       .domain([tempKey])
       .paddingInner(1)
       .paddingOuter(.5)
     svg.append("g")
       .style("color", "white")
-      .call(d3.axisLeft(y).tickSize(0))
+      .call(d3.axisLeft(yScale).tickSize(0))
       .select(".domain").remove()
     // X scale
-    let x = d3.scaleLinear()
+    let xScale = d3.scaleLinear()
       .domain([min, max])
       .range([0, width]);
     svg.append("g")
       .attr("stroke", "white")
       .style("color", "white")
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(xScale))
       .attr("transform", "translate(0," + (height) + ")");
     // box features
     let center = 150;
@@ -101,16 +103,16 @@ class BoxPlot extends Component {
     svg.append("line")
       .attr("y1", center)
       .attr("y2", center)
-      .attr("x1", x(min) )
-      .attr("x2", x(max) )
+      .attr("x1", xScale(min) )
+      .attr("x2", xScale(max) )
       .attr("stroke", "white");
 
     // Show the box
     svg.append("rect")
-      .attr("x", x(q1))
+      .attr("x", xScale(q1))
       .attr("y", center - width/2 )
       .attr("height",  width)
-      .attr("width", (x(q3)-x(q1)) )
+      .attr("width", (xScale(q3)-xScale(q1)) )
       .attr("stroke", "white")
       .style("fill", "#1678c2")
       // orange - #f26202
@@ -123,8 +125,8 @@ class BoxPlot extends Component {
     .append("line")
       .attr("y1", center-width/2)
       .attr("y2", center+width/2)
-      .attr("x1", function(d){ return(x(d))} )
-      .attr("x2", function(d){ return(x(d))} )
+      .attr("x1", function(d){ return(xScale(d))} )
+      .attr("x2", function(d){ return(xScale(d))} )
       .attr("stroke", "white");
 
     // tool tip
