@@ -23,8 +23,8 @@ class BoxPlot extends Component {
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
     const { dataPreview, valByRowObj, tempKey } = this.props;
-    let margin = { top: 5, right: 60, bottom: 25, left: 30 },
-        width = 380 - margin.left - margin.right,
+    let margin = { top: 5, right: 60, bottom: 25, left: 85 },
+        width = 425 - margin.left - margin.right,
         height = 255 - margin.top - margin.bottom;
     let dataKeys;
     if(dataPreview) {
