@@ -30,7 +30,8 @@ RUN npm install -g pm2 --silent --progress=false
 WORKDIR /appsrc/machine
 
 COPY machine/package.json /appsrc/machine/
-RUN dos2unix /appsrc/machine/package.json
+COPY machine/package-lock.json /appsrc/machine/
+RUN dos2unix /appsrc/machine/*.json
 RUN npm install --silent --progress=false
 
 COPY ${docker_filepath}/entrypoint.sh /root/
