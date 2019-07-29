@@ -24,7 +24,7 @@
     "body-parser": "^1.15.0",
     "compression": "^1.6.2",
     "express": "^4.13.4",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.15",
     "mongodb": "^2.2.35",
     "mongoskin": "^2.1.0",
     "morgan": "^1.7.0",
