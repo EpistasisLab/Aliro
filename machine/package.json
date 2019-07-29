@@ -41,7 +41,7 @@
     "ws": "^3.3.3"
   },
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^6.2.0"
   },
   "engines": {
     "node": "6.x"
