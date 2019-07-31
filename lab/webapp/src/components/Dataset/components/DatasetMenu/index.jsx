@@ -5,6 +5,7 @@ import { Header, Tab, Segment, Grid, Loader, Table, Icon } from 'semantic-ui-rea
 import BarChart from '../BarChart/';
 import BarCharts from '../BarCharts/';
 import BoxPlot from '../BoxPlot/';
+import ViolinChart from '../ViolinChart/';
 import * as d3 from "d3";
 
 class DatasetMenu extends Component {
@@ -142,7 +143,7 @@ class DatasetMenu extends Component {
                     let tempChart = (
                       <BoxPlot
                         key={tempKey}
-                        tempKey={tempKey}
+                        tempKey={key}
                         dataPreview={dataPreview}
                         valByRowObj={valByRowObj}
                       />);
@@ -175,7 +176,6 @@ class DatasetMenu extends Component {
                       </div>
                     ) : null;
                     // create bar chart for dependent_col/target class
-                    // TODO: make this appear first
                     key === dep_col
                       ? tempChart = (
                         <BarChart
@@ -325,6 +325,29 @@ class DatasetMenu extends Component {
                     </Table.Body>
                   </Table>
                 </div>
+              </Segment>
+            </Tab.Pane>
+          )
+        },{
+          menuItem: 'violin test',
+          render: () => (
+            <Tab.Pane>
+              <Segment inverted attached="top" className="panel-header">
+                <Header as="h3" content="test violin" style={{ display: 'inline', marginRight: '0.5em' }} />
+              </Segment>
+              <Segment inverted attached="bottom">
+
+                {
+                  dataKeys && dataKeys.map(key => {
+                    let tempKey = key.replace(/ /g, "_");
+                    return (<ViolinChart
+                      key={tempKey}
+                      tempKey={key}
+                      dataPreview={dataPreview}
+                      valByRowObj={valByRowObj}
+                    />);
+                  })
+                }
               </Segment>
             </Tab.Pane>
           )
