@@ -380,8 +380,8 @@ class AI():
         logger.debug(f"transfer_rec() submitstatus: {submitstatus}")
 
         if 'error' in submitstatus:
-            if (submitstatus['error'] == 'No machine capacity available'):
-                logger.debug("No machine capacity available")
+            if ('No machine capacity available' in submitstatus['error']):
+                logger.debug(f"Waiting for capacity: {submitstatus['error']}")
                 return False
             else:
                 msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)

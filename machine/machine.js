@@ -188,15 +188,19 @@ app.get("/projects", (req, res) => {
 
 // Starts experiment
 app.post("/projects/:id", jsonParser, (req, res) => {
+    var experimentId = req.body._id;
+    console.log(`Attempting to start experiment ${experimentId}`)
+
     // Check if capacity still available
     var capacity_info = machine_utils.checkCapacity(req.params.id, maxCapacity, projects);
     if(capacity_info.capacity === 0) {
+        console.log(`Error: experiment ${experimentId} - No machine capacity available`)
         res.status(501);
-        res.send(capacity_info.error_msg);
+        res.send(capacity_info.error_msg)
+        return
     }
 
     // Process args
-    var experimentId = req.body._id;
     var exp_url = laburi + "/api/v1/experiments/" + experimentId;
     var project = projects[req.params.id];
     var args = [];
@@ -228,8 +232,9 @@ app.post("/projects/:id", jsonParser, (req, res) => {
     }
 
     // Spawn experiment
-    console.log("args")
+    console.log("Spawning experiment. args:")
     console.log(args)
+
     var experimentErrorMessage
     var experiment = spawn(project.command, args, {
             cwd: project_root + '/' + project.cwd
@@ -258,6 +263,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         method: "PUT",
         data: null
     }); // Set started
+
     // Save experiment
     experiments[experimentId] = experiment;
 
@@ -291,7 +297,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
 
     // Results-sending function for other files
     var sendResults = function(file_path, uri) {
-        console.log('pushing ' + file_path);
+        console.log('pushing file' + file_path);
         if (file_path.match(/\.json$/)) {
             results = JSON.parse(fs.readFileSync(file_path, "utf-8"));
             var ret = {
@@ -340,11 +346,10 @@ app.post("/projects/:id", jsonParser, (req, res) => {
                 experimentErrorMessage = "Experiment already killed"
             }
         }
-        else { console.log("experiment process does not exist") }
-        res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
-        res.send(JSON.stringify({
-            status: "killed"
-        }));
+        else { 
+            console.log("experiment process does not exist") }
+            res.setHeader("Access-Control-Allow-Origin", "*"); // Allow CORS
+            res.send(JSON.stringify({status: "killed"}));
     });
 
     // Processes results
@@ -375,9 +380,7 @@ app.post("/projects/:id", jsonParser, (req, res) => {
             errorMessage: experimentErrorMessage
         }}
 
-        console.log(`Experiment process ended, exit code: ${exitCode}, status: ${status}`)
-        //`Process ended with exit code ${exitCode}`
-
+        console.log(`Experiment ${experimentId} process ended, exit code: ${exitCode}, status: ${status}`)
         rp({
             uri: exp_url,
             method: "PUT",
@@ -410,6 +413,8 @@ app.post("/projects/:id", jsonParser, (req, res) => {
         // Delete experiment
         delete experiments[experimentId];
     });
+
+    console.log(`Sending experiment ${experimentId} results`)
     res.send(req.body);
 });
 

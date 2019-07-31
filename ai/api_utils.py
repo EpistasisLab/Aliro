@@ -164,13 +164,15 @@ class LabApi:
         data = json.loads(res.text)
         data = data[0]
 
-        logger.info(f"data: {data}")
+        #logger.debug(f"get_dataset_ai_status data: {data}")
 
+        aiStatus = None
         if ("ai" in data): 
-            return data["ai"]
-        else: 
-            return None
+            aiStatus = data["ai"]
 
+        logger.info(f"get_dataset_ai_status('{datasetId}') = '{aiStatus}'")
+
+        return aiStatus
 
     def get_new_experiments(self, last_update):
         """Get experiments that occurred after last_update
