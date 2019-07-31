@@ -93,7 +93,7 @@ class DatasetMenu extends Component {
         {
           menuItem: 'Summary',
           render: () => (
-            <Tab.Pane>
+            <Tab.Pane style={{border: 'none' }}>
               <Segment inverted attached="bottom">
                 <span>{`# of Rows: ${dataset.metafeatures.n_rows}`}</span>
                 <br/>
@@ -101,8 +101,13 @@ class DatasetMenu extends Component {
                 <br/>
                 <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
               </Segment>
-              <Grid columns={3} divided celled='internally'>
-                <Grid.Row columns={3} centered>
+              <Grid
+                columns={3}
+                divided
+                celled='internally'
+                verticalAlign='middle'
+              >
+                <Grid.Row columns={3}>
                   <Grid.Column width={2}>
                     <Header
                       as="h4"
@@ -119,7 +124,7 @@ class DatasetMenu extends Component {
                       content="Type"
                     />
                   </Grid.Column>
-                  <Grid.Column width={5}>
+                  <Grid.Column width={5} textAlign="middle">
                     <Header
                       as="h4"
                       inverted
@@ -189,21 +194,21 @@ class DatasetMenu extends Component {
                     //key === dep_col ? tempKey += '(target)' : null;
                     let gridList = [];
                     gridList.push(
-                      <Grid.Row centered>
+                      <Grid.Row>
                         <Grid.Column width={2}>
-                          <div style={{color: 'white'}}>
+                          <div style={{color: 'white', paddingLeft: '10px'}}>
                             {tempKey}
-                            { // if target class add '(target)'
+                            { // if target class add ' (target)', &nbsp; is space
                               key === dep_col
                               ? (<b>
-                                  (target)
+                                  &nbsp;(target)
                                 </b>)
                               : null
                             }
                           </div>
                         </Grid.Column>
                         <Grid.Column width={2}>
-                          <div style={{color: 'white'}}>
+                          <div style={{color: 'white', paddingLeft: '10px'}}>
                             {dataType}
                           </div>
                         </Grid.Column>
@@ -225,7 +230,7 @@ class DatasetMenu extends Component {
         {
           menuItem: 'Details',
           render: () => (
-            <Tab.Pane>
+            <Tab.Pane style={{border: 'none' }}>
               <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
                 <Header as="h3" content="File Details" />
                 <Icon
@@ -301,7 +306,7 @@ class DatasetMenu extends Component {
         },{
           menuItem: 'Metafeatures',
           render: () => (
-            <Tab.Pane>
+            <Tab.Pane style={{border: 'none' }}>
               <Segment inverted attached="top" className="panel-header">
                 <Header as="h3" content="Metafeatures" style={{ display: 'inline', marginRight: '0.5em' }} />
                 <span className="muted">{`${Object.keys(dataset.metafeatures).length} total`}</span>

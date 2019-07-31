@@ -52,13 +52,18 @@ class BarCharts extends Component {
 
       /**---- *************** ----**** ---- Color stuff here ----****---- *************** ----**/
       let colorList = ['#55d6be','#7c5ba5'];
+      //let d3.interpolateInferno();
       // for every entry in depColSet, map keys to color
       //let colorObj = [{0:'#e41a1c'}, {1:'#377eb8'}];
       let colorObjList = [];
       depColSet.forEach((depVal, i) => {
-         i % 2 === 0
-          ? colorObjList.push({[depVal]: colorList[0]})
-          : colorObjList.push({[depVal]: colorList[1]});
+        // normalize index
+        let normI = i / depColSet.length;
+        let colorString = d3.interpolateSinebow(normI);
+        colorObjList.push({[depVal]: colorString});
+         // i % 2 === 0
+         //  ? colorObjList.push({[depVal]: colorList[0]})
+         //  : colorObjList.push({[depVal]: colorList[1]});
       })
       //window.console.log('colorobjlist', colorObjList);
       /**---- *************** ----****---- *************** ----****---- *************** ----**/
@@ -155,7 +160,10 @@ class BarCharts extends Component {
         .enter().append("g")
         .style("fill", (d) => {
           //window.console.log('color thing', d);
-          return colorStack(d.key)
+          let normI = d.index / depColSet.length;
+          let colorString = d3.interpolateSinebow(normI);
+          return colorString;
+          //return colorStack(d.key)
         });
 
       let stackRect = groups.selectAll("rect")

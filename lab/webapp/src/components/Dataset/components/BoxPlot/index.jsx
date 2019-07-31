@@ -71,7 +71,12 @@ class BoxPlot extends Component {
     window.console.debug('median: ', median);
     window.console.debug('min: ', min);
     window.console.debug('max: ', max);
+    // use minimum/max values in data as lower & upper bounds for whisker lines
+    min < minData ? min = minData : null;
+    max > maxData ? max = maxData : null;
 
+    window.console.debug('minData: ', minData);
+    window.console.debug('maxData: ', maxData);
     // color scale for jitter points
     let myColor = d3.scaleSequential()
       .interpolator(d3.interpolateInferno)
@@ -177,7 +182,7 @@ class BoxPlot extends Component {
   render() {
     const {tempKey } = this.props;
     return (
-      <div id={"test_box_plot_" + tempKey} />
+      <div id={"test_box_plot_" + tempKey} style={{position:'relative', left:'-100px'}}/>
     );
   }
 }

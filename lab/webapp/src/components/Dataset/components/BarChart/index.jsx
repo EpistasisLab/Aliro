@@ -132,7 +132,7 @@ class BarChart extends Component {
   render() {
     const { tempKey } = this.props;
     return (
-      <div id={"test_bar_chart_" + tempKey} />
+      <div id={"test_bar_chart_" + tempKey} style={{position:'relative', left:'-60px'}}/>
     );
   }
 }
