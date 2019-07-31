@@ -21,6 +21,7 @@ function socketServer(server) {
 
 function emitEvent(event, req) {
 	console.log(`serverSocket.emitEvent('${event}', '${req}')`)
+	console.log(req.params)
 
 	switch(event) {
 		case 'updateAllAiStatus':
@@ -34,6 +35,7 @@ function emitEvent(event, req) {
 		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 
 		case 'aiToggled':
+			console.log(`=socketServer:aiToggled(${req.params.id})`)
 			return sockets.forEach(socket => 
 				socket.emit('updateAIToggle', JSON.stringify({ _id: req.params.id, nextAIState: req.body.ai }))
 			);
