@@ -1,4 +1,10 @@
-FROM python:3
+FROM python:3.7.4-stretch
+
+#nodejs
+RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /opt/ && \
+    rm ~/node.tar.xz
+ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
 
 RUN apt-get update --fix-missing \
     && apt-get install -y --no-install-recommends \
@@ -6,33 +12,11 @@ RUN apt-get update --fix-missing \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Miniconda 4.5.4
-RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh
+COPY /tests/unit/files/requirements.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements.txt
 
-# set up conda environment
-ENV PATH /opt/conda/bin:$PATH
-
-# set conda config for faster build
-RUN conda config --set channel_priority strict
-
-# set up conda environment, specify node version because of known issue with version 11.11
-# check here - https://github.com/facebook/jest/issues/8069
-RUN conda install -y -c conda-forge nodejs scikit-learn=0.20.2 \
-    pymongo tqdm pandas matplotlib \
-    xgboost simplejson numpy cython && \
-    conda clean --all -y
-
-### my surprise fork
+### Bill's surprise fork
 RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
-
-
-RUN pip install --no-cache-dir mlxtend \
-    pydot sphinx coverage \
-    nose nose-htmloutput parameterized \
-    m2r sphinx_rtd_theme
 
 RUN npm install -g mocha
 
