@@ -106,6 +106,9 @@ class AiState(Enum):
     ADD_RECOMMENDATIONS = auto()
     TERMINATE = auto()
     INACTIVE = auto()
+    # python threads cannot be restarted; 
+    THREAD_DIED_TERMINATE = auto() # uncrecoverable thread error detected; empty the queue, -> THREAD_DIED
+    THREAD_DIED = auto() # unrecoverable thread error has happened
 
 
 class AiRequest:
@@ -142,7 +145,7 @@ class AiRequest:
         self.state = AiState.INITILIZE
 
 
-    def terminate_request(self, setServerAiState = True):
+    def terminate_request(self, setServerAiState = True, nextState = AiState.INACTIVE):
         # get rid of everything in the queue
         # set state to inactive
         ##logger.debug("=======")
@@ -160,13 +163,13 @@ class AiRequest:
         if (setServerAiState):
             self.ai.labApi.set_ai_status(self.datasetId, 'finished')
 
-        self.state = AiState.INACTIVE
+        self.state = nextState
 
 
     def process_request(self):
         logger.debug(f"===={self.datasetName} AI.State={self.state}, queue={self.datasetThread.workQueue.qsize()}, processingRequest={self.datasetThread.processingRequest}====")
-        logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}")
-        if (self.state == AiState.INACTIVE):
+        logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}  self.datasetThread.is_alive()={self.datasetThread.is_alive()}")
+        if (self.state in [AiState.INACTIVE, AiState.THREAD_DIED]):
             return
 
         # update state as per termination strategy
@@ -174,6 +177,10 @@ class AiRequest:
 
         if (self.state == AiState.TERMINATE):
             self.terminate_request(setServerAiState=True)
+
+        elif (self.state == AiState.THREAD_DIED_TERMINATE):
+            logger.error(f"Queue error encountered; terminating request for {self.datasetName}")
+            self.terminate_request(setServerAiState=True, nextState=AiState.THREAD_DIED)
 
         elif (self.state == AiState.WAIT_FOR_QUEUE_EMPTY):
             return
@@ -194,6 +201,11 @@ class AiRequest:
             msg = 'Tried to run update_state() when state was INACTIVE.  DatasetId: "' + str(datasetId) + '"  DatasetName: "' + str(datasetName) + '"'
             logger.error(msg)
             raise RuntimeError(msg)
+
+        # if there was an uncaught error that killed the queue runner, terminate
+        if not(self.datasetThread.is_alive()):
+            self.state = AiState.THREAD_DIED_TERMINATE
+            return
 
         # always start by adding recommendations
         if self.state == AiState.INITILIZE:

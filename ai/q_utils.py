@@ -41,18 +41,28 @@ class DatasetThread (threading.Thread):
         """This overrides threading.Thread's run method, 
         and is invoked by start()"""
         logger.debug(f"Creating queue for thread {self.name}")
-        try:
-            process_data(self)
-        except:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            logger.error("Exception caught in thread '" + self.name + "': " + 
-                         str(exc_obj))
-            logger.error(''.join(traceback.format_exception(exc_type, exc_obj, 
-                                                            exc_tb))) 
-        #see <https://docs.python.org/3/library/traceback.html#traceback-examples>
-            self.__threadExceptionBucket.put(exc_obj)
-        #raise #this will just terminate the thread; will not prop to the root thread
-            logger.debug("Exiting queue for thread " + self.name)
+
+        while not exitFlag:
+            try:
+                logger.info(f"Starting loop for thread {self.name}")
+                process_data(self)
+            except:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                logger.error("=========================================================================")
+                logger.error("=========================================================================")
+                logger.error("=========================================================================")
+                logger.error("=========================================================================")
+                logger.error("=========================================================================")
+                logger.error("Exception caught in thread '" + self.name + "': " + 
+                             str(exc_obj))
+                logger.error(''.join(traceback.format_exception(exc_type, exc_obj, 
+                                                                exc_tb))) 
+            #see <https://docs.python.org/3/library/traceback.html#traceback-examples>
+                self.__threadExceptionBucket.put(exc_obj)
+
+
+        logger.info(f"Exiting queue for thread {self.name}")
+
 
 def startQ(ai, datasetId, datasetName):
     """Get or start a threaded queue for experiments for a 
