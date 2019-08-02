@@ -7,15 +7,13 @@ jobs:
   include:
     - stage: Test
       name: "Integration Tests"
-      before_install:
-        # Rebuild PennAI Base
-        - docker build ./dockers/base -t pennai/base:latest -m 8g
       install:
         # Building Docker images
         - docker-compose -f ./docker-compose-int-test.yml build -m 8g
       script:
-        # Unit tests
-        - docker-compose -f ./docker-compose-int-test.yml up --abort-on-container-exit --force-recreate
+        # Integration tests
+        - docker-compose  -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
+        - docker-compose -f ./docker-compose-int-test.yml down
     - # stage name not required, will continue to use 'Test'
       name: "Unit Tests"
       install:

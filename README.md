@@ -1,6 +1,6 @@
 [![Logo](./docs/source/_static/logo_blank_small.png)]()
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE) [![Master Build Status - Mac/Linux](https://travis-ci.org/EpistasisLab/pennai.svg?branch=master)](https://travis-ci.org/EpistasisLab/pennai)
 
 PennAI: AI-Driven Data Science
 ==================================
