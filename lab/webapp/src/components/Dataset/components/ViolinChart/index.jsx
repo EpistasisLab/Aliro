@@ -31,7 +31,7 @@ class ViolinChart extends Component {
       // grab dataset columns names from first entry
       dataKeys = Object.keys(dataStuff[0]);
     }
-
+/*
     // to make background of svg transparent set stroke & fill to none
     // or do not specify background color
     let svg = d3.select("#test_violin_plot_" + tempKey)
@@ -116,7 +116,7 @@ class ViolinChart extends Component {
 
     let sumStat = d3.nest()
       .key(function(d) {
-        window.console.log('sum stat key', d);
+        //window.console.log('sum stat key', d);
         return d + 'sumstat_key_test';
       })
       .rollup(function(d) {
@@ -124,7 +124,7 @@ class ViolinChart extends Component {
           return g;
         })
         let bins = histogramTest(input);
-        window.console.log('sum stat rollup', bins);
+        //window.console.log('sum stat rollup', bins);
         return bins
       })
       .entries(valByRowObj[tempKey]);
@@ -183,7 +183,7 @@ class ViolinChart extends Component {
         .duration(200)
         .style("opacity", 0)
     }
-
+*/
   }
 
   render() {

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { formatDataset, formatTime } from 'utils/formatter';
-import { Header, Tab, Segment, Grid, Loader, Table, Icon } from 'semantic-ui-react';
-import BarChart from '../BarChart/';
-import BarCharts from '../BarCharts/';
-import BoxPlot from '../BoxPlot/';
+import { Header, Tab, Segment, Grid, Loader, Table, Icon, Container } from 'semantic-ui-react';
 import ViolinChart from '../ViolinChart/';
+import Metafeatures from '../Metafeatures/';
+import Details from '../Details/';
+import Summary from '../Summary/';
+
 import * as d3 from "d3";
 
 class DatasetMenu extends Component {
@@ -94,136 +95,15 @@ class DatasetMenu extends Component {
           menuItem: 'Summary',
           render: () => (
             <Tab.Pane style={{border: 'none' }}>
-              <Segment inverted attached="bottom">
-                <span>{`# of Rows: ${dataset.metafeatures.n_rows}`}</span>
-                <br/>
-                <span>{`# of Columns: ${dataset.metafeatures.n_columns}`}</span>
-                <br/>
-                <span>{`# of Classes: ${dataset.metafeatures.n_classes}`}</span>
-              </Segment>
-              <Grid
-                columns={3}
-                divided
-                celled='internally'
-                verticalAlign='middle'
-              >
-                <Grid.Row columns={3}>
-                  <Grid.Column width={2}>
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Name"
-                    />
-                  </Grid.Column>
-                  <Grid.Column width={2}>
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Type"
-                    />
-                  </Grid.Column>
-                  <Grid.Column width={5} textAlign="middle">
-                    <Header
-                      as="h4"
-                      inverted
-                      color="grey"
-                      content="Chart"
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-                {
-
-                  // display boxplots
-                  dataKeys && dataKeys.map(key => {
-                    // loop through dataset column name/key for charts later on
-                    // need to be careful with this key - replace spaces with '_'
-                    let tempKey = key.replace(/ /g, "_");
-                    cat_feats.indexOf(key) > -1 || ordKeys.indexOf(key) > -1
-                      ? dataType = 'nominal' : dataType = 'numeric';
-                    key === dep_col
-                      ? dataType = 'nominal' : null;
-                    // default value for chart - make box plot
-                    let tempChart = (
-                      <BoxPlot
-                        key={tempKey}
-                        tempKey={key}
-                        dataPreview={dataPreview}
-                        valByRowObj={valByRowObj}
-                      />);
-
-                    // override tempChart depending on type of data
-
-                    // check for categorical columns (display stacked bar chart)
-                    cat_feats.indexOf(key) > -1 ? tempChart = (
-                      <div key={"cat_chart_" + tempKey}>
-                        <BarCharts
-                          colKey={key}
-                          depCol={dep_col}
-                          dataPreview={dataPreview}
-                          valByRowObj={valByRowObj}
-                        />
-                      </div>
-                    ) : null;
-                    // check for ordinal columns (display stacked bar chart)
-                    ordKeys.indexOf(key) > -1 ? tempChart = (
-                      <div key={"ord_chart_" + tempKey}>
-                        {/*<p style={{color: "green"}}>
-                          {"ordinal_chart_for: " + tempKey}
-                        </p>*/}
-                        <BarCharts
-                          colKey={key}
-                          depCol={dep_col}
-                          dataPreview={dataPreview}
-                          valByRowObj={valByRowObj}
-                        />
-                      </div>
-                    ) : null;
-                    // create bar chart for dependent_col/target class
-                    key === dep_col
-                      ? tempChart = (
-                        <BarChart
-                          tempKey={key}
-                          dataset={dataset}
-                          dataPreview={dataPreview}
-                          valByRowObj={valByRowObj}
-                        />
-                      ) : null;
-                    // if target class add '(target)'
-                    //key === dep_col ? tempKey += '(target)' : null;
-                    let gridList = [];
-                    gridList.push(
-                      <Grid.Row>
-                        <Grid.Column width={2}>
-                          <div style={{color: 'white', paddingLeft: '10px'}}>
-                            {tempKey}
-                            { // if target class add ' (target)', &nbsp; is space
-                              key === dep_col
-                              ? (<b>
-                                  &nbsp;(target)
-                                </b>)
-                              : null
-                            }
-                          </div>
-                        </Grid.Column>
-                        <Grid.Column width={2}>
-                          <div style={{color: 'white', paddingLeft: '10px'}}>
-                            {dataType}
-                          </div>
-                        </Grid.Column>
-                        <Grid.Column width={5}>
-
-                            {tempChart}
-
-                        </Grid.Column>
-                      </Grid.Row>
-                    );
-
-                    return gridList;
-                  })
-                }
-              </Grid>
+              <Summary
+                dataPreview={dataPreview}
+                valByRowObj={valByRowObj}
+                dataset={dataset}
+                dataKeys={dataKeys}
+                cat_feats={cat_feats}
+                ordKeys={ordKeys}
+                dep_col={dep_col}
+              />
             </Tab.Pane>
           )
         },
@@ -231,112 +111,28 @@ class DatasetMenu extends Component {
           menuItem: 'Details',
           render: () => (
             <Tab.Pane style={{border: 'none' }}>
-              <Segment inverted attached="top" className="panel-header" style={{maxHeight: '53px'}}>
-                <Header as="h3" content="File Details" />
-                <Icon
-                  name="info circle"
-                  onClick={(e) => fileDetailsClick(e)}
-                  style={{position: 'absolute', top: '11px', left: '95%', cursor: 'pointer'}}
-                />
-              </Segment>
-              <Segment inverted attached="bottom">
-                <Grid>
-                  <Grid.Row columns={2}>
-                    <Grid.Column>
-                      <Header
-                        as="h4"
-                        inverted
-                        color="grey"
-                        content="Upload Date"
-                        subheader={formatTime(dataset.files[0].timestamp)}
-                      />
-                    </Grid.Column>
-                    <Grid.Column>
-                      <Header
-                        as="h4"
-                        inverted
-                        color="grey"
-                        content="Filename"
-                        subheader={dataset.files[0].filename}
-                      />
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row columns={1}>
-                    <Grid.Column>
-                      <Header
-                        as="h4"
-                        inverted
-                        color="grey"
-                        content="Data Preview"
-                        style={{ display: 'inline', marginRight: '0.5em' }}
-                      />
-                      <span className="muted">(first 100 rows)</span>
-                      <Segment style={{ height: '500px' }}>
-                        {dataPreview ? (
-                          <div style={{ overflow: 'scroll', maxHeight: '470px' }}>
-                            <Table inverted celled compact unstackable singleLine>
-                              <Table.Header>
-                                <Table.Row>
-                                  {dataPreview.meta.fields.map(field =>
-                                    <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
-                                  )}
-                                </Table.Row>
-                              </Table.Header>
-                              <Table.Body>
-                                {dataPreview.data.slice(0, 100).map((row, i) =>
-                                  <Table.Row key={i}>
-                                    {dataPreview.meta.fields.map(field =>
-                                      <Table.Cell key={`${i}-${field}`}>{row[field]}</Table.Cell>
-                                    )}
-                                  </Table.Row>
-                                )}
-                              </Table.Body>
-                            </Table>
-                          </div>
-                        ) : (
-                          <Loader inverted active content="Loading data preview" />
-                        )}
-                      </Segment>
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Segment>
+              <Details
+                fileDetailsClick={fileDetailsClick}
+                formatTime={formatTime}
+                dataPreview={dataPreview}
+                dataset={dataset}
+              />
             </Tab.Pane>
           )
         },{
           menuItem: 'Metafeatures',
           render: () => (
             <Tab.Pane style={{border: 'none' }}>
-              <Segment inverted attached="top" className="panel-header">
-                <Header as="h3" content="Metafeatures" style={{ display: 'inline', marginRight: '0.5em' }} />
-                <span className="muted">{`${Object.keys(dataset.metafeatures).length} total`}</span>
-              </Segment>
-              <Segment inverted attached="bottom">
-                <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
-                  <Table inverted celled compact unstackable>
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.HeaderCell>Field</Table.HeaderCell>
-                        <Table.HeaderCell>Value</Table.HeaderCell>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {allMetafeatures.map(field =>
-                        <Table.Row key={field}>
-                          <Table.Cell>{field}</Table.Cell>
-                          <Table.Cell>{dataset.metafeatures[field]}</Table.Cell>
-                        </Table.Row>
-                      )}
-                    </Table.Body>
-                  </Table>
-                </div>
-              </Segment>
+              <Metafeatures
+                allMetafeatures={allMetafeatures}
+                dataset={dataset}
+              />
             </Tab.Pane>
           )
         },{
           menuItem: 'violin test',
           render: () => (
-            <Tab.Pane>
+            <Tab.Pane style={{border: 'none' }}>
               <Segment inverted attached="top" className="panel-header">
                 <Header as="h3" content="test violin" style={{ display: 'inline', marginRight: '0.5em' }} />
               </Segment>
@@ -367,7 +163,7 @@ class DatasetMenu extends Component {
     return (
       <div>
         <Tab
-          menu={{ attached: 'top', inverted: 'true' }}
+          menu={{ attached: 'top', inverted: true }}
           panes={stuff}
           renderActiveOnly={true}
         />

@@ -26,12 +26,6 @@ class BoxPlot extends Component {
     let margin = { top: 5, right: 60, bottom: 25, left: 85 },
         width = 425 - margin.left - margin.right,
         height = 255 - margin.top - margin.bottom;
-    let dataKeys;
-    if(dataPreview) {
-      let dataStuff = dataPreview.data;
-      // grab dataset columns names from first entry
-      dataKeys = Object.keys(dataStuff[0]);
-    }
 
     // to make background of svg transparent set stroke & fill to none
     // or do not specify background color
@@ -46,9 +40,9 @@ class BoxPlot extends Component {
             "translate(" + margin.left + "," + margin.top + ")");
     // get stats
     let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
-    let data_sorted_AB = valByRowObj[tempKey].sort( (a, b) => {
-      return a - b;
-    });
+    // let data_sorted_AB = valByRowObj[tempKey].sort( (a, b) => {
+    //   return a - b;
+    // });
 
     let q1 = d3.quantile(data_sorted, .25);
     let median = d3.quantile(data_sorted, .5);
@@ -69,8 +63,8 @@ class BoxPlot extends Component {
     window.console.debug('q3: ', q3);
     window.console.debug('interQuantileRange: ', interQuantileRange);
     window.console.debug('median: ', median);
-    window.console.debug('min: ', min);
-    window.console.debug('max: ', max);
+    window.console.debug('min (whisker): ', min);
+    window.console.debug('max (whisker): ', max);
     // use minimum/max values in data as lower & upper bounds for whisker lines
     min < minData ? min = minData : null;
     max > maxData ? max = maxData : null;
