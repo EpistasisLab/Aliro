@@ -802,9 +802,11 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                                 resolve(body);
                                             })
                                             .catch((err) => {
+                                                //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
+                                                console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
                                                 db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
                                                 reject({
-                                                    error: `Experiment failed to run: project '${projId}' failed on machine ${availableMac.address}.`
+                                                    error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
                                                 });
                                             });
                                     })

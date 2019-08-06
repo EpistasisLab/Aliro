@@ -39,7 +39,7 @@ describe('Mocha Test for checkCapacity function', function () {
   it('Test checkCapacity returns the correct values.', function () {
         ret = machine_utils.checkCapacity("DecisionTreeClassifier", 0, projects);
         assert.equal(ret.capacity, 0);
-        assert.equal(ret.error_msg.error, "No capacity available");
+        assert.equal(ret.error_msg.error, "No machine capacity available");
     });
 
   it('Test checkCapacity returns the correct values when projId is not defined', function () {

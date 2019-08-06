@@ -40,7 +40,7 @@ var checkCapacity = function(projId, maxCapacity, projects) {
         var capacity = getCapacity(projId, maxCapacity, projects);
         if (capacity === 0) {
             error_msg = {
-                error: "No capacity available"
+                error: "No machine capacity available"
             };
         }
     }
