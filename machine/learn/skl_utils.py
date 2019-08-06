@@ -322,6 +322,11 @@ def generate_results(model, input_data,
 
         if num_classes==2:
             plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
+    else: # regression
+        if figure_export:
+            pred_y = model.predict(features)
+            plot_pred(tmpdir, _id, pred_y, target)
+
 
 
     metrics_dict = {'_scores': scores}
@@ -685,6 +690,31 @@ def plot_dot_plot(tmpdir, _id, features,
     return dtree_train_score
 
 
+def plot_pred(tmpdir, _id, pred_y, y):
+    """
+    Plot Predictions.
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in PennAI
+    pred_y: np.darray/pd.DataFrame
+        Predicted Target
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    Returns
+    -------
+    None
+    """
+    h=plt.figure()
+    plt.title("Regression Predictions")
+    plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Observed Target')
+    plt.ylabel('Predicted Target')
+    h.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_pred_' + _id + '.png')
+    plt.close()
 
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.

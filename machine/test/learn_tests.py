@@ -87,7 +87,7 @@ def make_train_test_split(input_data, target_name, random_state):
     features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
+        train_test_split(features, target, random_state=random_state)
     return training_features, testing_features, training_classes, testing_classes, feature_names
 
 training_features_1, testing_features_1, training_classes_1, testing_classes_1, feature_names_1 = \
@@ -839,10 +839,12 @@ def test_generate_results_2():
 
 def test_generate_results_3():
     """Test generate results can produce expected outputs in regression mode"""
-    tmpdir = mkdtemp() + '/'
+    #tmpdir = mkdtemp() + '/'
+    tmpdir = 'machine/learn/tmp/'
     _id = 'test_id'
     outdir = tmpdir + _id
-    os.mkdir(outdir)
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='class',
                     mode='regression', figure_export=True)
@@ -856,12 +858,13 @@ def test_generate_results_3():
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/reg_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
-    rmtree(tmpdir)
+    #rmtree(tmpdir)
 
 
 def test_generate_results_4():
