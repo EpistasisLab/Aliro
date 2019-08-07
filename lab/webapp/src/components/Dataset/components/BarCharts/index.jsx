@@ -10,6 +10,8 @@ class BarCharts extends Component {
 
     };
     this.createBarGraph = this.createBarGraph.bind(this);
+    // upper limit/max number of unique values for making chart
+    this.chartCutoff = 99;
   }
 
   componentDidMount() {
@@ -20,15 +22,15 @@ class BarCharts extends Component {
   // and also using https://www.d3-graph-gallery.com/graph/barplot_stacked_basicWide.html
   // as examples
   createBarGraph(){
-    const { depCol, dataPreview, valByRowObj, colKey, keys } = this.props;
-    let margin = { top: 10, right: 30, bottom: 50, left: 70 },
-        width = 560 - margin.left - margin.right,
+    const { depCol, dataPreview, valByRowObj, colKey, keys, cleanKey } = this.props;
+    let margin = { top: 10, right: 65, bottom: 50, left: 35 },
+        width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     let chartInnerHTML = "";
     // check DOM to see if graphic already exists
-    if(document.getElementById("stacked_bar_charts_" + colKey)) {
-      chartInnerHTML = document.getElementById("stacked_bar_charts_" + colKey).innerHTML;
+    if(document.getElementById("stacked_bar_charts_" + cleanKey)) {
+      chartInnerHTML = document.getElementById("stacked_bar_charts_" + cleanKey).innerHTML;
     };
     // only attempt to create graphic once
     if(chartInnerHTML === "") {
@@ -57,9 +59,20 @@ class BarCharts extends Component {
       //let colorObj = [{0:'#e41a1c'}, {1:'#377eb8'}];
       let colorObjList = [];
       depColSet.forEach((depVal, i) => {
-        // normalize index
-        let normI = i / depColSet.length;
-        let colorString = d3.interpolateSinebow(normI);
+        // use https://github.com/d3/d3-scale-chromatic#schemePaired for 12 colors
+        // to select unique color per class in dataset
+        let colorString;
+        if(i < 12) {
+          colorString = d3.schemePaired[i];
+        } else {
+          // if more than 12 classes in dataset use sequential color range
+          // https://github.com/d3/d3-scale-chromatic#sequential-multi-hue
+
+          // given num between 0 & 1 get color value
+          let normI = i / depColSet.length; // normalize index
+          colorString = d3.interpolateSinebow(normI);
+        }
+
         colorObjList.push({[depVal]: colorString});
          // i % 2 === 0
          //  ? colorObjList.push({[depVal]: colorList[0]})
@@ -70,6 +83,15 @@ class BarCharts extends Component {
 
       // count proportion of given column name/key with dataset dependent_col
 
+
+      //======================================================================//
+      /**********               Chart cutoff here                    **********/
+      //======================================================================//
+      // if number of unique values for given chart exceeds cutoff value
+      if(givenColSet.length > this.chartCutoff) {
+        this.setState({chartCutoff: true});
+        return;
+      }
       // for every unique value of given colKey in dataset, collect all matches
       givenColSet.forEach(tKey => {
         columnValueObj[tKey] = [];
@@ -98,15 +120,15 @@ class BarCharts extends Component {
       // for this example depCol is 'target_class' which can be '0' or '1'
       // and colKey is 'cat' which can be 'a', 'b' ...
 
-      let stackedData = []; // stack data as per examples to use with d3
-      // having data formatted this way helps facilitating use of d3
-      depColSet.forEach(classKey => {
-        let tempObj = {"class": classKey};
-        givenColSet.forEach(tKey => {
-          tempObj[tKey] = proportionObj[tKey][classKey];
-        })
-        stackedData.push(tempObj);
-      })
+      // let stackedData = []; // stack data as per examples to use with d3
+      // // having data formatted this way helps facilitating use of d3
+      // depColSet.forEach(classKey => {
+      //   let tempObj = {"class": classKey};
+      //   givenColSet.forEach(tKey => {
+      //     tempObj[tKey] = proportionObj[tKey][classKey];
+      //   })
+      //   stackedData.push(tempObj);
+      // })
 
       // Transpose the data into layers
       let stack = d3.stack()
@@ -128,7 +150,7 @@ class BarCharts extends Component {
         .range(colorList);
 
       // stacked stuff - svg elem using stacked data
-      let stackedSvg = d3.select("#stacked_bar_charts_" + colKey)
+      let stackedSvg = d3.select("#stacked_bar_charts_" + cleanKey)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -138,7 +160,22 @@ class BarCharts extends Component {
       stackedSvg.append('g')
         .attr('transform', `translate(0, ${height})`)
         .style("color", "white")
-        .call(d3.axisBottom(xStuff));
+        .call(d3.axisBottom(xStuff))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end")
+        .on("mouseover", () => { xAxisTooltip.style("display", null); }) // tooltip - hover over bars and display value
+        .on("mouseout", function() {
+          window.setTimeout(() => xAxisTooltip.style("display", "none"), 3500);
+         })
+        .on("mousemove", function(d, t, s, a) {
+          let xPosition = 0;
+          let yPosition = 0;
+          //let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
+          //window.console.log('tool tip thing for x axis', d);
+          xAxisTooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+          xAxisTooltip.select("text").text('x-axis: ' + d);
+        });
 
       // y-axis
       let stackedY = d3.scaleLinear()
@@ -155,20 +192,19 @@ class BarCharts extends Component {
         .style("color", "white")
         .call(d3.axisLeft(stackedY));
 
+      //window.console.log('colorobjlist', colorObjList);
       let groups = stackedSvg.selectAll("g.stack")
         .data(stackThing)
         .enter().append("g")
-        .style("fill", (d) => {
-          //window.console.log('color thing', d);
-          let normI = d.index / depColSet.length;
-          let colorString = d3.interpolateSinebow(normI);
+        .style("fill", (d, i) => {
+          let colorString = colorObjList[d.index][d.key];
           return colorString;
-          //return colorStack(d.key)
         });
 
       let stackRect = groups.selectAll("rect")
         .data((d) => {
-          //window.console.log('stacked thing', d);
+          //window.console.log('tempThing', d);
+          //let tempThing = {...d, classKey: d.key};
           return d;
         })
         .enter()
@@ -191,9 +227,10 @@ class BarCharts extends Component {
         .on("mouseout", function() {
           window.setTimeout(() => tooltip.style("display", "none"), 3500);
          })
-        .on("mousemove", function(d) {
+        .on("mousemove", function(d, t, s, a) {
           let xPosition = d3.mouse(this)[0] - 15;
           let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
+          //window.console.log('tool tip thing', d);
           tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
           tooltip.select("text").text(d[1] - d[0]);
         });
@@ -203,7 +240,9 @@ class BarCharts extends Component {
           .data(stackColorThing)
           .enter().append("g")
           .attr("transform", function(d, i) {
-            return "translate(20,"+  (i * 19) + ")";
+            //let legendWidth = width + margin.right;
+            let legendWidth = 555;
+            return "translate(" + legendWidth + "," + (-(i * 19) - margin.bottom) + ")";
           });
 
         legend.append("rect")
@@ -234,7 +273,7 @@ class BarCharts extends Component {
           .style("display", "none");
 
         tooltip.append("rect")
-          .attr("width", 30)
+          .attr("width", 35)
           .attr("height", 20)
           .attr("fill", "white")
           .style("opacity", 0.5);
@@ -245,13 +284,36 @@ class BarCharts extends Component {
           .style("text-anchor", "middle")
           .attr("font-size", "12px")
           .attr("font-weight", "bold");
+
+        // tooltip elem to display x axis labels
+        let xAxisTooltip = stackedSvg.append("g")
+          .attr("class", "tooltip")
+          .style("display", "none");
+
+        xAxisTooltip.append("rect")
+          .attr("width", width)
+          .attr("height", 20)
+          .attr("fill", "black")
+          .style("opacity", 0.75);
+
+        xAxisTooltip.append("text")
+          .attr("x", 15)
+          .attr("dy", "1.2em")
+          .style("text-anchor", "start")
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold")
+          .style("fill", "white");
      }
   }
 
   render() {
-    const { dataPreview, valByRowObj, colKey } = this.props;
+    const { dataPreview, valByRowObj, colKey, cleanKey } = this.props;
+    const { chartCutoff } = this.state;
     return (
-        <div id={"stacked_bar_charts_" + colKey} />
+      <div>
+        <div id={"stacked_bar_charts_" + cleanKey} />
+        {chartCutoff ? (<p>Too many value to plot</p>) : null}
+      </div>
     );
   }
 }

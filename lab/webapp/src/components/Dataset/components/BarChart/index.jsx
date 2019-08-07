@@ -18,38 +18,61 @@ class BarChart extends Component {
 
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
   createBarGraph(){
-    const { dataPreview, valByRowObj, tempKey } = this.props;
+    const { dataPreview, valByRowObj, depCol, cleanKey } = this.props;
     let margin = { top: 10, right: 30, bottom: 20, left: 40 },
         width = 400 - margin.left - margin.right,
         height = 200 - margin.top - margin.bottom;
 
     let chartInnerHTML = "";
     //let valByRowObj = this.getDataValByRow();
-    if(document.getElementById("test_bar_chart_" + tempKey)) {
-      chartInnerHTML = document.getElementById("test_bar_chart_" + tempKey).innerHTML;
+    if(document.getElementById("test_bar_chart_" + depCol)) {
+      chartInnerHTML = document.getElementById("test_bar_chart_" + depCol).innerHTML;
     };
 
     if(chartInnerHTML === "") {
       width = 460 - margin.left - margin.right;
-      let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
+      let data_sorted = valByRowObj[depCol].sort(d3.ascending);
 
       let classCountObj = {};
-      let tempData = [];
+      let chartData = [];
 
       data_sorted.forEach(val => {
         classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
       })
-      //tempData.push(classCountObj);
-      let testSet = [... new Set(valByRowObj[tempKey])];
+      //chartData.push(classCountObj);
+      let testSet = [... new Set(valByRowObj[depCol])].sort();
 
-      testSet.forEach(tKey => tempData.push({
+      /**---- *************** ----**** ---- Color stuff here ----****---- *************** ----**/
+      // for every entry in testSet, map keys to color
+      let colorObjList = [];
+      testSet.forEach((depVal, i) => {
+        // use https://github.com/d3/d3-scale-chromatic#schemePaired for 12 colors
+        // to select unique color per class in dataset
+        let colorString;
+        if(i < 12) {
+          colorString = d3.schemePaired[i];
+        } else {
+          // if more than 12 classes in dataset use sequential color range
+          // https://github.com/d3/d3-scale-chromatic#sequential-multi-hue
+
+          // given num between 0 & 1 get color value
+          let normI = i / depColSet.length; // normalize index
+          colorString = d3.interpolateSinebow(normI);
+        }
+        colorObjList.push({[depVal]: colorString});
+      })
+      //window.console.log('colorobjlist', colorObjList);
+      /**---- *************** ----****---- *************** ----****---- *************** ----**/
+
+
+      testSet.forEach(tKey => chartData.push({
         entry: {
           testKey: tKey,
           testValue: classCountObj[tKey]
         }
       }));
 
-      let svg = d3.select("#test_bar_chart_" + tempKey)
+      let svg = d3.select("#test_bar_chart_" + cleanKey)
         .append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
@@ -65,7 +88,7 @@ class BarChart extends Component {
 
       // y - axis
       let yStuff = d3.scaleLinear()
-        .domain([0, d3.max(tempData, (d) => d.entry.testValue)])
+        .domain([0, d3.max(chartData, (d) => d.entry.testValue)])
         .range([height, 0]);
 
       svg.append('g')
@@ -73,10 +96,14 @@ class BarChart extends Component {
         .call(d3.axisLeft(yStuff));
 
       svg.selectAll("rect")
-        .data(tempData).enter()
+        .data(chartData).enter()
         .append("rect").merge(svg)
         .style("stroke", "gray")
-        .style("fill", "rgb(125, 91, 166)")
+        .style("fill", (d, i) => {
+          //window.console.log('colorobjlist', d);
+          let colorString = colorObjList[i][d.entry.testKey];
+          return colorString;
+        })
         .attr("x", (d, t, s, a) => {
           //window.console.log('x stuff', d);
           return xStuff(d.entry.testKey);
@@ -130,9 +157,9 @@ class BarChart extends Component {
   }
 
   render() {
-    const { tempKey } = this.props;
+    const { cleanKey } = this.props;
     return (
-      <div id={"test_bar_chart_" + tempKey} style={{position:'relative', left:'-60px'}}/>
+      <div id={"test_bar_chart_" + cleanKey} style={{position:'relative', left:'-60px'}}/>
     );
   }
 }

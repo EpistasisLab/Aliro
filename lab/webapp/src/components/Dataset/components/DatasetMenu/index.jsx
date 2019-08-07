@@ -129,32 +129,35 @@ class DatasetMenu extends Component {
               />
             </Tab.Pane>
           )
-        },{
-          menuItem: 'violin test',
-          render: () => (
-            <Tab.Pane style={{border: 'none' }}>
-              <Segment inverted attached="top" className="panel-header">
-                <Header as="h3" content="test violin" style={{ display: 'inline', marginRight: '0.5em' }} />
-              </Segment>
-              <Segment inverted attached="bottom">
-
-                {
-                  dataKeys && dataKeys.map(key => {
-                    let tempKey = key.replace(/ /g, "_");
-                    return (<ViolinChart
-                      key={tempKey}
-                      tempKey={key}
-                      dataPreview={dataPreview}
-                      valByRowObj={valByRowObj}
-                    />);
-                  })
-                }
-              </Segment>
-            </Tab.Pane>
-          )
         }
       ];
       return testPain;
+      /*
+      ,{
+        menuItem: 'violin test',
+        render: () => (
+          <Tab.Pane style={{border: 'none' }}>
+            <Segment inverted attached="top" className="panel-header">
+              <Header as="h3" content="test violin" style={{ display: 'inline', marginRight: '0.5em' }} />
+            </Segment>
+            <Segment inverted attached="bottom">
+
+              {
+                dataKeys && dataKeys.map(key => {
+                  let tempKey = key.replace(/ /g, "_");
+                  return (<ViolinChart
+                    key={tempKey}
+                    tempKey={key}
+                    dataPreview={dataPreview}
+                    valByRowObj={valByRowObj}
+                  />);
+                })
+              }
+            </Segment>
+          </Tab.Pane>
+        )
+      }
+      */
   }
 }
 

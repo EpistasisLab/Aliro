@@ -51,7 +51,7 @@ class Summary extends Component {
           >
 
             <Grid.Row columns={3}>
-              <Grid.Column width={2}>
+              <Grid.Column width={4}>
                 <Header
                   as="h4"
                   inverted
@@ -83,6 +83,7 @@ class Summary extends Component {
                 // loop through dataset column name/key for charts later on
                 // need to be careful with this key - replace spaces with '_'
                 let tempKey = key.replace(/ /g, "_");
+                tempKey = tempKey.replace(/\./g, "_");
                 cat_feats.indexOf(key) > -1 || ordKeys.indexOf(key) > -1
                   ? dataType = 'nominal' : dataType = 'numeric';
                 key === dep_col
@@ -90,8 +91,8 @@ class Summary extends Component {
                 // default value for chart - make box plot
                 let tempChart = (
                   <BoxPlot
-                    key={tempKey}
-                    tempKey={key}
+                    cleanKey={tempKey}
+                    rawKey={key}
                     dataPreview={dataPreview}
                     valByRowObj={valByRowObj}
                   />);
@@ -102,6 +103,7 @@ class Summary extends Component {
                 cat_feats.indexOf(key) > -1 ? tempChart = (
                   <div key={"cat_chart_" + tempKey}>
                     <BarCharts
+                      cleanKey={tempKey}
                       colKey={key}
                       depCol={dep_col}
                       dataPreview={dataPreview}
@@ -116,6 +118,7 @@ class Summary extends Component {
                       {"ordinal_chart_for: " + tempKey}
                     </p>*/}
                     <BarCharts
+                      cleanKey={tempKey}
                       colKey={key}
                       depCol={dep_col}
                       dataPreview={dataPreview}
@@ -127,7 +130,8 @@ class Summary extends Component {
                 key === dep_col
                   ? tempChart = (
                     <BarChart
-                      tempKey={key}
+                      depCol={key}
+                      cleanKey={tempKey}
                       dataset={dataset}
                       dataPreview={dataPreview}
                       valByRowObj={valByRowObj}

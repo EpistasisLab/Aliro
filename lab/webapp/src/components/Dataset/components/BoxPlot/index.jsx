@@ -22,14 +22,14 @@ class BoxPlot extends Component {
 
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
-    const { dataPreview, valByRowObj, tempKey } = this.props;
-    let margin = { top: 5, right: 60, bottom: 25, left: 85 },
+    const { dataPreview, valByRowObj, rawKey, cleanKey } = this.props;
+    let margin = { top: 5, right: 60, bottom: 50, left: 85 },
         width = 425 - margin.left - margin.right,
-        height = 255 - margin.top - margin.bottom;
+        height = 300 - margin.top - margin.bottom;
 
     // to make background of svg transparent set stroke & fill to none
     // or do not specify background color
-    let svg = d3.select("#test_box_plot_" + tempKey)
+    let svg = d3.select("#test_box_plot_" + cleanKey)
     .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -39,8 +39,8 @@ class BoxPlot extends Component {
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
     // get stats
-    let data_sorted = valByRowObj[tempKey].sort(d3.ascending);
-    // let data_sorted_AB = valByRowObj[tempKey].sort( (a, b) => {
+    let data_sorted = valByRowObj[rawKey].sort(d3.ascending);
+    // let data_sorted_AB = valByRowObj[rawKey].sort( (a, b) => {
     //   return a - b;
     // });
 
@@ -57,29 +57,29 @@ class BoxPlot extends Component {
     let maxData = Math.max(...data_sorted);
 
     // print stats
-    window.console.debug('temp key: ', tempKey);
-    window.console.debug('sorted data: ', data_sorted);
-    window.console.debug('q1: ', q1);
-    window.console.debug('q3: ', q3);
-    window.console.debug('interQuantileRange: ', interQuantileRange);
-    window.console.debug('median: ', median);
-    window.console.debug('min (whisker): ', min);
-    window.console.debug('max (whisker): ', max);
+    // window.console.debug('raw key: ', rawKey);
+    // window.console.debug('sorted data: ', data_sorted);
+    // window.console.debug('q1: ', q1);
+    // window.console.debug('q3: ', q3);
+    // window.console.debug('interQuantileRange: ', interQuantileRange);
+    // window.console.debug('median: ', median);
+    // window.console.debug('min (whisker): ', min);
+    // window.console.debug('max (whisker): ', max);
     // use minimum/max values in data as lower & upper bounds for whisker lines
     min < minData ? min = minData : null;
     max > maxData ? max = maxData : null;
 
-    window.console.debug('minData: ', minData);
-    window.console.debug('maxData: ', maxData);
+    // window.console.debug('minData: ', minData);
+    // window.console.debug('maxData: ', maxData);
     // color scale for jitter points
     let myColor = d3.scaleSequential()
       .interpolator(d3.interpolateInferno)
       .domain([min, max]);
 
-    // Y scale
+    // Y scale - use .domain([rawKey]) to show y-axis label
     let yScale = d3.scaleBand()
       .range([height, 0])
-      .domain([tempKey])
+
       .paddingInner(1)
       .paddingOuter(.5)
     svg.append("g")
@@ -94,7 +94,11 @@ class BoxPlot extends Component {
       .attr("stroke", "white")
       .style("color", "white")
       .call(d3.axisBottom(xScale))
-      .attr("transform", "translate(0," + (height) + ")");
+      .attr("transform", "translate(0," + (height) + ")")
+      .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+      //.attr("transform", "translate(0," + (height) + ")");
     // box features
     let center = 150;
     width = 100;
@@ -129,27 +133,27 @@ class BoxPlot extends Component {
       .attr("stroke", "white");
 
     // tool tip
-    let tooltip = d3.select("#test_box_plot_" + tempKey)
-    .append("div")
-      .style("opacity", 0)
-      .style("font-size", "16px");
-
-    let mouseover = function(d) {
-      tooltip
-        .transition()
-        .duration(200)
-        .style("opacity", 1)
-      tooltip
-        .html(`<span style='color:white'>data: ${d}</span>`)
-        .style("left", (d3.mouse(this)[0]+30) + "px")
-        .style("top", (d3.mouse(this)[1]+30) + "px")
-    }
-    let mouseleave = function(d) {
-      tooltip
-        .transition()
-        .duration(200)
-        .style("opacity", 0)
-    }
+    // let tooltip = d3.select("#test_box_plot_" + rawKey)
+    // .append("div")
+    //   .style("opacity", 0)
+    //   .style("font-size", "16px");
+    //
+    // let mouseover = function(d) {
+    //   tooltip
+    //     .transition()
+    //     .duration(200)
+    //     .style("opacity", 1)
+    //   tooltip
+    //     .html(`<span style='color:white'>data: ${d}</span>`)
+    //     .style("left", (d3.mouse(this)[0]+30) + "px")
+    //     .style("top", (d3.mouse(this)[1]+30) + "px")
+    // }
+    // let mouseleave = function(d) {
+    //   tooltip
+    //     .transition()
+    //     .duration(200)
+    //     .style("opacity", 0)
+    // }
 
     /**---- *************** ----**** ---- jitter stuff here ----****-----**/
 
@@ -174,9 +178,9 @@ class BoxPlot extends Component {
   }
 
   render() {
-    const {tempKey } = this.props;
+    const {cleanKey} = this.props;
     return (
-      <div id={"test_box_plot_" + tempKey} style={{position:'relative', left:'-100px'}}/>
+      <div id={"test_box_plot_" + cleanKey} style={{position:'relative', left:'-100px'}}/>
     );
   }
 }
