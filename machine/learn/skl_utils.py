@@ -235,8 +235,6 @@ def generate_results(model, input_data,
         else:
             model.fit(features, target)
 
-        # set categories into OrdinalEncoder
-
         # computing cross-validated metrics
         cv_scores = cross_validate(
                                     estimator=model,
