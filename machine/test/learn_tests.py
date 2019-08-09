@@ -858,7 +858,6 @@ def test_generate_results_3():
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert os.path.isfile('{}/reg_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
@@ -1106,7 +1105,7 @@ def test_plot_dot_plot_2():
     dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
                     training_classes_4,
                     feature_names_4,
-                    indices=np.array([0,1,2,3]),
+                    indices=np.array(range(12)),
                     random_state=42,
                     mode='regression')
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)

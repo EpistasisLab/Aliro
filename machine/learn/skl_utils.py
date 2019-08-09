@@ -324,8 +324,6 @@ def generate_results(model, input_data,
             plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
     else: # regression
         if figure_export:
-            pred_y = model.predict(features)
-            plot_pred(tmpdir, _id, pred_y, target)
             plot_cv_pred(tmpdir, _id, features, target, cv_scores)
 
 
@@ -689,33 +687,6 @@ def plot_dot_plot(tmpdir, _id, features,
     (graph,) = pydot.graph_from_dot_file(dot_file)
     graph.write_png(png_file)
     return dtree_train_score
-
-
-def plot_pred(tmpdir, _id, pred_y, y):
-    """
-    Plot Predictions.
-    Parameters
-    ----------
-    tmpdir: string
-        Temporary directory for saving experiment results
-    _id: string
-        Experiment ID in PennAI
-    pred_y: np.darray/pd.DataFrame
-        Predicted Target
-    y: np.darray/pd.DataFrame
-        Target in training dataset
-    Returns
-    -------
-    None
-    """
-    h=plt.figure()
-    plt.title("Regression Predictions")
-    plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
-    plt.xlabel('Observed Target')
-    plt.ylabel('Predicted Target')
-    h.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_pred_' + _id + '.png')
-    plt.close()
 
 
 def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
