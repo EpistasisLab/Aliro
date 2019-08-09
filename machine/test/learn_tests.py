@@ -49,7 +49,7 @@ test_clf_input5 = "data/datasets/test/test_mixed/backache.csv"
 test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
 
 # test inputfile for regression
-test_reg_input = "machine/test/1027_ESL.tsv"
+test_reg_input = "machine/test/562_cpu_small.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 
@@ -859,6 +859,7 @@ def test_generate_results_3():
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert os.path.isfile('{}/reg_pred_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
