@@ -326,6 +326,7 @@ def generate_results(model, input_data,
         if figure_export:
             pred_y = model.predict(features)
             plot_pred(tmpdir, _id, pred_y, target)
+            plot_cv_pred(tmpdir, _id, features, target, cv_scores)
 
 
 
@@ -715,6 +716,44 @@ def plot_pred(tmpdir, _id, pred_y, y):
     h.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_pred_' + _id + '.png')
     plt.close()
+
+
+def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
+    """
+    Plot Cross-Validated Predictions.
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in PennAI
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    Returns
+    -------
+    None
+    """
+    pred_y = np.empty(y.shape)
+    cv = StratifiedKFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        if np.array_equal(est.predict(X[test]),pred_y[test]):
+            print(pred_y[test])
+        pred_y[test] = est.predict(X[test])
+
+    h=plt.figure()
+    plt.title("Regression Cross-Validated Predictions")
+    plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Observed Target')
+    plt.ylabel('Predicted Target')
+    h.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.close()
+
 
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
