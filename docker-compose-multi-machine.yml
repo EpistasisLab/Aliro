@@ -96,6 +96,44 @@ services:
       - lab
       - dbmongo
 
+  machine_5:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5085:5085"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5085
+      - MACHINE_HOST=machine_5
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_6:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5086:5086"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5086
+      - MACHINE_HOST=machine_6
+    depends_on:
+      - lab
+      - dbmongo
+
   dbmongo:
     build:
       context: .
