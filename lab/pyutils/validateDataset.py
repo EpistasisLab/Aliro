@@ -114,11 +114,12 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 	if target_column:
 		# check that non-cat feature columns contain only numeric data
 		num_df = num_df.drop(columns=target_column, axis=1)
-		try:
-			check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
-		except Exception as e:
-			logger.warn("sklearn.check_array() validation " + str(e))
-			return False, "sklearn.check_array() validation " + str(e)
+		if (len(num_df.columns)) > 0:
+			try:
+				check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
+			except Exception as e:
+				logger.warn("sklearn.check_array() validation " + str(e))
+				return False, "sklearn.check_array() validation " + str(e)
 
 		# Check rows per class
 		counts = df.groupby(target_column).count()
