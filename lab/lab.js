@@ -891,7 +891,8 @@ app.post("/api/v1/projects/:id/experiment", jsonParser, upload.array("_files"), 
                                 .catch((err) => {
                                     // TODO Check comprehensiveness of error catching
                                     if (err.error === "No machine capacity available") {
-                                        res.status(501);
+                                        res.status(503);
+                                        res.statusMessage = "All experiment nodes busy."
                                         res.send(err);
                                     } else if ((err.error !== undefined) && err.error.startsWith("Experiment failed to run")) {
                                         res.status(500);
