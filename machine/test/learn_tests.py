@@ -325,7 +325,8 @@ class APITESTCLASS(unittest.TestCase):
             "_id": "test_id",
             "kernel": "rbf",
             "tol": 0.0001,
-            "C": 1
+            "C": 1,
+            "gamma": 0.01
             }
         exp = Experiment(args=args, basedir='.')
 
@@ -333,6 +334,31 @@ class APITESTCLASS(unittest.TestCase):
         assert exp.method_name == "SVC"
         assert exp.basedir == '.'
         assert exp.tmpdir == './machine/learn/tmp/{}/'.format('SVC')
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_Experiment_get_model(self, mock_get):
+        """Test Experiment get_model function assign correct parameter values including static parameters."""
+
+        args = {
+            "method": "SVC",
+            "_id": "test_id",
+            "kernel": "rbf",
+            "tol": 0.0001,
+            "C": 1,
+            "gamma": 0.01,
+            "degree": 2,
+            "coef0": 0
+            }
+        exp = Experiment(args=args, basedir='.')
+        model, method_type, encoding_strategy = exp.get_model()
+        params = model.get_params()
+        assert params['cache_size'] == 700
+        assert params['max_iter'] == 10000
+        for k in params.keys():
+            if k in args:
+                assert args[k] == params[k]
+        assert encoding_strategy == "OrdinalEncoder"
+        assert method_type == "classification"
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
