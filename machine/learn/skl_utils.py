@@ -691,7 +691,7 @@ def plot_dot_plot(tmpdir, _id, features,
 
 def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     """
-    Plot Cross-Validated Predictions.
+    Plot Cross-Validated Predictions and Residuals.
     Parameters
     ----------
     tmpdir: string
@@ -709,20 +709,29 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     None
     """
     pred_y = np.empty(y.shape)
+    resi_y = np.empty(y.shape)
     cv = StratifiedKFold(n_splits=10)
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
-        if np.array_equal(est.predict(X[test]),pred_y[test]):
-            print(pred_y[test])
         pred_y[test] = est.predict(X[test])
+        resi_y[test] = pred_y[test] - test
 
-    h=plt.figure()
+    p=plt.figure()
     plt.title("Regression Cross-Validated Predictions")
     plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
-    plt.xlabel('Observed Target')
-    plt.ylabel('Predicted Target')
-    h.tight_layout()
+    plt.xlabel('Observed Value')
+    plt.ylabel('Predicted Value')
+    p.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.close()
+
+    r=plt.figure()
+    plt.title("Regression Cross-Validated Residuals")
+    plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Predicted Value')
+    plt.ylabel('Residuals')
+    r.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
     plt.close()
 
 

@@ -859,6 +859,7 @@ def test_generate_results_3():
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
     assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/reg_cv_resi_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
