@@ -23,6 +23,7 @@ class BoxPlot extends Component {
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
     const { dataPreview, valByRowObj, rawKey, cleanKey } = this.props;
+    //window.console.log('datapreview for boxplot', dataPreview);
     let margin = { top: 5, right: 60, bottom: 50, left: 85 },
         width = 425 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
@@ -45,7 +46,11 @@ class BoxPlot extends Component {
     // });
 
     let q1 = d3.quantile(data_sorted, .25);
-    let median = d3.quantile(data_sorted, .5);
+    //let median_quantile = d3.quantile(data_sorted, .5);
+    let median = d3.median(data_sorted);
+    //window.console.log('median_quantile', median_quantile);
+    //window.console.log('median', median);
+
     let q3 = d3.quantile(data_sorted, .75);
     let interQuantileRange = q3 - q1;
     let min = q1 - (1.5 * interQuantileRange);
@@ -79,7 +84,6 @@ class BoxPlot extends Component {
     // Y scale - use .domain([rawKey]) to show y-axis label
     let yScale = d3.scaleBand()
       .range([height, 0])
-
       .paddingInner(1)
       .paddingOuter(.5)
     svg.append("g")
