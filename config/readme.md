@@ -13,7 +13,8 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
     "category": "<classification or regression>"
     "invalidParameterCombinations": [
         <optional; lists of arrays of invalid parameter combinations.  array keys must be valid parameter names, array values must be valid parameter values>
-    ]
+    ],
+    "static_parameters" : {<optional; dictionary of static parameters in this algorithm},
     "schema": {
         "<parameter 1 name>": {
             "description": "<parameter description>",
@@ -47,6 +48,7 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
         [{"penalty":"l1"}, {"loss":"square_hinge"}, {"dual":"true"}],
         [{"penalty":"l1"}, {"loss":"hinge"}]
     ],
+    "static_parameters" : {"max_iter":1000} ,
     "schema": {
         "penalty": {
             "description": "Specifies the norm used in the penalization. The ‘l2’ penalty is the standard used in SVC. The ‘l1’ leads to coef_ vectors that are sparse.",
@@ -98,5 +100,5 @@ Machine learning algorithm parameters and UI settings are defined in `/dockers/d
         }
     },
     "category": "classification"
-} 
+}
 ```
