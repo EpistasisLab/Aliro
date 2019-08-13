@@ -67,6 +67,8 @@ class Experiment:
         method_type = pdict['category']
         encoding_strategy = pdict['categorical_encoding_strategy']
         method_args = {k:self.args[k] for k in params.keys()}
+        # update static parameters
+        method_args.update(pdict['static_parameters'])
         exec('from {} import {}'.format(import_path, self.method_name))
         method = eval(self.method_name)
         model = method(**method_args)
