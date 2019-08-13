@@ -17,13 +17,6 @@ PennAI is a multi-container docker project that uses ([Docker-Compose](https://d
 ### Installation
 1. Download the production zip from the [latest release](https://github.com/EpistasisLab/pennai/releases/latest)
 2. Unzip the archive
-2. From the command line, navigate to the pennai directory and load the images into docker with the following commands:
-
-```
-docker load --input .\images\pennai_lab.tar
-docker load --input .\images\pennai_machine.tar
-docker load --input .\images\pennai_dbmongo.tar
-```
 
 ## Using PennAI
 

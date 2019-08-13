@@ -159,9 +159,10 @@ def generate_results(model, input_data,
         if categories:
             col_idx = get_col_idx(feature_names_list, categories)
             if encoding_strategy == "OneHotEncoder":
-                transform_cols.append(("categorical_encoder", OneHotEncoder(), col_idx))
+                transform_cols.append(("categorical_encoder", OneHotEncoder(handle_unknown='ignore'), col_idx))
             elif encoding_strategy == "OrdinalEncoder":
-                transform_cols.append(("categorical_encoder", OrdinalEncoder(), col_idx))
+                ordinal_map = OrdinalEncoder().fit(features[:, col_idx]).categories_
+                transform_cols.append(("categorical_encoder", OrdinalEncoder(categories=ordinal_map), col_idx))
         if ordinals:
             ordinal_features = sorted(list(ordinals.keys()))
             col_idx = get_col_idx(feature_names_list, ordinal_features)
@@ -174,6 +175,7 @@ def generate_results(model, input_data,
                                  remainder='passthrough',
                                  sparse_threshold=0
                                  )
+
         model = make_pipeline(ct, model)
 
     scores = {}
