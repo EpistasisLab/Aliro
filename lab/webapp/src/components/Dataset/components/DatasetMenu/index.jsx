@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { formatDataset, formatTime } from 'utils/formatter';
 import { Header, Tab, Segment, Grid, Loader, Table, Icon, Container } from 'semantic-ui-react';
-import ViolinChart from '../ViolinChart/';
-import Metafeatures from '../Metafeatures/';
-import Details from '../Details/';
-import Summary from '../Summary/';
+import Metafeatures from './components/Metafeatures/';
+import Details from './components/Details/';
+import Summary from './components/Summary/';
 
 import * as d3 from "d3";
 
@@ -132,32 +131,6 @@ class DatasetMenu extends Component {
         }
       ];
       return testPain;
-      /*
-      ,{
-        menuItem: 'violin test',
-        render: () => (
-          <Tab.Pane style={{border: 'none' }}>
-            <Segment inverted attached="top" className="panel-header">
-              <Header as="h3" content="test violin" style={{ display: 'inline', marginRight: '0.5em' }} />
-            </Segment>
-            <Segment inverted attached="bottom">
-
-              {
-                dataKeys && dataKeys.map(key => {
-                  let tempKey = key.replace(/ /g, "_");
-                  return (<ViolinChart
-                    key={tempKey}
-                    tempKey={key}
-                    dataPreview={dataPreview}
-                    valByRowObj={valByRowObj}
-                  />);
-                })
-              }
-            </Segment>
-          </Tab.Pane>
-        )
-      }
-      */
   }
 }
 

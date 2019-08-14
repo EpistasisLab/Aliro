@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Header, Segment, Table, Grid } from 'semantic-ui-react';
-import BarChart from '../BarChart/';
-import BarCharts from '../BarCharts/';
-import BoxPlot from '../BoxPlot/';
+import BarChart from '../Charts/BarChart/';
+import BarCharts from '../Charts/BarCharts/';
+import BoxPlot from '../Charts/BoxPlot/';
 import * as d3 from "d3";
 
 class Summary extends Component {

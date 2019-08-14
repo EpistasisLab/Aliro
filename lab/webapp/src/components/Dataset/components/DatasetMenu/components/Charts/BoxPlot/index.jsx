@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Header } from 'semantic-ui-react';
 import * as d3 from "d3";
+//import * as bananaSet from './bananaJson.json';
 
 class BoxPlot extends Component {
   constructor(props) {
@@ -136,53 +137,22 @@ class BoxPlot extends Component {
       .attr("x2", function(d){ return(xScale(d))} )
       .attr("stroke", "white");
 
-    // tool tip
-    // let tooltip = d3.select("#test_box_plot_" + rawKey)
-    // .append("div")
-    //   .style("opacity", 0)
-    //   .style("font-size", "16px");
-    //
-    // let mouseover = function(d) {
-    //   tooltip
-    //     .transition()
-    //     .duration(200)
-    //     .style("opacity", 1)
-    //   tooltip
-    //     .html(`<span style='color:white'>data: ${d}</span>`)
-    //     .style("left", (d3.mouse(this)[0]+30) + "px")
-    //     .style("top", (d3.mouse(this)[1]+30) + "px")
-    // }
-    // let mouseleave = function(d) {
-    //   tooltip
-    //     .transition()
-    //     .duration(200)
-    //     .style("opacity", 0)
-    // }
+    let statisticsObj = {
+      q1: q1 ? q1 : undefined,
+      q3: q3 ? q3 : undefined,
+      median: median ? median : undefined,
+      min: min ? min : undefined,
+      max: max ? max : undefined,
+      min_val_in_data: minData ? minData : undefined,
+      max_val_in_data: maxData ? maxData : undefined
+    };
 
-    /**---- *************** ----**** ---- jitter stuff here ----****-----**/
-
-    /*let jitterWidth = 50;
-    svg.selectAll("indPoints")
-      .data(data_sorted)
-      .enter()
-      .append("circle")
-        .attr("cy", function(d){
-          //window.console.log('y data', d);
-          return(center - jitterWidth/2 + Math.random()*jitterWidth)
-        })
-        .attr("cx", function(d){
-          //window.console.log('x data', d);
-          return(x(d))
-        })
-        .attr("r", 3)
-        .style("fill", function(d){ return(myColor(d)) })
-        .attr("stroke", "black")
-        .on("mouseover", mouseover)
-        .on("mouseleave", mouseleave)*/
+    return statisticsObj;
   }
 
   render() {
     const {cleanKey} = this.props;
+    createBoxPlotStatsTest();
     return (
       <div id={"test_box_plot_" + cleanKey} style={{position:'relative', left:'-100px'}}/>
     );
@@ -195,3 +165,35 @@ const mapStateToProps = (state) => ({
 
 export { BoxPlot };
 export default connect(mapStateToProps, {})(BoxPlot);
+
+// export helper method for unit test
+export function createBoxPlotStatsTest(valByRowObj={'test':[0]}, rawKey='test'){
+
+  valByRowObj[rawKey] = Object.values(valByRowObj[rawKey]);
+  let data_sorted = valByRowObj[rawKey].sort(d3.ascending);
+
+  let q1 = d3.quantile(data_sorted, .25);
+  let median = d3.median(data_sorted);
+  let q3 = d3.quantile(data_sorted, .75);
+  let interQuantileRange = q3 - q1;
+  let min = q1 - (1.5 * interQuantileRange);
+  let max = q3 + (1.5 * interQuantileRange);
+
+  let minData = Math.min(...data_sorted);
+  let maxData = Math.max(...data_sorted);
+
+  min < minData ? min = minData : null;
+  max > maxData ? max = maxData : null;
+
+  let statisticsObj = {
+    q1: q1 ? q1 : undefined,
+    q3: q3 ? q3 : undefined,
+    median: median ? median : undefined,
+    min: min ? min : undefined,
+    max: max ? max : undefined,
+    min_val_in_data: minData ? minData : undefined,
+    max_val_in_data: maxData ? maxData : undefined
+  };
+
+  return statisticsObj;
+}
