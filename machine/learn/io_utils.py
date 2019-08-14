@@ -70,6 +70,7 @@ class Experiment:
         # update static parameters
         if 'static_parameters' in pdict:
             method_args.update(pdict['static_parameters'])
+        print(f"method_args: {method_args}")
         exec('from {} import {}'.format(import_path, self.method_name))
         method = eval(self.method_name)
         model = method(**method_args)
