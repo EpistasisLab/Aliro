@@ -714,7 +714,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
         pred_y[test] = est.predict(X[test])
-        resi_y[test] = pred_y[test] - test
+        resi_y[test] = pred_y[test] - y[test]
 
     p=plt.figure()
     plt.title("Regression Cross-Validated Predictions")
