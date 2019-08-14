@@ -2,8 +2,8 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
-import DatasetModal from './components/DatasetModal/';
-import BarChart from './components/BarChart/';
+import DatasetModal from './components/DatasetMenu/components/DatasetModal/';
+import BarChart from './components/DatasetMenu/components/Charts/BarChart/';
 import DatasetMenu from './components/DatasetMenu/';
 import { Grid, Segment, Header, Table, Loader, Icon, Menu, Tab } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
@@ -83,7 +83,7 @@ class Dataset extends Component {
     return (
       <div>
         <DatasetModal
-          project={metadataStuff} 
+          project={metadataStuff}
           handleClose={this.handleCloseFileDetails}
         />
         <DatasetMenu
