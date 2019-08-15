@@ -80,7 +80,7 @@ RUN dos2unix /root/start.sh \
 # Start the webserver
 CMD ["/bin/bash", "/root/start.sh"]
 
-EXPOSE 443
+# EXPOSE 443
 EXPOSE 5080
 WORKDIR /appsrc/lab/
 ENTRYPOINT ["/root/entrypoint.sh"]
