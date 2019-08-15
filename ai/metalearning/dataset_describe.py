@@ -142,6 +142,9 @@ class Dataset:
         rowHashes = hash_pandas_object(self.df).values
         return hashlib.sha256(rowHashes).hexdigest()
 
+    def dependent_col_val(self):
+        return self.dependent_col
+
     def n_rows(self):
         return self.df.shape[0]
 

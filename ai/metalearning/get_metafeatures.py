@@ -35,7 +35,7 @@ def generate_metafeatures_from_filepath(input_file, target_field, **kwargs):
     df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
     dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
 
-    return generate_metafeatures(dataset, target_field)
+    return generate_metafeatures(dataset)
 
 def generate_metafeatures_from_server(file_id, target_field, **kwargs):
     # Read the data set into memory
@@ -43,11 +43,11 @@ def generate_metafeatures_from_server(file_id, target_field, **kwargs):
     df = pd.read_csv(StringIO(raw_data), sep=None, engine='python',**kwargs)
     dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
 
-    return generate_metafeatures(dataset, target_field)
+    return generate_metafeatures(dataset)
 
 
-def generate_metafeatures(dataset, target_field):
-    """Generate metafeatures for a pandas dataset"""
+def generate_metafeatures(dataset):
+    """Generate metafeatures for a dataset_describe.Dataset"""
     meta_features = OrderedDict() 
     for i in dir(dataset):
         result = getattr(dataset, i)
