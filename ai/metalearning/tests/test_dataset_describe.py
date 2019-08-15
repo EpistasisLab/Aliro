@@ -21,18 +21,18 @@ class Dataset_Describe(unittest.TestCase):
         irisPermutePath = os.path.join(package_directory, 'iris_permute.csv')
 
         # classification problems
-        iris = pd.read_csv(irisPath)
-        self.iris = Dataset(iris)
+        irisPd = pd.read_csv(irisPath)
+        self.iris = Dataset(irisPd)
 
-        irisPermute = pd.read_csv(irisPermutePath)
-        self.irisPermute = Dataset(irisPermute) 
+        irisPermutePd = pd.read_csv(irisPermutePath)
+        self.irisPermute = Dataset(irisPermutePd) 
 
-        appendicitisString = pd.read_csv(appendicitisStringPath)
-        self.appendicitisString = Dataset(appendicitisString)   
+        appendicitisStringPd = pd.read_csv(appendicitisStringPath)
+        self.appendicitisString = Dataset(appendicitisStringPd)
 
         # Regression problem
-        tips = pd.read_csv(tipsPath)
-        self.tips = Dataset(tips, dependent_col = 'tip')   
+        tipsPd = pd.read_csv(tipsPath)
+        self.tips = Dataset(tipsPd, dependent_col = 'tip')   
 
     def test_dataset_hash(self):
         irisResult = self.iris.dataset_hash()
