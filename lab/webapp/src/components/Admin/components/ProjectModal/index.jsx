@@ -8,7 +8,7 @@ const ProjectModal = ({ project, handleClose }) => {
     <Modal basic open={project ? true : false} onClose={handleClose} closeIcon>
       <Modal.Header>Schema: {project.name}</Modal.Header>
       <Modal.Content>
-        <pre className="schema">{JSON.stringify(project.schema, null, 2)}</pre>
+        <pre className="schema">{JSON.stringify(project, null, 2)}</pre>
       </Modal.Content>
     </Modal>
   );
