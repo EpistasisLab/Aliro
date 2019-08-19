@@ -11,7 +11,7 @@ class BarCharts extends Component {
     };
     this.createBarGraph = this.createBarGraph.bind(this);
     // upper limit/max number of unique values for making chart
-    this.chartCutoff = 99;
+    this.chartCutoff = 40;
   }
 
   componentDidMount() {
@@ -51,12 +51,8 @@ class BarCharts extends Component {
       // find unique values for the given column key as well as dependent column
       let givenColSet = [... new Set(valByRowObj[colKey])];
       let depColSet = [... new Set(valByRowObj[depCol])].sort();
-
-      /**---- *************** ----**** ---- Color stuff here ----****---- *************** ----**/
-      let colorList = ['#55d6be','#7c5ba5'];
-      //let d3.interpolateInferno();
+      /**---- *************** ----**** ---- Color stuff here ----****---- ***/
       // for every entry in depColSet, map keys to color
-      //let colorObj = [{0:'#e41a1c'}, {1:'#377eb8'}];
       let colorObjList = [];
       depColSet.forEach((depVal, i) => {
         // use https://github.com/d3/d3-scale-chromatic#schemePaired for 12 colors
@@ -72,27 +68,23 @@ class BarCharts extends Component {
           let normI = i / depColSet.length; // normalize index
           colorString = d3.interpolateSinebow(normI);
         }
-
         colorObjList.push({[depVal]: colorString});
-         // i % 2 === 0
-         //  ? colorObjList.push({[depVal]: colorList[0]})
-         //  : colorObjList.push({[depVal]: colorList[1]});
       })
-      //window.console.log('colorobjlist', colorObjList);
-      /**---- *************** ----****---- *************** ----****---- *************** ----**/
+      /**---- *************** ----****---- *************** ----****---- ***/
 
-      // count proportion of given column name/key with dataset dependent_col
-
-
-      //======================================================================//
-      /**********               Chart cutoff here                    **********/
-      //======================================================================//
       // if number of unique values for given chart exceeds cutoff value
       if(givenColSet.length > this.chartCutoff) {
         this.setState({chartCutoff: true});
         return;
       }
+
+      // in order to create a stacked bar chart need proportion of data per categorical
+      // feature for count of each dependent column value
+
+      // First step is to consolidate values of a given categorical feature:
       // for every unique value of given colKey in dataset, collect all matches
+      // by looping over entire dataset and keep track of dependent column
+      // values for each given categorical feature
       givenColSet.forEach(tKey => {
         columnValueObj[tKey] = [];
         dataPreview.data.forEach(entry => {
@@ -102,33 +94,36 @@ class BarCharts extends Component {
         })
       });
 
+      // Next step is to calculate proportion of depedent column values:
       // unqiue counts of each class occurance per value in given column name/key
+      // results in list of objects -
+      // ex: [ {0: 21, 1: 6, cat: "a"}, {0: 22, 1: 5, cat: "b"} ... ]
+      // for this example depCol is 'target_class' which can be '0' or '1'
+      // and colKey is 'cat' which can be 'a', 'b' ...
       Object.entries(columnValueObj).forEach((entry, index) => {
+        // entry[0] is column key - entry[1] is list of all values for column key
         proportionObj[entry[0]] = []; // init obj key with empty list
         let tempObj = {};
         depColSet.forEach(depVal => {
           tempObj[colKey] = entry[0];
-          let tempLen = entry[1].filter(x => x === depVal).length;
+          // calculate count of depedent column for given column key
+          // use array filter to create temp list and use that list's length
+          let tempLen = entry[1].filter(x => {
+            let parsedX = parseFloat(x);
+            if(!isNaN(parsedX)) {
+              return parsedX === depVal;
+            } else {
+              return x === depVal;
+            }
+          }).length;
           //proportionObj[entry[0]].push({[depVal]: tempLen})
           tempObj[depVal] = tempLen;
           proportionObj[entry[0]].push(tempLen);
         })
         proportionObjList.push(tempObj);
       })
-      // results in list of objects -
-      // ex: [ {0: 21, 1: 6, cat: "a"}, {0: 22, 1: 5, cat: "b"} ... ]
-      // for this example depCol is 'target_class' which can be '0' or '1'
-      // and colKey is 'cat' which can be 'a', 'b' ...
-
-      // let stackedData = []; // stack data as per examples to use with d3
-      // // having data formatted this way helps facilitating use of d3
-      // depColSet.forEach(classKey => {
-      //   let tempObj = {"class": classKey};
-      //   givenColSet.forEach(tKey => {
-      //     tempObj[tKey] = proportionObj[tKey][classKey];
-      //   })
-      //   stackedData.push(tempObj);
-      // })
+      // proportionObjList is used with d3 stack (almost like python zip) to
+      // to map depCol values to categorical features
 
       // Transpose the data into layers
       let stack = d3.stack()
@@ -137,7 +132,6 @@ class BarCharts extends Component {
         .offset(d3.stackOffsetNone);
       let stackThing = stack(proportionObjList);
       let stackColorThing = stack(colorObjList);
-      //window.console.log('real data stack', stackThing);
 
       // x - axis
       let xStuff = d3.scaleBand()
@@ -145,11 +139,7 @@ class BarCharts extends Component {
         .domain(givenColSet)
         .padding(0.2);
 
-      let colorStack = d3.scaleOrdinal()
-        .domain(depColSet)
-        .range(colorList);
-
-      // stacked stuff - svg elem using stacked data
+      // stacked stuff - svg elem using stacked data (background/setup for chart)
       let stackedSvg = d3.select("#stacked_bar_charts_" + cleanKey)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -171,8 +161,6 @@ class BarCharts extends Component {
         .on("mousemove", function(d, t, s, a) {
           let xPosition = 0;
           let yPosition = 0;
-          //let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
-          //window.console.log('tool tip thing for x axis', d);
           xAxisTooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
           xAxisTooltip.select("text").text('x-axis: ' + d);
         });
@@ -180,9 +168,7 @@ class BarCharts extends Component {
       // y-axis
       let stackedY = d3.scaleLinear()
         .domain([0, d3.max(stackThing, (d) => {
-          //window.console.log('y stacked thing 1', d);
           return d3.max(d, (d) => {
-            //window.console.log('y stacked thing 2', d);
             return d[1];
           });
         })])
@@ -203,14 +189,11 @@ class BarCharts extends Component {
 
       let stackRect = groups.selectAll("rect")
         .data((d) => {
-          //window.console.log('tempThing', d);
-          //let tempThing = {...d, classKey: d.key};
           return d;
         })
         .enter()
         .append("rect")
         .attr("x", (d, t, s, a) => {
-        //  window.console.log('x stuff', d);
           return xStuff(d.data[colKey]);
         })
         .attr("y", (d, t, s) => {
@@ -219,7 +202,6 @@ class BarCharts extends Component {
         .attr('height', (d) => {
           let y0 = stackedY(d[0]);
           let y1 = stackedY(d[1]);
-          //window.console.log('height stuff', y0 - y1);
           return y0 - y1;
         })
         .attr('width', xStuff.bandwidth())
@@ -229,8 +211,7 @@ class BarCharts extends Component {
          })
         .on("mousemove", function(d, t, s, a) {
           let xPosition = d3.mouse(this)[0] - 15;
-          let yPosition = d3.mouse(this)[1] - 25; //+ stackedY(d[1] - d[0])
-          //window.console.log('tool tip thing', d);
+          let yPosition = d3.mouse(this)[1] - 25;
           tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
           tooltip.select("text").text(d[1] - d[0]);
         });
@@ -241,6 +222,7 @@ class BarCharts extends Component {
           .enter().append("g")
           .attr("transform", function(d, i) {
             //let legendWidth = width + margin.right;
+            // hardcoding width here for chart legend position
             let legendWidth = 555;
             return "translate(" + legendWidth + "," + (-(i * 19) - margin.bottom) + ")";
           });
@@ -251,7 +233,6 @@ class BarCharts extends Component {
           .attr("width", 18)
           .attr("height", 18)
           .style("fill", function(d, i) {
-            //window.console.log('legend color stuff', d);
             let color = d[d.index];
             return color.data[d.key];
           });
@@ -263,7 +244,6 @@ class BarCharts extends Component {
           .style("text-anchor", "start")
           .style("fill", "white")
           .text(function(d, i) {
-            //window.console.log('legend text stuff');
             return d.key;
           });
 

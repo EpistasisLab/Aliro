@@ -6,6 +6,10 @@ import BarCharts from '../Charts/BarCharts/';
 import BoxPlot from '../Charts/BoxPlot/';
 import * as d3 from "d3";
 
+/**
+*  Main component for dataset page update - consists mostly of d3 charts
+* & creates different charts based on type of data (categorical,ordinal,etc)
+*/
 class Summary extends Component {
   constructor(props) {
     super(props);
@@ -77,11 +81,11 @@ class Summary extends Component {
               </Grid.Column>
             </Grid.Row>
             {
+              // the following block loops through the data and creates one chart
+              // per entry - uses column name/key for d3 charts
 
-              // display boxplots
               dataKeys && dataKeys.map(key => {
-                // loop through dataset column name/key for charts later on
-                // need to be careful with this key - replace spaces with '_'
+                // need to be careful with this key - replace spaces and . with _
                 let tempKey = key.replace(/ /g, "_");
                 tempKey = tempKey.replace(/\./g, "_");
                 cat_feats.indexOf(key) > -1 || ordKeys.indexOf(key) > -1
@@ -137,9 +141,8 @@ class Summary extends Component {
                       valByRowObj={valByRowObj}
                     />
                   ) : null;
-                // if target class add '(target)'
-                //key === dep_col ? tempKey += '(target)' : null;
-                let gridList = [];
+                // if target class add '(target)' to chart label
+                let gridList = []; // list of all charts
                 gridList.push(
                   <Grid.Row>
                     <Grid.Column width={2}>
@@ -160,14 +163,12 @@ class Summary extends Component {
                       </div>
                     </Grid.Column>
                     <Grid.Column width={5}>
-
                         {tempChart}
-
                     </Grid.Column>
                   </Grid.Row>
                 );
 
-                return gridList;
+                return gridList; // what will be rendered, essentially a list of charts
               })
             }
           </Grid>

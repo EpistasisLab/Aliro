@@ -6,8 +6,6 @@ import Metafeatures from './components/Metafeatures/';
 import Details from './components/Details/';
 import Summary from './components/Summary/';
 
-import * as d3 from "d3";
-
 class DatasetMenu extends Component {
   constructor(props) {
     super(props);
@@ -41,9 +39,19 @@ class DatasetMenu extends Component {
         dataKeys.forEach(key => {
           let tempKey = key.replace(/ /g, "_");
           // add some checks to prevent loading empty/garbage data
+
+          // first try to parse entry to test for number, without parsing
+          // numerical values are entered as strings
+          let parsedEntry = parseFloat(entry[key]);
+          // if not a number and not empty, record entry, this will ignore entries
+          // that are empty string or undefined
           typeof entry[key] !== 'undefined'
             && entry[key] !== ''
-            && valByRowObj[tempKey].push(entry[key])
+            && isNaN(parsedEntry)
+            && valByRowObj[tempKey].push(entry[key]);
+          // if entry is a number, enter parsed value
+          !isNaN(parsedEntry) && valByRowObj[tempKey].push(parsedEntry)
+
         })
       });
       //window.console.log('val test ', valByRowObj);

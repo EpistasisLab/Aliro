@@ -17,14 +17,9 @@ class BoxPlot extends Component {
     this.createBoxPlot();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    //this.createBarGraph();
-  }
-
   // from - https://www.d3-graph-gallery.com/graph/boxplot_basic.html
   createBoxPlot(){
     const { dataPreview, valByRowObj, rawKey, cleanKey } = this.props;
-    //window.console.log('datapreview for boxplot', dataPreview);
     let margin = { top: 5, right: 60, bottom: 50, left: 85 },
         width = 425 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
@@ -40,43 +35,23 @@ class BoxPlot extends Component {
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-    // get stats
+
+    // First step: sort values in dataset - https://github.com/d3/d3-array#ascending
     let data_sorted = valByRowObj[rawKey].sort(d3.ascending);
-    // let data_sorted_AB = valByRowObj[rawKey].sort( (a, b) => {
-    //   return a - b;
-    // });
 
     let q1 = d3.quantile(data_sorted, .25);
-    //let median_quantile = d3.quantile(data_sorted, .5);
     let median = d3.median(data_sorted);
-    //window.console.log('median_quantile', median_quantile);
-    //window.console.log('median', median);
-
     let q3 = d3.quantile(data_sorted, .75);
     let interQuantileRange = q3 - q1;
     let min = q1 - (1.5 * interQuantileRange);
     let max = q3 + (1.5 * interQuantileRange);
-    // min = -1;
-    // median = 0;
-    // max = 1;
     let minData = Math.min(...data_sorted);
     let maxData = Math.max(...data_sorted);
 
-    // print stats
-    // window.console.debug('raw key: ', rawKey);
-    // window.console.debug('sorted data: ', data_sorted);
-    // window.console.debug('q1: ', q1);
-    // window.console.debug('q3: ', q3);
-    // window.console.debug('interQuantileRange: ', interQuantileRange);
-    // window.console.debug('median: ', median);
-    // window.console.debug('min (whisker): ', min);
-    // window.console.debug('max (whisker): ', max);
     // use minimum/max values in data as lower & upper bounds for whisker lines
     min < minData ? min = minData : null;
     max > maxData ? max = maxData : null;
 
-    // window.console.debug('minData: ', minData);
-    // window.console.debug('maxData: ', maxData);
     // color scale for jitter points
     let myColor = d3.scaleSequential()
       .interpolator(d3.interpolateInferno)
@@ -103,7 +78,7 @@ class BoxPlot extends Component {
       .selectAll("text")
         .attr("transform", "translate(-10,0)rotate(-45)")
         .style("text-anchor", "end");
-      //.attr("transform", "translate(0," + (height) + ")");
+
     // box features
     let center = 150;
     width = 100;
@@ -123,9 +98,7 @@ class BoxPlot extends Component {
       .attr("width", (xScale(q3)-xScale(q1)) )
       .attr("stroke", "white")
       .style("fill", "#1678c2")
-      // orange - #f26202
-      // sea foam green - rgb(85, 214, 190)
-      // #1678c2
+
     // show median, min and max horizontal lines
     svg.selectAll("toto")
     .data([min, median, max])
