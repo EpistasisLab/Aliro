@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Header } from 'semantic-ui-react';
 import * as d3 from "d3";
-//import * as bananaSet from './bananaJson.json';
+import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js/dist/plotly';
 
 class BoxPlot extends Component {
   constructor(props) {
@@ -124,10 +125,29 @@ class BoxPlot extends Component {
   }
 
   render() {
-    const {cleanKey} = this.props;
-    createBoxPlotStatsTest();
+    const {cleanKey, valByRowObj, rawKey} = this.props;
+    //createBoxPlotStatsTest();
+    let testForPlotly = [{
+      x: valByRowObj[rawKey],
+      type: 'box',
+      marker: {color: 'red'},
+      name: cleanKey,
+      boxpoints: false,
+      boxmean: true
+    }];
+
     return (
-      <div id={"test_box_plot_" + cleanKey} style={{position:'relative', left:'-100px'}}/>
+      <div>
+        <div id={"test_box_plot_" + cleanKey} style={{position:'relative', left:'-100px'}}/>
+        <Plot
+          data={testForPlotly}
+          layout={{
+            title: 'box plot for ' + cleanKey,
+            width: 400,
+            height: 300
+          }}
+        />
+      </div>
     );
   }
 }
