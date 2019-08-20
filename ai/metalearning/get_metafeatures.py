@@ -51,8 +51,9 @@ def generate_metafeatures(dataset):
     meta_features = OrderedDict() 
     for i in dir(dataset):
         result = getattr(dataset, i)
-        if not i.startswith('__') and not i.startswith('_') and hasattr(result, '__call__'):
-            meta_features[i] = result()
+        if not i.startswith('_') and hasattr(result, '__call__'):
+            iParm = i.replace(Dataset.META_PREFIX, "_")
+            meta_features[iParm] = result()
     return meta_features
 
 

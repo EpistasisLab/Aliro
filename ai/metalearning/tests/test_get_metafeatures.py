@@ -22,12 +22,12 @@ class Dataset_Describe(unittest.TestCase):
         #row permutation of the iris dataset
         self.irisPermutePath = os.path.join(package_directory, 'iris_permute.csv')
 
-        self.depColMetafeature = "dependent_col_val"
+        self.depColMetafeature = "_dependent_col"
 
         self.expectedMetafeatureKeys = [
-            "dependent_col_val",
-            "metafeature_version",
-            "dataset_hash",
+            "_dependent_col",
+            "_metafeature_version",
+            "_dataset_hash",
             "n_rows",
             "n_columns",
             "ratio_rowcol",

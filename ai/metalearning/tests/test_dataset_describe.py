@@ -35,10 +35,10 @@ class Dataset_Describe(unittest.TestCase):
         self.tips = Dataset(tipsPd, dependent_col = 'tip')   
 
     def test_dataset_hash(self):
-        irisResult = self.iris.dataset_hash()
-        irisPermuteResult = self.irisPermute.dataset_hash()
-        tipsResult = self.tips.dataset_hash()
-        appendicitisStringResult = self.appendicitisString.dataset_hash()
+        irisResult = self.iris.meta__dataset_hash()
+        irisPermuteResult = self.irisPermute.meta__dataset_hash()
+        tipsResult = self.tips.meta__dataset_hash()
+        appendicitisStringResult = self.appendicitisString.meta__dataset_hash()
         self.assertEqual(irisResult, "4761c082ca2f241c151d3ec57336ddf7627bfbf0893348ed21e8abb87620206b")
         self.assertEqual(irisPermuteResult, "2a7d7049779206839faa99f28060f5645f856cf5bbccfee08b735cc261c151e8")
         self.assertEqual(tipsResult, "6b5a7bde4f70028674093e87ddbfc2de39f7e2826b6027511199c89eaeb0c63e")

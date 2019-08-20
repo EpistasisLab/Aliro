@@ -30,6 +30,7 @@ class Dataset:
     prediction_type = {'regression'|'classification'}
     """
     VERSION = 1.0
+    META_PREFIX = "meta__"
 
     df = None
     df_encoded = None
@@ -126,7 +127,7 @@ class Dataset:
                 # nominal - so make dummy"
                 self.df_encoded = pd.get_dummies(self.df_encoded, columns=[col])
         
-    def metafeature_version(self):
+    def meta__metafeature_version(self):
         """
         version of the code used to generate metafeatures.
 
@@ -135,14 +136,14 @@ class Dataset:
         """
         return self.VERSION
 
-    def dataset_hash(self):
+    def meta__dataset_hash(self):
         """
         Generates a hash for the dataset
         """
         rowHashes = hash_pandas_object(self.df).values
         return hashlib.sha256(rowHashes).hexdigest()
 
-    def dependent_col_val(self):
+    def meta__dependent_col(self):
         return self.dependent_col
 
     def n_rows(self):
