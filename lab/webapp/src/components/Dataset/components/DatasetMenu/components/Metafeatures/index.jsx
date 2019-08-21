@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Header, Segment, Table } from 'semantic-ui-react';
-import * as d3 from "d3";
 
 class Metafeatures extends Component {
   constructor(props) {

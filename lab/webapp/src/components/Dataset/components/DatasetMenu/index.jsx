@@ -5,6 +5,7 @@ import { Header, Tab, Segment, Grid, Loader, Table, Icon, Container } from 'sema
 import Metafeatures from './components/Metafeatures/';
 import Details from './components/Details/';
 import Summary from './components/Summary/';
+import * as d3 from "d3";
 
 class DatasetMenu extends Component {
   constructor(props) {

@@ -4,7 +4,6 @@ import { Header, Segment, Table, Grid } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart/';
 import BarCharts from '../Charts/BarCharts/';
 import BoxPlot from '../Charts/BoxPlot/';
-import * as d3 from "d3";
 
 /**
 *  Main component for dataset page update - consists mostly of d3 charts
