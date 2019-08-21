@@ -55,7 +55,7 @@ class Summary extends Component {
           >
 
             <Grid.Row columns={3}>
-              <Grid.Column width={4}>
+              <Grid.Column width={2}>
                 <Header
                   as="h4"
                   inverted

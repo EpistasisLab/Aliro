@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Header } from 'semantic-ui-react';
 import * as d3 from "d3";
+import Plot from 'react-plotly.js';
 
 class BarCharts extends Component {
   constructor(props) {
@@ -9,6 +10,8 @@ class BarCharts extends Component {
     this.state = {
 
     };
+
+    this.createStackedData = this.createStackedData.bind(this);
     this.createBarGraph = this.createBarGraph.bind(this);
     // upper limit/max number of unique values for making chart
     this.chartCutoff = 40;
@@ -18,11 +21,98 @@ class BarCharts extends Component {
     this.createBarGraph();
   }
 
+  createStackedData() {
+    const { depCol, dataPreview, valByRowObj, colKey, } = this.props;
+    let givenColSet = [... new Set(valByRowObj[colKey])];
+    let depColSet = [... new Set(valByRowObj[depCol])].sort();
+    let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
+    let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
+    let proportionObjList = [];
+    let plotlyData = [];
+
+    // for every entry in depColSet, map keys to color
+    let colorObj = {};
+    depColSet.forEach((depVal, i) => {
+      let colorString;
+      if(i < 12) {
+        colorString = d3.schemePaired[i];
+      } else {
+        let normI = i / depColSet.length; // normalize index
+        colorString = d3.interpolateSinebow(normI);
+      }
+      colorObj[depVal] = colorString;
+    })
+    // in order to create a stacked bar chart need proportion of data per categorical
+    // feature for count of each dependent column value
+
+    // First step is to consolidate values of a given categorical feature:
+    // for every unique value of given colKey in dataset, collect all matches
+    // by looping over entire dataset and keep track of dependent column
+    // values for each given categorical feature
+    givenColSet.forEach(tKey => {
+      columnValueObj[tKey] = [];
+      dataPreview.data.forEach(entry => {
+        if(entry[colKey] === tKey) {
+          columnValueObj[tKey].push(entry[depCol])
+        }
+      })
+    });
+
+    // Next step is to calculate proportion of depedent column values:
+    // unqiue counts of each class occurance per value in given column name/key
+    // results in list of objects -
+    // ex: [ {0: 21, 1: 6, cat: "a"}, {0: 22, 1: 5, cat: "b"} ... ]
+    // for this example depCol is 'target_class' which can be '0' or '1'
+    // and colKey is 'cat' which can be 'a', 'b' ...
+    Object.entries(columnValueObj).forEach((entry, index) => {
+      // entry[0] is column key - entry[1] is list of all values for column key
+      proportionObj[entry[0]] = []; // init obj key with empty list
+      let tempObj = {};
+      depColSet.forEach(depVal => {
+        tempObj[colKey] = entry[0];
+        // calculate count of depedent column for given column key
+        // use array filter to create temp list and use that list's length
+        let tempLen = entry[1].filter(x => {
+          let parsedX = parseFloat(x);
+          if(!isNaN(parsedX)) {
+            return parsedX === depVal;
+          } else {
+            return x === depVal;
+          }
+        }).length;
+        //proportionObj[entry[0]].push({[depVal]: tempLen})
+        tempObj[depVal] = tempLen;
+        proportionObj[entry[0]].push(tempLen);
+      })
+      proportionObjList.push(tempObj);
+    })
+
+    depColSet.forEach((depVal, i) => {
+      // plotly stuff - based on stacked bar chart example from here
+      // https://plot.ly/javascript/bar-charts/
+      let yData = [];
+      proportionObjList.forEach(tEntry => yData.push(tEntry[depVal]));
+      plotlyData.push({
+        name: depVal,
+        type: 'bar',
+        x: givenColSet,
+        y: yData,
+        marker: {
+          color: colorObj[depVal]
+        }
+      })
+    })
+    //window.console.log('plotlyData', plotlyData);
+
+    return plotlyData;
+
+  }
+
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
   // and also using https://www.d3-graph-gallery.com/graph/barplot_stacked_basicWide.html
   // as examples
   createBarGraph(){
-    const { depCol, dataPreview, valByRowObj, colKey, keys, cleanKey } = this.props;
+    const { depCol, dataPreview, valByRowObj, colKey, cleanKey } = this.props;
     let margin = { top: 10, right: 65, bottom: 50, left: 35 },
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -35,15 +125,6 @@ class BarCharts extends Component {
     // only attempt to create graphic once
     if(chartInnerHTML === "") {
       // need to do a bit of processing
-      let classTotalCountObj = {}; // obj to keep track of total vals in dataset given a specific column key
-      // example: {a: 27, b: 27, c: 26, d: 26}
-      // count # of items with valByRowObj - 'flattened' object of dataset
-      // where each key is a column in the dataset and each value is every entry
-      // in entire dataset given the column key
-      let data_sorted = valByRowObj[colKey].sort(d3.ascending);
-      data_sorted.forEach(val => {
-        classTotalCountObj[val] = classTotalCountObj[val] ? ++classTotalCountObj[val] : 1;
-      });
 
       let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
       let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
@@ -51,6 +132,8 @@ class BarCharts extends Component {
       // find unique values for the given column key as well as dependent column
       let givenColSet = [... new Set(valByRowObj[colKey])];
       let depColSet = [... new Set(valByRowObj[depCol])].sort();
+
+      let plotlyData = [];
       /**---- *************** ----**** ---- Color stuff here ----****---- ***/
       // for every entry in depColSet, map keys to color
       let colorObjList = [];
@@ -289,10 +372,69 @@ class BarCharts extends Component {
   render() {
     const { dataPreview, valByRowObj, colKey, cleanKey } = this.props;
     const { chartCutoff } = this.state;
+    let testData = this.createStackedData();
+
+    // layout obj for plotly
+    const plotLayout = {
+      barmode: 'stack',
+      font: {
+        family: 'Courier New, monospace',
+        size: 1,
+        color: 'white'
+      },
+      xaxis: {
+        tickangle: 'auto',
+        tickfont: {
+         family: 'Oswald, sans-serif',
+         size: 9,
+         color: 'white'
+        }
+      },
+      yaxis: {
+        zerolinecolor: 'white',
+        tickangle: 'auto',
+        tickfont: {
+         family: 'Oswald, sans-serif',
+         size: 9,
+         color: 'white'
+        }
+      },
+      width: 500,
+      height: 375,
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      legend: {
+        x: 1,
+        y: 1,
+        traceorder: 'normal',
+        font: {
+          family: 'sans-serif',
+          size: 9,
+          color: 'white'
+        }
+      }
+    };
+
+    // config for plotly
+    const optBtnsToRemove = [
+      'toImage',
+      'sendDataToCloud'
+    ];
+    const plotConfig = {
+      displaylogo: false,
+      modeBarButtonsToRemove: optBtnsToRemove
+    };
+
     return (
       <div>
         <div id={"stacked_bar_charts_" + cleanKey} />
         {chartCutoff ? (<p>Too many value to plot</p>) : null}
+        <Plot
+          style={{position:'relative', left:'-50px'}}
+          data={testData}
+          layout={plotLayout}
+          config={plotConfig}
+        />
       </div>
     );
   }

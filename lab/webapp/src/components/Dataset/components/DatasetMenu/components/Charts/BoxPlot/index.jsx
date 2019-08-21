@@ -126,26 +126,69 @@ class BoxPlot extends Component {
 
   render() {
     const {cleanKey, valByRowObj, rawKey} = this.props;
-    //createBoxPlotStatsTest();
+
     let testForPlotly = [{
       x: valByRowObj[rawKey],
       type: 'box',
-      marker: {color: 'red'},
-      name: cleanKey,
+      marker: {color: 'rgb(22, 120, 194)'},
+      name: rawKey,
+      title: {
+        text: cleanKey,
+        font: {
+          family: 'Courier New, monospace',
+          size: 12,
+          color: 'white'
+        }
+      },
       boxpoints: false,
-      boxmean: true
+      boxmean: 'sd'
     }];
+    const optBtnsToRemove = [
+      'toImage',
+      'sendDataToCloud'
+    ];
+    const boxPlotConfig = {
+      displaylogo: false,
+      modeBarButtonsToRemove: optBtnsToRemove
+    };
+   //use pretty much any html font/css style with certain parts of chart
+    const plotLayout = {
+      font: {
+        family: 'Courier New, monospace',
+        size: 1,
+        color: 'white'
+      },
+      xaxis: {
+        showticklabels: true,
+        gridcolor: 'white',
+        zerolinecolor: 'white',
+        tickangle: 'auto',
+        tickfont: {
+         family: 'Oswald, sans-serif',
+         size: 9,
+         color: 'white'
+        },
+        exponentformat: 'e',
+        showexponent: 'all'
+      },
+      yaxis: {
+        gridcolor: 'white'
+      },
+      width: 500,
+      height: 375,
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      showlegend: false
+    };
 
     return (
       <div>
         <div id={"test_box_plot_" + cleanKey} style={{position:'relative', left:'-100px'}}/>
         <Plot
+          style={{position:'relative', left:'-100px'}}
           data={testForPlotly}
-          layout={{
-            title: 'box plot for ' + cleanKey,
-            width: 400,
-            height: 300
-          }}
+          layout={plotLayout}
+          config={boxPlotConfig}
         />
       </div>
     );
