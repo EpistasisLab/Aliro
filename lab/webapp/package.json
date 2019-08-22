@@ -30,6 +30,7 @@
     "plotly.js": "^1.49.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-lazyload": "^2.6.2",
     "react-plotly.js": "^2.3.0",
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.7",

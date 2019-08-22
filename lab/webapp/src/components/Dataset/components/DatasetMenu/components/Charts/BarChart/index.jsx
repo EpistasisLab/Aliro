@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Header } from 'semantic-ui-react';
+import { Header, Loader } from 'semantic-ui-react';
 import * as d3 from "d3";
 import Plot from 'react-plotly.js';
 
@@ -8,11 +8,10 @@ class BarChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
     };
 
-  this.createBarChartData = this.createBarChartData.bind(this);
-  this.createBarGraph = this.createBarGraph.bind(this);
+    this.createBarChartData = this.createBarChartData.bind(this);
+    this.createBarGraph = this.createBarGraph.bind(this);
   }
 
   componentDidMount() {
@@ -31,7 +30,7 @@ class BarChart extends Component {
       y: [],
       type: 'bar'
     };
-    let returnDataList = [];
+    let plotlyBarCharData = [];
     data_sorted.forEach(val => {
       classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
     })
@@ -51,7 +50,7 @@ class BarChart extends Component {
         // always mapped to column keys, this appears to work okay for now
         colorList.push(colorString);
       } else {
-        let normI = i / depColSet.length; // normalize index
+        let normI = i / testSet.length; // normalize index
         colorString = d3.interpolateSinebow(normI);
         colorList.push(colorString);
       }
@@ -65,7 +64,7 @@ class BarChart extends Component {
       testData.marker = {color: colorList};
     });
     // push data obj to list
-    returnDataList.push(testData);
+    plotlyBarCharData.push(testData);
 
     // layout obj
     const plotLayout = {
@@ -98,7 +97,7 @@ class BarChart extends Component {
     };
 
     // push layout obj to list
-    returnDataList.push(plotLayout);
+    plotlyBarCharData.push(plotLayout);
 
     // config
     const optBtnsToRemove = [
@@ -108,9 +107,18 @@ class BarChart extends Component {
       displaylogo: false,
       modeBarButtonsToRemove: optBtnsToRemove
     };
-    returnDataList.push(boxPlotConfig);
+    plotlyBarCharData.push(boxPlotConfig);
     // return data, layout & config in same list
-    return returnDataList;
+    //tried using https://github.com/plotly/react-plotly.js/blob/master/README.md#event-handler-props
+    // to detect when chart is loaded - not sure how to hook up to events to detect when plot
+    // is created/loaded, using onInitialized only triggers when chart is rendered
+    // if display/render a loading
+    return (<Plot
+      style={{position:'relative', left:'-100px'}}
+      data={[plotlyBarCharData[0]]}
+      layout={plotlyBarCharData[1]}
+      config={plotlyBarCharData[2]}
+    />);
   }
 
   // adapted from https://bl.ocks.org/d3noob/bdf28027e0ce70bd132edc64f1dd7ea4
@@ -133,7 +141,7 @@ class BarChart extends Component {
         classCountObj[val] = classCountObj[val] ? ++classCountObj[val] : 1;
       })
       let testSet = [... new Set(valByRowObj[depCol])].sort();
-
+      let chartData = [];
       /**---- *************** ----**** ---- Color stuff here ----****---- *************** ----**/
       // for every entry in testSet, map keys to color
       let colorObjList = [];
@@ -148,7 +156,7 @@ class BarChart extends Component {
           // https://github.com/d3/d3-scale-chromatic#sequential-multi-hue
 
           // given num between 0 & 1 get color value
-          let normI = i / depColSet.length; // normalize index
+          let normI = i / testSet.length; // normalize index
           colorString = d3.interpolateSinebow(normI);
         }
         colorObjList.push({[depVal]: colorString});
@@ -241,16 +249,13 @@ class BarChart extends Component {
 
   render() {
     const { cleanKey } = this.props;
-    let plotlyBarCharData = this.createBarChartData();
+    const { barChartLoaded } = this.state;
+    let plotlyBarChart = this.createBarChartData();
+
     return (
       <div>
         <div id={"test_bar_chart_" + cleanKey} style={{position:'relative', left:'-60px'}}/>
-        <Plot
-          style={{position:'relative', left:'-100px'}}
-          data={[plotlyBarCharData[0]]}
-          layout={plotlyBarCharData[1]}
-          config={plotlyBarCharData[2]}
-        />
+        {plotlyBarChart}
       </div>
     );
   }
