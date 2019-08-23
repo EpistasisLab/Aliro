@@ -57,82 +57,82 @@ services:
     depends_on:
       - lab
       - dbmongo
+#
+#  machine_3:
+#    build:
+#      context: .
+#      dockerfile: dockers/machine/Dockerfile
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "./:/appsrc"
+#      - "/appsrc/machine/node_modules"
+#    ports:
+#      - "5083:5083"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5083
+#      - MACHINE_HOST=machine_3
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_4:
+#    build:
+#      context: .
+#      dockerfile: dockers/machine/Dockerfile
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "./:/appsrc"
+#      - "/appsrc/machine/node_modules"
+#    ports:
+#      - "5084:5084"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5084
+#      - MACHINE_HOST=machine_4
+#    depends_on:
+#      - lab
+#      - dbmongo
 
-  machine_3:
-    build:
-      context: .
-      dockerfile: dockers/machine/Dockerfile
-    tty: true
-    stdin_open: true
-    volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
-    ports:
-      - "5083:5083"
-    env_file: ./config/common.env
-    environment:
-      - MACHINE_PORT=5083
-      - MACHINE_HOST=machine_3
-    depends_on:
-      - lab
-      - dbmongo
-
-  machine_4:
-    build:
-      context: .
-      dockerfile: dockers/machine/Dockerfile
-    tty: true
-    stdin_open: true
-    volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
-    ports:
-      - "5084:5084"
-    env_file: ./config/common.env
-    environment:
-      - MACHINE_PORT=5084
-      - MACHINE_HOST=machine_4
-    depends_on:
-      - lab
-      - dbmongo
-
-  machine_5:
-    build:
-      context: .
-      dockerfile: dockers/machine/Dockerfile
-    tty: true
-    stdin_open: true
-    volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
-    ports:
-      - "5085:5085"
-    env_file: ./config/common.env
-    environment:
-      - MACHINE_PORT=5085
-      - MACHINE_HOST=machine_5
-    depends_on:
-      - lab
-      - dbmongo
-
-  machine_6:
-    build:
-      context: .
-      dockerfile: dockers/machine/Dockerfile
-    tty: true
-    stdin_open: true
-    volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
-    ports:
-      - "5086:5086"
-    env_file: ./config/common.env
-    environment:
-      - MACHINE_PORT=5086
-      - MACHINE_HOST=machine_6
-    depends_on:
-      - lab
-      - dbmongo
+#  machine_5:
+#    build:
+#      context: .
+#      dockerfile: dockers/machine/Dockerfile
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "./:/appsrc"
+#      - "/appsrc/machine/node_modules"
+#    ports:
+#      - "5085:5085"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5085
+#      - MACHINE_HOST=machine_5
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_6:
+#    build:
+#      context: .
+#      dockerfile: dockers/machine/Dockerfile
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "./:/appsrc"
+#      - "/appsrc/machine/node_modules"
+#    ports:
+#      - "5086:5086"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5086
+#      - MACHINE_HOST=machine_6
+#    depends_on:
+#      - lab
+#      - dbmongo
 
   dbmongo:
     build:

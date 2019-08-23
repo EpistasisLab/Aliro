@@ -25,9 +25,13 @@ class Dataset_Describe(unittest.TestCase):
         self.depColMetafeature = "_dependent_col"
 
         self.expectedMetafeatureKeys = [
+            "_id",
             "_dependent_col",
             "_metafeature_version",
-            "_dataset_hash",
+            "_categorical_cols",
+            "_independent_cols",
+            "_data_hash",
+            "_prediction_type",
             "n_rows",
             "n_columns",
             "ratio_rowcol",

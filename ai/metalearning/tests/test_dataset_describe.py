@@ -11,6 +11,7 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 class Dataset_Describe(unittest.TestCase):
  
     def setUp(self):
+        ## paths
         irisPath = os.path.join(package_directory, 'iris.csv') 
         tipsPath = os.path.join(package_directory, 'tips.csv')
 
@@ -20,29 +21,127 @@ class Dataset_Describe(unittest.TestCase):
         #row permutation of the iris dataset
         irisPermutePath = os.path.join(package_directory, 'iris_permute.csv')
 
+        #duplicate of the iris dataser
+        irisDupePath = os.path.join(package_directory, 'iris_dupe.csv')
+
+        ## cols
+        self.irisCols = set(["SepalLength","SepalWidth","PetalLength","PetalWidth","Name"])
+        self.irisCatCols = set(["Name"])
+        self.irisTarget = "Name"
+
+        self.appendicitisCols = set(["At1","At2","At3","At4","At5","At6","At7","cat","ord","target_class"])
+        self.appendicitisCatCols = set(["cat", "ord"])
+        self.appendicitisTarget = "target_class"
+
+        self.tipsCols = set(["total_bill","tip","sex","smoker","day","time","size"])
+        self.tipsCatCols = set(["sex", "smoker", "day", "time"])
+        self.tipsTarget = "tip"
+
+        ## metafeature classes
         # classification problems
         irisPd = pd.read_csv(irisPath)
-        self.iris = Dataset(irisPd)
+        self.iris = Dataset(irisPd) 
 
         irisPermutePd = pd.read_csv(irisPermutePath)
         self.irisPermute = Dataset(irisPermutePd) 
 
-        appendicitisStringPd = pd.read_csv(appendicitisStringPath)
-        self.appendicitisString = Dataset(appendicitisStringPd)
+        irisDupePd = pd.read_csv(irisDupePath)
+        self.irisDupe = Dataset(irisDupePd) 
+
+        appendicitisStringPd = pd.read_csv(appendicitisStringPath, sep=None, engine='python')
+        self.appendicitisString = Dataset(appendicitisStringPd, prediction_type="classification")
+        self.appendicitisOrdTarget = Dataset(appendicitisStringPd, prediction_type="classification", dependent_col="ord")
 
         # Regression problem
         tipsPd = pd.read_csv(tipsPath)
-        self.tips = Dataset(tipsPd, dependent_col = 'tip')   
+        self.tips = Dataset(tipsPd, dependent_col = 'tip') 
 
-    def test_dataset_hash(self):
-        irisResult = self.iris.meta__dataset_hash()
-        irisPermuteResult = self.irisPermute.meta__dataset_hash()
-        tipsResult = self.tips.meta__dataset_hash()
-        appendicitisStringResult = self.appendicitisString.meta__dataset_hash()
+    def test_m_dependent_col(self):
+        self.assertEqual(self.iris.m_dependent_col(), "Name")
+        self.assertEqual(self.irisPermute.m_dependent_col(), "Name")
+        self.assertEqual(self.tips.m_dependent_col(), "tip")
+        self.assertEqual(self.appendicitisString.m_dependent_col(), "target_class")
+        self.assertEqual(self.appendicitisOrdTarget.m_dependent_col(), "ord")
+
+    def iterableToSrtdStr(self, iterable):
+        return repr(sorted(list(iterable)))
+
+    def test_m_categorical_cols(self):
+        self.assertEqual(self.iris.m_categorical_cols(), self.iterableToSrtdStr(self.irisCatCols - set([self.irisTarget])))
+        self.assertEqual(self.irisPermute.m_categorical_cols(), self.iterableToSrtdStr(self.irisCatCols - set([self.irisTarget])))
+        self.assertEqual(self.appendicitisString.m_categorical_cols(), self.iterableToSrtdStr(self.appendicitisCatCols - set([self.appendicitisTarget])))
+        self.assertEqual(self.appendicitisOrdTarget.m_categorical_cols(), self.iterableToSrtdStr(self.appendicitisCatCols - set(["ord"])))
+        self.assertEqual(self.tips.m_categorical_cols(), self.iterableToSrtdStr(self.tipsCatCols - set([self.tipsTarget])))
+
+    def test_m_independent_cols(self):
+        self.assertEqual(self.iris.m_independent_cols(), self.iterableToSrtdStr(self.irisCols - set([self.irisTarget])))
+        self.assertEqual(self.irisPermute.m_independent_cols(), self.iterableToSrtdStr(self.irisCols - set([self.irisTarget])))
+        self.assertEqual(self.appendicitisString.m_independent_cols(), self.iterableToSrtdStr(self.appendicitisCols - set([self.appendicitisTarget])))
+        self.assertEqual(self.appendicitisOrdTarget.m_independent_cols(), self.iterableToSrtdStr(self.appendicitisCols - set(["ord"])))
+        self.assertEqual(self.tips.m_independent_cols(), self.iterableToSrtdStr(self.tipsCols - set([self.tipsTarget])))
+
+    def test_m_prediction_type(self):
+        self.assertEqual(self.iris.m_prediction_type(), "classification")
+        self.assertEqual(self.irisPermute.m_prediction_type(), "classification")
+        self.assertEqual(self.appendicitisString.m_prediction_type(), "classification")
+        self.assertEqual(self.appendicitisOrdTarget.m_prediction_type(), "classification")
+        #self.assertEqual(self.tips.m_prediction_type(), "regression")
+
+    def test_m_data_hash(self):
+        irisResult = self.iris.m_data_hash()
+        irisPermuteResult = self.irisPermute.m_data_hash()
+        irisDupeResult = self.irisDupe.m_data_hash()
+        tipsResult = self.tips.m_data_hash()
+        appendicitisStringResult = self.appendicitisString.m_data_hash()
+        appendicitisOrdTargetResult = self.appendicitisOrdTarget.m_data_hash()
+
+
+        self.assertEqual(irisResult, irisDupeResult)
+        self.assertNotEqual(irisResult, irisPermuteResult)
+        self.assertEqual(appendicitisStringResult, appendicitisOrdTargetResult)
+
         self.assertEqual(irisResult, "4761c082ca2f241c151d3ec57336ddf7627bfbf0893348ed21e8abb87620206b")
         self.assertEqual(irisPermuteResult, "2a7d7049779206839faa99f28060f5645f856cf5bbccfee08b735cc261c151e8")
         self.assertEqual(tipsResult, "6b5a7bde4f70028674093e87ddbfc2de39f7e2826b6027511199c89eaeb0c63e")
-        self.assertEqual(appendicitisStringResult, "49f6460511b2efe5bf7f5da425e0fbc6764b64a890fc3196bef1cb618f762477")
+        self.assertEqual(appendicitisStringResult, "4d9be7d1f3026a82e16fc7cebdbdfb7d375668070d1b0297beaf63c447993dbb")
+        self.assertEqual(appendicitisOrdTargetResult, "4d9be7d1f3026a82e16fc7cebdbdfb7d375668070d1b0297beaf63c447993dbb")
+
+
+    def test_id_obj_str(self):
+        irisResult = self.iris._id_obj_str()
+        irisDupeResult = self.irisDupe._id_obj_str()
+        irisPermuteResult = self.irisPermute._id_obj_str()
+        tipsResult = self.tips._id_obj_str()
+        appendicitisStringResult = self.appendicitisString._id_obj_str()
+
+        self.assertEqual(irisResult, irisDupeResult)
+        self.assertNotEqual(irisResult, irisPermuteResult)
+
+        self.assertEqual(irisResult.encode('utf-8'), 
+            b"[('m_categorical_cols', []), ('m_data_hash', '4761c082ca2f241c151d3ec57336ddf7627bfbf0893348ed21e8abb87620206b'), ('m_dependent_col', 'Name'), ('m_independent_cols', ['PetalLength', 'PetalWidth', 'SepalLength', 'SepalWidth']), ('m_prediction_type', 'classification')]")
+        self.assertEqual(irisDupeResult.encode('utf-8'), 
+            b"[('m_categorical_cols', []), ('m_data_hash', '4761c082ca2f241c151d3ec57336ddf7627bfbf0893348ed21e8abb87620206b'), ('m_dependent_col', 'Name'), ('m_independent_cols', ['PetalLength', 'PetalWidth', 'SepalLength', 'SepalWidth']), ('m_prediction_type', 'classification')]")
+        self.assertEqual(irisPermuteResult.encode('utf-8'), 
+            b"[('m_categorical_cols', []), ('m_data_hash', '2a7d7049779206839faa99f28060f5645f856cf5bbccfee08b735cc261c151e8'), ('m_dependent_col', 'Name'), ('m_independent_cols', ['PetalLength', 'PetalWidth', 'SepalLength', 'SepalWidth']), ('m_prediction_type', 'classification')]")
+ 
+
+    def test_m_id(self):
+        irisResult = self.iris.m_id()
+        irisDupeResult = self.irisDupe.m_id()
+        irisPermuteResult = self.irisPermute.m_id()
+        tipsResult = self.tips.m_id()
+        appendicitisStringResult = self.appendicitisString.m_id()
+
+        self.assertEqual(irisResult, irisDupeResult)
+        self.assertNotEqual(irisResult, irisPermuteResult)
+
+        #unittest.util._MAX_LENGTH = 700 
+
+        self.assertEqual(irisResult, "8f1ade2dc0cc5ab6d2375ae6d00c879b8123e5959fc3b1db7445c2baa4b1e484")
+        self.assertEqual(irisPermuteResult, "781effc03375bbdab47ea289ca0f11994ff780c09d81b64c1d7ed1d83b89fed7")
+        self.assertEqual(tipsResult, "0a545c848cf5cac0b47bf39a67b626a057d1ff7d79b37f954df16d0262875bc6")
+        self.assertEqual(appendicitisStringResult, "a34dccabe2d3605caa582ec6ec68a8aa56738a94694a828a7f5c041760a7eb9d")
+
 
     def test_number_of_rows(self):
         irisResult = self.iris.n_rows()
@@ -51,8 +150,10 @@ class Dataset_Describe(unittest.TestCase):
         self.assertEqual(150, irisPermuteResult)
 
     def test_number_of_columns(self):
-        result = self.iris.n_columns()
-        self.assertEqual(5, result)
+        irisResult = self.iris.n_columns()
+        appendicitisStringResult = self.appendicitisString.n_columns()
+        self.assertEqual(5, irisResult)
+        self.assertEqual(10, appendicitisStringResult)
  
     def test_if_self_categorical_cols_is_zero_iris(self):
         result = self.iris.categorical_cols
