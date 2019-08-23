@@ -167,6 +167,7 @@ class Dataset:
             "m_prediction_type" : self.m_prediction_type(),
         }
 
+        return repr(sorted(idObj.items()))
 
     def m_id(self):
         """
