@@ -8,7 +8,6 @@ import DatasetMenu from './components/DatasetMenu/';
 import { Grid, Segment, Header, Table, Loader, Icon, Menu, Tab } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
-import * as d3 from "d3";
 
 class Dataset extends Component {
   constructor(props) {
@@ -17,10 +16,9 @@ class Dataset extends Component {
       dataset: 'fetching',
       dataPreview: null
     };
-    this.fileDetailsClick = this.fileDetailsClick.bind(this);
-    //this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
-    this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
 
+    this.fileDetailsClick = this.fileDetailsClick.bind(this);
+    this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
   }
 
   componentDidMount() {
@@ -45,15 +43,11 @@ class Dataset extends Component {
         })
         .then(text => {
           this.setState({ dataPreview: Papa.parse(text, { header: true }) });
-          //this.createCharts();
         });
     }
   }
 
-  //handleItemClick = (e, { name }) => this.setState({ activeItem: name });
   fileDetailsClick(e) {
-    //e.preventDefault();
-    //window.console.log('clicked file details');
     const { dataset } = this.state;
     const tempFile = dataset.files[0];
     let testObj = {

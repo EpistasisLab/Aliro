@@ -523,6 +523,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     None
     """
     from scipy import interp
+    from scipy.stats import sem, t
     cv = StratifiedKFold(n_splits=10)
     tprs = []
     aucs = []
@@ -554,9 +555,11 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     mean_tpr[-1] = 1.0
     mean_auc = auc(mean_fpr, mean_tpr)
     std_auc = np.std(aucs)
-    std_tpr = np.std(tprs, axis=0)
-    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
-    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+    std_err = sem(tprs, axis=0)
+    h = std_err * t.ppf(1.95/2, len(mean_tpr) - 1)
+    tprs_upper = np.minimum(mean_tpr + h, 1)
+    tprs_lower = np.maximum(mean_tpr - h, 0)
+
     if figure_export:
         plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
                  label='Chance', alpha=.8)
@@ -564,7 +567,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
                  label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
                  lw=2, alpha=.8)
         plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
-                         label=r'$\pm$ 1 Standard Deviation')
+                         label=r'95% Confidence Interval')
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
         plt.xlabel('False Positive Rate')

@@ -1,4 +1,4 @@
-import BoxPlot from './';
+import BarChart from './';
 // try getting react pieces and framework for test rendering
 import React from 'react';
 import Papa from 'papaparse';
@@ -18,29 +18,29 @@ import Adapter from 'enzyme-adapter-react-15';
 //window.URL.createObjectURL = function() {};
 configure({ adapter: new Adapter() });
 
-describe('basic testing of boxplot react component', () => {
+describe('basic testing of BarChart react component', () => {
   let store = mockStore(initialState);
-  let testBoxPlot;
+  let testBarChart;
 
   beforeEach(() => {
-    testBoxPlot = mount(<BoxPlot store={store} testProp='hello' valByRowObj={{'test':[1,2]}} rawKey='test'/>);
+    testBarChart = mount(<BarChart store={store} depCol='test' valByRowObj={{'test':[1,2]}} rawKey='test'/>);
   })
   afterEach(() => {
-    testBoxPlot.unmount();
+    testBarChart.unmount();
   })
 
   // test for existence
-  it('create mock BoxPlot component, test for existence', () => {
-    testBoxPlot.setProps({ name: 'bar' });
-    expect(testBoxPlot.name()).toEqual('Connect(BoxPlot)');
-    expect(testBoxPlot.props().testProp).toEqual('hello');
-    expect(testBoxPlot.props().name).toEqual('bar');
-    expect(testBoxPlot.props().valByRowObj).toEqual({'test':[1,2]});
+  it('create mock BarChart component, test for existence', () => {
+    testBarChart.setProps({ name: 'bar' });
+    expect(testBarChart.name()).toEqual('Connect(BarChart)');
+    expect(testBarChart.props().depCol).toEqual('test');
+    expect(testBarChart.props().name).toEqual('bar');
+    expect(testBarChart.props().valByRowObj).toEqual({'test':[1,2]});
   })
 
   // it('template test', () => {
-  //   console.log('testBoxPlot : ', testBoxPlot);
-  //   console.log('testBoxPlot plots : ', testBoxPlot.props());
+  //   let testPlotlyChart = testBarChart.find('#bar_chart_test');
+  //   console.log('testPlotlyChart : ', testPlotlyChart);
   //   expect(true).toEqual(true);
   // })
 
