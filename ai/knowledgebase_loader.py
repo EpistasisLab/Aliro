@@ -194,11 +194,18 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
     # with the current version of datasest_describe.py
     versions=[]
     for k,v in metafeaturesDict.items():
-        versions.append(v['metafeature_version'])
+        if ("_metafeature_version" in v.keys()):
+            versions.append(v['_metafeature_version'])
+        else:
+            warnings.append(f"Required key '_metafeature_version' missing from metafeatures data for '{k}'. Existing keys: {v.keys()}.")
+
+
     versions = np.array(versions)
     if len(np.unique(versions)) != 1:
         warnings.append('Different metafeatures versions present: '+
                         str(np.unique(versions)))
+
+
     return warnings
 
 
@@ -276,7 +283,7 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class',
                 #   'myfile.tsv.gz' => 'myfile'
                 dataset = os.path.splitext(os.path.splitext(name)[0])[0]  
                 datapath = os.path.join(root, name)
-                logger.debug(f"Generating metadata for {datapath}")
+                logger.info(f"Generating metadata for {datapath}")
                 metafeatures = mf.generate_metafeatures_from_filepath(
                         datapath, targetField)
                 metafeaturesData[dataset] = metafeatures

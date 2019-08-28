@@ -88,10 +88,10 @@ class SurpriseRecommender(BaseRecommender):
                 results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
         self.results_df = self.results_df.append(
-                results_data[['algorithm-parameters','dataset_hash','score']]
+                results_data[['algorithm-parameters','_id','score']]
                                                 ).drop_duplicates()
 
-        data = Dataset.load_from_df(self.results_df[['dataset_hash', 
+        data = Dataset.load_from_df(self.results_df[['_id', 
                                                      'algorithm-parameters', 
                                                      'score']], 
                                     self.reader, rating_scale=(0,1))

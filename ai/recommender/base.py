@@ -83,9 +83,9 @@ class BaseRecommender:
                 lambda x: str(hash(frozenset(x.items()))))
         
         # store hash dataset ids
-        self.dataset_id_to_hash.update({d:results_mf.loc[d]['dataset_hash'] 
+        self.dataset_id_to_hash.update({d:results_mf.loc[d]['_id'] 
                 for d in results_mf.index})
-        results_data['dataset_hash'] = results_data['dataset'].apply(lambda x:
+        results_data['_id'] = results_data['dataset'].apply(lambda x:
                 self.dataset_id_to_hash[x])
 
         # update results list 
@@ -107,7 +107,7 @@ class BaseRecommender:
             metafeatures of the dataset represented by dataset_id
         """
         self.dataset_id_to_hash.update(
-                {dataset_id:dataset_mf['dataset_hash'].values[0]})
+                {dataset_id:dataset_mf['_id'].values[0]})
 
     @property
     def ml_p(self):
@@ -136,7 +136,7 @@ class BaseRecommender:
     def update_trained_dataset_models_from_df(self, results_data):
         '''stores the trained_dataset_models to aid in filtering repeats.'''
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset_hash'].values + '|' +
+                                       results_data['_id'].values + '|' +
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameter_hash'].values)
 

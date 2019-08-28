@@ -40,15 +40,22 @@ class KNNMetaRecommender(BaseRecommender):
         """Initialize recommendation system."""
         super().__init__(ml_type, metric, ml_p)
         # lookup table: dataset name to best ML+P
-        self.best_mlp = pd.DataFrame(columns=['dataset_hash','algorithm',
+        self.best_mlp = pd.DataFrame(columns=['_id','algorithm',
             'parameters', 'score'])
-        self.best_mlp.set_index('dataset_hash',inplace=True)
+        self.best_mlp.set_index('_id',inplace=True)
 
         # local dataframe of datasets and their metafeatures
         self.all_dataset_mf = pd.DataFrame()
         # keep a list of metafeatures that should be removed from similarity
         # comparisons
-        self.drop_mf = ['metafeature_version']
+        # TODO - remove features that start with "_"
+        self.drop_mf = ["_dependent_col",
+            "_metafeature_version",
+            "_categorical_cols",
+            "_independent_cols",
+            "_data_hash",
+            "_prediction_type"
+            ]
 
     def update(self, results_data, results_mf, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -69,7 +76,7 @@ class KNNMetaRecommender(BaseRecommender):
     
         # save a copy of the results_mf with NaNs filled with zero
         self.all_dataset_mf = \
-        results_mf.drop(columns=self.drop_mf).fillna(0.0).set_index('dataset_hash')
+        results_mf.drop(columns=self.drop_mf).fillna(0.0).set_index('_id')
 
         # update internal model
         self.update_model(results_data)
@@ -77,7 +84,7 @@ class KNNMetaRecommender(BaseRecommender):
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
         logger.debug('len(self.param_htable)): ' + str(len(self.param_htable)))
-        for d,dfg in results_data.groupby('dataset_hash'):
+        for d,dfg in results_data.groupby('_id'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
                 dfg[self.metric].max() > self.best_mlp.loc[d,'score']):
@@ -161,7 +168,7 @@ class KNNMetaRecommender(BaseRecommender):
     def best_model_prediction(self, dataset_hash, df_mf, n_recs=1):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
-        for cols in ['dataset','dataset_hash']:
+        for cols in ['dataset','_id']:
             if cols in df_mf.columns:
                 df_mf = df_mf.drop(cols,axis=1)
         mf = df_mf.fillna(0.0).values.flatten()
