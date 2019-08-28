@@ -5,7 +5,6 @@ import { Header, Tab, Segment, Grid, Loader, Table, Icon, Container } from 'sema
 import Metafeatures from './components/Metafeatures/';
 import Details from './components/Details/';
 import Summary from './components/Summary/';
-import * as d3 from "d3";
 
 class DatasetMenu extends Component {
   constructor(props) {
@@ -35,8 +34,8 @@ class DatasetMenu extends Component {
         let tempKey = key.replace(/ /g, "_");
         valByRowObj[tempKey] = []
       });
-      let valueTest = d3.values(dataStuff);
-      valueTest.forEach(entry => {
+
+      dataStuff.forEach(entry => {
         dataKeys.forEach(key => {
           let tempKey = key.replace(/ /g, "_");
           // add some checks to prevent loading empty/garbage data
@@ -52,7 +51,6 @@ class DatasetMenu extends Component {
             && valByRowObj[tempKey].push(entry[key]);
           // if entry is a number, enter parsed value
           !isNaN(parsedEntry) && valByRowObj[tempKey].push(parsedEntry)
-
         })
       });
       //window.console.log('val test ', valByRowObj);

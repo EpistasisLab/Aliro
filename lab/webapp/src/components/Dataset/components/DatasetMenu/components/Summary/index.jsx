@@ -5,7 +5,6 @@ import { Header, Segment, Table, Grid, Loader } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart/';
 import BarCharts from '../Charts/BarCharts/';
 import BoxPlot from '../Charts/BoxPlot/';
-import * as d3 from "d3";
 
 /**
 *  Main component for dataset page update - consists mostly of d3 charts
@@ -69,9 +68,6 @@ class Summary extends Component {
       // check for ordinal columns (display stacked bar chart)
       ordKeys.indexOf(key) > -1 ? tempChart = (
         <div key={"ord_chart_" + tempKey}>
-          {/*<p style={{color: "green"}}>
-            {"ordinal_chart_for: " + tempKey}
-          </p>*/}
           <BarCharts
             cleanKey={tempKey}
             colKey={key}
@@ -171,7 +167,6 @@ class Summary extends Component {
             celled='internally'
             verticalAlign='middle'
           >
-
             <Grid.Row columns={3}>
               <Grid.Column width={2}>
                 <Header
@@ -206,9 +201,7 @@ class Summary extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-
-});
+const mapStateToProps = (state) => ({});
 
 export { Summary };
 export default connect(mapStateToProps, {})(Summary);
