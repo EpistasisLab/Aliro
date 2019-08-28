@@ -134,7 +134,7 @@ class Dataset:
         """
         version of the code used to generate metafeatures.
 
-        If the way metafeatures are generated changes (in particular dataset_hash),
+        If the way metafeatures are generated changes (in particular dataset id),
         The version number should be updated.
         """
         return self.VERSION
