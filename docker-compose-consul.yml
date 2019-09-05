@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+
+  consul:
+    image: gliderlabs/consul-server
+    command: -bootstrap
+    ports:
+      - 8500:8500
+    container_name: consul
+
+  registrator:
+    network_mode: host
+    image: gliderlabs/registrator:latest
+    command: [
+      "-retry-attempts", "20",
+      "consul:://consul:8500"]
+    container_name: registrator
+    depends_on:
+      - consul
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"
+
+  lab:
+    build:
+      context: .
+      dockerfile: dockers/lab/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/lab/webapp/node_modules"
+      - "/appsrc/lab/node_modules"
+    ports:
+      - "5080:5080"
+    env_file:
+      - ./config/common.env
+      - ./config/ai.env
+    depends_on:
+      - dbmongo
+      - registrator
+
+  machine:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5081-5091:5081"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5081
+    depends_on:
+      - lab
+      - dbmongo
+      - registrator
+
+  dbmongo:
+    build:
+      context: .
+      dockerfile: dockers/dbmongo/Dockerfile
+    tty: true
+    stdin_open: true
+    ports:
+      - "27017:27017"
+    env_file: ./config/common.env
+    depends_on:
+      - registrator
