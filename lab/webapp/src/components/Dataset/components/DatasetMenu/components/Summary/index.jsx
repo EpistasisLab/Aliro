@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import LazyLoad from 'react-lazyload';
 import { Header, Segment, Table, Grid, Loader } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart/';
-import BarCharts from '../Charts/BarCharts/';
+import StackedBarChart from '../Charts/StackedBarChart/';
 import BoxPlot from '../Charts/BoxPlot/';
 
 /**
@@ -56,7 +56,7 @@ class Summary extends Component {
       // check for categorical columns (display stacked bar chart)
       cat_feats.indexOf(key) > -1 ? tempChart = (
         <div key={"cat_chart_" + tempKey}>
-          <BarCharts
+          <StackedBarChart
             cleanKey={tempKey}
             colKey={key}
             depCol={dep_col}
@@ -68,7 +68,7 @@ class Summary extends Component {
       // check for ordinal columns (display stacked bar chart)
       ordKeys.indexOf(key) > -1 ? tempChart = (
         <div key={"ord_chart_" + tempKey}>
-          <BarCharts
+          <StackedBarCha
             cleanKey={tempKey}
             colKey={key}
             depCol={dep_col}

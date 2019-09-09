@@ -1,4 +1,4 @@
-import BarCharts from './';
+import StackedBarChart from './';
 // try getting react pieces and framework for test rendering
 import React from 'react';
 import Papa from 'papaparse';
@@ -23,7 +23,7 @@ describe('basic testing of BarCharts react component', () => {
   let testBarCharts;
 
   beforeEach(() => {
-    testBarCharts = mount(<BarCharts store={store} depCol='test' valByRowObj={{'test':[1,2]}} rawKey='test'/>);
+    testBarCharts = mount(<StackedBarChart store={store} depCol='test' valByRowObj={{'test':[1,2]}} rawKey='test'/>);
   })
   afterEach(() => {
     testBarCharts.unmount();
@@ -32,7 +32,7 @@ describe('basic testing of BarCharts react component', () => {
   // test for existence
   it('create mock BarCharts component, test for existence', () => {
     testBarCharts.setProps({ name: 'bar' });
-    expect(testBarCharts.name()).toEqual('Connect(BarCharts)');
+    expect(testBarCharts.name()).toEqual('Connect(StackedBarChart)');
     expect(testBarCharts.props().depCol).toEqual('test');
     expect(testBarCharts.props().name).toEqual('bar');
     expect(testBarCharts.props().valByRowObj).toEqual({'test':[1,2]});

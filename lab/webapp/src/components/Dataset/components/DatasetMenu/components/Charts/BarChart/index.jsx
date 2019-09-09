@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+// define list of colors to use for charts in chartInfo.js
+import {colorStringList, colorsListObj} from '../../static/chartInfo.js';
 import { Header, Loader } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
@@ -37,66 +39,7 @@ class BarChart extends Component {
     // for every entry in depColSet, map keys to color
     let colorObj = {};
     let colorList = [];
-    let colorStringList = [
-      "#a6cee3",
-      "#1f77b4",
-      "#b2df8a",
-      "#339f2c",
-      "#fb9a99",
-      "#e31a1c",
-      "#fdbf6f",
-      "#ff7f00",
-      "#cab2d6",
-      "#6a3d9a",
-      "#ffff99",
-      "#b15928"
-    ];
-    let colorsListObj = {};
-    colorsListObj.names = {
-        aqua: "#00ffff",
-        azure: "#f0ffff",
-        beige: "#f5f5dc",
-        black: "#000000",
-        blue: "#0000ff",
-        brown: "#a52a2a",
-        cyan: "#00ffff",
-        darkblue: "#00008b",
-        darkcyan: "#008b8b",
-        darkgrey: "#a9a9a9",
-        darkgreen: "#006400",
-        darkkhaki: "#bdb76b",
-        darkmagenta: "#8b008b",
-        darkolivegreen: "#556b2f",
-        darkorange: "#ff8c00",
-        darkorchid: "#9932cc",
-        darkred: "#8b0000",
-        darksalmon: "#e9967a",
-        darkviolet: "#9400d3",
-        fuchsia: "#ff00ff",
-        gold: "#ffd700",
-        green: "#008000",
-        indigo: "#4b0082",
-        khaki: "#f0e68c",
-        lightblue: "#add8e6",
-        lightcyan: "#e0ffff",
-        lightgreen: "#90ee90",
-        lightgrey: "#d3d3d3",
-        lightpink: "#ffb6c1",
-        lightyellow: "#ffffe0",
-        lime: "#00ff00",
-        magenta: "#ff00ff",
-        maroon: "#800000",
-        navy: "#000080",
-        olive: "#808000",
-        orange: "#ffa500",
-        pink: "#ffc0cb",
-        purple: "#800080",
-        violet: "#800080",
-        red: "#ff0000",
-        silver: "#c0c0c0",
-        white: "#ffffff",
-        yellow: "#ffff00"
-    };
+
     testSet.forEach((depVal, i) => {
       // use https://github.com/d3/d3-scale-chromatic#schemePaired for 12 colors
       // to select unique color per class in dataset - no longer using d3
@@ -109,8 +52,8 @@ class BarChart extends Component {
         // always mapped to column keys, this appears to work okay for now
         colorList.push(colorString);
       } else {
-        let colorKeys = Object.keys(colorsObj);
-        colorString = colorsObj[colorKeys[i]];
+        let colorKeys = Object.keys(colorsListObj.names);
+        colorString = colorsListObj.names[colorKeys[i]];
         colorList.push(colorString);
       }
       colorObj[depVal] = colorString;
