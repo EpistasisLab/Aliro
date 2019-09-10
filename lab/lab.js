@@ -340,11 +340,29 @@ app.put("/api/userdatasets/:id/ai", jsonParser, (req, res, next) => {
 // register new machine
 app.post("/api/v1/machines", jsonParser, (req, res, next) => {
     console.log("=====/api/v1/machines...")
-    //console.log(req)
-    //var machineuri = 'http://' + process.env.MACHINE_HOST + ':' + req.port;
-    //req.body.address = machineuri
-    //console.log(machineuri)
-    console.log(req.body)
+    
+    // data validation
+    var requestKeys = Object.getOwnPropertyNames(req.body)
+    var requiredKeys = ["hostname", "address"]
+    var possibleKeys = ["address", "hostname", "os", "cpus", "mem", "gpus", "projects"] 
+
+    //console.log(`req.body(${typeof req.body}): ${req.body}`)
+    //console.log(`pretty req.body ${JSON.stringify(req.body, null, 2)}`)
+    //console.log(`requestKeys: ${requestKeys}`)
+
+    var missingKeys = requiredKeys.filter(key => !(requestKeys.includes(key)))
+    if (missingKeys.length > 0) {
+        res.status(400);
+        return res.send({error: `missing required key(s): ${missingKeys}`});
+    }
+
+    var invalidKeys = requestKeys.filter(key => !(possibleKeys.includes(key)))
+    if (invalidKeys.length > 0) {
+        res.status(400);
+        return res.send({error: `invalid key(s): ${invalidKeys}`});
+    }
+
+    // register machine entry
     db.machines.insertAsync(req.body, {})
         .then((result) => {
             res.status(201);
@@ -769,6 +787,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
                     // First machine with capacity, so use
                     .then((availableMac) => {
                         availableMac = JSON.parse(availableMac);
+                        console.log(`submitJob found machine: ${availableMac}`)
 
                         // Create experiment
                         db.experiments.insertAsync({
@@ -1520,7 +1539,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
         if (machines === null) {
             res.status(404);
             return res.send({
-                error: "Machine ID " + req.params.id + " does not exist"
+                error: "Machine ID '" + req.params.id + "' does not exist"
             });
         }
         // Register projects otherwise
