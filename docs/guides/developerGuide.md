@@ -4,6 +4,8 @@
 
 ### Requirements
 Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
+- Docker setup
+  - Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives) 
 
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (needed only to run unit tests locally)
