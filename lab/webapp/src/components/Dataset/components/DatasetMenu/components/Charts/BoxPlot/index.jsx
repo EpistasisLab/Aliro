@@ -15,9 +15,8 @@ class BoxPlot extends Component {
 
   createPlotlyBoxPlot() {
     const {cleanKey, valByRowObj, rawKey} = this.props;
-
     let testForPlotly = [{
-      x: valByRowObj[rawKey],
+      x: valByRowObj[cleanKey],
       type: 'box',
       marker: {color: 'rgb(22, 120, 194)'},
       name: rawKey,

@@ -61,7 +61,7 @@ class BarChart extends Component {
 
     // data object, passing in list of colors
     testSet.forEach(tKey => {
-      testData.x.push(tKey);
+      testData.x.push(tKey.toString());
       testData.y.push(classCountObj[tKey]);
       testData.marker = {color: colorList};
     });

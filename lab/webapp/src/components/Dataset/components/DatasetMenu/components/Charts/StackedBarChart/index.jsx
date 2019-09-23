@@ -19,7 +19,7 @@ class StackedBarChart extends Component {
   }
 
   createStackedData() {
-    const { depCol, dataPreview, valByRowObj, colKey, } = this.props;
+    const { depCol, dataPreview, valByRowObj, colKey } = this.props;
     let givenColSet = [... new Set(valByRowObj[colKey])];
     let depColSet = [... new Set(valByRowObj[depCol])].sort();
     let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
@@ -56,7 +56,8 @@ class StackedBarChart extends Component {
     // for every unique value of given colKey in dataset, collect all matches
     // by looping over entire dataset and keep track of dependent column
     // values for each given categorical feature
-    givenColSet.forEach(tKey => {
+    givenColSet.forEach(rawKey => {
+      let tKey = rawKey.toString();
       columnValueObj[tKey] = [];
       dataPreview.data.forEach(entry => {
         if(entry[colKey] === tKey) {
