@@ -384,6 +384,7 @@ mediaType: application/json
                             "_id": "5bf4841c9fc83c002cdbf5e8",
                             "filename": "appendicitis.csv",
                             "mimetype": "text/csv",
+                            "problem_type": "classification",
                             "dependent_col": "class",
                             "timestamp": 1542751267786
                         }
@@ -444,6 +445,7 @@ mediaType: application/json
                             "_id": "5bf484209fc83c002cdbf5e9",
                             "filename": "breast-cancer.csv",
                             "mimetype": "text/csv",
+                            "problem_type": "classification",
                             "dependent_col": "class",
                             "timestamp": 1542751267784
                         }
@@ -525,6 +527,7 @@ mediaType: application/json
                         "_id": "5bf4841c9fc83c002cdbf5e8",
                         "filename": "appendicitis_categorical.csv",
                         "mimetype": "text/csv",
+                        "problem_type": "classification",
                         "dependent_col": "class",
                         "categorical_features" : ["cat_feat_1", "cat_feat_2"],
                         "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]},
@@ -587,6 +590,7 @@ mediaType: application/json
           name - file name
           username - owner of the dataset
           dependent_col - name of the target column
+          problem_type - regression or classification
           categorical_features - (optional) list of categorical features
           ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
         example: |
@@ -597,6 +601,7 @@ mediaType: application/json
               "name": "datasetName",
               "username": "testuser",
               "dependent_col": "class",
+              "problem_type": "classification",
               "categorical_features" : ["cat_feat_1", "cat_feat_2"],
               "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
             }
