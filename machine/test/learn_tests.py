@@ -149,29 +149,35 @@ def mocked_requests_get(*args, **kwargs):
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "class",
-                                                    "filename": "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "class",
-                                                    "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2",
+                                                    "filename": "test_clf_input",
+                                                    "dataset_type": "classification"},
+                                                {"_id":"test_file_id4",
                                                 "dependent_col": "class",
-                                                "filename": "test_reg_input"}]}), 200)
+                                                "filename": "test_clf_input2",
+                                                "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                 "dependent_col": "class",
-                                                "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2",
+                                                "filename": "test_clf_input",
+                                                "dataset_type": "classification"},
+                                                {"_id":"test_file_id4",
                                                 "dependent_col": "target",
-                                                "filename": "test_reg_input"}]}), 200)
+                                                "filename": "test_clf_input2",
+                                                "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "filename":
-                                                    "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "NA_class",
-                                                    "filename": "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id3",
@@ -179,24 +185,28 @@ def mocked_requests_get(*args, **kwargs):
                             "categorical_features":  ["test_categorical_feature_1",
                                                     "test_categorical_feature_2"],
                             "ordinal_features":  {"test_ordinal_feature": [1, 3, 5, 7, 9]},
-                            "filename": "test_clf_input3"}]}), 200)
+                            "filename": "test_clf_input3",
+                            "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id7':
         return MockResponse(json.dumps({"files":
                                     [{"_id":"test_file_id4",
                                     "dependent_col": "class",
-                                    "filename": "test_clf_input"}]}), 200)
+                                    "filename": "test_clf_input",
+                                    "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id8':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id5",
                             "dependent_col": "target_class",
                             "categorical_features" : ["cat"],
 	                        "ordinal_features" : {"ord" : ["first", "second", "third"]},
-                            "filename": "test_clf_input5"}]}), 200)
+                            "filename": "test_clf_input5",
+                            "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id9':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id6",
                             "dependent_col": "class",
-                            "filename": "test_clf_input6"}]}), 200)
+                            "filename": "test_clf_input6",
+                            "dataset_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -246,12 +256,12 @@ class APITESTCLASS(unittest.TestCase):
         # Assert requests.get calls
         input_data, data_info = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
-        exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
+        exp_input_data2 = pd.read_csv(test_clf_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
         assert data_info['filename'][0] == 'test_clf_input'
-        assert data_info['filename'][1] == 'test_reg_input'
+        assert data_info['filename'][1] == 'test_clf_input2'
         assert data_info['target_name'] == 'class'
         assert data_info['categories'] is None
         assert data_info['ordinals'] is None
