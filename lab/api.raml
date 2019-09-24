@@ -186,13 +186,13 @@ mediaType: application/json
           200:
             body:
               binary/octet-stream:
-              example: |
-                {
-                  "_id": "5b634f2a36e5380032a7c55b",
-                  "filename": "model_5b634f2236e5380032a7c55a.pkl",
-                  "mimetype": "application/octet-stream",
-                  "timestamp": 1533234986515
-                }
+                example: |
+                  {
+                    "_id": "5b634f2a36e5380032a7c55b",
+                    "filename": "model_5b634f2236e5380032a7c55a.pkl",
+                    "mimetype": "application/octet-stream",
+                    "timestamp": 1533234986515
+                  }
           400:
             body:
               example: |
@@ -206,13 +206,13 @@ mediaType: application/json
           200:
             body:
               binary/octet-stream:
-              example: |
-                {
-                  "_id": "5b634f2a36e5380032a7c55b",
-                  "filename": "script_5b634f2236e5380032a7c55a.python",
-                  "mimetype": "application/octet-stream",
-                  "timestamp": 1533234986515
-                }
+                example: |
+                  {
+                    "_id": "5b634f2a36e5380032a7c55b",
+                    "filename": "script_5b634f2236e5380032a7c55a.python",
+                    "mimetype": "application/octet-stream",
+                    "timestamp": 1533234986515
+                  }
           400:
             body:
               example: |
@@ -589,17 +589,17 @@ mediaType: application/json
           dependent_col - name of the target column
           categorical_features - (optional) list of categorical features
           ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
-
         example: |
           {
-          _files:file binary,
-          _metadata: [
-            name: "datasetName",
-            username: "testuser",
-            dependent_col: "class",
-            categorical_features : ["cat_feat_1", "cat_feat_2"],
-            ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
-          ]
+          "_files": "file binary",
+          "_metadata": 
+            {
+              "name": "datasetName",
+              "username": "testuser",
+              "dependent_col": "class",
+              "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+              "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+            }
           }
     responses:
       201:
