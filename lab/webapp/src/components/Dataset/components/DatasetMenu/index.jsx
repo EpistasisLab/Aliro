@@ -22,7 +22,8 @@ class DatasetMenu extends Component {
   }
 
   // aggregate all available column values grouped by row, i.e all values for
-  // column 'At1' into returned obj
+  // column 'At1' into returned obj - need to be mindful of data columns with
+  // spaces or . TODO: other characters may be potentially troublesome as well
   getDataValByRow() {
     const { dataset, dataPreview } = this.props;
     if(dataPreview) {
@@ -33,12 +34,14 @@ class DatasetMenu extends Component {
       // initialize empty obj with dataset column names as keys
       dataKeys.forEach(key => {
         let tempKey = key.replace(/ /g, "_");
-        valByRowObj[tempKey] = []
+        tempKey = tempKey.replace(/\./g, "_");
+        valByRowObj[tempKey] = [];
       });
 
       dataStuff.forEach(entry => {
         dataKeys.forEach(key => {
           let tempKey = key.replace(/ /g, "_");
+          tempKey = tempKey.replace(/\./g, "_");
           // add some checks to prevent loading empty/garbage data
 
           // first try to parse entry to test for number, without parsing

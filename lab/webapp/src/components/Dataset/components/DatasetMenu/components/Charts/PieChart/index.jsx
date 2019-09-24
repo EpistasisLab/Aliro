@@ -5,32 +5,25 @@ import {colorStringList, colorsListObj} from '../../static/chartInfo.js';
 import { Header } from 'semantic-ui-react';
 import Plot from 'react-plotly.js';
 
-class StackedBarChart extends Component {
+class PieChart extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+
+    };
 
     this.createStackedData = this.createStackedData.bind(this);
-    this.createPlotlyStackedChart = this.createPlotlyStackedChart.bind(this);
+    this.createPlotlyPieChart = this.createPlotlyPieChart.bind(this);
   }
 
   createStackedData() {
     const { depCol, dataPreview, valByRowObj, colKey, cleanKey } = this.props;
-    //let givenColSet = [... new Set(valByRowObj[colKey])];
     let givenColSet = [... new Set(valByRowObj[cleanKey])];
     let depColSet = [... new Set(valByRowObj[depCol])].sort();
     let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
     let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
     let proportionObjList = [];
     let plotlyData = [];
-
-    // too many items to display on x axis, use cutoff to prevent creation of
-    // illegible chart - UPDATE the check for chart cutoff is now in parent component
-    // if(givenColSet.length > this.chartCutoff) {
-    //   // was previously setting react state here and called in render method
-    //   // causing infinite loop, don't need to set state, only care about chartCutoff
-    //   return {chartCutoff: true};
-    // }
 
     // for every entry in depColSet, map keys to color
 
@@ -53,8 +46,10 @@ class StackedBarChart extends Component {
     // for every unique value of given colKey in dataset, collect all matches
     // by looping over entire dataset and keep track of dependent column
     // values for each given categorical feature
+    let testPieObj = {};
     givenColSet.forEach(rawKey => {
       let tKey = rawKey.toString();
+      testPieObj[tKey] = valByRowObj[cleanKey].filter(item => item === tKey).length;
       columnValueObj[tKey] = [];
       dataPreview.data.forEach(entry => {
         if(entry[colKey] === tKey) {
@@ -62,7 +57,12 @@ class StackedBarChart extends Component {
         }
       })
     });
+    // ------------------------------------------------------------------------
+    // TODO: use this method instead of 'recombining' stacked chart data below
+    // ------------------------------------------------------------------------
+    window.console.log('testPieObj', testPieObj);
 
+    //window.console.log('columnValueObj pie chart', columnValueObj);
     // Next step is to calculate proportion of depedent column values:
     // unqiue counts of each class occurance per value in given column name/key
     // results in list of objects -
@@ -73,6 +73,7 @@ class StackedBarChart extends Component {
       // entry[0] is column key - entry[1] is list of all values for column key
       proportionObj[entry[0]] = []; // init obj key with empty list
       let tempObj = {};
+      let tempTotal = 0;
       depColSet.forEach(depVal => {
         tempObj[colKey] = entry[0];
         // calculate count of depedent column for given column key
@@ -87,31 +88,62 @@ class StackedBarChart extends Component {
         }).length;
         //proportionObj[entry[0]].push({[depVal]: tempLen})
         tempObj[depVal] = tempLen;
+        tempTotal += tempLen;
         proportionObj[entry[0]].push(tempLen);
       })
+      tempObj.total_count = tempTotal;
       proportionObjList.push(tempObj);
     })
 
-    depColSet.forEach((depVal, i) => {
-      // plotly stuff - based on stacked bar chart example from here
-      // https://plot.ly/javascript/bar-charts/
-      let yData = [];
-      proportionObjList.forEach(tEntry => yData.push(tEntry[depVal]));
-      plotlyData.push({
-        name: depVal,
-        type: 'bar',
-        x: givenColSet,
-        y: yData,
-        marker: {
-          color: colorObj[depVal]
-        }
-      })
+    let values = [];
+    let pieChartLabels = [];
+    let restOfPieChart = 0;
+    // sort in ascending order, take top 5 and consolidate rest into one
+    proportionObjList.sort((a, b) => (a.total_count < b.total_count) ? 1 : -1);
+    //window.console.log('sorted proportionObjList', proportionObjList);
+    for(var i = 0; i < proportionObjList.length; i++) {
+      if(i < 5){
+        values.push(proportionObjList[i].total_count);
+        pieChartLabels.push(proportionObjList[i][colKey])
+      } else {
+        restOfPieChart += proportionObjList[i].total_count;
+      }
+    }
+    pieChartLabels.push("rest of data");
+    values.push(restOfPieChart);
+    // proportionObjList.forEach(tEntry => {
+    //   //window.console.log('here', tEntry);
+    //   values.push(tEntry.total_count)
+    // });
+    plotlyData.push({
+      type: 'pie',
+      values: values,
+      labels: pieChartLabels
     })
-    //window.console.log('plotlyData', plotlyData);
+    // depColSet.forEach((depVal, i) => {
+    //   // plotly stuff - based on stacked bar chart example from here
+    //   // https://plot.ly/javascript/bar-charts/
+    //   let values = [];
+    //   proportionObjList.forEach(tEntry => values.push(tEntry.total));
+    //   plotlyData.push({
+    //     name: depVal,
+    //     type: 'pie',
+    //     values: values,
+    //     labels: ,
+    //     marker: {
+    //       color: colorObj[depVal]
+    //     }
+    //   })
+    // })
+    //window.console.log('plotlyData pie chart', plotlyData);
     return plotlyData;
   }
 
-  createPlotlyStackedChart() {
+  // in the case of creating a stacked bar chart with too many items to display
+  // along x - axis (number of unique vals for given column key/categorical_feature)
+  // display alternative chart instead - take top five largest/most numerous values
+  // and consolidate remaining items into one and display a pie chart with six slices
+  createPlotlyPieChart() {
     const { chartCutoff } = this.state;
 
     let testData = this.createStackedData();
@@ -178,9 +210,10 @@ class StackedBarChart extends Component {
   }
 
   render() {
-    //const { depCol, dataPreview, valByRowObj, colKey } = this.props;
-    let plotlyChart = this.createPlotlyStackedChart();
 
+    let plotlyChart = this.createPlotlyPieChart();
+    //plotlyChart = (<p>pie chart</p>);
+    //plotlyChart.chartCutoff ? plotlyChart = (<p>Too many values to plot</p>) : null;
     return (
       <div>
         {plotlyChart}
@@ -189,9 +222,7 @@ class StackedBarChart extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({});
 
-});
-
-export { StackedBarChart };
-export default connect(mapStateToProps, {})(StackedBarChart);
+export { PieChart };
+export default connect(mapStateToProps, {})(PieChart);

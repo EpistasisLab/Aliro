@@ -5,6 +5,7 @@ import { Header, Segment, Table, Grid, Loader } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart/';
 import StackedBarChart from '../Charts/StackedBarChart/';
 import BoxPlot from '../Charts/BoxPlot/';
+import PieChart from '../Charts/PieChart/';
 
 /**
 *  Main component for dataset page update - consists mostly of d3 charts
@@ -15,7 +16,8 @@ class Summary extends Component {
     super(props);
     this.state = {
     };
-
+    // upper limit/max number of unique values for making chart
+    this.chartCutoff = 25;
     this.createGridContent = this.createGridContent.bind(this);
   }
 
@@ -38,6 +40,8 @@ class Summary extends Component {
       // need to be careful with this key - replace spaces and . with _
       let tempKey = key.replace(/ /g, "_");
       tempKey = tempKey.replace(/\./g, "_");
+      let uniqueCount = new Set(valByRowObj[tempKey]).size;
+
       cat_feats.indexOf(key) > -1 || ordKeys.indexOf(key) > -1
         ? dataType = 'nominal' : dataType = 'numeric';
       key === dep_col
@@ -68,7 +72,7 @@ class Summary extends Component {
       // check for ordinal columns (display stacked bar chart)
       ordKeys.indexOf(key) > -1 ? tempChart = (
         <div key={"ord_chart_" + tempKey}>
-          <StackedBarCha
+          <StackedBarChart
             cleanKey={tempKey}
             colKey={key}
             depCol={dep_col}
@@ -89,12 +93,24 @@ class Summary extends Component {
             valByRowObj={valByRowObj}
           />
         ) : null;
+      uniqueCount > this.chartCutoff && dataType === 'nominal'
+        ? tempChart = (
+          <PieChart
+            key={"pie_chart_" + tempKey}
+            depCol={dep_col}
+            dataPreview={dataPreview}
+            valByRowObj={valByRowObj}
+            cleanKey={tempKey}
+            colKey={key}
+          />
+        ) : null;
       // if target class add '(target)' to chart label
+      let gridTextStyle = {color: 'white', paddingLeft: '10px', fontSize: '1em'};
 
       gridList.push(
         <Grid.Row key={"grid_chart_" + tempKey}>
           <Grid.Column width={2}>
-            <div style={{color: 'white', paddingLeft: '10px'}}>
+            <div style={gridTextStyle}>
               {tempKey}
               { // if target class add ' (target)', &nbsp; is space
                 key === dep_col
@@ -106,8 +122,10 @@ class Summary extends Component {
             </div>
           </Grid.Column>
           <Grid.Column width={2}>
-            <div style={{color: 'white', paddingLeft: '10px'}}>
+            <div style={gridTextStyle}>
               {dataType}
+              <br />
+              (<b>&nbsp;# of unique values:&nbsp;<i>{uniqueCount}</i></b>)
             </div>
           </Grid.Column>
           <Grid.Column width={5}>
