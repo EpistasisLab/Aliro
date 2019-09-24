@@ -196,7 +196,8 @@ def get_input_data(_id, tmpdir):
             categories = file['categorical_features']
         if 'ordinal_features' in file:
             ordinals = file['ordinal_features']
-        dataset_type = file['dataset_type']
+        if 'dataset_type' in file:
+            dataset_type = file['dataset_type']
 
     if len(files) == 1: # only 1 file
         input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
