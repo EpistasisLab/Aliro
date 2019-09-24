@@ -29,7 +29,7 @@ def main(args, param_grid={}):
         raise RuntimeError("Experiment failed! "
                             "Dataset type is {} "
                             "but method type is {}".format(data_info["dataset_type"],method_type))
-    return_val = generate_results(model=model,
+    generate_results(model=model,
                     input_data=input_data,
                     tmpdir=exp.tmpdir,
                     target_name=data_info['target_name'],
@@ -41,9 +41,6 @@ def main(args, param_grid={}):
                     encoding_strategy=encoding_strategy,
                     param_grid=param_grid
                     )
-    if return_val == "Timeout":
-        raise RuntimeError("Experiment failed due to time out!")
-
 
 if __name__ == "__main__":
     args, param_grid = parse_args()
