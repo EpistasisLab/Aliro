@@ -21,8 +21,6 @@ class PieChart extends Component {
     let givenColSet = [... new Set(valByRowObj[cleanKey])];
     let depColSet = [... new Set(valByRowObj[depCol])].sort();
     let columnValueObj = {}; // key: unique value in dataset given colKey, val: list of all depCol values for given colKey
-    let proportionObj = {}; // key: unique value in dataset given colKey, val: # of values per unique value in depCol
-    let proportionObjList = [];
     let plotlyData = [];
 
     // for every entry in depColSet, map keys to color
@@ -39,17 +37,19 @@ class PieChart extends Component {
       }
       colorObj[depVal] = colorString;
     })
-    // in order to create a stacked bar chart need proportion of data per categorical
-    // feature for count of each dependent column value
+    // in order to create a pie chart need to look at given categorical feature
+    // column key to collect the total count of each individual value given that key
+    // each entry is added to pieList
+    let testPieList = [];
 
-    // First step is to consolidate values of a given categorical feature:
-    // for every unique value of given colKey in dataset, collect all matches
-    // by looping over entire dataset and keep track of dependent column
-    // values for each given categorical feature
-    let testPieObj = {};
     givenColSet.forEach(rawKey => {
+      let testPieObj = {};
+      testPieObj.col_value = rawKey;
       let tKey = rawKey.toString();
-      testPieObj[tKey] = valByRowObj[cleanKey].filter(item => item === tKey).length;
+      //testPieObj[tKey] = valByRowObj[cleanKey].filter(item => item === tKey).length;
+      testPieObj.total_count = valByRowObj[cleanKey].filter(item => item === tKey).length;
+
+      testPieList.push(testPieObj);
       columnValueObj[tKey] = [];
       dataPreview.data.forEach(entry => {
         if(entry[colKey] === tKey) {
@@ -57,84 +57,32 @@ class PieChart extends Component {
         }
       })
     });
-    // ------------------------------------------------------------------------
-    // TODO: use this method instead of 'recombining' stacked chart data below
-    // ------------------------------------------------------------------------
-    window.console.log('testPieObj', testPieObj);
 
-    //window.console.log('columnValueObj pie chart', columnValueObj);
-    // Next step is to calculate proportion of depedent column values:
-    // unqiue counts of each class occurance per value in given column name/key
-    // results in list of objects -
-    // ex: [ {0: 21, 1: 6, cat: "a"}, {0: 22, 1: 5, cat: "b"} ... ]
-    // for this example depCol is 'target_class' which can be '0' or '1'
-    // and colKey is 'cat' which can be 'a', 'b' ...
-    Object.entries(columnValueObj).forEach((entry, index) => {
-      // entry[0] is column key - entry[1] is list of all values for column key
-      proportionObj[entry[0]] = []; // init obj key with empty list
-      let tempObj = {};
-      let tempTotal = 0;
-      depColSet.forEach(depVal => {
-        tempObj[colKey] = entry[0];
-        // calculate count of depedent column for given column key
-        // use array filter to create temp list and use that list's length
-        let tempLen = entry[1].filter(x => {
-          let parsedX = parseFloat(x);
-          if(!isNaN(parsedX)) {
-            return parsedX === depVal;
-          } else {
-            return x === depVal;
-          }
-        }).length;
-        //proportionObj[entry[0]].push({[depVal]: tempLen})
-        tempObj[depVal] = tempLen;
-        tempTotal += tempLen;
-        proportionObj[entry[0]].push(tempLen);
-      })
-      tempObj.total_count = tempTotal;
-      proportionObjList.push(tempObj);
-    })
+    testPieList.sort((a, b) => (a.total_count < b.total_count) ? 1 : -1);
+
+    window.console.log('testPieObj', testPieList);
 
     let values = [];
     let pieChartLabels = [];
     let restOfPieChart = 0;
     // sort in ascending order, take top 5 and consolidate rest into one
-    proportionObjList.sort((a, b) => (a.total_count < b.total_count) ? 1 : -1);
-    //window.console.log('sorted proportionObjList', proportionObjList);
-    for(var i = 0; i < proportionObjList.length; i++) {
+    for(var i = 0; i < testPieList.length; i++) {
       if(i < 5){
-        values.push(proportionObjList[i].total_count);
-        pieChartLabels.push(proportionObjList[i][colKey])
+        values.push(testPieList[i].total_count);
+        pieChartLabels.push(testPieList[i].col_value)
       } else {
-        restOfPieChart += proportionObjList[i].total_count;
+        restOfPieChart += testPieList[i].total_count;
       }
     }
     pieChartLabels.push("rest of data");
     values.push(restOfPieChart);
-    // proportionObjList.forEach(tEntry => {
-    //   //window.console.log('here', tEntry);
-    //   values.push(tEntry.total_count)
-    // });
+
+    // https://plot.ly/javascript/pie-charts/
     plotlyData.push({
       type: 'pie',
       values: values,
       labels: pieChartLabels
     })
-    // depColSet.forEach((depVal, i) => {
-    //   // plotly stuff - based on stacked bar chart example from here
-    //   // https://plot.ly/javascript/bar-charts/
-    //   let values = [];
-    //   proportionObjList.forEach(tEntry => values.push(tEntry.total));
-    //   plotlyData.push({
-    //     name: depVal,
-    //     type: 'pie',
-    //     values: values,
-    //     labels: ,
-    //     marker: {
-    //       color: colorObj[depVal]
-    //     }
-    //   })
-    // })
     //window.console.log('plotlyData pie chart', plotlyData);
     return plotlyData;
   }
