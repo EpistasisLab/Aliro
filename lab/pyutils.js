@@ -13,11 +13,11 @@ var Promise = require("bluebird");
 *
 * @return data: (if success) JSON
 */
-function generateFeaturesFromFilepath(filename, filepath, dependent_col) {
+function generateFeaturesFromFilepath(filename, prediction_type, filepath, dependent_col) {
 	console.log(`generateFeaturesFromFilepath ('${filename}', '${filepath}', '${dependent_col}')`)
 
 	var filepath = filepath + "/" + filename
-	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
+	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col, '-prediction_type', prediction_type]
 
 	console.log(`args: ${args}`)
 
@@ -35,11 +35,11 @@ function generateFeaturesFromFilepath(filename, filepath, dependent_col) {
 *
 * @return Promise
 */
-function generateFeaturesFromFilepathAsync(filename, filepath, dependent_col) {
+function generateFeaturesFromFilepathAsync(filename, prediction_type, filepath, dependent_col) {
 	console.log(`generateFeaturesFromFilepath ('${filename}', '${filepath}', '${dependent_col}')`)
 
 	var filepath = filepath + "/" + filename
-	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col]
+	var args = ['ai/metalearning/get_metafeatures.py', filepath, '-target', dependent_col, '-prediction_type', prediction_type]
 
 	console.log(`args: ${args}`)
 
@@ -56,10 +56,10 @@ function generateFeaturesFromFilepathAsync(filename, filepath, dependent_col) {
 *
 * @return data: (if success) JSON
 */
-function generateFeaturesFromFileId(fileid, dependent_col) {
-	console.log(`generateFeaturesFromFileId ('${fileid}', '${dependent_col}')`)
+function generateFeaturesFromFileId(fileid, prediction_type, dependent_col) {
+	console.log(`generateFeaturesFromFileId ('${fileid}', '${prediction_type}', '${dependent_col}')`)
 
-	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
+	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid', '-prediction_type', prediction_type]
 
 	console.log(`args: ${args}`)
 
@@ -76,10 +76,10 @@ function generateFeaturesFromFileId(fileid, dependent_col) {
 *
 * @return Promise
 */
-function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
-	console.log(`generateFeaturesFromFileId ('${fileid}', '${dependent_col}')`)
+function generateFeaturesFromFileIdAsync(fileid, prediction_type, dependent_col) {
+	console.log(`generateFeaturesFromFileId ('${fileid}', '${prediction_type}', '${dependent_col}')`)
 
-	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid']
+	var args = ['ai/metalearning/get_metafeatures.py', fileid, '-target', dependent_col, '-identifier_type', 'fileid', '-prediction_type', prediction_type]
 
 	console.log(`args: ${args}`)
 
@@ -95,13 +95,14 @@ function generateFeaturesFromFileIdAsync(fileid, dependent_col) {
 *
 * @return Promise
 */
-function validateDatafileByFileIdAsync(fileid, dependent_col, categorical_features, ordinal_features) {
-	console.log(`validateDatafileByFileIdAsync ('${fileid}', '${dependent_col}', '${categorical_features}', '${ordinal_features}')`)
+function validateDatafileByFileIdAsync(fileid, prediction_type, dependent_col, categorical_features, ordinal_features) {
+	console.log(`validateDatafileByFileIdAsync ('${fileid}', '${prediction_type}', ${dependent_col}', '${categorical_features}', '${ordinal_features}')`)
 
 	var args = [
 		'lab/pyutils/validateDataset.py', fileid, 
 		'-target', dependent_col, 
-		'-identifier_type', 'fileid'
+		'-identifier_type', 'fileid',
+		'-prediction_type', prediction_type
 	]
 	if (categorical_features != null) {
 		args.push('-categorical_features')

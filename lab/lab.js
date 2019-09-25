@@ -227,6 +227,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 *      _metadata: [
 *        name: "datasetName",
 *        username: "testUser",
+*        prediction_type: "classification",
 *        dependent_col: "class",
 *        categorical_features : ["cat_feat_1", "cat_feat_2"],
 *        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
@@ -238,6 +239,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 * @param _metadata - json
 *    name - file name
 *    username - owner of the dataset
+*    prediction_type - "regression" or "classification"
 *    dependent_col - name of the target column
 *    categorical_features - list of categorical features
 *    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
@@ -264,7 +266,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     }
 
     // Validate
-    var possibleMetadataKeys = ['name', 'username', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
+    var possibleMetadataKeys = ['name', 'username', 'prediction_type', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
     if (!metadata) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata"});
@@ -298,9 +300,10 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     var dependent_col = metadata['dependent_col'];
     var categorical_features = metadata['categorical_features'] 
     var ordinal_features = metadata['ordinal_features']
+    var prediction_type = "classification"
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(file_id, dependent_col, categorical_features, ordinal_features, metadata)})
+    .then((file_id) => {return registerDataset(file_id, prediction_type, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -1285,7 +1288,7 @@ var validateDatasetMetadata = function(metadata) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileId, dependent_col, categorical_features, ordinal_features, metadata) {
+var registerDataset = function(fileId, prediction_type, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
@@ -1293,10 +1296,9 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
     var dataset_id 
 
     // generate dataset profile
-    //return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)
     return validateDatasetMetadata(metadata)
-    .then((result) => {return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)})
-    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
+    .then((result) => {return validateDatafileByFileIdAsync(fileId, prediction_type, dependent_col, categorical_features, ordinal_features)})
+    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, prediction_type, dependent_col)})
     
     // create a new datasets instance and with the dataset dataProfile
     .then((dataProfile) => {
@@ -1331,6 +1333,7 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
                     _id: gridStore.fileId,
                     filename: gridStore.filename,
                     mimetype: gridStore.metadata.contentType,
+                    prediction_type: prediction_type,
                     dependent_col: dependent_col,
                     categorical_features: categorical_features,
                     ordinal_features: ordinal_features,
