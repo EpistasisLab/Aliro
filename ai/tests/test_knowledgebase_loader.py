@@ -142,9 +142,13 @@ class TestResultUtils(unittest.TestCase):
     def test_generate_metadata_from_directory(self):
         testResultsDataDirectory = "data/datasets/pmlb_small"
         targetField = "class"
+        prediction_type = "classification"
+
 
         data = knowledgebase_loader._generate_metadata_from_directory(
-                testResultsDataDirectory, targetField=targetField)
+                testResultsDataDirectory, 
+                prediction_type=prediction_type,
+                targetField=targetField)
         assert isinstance(data, dict)
 
         self.assertGreater(len(data.keys()), 1)
@@ -193,6 +197,7 @@ class TestResultUtils(unittest.TestCase):
         datasetDirectory = "data/datasets/pmlb_small"
         outputFilename = 'metafeatures.csv.gz'
         targetField = 'class'
+        predictionType = "classification"
 
         mfGen = knowledgebase_loader.generate_metafeatures_file(
             outputFilename=outputFilename,
