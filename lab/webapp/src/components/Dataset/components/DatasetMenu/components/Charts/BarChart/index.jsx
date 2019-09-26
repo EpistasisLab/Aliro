@@ -103,7 +103,8 @@ class BarChart extends Component {
 
     // config
     const optBtnsToRemove = [
-      'sendDataToCloud'
+      'sendDataToCloud',
+      'toggleSpikelines',
     ];
     const boxPlotConfig = {
       displaylogo: false,

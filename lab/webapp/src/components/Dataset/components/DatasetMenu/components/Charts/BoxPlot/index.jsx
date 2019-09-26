@@ -31,9 +31,16 @@ class BoxPlot extends Component {
       boxpoints: false,
       boxmean: 'sd'
     }];
+    // check here for button list -
+    // https://github.com/plotly/plotly.js/blob/master/src/components/modebar/buttons.js
     const optBtnsToRemove = [
       'toImage',
-      'sendDataToCloud'
+      'sendDataToCloud',
+      'lasso2d',
+      'select2d',
+      'toggleSpikelines',
+      'hoverClosestCartesian',
+      'hoverCompareCartesian'
     ];
     const boxPlotConfig = {
       displaylogo: false,
@@ -70,7 +77,7 @@ class BoxPlot extends Component {
     };
 
     return (<Plot
-      style={{position:'relative', left:'-100px'}}
+      style={{position:'relative', left: '-100px'}}
       data={testForPlotly}
       layout={plotLayout}
       config={boxPlotConfig}
@@ -81,7 +88,7 @@ class BoxPlot extends Component {
     let plotlyChart = this.createPlotlyBoxPlot();
 
     return (
-      <div>
+      <div style={{}}>
         {plotlyChart}
       </div>
     );

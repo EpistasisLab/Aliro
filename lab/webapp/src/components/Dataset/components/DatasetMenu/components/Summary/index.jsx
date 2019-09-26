@@ -17,7 +17,8 @@ class Summary extends Component {
     this.state = {
     };
     // upper limit/max number of unique values for making chart
-    this.chartCutoff = 25;
+    this.stackedChartCutoff = 25;
+    this.numericChartCutoff = 5;
     this.createGridContent = this.createGridContent.bind(this);
   }
 
@@ -57,9 +58,9 @@ class Summary extends Component {
 
       // override tempChart depending on type of data
 
-      // check for categorical columns (display stacked bar chart)
-      cat_feats.indexOf(key) > -1 ? tempChart = (
-        <div key={"cat_chart_" + tempKey}>
+      // check for data type & display stacked bar chart
+      dataType === 'nominal' ? tempChart = (
+        <div key={"stacked_bar_chart_" + tempKey}>
           <StackedBarChart
             cleanKey={tempKey}
             colKey={key}
@@ -69,9 +70,9 @@ class Summary extends Component {
           />
         </div>
       ) : null;
-      // check for ordinal columns (display stacked bar chart)
-      ordKeys.indexOf(key) > -1 ? tempChart = (
-        <div key={"ord_chart_" + tempKey}>
+
+      dataType === 'numeric' && uniqueCount <= this.numericChartCutoff ? tempChart = (
+        <div key={"stacked_bar_chart_" + tempKey}>
           <StackedBarChart
             cleanKey={tempKey}
             colKey={key}
@@ -93,7 +94,7 @@ class Summary extends Component {
             valByRowObj={valByRowObj}
           />
         ) : null;
-      uniqueCount > this.chartCutoff && dataType === 'nominal'
+      uniqueCount > this.stackedChartCutoff && dataType === 'nominal'
         ? tempChart = (
           <PieChart
             key={"pie_chart_" + tempKey}
@@ -105,7 +106,7 @@ class Summary extends Component {
           />
         ) : null;
       // if target class add '(target)' to chart label
-      let gridTextStyle = {color: 'white', paddingLeft: '10px', fontSize: '1em'};
+      let gridTextStyle = {color: 'white', paddingLeft: '10px', fontSize: '1.33em'};
 
       gridList.push(
         <Grid.Row key={"grid_chart_" + tempKey}>
@@ -184,6 +185,7 @@ class Summary extends Component {
             divided
             celled='internally'
             verticalAlign='middle'
+
           >
             <Grid.Row columns={3}>
               <Grid.Column width={2}>
