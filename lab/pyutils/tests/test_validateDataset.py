@@ -113,7 +113,21 @@ def load_bad_test_data():
 			"target_class",
 			["target_class"],
 			None,
-			"Target column 'target_class' cannot be a categorical feature")
+			"Target column 'target_class' cannot be a categorical feature"),
+		("reg_vineyard_null_target", 
+			"data/datasets/test/test_bad/regression/vineyard_null_target.csv",
+			"regression",
+			"target",
+			None,
+			None,
+			"sklearn.check_array() validation Input contains NaN, infinity or a value too large for dtype('float64')."),
+		("reg_vineyard_str_target", 
+			"data/datasets/test/test_bad/regression/vineyard_str_target.csv",
+			"regression",
+			"target",
+			None,
+			None,
+			"sklearn.check_array() validation could not convert string to float: 'bar'"),
 	]
 
 @nottest
@@ -190,6 +204,20 @@ def load_good_test_data():
 			"data/datasets/test/integration/appendicitis_string_target.csv",
 			"classification",
 			"target_class",
+			None,
+			None
+			),
+		("reg_vineyard", 
+			"data/datasets/test/test_regression/192_vineyard.csv",
+			"regression",
+			"target",
+			None,
+			None
+			),
+		("reg_auto_price", 
+			"data/datasets/test/test_regression/195_auto_price.tsv",
+			"regression",
+			"target",
 			None,
 			None
 			),
