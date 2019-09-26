@@ -267,6 +267,8 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
 
     // Validate
     var possibleMetadataKeys = ['name', 'username', 'prediction_type', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
+    var possiblePredictionType = ['classification']
+
     if (!metadata) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata"});
@@ -279,7 +281,12 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     } if (!metadata.hasOwnProperty('username')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.username"});
-    } if (!req.hasOwnProperty('files')) {
+    } if (metadata.hasOwnProperty('prediction_type') && !possiblePredictionType.includes(metadata['prediction_type'])) {
+        res.status(400);
+        return res.send({error: `invalid prediction_type: ${metadata['prediction_type']}`}) 
+    }
+
+    if (!req.hasOwnProperty('files')) {
         res.status(400);
         return res.send({error: "Missing parameter _files"});
     } if (req.files.length != 1) {
@@ -289,6 +296,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
         res.status(400);
         return res.send({error: `_files[0] has size 0`});
     } 
+
     var invalidKeys = Object.getOwnPropertyNames(metadata).filter(key => !(possibleMetadataKeys.includes(key)))
     if (invalidKeys.length > 0) {
         res.status(400);
@@ -300,7 +308,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     var dependent_col = metadata['dependent_col'];
     var categorical_features = metadata['categorical_features'] 
     var ordinal_features = metadata['ordinal_features']
-    var prediction_type = "classification"
+    var prediction_type = metadata['prediction_type'] || "classification"
 
     stageDatasetFile(req.files[0])
     .then((file_id) => {return registerDataset(file_id, prediction_type, dependent_col, categorical_features, ordinal_features, metadata)})
