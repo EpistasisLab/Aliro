@@ -798,47 +798,49 @@ class APITESTCLASS(unittest.TestCase):
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_reg_1(self, mock_get):
         """Test main function on regression dataset. """
-        obj = next(item for item in projects_json_data if item["name"] == "DecisionTreeRegressor")
-        algorithm_name = obj["name"]
-        schema = obj["schema"]
-        args = {}
-        _id = "test_id10"
-        args['_id'] = _id
-        args["method"] = algorithm_name
-        args['grid_search'] = False
-        for param_name in schema.keys():
-            default_value = schema[param_name]["default"]
-            param_type = schema[param_name]["type"]
-            conv_func = get_type(param_type)
-            conv_default_value = conv_func(default_value)
-            args[param_name] = conv_default_value
-        main(args, {})
-        outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
-        value_json = '{}/value.json'.format(outdir)
-        assert os.path.isfile(value_json)
-        with open(value_json, 'r') as f:
-            value = json.load(f)
-        train_score = value['_scores']['train_score']
-        assert train_score
-        # test pickle file
-        pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
-        assert os.path.isfile(pickle_file)
+        for obj in projects_json_data:
+            if obj['category'] != 'regression':
+                continue
+            algorithm_name = obj["name"]
+            schema = obj["schema"]
+            args = {}
+            _id = "test_id10"
+            args['_id'] = _id
+            args["method"] = algorithm_name
+            args['grid_search'] = False
+            for param_name in schema.keys():
+                default_value = schema[param_name]["default"]
+                param_type = schema[param_name]["type"]
+                conv_func = get_type(param_type)
+                conv_default_value = conv_func(default_value)
+                args[param_name] = conv_default_value
+            main(args, {})
+            outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+            value_json = '{}/value.json'.format(outdir)
+            assert os.path.isfile(value_json)
+            with open(value_json, 'r') as f:
+                value = json.load(f)
+            train_score = value['_scores']['train_score']
+            assert train_score
+            # test pickle file
+            pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+            assert os.path.isfile(pickle_file)
 
-        # test reloaded model is the same
-        pickle_model = joblib.load(pickle_file)
-        load_clf = pickle_model['model']
-        cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_reg_input_df.drop('class', axis=1).values,
-                                    y=test_reg_input_df['class'].values,
-                                    scoring="r2",
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            # test reloaded model is the same
+            pickle_model = joblib.load(pickle_file)
+            load_clf = pickle_model['model']
+            cv_scores = cross_validate(
+                                        estimator=load_clf,
+                                        X=test_reg_input_df.drop('class', axis=1).values,
+                                        y=test_reg_input_df['class'].values,
+                                        scoring="r2",
+                                        cv=10,
+                                        return_train_score=True
+                                        )
 
-        load_clf_score = cv_scores['train_score'].mean()
-        print(algorithm_name, train_score, load_clf_score)
-        assert train_score == load_clf_score
+            load_clf_score = cv_scores['train_score'].mean()
+            print(algorithm_name, train_score, load_clf_score)
+            assert train_score == load_clf_score
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_reg_2(self, mock_get):
