@@ -144,6 +144,7 @@ def generate_metafeatures_file(
     datasetDirectory,
     outputPath,  
     outputFilename = "metafeatures.csv", 
+    predictionType = "classification",
     targetField = 'class', 
     checkSubdirectories = True, 
     fileExtensions = ['.csv', '.tsv']):
@@ -156,7 +157,7 @@ def generate_metafeatures_file(
     os.makedirs(outputPath, exist_ok=True)
 
     metafeaturesData = _generate_metadata_from_directory(
-        datasetDirectory, targetField, checkSubdirectories, fileExtensions)
+        datasetDirectory, predictionType, targetField, checkSubdirectories, fileExtensions)
 
     df = pd.DataFrame(metafeaturesData).transpose()
 
@@ -255,7 +256,8 @@ def _load_metadata_from_file(metafeaturesFile):
 
     return metafeaturesDf.to_dict(orient='index')
 
-def _generate_metadata_from_directory(datasetDirectory, targetField = 'class', 
+def _generate_metadata_from_directory(datasetDirectory,
+    prediction_type = "classification", targetField = 'class', 
     checkSubdirectories = True, fileExtensions = ['.csv', '.tsv']):
     """Extract metafeatures for all dataset files in the directory
 
@@ -278,7 +280,7 @@ def _generate_metadata_from_directory(datasetDirectory, targetField = 'class',
                 datapath = os.path.join(root, name)
                 logger.debug(f"Generating metadata for {datapath}")
                 metafeatures = mf.generate_metafeatures_from_filepath(
-                        datapath, targetField)
+                        datapath, prediction_type, targetField)
                 metafeaturesData[dataset] = metafeatures
 
     return metafeaturesData

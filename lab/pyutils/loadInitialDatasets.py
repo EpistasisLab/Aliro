@@ -20,6 +20,7 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
 DEFAULT_TARGET_COLUMN = "class"
+DEFAULT_PREDICTION_TYPE = "classification"
 
 
 def registerDatafiles(directory, apiPath):
@@ -36,8 +37,8 @@ def registerDatafiles(directory, apiPath):
 			extension = os.path.splitext(file)[1]
 
 			if (extension in ['.csv', '.tsv']):
-				foundMetadataFile, target_column, categorical_features, ordinal_features = getMetadataForDatafile(root, file)
-				registerDatafile(root, file, target_column, categorical_features, ordinal_features, apiPath)		
+				foundMetadataFile, target_column, prediction_type, categorical_features, ordinal_features = getMetadataForDatafile(root, file)
+				registerDatafile(root, file, target_column, prediction_type, categorical_features, ordinal_features, apiPath)		
 
 
 def getMetadataForDatafile(root, file):
@@ -58,6 +59,7 @@ def getMetadataForDatafile(root, file):
 	filepath = os.path.join(root, metafile)
 
 	target_column = DEFAULT_TARGET_COLUMN
+	prediction_type = DEFAULT_PREDICTION_TYPE
 	categorical_features = []
 	ordinal_features = {}
 
@@ -67,10 +69,10 @@ def getMetadataForDatafile(root, file):
 			data = simplejson.load(f)
 	except FileNotFoundError:
 		logger.info("File " + metafile + " does not exist, using default metadata.")
-		return False, target_column, categorical_features, ordinal_features
+		return False, target_column, prediction_type, categorical_features, ordinal_features
 	except Exception as e:
 		logger.error("Unable to parse file " + filepath + ": " + str(e))
-		return False, target_column, categorical_features, ordinal_features
+		return False, target_column, prediction_type, categorical_features, ordinal_features
 
 	# extract matadata from the file
 	if ('target_column' in data.keys()):
@@ -78,17 +80,20 @@ def getMetadataForDatafile(root, file):
 	else:
 		logger.warning("Could not get 'target_column' from file " + filepath)
 
+	if ('prediction_type' in data.keys()): prediction_type = data['prediction_type']
+	else: logger.warning("Could not get 'prediction_type' from file " + filepath)
+
 	if ('categorical_features' in data.keys()): categorical_features = data['categorical_features']
 	else: logger.warning("Could not get 'categorical_features' from file " + filepath)
 
 	if ('ordinal_features' in data.keys()): ordinal_features = data['ordinal_features']
 	else: logger.warning("Could not get 'ordinal_features' from file " + filepath)
 
-	return True, target_column, categorical_features, ordinal_features
+	return True, target_column, prediction_type, categorical_features, ordinal_features
 
 
 
-def registerDatafile(root, file, target_column, categorical_features, ordinal_features, apiPath):
+def registerDatafile(root, file, target_column, prediction_type, categorical_features, ordinal_features, apiPath):
 	'''
 	Register a datafile with the main PennAI server
 	'''
@@ -97,12 +102,16 @@ def registerDatafile(root, file, target_column, categorical_features, ordinal_fe
 
 	logger.debug("registering file:" + root + " " + file)
 	logger.debug("api path: " + path)
-	logger.debug("target_column: " + str(target_column) + " categorical_features: " + str(categorical_features) + " ordinal_features: " + str(ordinal_features))
+	logger.debug("target_column: " + str(target_column) 
+		+ " categorical_features: " + str(categorical_features) 
+		+ " ordinal_features: " + str(ordinal_features)
+		+ " prediction_type: " + str(prediction_type))
 
 	payload = {'_metadata' : simplejson.dumps({
 		'name': os.path.splitext(file)[0],
 		'username': 'testuser',
 		'dependent_col' : target_column,
+		'prediction_type' : prediction_type,
 		'categorical_features' : categorical_features,
 		'ordinal_features' : ordinal_features
 		})
