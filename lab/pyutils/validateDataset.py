@@ -24,16 +24,16 @@ MIN_COLS = 2
 MIN_ROW_PER_CLASS = 2
 
 
-def validate_data_from_server(file_id, target_field, categories = None, ordinals = None, **kwargs):
+def validate_data_from_server(file_id, prediction_type, target_field, categories = None, ordinals = None, **kwargs):
 	# Read the data set into memory
 	raw_data = get_file_from_server(file_id)
 	df = pd.read_csv(StringIO(raw_data), sep=None, engine='python',**kwargs)
-	return validate_data(df, target_field, categories, ordinals)
+	return validate_data(df, prediction_type, target_field, categories, ordinals)
 
-def validate_data_from_filepath(file_id, target_field, categories = None, ordinals = None, **kwargs):
+def validate_data_from_filepath(file_id, prediction_type, target_field, categories = None, ordinals = None, **kwargs):
 	# Read the data set into memory
 	df = pd.read_csv(file_id, sep=None, engine='python',**kwargs)
-	return validate_data(df, target_field, categories, ordinals)
+	return validate_data(df, prediction_type, target_field, categories, ordinals)
 
 
 def encode_data(df, target_column, categories, ordinals, encoding_strategy = "OneHotEncoder"):
@@ -65,7 +65,7 @@ def encode_data(df, target_column, categories, ordinals, encoding_strategy = "On
 		return df
 
 
-def validate_data(df, target_column = None, categories = None, ordinals = None):
+def validate_data(df, prediction_type="classification", target_column = None, categories = None, ordinals = None):
 	'''
 	Check that a datafile is valid
 
@@ -74,6 +74,11 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 		boolean - validation result
 		string 	- message
 	'''
+
+	if prediction_type not in ["classification", "regression"]:
+		logger.warn(f"Invalid prediction type: '{prediction_type}'")
+		return False, f"Invalid prediction type: '{prediction_type}'"
+
 	num_df = df
 
 	# dimension validation
@@ -112,22 +117,28 @@ def validate_data(df, target_column = None, categories = None, ordinals = None):
 
 	# check only check if target is specified
 	if target_column:
+
+		# classification
+		if (prediction_type == "classification"):
+			# target column of classification problem does not need to be numeric
+			num_df = num_df.drop(columns=target_column, axis=1)
+
+			# Check rows per class
+			counts = df.groupby(target_column).count()
+			fails_validation = counts[counts[counts.columns[1]] < MIN_ROW_PER_CLASS]
+			if (not fails_validation.empty):
+				msg = "Classification datasets must have at least 2 rows per class, class(es) '{}' have only 1 row.".format(list(fails_validation.index.values))
+				logger.warn(msg)
+				return False, msg
+
+
 		# check that non-cat feature columns contain only numeric data
-		num_df = num_df.drop(columns=target_column, axis=1)
 		if (len(num_df.columns)) > 0:
 			try:
 				check_array(num_df, dtype=np.float64, order="C", force_all_finite=True)
 			except Exception as e:
 				logger.warn("sklearn.check_array() validation " + str(e))
 				return False, "sklearn.check_array() validation " + str(e)
-
-		# Check rows per class
-		counts = df.groupby(target_column).count()
-		fails_validation = counts[counts[counts.columns[1]] < MIN_ROW_PER_CLASS]
-		if (not fails_validation.empty):
-			msg = "Classification datasets must have at least 2 rows per class, class(es) '{}' have only 1 row.".format(list(fails_validation.index.values))
-			logger.warn(msg)
-			return False, msg
 
 	return True, None
 
@@ -169,6 +180,8 @@ def main():
 						help='JSON list of categorical features')
 	parser.add_argument('-ordinal_features', action='store', dest='JSON_ORDINALS', type=str, required=False, default=None,
 						help='JSON dict of ordianl features and possible values')
+	parser.add_argument('-prediction_type', action='store', dest='PREDICTION_TYPE', type=str, choices=['classification', 'regression'], default="classification",
+						help="Classification or regression problem")
 
 	args = parser.parse_args()
 
@@ -193,13 +206,14 @@ def main():
 	try:
 		if args.JSON_CATEGORIES: categories = simplejson.loads(args.JSON_CATEGORIES)
 		if args.JSON_ORDINALS: ordinals = simplejson.loads(args.JSON_ORDINALS)
+		prediction_type = args.PREDICTION_TYPE
 		#print("categories: ")
 		#print(categories)
 
 		if(args.IDENTIFIER_TYPE == 'filepath'):
-			success, errorMessage = validate_data_from_filepath(args.INPUT_FILE, args.TARGET, categories, ordinals)
+			success, errorMessage = validate_data_from_filepath(args.INPUT_FILE, prediction_type, args.TARGET, categories, ordinals)
 		else:
-			success, errorMessage = validate_data_from_server(args.INPUT_FILE, args.TARGET, categories, ordinals)
+			success, errorMessage = validate_data_from_server(args.INPUT_FILE, prediction_type, args.TARGET, categories, ordinals)
 		meta_json = simplejson.dumps({"success":success, "errorMessage":errorMessage}, ignore_nan=True) #, ensure_ascii=False)
 	except Exception as e:
 		logger.error(traceback.format_exc())
