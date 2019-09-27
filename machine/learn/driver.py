@@ -25,10 +25,10 @@ def main(args, param_grid={}):
     model, method_type, encoding_strategy = exp.get_model()
     if not args['grid_search']:
         param_grid = {}
-    if method_type != data_info["dataset_type"]:
+    if method_type != data_info["prediction_type"]:
         raise RuntimeError("Experiment failed! "
                             "Dataset type is {} "
-                            "but method type is {}".format(data_info["dataset_type"],method_type))
+                            "but method type is {}".format(data_info["prediction_type"],method_type))
     generate_results(model=model,
                     input_data=input_data,
                     tmpdir=exp.tmpdir,
