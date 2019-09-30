@@ -49,7 +49,7 @@ test_clf_input5 = "data/datasets/test/test_mixed/backache.csv"
 test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
 
 # test inputfile for regression
-test_reg_input = "machine/test/562_cpu_small.tsv"
+test_reg_input = "machine/test/1030_ERA.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 
@@ -1219,7 +1219,7 @@ def test_plot_dot_plot_2():
     dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
                     training_classes_4,
                     feature_names_4,
-                    indices=np.array(range(12)),
+                    indices=np.array(range(4)),
                     random_state=42,
                     mode='regression')
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
