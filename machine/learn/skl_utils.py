@@ -324,6 +324,10 @@ def generate_results(model, input_data,
 
         if num_classes==2:
             plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
+    else: # regression
+        if figure_export:
+            plot_cv_pred(tmpdir, _id, features, target, cv_scores)
+
 
 
     metrics_dict = {'_scores': scores}
@@ -689,6 +693,51 @@ def plot_dot_plot(tmpdir, _id, features,
     graph.write_png(png_file)
     return dtree_train_score
 
+
+def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
+    """
+    Plot Cross-Validated Predictions and Residuals.
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in PennAI
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    Returns
+    -------
+    None
+    """
+    pred_y = np.empty(y.shape)
+    resi_y = np.empty(y.shape)
+    cv = StratifiedKFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        pred_y[test] = est.predict(X[test])
+        resi_y[test] = pred_y[test] - y[test]
+
+    p=plt.figure()
+    plt.title("Regression Cross-Validated Predictions")
+    plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Observed Value')
+    plt.ylabel('Predicted Value')
+    p.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.close()
+
+    r=plt.figure()
+    plt.title("Regression Cross-Validated Residuals")
+    plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Predicted Value')
+    plt.ylabel('Residuals')
+    r.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.close()
 
 
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
