@@ -7,7 +7,7 @@ import os
 import json
 import itertools
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
-from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold
+from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold, KFold
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -715,7 +715,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     """
     pred_y = np.empty(y.shape)
     resi_y = np.empty(y.shape)
-    cv = StratifiedKFold(n_splits=10)
+    cv = KFold(n_splits=10)
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
         pred_y[test] = est.predict(X[test])
