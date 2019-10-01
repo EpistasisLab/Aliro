@@ -88,10 +88,11 @@ def main():
     parser.add_argument('INPUT_FILE', type=str, help='Filepath or fileId.')
     parser.add_argument('-target', action='store', dest='TARGET', type=str, default='class',
                         help='Name of target column', required=True)
-    parser.add_argument('-identifier_type', action='store', dest='IDENTIFIER_TYPE', type=str, choices=['filepath', 'fileid'], default='filepath',
+    parser.add_argument('-identifier_type', action='store', dest='IDENTIFIER_TYPE', type=str.lower, choices=['filepath', 'fileid'], default='filepath',
                         help='Name of target column')
-    parser.add_argument('-prediction_type', action='store', dest='PREDICTION_TYPE', type=str, choices=['classification', 'regression'], default="classification",
+    parser.add_argument('-prediction_type', action='store', dest='PREDICTION_TYPE', type=str.lower, choices=['classification', 'regression'], default="classification",
                         help="Classification or regression problem")
+    
     args = parser.parse_args()
 
     # set up the file logger

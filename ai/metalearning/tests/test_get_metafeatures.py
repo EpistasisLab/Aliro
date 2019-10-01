@@ -21,17 +21,36 @@ def main_args_good():
 	return [
 			(os.path.join(package_directory, 'iris.csv'),
 			'Name',
-			'filepath'),
+			'filepath',
+			None),
 			(os.path.join(package_directory, 'iris.csv'),
 			'Name',
+			None,
+			None),
+			(os.path.join(package_directory, 'iris.csv'),
+			'Name',
+			'filepath',
+			'classification'),
+			(os.path.join(package_directory, 'iris.csv'),
+			'Name',
+			'filepath',
+			'CLASSification'),
+			(os.path.join(package_directory, 'tips.csv'),
+			'size',
+			'filepath',
+			'regression'),
+			(os.path.join(package_directory, 'tips.csv'),
+			'size',
+			'filepath',
 			None),
 	]
 
 def main_args_bad():
 	return [
 			(os.path.join(package_directory, 'iris.csv'),
-			'Namezzz',
-			'filepath')
+			'BAD_TARGET_FIELD',
+			'filepath',
+			None)
 	]
 
 
@@ -41,12 +60,13 @@ class Dataset_Describe(unittest.TestCase):
 		irisPath = os.path.join(package_directory, 'iris.csv')
 
 	@parameterized.expand(main_args_good)
-	def test_validate_main_good(self, file_path, target, identifier_type):
+	def test_validate_main_good(self, file_path, target, identifier_type, prediction_type):
 		result = io.StringIO()
 		testargs = ["program.py", file_path]
 
 		if target: testargs.extend(['-target', target])
 		if identifier_type: testargs.extend(['-identifier_type', identifier_type])
+		if prediction_type: testargs.extend(['-prediction_type', prediction_type])
 
 		logger.debug("testargs: " + str(testargs))
 
@@ -71,12 +91,13 @@ class Dataset_Describe(unittest.TestCase):
 
 
 	@parameterized.expand(main_args_bad)
-	def test_validate_main_bad(self, file_path, target, identifier_type):
+	def test_validate_main_bad(self, file_path, target, identifier_type, prediction_type):
 		result = io.StringIO()
 		testargs = ["program.py", file_path]
 
 		if target: testargs.extend(['-target', target])
 		if identifier_type: testargs.extend(['-identifier_type', identifier_type])
+		if prediction_type: testargs.extend(['-prediction_type', prediction_type])
 
 		logger.debug("testargs: " + str(testargs))
 
