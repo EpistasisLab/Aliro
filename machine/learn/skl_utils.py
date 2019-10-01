@@ -197,7 +197,9 @@ def generate_results(model, input_data,
 
         metric = "accuracy"
     else:
-        scoring = ["r2", "neg_mean_squared_error"]
+        scoring = ["r2",
+                   "neg_mean_squared_error",
+                   "neg_mean_absolute_error"]
         metric = 'r2'
 
     with warnings.catch_warnings():
