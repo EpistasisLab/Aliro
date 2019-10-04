@@ -11,12 +11,13 @@ import FormData = require('form-data');
 
 describe('lab', () => {
 	describe('api', () => {
-		//${'regression'}				| ${'192_vineyard.csv'}			| ${'regression'}		| ${'target'}		|${[]}			| ${{}}
+		//
 		describe.each`
 			testname					| filename						| prediction_type		| target			| categorical	| ordinal
 			${'numeric'}				| ${'appendicitis_2.csv'}		| ${'classification'}	| ${'target_class'}	| ${[]}			| ${{}}
 			${'categorical'}			| ${'appendicitis_cat.csv'}		| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${{}}
-			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${ {"ord" : ["first", "second", "third"]} }		
+			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${ {"ord" : ["first", "second", "third"]}}
+			${'regression'}				| ${'192_vineyard.csv'}			| ${'regression'}		| ${'target'}		|${[]}			| ${{}}
 			`("putDatasetGood", ({testname, filename, prediction_type, target, categorical, ordinal}) => {
 				it(`${testname}`, async () => {
 					jest.setTimeout(15000)

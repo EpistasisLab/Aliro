@@ -112,6 +112,10 @@ class Dataset_Describe(unittest.TestCase):
 
 
     def test_75p_corr_with_dependent_regression(self):
+        # call twice; the first time this method is called corr_with_dependent is set.
+        # during subsiquent calls the set value is referenced
+        self.tips.corr_with_dependent_abs_75p()
+
         result = self.tips.corr_with_dependent_abs_75p()
         self.assertAlmostEqual(0.125, result, places = 2)
 
