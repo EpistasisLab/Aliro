@@ -267,7 +267,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
 
     // Validate
     var possibleMetadataKeys = ['name', 'username', 'prediction_type', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
-    var possiblePredictionType = ['classification']
+    var possiblePredictionType = ['classification', 'regression']
 
     if (!metadata) {
         res.status(400);
