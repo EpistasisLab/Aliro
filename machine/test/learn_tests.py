@@ -362,10 +362,45 @@ class APITESTCLASS(unittest.TestCase):
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_main_1(self, mock_get):
-        """Test main function in each machine learning in projects.json can produce expected outputs."""
+    def test_main_regression_algorithms(self, mock_get):
+        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
 
-        for obj in projects_json_data:
+        regression_json_data = [proj for proj in projects_json_data if proj["category"] == "regression"]
+
+        for obj in regression_json_data:
+            algorithm_name = obj["name"]
+            schema = obj["schema"]
+            args = {}
+            _id = "test_id"
+            args['_id'] = _id
+            args["method"] = algorithm_name
+            args['grid_search'] = False
+            for param_name in schema.keys():
+                default_value = schema[param_name]["default"]
+                param_type = schema[param_name]["type"]
+                conv_func = get_type(param_type)
+                conv_default_value = conv_func(default_value)
+                args[param_name] = conv_default_value
+
+            main(args, {})
+            outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+            value_json = '{}/value.json'.format(outdir)
+            assert os.path.isfile(value_json)
+            with open(value_json, 'r') as f:
+                value = json.load(f)
+
+            #TODO - check for the existance of the output files
+
+            #TODO - test the reloaded model is the same
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_classification_algorithms(self, mock_get):
+        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
+
+        classification_json_data = [proj for proj in projects_json_data if proj["category"] == "classification"]
+
+        for obj in classification_json_data:
             algorithm_name = obj["name"]
             schema = obj["schema"]
             args = {}
