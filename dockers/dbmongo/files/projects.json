@@ -153,7 +153,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250],
+                "choices": [100, 500],
                 "grid_search": [100]
             }
         },
@@ -224,7 +224,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250],
+                "choices": [100, 500],
                 "grid_search": [100]
             }
         },
@@ -455,7 +455,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250],
+                "choices": [100, 500],
                 "grid_search": [100]
             }
         },
@@ -667,7 +667,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250],
+                "choices": [100, 500],
                 "grid_search": [100]
             }
         },
@@ -851,7 +851,7 @@
             "default": 100,
             "ui": {
                 "style": "radio",
-                "choices": [100, 250],
+                "choices": [100, 500],
                 "grid_search": [100]
             }
         },
