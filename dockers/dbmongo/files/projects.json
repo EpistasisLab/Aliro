@@ -945,5 +945,34 @@
         }
     },
     "category": "regression"
+},
+{
+    "name": "KernelRidge",
+    "categorical_encoding_strategy": "OneHotEncoder",
+    "path": "sklearn.kernel_ridge",
+    "description": "Kernel ridge regression.",
+    "url": "https://scikit-learn.org/stable/modules/generated/sklearn.kernel_ridge.KernelRidge.html",
+    "static_parameters" : {"kernel": "rbf"},
+    "schema": {
+        "alpha": {
+            "description": "Small positive values of alpha improve the conditioning of the problem and reduce the variance of the estimates.",
+            "type": "float",
+            "default": 1,
+            "ui": {
+                "style": "radio",
+                "choices": [0.001, 0.01, 0.1, 1]
+            }
+        },
+        "gamma": {
+            "description": "Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.",
+            "type": "float",
+            "default": 0.01,
+            "ui": {
+                "style": "radio",
+                "choices": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100]
+            }
+        }
+    },
+    "category": "regression"
 }
 ]
