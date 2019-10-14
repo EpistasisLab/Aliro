@@ -17,7 +17,7 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 # from ai.recommender.svd_recommender import SVDRecommender
-from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 from collections import OrderedDict
@@ -54,7 +54,7 @@ class AI():
     :param datasets: str or False - if not false, a comma seperated list of datasets
     to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-    
+
     """
 
     def __init__(self,
@@ -161,7 +161,7 @@ class AI():
 
     ##-----------------
     ## Init methods
-    ##-----------------       
+    ##-----------------
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
@@ -218,9 +218,9 @@ class AI():
     def update_dataset_mf(self, results_data):
         """Grabs metafeatures of datasets in results_data
         and concatinates them to result_data
-        
+
         :param results_data: experiment results with associated datasets
-        
+
         """
         logger.debug('results_data:'+str(results_data.columns))
         logger.debug('results_data:'+str(results_data.head()))
@@ -228,13 +228,13 @@ class AI():
         for d in results_data['dataset'].unique():
             if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
                 # fetch metafeatures from server for dataset and append
-                df = self.labApi.get_metafeatures(d)        
+                df = self.labApi.get_metafeatures(d)
                 df['dataset'] = d
                 # print('metafeatures:',df)
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
             df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
-            # print('df_mf:',df_mf['dataset'], df_mf) 
+            # print('df_mf:',df_mf['dataset'], df_mf)
             self.dataset_mf = self.dataset_mf.append(df_mf)
             # print('self.dataset_mf:\n',self.dataset_mf)
 
@@ -242,20 +242,22 @@ class AI():
     ## Loop methods
     ##-----------------
     def check_results(self):
-        """Checks to see if new experiment results have been posted since the 
+        """Checks to see if new experiment results have been posted since the
         previous time step. If so, set them to self.new_data and return True.
 
         :returns: Boolean - True if new results were found
         """
         logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                   ': checking results...')
-
-        newResults = self.labApi.get_new_experiments_as_dataframe(
+        try: # bypass for new regression results
+            newResults = self.labApi.get_new_experiments_as_dataframe(
                                         last_update=self.last_update)
+        except:
+            newResults = []
 
         if len(newResults) > 0:
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': ' + str(len(newResults)) + ' new results!')           
+                  ': ' + str(len(newResults)) + ' new results!')
             self.last_update = int(time.time())*1000 # update timestamp
             self.new_data = newResults
             return True
@@ -263,8 +265,8 @@ class AI():
         return False
 
     def update_recommender(self):
-        """Update recommender models based on new experiment results in 
-        self.new_data, and then clear self.new_data. 
+        """Update recommender models based on new experiment results in
+        self.new_data, and then clear self.new_data.
         """
 
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
@@ -287,7 +289,7 @@ class AI():
 
 
         # get all dtasets that have an ai 'requested' status
-        # and initilize a new request        
+        # and initilize a new request
         dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
@@ -298,7 +300,7 @@ class AI():
 
             # set AI flag to 'on' to acknowledge requests received
             for r in aiOnRequests:
-                self.labApi.set_ai_status(datasetId = r['_id'], 
+                self.labApi.set_ai_status(datasetId = r['_id'],
                                             aiStatus = 'on')
 
                 self.requestManager.add_request(datasetId=r['_id'],
@@ -314,7 +316,7 @@ class AI():
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                       ': ai termination request for:'+
                       ';'.join([r['name'] for r in aiOffRequests]))
-            
+
             for r in aiOffRequests:
                 self.requestManager.terminate_request(datasetId=r['_id'])
 
@@ -347,7 +349,7 @@ class AI():
         for alg,params,score in zip(ml,p,ai_scores):
             # TODO: just return dictionaries of parameters from rec
             # modified_params = eval(params) # turn params into a dictionary
-            
+
             recommendations.append({'dataset_id':datasetId,
                     'algorithm_id':alg,
                     'username':self.user,
@@ -464,7 +466,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True, 
+            dest='USE_KNOWLEDGEBASE', default=True,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -509,7 +511,7 @@ def main():
             # check for user updates to request states
             pennai.check_requests()
 
-            # process any active requests 
+            # process any active requests
             pennai.process_rec()
 
             n = n + 1

@@ -50,9 +50,9 @@ class LabApi:
     def __init__(self, api_path, user, api_key, extra_payload, verbose):
         """
         :param api_path: string - path to the lab api server
-        :param extra_payload: dict - any additional payload that needs to be 
+        :param extra_payload: dict - any additional payload that needs to be
             specified
-        :param api_key: string - 
+        :param api_key: string -
         :param user: string - test user
         :param verbose: Boolean
         """
@@ -65,7 +65,7 @@ class LabApi:
         self.data_path = '/'.join([self.api_path,'api/datasets'])
         self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
         self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
-        
+
         self.api_key=api_key
         self.user=user
         self.verbose=False
@@ -86,18 +86,18 @@ class LabApi:
 
         logger.debug("self.projects_path: " + self.projects_path)
         logger.debug("self.algo_path: " + self.algo_path)
-        
+
         logger.debug("self.data_path: " + self.data_path)
         logger.debug("self.status_path: " + self.status_path)
         logger.debug("self.submit_path: " + self.submit_path)
-        
+
     def launch_experiment(self, algorithmId, payload):
         """Attempt to start a ml experiment.
 
-        :param algorithmId: string - 
+        :param algorithmId: string -
         :param payload: dict - dictionary describing the ml experiment parameters
 
-        :returns: dict {value(str): status(str)} 
+        :returns: dict {value(str): status(str)}
         """
         logger.info("launch_experiment(" + str(algorithmId) + ", " + str(payload))
         assert algorithmId
@@ -106,12 +106,12 @@ class LabApi:
         experimentData = json.dumps(payload,cls=NumpyJsonEncoder)
 
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
-        
+
         try:
-            res=requests.request("POST", rec_path, data=experimentData, 
+            res=requests.request("POST", rec_path, data=experimentData,
                     headers=self.header)
         except:
-            logger.error("Unexpected error in launch_experiment for path '", 
+            logger.error("Unexpected error in launch_experiment for path '",
                     rec_path, "':", sys.exc_info()[0])
             raise
 
@@ -140,10 +140,10 @@ class LabApi:
     def get_filtered_datasets(self, payload):
         """Get datasets with filters
 
-        :param payload: dict 
+        :param payload: dict
             How to filter the results {'ai':['requested','finished']}
 
-        :return: dict 
+        :return: dict
             datasets that pass the payload filter
         """
         logger.info("get_filtered_datasets()")
@@ -167,7 +167,7 @@ class LabApi:
         #logger.debug(f"get_dataset_ai_status data: {data}")
 
         aiStatus = None
-        if ("ai" in data): 
+        if ("ai" in data):
             aiStatus = data["ai"]
 
         logger.info(f"get_dataset_ai_status('{datasetId}') = '{aiStatus}'")
@@ -177,7 +177,7 @@ class LabApi:
     def get_new_experiments(self, last_update):
         """Get experiments that occurred after last_update
 
-        :param last_update: int - 
+        :param last_update: int -
 
         :returns: dict - ml experiments results
         """
@@ -192,19 +192,19 @@ class LabApi:
     def get_new_experiments_as_dataframe(self, last_update):
         """
         Get experiments that occured after last_update and return a dataframe
-    
+
         :param last_update: int -
 
         :returns: dataframe - last experiments
 
         """
         logger.info("get_new_experiments_as_dataframe(" + str(last_update)+ ")")
-        
+
         data = self.get_new_experiments(last_update)
 
         processed_data = []
         for d in data:
-            if ('_options' in d.keys() and '_scores' in d.keys() 
+            if ('_options' in d.keys() and '_scores' in d.keys()
                 and '_dataset_id' in d.keys()):
                 frame={
                     'dataset':d['_dataset_id'],
@@ -212,7 +212,7 @@ class LabApi:
                     'accuracy':d['_scores']['accuracy_score'],#! This is balanced
                     # accuracy!
                     'f1':d['_scores']['f1_score'],
-                    'parameters':d['_options'], 
+                    'parameters':d['_options'],
                     }
                 if(hasattr(d['_scores'],'balanced_accuracy')):
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
@@ -229,9 +229,9 @@ class LabApi:
 
     def set_ai_status(self, datasetId, aiStatus):
         """set the ai status for the given dataset.
-        
+
         :param datasetId: string - dataset to update
-        :param aiStatus: string 
+        :param aiStatus: string
         """
         logger.info("set_ai_status(" + str(datasetId) +", " + str(aiStatus) + ")")
 
@@ -260,8 +260,8 @@ class LabApi:
 
     # @Deprecated, used in ai.py; redundant
     def get_user_datasets(self, user):
-        """Returns a dictionary for converting dataset IDs to names.  
-        
+        """Returns a dictionary for converting dataset IDs to names.
+
         :return: dict {datasetId(str):datasetName(str)}
         """
         logger.info("get_user_datasets(" + str(user) + ")")
@@ -285,16 +285,16 @@ class LabApi:
             logger.info("get_metafeatures(" + str(datasetId) + ")")
 
             try:
-                res = self.__request(path=self.data_path+'/'+datasetId, 
+                res = self.__request(path=self.data_path+'/'+datasetId,
                         method='GET')
                 data = json.loads(res.text)
 
             except Exception as e:
-                logger.error('exception when grabbing metafeature data for' 
+                logger.error('exception when grabbing metafeature data for'
                         + str(datasetId))
                 raise e
 
-            data = data[0] 
+            data = data[0]
             mf = [data['metafeatures']]
             # print('mf:',mf)
             df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
@@ -306,29 +306,29 @@ class LabApi:
             return df
 
     def get_all_ml_p(self):
-        """ 
-        Returns a list of ml and parameter options for the user 'pennai' 
+        """
+        Returns a list of ml and parameter options for the user 'pennai'
         from the server.
-        
+
         :returns: pd.DataFrame - unique ml algorithm and parameter combinations
         """
         logger.info("get_all_ml_p()")
         payload = {"username":"pennai"}
 
         # get the algorithm list for the user 'pennai'
-        r = self.__request(path=self.api_path+'/api/preferences', payload=payload, 
+        r = self.__request(path=self.api_path+'/api/preferences', payload=payload,
                 method='GET')
         response = json.loads(r.text)
 
         if len(response) != 1:
-            msg = 'error: get_all_ml_p() got ' + str(len(response)) 
+            msg = 'error: get_all_ml_p() got ' + str(len(response))
             + ' user preferences, expected 1.'
             logger.error(msg)
             logger.error(response)
             raise RuntimeError(msg)
 
         if (response[0]['username'] != 'pennai'):
-            msg = ('error: get_all_ml_p() did not get user "pennai", got "' 
+            msg = ('error: get_all_ml_p() did not get user "pennai", got "'
                     + str(response[0]['username']) + '"')
             logger.error(msg)
             logger.error(response)
@@ -348,7 +348,7 @@ class LabApi:
 
             # get a dictionary of hyperparameters and their values
             for h in hyperparams:
-                logger.debug('  Checking hyperparams: x[''schema''][h]' + 
+                logger.debug('  Checking hyperparams: x[''schema''][h]' +
                         str(x['schema'][h]))
                 if 'ui' in x['schema'][h]:
                     if 'values' in x['schema'][h]['ui']:
@@ -386,7 +386,7 @@ class LabApi:
         return all_ml_p
 
 
-    def __request(self, path, payload = None, method = 'POST', 
+    def __request(self, path, payload = None, method = 'POST',
             headers = {'content-type': 'application/json'}):
         """
         Attempt to make an api request and return the result.
@@ -395,10 +395,10 @@ class LabApi:
         :return: Requests.response object
         """
 
-        logger.debug("Starting LabApi.__request(" + str(path) + ", " + 
+        logger.debug("Starting LabApi.__request(" + str(path) + ", " +
                 str(payload) + ", " + str(method) + ", ...)" )
-        
-        if payload: 
+
+        if payload:
             assert isinstance(payload, dict)
             payload.update(self.static_payload)
         else:
@@ -406,16 +406,16 @@ class LabApi:
 
         res = None
         try:
-            res = requests.request(method, path, data=json.dumps(payload), 
+            res = requests.request(method, path, data=json.dumps(payload),
                     headers=headers)
         except:
-            logger.error("Unexpected error in LabApi.__request for path '" + 
+            logger.error("Unexpected error in LabApi.__request for path '" +
                     str(method) + ":" + str(path) + "':" + str(sys.exc_info()[0]))
             raise
-        
+
         if res.status_code != requests.codes.ok:
-            msg = ("Request " + str(method) + " status_code not ok, path: '" + 
-                    str(path) + "'' status code: '" + str(res.status_code) + 
+            msg = ("Request " + str(method) + " status_code not ok, path: '" +
+                    str(path) + "'' status code: '" + str(res.status_code) +
                     "'' response text: " + str(res.text))
             logger.error(msg)
             raise RuntimeError(msg)
