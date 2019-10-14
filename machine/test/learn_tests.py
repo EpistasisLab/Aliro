@@ -380,12 +380,12 @@ class APITESTCLASS(unittest.TestCase):
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_main_1(self, mock_get):
+    def test_main_classification_algorithms(self, mock_get):
         """Test main function in each classification machine learning in projects.json can produce expected outputs."""
 
-        for obj in projects_json_data:
-            if obj['category'] != 'classification':
-                continue
+        classification_json_data = [proj for proj in projects_json_data if proj["category"] == "classification"]
+
+        for obj in classification_json_data:
             algorithm_name = obj["name"]
             schema = obj["schema"]
             args = {}
@@ -795,12 +795,12 @@ class APITESTCLASS(unittest.TestCase):
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
+
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_main_reg_1(self, mock_get):
-        """Test main function on regression dataset. """
-        for obj in projects_json_data:
-            if obj['category'] != 'regression':
-                continue
+    def test_main_regression_algorithms(self, mock_get):
+        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
+        regression_json_data = [proj for proj in projects_json_data if proj["category"] == "regression"]
+        for obj in regression_json_data:
             algorithm_name = obj["name"]
             schema = obj["schema"]
             args = {}
