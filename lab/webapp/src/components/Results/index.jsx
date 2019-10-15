@@ -77,138 +77,203 @@ class Results extends Component {
       );
     }
 
-    let confusionMatrix, rocCurve, importanceScore;
+    let confusionMatrix, rocCurve, importanceScore, reg_cv_pred, reg_cv_resi;
     experiment.data.experiment_files.forEach(file => {
       const filename = file.filename;
-      if(filename.includes('confusion_matrix')) {
+      if(filename.includes('confusion_matrix') || filename.includes('reg_cv_pred')) {
         confusionMatrix = file;
-      } else if(filename.includes('roc_curve')) {
+      } else if(filename.includes('roc_curve') || filename.includes('reg_cv_resi')) {
         rocCurve = file;
       } else if(filename.includes('imp_score')) {
         importanceScore = file;
+      } else if(filename.includes('reg_cv_pred')) {
+        reg_cv_pred = file;
+      } else if(filename.includes('reg_cv_resi')) {
+        reg_cv_resi = file;
       }
     });
 
     // --- get lists of scores ---
+    if(confusionMatrix) { // classification
+      // balanced accuracy
+      let balancedAccKeys = ['train_score', 'accuracy_score'];
+      // precision scores
+      let precisionKeys = ['train_precision_score', 'precision_score']
+      // AUC
+      let aucKeys = ['train_roc_auc_score', 'roc_auc_score'];
+      // f1 score
+      let f1Keys = ['train_f1_score', 'f1_score'];
+      // recall
+      let recallKeys = ['train_recall_score', 'recall_score'];
 
-    // balanced accuracy
-    let balancedAccKeys = ['train_score', 'accuracy_score'];
-    // precision scores
-    let precisionKeys = ['train_precision_score', 'precision_score']
-    // AUC
-    let aucKeys = ['train_roc_auc_score', 'roc_auc_score'];
-    // f1 score
-    let f1Keys = ['train_f1_score', 'f1_score'];
-    // recall
-    let recallKeys = ['train_recall_score', 'recall_score'];
+      let balancedAccList = this.getGaugeArray(balancedAccKeys);
+      let precisionList = this.getGaugeArray(precisionKeys);
+      let aucList = this.getGaugeArray(aucKeys);
+      let recallList = this.getGaugeArray(recallKeys);
+      let f1List = this.getGaugeArray(f1Keys);
+      return (
+        <div>
+          <SceneHeader
+            header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+            subheader={`Experiment: #${experiment.data._id}`}
+          />
+          <Grid columns={3} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <AlgorithmDetails
+                  algorithm={experiment.data.algorithm}
+                  params={experiment.data.params}
+                />
+                <RunDetails
+                  startTime={experiment.data.started}
+                  finishTime={experiment.data.finished}
+                  launchedBy={experiment.data.launched_by}
+                />
+                <ImportanceScore file={importanceScore} />
+              </Grid.Column>
+              <Grid.Column>
+                <ConfusionMatrix file={confusionMatrix} />
+                <ROCCurve file={rocCurve} />
+              </Grid.Column>
+              <Grid.Column>
+                <Score
+                  scoreName="Balanced Accuracy"
+                  scoreValueList={balancedAccList}
+                  chartKey="all"
+                  chartColor="#7D5BA6"
+                />
+                <Score
+                  scoreName="AUC"
+                  scoreValueList={aucList}
+                  chartKey="auc_scores"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="Precision"
+                  scoreValueList={precisionList}
+                  chartKey="precision_scores"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="Recall"
+                  scoreValueList={recallList}
+                  chartKey="recall_scores"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="F1 Score"
+                  scoreValueList={f1List}
+                  chartKey="f1_scores"
+                  chartColor="#55D6BE"
+                />
+                {/*<Score
+                  scoreName="Precision Score"
+                  scoreValue={experiment.data.scores.precision_score}
+                  chartKey="precision"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="Recall Score"
+                  scoreValue={experiment.data.scores.recall_score}
+                  chartKey="recall"
+                  chartColor="#7D5BA6"
+                />
+                <Score
+                  scoreName="F1 Score"
+                  scoreValue={experiment.data.scores.f1_score}
+                  chartKey="f1_score"
+                  chartColor="#55D6BE"
+                />*/}
+                {/*<Score
+                  scoreName="Training Accuracy"
+                  scoreValue={experiment.data.scores.train_score}
+                  chartKey="training"
+                  chartColor="#7D5BA6"
+                />
+                <Score
+                  scoreName="Testing Accuracy"
+                  scoreValue={experiment.data.scores.test_score}
+                  chartKey="testing"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="AUC"
+                  scoreValue={experiment.data.scores.roc_auc_score}
+                  chartKey="auc"
+                  chartColor="#7D5BA6"
+                />
+                <Score
+                  scoreName="Train AUC"
+                  scoreValue={experiment.data.scores.train_roc_auc_score}
+                  chartKey="train_auc"
+                  chartColor="#55D6BE"
+                />*/}
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </div>
+      );
+    } else if(reg_cv_pred) { // regression
+      // r2
+      let R2Keys = ['train_r2_score', 'r2_score'];
+      // MSE
+      let MSEKeys = ['train_neg_mean_squared_error_score', 'neg_mean_squared_error_score']
+      // MAE
+      let MAEKeys = ['train_neg_mean_absolute_error_score', 'neg_mean_absolute_error_score'];
 
-    let balancedAccList = this.getGaugeArray(balancedAccKeys);
-    let precisionList = this.getGaugeArray(precisionKeys);
-    let aucList = this.getGaugeArray(aucKeys);
-    let recallList = this.getGaugeArray(recallKeys);
-    let f1List = this.getGaugeArray(f1Keys);
-    return (
-      <div>
-        <SceneHeader
-          header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-          subheader={`Experiment: #${experiment.data._id}`}
-        />
-        <Grid columns={3} stackable>
-          <Grid.Row>
-            <Grid.Column>
-              <AlgorithmDetails
-                algorithm={experiment.data.algorithm}
-                params={experiment.data.params}
-              />
-              <RunDetails
-                startTime={experiment.data.started}
-                finishTime={experiment.data.finished}
-                launchedBy={experiment.data.launched_by}
-              />
-              <ImportanceScore file={importanceScore} />
-            </Grid.Column>
-            <Grid.Column>
-              <ConfusionMatrix file={confusionMatrix} />
-              <ROCCurve file={rocCurve} />
-            </Grid.Column>
-            <Grid.Column>
-              <Score
-                scoreName="Balanced Accuracy"
-                scoreValueList={balancedAccList}
-                chartKey="all"
-                chartColor="#7D5BA6"
-              />
-              <Score
-                scoreName="AUC"
-                scoreValueList={aucList}
-                chartKey="auc_scores"
-                chartColor="#55D6BE"
-              />
-              <Score
-                scoreName="Precision"
-                scoreValueList={precisionList}
-                chartKey="precision_scores"
-                chartColor="#55D6BE"
-              />
-              <Score
-                scoreName="Recall"
-                scoreValueList={recallList}
-                chartKey="recall_scores"
-                chartColor="#55D6BE"
-              />
-              <Score
-                scoreName="F1 Score"
-                scoreValueList={f1List}
-                chartKey="f1_scores"
-                chartColor="#55D6BE"
-              />
-              {/*<Score
-                scoreName="Precision Score"
-                scoreValue={experiment.data.scores.precision_score}
-                chartKey="precision"
-                chartColor="#55D6BE"
-              />
-              <Score
-                scoreName="Recall Score"
-                scoreValue={experiment.data.scores.recall_score}
-                chartKey="recall"
-                chartColor="#7D5BA6"
-              />
-              <Score
-                scoreName="F1 Score"
-                scoreValue={experiment.data.scores.f1_score}
-                chartKey="f1_score"
-                chartColor="#55D6BE"
-              />*/}
-              {/*<Score
-                scoreName="Training Accuracy"
-                scoreValue={experiment.data.scores.train_score}
-                chartKey="training"
-                chartColor="#7D5BA6"
-              />
-              <Score
-                scoreName="Testing Accuracy"
-                scoreValue={experiment.data.scores.test_score}
-                chartKey="testing"
-                chartColor="#55D6BE"
-              />
-              <Score
-                scoreName="AUC"
-                scoreValue={experiment.data.scores.roc_auc_score}
-                chartKey="auc"
-                chartColor="#7D5BA6"
-              />
-              <Score
-                scoreName="Train AUC"
-                scoreValue={experiment.data.scores.train_roc_auc_score}
-                chartKey="train_auc"
-                chartColor="#55D6BE"
-              />*/}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </div>
-    );
+      let R2List = this.getGaugeArray(R2Keys);
+      let MSEList = this.getGaugeArray(MSEKeys);
+      let MAEList = this.getGaugeArray(MAEKeys);
+
+      return (
+        <div>
+          <SceneHeader
+            header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+            subheader={`Experiment: #${experiment.data._id}`}
+          />
+          <Grid columns={3} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <AlgorithmDetails
+                  algorithm={experiment.data.algorithm}
+                  params={experiment.data.params}
+                />
+                <RunDetails
+                  startTime={experiment.data.started}
+                  finishTime={experiment.data.finished}
+                  launchedBy={experiment.data.launched_by}
+                />
+                <ImportanceScore file={importanceScore} />
+              </Grid.Column>
+              <Grid.Column>
+                <ConfusionMatrix file={reg_cv_pred} />
+                <ROCCurve file={reg_cv_resi} />
+              </Grid.Column>
+              <Grid.Column>
+                <Score
+                  scoreName="R2"
+                  scoreValueList={R2List}
+                  chartKey="R2"
+                  chartColor="#7D5BA6"
+                />
+                <Score
+                  scoreName="MSE"
+                  scoreValueList={MSEList}
+                  chartKey="MSE"
+                  chartColor="#55D6BE"
+                />
+                <Score
+                  scoreName="MAE"
+                  scoreValueList={MAEList}
+                  chartKey="MAE"
+                  chartColor="#55D6BE"
+                />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </div>
+      );
+    }
   }
 }
 
