@@ -580,7 +580,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         plt.ylabel('True Positive Rate')
         plt.title('ROC curve')
         plt.legend(loc="lower right")
-        plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/roc_curve_' + _id + '.png')
         plt.close()
     roc_curve_dict = {
         'fpr': mean_fpr.tolist(),
@@ -624,7 +624,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
     plt.close()
     return top_features, indices
 
