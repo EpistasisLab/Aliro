@@ -8,6 +8,7 @@ import RunDetails from './components/RunDetails';
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
 import ImportanceScore from './components/ImportanceScore';
+import RegFigure from './components/RegFigure';
 import Score from './components/Score';
 import { Header, Grid, Loader } from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
@@ -80,9 +81,9 @@ class Results extends Component {
     let confusionMatrix, rocCurve, importanceScore, reg_cv_pred, reg_cv_resi;
     experiment.data.experiment_files.forEach(file => {
       const filename = file.filename;
-      if(filename.includes('confusion_matrix') || filename.includes('reg_cv_pred')) {
+      if(filename.includes('confusion_matrix')) {
         confusionMatrix = file;
-      } else if(filename.includes('roc_curve') || filename.includes('reg_cv_resi')) {
+      } else if(filename.includes('roc_curve')) {
         rocCurve = file;
       } else if(filename.includes('imp_score')) {
         importanceScore = file;
@@ -246,8 +247,8 @@ class Results extends Component {
                 <ImportanceScore file={importanceScore} />
               </Grid.Column>
               <Grid.Column>
-                <ConfusionMatrix file={reg_cv_pred} />
-                <ROCCurve file={reg_cv_resi} />
+                <RegFigure file={reg_cv_pred} />
+                <RegFigure file={reg_cv_resi} />
               </Grid.Column>
               <Grid.Column>
                 <Score

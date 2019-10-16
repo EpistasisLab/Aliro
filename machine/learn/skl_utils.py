@@ -265,6 +265,8 @@ def generate_results(model, input_data,
         elif score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
             scores['train_{}_score'.format(score_name)] = abs(train_scores.mean())
             scores['{}_score'.format(score_name)] = abs(test_scores.mean())
+            scores['accuracy_score'] = scores['test_score']
+            scores['balanced_accuracy'] = scores['test_score']
         else:
             scores['train_{}_score'.format(score_name)] = train_scores.mean()
             scores['{}_score'.format(score_name)] = test_scores.mean()
