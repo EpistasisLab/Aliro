@@ -24,7 +24,7 @@ import lab_api_mocker as mocker
 def test_ai_init_args(mock_request, mock_post):
 	lab_connection_args = {}
 	pennai = AI(
-		rec=None,
+		rec_class=None,
 		api_path='http://lab:5080',
 		user="testuser",
         verbose=True, 
@@ -39,7 +39,7 @@ def test_ai_init_args(mock_request, mock_post):
 def test_ai_init_knowledgebase(mock_request, mock_post):
     lab_connection_args = {}
     pennai = AI(
-        rec=None,
+        rec_class=None,
         api_path='http://lab:5080',
         user="testuser",
         verbose=True, 
