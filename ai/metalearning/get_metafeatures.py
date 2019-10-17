@@ -6,6 +6,7 @@ import warnings
 import logging
 import os
 import requests
+import traceback
 from io import StringIO
 
 with warnings.catch_warnings():
