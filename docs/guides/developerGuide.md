@@ -4,6 +4,8 @@
 
 ### Requirements
 Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
+- Docker setup
+  - Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
 
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (needed only to run unit tests locally)
@@ -147,53 +149,33 @@ The default location of the test output is the `.\target\test-reports\` director
 ## Production Builds
 
 ### Generating and publishing production builds
-To create production builds merge the code into the production branch and create a github release, create a local production directory, add .tar files of the production docker images to the directory, zip it, and add the zipped directory as an asset to the github release:
+To create a production release:
+- the source should be added to the `production` branch with a tagged commit
+- the production docker images should be added to DockerHub with appropriate tags
+- a github release should be created
+- a user production .zip should be addded as an asset to the github release
 
-1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/)
+Release procedure:
 
-2. Push the code to github, merge it to the production branch using github create a release using the same version as the .env file
+1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/).  Development images should have the suffix `-SNAPSHOT`.
+
+2. Push the code to github, merge it to the `production` branch, and tag the commit with the same version as the .env file
 
 3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
 
-4. Create a production directory and copy the config files, the .env file, and the production docker compose file, and make an images directory:
-  ```
-  #!/bin/bash
+4. Push the images to docker hub with the version tag and the `latest` tag.
 
-  PROD_DIR = "pennai-${TAG}"
+5. Generate the user production .zip by running `bash release.sh`.  The file will be named `target/production/pennai-${VERSION}.zip`.
 
-  mkdir -p $PROD_DIR
-  mkdir -p "$PROD_DIR/images"
+6. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
 
-  cp -R config "${PROD_DIR}/config"
-  cp config/ai.env-template "${PROD_DIR}/config/ai.env-template"
-  cp .env "${PROD_DIR}/.env"
-  cp docker-compose-production.yml "${PROD_DIR}/docker-compose.yml"
-  ```
-
-5. Export the production images into the images directory:
-  ```
-  cd PROD_DIR
-  docker save --output pennai_lab.tar "pennai_lab:${TAG}"
-  docker save --output pennai_machine.tar "pennai_machine:${TAG}"
-  docker save --output pennai_dbmongo.tar "pennai_dbmongo:${TAG}"
-  ```
-
-6. Zip the production directory
-
-7. Create a github release using the tagged production commit, and attach the zipped production directory as an archive
+7. Create a github release using the tagged production commit, and attach the zipped production directory as an archive asset.
 
 
 ### Installing a production build
 1. Download a production build from github
 
 2. Unzip the archive
-
-3. Load the images into docker with the following commands:
-  ```
-  docker load --input .\images\pennai_lab.tar
-  docker load --input .\images\pennai_machine.tar
-  docker load --input .\images\pennai_dbmongo.tar
-  ```
 
 ### Running from production build
 1. From the pennai directory, run the command `docker-compose up` to start the PennAI server.

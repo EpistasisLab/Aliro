@@ -11,6 +11,7 @@ It provides results visualization and reproducible scripts so that the analysis 
 And, it has an *AI* assistant that can choose the analysis to run for you. 
 
 [**Documentation**](https://epistasislab.github.io/pennai/) 
+[**Latest Production Release**](https://github.com/EpistasisLab/pennai/releases/latest)
 
 Browse the repo:
  - [User Guide](./docs/guides/userGuide.md)

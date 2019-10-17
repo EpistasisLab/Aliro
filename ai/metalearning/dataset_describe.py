@@ -188,7 +188,7 @@ class Dataset:
         
         #Correlation with dependent variable only make sense for regression problems
         if self.prediction_type == 'regression':
-            if self.corr_with_dependent!=None:
+            if self.corr_with_dependent is not None:
                 return self.corr_with_dependent
             else:
                 self.corr_with_dependent = self.df_encoded.corr()[self.dependent_col]

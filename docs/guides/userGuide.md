@@ -10,23 +10,23 @@ PennAI is a multi-container docker project that uses ([Docker-Compose](https://d
     - Most recent stable release, minimum version is 17.06.0
       - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
       - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-    - **Runtime Memory**: We recommend docker to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).  By default, docker starts with 2G runtime memory.
+    - **Runtime Memory**: (Mac and Windows only) If using **Windows** or **Mac**, we recommend docker VM to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).  By default, docker VM on Windows or Mac starts with 2G runtime memory.
   - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
 ### Installation
-1. Download the production zip from the [latest release](https://github.com/EpistasisLab/pennai/releases/latest)
+1. Download the production zip `pennai-0_13.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/pennai/releases/latest) (note that this is different from the source code zip file).
 2. Unzip the archive
 
 ## Using PennAI
 
 ### Starting and Stopping
-To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the server to shut down.
+To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the server to shut down.  It may take a few minutes to build the first time PennAI is run.
 
 To reset the datasets and experiments in the server, start PennAI with the command `docker-compose up --force-recreate`  or run the command `docker-compose down` after the server has stopped.
 
 ### User Interface
-Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page with the datasets in the `data/datasets/user` directory.  
+Once the webserver is up, connect to <http://localhost:5080/> to access the website.  You should see the **Datasets** page.  If it is your first time starting PennAI, there should be a message instructing one to add new datasets.
 
 ### Adding Datasets
 One can add new datasets using a UI form within the website or manually add new datasets to the data directory.  Datasets have the following restrictions:
@@ -34,6 +34,9 @@ One can add new datasets using a UI form within the website or manually add new 
 * Datasets cannot have any null or empty values
 * Dataset features must be either numeric, categorical, or ordinal.
 * Only the label column or categorical or ordinal features can contain string values.
+* Files must be smaller then 8mb
+
+Some example datasets can be found in the classification section of the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets/classification) github repository. 
 
 #### Uploading Using the Website ####
 To upload new datasets from the website, click the "Add new Datasets" button on the Datasets page to navigate to the upload form. Select a file using the form's file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example ```{"ord" : ["first", "second", "third"]}```, and a comma separated list of categorical column names without quotes, such as `cat1, cat2`. Once uploaded, the dataset should be available to use within the system.
@@ -54,7 +57,7 @@ By default, the column with the label should be named 'class'.  If the labeled c
 ```
 
 ### Analyzing Data ###
-To run a classification machine learning experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.
+To run a classification machine learning experiment, from the click 'Build New Experiment', choose the desired algorithm and experiment parameters and click 'Launch Experiment'.  To start the AI, from the **Datasets** page click the AI toggle.  The AI will start issuing experiments according to the parameters in `config/ai.config`.  This file can be modified to change the recommendation engine being used and how may recommendations the AI will give.  By default, the AI will make 10 recommendations.
 
 From the **Datasets** page, click 'completed experiments' to navigate to the **Experiments** page for that dataset filtered for the completed experiments.  If an experiment completed successfully, use the 'Actions' dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets.  Click elsewhere on the row to navigate to the experiment **Results** page.
 
