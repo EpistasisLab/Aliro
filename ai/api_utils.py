@@ -305,7 +305,7 @@ class LabApi:
 
             return df
 
-    def get_all_ml_p(self):
+    def get_all_ml_p(self, categoryFilter = None):
         """ 
         Returns a list of ml and parameter options for the user 'pennai' 
         from the server.
@@ -339,6 +339,10 @@ class LabApi:
 
         algorithms = response[0]['algorithms']
         logger.debug('response.algorithms length(): ' + str(len(algorithms)))
+
+        if (categoryFilter):
+            assert isinstance(categoryFilter, str)
+            algorithms = [a for a in algorithms if a['category'] == categoryFilter]
 
         result = [] # returned value
         good_def = True # checks that json for ML is in good form
