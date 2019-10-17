@@ -293,8 +293,95 @@ api_preferences_data = [
                         }
                     }
                 },
-                "category": "ML"
-            }            ]
+                "category": "classification"
+            },
+            {
+                "_id": "5da8d68c4590b0868cbf574e",
+                "name": "DecisionTreeRegressor",
+                "path": "sklearn.tree",
+                "categorical_encoding_strategy": "OrdinalEncoder",
+                "description": "A Decision Tree Regressor",
+                "url": "https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html",
+                "category": "regression",
+                "schema": {
+                    "criterion": {
+                        "description": "The function to measure the quality of a split. ",
+                        "type": "string",
+                        "default": "mse",
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                "Mean Squared Error",
+                                "Mean Absolute Error"
+                            ],
+                            "values": [
+                                "mse",
+                                "mae"
+                            ]
+                        }
+                    },
+                    "max_depth": {
+                        "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
+                        "type": [
+                            "int",
+                            "none"
+                        ],
+                        "default": 3,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                3,
+                                5,
+                                10
+                            ]
+                        }
+                    },
+                    "min_samples_split": {
+                        "description": "The minimum number of samples required to split an internal node.",
+                        "type": [
+                            "int",
+                            "float"
+                        ],
+                        "default": 2,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                2,
+                                5
+                            ]
+                        }
+                    },
+                    "min_samples_leaf": {
+                        "description": "The minimum number of samples required to be at a leaf node.",
+                        "type": [
+                            "int",
+                            "float"
+                        ],
+                        "default": 1,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                1,
+                                5
+                            ]
+                        }
+                    },
+                    "min_weight_fraction_leaf": {
+                        "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+                        "type": "float",
+                        "default": 0,
+                        "ui": {
+                            "style": "radio",
+                            "choices": [
+                                0,
+                                0.45
+                            ]
+                        }
+                    }
+                }
+            }
+
+            ]
         }]
 
 api_projects_data = [{
@@ -353,7 +440,7 @@ api_projects_data = [{
                         }
                     }
                 },
-                "category": "ML"
+                "category": "classification"
             },
             {
                     "_id": '12345',

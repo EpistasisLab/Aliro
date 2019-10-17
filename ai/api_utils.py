@@ -311,6 +311,8 @@ class LabApi:
         from the server.
         
         :returns: pd.DataFrame - unique ml algorithm and parameter combinations
+            with columns 'alg_name', 'category', 'alg_name', 'parameters'
+            'parameters' is a dictionary of parameters
         """
         logger.info("get_all_ml_p()")
         payload = {"username":"pennai"}
@@ -365,6 +367,7 @@ class LabApi:
 
                 for ahc in all_hyperparam_combos:
                     result.append({'algorithm':x['_id'],
+                                   'category':x['category'],
                                    'parameters':ahc,
                                    'alg_name':x['name']})
             else:
