@@ -46,16 +46,6 @@ class KNNMetaRecommender(BaseRecommender):
 
         # local dataframe of datasets and their metafeatures
         self.all_dataset_mf = pd.DataFrame()
-        # keep a list of metafeatures that should be removed from similarity
-        # comparisons
-        # TODO - remove features that start with "_"
-        self.drop_mf = ["_dependent_col",
-            "_metafeature_version",
-            "_categorical_cols",
-            "_independent_cols",
-            "_data_hash",
-            "_prediction_type"
-            ]
 
     def update(self, results_data, results_mf, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -75,8 +65,10 @@ class KNNMetaRecommender(BaseRecommender):
         super().update(results_data, results_mf, source)
     
         # save a copy of the results_mf with NaNs filled with zero
+        drop_cols = [c for c in results_mf.columns 
+                if c[0] == '_' and c !='_id']
         self.all_dataset_mf = \
-        results_mf.drop(columns=self.drop_mf).fillna(0.0).set_index('_id')
+        results_mf.drop(columns=drop_cols).fillna(0.0).set_index('_id')
 
         # update internal model
         self.update_model(results_data)
@@ -120,7 +112,9 @@ class KNNMetaRecommender(BaseRecommender):
         dataset_hash = self.dataset_id_to_hash[dataset_id]
 
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
-        dataset_mf = dataset_mf.drop(columns=self.drop_mf)
+        drop_cols = [c for c in dataset_mf.columns 
+                if c[0] == '_' and c !='_id']
+        dataset_mf = dataset_mf.drop(columns=drop_cols)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
             ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_hash,
