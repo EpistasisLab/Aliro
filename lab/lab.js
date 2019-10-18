@@ -746,94 +746,116 @@ var submitJob = (projId, options, files, datasetId, username) => {
             return;
         }
 
-        // find machines that could potentally handle the project
-        db.machines.find({
-            //_project_id: db.toObjectID(projId)
-            }, {
-                address: 1
-            }).toArrayAsync() // Get machine hostnames
-            .then((machines) => {
-                //console.log("===machines: ", machines)
-                //console.log("===machines.projects: ", machines.projects)
+        db.datasets.findByIdAsync(datasetId, {
+            files: 1
+        })
+        .then((dataset) => {
+            if ((dataset['files'] === undefined) || (dataset['files'][0]['prediction_type'] === undefined)) {
+                reject({
+                    error: `Experiment failed to run: prediction_type not defined for dataset ${datasetId}`
+                });
+                return;
+            }
 
-                if (machines.length == 0) {
-                    reject({
-                        error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
-                    });
-                    return;
-                }
+            var predictionType = dataset['files'][0]['prediction_type']
+            console.log(`found dataset prediction type ${predictionType}`)
 
-                // Check machine capacities
-                var macsP = Array(machines.length);
-                for (var i = 0; i < machines.length; i++) {
-                    macsP[i] = rp({
-                        uri: machines[i].address + "/projects/" + projId + "/capacity",
-                        method: "GET",
-                        data: null
-                    });
-                }
+            // find machines that could potentally handle the project
+            db.machines.find({
+                //_project_id: db.toObjectID(projId)
+                }, {
+                    address: 1
+                }).toArrayAsync() // Get machine hostnames
+                .then((machines) => {
+                    //console.log("===machines: ", machines)
+                    //console.log("===machines.projects: ", machines.projects)
 
-                // Loop over reponses
-                Promise.any(macsP)
-                    // First machine with capacity, so use
-                    .then((availableMac) => {
-                        availableMac = JSON.parse(availableMac);
-
-                        // Create experiment
-                        db.experiments.insertAsync({
-                                _options: options,
-                                _dataset_id: db.toObjectID(datasetId),
-                                _project_id: db.toObjectID(projId),
-                                _machine_id: db.toObjectID(availableMac._id),
-                                _prediction_type: "classification",
-                                username: username,
-                                files: [],
-                                _status: "running"
-                            }, {})
-                            .then((exp) => {
-                                options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-
-                                if (datasetId == "") {
-                                    var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
-                                } else {
-                                    var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
-                                }
-                                // Wait for file upload to complete
-                                Promise.all(filesP)
-                                    .then(() => {
-                                        // Send project
-                                        rp({
-                                                uri: availableMac.address + "/projects/" + projId,
-                                                method: "POST",
-                                                json: options,
-                                                gzip: true
-                                            })
-                                            .then((body) => {
-                                                resolve(body);
-                                            })
-                                            .catch((err) => {
-                                                //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
-                                                console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
-                                                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                                                reject({
-                                                    error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
-                                                });
-                                            });
-                                    })
-                                    .catch((err) => {
-                                        reject(err);
-                                    });
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    })
-                    // No machines responded, therefore fail
-                    .catch(() => {
+                    if (machines.length == 0) {
                         reject({
-                            error: "No machine capacity available"
+                            error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
                         });
+                        return;
+                    }
+
+                    // Check machine capacities
+                    var macsP = Array(machines.length);
+                    for (var i = 0; i < machines.length; i++) {
+                        macsP[i] = rp({
+                            uri: machines[i].address + "/projects/" + projId + "/capacity",
+                            method: "GET",
+                            data: null
+                        });
+                    }
+
+
+                    // Loop over reponses
+                    Promise.any(macsP)
+                        // First machine with capacity, so use
+                        .then((availableMac) => {
+                            availableMac = JSON.parse(availableMac);
+
+                            // Create experiment
+                            db.experiments.insertAsync({
+                                    _options: options,
+                                    _dataset_id: db.toObjectID(datasetId),
+                                    _project_id: db.toObjectID(projId),
+                                    _machine_id: db.toObjectID(availableMac._id),
+                                    _prediction_type: predictionType,
+                                    username: username,
+                                    files: [],
+                                    _status: "running"
+                                }, {})
+                                .then((exp) => {
+                                    options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+
+                                    if (datasetId == "") {
+                                        var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
+                                    } else {
+                                        var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
+                                    }
+                                    // Wait for file upload to complete
+                                    Promise.all(filesP)
+                                        .then(() => {
+                                            // Send project
+                                            rp({
+                                                    uri: availableMac.address + "/projects/" + projId,
+                                                    method: "POST",
+                                                    json: options,
+                                                    gzip: true
+                                                })
+                                                .then((body) => {
+                                                    resolve(body);
+                                                })
+                                                .catch((err) => {
+                                                    //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
+                                                    console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
+                                                    db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+                                                    reject({
+                                                        error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
+                                                    });
+                                                });
+                                        })
+                                        .catch((err) => {
+                                            reject(err);
+                                        });
+                                })
+                                .catch((err) => {
+                                    reject(err);
+                                });
+                        })
+                        // No machines responded, therefore fail
+                        .catch(() => {
+                            reject({
+                                error: "No machine capacity available"
+                            });
+                        });
+                })
+                // Could not retireve dataset
+                .catch(() => {
+                    reject({
+                        error: `Unable to find dataset with db id ${datasetId}`
                     });
+                });
             })
             .catch((err) => {
                 reject(err);
