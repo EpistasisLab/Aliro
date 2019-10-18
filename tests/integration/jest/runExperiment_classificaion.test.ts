@@ -19,19 +19,10 @@ afterAll(() => {
 */
 
 describe('run experiment', () => {
-	it('run decisionTree experiment on banana', async () => {	
-		console.log('run decisionTree experiment on banana')
+	it('run LogisticRegression experiment on banana', async () => {
+		console.log('run LogisticRegression experiment on banana')
 
 		jest.setTimeout(util.JEST_TIMEOUT)
-	/*
-		let algoName = 'DecisionTreeClassifier'
-		let algoParms = {
-			"criterion": "gini",
-			"max_depth": 1,
-			"min_samples_split": 2,
-			"min_samples_leaf": 1,
-		};
-	*/
 		let algoName = 'LogisticRegression'
 		let algoParms = {
 			"penalty": "l1",
@@ -63,7 +54,7 @@ describe('run experiment', () => {
 		try {
 			var submitResult = await labApi.submitExperiment(algoId, algoParms)
 		} catch (e) {
-			console.log("submitExperiment exception")
+			console.log("submit Experiment exception")
 			var json = await e.response.json() // get the specific error description
 			expect(json).toBeFalsy()
 			expect(e).toBeFalsy() // break even if no message body returned
@@ -107,7 +98,7 @@ describe('run experiment', () => {
 	});
 
 
-	it('run decisionTree experiment with invalid parms on banana', async () => {	
+	it('run decisionTree experiment with invalid parms on banana', async () => {
 		console.log('run decisionTree experiment with invalid parms on banana')
 
 		jest.setTimeout(util.JEST_TIMEOUT)
@@ -257,9 +248,11 @@ describe('run experiment', () => {
 		var experimentResults = await labApi.fetchExperiment(submitResult._id)
 		expect(experimentResults._status).toEqual('cancelled')
 
-		// hacky... 
+		// hacky...
 		util.delay(20000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});
+
+
 });

@@ -7,7 +7,7 @@ import os
 import json
 import itertools
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
-from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold
+from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold, KFold
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -197,7 +197,9 @@ def generate_results(model, input_data,
 
         metric = "accuracy"
     else:
-        scoring = ["r2", "neg_mean_squared_error"]
+        scoring = ["r2",
+                   "neg_mean_squared_error",
+                   "neg_mean_absolute_error"]
         metric = 'r2'
 
     with warnings.catch_warnings():
@@ -260,6 +262,11 @@ def generate_results(model, input_data,
         if score_name == "balanced_accuracy":
             scores['accuracy_score'] =  scores['test_score']
             scores['balanced_accuracy'] =  scores['test_score']
+        elif score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
+            scores['train_{}_score'.format(score_name)] = abs(train_scores.mean())
+            scores['{}_score'.format(score_name)] = abs(test_scores.mean())
+            scores['accuracy_score'] = scores['test_score'] # need refine for regression
+            scores['balanced_accuracy'] = scores['test_score'] # need refine for regression
         else:
             scores['train_{}_score'.format(score_name)] = train_scores.mean()
             scores['{}_score'.format(score_name)] = test_scores.mean()
@@ -324,6 +331,10 @@ def generate_results(model, input_data,
 
         if num_classes==2:
             plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
+    else: # regression
+        if figure_export:
+            plot_cv_pred(tmpdir, _id, features, target, cv_scores)
+
 
 
     metrics_dict = {'_scores': scores}
@@ -574,7 +585,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         plt.ylabel('True Positive Rate')
         plt.title('ROC curve')
         plt.legend(loc="lower right")
-        plt.savefig(tmpdir + _id + '/roc_curve' + _id + '.png')
+        plt.savefig(tmpdir + _id + '/roc_curve_' + _id + '.png')
         plt.close()
     roc_curve_dict = {
         'fpr': mean_fpr.tolist(),
@@ -618,7 +629,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    plt.savefig(tmpdir + _id + '/imp_score' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
     plt.close()
     return top_features, indices
 
@@ -689,6 +700,51 @@ def plot_dot_plot(tmpdir, _id, features,
     graph.write_png(png_file)
     return dtree_train_score
 
+
+def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
+    """
+    Plot Cross-Validated Predictions and Residuals.
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in PennAI
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    Returns
+    -------
+    None
+    """
+    pred_y = np.empty(y.shape)
+    resi_y = np.empty(y.shape)
+    cv = KFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        pred_y[test] = est.predict(X[test])
+        resi_y[test] = pred_y[test] - y[test]
+
+    p=plt.figure()
+    plt.title("Regression Cross-Validated Predictions")
+    plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Observed Value')
+    plt.ylabel('Predicted Value')
+    p.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
+    plt.close()
+
+    r=plt.figure()
+    plt.title("Regression Cross-Validated Residuals")
+    plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    plt.xlabel('Predicted Value')
+    plt.ylabel('Residuals')
+    r.tight_layout()
+    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.close()
 
 
 def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
