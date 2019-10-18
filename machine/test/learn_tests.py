@@ -49,7 +49,7 @@ test_clf_input5 = "data/datasets/test/test_mixed/backache.csv"
 test_clf_input_df5 = pd.read_csv(test_clf_input5, sep='\t')
 
 # test inputfile for regression
-test_reg_input = "machine/test/1027_ESL.tsv"
+test_reg_input = "machine/test/210_cloud.tsv"
 test_reg_input_df = pd.read_csv(test_reg_input, sep='\t')
 
 
@@ -87,7 +87,7 @@ def make_train_test_split(input_data, target_name, random_state):
     features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, target, random_state=random_state, stratify=input_data[target_name])
+        train_test_split(features, target, random_state=random_state)
     return training_features, testing_features, training_classes, testing_classes, feature_names
 
 training_features_1, testing_features_1, training_classes_1, testing_classes_1, feature_names_1 = \
@@ -146,32 +146,40 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id8"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id9':
         return MockResponse(json.dumps({"_dataset_id": "test_dataset_id9"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id10':
+        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id10"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "class",
-                                                    "filename": "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "class",
-                                                    "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2",
+                                                    "filename": "test_clf_input",
+                                                    "prediction_type": "classification"},
+                                                {"_id":"test_file_id4",
                                                 "dependent_col": "class",
-                                                "filename": "test_reg_input"}]}), 200)
+                                                "filename": "test_clf_input2",
+                                                "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                 "dependent_col": "class",
-                                                "filename": "test_clf_input"},
-                                                {"_id":"test_file_id2",
+                                                "filename": "test_clf_input",
+                                                "prediction_type": "classification"},
+                                                {"_id":"test_file_id4",
                                                 "dependent_col": "target",
-                                                "filename": "test_reg_input"}]}), 200)
+                                                "filename": "test_clf_input2",
+                                                "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "filename":
-                                                    "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
         return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
                                                     "dependent_col": "NA_class",
-                                                    "filename": "test_clf_input"}]}), 200)
+                                                    "filename": "test_clf_input",
+                                                    "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id3",
@@ -179,24 +187,34 @@ def mocked_requests_get(*args, **kwargs):
                             "categorical_features":  ["test_categorical_feature_1",
                                                     "test_categorical_feature_2"],
                             "ordinal_features":  {"test_ordinal_feature": [1, 3, 5, 7, 9]},
-                            "filename": "test_clf_input3"}]}), 200)
+                            "filename": "test_clf_input3",
+                            "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id7':
         return MockResponse(json.dumps({"files":
                                     [{"_id":"test_file_id4",
                                     "dependent_col": "class",
-                                    "filename": "test_clf_input"}]}), 200)
+                                    "filename": "test_clf_input",
+                                    "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id8':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id5",
                             "dependent_col": "target_class",
                             "categorical_features" : ["cat"],
 	                        "ordinal_features" : {"ord" : ["first", "second", "third"]},
-                            "filename": "test_clf_input5"}]}), 200)
+                            "filename": "test_clf_input5",
+                            "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id9':
         return MockResponse(json.dumps({"files": [
                             {"_id":"test_file_id6",
                             "dependent_col": "class",
-                            "filename": "test_clf_input6"}]}), 200)
+                            "filename": "test_clf_input6",
+                            "prediction_type": "classification"}]}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id10':
+        return MockResponse(json.dumps({"files": [
+                            {"_id":"test_file_id2",
+                            "dependent_col": "class",
+                            "filename": "test_reg_input",
+                            "prediction_type": "regression"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -246,12 +264,12 @@ class APITESTCLASS(unittest.TestCase):
         # Assert requests.get calls
         input_data, data_info = get_input_data(_id, tmpdir=tmpdir)
         exp_input_data1 = pd.read_csv(test_clf_input2, sep='\t')
-        exp_input_data2 = pd.read_csv(test_reg_input, sep='\t')
+        exp_input_data2 = pd.read_csv(test_clf_input, sep='\t')
         rmtree(tmpdir)
         assert exp_input_data1.equals(input_data[0])
         assert exp_input_data2.equals(input_data[1])
         assert data_info['filename'][0] == 'test_clf_input'
-        assert data_info['filename'][1] == 'test_reg_input'
+        assert data_info['filename'][1] == 'test_clf_input2'
         assert data_info['target_name'] == 'class'
         assert data_info['categories'] is None
         assert data_info['ordinals'] is None
@@ -362,39 +380,6 @@ class APITESTCLASS(unittest.TestCase):
 
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_main_regression_algorithms(self, mock_get):
-        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
-
-        regression_json_data = [proj for proj in projects_json_data if proj["category"] == "regression"]
-
-        for obj in regression_json_data:
-            algorithm_name = obj["name"]
-            schema = obj["schema"]
-            args = {}
-            _id = "test_id"
-            args['_id'] = _id
-            args["method"] = algorithm_name
-            args['grid_search'] = False
-            for param_name in schema.keys():
-                default_value = schema[param_name]["default"]
-                param_type = schema[param_name]["type"]
-                conv_func = get_type(param_type)
-                conv_default_value = conv_func(default_value)
-                args[param_name] = conv_default_value
-
-            main(args, {})
-            outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
-            value_json = '{}/value.json'.format(outdir)
-            assert os.path.isfile(value_json)
-            with open(value_json, 'r') as f:
-                value = json.load(f)
-
-            #TODO - check for the existance of the output files
-
-            #TODO - test the reloaded model is the same
-
-
-    @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_classification_algorithms(self, mock_get):
         """Test main function in each classification machine learning in projects.json can produce expected outputs."""
 
@@ -426,8 +411,8 @@ class APITESTCLASS(unittest.TestCase):
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
             assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-            assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+            assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+            assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -480,7 +465,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -534,7 +519,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -587,7 +572,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -622,7 +607,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -657,8 +642,8 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -723,7 +708,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
@@ -786,7 +771,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+        assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
@@ -809,6 +794,73 @@ class APITESTCLASS(unittest.TestCase):
         load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
+
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_regression_algorithms(self, mock_get):
+        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
+        regression_json_data = [proj for proj in projects_json_data if proj["category"] == "regression"]
+        for obj in regression_json_data:
+            algorithm_name = obj["name"]
+            schema = obj["schema"]
+            args = {}
+            _id = "test_id10"
+            args['_id'] = _id
+            args["method"] = algorithm_name
+            args['grid_search'] = False
+            for param_name in schema.keys():
+                default_value = schema[param_name]["default"]
+                param_type = schema[param_name]["type"]
+                conv_func = get_type(param_type)
+                conv_default_value = conv_func(default_value)
+                args[param_name] = conv_default_value
+            main(args, {})
+            outdir = "./machine/learn/tmp/{}/{}".format(algorithm_name, _id)
+            value_json = '{}/value.json'.format(outdir)
+            assert os.path.isfile(value_json)
+            with open(value_json, 'r') as f:
+                value = json.load(f)
+            train_score = value['_scores']['train_score']
+            assert train_score
+            # test pickle file
+            pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
+            assert os.path.isfile(pickle_file)
+
+            # test reloaded model is the same
+            pickle_model = joblib.load(pickle_file)
+            load_clf = pickle_model['model']
+            cv_scores = cross_validate(
+                                        estimator=load_clf,
+                                        X=test_reg_input_df.drop('class', axis=1).values,
+                                        y=test_reg_input_df['class'].values,
+                                        scoring="r2",
+                                        cv=10,
+                                        return_train_score=True
+                                        )
+
+            load_clf_score = cv_scores['train_score'].mean()
+            print(algorithm_name, train_score, load_clf_score)
+            assert train_score == load_clf_score
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_main_reg_2(self, mock_get):
+        """Test main function should raise RuntimeError if the dataset type is inconsistent with method type."""
+        obj = next(item for item in projects_json_data if item["name"] == "DecisionTreeClassifier")
+        algorithm_name = obj["name"]
+        schema = obj["schema"]
+        args = {}
+        _id = "test_id10"
+        args['_id'] = _id
+        args["method"] = algorithm_name
+        args['grid_search'] = False
+        for param_name in schema.keys():
+            default_value = schema[param_name]["default"]
+            param_type = schema[param_name]["type"]
+            conv_func = get_type(param_type)
+            conv_default_value = conv_func(default_value)
+            args[param_name] = conv_default_value
+        assert_raises(RuntimeError, main, args, {})
+
 
 
 def test_balanced_accuracy():
@@ -839,8 +891,8 @@ def test_generate_results_1():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -874,8 +926,8 @@ def test_generate_results_2():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -900,10 +952,12 @@ def test_generate_results_2():
 
 def test_generate_results_3():
     """Test generate results can produce expected outputs in regression mode"""
-    tmpdir = mkdtemp() + '/'
+    #tmpdir = mkdtemp() + '/'
+    tmpdir = 'machine/learn/tmp/'
     _id = 'test_id'
     outdir = tmpdir + _id
-    os.mkdir(outdir)
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
                     tmpdir=tmpdir, _id=_id, target_name='class',
                     mode='regression', figure_export=True)
@@ -916,13 +970,15 @@ def test_generate_results_3():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/reg_cv_resi_{}.png'.format(outdir, _id))
+    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
-    rmtree(tmpdir)
+    #rmtree(tmpdir)
 
 
 def test_generate_results_4():
@@ -943,8 +999,8 @@ def test_generate_results_4():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -999,8 +1055,8 @@ def test_generate_results_6():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1049,8 +1105,8 @@ def test_generate_results_7():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert not os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1093,8 +1149,8 @@ def test_generate_results_9():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1125,8 +1181,8 @@ def test_generate_results_10():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve{}.png'.format(outdir, _id)) # only has roc for binary outcome
-    assert os.path.isfile('{}/imp_score{}.png'.format(outdir, _id))
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
@@ -1163,7 +1219,7 @@ def test_plot_dot_plot_2():
     dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
                     training_classes_4,
                     feature_names_4,
-                    indices=np.array([0,1,2,3]),
+                    indices=np.array(range(5)),
                     random_state=42,
                     mode='regression')
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)

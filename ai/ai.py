@@ -17,7 +17,7 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 # from ai.recommender.svd_recommender import SVDRecommender
-from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 from collections import OrderedDict
@@ -54,7 +54,7 @@ class AI():
     :param datasets: str or False - if not false, a comma seperated list of datasets
     to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-    
+
     """
 
     def __init__(self,
@@ -156,7 +156,7 @@ class AI():
 
     ##-----------------
     ## Init methods
-    ##-----------------  
+    ##-----------------
     def initilize_recommenders(self, rec_class):
         """
         Initilize classification recommender
@@ -182,7 +182,7 @@ class AI():
         for prob_type, rec in self.rec_engines.items():
             logger.debug(f'\tproblemType: {prob_type} - {rec}')
             logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
-        
+
 
 
     def load_knowledgebase(self):
@@ -245,9 +245,9 @@ class AI():
 
         Retireves metafeatures from self.dataset_mf_cache if they exist,
         otherwise queries the api and updates the cache.
-        
+
         :param results_data: experiment results with associated datasets
-        
+
         """
         logger.debug('results_data:'+str(results_data.columns))
         logger.debug('results_data:'+str(results_data.head()))
@@ -258,7 +258,7 @@ class AI():
         # add dataset metafeatures to the cache
         for d in dataset_indicies:
             if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
-                df = self.labApi.get_metafeatures(d)        
+                df = self.labApi.get_metafeatures(d)
                 df['dataset'] = d
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
@@ -279,7 +279,7 @@ class AI():
     ## Loop methods
     ##-----------------
     def check_results(self):
-        """Checks to see if new experiment results have been posted since the 
+        """Checks to see if new experiment results have been posted since the
         previous time step. If so, set them to self.new_data and return True.
 
         :returns: Boolean - True if new results were found
@@ -292,7 +292,7 @@ class AI():
 
         if len(newResults) > 0:
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': ' + str(len(newResults)) + ' new results!')           
+                  ': ' + str(len(newResults)) + ' new results!')
             self.last_update = int(time.time())*1000 # update timestamp
             self.new_data = newResults
             return True
@@ -300,8 +300,8 @@ class AI():
         return False
 
     def update_recommender(self):
-        """Update recommender models based on new experiment results in 
-        self.new_data, and then clear self.new_data. 
+        """Update recommender models based on new experiment results in
+        self.new_data, and then clear self.new_data.
         """
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             new_mf = self.get_results_metafeatures(self.new_data)
@@ -323,7 +323,7 @@ class AI():
 
 
         # get all dtasets that have an ai 'requested' status
-        # and initilize a new request        
+        # and initilize a new request
         dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
@@ -334,7 +334,7 @@ class AI():
 
             # set AI flag to 'on' to acknowledge requests received
             for r in aiOnRequests:
-                self.labApi.set_ai_status(datasetId = r['_id'], 
+                self.labApi.set_ai_status(datasetId = r['_id'],
                                             aiStatus = 'on')
 
                 self.requestManager.add_request(datasetId=r['_id'],
@@ -350,7 +350,7 @@ class AI():
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                       ': ai termination request for:'+
                       ';'.join([r['name'] for r in aiOffRequests]))
-            
+
             for r in aiOffRequests:
                 self.requestManager.terminate_request(datasetId=r['_id'])
 
@@ -384,7 +384,7 @@ class AI():
         for alg,params,score in zip(ml,p,ai_scores):
             # TODO: just return dictionaries of parameters from rec
             # modified_params = eval(params) # turn params into a dictionary
-            
+
             recommendations.append({'dataset_id':datasetId,
                     'algorithm_id':alg,
                     'username':self.user,
@@ -501,7 +501,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True, 
+            dest='USE_KNOWLEDGEBASE', default=True,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -544,7 +544,7 @@ def main():
             # check for user updates to request states
             pennai.check_requests()
 
-            # process any active requests 
+            # process any active requests
             pennai.process_rec()
 
             n = n + 1
