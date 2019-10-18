@@ -209,14 +209,21 @@ class LabApi:
                 frame={
                     'dataset':d['_dataset_id'],
                     'algorithm':d['_project_id'],
-                    'accuracy':d['_scores']['accuracy_score'],#! This is balanced
-                    # accuracy!
-                    'f1':d['_scores']['f1_score'],
                     'parameters':d['_options'], 
                     'prediction_type':d['_prediction_type'],
-                    }
-                if(hasattr(d['_scores'],'balanced_accuracy')):
-                    frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];
+                }
+                
+                if(d['_prediction_type'] == "classification"):
+                    frame['accuracy'] = d['_scores']['accuracy_score'],#! This is balanced
+                    # accuracy!
+                    frame['f1'] = d['_scores']['f1_score'],
+
+                elif(d['_prediction_type'] == "regression"):
+                    frame['accuracy'] = d['_scores']['r2_score']
+                else:
+                    msg = (f'error in get_new_experiments_as_dataframe(), experiment has unhandled _prediction_type {d["_prediction_type"]}')
+                    raise RuntimeError(msg)
+
                 processed_data.append(frame)
             else:
               logger.error("new results are missing these fields:",
