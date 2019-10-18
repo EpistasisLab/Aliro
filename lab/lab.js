@@ -739,8 +739,6 @@ var submitJob = (projId, options, files, datasetId, username) => {
 
     //check for duplicate experiments
     return new Promise((resolve, reject) => {
-
-        //if ((!datasetId || datasetId == undefined || datasetId == "") && (dataset['files'] === undefined || dataset['files'].length == 0)){
         if (!datasetId || datasetId == undefined || datasetId == "") {
             reject({
                 error: "Experiment failed to run: datasetId not defined"
@@ -787,6 +785,7 @@ var submitJob = (projId, options, files, datasetId, username) => {
                                 _dataset_id: db.toObjectID(datasetId),
                                 _project_id: db.toObjectID(projId),
                                 _machine_id: db.toObjectID(availableMac._id),
+                                _prediction_type: "classification",
                                 username: username,
                                 files: [],
                                 _status: "running"

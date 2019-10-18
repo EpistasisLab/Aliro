@@ -80,7 +80,8 @@ class AI():
         # will be expanded as more types of probles are supported
         # (classification, regression, unsupervised, etc.)
         self.rec_engines = {
-            "classification":None
+            "classification":None,
+            "regression":None
         }
 
         # Request manager settings
@@ -112,8 +113,6 @@ class AI():
             api_key=self.api_key,
             extra_payload=extra_payload,
             verbose=self.verbose)
-
-        self.load_options() #loads algorithm parameters to self.ui_options
 
         self.initilize_recommenders(rec_class) # set self.rec_engines
 
@@ -162,26 +161,30 @@ class AI():
         Initilize classification recommender
         """
 
-        # Create supervised learning recommenders
-        if (rec_class):
-            self.rec_engines["classification"] = rec_class(**self.DEFAULT_REC_ARGS)
-        else:
-            self.rec_engines["classification"]  = self.DEFAULT_REC_CLASS(**self.DEFAULT_REC_ARGS)
+        for prediction_type in self.rec_engines.keys():
+            logger.info(f'initilizing rec engine for problem type "{prediction_type}"')
 
-        # set the registered ml parameters in the recommenders
-        ml_p = self.labApi.get_all_ml_p()
-        assert ml_p is not None
-        assert len(ml_p) > 0
-        self.rec_engines["classification"].ml_p = ml_p
-        # if hasattr(self.rec_engines["classification"],'mlp_combos'):
-        #     self.rec_engines["classification"].mlp_combos = self.rec_engines["classification"].ml_p['algorithm']+'|'+self.rec_engines["classification"].ml_p['parameters']
-        # ml_p.to_csv('ml_p_options.csv')
+            # get the ml parameters for the given recommender type
+            logger.debug("getting ml_p")
+            ml_p = self.labApi.get_all_ml_p(prediction_type)
+            assert ml_p is not None
+            assert len(ml_p) > 0
+
+            # Create supervised learning recommenders
+            logger.debug("initilizing engine")
+            recArgs = self.DEFAULT_REC_ARGS
+            recArgs['ml_p'] = ml_p
+
+            if (rec_class):
+                self.rec_engines[prediction_type] = rec_class(**recArgs)
+            else:
+                self.rec_engines[prediction_type]  = self.DEFAULT_REC_CLASS(**recArgs)
 
 
         logger.debug("recomendation engines initilized: ")
         for prob_type, rec in self.rec_engines.items():
             logger.debug(f'\tproblemType: {prob_type} - {rec}')
-            logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
+            #logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
         
 
 
@@ -221,19 +224,6 @@ class AI():
 
         logger.info('pmlb knowledgebase loaded')
 
-    def load_options(self):
-        """Loads algorithm UI parameters and sets them to self.ui_options."""
-
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-              ': loading options...')
-
-        responses = self.labApi.get_projects()
-
-        if len(responses) > 0:
-            self.ui_options = responses
-        else:
-            logger.warning("no algorithms found by load_options()")
-
 
     ##-----------------
     ## Utility methods
@@ -266,12 +256,12 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        logger.info(f'indicies: \n\n {dataset_indicies}')
+        logger.debug(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
+        logger.debug(f'indicies: \n\n {dataset_indicies}')
 
         new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
         assert len(new_mf) == len(dataset_indicies)
-        logger.info(f"new_mf: {new_mf}")
+        logger.debug(f"new_mf: {new_mf}")
 
         return new_mf
 
@@ -304,8 +294,11 @@ class AI():
         self.new_data, and then clear self.new_data. 
         """
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            new_mf = self.get_results_metafeatures(self.new_data)
-            self.rec_engines["classification"].update(self.new_data, new_mf)
+            for predictionType in self.new_data.prediction_type.unique():
+                filterRes = self.new_data[self.new_data['prediction_type']==predictionType]
+                filterMf = self.get_results_metafeatures(filterRes)
+                self.rec_engines[predictionType].update(filterRes, filterMf)
+
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     ': recommender updated')
             # reset new data
@@ -362,7 +355,7 @@ class AI():
     ##-----------------
     ## Syncronous actions an AI request can take
     ##-----------------
-    def generate_recommendations(self, datasetId, numOfRecs, predictionType = "classification"):
+    def generate_recommendations(self, datasetId, numOfRecs):
         """Generate ml recommendation payloads for the given dataset.
 
         :param datasetId
@@ -370,11 +363,15 @@ class AI():
 
         :returns list of maps that represent request payload objects
         """
-        logger.info("generate_recommendations({},{})".format(datasetId, numOfRecs))
+        logger.info(f'generate_recommendations({datasetId},{numOfRecs}')
 
         recommendations = []
 
+        #TODO: Temporary till updated metafeatures get merged...
         metafeatures = self.labApi.get_metafeatures(datasetId)
+        #assert metafeatures['_prediction_type']
+        #predictionType = metafeatures['_prediction_type']
+        predictionType = "classification"
 
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
             dataset_id=datasetId,

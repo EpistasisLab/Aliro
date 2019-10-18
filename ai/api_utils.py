@@ -213,6 +213,7 @@ class LabApi:
                     # accuracy!
                     'f1':d['_scores']['f1_score'],
                     'parameters':d['_options'], 
+                    'prediction_type':d['_prediction_type'],
                     }
                 if(hasattr(d['_scores'],'balanced_accuracy')):
                     frame['balanced_accuracy'] = d['_scores']['balanced_accuracy'];

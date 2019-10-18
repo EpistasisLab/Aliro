@@ -77,6 +77,7 @@ describe('run experiment', () => {
 		//console.log("experimentResults: ", experimentResults)
 		expect(experimentResults._status).toBeTruthy()
 		expect(experimentResults._status).toEqual('running')
+		expect(experimentResults._prediction_type).toEqual('classification')
 
 
 		// wait for the experiment to finish running, probably a better way to do this then delay...
