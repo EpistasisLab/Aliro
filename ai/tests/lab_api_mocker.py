@@ -854,6 +854,7 @@ api_experiments_data = [
             }
         ],
         "_status": "success",
+        "_prediction_type": "classification",
         "_started": "2018-07-25T22:29:53.772Z",
         "feature_names": [
             "age",
@@ -971,6 +972,7 @@ api_launch_experiment_running = {
             }
         ],
         "_status": "running",
+        "_prediction_type": "classification",
         "_started": "2018-07-25T22:29:53.772Z"
        }
 

@@ -48,6 +48,7 @@ describe('ai', () => {
 
 	 	// fetch previously run experiments
 		var prevExperiments = await labApi.fetchExperiments()
+		console.log("number previous experiments: ", prevExperiments.length)
 
 	 	// turn on ai
 	 	await labApi.updateAiStatus(datasetId, "requested")
@@ -65,7 +66,7 @@ describe('ai', () => {
 
 			var experiments = await labApi.fetchExperiments()
 			dataset = await labApi.fetchDataset(datasetId)
-			console.log("dataset[0].ai, count (" + count + "): ", dataset[0].ai, " total experiment count: ", experiments.length)
+			console.log("dataset[0].ai, count (" + count + ") status:", dataset[0].ai, " total experiment count: ", experiments.length)
 		}
 		console.log("finished timeout...")
 		console.log("dataset[0].ai: ", dataset[0].ai)
