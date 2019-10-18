@@ -207,7 +207,7 @@ class LabApi:
             if ('_options' in d.keys() and '_scores' in d.keys() 
                 and '_dataset_id' in d.keys()):
                 frame={
-                    'dataset':d['_dataset_id'],
+                    'dataset_id':d['_dataset_id'],
                     'algorithm':d['_project_id'],
                     'accuracy':d['_scores']['accuracy_score'],#! This is balanced
                     # accuracy!

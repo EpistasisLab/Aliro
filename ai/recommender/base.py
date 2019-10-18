@@ -81,11 +81,12 @@ class BaseRecommender:
         # store parameter_hash variable in results_data 
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: str(hash(frozenset(x.items()))))
-        
+       
+        pdb.set_trace()
         # store hash dataset ids
         self.dataset_id_to_hash.update({d:results_mf.loc[d]['_id'] 
                 for d in results_mf.index})
-        results_data['_id'] = results_data['dataset'].apply(lambda x:
+        results_data['_id'] = results_data['dataset_id'].apply(lambda x:
                 self.dataset_id_to_hash[x])
 
         # update results list 

@@ -24,7 +24,7 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -172,27 +172,13 @@ class AI():
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
 
-        #TODO: Verify that conversion from name to id is needed....
-        # WGL: yes at the moment we need this until hash is implemented.
-        # we can add a check at dataset upload to prevent repeat dataset names in
-        # the mean time.
-        # pdb.set_trace()
-        # self.user_datasets = self.labApi.get_user_datasets(self.user)
-        # self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
-        # kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
-        #                                   lambda x: self.dataset_name_to_id[x]
-        #                                   if x in self.dataset_name_to_id.keys()
-        #                                   else x)
-        # metafeatures = {}
-        # for k,v in kb['metafeaturesData'].items():
-        #     if k in self.dataset_name_to_id.keys():
-        #         metafeatures[self.dataset_name_to_id[k]] = v
-        #     else:
-        #         metafeatures[k] = v
-        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        all_df_mf = pd.DataFrame.from_records(
+                kb['metafeaturesData']).transpose().set_index('_id')
+        pdb.set_trace()
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
+        # use _id to index the metafeatures, and
         # keep only metafeatures with results
-        self.dataset_mf = all_df_mf.reindex(kb['resultsData'].dataset.unique())
+        self.dataset_mf = all_df_mf.loc[kb['resultsData']['dataset_id'].unique()]
         # self.update_dataset_mf(kb['resultsData'])
         self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
 
@@ -217,7 +203,7 @@ class AI():
     ##-----------------
     def update_dataset_mf(self, results_data):
         """Grabs metafeatures of datasets in results_data
-        and concatinates them to result_data
+        and concatenates them to result_data
         
         :param results_data: experiment results with associated datasets
         
@@ -225,11 +211,12 @@ class AI():
         logger.debug('results_data:'+str(results_data.columns))
         logger.debug('results_data:'+str(results_data.head()))
         dataset_metafeatures = []
-        for d in results_data['dataset'].unique():
+
+        for d in results_data['dataset_id'].unique():
             if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
                 # fetch metafeatures from server for dataset and append
                 df = self.labApi.get_metafeatures(d)        
-                df['dataset'] = d
+                df['dataset_id'] = d
                 # print('metafeatures:',df)
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
