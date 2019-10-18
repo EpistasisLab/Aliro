@@ -25,7 +25,11 @@ def main(args, param_grid={}):
     model, method_type, encoding_strategy = exp.get_model()
     if not args['grid_search']:
         param_grid = {}
-    return_val = generate_results(model=model,
+    if method_type != data_info["prediction_type"]:
+        raise RuntimeError("Experiment failed! "
+                            "Dataset type is {} "
+                            "but method type is {}".format(data_info["prediction_type"],method_type))
+    generate_results(model=model,
                     input_data=input_data,
                     tmpdir=exp.tmpdir,
                     target_name=data_info['target_name'],
@@ -37,9 +41,6 @@ def main(args, param_grid={}):
                     encoding_strategy=encoding_strategy,
                     param_grid=param_grid
                     )
-    if return_val == "Timeout":
-        raise RuntimeError("Experiment failed due to time out!")
-
 
 if __name__ == "__main__":
     args, param_grid = parse_args()

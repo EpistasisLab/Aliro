@@ -184,6 +184,7 @@ def get_input_data(_id, tmpdir):
     target_name = ''
     categories = None
     ordinals = None
+    prediction_type = "classification" # by default
     for file in files:
         if 'dependent_col' not in file:
             raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
@@ -195,6 +196,8 @@ def get_input_data(_id, tmpdir):
             categories = file['categorical_features']
         if 'ordinal_features' in file:
             ordinals = file['ordinal_features']
+        if 'prediction_type' in file:
+            prediction_type = file['prediction_type']
 
     if len(files) == 1: # only 1 file
         input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
@@ -209,7 +212,8 @@ def get_input_data(_id, tmpdir):
                 'target_name': target_name,
                 'filename': filename,
                 'categories': categories,
-                'ordinals': ordinals
+                'ordinals': ordinals,
+                'prediction_type': prediction_type
                 }
     return input_data, data_info
 
