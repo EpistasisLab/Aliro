@@ -6,5 +6,9 @@
                 "LogisticRegression",
                 "RandomForestClassifier",
                 "DecisionTreeRegressor",
-                "GradientBoostingRegressor"]
+                "GradientBoostingRegressor",
+                "SVR",
+                "KNeighborsRegressor",
+                "KernelRidge",
+                "RandomForestRegressor"]
 }
