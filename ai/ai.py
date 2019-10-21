@@ -238,8 +238,8 @@ class AI():
         :param results_data: experiment results with associated datasets
 
         """
-        logger.debug('results_data:'+str(results_data.columns))
-        logger.debug('results_data:'+str(results_data.head()))
+        #logger.debug('results_data:'+str(results_data.columns))
+        #logger.debug('results_data:'+str(results_data.head()))
 
         dataset_metafeatures = []
         dataset_indicies = results_data['dataset'].unique()
@@ -255,12 +255,12 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.debug(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        logger.debug(f'indicies: \n\n {dataset_indicies}')
+        #logger.debug(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
+        #logger.debug(f'indicies: \n\n {dataset_indicies}')
 
         new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
         assert len(new_mf) == len(dataset_indicies)
-        logger.debug(f"new_mf: {new_mf}")
+        #logger.debug(f"new_mf: {new_mf}")
 
         return new_mf
 
@@ -297,9 +297,9 @@ class AI():
                 filterRes = self.new_data[self.new_data['prediction_type']==predictionType]
                 filterMf = self.get_results_metafeatures(filterRes)
                 self.rec_engines[predictionType].update(filterRes, filterMf)
+                logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                    f': {predictionType} recommender updated with {len(filterRes.index)} result(s)')
 
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                    ': recommender updated')
             # reset new data
             self.new_data = pd.DataFrame()
 
