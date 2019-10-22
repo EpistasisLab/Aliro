@@ -1,6 +1,6 @@
 {
   "algorithms": ["DecisionTreeClassifier",
-                "XGBClassifier",
+                "GradientBoostingClassifier",
                 "KNeighborsClassifier",
                 "SVC",
                 "LogisticRegression",
