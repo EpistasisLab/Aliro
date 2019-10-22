@@ -106,9 +106,9 @@ describe('run regression experiment', () => {
 		console.log('start and then kill experiment')
 		jest.setTimeout(util.JEST_TIMEOUT)
 
-		let algoName = 'GradientBoostingRegressor'
+		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"n_estimators":5000
+			"n_estimators":10000
 		};
 
 		let datasetName = "192_vineyard.csv";
