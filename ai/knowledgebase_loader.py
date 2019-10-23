@@ -81,8 +81,8 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
 
     # add an id to results so we can index them by dataset hash, 
     # i.e., the '_id' variable in metafeaturesData
-    pdb.set_trace()
-    resultsData['dataset_id'] = resultsData['dataset'].apply(
+    # pdb.set_trace()
+    resultsData['_id'] = resultsData['dataset'].apply(
             lambda x: metafeaturesData[x]['_id'])
 
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 

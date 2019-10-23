@@ -132,14 +132,14 @@ class SurpriseRecommender(BaseRecommender):
         """
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
-        dataset_hash = self.dataset_id_to_hash[dataset_id]
+        # dataset_hash = self.dataset_id_to_hash[dataset_id]
         try:
             predictions = []
             filtered =0
             for alg_params in self.mlp_combos:
-                if (dataset_hash+'|'+alg_params not in 
+                if (dataset_id+'|'+alg_params not in 
                     self.trained_dataset_models):  
-                    predictions.append(self.algo.predict(dataset_hash, alg_params,
+                    predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
                 else:
                     filtered +=1

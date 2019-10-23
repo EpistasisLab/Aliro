@@ -109,7 +109,6 @@ class KNNMetaRecommender(BaseRecommender):
 
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
-        dataset_hash = self.dataset_id_to_hash[dataset_id]
 
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         drop_cols = [c for c in dataset_mf.columns 
@@ -117,7 +116,7 @@ class KNNMetaRecommender(BaseRecommender):
         dataset_mf = dataset_mf.drop(columns=drop_cols)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
-            ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_hash,
+            ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id,
                                                                   dataset_mf)
             if len(ml_rec) < n_recs:
                 logger.info(f'len(ml_rec)={len(ml_rec)}, recommending random')
@@ -128,7 +127,7 @@ class KNNMetaRecommender(BaseRecommender):
                 new_phash_rec = str(hash(frozenset(np.random.choice(
                         self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
                                               ['parameters'].values).items())))
-                if (dataset_hash + '|' + new_ml_rec + '|' + new_phash_rec
+                if (dataset_id + '|' + new_ml_rec + '|' + new_phash_rec
                         not in self.trained_dataset_models):
                     ml_rec.append(new_ml_rec)
                     phash_rec.append(new_phash_rec)
@@ -137,17 +136,17 @@ class KNNMetaRecommender(BaseRecommender):
             if iters == 1000:
                 logger.info(f'couldn''t find {n_recs} unique recommendations! '
                       'returning',len(ml_rec))
-                subset = [dataset_hash in tdm for tdm in self.trained_dataset_models]
+                subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
                 num_results = len([tdm for i,tdm in enumerate(self.trained_dataset_models)
                            if subset[i]]) 
-                logger.info(f'btw, there are {num_results} results for {dataset_hash} already')
+                logger.info(f'btw, there are {num_results} results for {dataset_id} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
                     [self.param_htable[int(p)] for p in phash_rec[:n_recs]],
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
 
         except Exception as e:
-            logger.error('error running self.best_model_prediction for'+dataset_hash)
+            logger.error('error running self.best_model_prediction for'+dataset_id)
             raise e
             # logger.error('ml_rec:'+ ml_rec)
             # logger.error('p_rec'+ p_rec)
@@ -159,7 +158,7 @@ class KNNMetaRecommender(BaseRecommender):
 
         return ml_rec, p_rec, rec_score
 
-    def best_model_prediction(self, dataset_hash, df_mf, n_recs=1):
+    def best_model_prediction(self, dataset_id, df_mf, n_recs=1):
         """Predict scores over many variations of ML+P and pick the best"""
         # get dataset metafeatures
         for cols in ['dataset','_id']:
@@ -192,7 +191,7 @@ class KNNMetaRecommender(BaseRecommender):
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
                 # only recommend if not already recommended
-                if dataset_hash+'|'+alg_params not in self.trained_dataset_models:
+                if dataset_id+'|'+alg_params not in self.trained_dataset_models:
                     ml_recs.append(self.best_mlp.loc[d,'algorithm'])
                     p_recs.append(self.best_mlp.loc[d,'parameters'])
                     scores.append(dist)
