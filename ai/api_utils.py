@@ -298,6 +298,7 @@ class LabApi:
             mf = [data['metafeatures']]
             # print('mf:',mf)
             df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
+            print('api_utils:get_metafeatures')
             # print('df:',df)
             # df['dataset_id'] = data['_id']
             df['dataset'] = data['name']

@@ -159,6 +159,9 @@ class AI():
         # for comma-separated list of datasets in datasets, turn AI request on
         assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
 
+        # store dataset_id to hash dictionary
+        self.dataset_id_to_hash = {}
+
     ##-----------------
     ## Init methods
     ##-----------------       
@@ -174,11 +177,10 @@ class AI():
 
         all_df_mf = pd.DataFrame.from_records(
                 kb['metafeaturesData']).transpose().set_index('_id')
-        pdb.set_trace()
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # use _id to index the metafeatures, and
         # keep only metafeatures with results
-        self.dataset_mf = all_df_mf.loc[kb['resultsData']['dataset_id'].unique()]
+        self.dataset_mf = all_df_mf.loc[kb['resultsData']['_id'].unique()]
         # self.update_dataset_mf(kb['resultsData'])
         self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
 
@@ -203,7 +205,7 @@ class AI():
     ##-----------------
     def update_dataset_mf(self, results_data):
         """Grabs metafeatures of datasets in results_data
-        and concatenates them to result_data
+        and concatenates them to self.dataset_mf
         
         :param results_data: experiment results with associated datasets
         
@@ -213,14 +215,14 @@ class AI():
         dataset_metafeatures = []
 
         for d in results_data['dataset_id'].unique():
-            if len(self.dataset_mf)==0 or d not in self.dataset_mf.index:
+            if len(self.dataset_mf)==0 or d not in self.dataset_id_to_hash.keys():
                 # fetch metafeatures from server for dataset and append
                 df = self.labApi.get_metafeatures(d)        
-                df['dataset_id'] = d
+                self.dataset_id_to_hash.update({d:df['_id']})
                 # print('metafeatures:',df)
                 dataset_metafeatures.append(df)
         if dataset_metafeatures:
-            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
+            df_mf = pd.concat(dataset_metafeatures).set_index('_id')
             # print('df_mf:',df_mf['dataset'], df_mf) 
             self.dataset_mf = self.dataset_mf.append(df_mf)
             # print('self.dataset_mf:\n',self.dataset_mf)
@@ -256,7 +258,10 @@ class AI():
 
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             self.update_dataset_mf(self.new_data)
+            self.new_data['_id'] = self.new_data['dataset_id'].apply(
+                    lambda x: self.dataset_id_to_hash[x])
             self.rec.update(self.new_data,self.dataset_mf)
+
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     ': recommender updated')
             # reset new data
@@ -288,9 +293,9 @@ class AI():
                 self.labApi.set_ai_status(datasetId = r['_id'], 
                                             aiStatus = 'on')
 
-                self.requestManager.add_request(datasetId=r['_id'],
-                                                datasetName=r['name'])
-
+                self.requestManager.add_request(
+                        datasetId=r['_id'], 
+                        datasetName=r['name']) 
         time.sleep(.1)
         # get all datasets that have a manual 'off' status
         # and terminate their ai requests
@@ -327,7 +332,7 @@ class AI():
 
         metafeatures = self.labApi.get_metafeatures(datasetId)
 
-        ml, p, ai_scores = self.rec.recommend(dataset_id=datasetId,
+        ml, p, ai_scores = self.rec.recommend(dataset_id=metafeatures['_id'].values[0],
             n_recs=numOfRecs,
             dataset_mf=metafeatures)
 
