@@ -833,12 +833,12 @@ class APITESTCLASS(unittest.TestCase):
                                         estimator=load_clf,
                                         X=test_reg_input_df.drop('class', axis=1).values,
                                         y=test_reg_input_df['class'].values,
-                                        scoring="r2",
+                                        scoring="neg_mean_squared_error",
                                         cv=10,
                                         return_train_score=True
                                         )
 
-            load_clf_score = cv_scores['train_score'].mean()
+            load_clf_score = abs(cv_scores['train_score'].mean())
             print(algorithm_name, train_score, load_clf_score)
             assert train_score == load_clf_score
 

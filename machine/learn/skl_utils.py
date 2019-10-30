@@ -255,9 +255,9 @@ def generate_results(model, input_data,
         # remove _macro
         score_name = s.replace('_macro', '')
         # make balanced_accuracy as default score
-        if score_name in ["balanced_accuracy", "r2"]:
-            scores['train_score'] = train_scores.mean()
-            scores['test_score'] = test_scores.mean()
+        if score_name in ["balanced_accuracy", "neg_mean_squared_error"]:
+            scores['train_score'] = abs(train_scores.mean())
+            scores['test_score'] = abs(test_scores.mean())
         # for api will fix later
         if score_name == "balanced_accuracy":
             scores['accuracy_score'] =  scores['test_score']
