@@ -25,6 +25,7 @@ var format_experiments = function(experiments, algorithms, datasets) {
         experiment['started'] = experiment['_started'];
         experiment['finished'] = experiment['_finished'];
         experiment['notification'] = experiment['notification'];
+        experiment['prediction_type'] = experiment['_prediction_type'];
         if (datasets[experiment['_dataset_id']]) {
             experiment['dataset_name'] = datasets[experiment['_dataset_id']]['name'];
             experiment['dataset_id'] = experiment['_dataset_id'];

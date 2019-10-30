@@ -78,24 +78,21 @@ class Results extends Component {
       );
     }
 
-    let confusionMatrix, rocCurve, importanceScore, reg_cv_pred, reg_cv_resi;
-    experiment.data.experiment_files.forEach(file => {
-      const filename = file.filename;
-      if(filename.includes('confusion_matrix')) {
-        confusionMatrix = file;
-      } else if(filename.includes('roc_curve')) {
-        rocCurve = file;
-      } else if(filename.includes('imp_score')) {
-        importanceScore = file;
-      } else if(filename.includes('reg_cv_pred')) {
-        reg_cv_pred = file;
-      } else if(filename.includes('reg_cv_resi')) {
-        reg_cv_resi = file;
-      }
-    });
 
+    console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
-    if(confusionMatrix) { // classification
+    if(experiment.data.prediction_type == "classification") { // classification
+      let confusionMatrix, rocCurve, importanceScore;
+      experiment.data.experiment_files.forEach(file => {
+        const filename = file.filename;
+        if(filename.includes('confusion_matrix')) {
+          confusionMatrix = file;
+        } else if(filename.includes('roc_curve')) {
+          rocCurve = file;
+        } else if(filename.includes('imp_score')) {
+          importanceScore = file;
+        }
+      });
       // balanced accuracy
       let balancedAccKeys = ['train_score', 'accuracy_score'];
       // precision scores
@@ -167,54 +164,23 @@ class Results extends Component {
                   chartKey="f1_scores"
                   chartColor="#55D6BE"
                 />
-                {/*<Score
-                  scoreName="Precision Score"
-                  scoreValue={experiment.data.scores.precision_score}
-                  chartKey="precision"
-                  chartColor="#55D6BE"
-                />
-                <Score
-                  scoreName="Recall Score"
-                  scoreValue={experiment.data.scores.recall_score}
-                  chartKey="recall"
-                  chartColor="#7D5BA6"
-                />
-                <Score
-                  scoreName="F1 Score"
-                  scoreValue={experiment.data.scores.f1_score}
-                  chartKey="f1_score"
-                  chartColor="#55D6BE"
-                />*/}
-                {/*<Score
-                  scoreName="Training Accuracy"
-                  scoreValue={experiment.data.scores.train_score}
-                  chartKey="training"
-                  chartColor="#7D5BA6"
-                />
-                <Score
-                  scoreName="Testing Accuracy"
-                  scoreValue={experiment.data.scores.test_score}
-                  chartKey="testing"
-                  chartColor="#55D6BE"
-                />
-                <Score
-                  scoreName="AUC"
-                  scoreValue={experiment.data.scores.roc_auc_score}
-                  chartKey="auc"
-                  chartColor="#7D5BA6"
-                />
-                <Score
-                  scoreName="Train AUC"
-                  scoreValue={experiment.data.scores.train_roc_auc_score}
-                  chartKey="train_auc"
-                  chartColor="#55D6BE"
-                />*/}
               </Grid.Column>
             </Grid.Row>
           </Grid>
         </div>
       );
-    } else if(reg_cv_pred) { // regression
+    } else if(experiment.data.prediction_type == "regression") { // regression
+      let importanceScore, reg_cv_pred, reg_cv_resi;
+      experiment.data.experiment_files.forEach(file => {
+        const filename = file.filename;
+        if(filename.includes('imp_score')) {
+          importanceScore = file;
+        } else if(filename.includes('reg_cv_pred')) {
+          reg_cv_pred = file;
+        } else if(filename.includes('reg_cv_resi')) {
+          reg_cv_resi = file;
+        }
+      });
       // r2
       let R2Keys = ['train_r2_score', 'r2_score'];
       // MSE
