@@ -7,7 +7,7 @@ import os
 import json
 import itertools
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
-from sklearn.model_selection import GridSearchCV, cross_validate, train_test_split, StratifiedKFold, KFold
+from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -265,8 +265,6 @@ def generate_results(model, input_data,
         elif score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
             scores['train_{}_score'.format(score_name)] = abs(train_scores.mean())
             scores['{}_score'.format(score_name)] = abs(test_scores.mean())
-            #scores['accuracy_score'] = scores['test_score'] # need refine for regression
-            #scores['balanced_accuracy'] = scores['test_score'] # need refine for regression
         else:
             scores['train_{}_score'.format(score_name)] = train_scores.mean()
             scores['{}_score'.format(score_name)] = test_scores.mean()
@@ -781,7 +779,7 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     export_scripts.close()
 
 
-def generate_export_codes(pickle_file_name, model, filename, target_name, random_state=42):
+def generate_export_codes(pickle_file_name, model, filename, target_name, mode="classification", random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
@@ -793,6 +791,9 @@ def generate_export_codes(pickle_file_name, model, filename, target_name, random
         File name of input dataset
     target_name: string
         Target name in input data
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
     random_state: int
         Random seed in model
     Returns
@@ -809,7 +810,6 @@ def generate_export_codes(pickle_file_name, model, filename, target_name, random
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer
@@ -821,9 +821,20 @@ pickle_file = '{pickle_file_name}'
 dataset = '{dataset}'
 # target column name
 target_column = '{target_name}'
-# seed to be used for train_test_split (default in PennAI is 42)
 seed = {random_state}
-
+""".format(
+            python_version=version.replace('\n', ''),
+            numpy_version=np.__version__,
+            pandas_version=pd.__version__,
+            skl_version=skl_version,
+            dataset=",".join(filename),
+            target_name=target_name,
+            pickle_file_name=pickle_file_name,
+            random_state=random_state,
+            model=str(model).replace('\n', '\n#')
+            )
+    if mode == "classification":
+        pipeline_text += """
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
 # It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
@@ -855,6 +866,30 @@ input_data = pd.read_csv(dataset, sep=None, engine='python')
 # Application 1: cross validation of fitted model
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
+predicted_target = model.predict(testing_features)
+# Get holdout score for fitted model
+print("Holdout score: ", end="")
+print(balanced_accuracy(testing_target, predicted_target))
+
+
+# Application 2: predict outcome by fitted model
+# In this application, the input dataset may not include target column
+input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
+predict_target = model.predict(input_data.values)
+"""
+    elif mode == "regression":
+        pipeline_text +="""
+# load fitted model
+pickle_model = joblib.load(pickle_file)
+model = pickle_model['model']
+
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python')
+
+
+# Application 1: cross validation of fitted model
+testing_features = input_data.drop(target_column, axis=1).values
+testing_target = input_data[target_column].values
 # Get holdout score for fitted model
 print("Holdout score: ", end="")
 print(model.score(testing_features, testing_target))
@@ -864,17 +899,6 @@ print(model.score(testing_features, testing_target))
 # In this application, the input dataset may not include target column
 input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
 predict_target = model.predict(input_data.values)
-""".format(
-            python_version=version.replace('\n', ''),
-            numpy_version=np.__version__,
-            pandas_version=pd.__version__,
-            skl_version=skl_version,
-            dataset=",".join(filename),
-            target_name=target_name,
-            pickle_file_name=pickle_file_name,
-            random_state=random_state,
-            model=str(model).replace('\n', '\n#')
-            )
-
+"""
 
     return pipeline_text
