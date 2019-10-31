@@ -1,23 +1,23 @@
+import __main__
+from sys import version
+import warnings
+from sklearn import __version__ as skl_version
+from sklearn.externals import joblib
+from mlxtend.evaluate import feature_importance_permutation
+from sklearn.utils import safe_sqr, check_X_y
+from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
+from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
+from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+import itertools
+import json
+import os
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.pyplot as plt
-import os
-import json
-import itertools
-from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
-from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.utils import safe_sqr, check_X_y
-from mlxtend.evaluate import feature_importance_permutation
-from sklearn.externals import joblib
-from sklearn import __version__ as skl_version
-import warnings
-from sys import version
-import __main__
 
 # if system environment allows to export figures
 figure_export = True
@@ -29,13 +29,14 @@ if 'MAKEPLOTS' in os.environ:
 random_state = None
 if 'RANDOM_SEED' in os.environ:
     random_state = int(os.environ['RANDOM_SEED'])
-#max numbers of bar in importance_score plot and decision tree plot
+# max numbers of bar in importance_score plot and decision tree plot
 max_bar_num = 10
 
 # The maximum depth of the decision tree for plot
 DT_MAX_DEPTH = 6
 if 'DT_MAX_DEPTH' in os.environ:
     DT_MAX_DEPTH = int(os.environ['DT_MAX_DEPTH'])
+
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function: balanced accuracy.
@@ -77,16 +78,17 @@ def balanced_accuracy(y_true, y_pred):
 # make new SCORERS
 SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 
+
 def generate_results(model, input_data,
-    tmpdir, _id, target_name='class',
-    mode='classification', figure_export=figure_export,
-    random_state=random_state,
-    filename=['test_dataset'],
-    categories=None,
-    ordinals=None,
-    encoding_strategy="OneHotEncoder",
-    param_grid={}
-    ):
+                     tmpdir, _id, target_name='class',
+                     mode='classification', figure_export=figure_export,
+                     random_state=random_state,
+                     filename=['test_dataset'],
+                     categories=None,
+                     ordinals=None,
+                     encoding_strategy="OneHotEncoder",
+                     param_grid={}
+                     ):
     """Generate reaults for applying a model on dataset in PennAI.
 
     Parameters
@@ -136,16 +138,22 @@ def generate_results(model, input_data,
         input_data = pd.concat([training_data, testing_data])
         train_rows = training_data.shape[0]
         total_rows = input_data.shape[0]
-        cv = [np.array(range(train_rows)), np.array(range(train_rows, total_rows))]
+        cv = [
+            np.array(
+                range(train_rows)), np.array(
+                range(
+                    train_rows, total_rows))]
     else:
-        cv=10
+        cv = 10
 
-    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
+    feature_names = np.array(
+        [x for x in input_data.columns.values if x != target_name])
     num_classes = input_data[target_name].unique().shape[0]
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
 
-    features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+    features, target = check_X_y(
+        features, target, dtype=None, order="C", force_all_finite=True)
 
     # fix random_state
     model = setup_model_params(model, 'random_state', random_state)
@@ -159,22 +167,27 @@ def generate_results(model, input_data,
         if categories:
             col_idx = get_col_idx(feature_names_list, categories)
             if encoding_strategy == "OneHotEncoder":
-                transform_cols.append(("categorical_encoder", OneHotEncoder(handle_unknown='ignore'), col_idx))
+                transform_cols.append(
+                    ("categorical_encoder", OneHotEncoder(
+                        handle_unknown='ignore'), col_idx))
             elif encoding_strategy == "OrdinalEncoder":
-                ordinal_map = OrdinalEncoder().fit(features[:, col_idx]).categories_
-                transform_cols.append(("categorical_encoder", OrdinalEncoder(categories=ordinal_map), col_idx))
+                ordinal_map = OrdinalEncoder().fit(
+                    features[:, col_idx]).categories_
+                transform_cols.append(
+                    ("categorical_encoder", OrdinalEncoder(
+                        categories=ordinal_map), col_idx))
         if ordinals:
             ordinal_features = sorted(list(ordinals.keys()))
             col_idx = get_col_idx(feature_names_list, ordinal_features)
             ordinal_map = [ordinals[k] for k in ordinal_features]
             transform_cols.append(("ordinalencoder",
-                                    OrdinalEncoder(categories=ordinal_map),
-                                    col_idx))
+                                   OrdinalEncoder(categories=ordinal_map),
+                                   col_idx))
         ct = ColumnTransformer(
-                                transformers=transform_cols,
-                                 remainder='passthrough',
-                                 sparse_threshold=0
-                                 )
+            transformers=transform_cols,
+            remainder='passthrough',
+            sparse_threshold=0
+        )
 
         model = make_pipeline(ct, model)
 
@@ -183,17 +196,17 @@ def generate_results(model, input_data,
     if mode == "classification":
         if(num_classes > 2):
             scoring = ["balanced_accuracy",
-                        "precision_macro",
-                        "recall_macro",
-                        "f1_macro"]
+                       "precision_macro",
+                       "recall_macro",
+                       "f1_macro"]
             scores['roc_auc_score'] = 'not supported for multiclass'
             scores['train_roc_auc_score'] = 'not supported for multiclass'
         else:
             scoring = ["balanced_accuracy",
-                        "precision",
-                        "recall",
-                        "f1",
-                        "roc_auc"]
+                       "precision",
+                       "recall",
+                       "f1",
+                       "roc_auc"]
 
         metric = "accuracy"
     else:
@@ -214,24 +227,26 @@ def generate_results(model, input_data,
             else:
                 parameters = param_grid
             clf = GridSearchCV(estimator=model,
-                                param_grid=parameters,
-                                scoring=metric,
-                                cv=5,
-                                refit=True,
-                                verbose=0,
-                                error_score=-float('inf'),
-                                return_train_score=True)
+                               param_grid=parameters,
+                               scoring=metric,
+                               cv=5,
+                               refit=True,
+                               verbose=0,
+                               error_score=-float('inf'),
+                               return_train_score=True)
             clf.fit(features, target)
             cv_results = clf.cv_results_
             # rename params name from pipeline object
             fmt_result = []
-            for param, ts in zip(cv_results['params'], cv_results['mean_train_score']):
+            for param, ts in zip(
+                    cv_results['params'], cv_results['mean_train_score']):
                 row_dict = {'mean_train_score': ts}
                 for key, val in param.items():
                     row_dict[key.split('__')[-1]] = val
                 fmt_result.append(row_dict)
             fmt_result = pd.DataFrame(fmt_result)
-            fmt_result_file = '{0}{1}/grid_search_results_{1}.csv'.format(tmpdir, _id)
+            fmt_result_file = '{0}{1}/grid_search_results_{1}.csv'.format(
+                tmpdir, _id)
             fmt_result.to_csv(fmt_result_file, index=False)
             model = clf.best_estimator_
         else:
@@ -239,14 +254,14 @@ def generate_results(model, input_data,
 
         # computing cross-validated metrics
         cv_scores = cross_validate(
-                                    estimator=model,
-                                    X=features,
-                                    y=target,
-                                    scoring=scoring,
-                                    cv=cv,
-                                    return_train_score=True,
-                                    return_estimator=True
-                                    )
+            estimator=model,
+            X=features,
+            y=target,
+            scoring=scoring,
+            cv=cv,
+            return_train_score=True,
+            return_estimator=True
+        )
 
     for s in scoring:
         train_scores = cv_scores['train_' + s]
@@ -260,18 +275,15 @@ def generate_results(model, input_data,
             scores['test_score'] = abs(test_scores.mean())
         # for api will fix later
         if score_name == "balanced_accuracy":
-            scores['accuracy_score'] =  scores['test_score']
-            scores['balanced_accuracy'] =  scores['test_score']
+            scores['accuracy_score'] = scores['test_score']
+            scores['balanced_accuracy'] = scores['test_score']
         elif score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
-            scores['train_{}_score'.format(score_name)] = abs(train_scores.mean())
+            scores['train_{}_score'.format(score_name)] = abs(
+                train_scores.mean())
             scores['{}_score'.format(score_name)] = abs(test_scores.mean())
         else:
             scores['train_{}_score'.format(score_name)] = train_scores.mean()
             scores['{}_score'.format(score_name)] = test_scores.mean()
-
-
-
-
 
     # dump fitted module as pickle file
     export_model(tmpdir, _id, model, filename, target_name, random_state)
@@ -279,12 +291,11 @@ def generate_results(model, input_data,
     # get predicted classes
     predicted_classes = model.predict(features)
 
-
     # exporting/computing importance score
     coefs, imp_score_type = compute_imp_score(model, metric,
-                                                features,
-                                                target,
-                                                random_state)
+                                              features,
+                                              target,
+                                              random_state)
 
     feature_importances = {
         'feature_names': feature_names.tolist(),
@@ -292,22 +303,25 @@ def generate_results(model, input_data,
         'feature_importance_type': imp_score_type
     }
 
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="feature_importances.json", content=feature_importances)
+    save_json_fmt(
+        outdir=tmpdir,
+        _id=_id,
+        fname="feature_importances.json",
+        content=feature_importances)
     dtree_train_score = None
     if figure_export:
-        top_features_names, indices = plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type)
+        top_features_names, indices = plot_imp_score(
+            tmpdir, _id, coefs, feature_names, imp_score_type)
         if not categories and not ordinals:
             dtree_train_score = plot_dot_plot(tmpdir, _id, features,
-                            target,
-                            top_features_names,
-                            indices,
-                            random_state,
-                            mode)
+                                              target,
+                                              top_features_names,
+                                              indices,
+                                              random_state,
+                                              mode)
 
     # save metrics
     scores['dtree_train_score'] = dtree_train_score
-
 
     if mode == 'classification':
         # determine if target is binary or multiclass
@@ -322,25 +336,28 @@ def generate_results(model, input_data,
         save_json_fmt(outdir=tmpdir, _id=_id,
                       fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-        #export plot
+        # export plot
         if figure_export:
             plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
 
-
-        if num_classes==2:
-            plot_roc_curve(tmpdir, _id, features, target, cv_scores, figure_export)
-    else: # regression
+        if num_classes == 2:
+            plot_roc_curve(
+                tmpdir,
+                _id,
+                features,
+                target,
+                cv_scores,
+                figure_export)
+    else:  # regression
         if figure_export:
             plot_cv_pred(tmpdir, _id, features, target, cv_scores)
-
-
 
     metrics_dict = {'_scores': scores}
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="value.json", content=metrics_dict)
 
-    prediction_dict = { 'prediction_values' : predicted_classes.tolist() }
+    prediction_dict = {'prediction_values': predicted_classes.tolist()}
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="prediction_values.json", content=prediction_dict)
 
@@ -432,15 +449,14 @@ def compute_imp_score(model, metric, features, target, random_state):
         imp_score_type = "Gini Importance"
     if coefs is None or np.isnan(coefs).any():
         coefs, _ = feature_importance_permutation(
-                                    predict_method=model.predict,
-                                    X=features,
-                                    y=target,
-                                    num_rounds=5,
-                                    metric=metric,
-                                    seed=random_state,
-                                    )
+            predict_method=model.predict,
+            X=features,
+            y=target,
+            num_rounds=5,
+            metric=metric,
+            seed=random_state,
+        )
         imp_score_type = "Permutation Feature Importance"
-
 
     return coefs, imp_score_type
 
@@ -507,7 +523,8 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
     plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
     plt.close()
 
-# After switching to dynamic charts, possibly disable outputting graphs from this function
+# After switching to dynamic charts, possibly disable outputting graphs
+# from this function
 
 
 def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
@@ -538,7 +555,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     aucs = []
     mean_fpr = np.linspace(0, 1, 100)
 
-    #print(cv_scores['train_roc_auc'])
+    # print(cv_scores['train_roc_auc'])
     for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
         train, test = cv_split
         try:
@@ -549,9 +566,9 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
         # Compute ROC curve and area the curve
 
         classes_encoded = np.array(
-                                [list(est.classes_).index(c)
-                                 for c in y[test]], dtype=np.int
-                                 )
+            [list(est.classes_).index(c)
+             for c in y[test]], dtype=np.int
+        )
         fpr, tpr, thresholds = roc_curve(classes_encoded, probas_)
         tprs.append(interp(mean_fpr, fpr, tpr))
         tprs[-1][0] = 0.0
@@ -565,18 +582,29 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     mean_auc = auc(mean_fpr, mean_tpr)
     std_auc = np.std(aucs)
     std_err = sem(tprs, axis=0)
-    h = std_err * t.ppf(1.95/2, len(mean_tpr) - 1)
+    h = std_err * t.ppf(1.95 / 2, len(mean_tpr) - 1)
     tprs_upper = np.minimum(mean_tpr + h, 1)
     tprs_lower = np.maximum(mean_tpr - h, 0)
 
     if figure_export:
         plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
                  label='Chance', alpha=.8)
-        plt.plot(mean_fpr, mean_tpr, color='b',
-                 label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
-                 lw=2, alpha=.8)
-        plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
-                         label=r'95% Confidence Interval')
+        plt.plot(
+            mean_fpr,
+            mean_tpr,
+            color='b',
+            label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' %
+            (mean_auc,
+             std_auc),
+            lw=2,
+            alpha=.8)
+        plt.fill_between(
+            mean_fpr,
+            tprs_lower,
+            tprs_upper,
+            color='grey',
+            alpha=.2,
+            label=r'95% Confidence Interval')
         plt.xlim([-0.05, 1.05])
         plt.ylim([-0.05, 1.05])
         plt.xlabel('False Positive Rate')
@@ -620,7 +648,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     # plot bar charts for top important features
     num_bar = min(max_bar_num, len(coefs))
     indices = np.argsort(coefs)[-num_bar:]
-    h=plt.figure()
+    h = plt.figure()
     plt.title(imp_score_type)
     plt.barh(range(num_bar), coefs[indices], color="r", align="center")
     top_features = list(feature_names[indices])
@@ -633,11 +661,11 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
 
 
 def plot_dot_plot(tmpdir, _id, features,
-                target,
-                top_features_name,
-                indices,
-                random_state,
-                mode):
+                  target,
+                  top_features_name,
+                  indices,
+                  random_state,
+                  mode):
     """Make dot plot for based on decision tree.
     Parameters
     ----------
@@ -672,13 +700,13 @@ def plot_dot_plot(tmpdir, _id, features,
     top_features = features[:, indices]
     if mode == 'classification':
         from sklearn.tree import DecisionTreeClassifier
-        dtree=DecisionTreeClassifier(random_state=random_state,
-                                max_depth=DT_MAX_DEPTH)
+        dtree = DecisionTreeClassifier(random_state=random_state,
+                                       max_depth=DT_MAX_DEPTH)
         scoring = SCORERS['balanced_accuracy']
     else:
         from sklearn.tree import DecisionTreeRegressor
-        dtree=DecisionTreeRegressor(random_state=random_state,
-                                max_depth=DT_MAX_DEPTH)
+        dtree = DecisionTreeRegressor(random_state=random_state,
+                                      max_depth=DT_MAX_DEPTH)
         scoring = SCORERS["neg_mean_squared_error"]
 
     dtree.fit(top_features, target)
@@ -690,10 +718,10 @@ def plot_dot_plot(tmpdir, _id, features,
     if mode == 'classification':
         class_names = [str(i) for i in dtree.classes_]
     export_graphviz(dtree, out_file=dot_file,
-                     feature_names=top_features_name,
-                     class_names=class_names,
-                     filled=True, rounded=True,
-                     special_characters=True)
+                    feature_names=top_features_name,
+                    class_names=class_names,
+                    filled=True, rounded=True,
+                    special_characters=True)
     (graph,) = pydot.graph_from_dot_file(dot_file)
     graph.write_png(png_file)
     return dtree_train_score
@@ -726,7 +754,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         pred_y[test] = est.predict(X[test])
         resi_y[test] = pred_y[test] - y[test]
 
-    p=plt.figure()
+    p = plt.figure()
     plt.title("Regression Cross-Validated Predictions")
     plt.scatter(y, pred_y, edgecolors=(0, 0, 0))
     plt.xlabel('Observed Value')
@@ -735,7 +763,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    r=plt.figure()
+    r = plt.figure()
     plt.title("Regression Cross-Validated Residuals")
     plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
     plt.xlabel('Predicted Value')
@@ -773,13 +801,20 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
     joblib.dump(pickle_model, pickle_file)
-    pipeline_text = generate_export_codes(pickle_file_name, model, filename, target_name, random_state)
+    pipeline_text = generate_export_codes(
+        pickle_file_name, model, filename, target_name, random_state)
     export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text)
     export_scripts.close()
 
 
-def generate_export_codes(pickle_file_name, model, filename, target_name, mode="classification", random_state=42):
+def generate_export_codes(
+        pickle_file_name,
+        model,
+        filename,
+        target_name,
+        mode="classification",
+        random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
     Parameters
     ----------
@@ -823,16 +858,16 @@ dataset = '{dataset}'
 target_column = '{target_name}'
 seed = {random_state}
 """.format(
-            python_version=version.replace('\n', ''),
-            numpy_version=np.__version__,
-            pandas_version=pd.__version__,
-            skl_version=skl_version,
-            dataset=",".join(filename),
-            target_name=target_name,
-            pickle_file_name=pickle_file_name,
-            random_state=random_state,
-            model=str(model).replace('\n', '\n#')
-            )
+        python_version=version.replace('\n', ''),
+        numpy_version=np.__version__,
+        pandas_version=pd.__version__,
+        skl_version=skl_version,
+        dataset=",".join(filename),
+        target_name=target_name,
+        pickle_file_name=pickle_file_name,
+        random_state=random_state,
+        model=str(model).replace('\n', '\n#')
+    )
     if mode == "classification":
         pipeline_text += """
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
@@ -878,7 +913,7 @@ input_data.drop(target_column, axis=1, inplace=True) # Please comment this line 
 predict_target = model.predict(input_data.values)
 """
     elif mode == "regression":
-        pipeline_text +="""
+        pipeline_text += """
 # load fitted model
 pickle_model = joblib.load(pickle_file)
 model = pickle_model['model']
