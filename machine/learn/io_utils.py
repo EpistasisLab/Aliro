@@ -15,7 +15,7 @@ basedir = os.environ.get('PROJECT_ROOT', '.')
 
 class Experiment:
     def __init__(self, args, basedir=basedir):
-        """ Experiment class for PennAI.
+        """Experiment class for PennAI.
 
         Parameters
         ----------
@@ -32,10 +32,10 @@ class Experiment:
         self.method_name = self.args['method']
         self.basedir = basedir
         # temporary directory
-        self.tmpdir = '{}/machine/learn/tmp/{}/'.format(self.basedir, self.method_name)
+        self.tmpdir = '{}/machine/learn/tmp/{}/'.format(
+            self.basedir, self.method_name)
         if not os.path.isdir(self.tmpdir):
             os.makedirs(self.tmpdir)
-
 
     def get_input(self):
         """Get input data based on experiment ID (_id) from PennAI API.
@@ -43,9 +43,10 @@ class Experiment:
         Returns
         -------
         input_data: pandas.Dataframe or list of two pandas.Dataframe
-            pandas.DataFrame: PennAI will use train_test_split to make train/test splits
-            list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
-                while the 2nd one is testing dataset
+            pandas.DataFrame: PennAI will use train_test_split to
+            make train/test splits list of two pandas.DataFrame:
+            The 1st pandas.DataFrame is training dataset,
+            while the 2nd one is testing dataset
         """
         return get_input_data(self.args['_id'], self.tmpdir)
 
@@ -61,12 +62,13 @@ class Experiment:
             'regression': regression model
         """
         projects = get_projects()
-        pdict = next(item for item in projects if item["name"] == self.method_name)
+        pdict = next(
+            item for item in projects if item["name"] == self.method_name)
         params = pdict['schema']
         import_path = pdict['path']
         method_type = pdict['category']
         encoding_strategy = pdict['categorical_encoding_strategy']
-        method_args = {k:self.args[k] for k in params.keys()}
+        method_args = {k: self.args[k] for k in params.keys()}
         # update static parameters
         if 'static_parameters' in pdict:
             method_args.update(pdict['static_parameters'])
@@ -78,14 +80,13 @@ class Experiment:
 
 
 def get_projects():
-    """Get all machine learning algorithm's information from PennAI API
-    This information should be the same with projects.json.
+    """Get all machine learning algorithm's information from PennAI API This
+    information should be the same with projects.json.
 
     Returns
     -------
     projects: dict
         A dict of all machine learning algorithm's information
-
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/projects'
     projects = json.loads(requests.get(uri).text)
@@ -100,25 +101,39 @@ def parse_args():
     args: dict
         Arguments of a experiment from PennAI API
     param_grid: dict
-        Dictionary with parameters names (string) as keys and lists
-        of parameter settings to try as values, or a list of such dictionaries,
-        in which case the grids spanned by each dictionary in the list are explored.
-        This enables searching over any sequence of parameter settings.
-
+        Dictionary with parameters names (string) as keys
+        and lists of parameter settings to try as values,
+        or a list of such dictionaries, in which case the
+        grids spanned by each dictionary in the list are
+        explored. This enables searching over any sequence
+        of parameter settings.
     """
     projects = get_projects()
-    parser = argparse.ArgumentParser(description='Driver for all machine learning algorithms in PennAI')
-    subparsers = parser.add_subparsers(dest='method',help="ML Learning Algorithm")
+    parser = argparse.ArgumentParser(
+        description='Driver for all machine learning algorithms in PennAI')
+    subparsers = parser.add_subparsers(
+        dest='method', help="ML Learning Algorithm")
 
     for pdict in projects:
         method = pdict['name']
         params = pdict['schema']
         subparser = subparsers.add_parser(method)
-        subparser.add_argument('--_id', action='store', dest='_id',
-                        default=None, type=str, help="Experiment id in database")
-        subparser.add_argument('--grid_search', action='store', dest='grid_search',
-                        default=False, type=bool, help=('If grid_search is True, then '
-                        'the experiment will perform GridSearchCV'))
+        subparser.add_argument(
+            '--_id',
+            action='store',
+            dest='_id',
+            default=None,
+            type=str,
+            help="Experiment id in database")
+        subparser.add_argument(
+            '--grid_search',
+            action='store',
+            dest='grid_search',
+            default=False,
+            type=bool,
+            help=(
+                'If grid_search is True, then '
+                'the experiment will perform GridSearchCV'))
         param_grid = {}
         # parse args for each parameter
         for key, val in params.items():
@@ -128,7 +143,7 @@ def parse_args():
             arg_type = get_type(val['type'])
 
             subparser.add_argument(arg, action='store', dest=arg_dest,
-                                default=arg_default, type=arg_type)
+                                   default=arg_default, type=arg_type)
             if "grid_search" in val['ui']:
                 values = val['ui']["grid_search"]
             elif "values" in val['ui']:
@@ -136,7 +151,6 @@ def parse_args():
             else:
                 values = val['ui']["choices"]
             param_grid[key] = [arg_type(v) for v in values]
-
 
     args = vars(parser.parse_args())
     print('parsed args:', args)
@@ -155,9 +169,11 @@ def get_input_data(_id, tmpdir):
     Returns
     -------
     input_data: pandas.Dataframe or list of two pandas.Dataframe
-        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
-        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
-            while the 2nd one is testing dataset
+        pandas.DataFrame: PennAI will use train_test_split
+        to make train/test splits
+        list of two pandas.DataFrame:
+        The 1st pandas.DataFrame is training dataset,
+        while the 2nd one is testing dataset
     data_info: dict
         target_name: string, target column name
         filename: list, filename(s)
@@ -175,21 +191,36 @@ def get_input_data(_id, tmpdir):
 
     _dataset_id = jsondata['_dataset_id']
     if (_dataset_id is None):
-        raise RuntimeError("Error when running experiment '" + _id + "': Unable to get _dataset_id from lab.  Response: " + str(jsondata))
+        raise RuntimeError("Error when running experiment '{}'"
+                           ": Unable to get _dataset_id "
+                           " from lab.  "
+                           "Response: {}".format(_id, str(jsondata)))
 
-    response = requests.get('http://' + LAB_HOST +':' + LAB_PORT + '/api/v1/datasets/' + _dataset_id)
+    response = requests.get(
+        'http://' +
+        LAB_HOST +
+        ':' +
+        LAB_PORT +
+        '/api/v1/datasets/' +
+        _dataset_id)
     jsondata = json.loads(response.text)
     files = jsondata['files']
     filename = [file['filename'] for file in files]
     target_name = ''
     categories = None
     ordinals = None
-    prediction_type = "classification" # by default
+    prediction_type = "classification"  # by default
     for file in files:
         if 'dependent_col' not in file:
-            raise RuntimeError("Target column is missing in {}.".format(" or ".join(filename)))
+            raise RuntimeError(
+                "Target column is missing in {}.".format(
+                    " or ".join(filename)))
         if target_name and target_name != file['dependent_col']:
-            raise RuntimeError("Files in one experiment should has the same target column name. Related files: {}.".format(','.join(filename)))
+            raise RuntimeError(
+                "Files in one experiment should has the same"
+                " target column name. Related files: {}.".format(
+                    ','.join(filename))
+            )
         else:
             target_name = file['dependent_col']
         if 'categorical_features' in file:
@@ -199,28 +230,40 @@ def get_input_data(_id, tmpdir):
         if 'prediction_type' in file:
             prediction_type = file['prediction_type']
 
-    if len(files) == 1: # only 1 file
-        input_data = pd.read_csv(StringIO(get_file_data(files[0]['_id'])), sep=None, engine='python')
+    if len(files) == 1:  # only 1 file
+        input_data = pd.read_csv(
+            StringIO(
+                get_file_data(
+                    files[0]['_id'])),
+            sep=None,
+            engine='python')
         check_column(target_name, input_data)
-    else: # two files for cross-validation
+    else:  # two files for cross-validation
         input_data = []
-        for file in files: # need api support !!the 1st one is training dataset and 2nd one is testing datast
-            indata = pd.read_csv(StringIO(get_file_data(file['_id'])), sep=None, engine='python')
+        # need api support !!
+        # the 1st one is training dataset and 2nd one is testing datast
+        for file in files:
+            indata = pd.read_csv(
+                StringIO(
+                    get_file_data(
+                        file['_id'])),
+                sep=None,
+                engine='python')
             check_column(target_name, indata)
             input_data.append(indata)
     data_info = {
-                'target_name': target_name,
-                'filename': filename,
-                'categories': categories,
-                'ordinals': ordinals,
-                'prediction_type': prediction_type
-                }
+        'target_name': target_name,
+        'filename': filename,
+        'categories': categories,
+        'ordinals': ordinals,
+        'prediction_type': prediction_type
+    }
     return input_data, data_info
 
+
 def get_file_data(file_id):
-    """
-    Attempt to retrieve dataset file.
-    If the file is corrupt or an error response is returned, it will rasie an ValueError.
+    """Attempt to retrieve dataset file. If the file is corrupt or an error
+    response is returned, it will rasie an ValueError.
 
     Parameters
     ----------
@@ -228,18 +271,18 @@ def get_file_data(file_id):
         File ID from the PennAI database
 
     Return: string
-        Dataset strings which will be read by pandas and converted to pd.DataFrame
-
+        Dataset strings which will be read by pandas
+        and converted to pd.DataFrame
     """
     uri = 'http://' + LAB_HOST + ':' + LAB_PORT + '/api/v1/files/' + file_id
     res = requests.get(uri)
 
     if res.status_code != requests.codes.ok:
         msg = ('Unable to retrieve file {file_id}.  '
-                'Status code: {status_code}. '
-                'Response text: {res_text}'.format(file_id=file_id,
-                                                    status_code=status_code,
-                                                    res_text=res.text))
+               'Status code: {status_code}. '
+               'Response text: {res_text}'.format(file_id=file_id,
+                                                  status_code=status_code,
+                                                  res_text=res.text))
         raise ValueError(msg)
 
     return res.text
@@ -260,9 +303,9 @@ def check_column(column_name, dataframe):
     """
     if column_name not in dataframe.columns.values:
         raise ValueError(
-                        'The provided data file does '
-                        'not seem to have target column {}.'.format(column_name)
-                        )
+            'The provided data file does '
+            'not seem to have target column {}.'.format(column_name)
+        )
 
 
 def bool_type(val):
@@ -310,7 +353,8 @@ def get_type(param_type):
     ----------
     param_type: string or list
         string, type of a parameter which is defined in projects.json
-        list, list of parameter types (for parameter supportting multiple input types)
+        list, list of parameter types
+        (for parameter supportting multiple input types)
 
     Returns
     -------
@@ -345,7 +389,7 @@ def get_type(param_type):
                         else:
                             conv_val = int(conv_val)
                         break
-                except:
+                except BaseException:
                     pass
             if conv_val == '':
                 raise argparse.ArgumentTypeError(val + ' is not a valid value')

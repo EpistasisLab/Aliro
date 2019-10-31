@@ -1,35 +1,46 @@
+import warnings
+from io import StringIO
+from nose.tools import assert_raises, assert_equal, nottest
+from unittest import mock
+import unittest
+import requests
+from sklearn import __version__ as skl_version
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.externals import joblib
+import json
+from shutil import rmtree
+from tempfile import mkdtemp
+from sklearn.utils import check_X_y
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.datasets import load_digits, load_boston
 import os
 import sys
+try:
+    os.environ['RANDOM_SEED'] = '42'
+    from driver import main
+    from io_utils import Experiment, get_projects, get_input_data, get_type
+    from skl_utils import setup_model_params, plot_dot_plot, compute_imp_score
+    from skl_utils import balanced_accuracy, generate_results
+    from skl_utils import generate_export_codes, SCORERS
+except Exception:
+    os.environ['RANDOM_SEED'] = '42'
+    Path = "machine/learn"
+    if Path not in sys.path:
+        sys.path.insert(0, Path)
+    from driver import main
+    from io_utils import Experiment, get_projects, get_input_data, get_type
+    from skl_utils import setup_model_params, plot_dot_plot, compute_imp_score
+    from skl_utils import balanced_accuracy, generate_results
+    from skl_utils import generate_export_codes, SCORERS
 # mock os.environ in unittest
-os.environ['RANDOM_SEED'] = '42'
-from sklearn.datasets import load_digits, load_boston
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.utils import check_X_y
-from tempfile import mkdtemp
-from shutil import rmtree
-Path = "machine/learn"
-if Path not in sys.path:
-    sys.path.insert(0, Path)
-from skl_utils import balanced_accuracy, generate_results, generate_export_codes, SCORERS
-from skl_utils import setup_model_params, plot_dot_plot, compute_imp_score
-from io_utils import Experiment, get_projects, get_input_data, get_type
-from driver import main
-import json
-from sklearn.externals import joblib
-from sklearn.model_selection import train_test_split, cross_validate
-import pandas as pd
-import numpy as np
-from sklearn import __version__ as skl_version
-import requests
-import unittest
-from unittest import mock
-from nose.tools import assert_raises, assert_equal, nottest
-from io import StringIO
-import warnings
-train_test_split=nottest(train_test_split)
+
+
+train_test_split = nottest(train_test_split)
 
 # test input file for multiclass classification
 test_clf_input = "machine/test/iris_full.tsv"
@@ -79,16 +90,19 @@ def make_train_test_split(input_data, target_name, random_state):
     feature_names: np.array
         feature names
     """
-    feature_names = np.array([x for x in input_data.columns.values if x != target_name])
+    feature_names = np.array(
+        [x for x in input_data.columns.values if x != target_name])
 
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
 
-    features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+    features, target = check_X_y(
+        features, target, dtype=None, order="C", force_all_finite=True)
 
     training_features, testing_features, training_classes, testing_classes = \
         train_test_split(features, target, random_state=random_state)
     return training_features, testing_features, training_classes, testing_classes, feature_names
+
 
 training_features_1, testing_features_1, training_classes_1, testing_classes_1, feature_names_1 = \
     make_train_test_split(input_data=test_clf_input_df, target_name='class', random_state=42)
@@ -129,92 +143,128 @@ def mocked_requests_get(*args, **kwargs):
             return self.json_data
 
     if args[0] == 'http://lab:5080/api/v1/experiments/test_id':
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id"}), 200)
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id2':
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id2"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id3': # different target names
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id3"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id4': # no target name
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id4"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id5': # invalid target name
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id5"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id6': # with categorical features
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id6"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id7': # with categorical features
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id7"}), 200)
-    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id8': # with categorical features
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id8"}), 200)
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id2"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id3':  # different target names
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id3"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id4':  # no target name
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id4"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id5':  # invalid target name
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id5"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id6':  # with categorical features
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id6"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id7':  # with categorical features
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id7"}), 200)
+    elif args[0] == 'http://lab:5080/api/v1/experiments/test_id8':  # with categorical features
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id8"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id9':
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id9"}), 200)
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id9"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/experiments/test_id10':
-        return MockResponse(json.dumps({"_dataset_id": "test_dataset_id10"}), 200)
+        return MockResponse(json.dumps(
+            {"_dataset_id": "test_dataset_id10"}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "dependent_col": "class",
-                                                    "filename": "test_clf_input",
-                                                    "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps(
+                {
+                    "files": [
+                        {
+                            "_id": "test_file_id",
+                            "dependent_col": "class",
+                            "filename": "test_clf_input",
+                            "prediction_type": "classification"}]}),
+            200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id2':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "dependent_col": "class",
-                                                    "filename": "test_clf_input",
-                                                    "prediction_type": "classification"},
-                                                {"_id":"test_file_id4",
-                                                "dependent_col": "class",
-                                                "filename": "test_clf_input2",
-                                                "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps({"files": [{"_id": "test_file_id",
+                                   "dependent_col": "class",
+                                   "filename": "test_clf_input",
+                                   "prediction_type": "classification"},
+                                  {"_id": "test_file_id4",
+                                   "dependent_col": "class",
+                                   "filename": "test_clf_input2",
+                                   "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id3':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                "dependent_col": "class",
-                                                "filename": "test_clf_input",
-                                                "prediction_type": "classification"},
-                                                {"_id":"test_file_id4",
-                                                "dependent_col": "target",
-                                                "filename": "test_clf_input2",
-                                                "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps({"files": [{"_id": "test_file_id",
+                                   "dependent_col": "class",
+                                   "filename": "test_clf_input",
+                                   "prediction_type": "classification"},
+                                  {"_id": "test_file_id4",
+                                   "dependent_col": "target",
+                                   "filename": "test_clf_input2",
+                                   "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id4':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "filename": "test_clf_input",
-                                                    "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps({"files": [{"_id": "test_file_id",
+                                   "filename": "test_clf_input",
+                                   "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id5':
-        return MockResponse(json.dumps({"files": [{"_id":"test_file_id",
-                                                    "dependent_col": "NA_class",
-                                                    "filename": "test_clf_input",
-                                                    "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps(
+                {
+                    "files": [
+                        {
+                            "_id": "test_file_id",
+                            "dependent_col": "NA_class",
+                            "filename": "test_clf_input",
+                            "prediction_type": "classification"}]}),
+            200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id6':
-        return MockResponse(json.dumps({"files": [
-                            {"_id":"test_file_id3",
-                            "dependent_col": "class",
-                            "categorical_features":  ["test_categorical_feature_1",
-                                                    "test_categorical_feature_2"],
-                            "ordinal_features":  {"test_ordinal_feature": [1, 3, 5, 7, 9]},
-                            "filename": "test_clf_input3",
-                            "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps({"files": [
+                {"_id": "test_file_id3",
+                 "dependent_col": "class",
+                 "categorical_features": ["test_categorical_feature_1",
+                                          "test_categorical_feature_2"],
+                 "ordinal_features": {"test_ordinal_feature": [1, 3, 5, 7, 9]},
+                 "filename": "test_clf_input3",
+                             "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id7':
-        return MockResponse(json.dumps({"files":
-                                    [{"_id":"test_file_id4",
-                                    "dependent_col": "class",
-                                    "filename": "test_clf_input",
-                                    "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps(
+                {
+                    "files": [
+                        {
+                            "_id": "test_file_id4",
+                            "dependent_col": "class",
+                            "filename": "test_clf_input",
+                            "prediction_type": "classification"}]}),
+            200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id8':
-        return MockResponse(json.dumps({"files": [
-                            {"_id":"test_file_id5",
-                            "dependent_col": "target_class",
-                            "categorical_features" : ["cat"],
-	                        "ordinal_features" : {"ord" : ["first", "second", "third"]},
-                            "filename": "test_clf_input5",
-                            "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps(
+                {"files": [
+                    {"_id": "test_file_id5",
+                     "dependent_col": "target_class",
+                     "categorical_features": ["cat"],
+                     "ordinal_features": {"ord": ["first", "second", "third"]},
+                     "filename": "test_clf_input5",
+                     "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id9':
-        return MockResponse(json.dumps({"files": [
-                            {"_id":"test_file_id6",
-                            "dependent_col": "class",
-                            "filename": "test_clf_input6",
-                            "prediction_type": "classification"}]}), 200)
+        return MockResponse(
+            json.dumps(
+                {"files": [
+                    {"_id": "test_file_id6",
+                     "dependent_col": "class",
+                     "filename": "test_clf_input6",
+                     "prediction_type": "classification"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/datasets/test_dataset_id10':
-        return MockResponse(json.dumps({"files": [
-                            {"_id":"test_file_id2",
-                            "dependent_col": "class",
-                            "filename": "test_reg_input",
-                            "prediction_type": "regression"}]}), 200)
+        return MockResponse(
+            json.dumps({"files": [
+                {"_id": "test_file_id2",
+                 "dependent_col": "class",
+                 "filename": "test_reg_input",
+                             "prediction_type": "regression"}]}), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id':
         return MockResponse(open(test_clf_input2).read(), 200)
     elif args[0] == 'http://lab:5080/api/v1/files/test_file_id2':
@@ -234,10 +284,11 @@ def mocked_requests_get(*args, **kwargs):
 
 
 class APITESTCLASS(unittest.TestCase):
-    # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
+    # We patch 'requests.get' with our own method. The mock object is passed
+    # in to our test case method.
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data(self, mock_get):
-        """Test get_input_data function return one input dataset"""
+        """Test get_input_data function return one input dataset."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id'
         LAB_PORT = '5080'
@@ -253,10 +304,10 @@ class APITESTCLASS(unittest.TestCase):
         assert data_info['categories'] is None
         assert data_info['ordinals'] is None
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_2(self, mock_get):
-        """Test get_input_data function return a list of input dataset for cross-validataion"""
+        """Test get_input_data function return a list of input dataset for
+        cross-validataion."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id2'
         LAB_PORT = '5080'
@@ -274,10 +325,10 @@ class APITESTCLASS(unittest.TestCase):
         assert data_info['categories'] is None
         assert data_info['ordinals'] is None
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_3(self, mock_get):
-        """Test get_input_data function raises RuntimeError when target names are inconsistent in two dataset files of one experiment."""
+        """Test get_input_data function raises RuntimeError when target names
+        are inconsistent in two dataset files of one experiment."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id3'
         LAB_PORT = '5080'
@@ -287,7 +338,8 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_4(self, mock_get):
-        """Test get_input_data function raises RuntimeError when target names are no available from API"""
+        """Test get_input_data function raises RuntimeError when target names
+        are no available from API."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id4'
         LAB_PORT = '5080'
@@ -295,10 +347,10 @@ class APITESTCLASS(unittest.TestCase):
         # Assert requests.get calls
         assert_raises(RuntimeError, get_input_data, _id, tmpdir)
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_5(self, mock_get):
-        """Test get_input_data function raises ValueError when target names are no available in input dataset."""
+        """Test get_input_data function raises ValueError when target names are
+        no available in input dataset."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id5'
         LAB_PORT = '5080'
@@ -308,7 +360,8 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_input_data_6(self, mock_get):
-        """Test get_input_data function return one input dataset with categorical and ordinal features"""
+        """Test get_input_data function return one input dataset with
+        categorical and ordinal features."""
         tmpdir = mkdtemp() + '/'
         _id = 'test_id6'
         LAB_PORT = '5080'
@@ -321,10 +374,11 @@ class APITESTCLASS(unittest.TestCase):
         assert exp_input_data.equals(input_data)
         assert data_info['filename'][0] == exp_filename
         assert data_info['target_name'] == 'class'
-        assert data_info['categories'] == ["test_categorical_feature_1", "test_categorical_feature_2"]
+        assert data_info['categories'] == [
+            "test_categorical_feature_1",
+            "test_categorical_feature_2"]
         assert list(data_info['ordinals'].keys()) == ["test_ordinal_feature"]
         assert data_info['ordinals']['test_ordinal_feature'] == [1, 3, 5, 7, 9]
-
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_projects(self, mock_get):
@@ -332,7 +386,6 @@ class APITESTCLASS(unittest.TestCase):
         projects = get_projects()
 
         assert projects == projects_json_data
-
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_Experiment_init(self, mock_get):
@@ -345,7 +398,7 @@ class APITESTCLASS(unittest.TestCase):
             "tol": 0.0001,
             "C": 1,
             "gamma": 0.01
-            }
+        }
         exp = Experiment(args=args, basedir='.')
 
         assert exp.args == args
@@ -355,7 +408,8 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_Experiment_get_model(self, mock_get):
-        """Test Experiment get_model function assign correct parameter values including static parameters."""
+        """Test Experiment get_model function assign correct parameter values
+        including static parameters."""
 
         args = {
             "method": "SVC",
@@ -366,7 +420,7 @@ class APITESTCLASS(unittest.TestCase):
             "gamma": 0.01,
             "degree": 2,
             "coef0": 0
-            }
+        }
         exp = Experiment(args=args, basedir='.')
         model, method_type, encoding_strategy = exp.get_model()
         params = model.get_params()
@@ -378,12 +432,14 @@ class APITESTCLASS(unittest.TestCase):
         assert encoding_strategy == "OrdinalEncoder"
         assert method_type == "classification"
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_classification_algorithms(self, mock_get):
-        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
+        """Test main function in each classification machine learning in
+        projects.json can produce expected outputs."""
 
-        classification_json_data = [proj for proj in projects_json_data if proj["category"] == "classification"]
+        classification_json_data = [
+            proj for proj in projects_json_data if
+            proj["category"] == "classification"]
 
         for obj in classification_json_data:
             algorithm_name = obj["name"]
@@ -410,8 +466,10 @@ class APITESTCLASS(unittest.TestCase):
             assert train_score
             assert os.path.isfile('{}/prediction_values.json'.format(outdir))
             assert os.path.isfile('{}/feature_importances.json'.format(outdir))
-            assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+            assert os.path.isfile(
+                '{}/confusion_matrix_{}.png'.format(outdir, _id))
+            # only has roc for binary outcome
+            assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
             # test pickle file
@@ -422,24 +480,26 @@ class APITESTCLASS(unittest.TestCase):
             pickle_model = joblib.load(pickle_file)
             load_clf = pickle_model['model']
             cv_scores = cross_validate(
-                                        estimator=load_clf,
-                                        X=test_clf_input_df2.drop('class', axis=1).values,
-                                        y=test_clf_input_df2['class'].values,
-                                        scoring=SCORERS['balanced_accuracy'],
-                                        cv=10,
-                                        return_train_score=True
-                                        )
+                estimator=load_clf,
+                X=test_clf_input_df2.drop('class', axis=1).values,
+                y=test_clf_input_df2['class'].values,
+                scoring=SCORERS['balanced_accuracy'],
+                cv=10,
+                return_train_score=True
+            )
 
             load_clf_score = cv_scores['train_score'].mean()
 
             print(algorithm_name, train_score, load_clf_score)
             assert train_score == load_clf_score
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_2(self, mock_get):
-        """Test main function when applying GradientBoostingClassifier on dateset with categorical features."""
-        obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
+        """Test main function when applying GradientBoostingClassifier on
+        dateset with categorical features."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "GradientBoostingClassifier")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -474,25 +534,28 @@ class APITESTCLASS(unittest.TestCase):
         pickle_model = joblib.load(pickle_file)
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
-        assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
+        # not use OneHotEncoder in GradientBoostingClassifier
+        assert not load_clf_str.count('OneHotEncoder')
         cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_clf_input_df3.drop('class', axis=1).values,
-                                    y=test_clf_input_df3['class'].values,
-                                    scoring=SCORERS['balanced_accuracy'],
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            estimator=load_clf,
+            X=test_clf_input_df3.drop('class', axis=1).values,
+            y=test_clf_input_df3['class'].values,
+            scoring=SCORERS['balanced_accuracy'],
+            cv=10,
+            return_train_score=True
+        )
 
         load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_3(self, mock_get):
-        """Test main function when applying LogisticRegression on dateset with categorical features and ordinal features."""
-        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        """Test main function when applying LogisticRegression on dateset with
+        categorical features and ordinal features."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -531,22 +594,24 @@ class APITESTCLASS(unittest.TestCase):
         load_clf_str = str(load_clf)
         assert load_clf_str.count('OneHotEncoder')
         cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_clf_input_df3.drop('class', axis=1).values,
-                                    y=test_clf_input_df3['class'].values,
-                                    scoring=SCORERS['balanced_accuracy'],
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            estimator=load_clf,
+            X=test_clf_input_df3.drop('class', axis=1).values,
+            y=test_clf_input_df3['class'].values,
+            scoring=SCORERS['balanced_accuracy'],
+            cv=10,
+            return_train_score=True
+        )
 
         load_clf_score = cv_scores['train_score'].mean()
         assert train_score == load_clf_score
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_4(self, mock_get):
-        """Test main function when applying LogisticRegression on appendicitis dateset with categorical features and ordinal features."""
-        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        """Test main function when applying LogisticRegression on appendicitis
+        dateset with categorical features and ordinal features."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -580,8 +645,11 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_5(self, mock_get):
-        """Test main function when applying LogisticRegression on dateset with more than 10 features."""
-        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        """Test main function when applying LogisticRegression on dateset with
+        more than 10 features."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -613,11 +681,13 @@ class APITESTCLASS(unittest.TestCase):
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_6(self, mock_get):
-        """Test main function do not export roc_curve for dataset without binary outcome. """
-        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        """Test main function do not export roc_curve for dataset without
+        binary outcome."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -642,7 +712,8 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/prediction_values.json'.format(outdir))
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-        assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+        # only has roc for binary outcome
+        assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
         # test pickle file
@@ -653,13 +724,13 @@ class APITESTCLASS(unittest.TestCase):
         pickle_model = joblib.load(pickle_file)
         load_clf = pickle_model['model']
         cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_clf_input_df.drop('class', axis=1).values,
-                                    y=test_clf_input_df['class'].values,
-                                    scoring=SCORERS['balanced_accuracy'],
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            estimator=load_clf,
+            X=test_clf_input_df.drop('class', axis=1).values,
+            y=test_clf_input_df['class'].values,
+            scoring=SCORERS['balanced_accuracy'],
+            cv=10,
+            return_train_score=True
+        )
 
         load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
@@ -667,8 +738,11 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_7(self, mock_get):
-        """Test main function when tuning GradientBoostingClassifier on dateset with categorical features."""
-        obj = next(item for item in projects_json_data if item["name"] == "GradientBoostingClassifier")
+        """Test main function when tuning GradientBoostingClassifier on dateset
+        with categorical features."""
+        obj = next(
+            item for item in projects_json_data
+            if item["name"] == "GradientBoostingClassifier")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -710,7 +784,8 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
-        assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
+        assert os.path.isfile(
+            '{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -718,15 +793,16 @@ class APITESTCLASS(unittest.TestCase):
         pickle_model = joblib.load(pickle_file)
         load_clf = pickle_model['model']
         load_clf_str = str(load_clf)
-        assert not load_clf_str.count('OneHotEncoder') # not use OneHotEncoder in GradientBoostingClassifier
+        # not use OneHotEncoder in GradientBoostingClassifier
+        assert not load_clf_str.count('OneHotEncoder')
         cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_clf_input_df3.drop('class', axis=1).values,
-                                    y=test_clf_input_df3['class'].values,
-                                    scoring=SCORERS['balanced_accuracy'],
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            estimator=load_clf,
+            X=test_clf_input_df3.drop('class', axis=1).values,
+            y=test_clf_input_df3['class'].values,
+            scoring=SCORERS['balanced_accuracy'],
+            cv=10,
+            return_train_score=True
+        )
 
         load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
@@ -734,8 +810,11 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_8(self, mock_get):
-        """Test main function when tuning LogisticRegression on Iris dateset."""
-        obj = next(item for item in projects_json_data if item["name"] == "LogisticRegression")
+        """Test main function when tuning LogisticRegression on Iris
+        dateset."""
+        obj = next(
+            item for item in projects_json_data if
+            item["name"] == "LogisticRegression")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -773,7 +852,8 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
-        assert os.path.isfile('{}/grid_search_results_{}.csv'.format(outdir, _id))
+        assert os.path.isfile(
+            '{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -783,23 +863,24 @@ class APITESTCLASS(unittest.TestCase):
         load_clf_str = str(load_clf)
         print(load_clf)
         cv_scores = cross_validate(
-                                    estimator=load_clf,
-                                    X=test_clf_input_df2.drop('class', axis=1).values,
-                                    y=test_clf_input_df2['class'].values,
-                                    scoring=SCORERS['balanced_accuracy'],
-                                    cv=10,
-                                    return_train_score=True
-                                    )
+            estimator=load_clf,
+            X=test_clf_input_df2.drop('class', axis=1).values,
+            y=test_clf_input_df2['class'].values,
+            scoring=SCORERS['balanced_accuracy'],
+            cv=10,
+            return_train_score=True
+        )
 
         load_clf_score = cv_scores['train_score'].mean()
         print(algorithm_name, train_score, load_clf_score)
         assert train_score == load_clf_score
 
-
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_regression_algorithms(self, mock_get):
-        """Test main function in each classification machine learning in projects.json can produce expected outputs."""
-        regression_json_data = [proj for proj in projects_json_data if proj["category"] == "regression"]
+        """Test main function in each classification machine learning in
+        projects.json can produce expected outputs."""
+        regression_json_data = [
+            proj for proj in projects_json_data if proj["category"] == "regression"]
         for obj in regression_json_data:
             algorithm_name = obj["name"]
             schema = obj["schema"]
@@ -830,13 +911,13 @@ class APITESTCLASS(unittest.TestCase):
             pickle_model = joblib.load(pickle_file)
             load_clf = pickle_model['model']
             cv_scores = cross_validate(
-                                        estimator=load_clf,
-                                        X=test_reg_input_df.drop('class', axis=1).values,
-                                        y=test_reg_input_df['class'].values,
-                                        scoring="neg_mean_squared_error",
-                                        cv=10,
-                                        return_train_score=True
-                                        )
+                estimator=load_clf,
+                X=test_reg_input_df.drop('class', axis=1).values,
+                y=test_reg_input_df['class'].values,
+                scoring="neg_mean_squared_error",
+                cv=10,
+                return_train_score=True
+            )
 
             load_clf_score = abs(cv_scores['train_score'].mean())
             print(algorithm_name, train_score, load_clf_score)
@@ -844,8 +925,10 @@ class APITESTCLASS(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_main_reg_2(self, mock_get):
-        """Test main function should raise RuntimeError if the dataset type is inconsistent with method type."""
-        obj = next(item for item in projects_json_data if item["name"] == "DecisionTreeClassifier")
+        """Test main function should raise RuntimeError if the dataset type is
+        inconsistent with method type."""
+        obj = next(
+            item for item in projects_json_data if item["name"] == "DecisionTreeClassifier")
         algorithm_name = obj["name"]
         schema = obj["schema"]
         args = {}
@@ -862,12 +945,14 @@ class APITESTCLASS(unittest.TestCase):
         assert_raises(RuntimeError, main, args, {})
 
 
-
 def test_balanced_accuracy():
     """Assert that the balanced_accuracy in PennAI returns correct accuracy."""
-    y_true = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
-    y_pred1 = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
-    y_pred2 = np.array([3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    y_true = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+                       2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    y_pred1 = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+                        2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
+    y_pred2 = np.array([3, 3, 3, 3, 3, 2, 2, 2, 2, 2,
+                        2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
     accuracy_score1 = balanced_accuracy(y_true, y_pred1)
     accuracy_score2 = balanced_accuracy(y_true, y_pred2)
     assert np.allclose(accuracy_score1, 1.0)
@@ -875,13 +960,19 @@ def test_balanced_accuracy():
 
 
 def test_generate_results_1():
-    """Test generate results can produce expected outputs in classification mode."""
+    """Test generate results can produce expected outputs in classification
+    mode."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=True)
+    generate_results(
+        model=test_clf,
+        input_data=test_clf_input_df,
+        tmpdir=tmpdir,
+        _id=_id,
+        target_name='class',
+        figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -891,7 +982,8 @@ def test_generate_results_1():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -901,21 +993,29 @@ def test_generate_results_1():
 
 
 def test_generate_results_2():
-    """Test generate results can produce expected outputs in classification mode without figure_export=False"""
+    """Test generate results can produce expected outputs in classification
+    mode without figure_export=False."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_clf, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+    generate_results(
+        model=test_clf,
+        input_data=test_clf_input_df,
+        tmpdir=tmpdir,
+        _id=_id,
+        target_name='class',
+        figure_export=False,
+        random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='class'
+    target_name = 'class'
     features = input_data.drop(target_name, axis=1).values
     classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        train_test_split(features, classes, random_state=42,
+                         stratify=input_data[target_name])
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -926,7 +1026,8 @@ def test_generate_results_2():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -936,13 +1037,13 @@ def test_generate_results_2():
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
     cv_scores = cross_validate(
-                                estimator=load_clf,
-                                X=test_clf_input_df.drop('class', axis=1).values,
-                                y=test_clf_input_df['class'].values,
-                                scoring=SCORERS['balanced_accuracy'],
-                                cv=10,
-                                return_train_score=True
-                                )
+        estimator=load_clf,
+        X=test_clf_input_df.drop('class', axis=1).values,
+        y=test_clf_input_df['class'].values,
+        scoring=SCORERS['balanced_accuracy'],
+        cv=10,
+        return_train_score=True
+    )
 
     load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
@@ -951,7 +1052,8 @@ def test_generate_results_2():
 
 
 def test_generate_results_3():
-    """Test generate results can produce expected outputs in regression mode"""
+    """Test generate results can produce expected outputs in regression
+    mode."""
     #tmpdir = mkdtemp() + '/'
     tmpdir = 'machine/learn/tmp/'
     _id = 'test_id'
@@ -959,8 +1061,8 @@ def test_generate_results_3():
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class',
-                    mode='regression', figure_export=True)
+                     tmpdir=tmpdir, _id=_id, target_name='class',
+                     mode='regression', figure_export=True)
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -970,7 +1072,8 @@ def test_generate_results_3():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/reg_cv_resi_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
@@ -978,18 +1081,19 @@ def test_generate_results_3():
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
-    #rmtree(tmpdir)
+    # rmtree(tmpdir)
 
 
 def test_generate_results_4():
-    """Test generate results can produce expected outputs in regression mode without figure_export=False"""
+    """Test generate results can produce expected outputs in regression mode
+    without figure_export=False."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_reg, input_data=test_reg_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class',
-                    mode='regression', figure_export=False)
+                     tmpdir=tmpdir, _id=_id, target_name='class',
+                     mode='regression', figure_export=False)
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -999,7 +1103,8 @@ def test_generate_results_4():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -1009,42 +1114,59 @@ def test_generate_results_4():
 
 
 def test_generate_results_5():
-    """Test generate results can raise a error when input dataset is in invalid format."""
+    """Test generate results can raise a error when input dataset is in invalid
+    format."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     # data with NaN
     test_reg_input_df_nan = test_reg_input_df
-    test_reg_input_df_nan.iloc[1,1] = np.nan
-    assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_nan,
-                    tmpdir, _id, 'class',
-                    'regression', False)
+    test_reg_input_df_nan.iloc[1, 1] = np.nan
+    assert_raises(
+        ValueError,
+        generate_results,
+        test_reg,
+        test_reg_input_df_nan,
+        tmpdir,
+        _id,
+        'class',
+        'regression',
+        False)
     # data with infinity value
     test_reg_input_df_inf = test_reg_input_df
-    test_reg_input_df_inf.iloc[1,1] = np.inf
-    assert_raises(ValueError, generate_results, test_reg, test_reg_input_df_inf,
-                    tmpdir, _id, 'class',
-                    'regression', False)
+    test_reg_input_df_inf.iloc[1, 1] = np.inf
+    assert_raises(
+        ValueError,
+        generate_results,
+        test_reg,
+        test_reg_input_df_inf,
+        tmpdir,
+        _id,
+        'class',
+        'regression',
+        False)
 
 
 def test_generate_results_6():
-    """Test generate results can produce expected pickle files with RandomForestClassifier."""
+    """Test generate results can produce expected pickle files with
+    RandomForestClassifier."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_rfc, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class',
-                    figure_export=False, random_state=42)
+                     tmpdir=tmpdir, _id=_id, target_name='class',
+                     figure_export=False, random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='class'
+    target_name = 'class'
     features = input_data.drop(target_name, axis=1).values
     classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        train_test_split(features, classes,
+                         random_state=42, stratify=input_data[target_name])
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -1055,7 +1177,8 @@ def test_generate_results_6():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -1065,13 +1188,13 @@ def test_generate_results_6():
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
     cv_scores = cross_validate(
-                                estimator=load_clf,
-                                X=test_clf_input_df.drop('class', axis=1).values,
-                                y=test_clf_input_df['class'].values,
-                                scoring=SCORERS['balanced_accuracy'],
-                                cv=10,
-                                return_train_score=True
-                                )
+        estimator=load_clf,
+        X=test_clf_input_df.drop('class', axis=1).values,
+        y=test_clf_input_df['class'].values,
+        scoring=SCORERS['balanced_accuracy'],
+        cv=10,
+        return_train_score=True
+    )
 
     load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
@@ -1080,21 +1203,29 @@ def test_generate_results_6():
 
 
 def test_generate_results_7():
-    """Test generate results can produce expected pickle files with GradientBoostingClassifier."""
+    """Test generate results can produce expected pickle files with
+    GradientBoostingClassifier."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
-    generate_results(model=test_gbc, input_data=test_clf_input_df,
-                    tmpdir=tmpdir, _id=_id, target_name='class', figure_export=False, random_state=42)
+    generate_results(
+        model=test_gbc,
+        input_data=test_clf_input_df,
+        tmpdir=tmpdir,
+        _id=_id,
+        target_name='class',
+        figure_export=False,
+        random_state=42)
 
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='class'
+    target_name = 'class'
     features = input_data.drop(target_name, axis=1).values
     classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        train_test_split(features, classes, random_state=42,
+                         stratify=input_data[target_name])
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -1105,7 +1236,8 @@ def test_generate_results_7():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert not os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -1115,13 +1247,13 @@ def test_generate_results_7():
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
     cv_scores = cross_validate(
-                                estimator=load_clf,
-                                X=test_clf_input_df.drop('class', axis=1).values,
-                                y=test_clf_input_df['class'].values,
-                                scoring=SCORERS['balanced_accuracy'],
-                                cv=10,
-                                return_train_score=True
-                                )
+        estimator=load_clf,
+        X=test_clf_input_df.drop('class', axis=1).values,
+        y=test_clf_input_df['class'].values,
+        scoring=SCORERS['balanced_accuracy'],
+        cv=10,
+        return_train_score=True
+    )
 
     load_clf_score = cv_scores['train_score'].mean()
     assert train_score == load_clf_score
@@ -1130,16 +1262,17 @@ def test_generate_results_7():
 
 
 def test_generate_results_9():
-    """Test generate results can produce expected outputs with a categorical feature"""
+    """Test generate results can produce expected outputs with a categorical
+    feature."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(model=test_clf, input_data=test_clf_input_df3,
-                    tmpdir=tmpdir, _id=_id, target_name='class',
-                    figure_export=True,
-                    categories=["test_categorical_feature_1"],
-                    encoding_strategy='OrdinalEncoder')
+                     tmpdir=tmpdir, _id=_id, target_name='class',
+                     figure_export=True,
+                     categories=["test_categorical_feature_1"],
+                     encoding_strategy='OrdinalEncoder')
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -1149,7 +1282,8 @@ def test_generate_results_9():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -1159,19 +1293,30 @@ def test_generate_results_9():
 
 
 def test_generate_results_10():
-    """Test generate results can produce expected outputs with 2 categorical features and 1 ordinal feature."""
+    """Test generate results can produce expected outputs with 2 categorical
+    features and 1 ordinal feature."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     generate_results(
-                    model=test_clf, input_data=test_clf_input_df3,
-                    tmpdir=tmpdir, _id=_id, target_name='class',
-                    figure_export=True,
-                    categories=["test_categorical_feature_1", "test_categorical_feature_2"],
-                    ordinals={'test_ordinal_feature': [1,3,5,7,9]},
-                    encoding_strategy='OrdinalEncoder'
-                    )
+        model=test_clf,
+        input_data=test_clf_input_df3,
+        tmpdir=tmpdir,
+        _id=_id,
+        target_name='class',
+        figure_export=True,
+        categories=[
+            "test_categorical_feature_1",
+            "test_categorical_feature_2"],
+        ordinals={
+            'test_ordinal_feature': [
+                1,
+                3,
+                5,
+                7,
+                9]},
+        encoding_strategy='OrdinalEncoder')
 
     value_json = '{}/value.json'.format(outdir)
     assert os.path.isfile(value_json)
@@ -1181,7 +1326,8 @@ def test_generate_results_10():
     assert os.path.isfile('{}/prediction_values.json'.format(outdir))
     assert os.path.isfile('{}/feature_importances.json'.format(outdir))
     assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
-    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id)) # only has roc for binary outcome
+    # only has roc for binary outcome
+    assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
     # test pickle file
@@ -1191,17 +1337,18 @@ def test_generate_results_10():
 
 
 def test_plot_dot_plot():
-    """Test plot_dot_plot function generates dot and png plots for classification dataset."""
+    """Test plot_dot_plot function generates dot and png plots for
+    classification dataset."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_1,
-                    training_classes_1,
-                    feature_names_1,
-                    indices=np.array([0,1,2,3]),
-                    random_state=42,
-                    mode='classification')
+                                      training_classes_1,
+                                      feature_names_1,
+                                      indices=np.array([0, 1, 2, 3]),
+                                      random_state=42,
+                                      mode='classification')
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     assert os.path.isfile(dot_file)
@@ -1211,17 +1358,18 @@ def test_plot_dot_plot():
 
 
 def test_plot_dot_plot_2():
-    """Test plot_dot_plot function generates dot and png plots for regression dataset."""
+    """Test plot_dot_plot function generates dot and png plots for regression
+    dataset."""
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
     os.mkdir(outdir)
     dtree_train_score = plot_dot_plot(tmpdir, _id, training_features_4,
-                    training_classes_4,
-                    feature_names_4,
-                    indices=np.array(range(5)),
-                    random_state=42,
-                    mode='regression')
+                                      training_classes_4,
+                                      feature_names_4,
+                                      indices=np.array(range(5)),
+                                      random_state=42,
+                                      mode='regression')
     dot_file = '{0}{1}/dtree_{1}.dot'.format(tmpdir, _id)
     png_file = '{0}{1}/dtree_{1}.png'.format(tmpdir, _id)
     assert os.path.isfile(dot_file)
@@ -1230,65 +1378,73 @@ def test_plot_dot_plot_2():
 
 
 def test_compute_imp_score():
-    """Test compute_imp_score function returns 'Sum of Squares of Coefficients' with LogisticRegression on multiclass dataset."""
+    """Test compute_imp_score function returns 'Sum of Squares of Coefficients'
+    with LogisticRegression on multiclass dataset."""
     model = LogisticRegression()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'accuracy',
-                                        training_features_1,
-                                        training_classes_1,
-                                        42)
+                                              'accuracy',
+                                              training_features_1,
+                                              training_classes_1,
+                                              42)
     assert imp_score_type == "Sum of Squares of Coefficients"
 
+
 def test_compute_imp_score_2():
-    """Test compute_imp_score function returns 'Coefficient' with LinearRegression on regression dataset."""
+    """Test compute_imp_score function returns 'Coefficient' with
+    LinearRegression on regression dataset."""
     model = LinearRegression()
     model.fit(training_features_4, training_classes_4)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'r2',
-                                        training_features_4,
-                                        training_classes_4,
-                                        42)
+                                              'r2',
+                                              training_features_4,
+                                              training_classes_4,
+                                              42)
     assert imp_score_type == "Squares of Coefficients"
 
+
 def test_compute_imp_score_3():
-    """Test compute_imp_score function returns 'Gini Importance' with DecisionTreeClassifier on multiclass dataset."""
+    """Test compute_imp_score function returns 'Gini Importance' with
+    DecisionTreeClassifier on multiclass dataset."""
     model = DecisionTreeClassifier()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'accuracy',
-                                        training_features_1,
-                                        training_classes_1,
-                                        42)
+                                              'accuracy',
+                                              training_features_1,
+                                              training_classes_1,
+                                              42)
     assert imp_score_type == "Gini Importance"
 
 
 def test_compute_imp_score_4():
-    """Test compute_imp_score function returns 'Permutation Feature Importance' with KNeighborsClassifier on multiclass dataset."""
+    """Test compute_imp_score function returns 'Permutation Feature Importance'
+    with KNeighborsClassifier on multiclass dataset."""
     model = KNeighborsClassifier()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'accuracy',
-                                        training_features_1,
-                                        training_classes_1,
-                                        42)
+                                              'accuracy',
+                                              training_features_1,
+                                              training_classes_1,
+                                              42)
     assert imp_score_type == "Permutation Feature Importance"
 
 
 def test_compute_imp_score_5():
-    """Test compute_imp_score function returns 'Sum of Squares of Coefficients' with LogisticRegression on multiclass dataset."""
+    """Test compute_imp_score function returns 'Sum of Squares of Coefficients'
+    with LogisticRegression on multiclass dataset."""
     model = LogisticRegression()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'accuracy',
-                                        training_features_1,
-                                        training_classes_1,
-                                        42)
+                                              'accuracy',
+                                              training_features_1,
+                                              training_classes_1,
+                                              42)
     assert imp_score_type == "Sum of Squares of Coefficients"
 
 
 def test_compute_imp_score_6():
-    """Test compute_imp_score function returns 'Permutation Feature Importance' with object if one of gini importances is Nan."""
+    """Test compute_imp_score function returns 'Permutation Feature Importance'
+    with object if one of gini importances is Nan."""
     class C(DecisionTreeClassifier):
         @property
         def feature_importances_(self):
@@ -1296,14 +1452,11 @@ def test_compute_imp_score_6():
     model = C()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
-                                        'accuracy',
-                                        training_features_1,
-                                        training_classes_1,
-                                        42)
+                                              'accuracy',
+                                              training_features_1,
+                                              training_classes_1,
+                                              42)
     assert imp_score_type == "Permutation Feature Importance"
-
-
-
 
 
 def test_setup_model_params():
@@ -1320,15 +1473,17 @@ def test_generate_export_codes():
     """Test generate_export_codes can generate scripts as execpted."""
     input_data = pd.read_csv(
         test_clf_input, sep='\t')
-    target_name='class'
+    target_name = 'class'
     features = input_data.drop(target_name, axis=1).values
     classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
-        train_test_split(features, classes, random_state=42, stratify=input_data[target_name])
+        train_test_split(features, classes, random_state=42,
+                         stratify=input_data[target_name])
 
     test_clf = DecisionTreeClassifier(random_state=42)
     test_clf.fit(training_features, training_classes)
-    test_clf_score = SCORERS['balanced_accuracy'](test_clf, testing_features, testing_classes)
+    test_clf_score = SCORERS['balanced_accuracy'](
+        test_clf, testing_features, testing_classes)
 
     tmpdir = mkdtemp() + '/'
     pickle_file = tmpdir + '/test.plk'
@@ -1338,11 +1493,16 @@ def test_generate_export_codes():
     joblib.dump(pickle_model, pickle_file)
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_clf_score = SCORERS['balanced_accuracy'](load_clf, testing_features, testing_classes)
+    load_clf_score = SCORERS['balanced_accuracy'](
+        load_clf, testing_features, testing_classes)
     assert test_clf_score == load_clf_score
 
-    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'],
-                                        target_name=target_name, random_state=42)
+    pipeline_text = generate_export_codes(
+        'test.plk',
+        test_clf,
+        filename=['test_dataset.tsv'],
+        target_name=target_name,
+        random_state=42)
 
     expected_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
@@ -1418,11 +1578,13 @@ predict_target = model.predict(input_data.values)
     assert_equal(pipeline_text, expected_text)
     rmtree(tmpdir)
 
+
 def test_generate_export_codes_regression():
-    """Test generate_export_codes can generate scripts as execpted in regression mode."""
+    """Test generate_export_codes can generate scripts as execpted in
+    regression mode."""
     input_data = pd.read_csv(
         test_reg_input, sep='\t')
-    target_name='class'
+    target_name = 'class'
     features = input_data.drop(target_name, axis=1).values
     classes = input_data[target_name].values
     training_features, testing_features, training_classes, testing_classes = \
@@ -1430,7 +1592,8 @@ def test_generate_export_codes_regression():
 
     test_clf = DecisionTreeRegressor(random_state=42)
     test_clf.fit(training_features, training_classes)
-    test_clf_score = SCORERS['neg_mean_squared_error'](test_clf, testing_features, testing_classes)
+    test_clf_score = SCORERS['neg_mean_squared_error'](
+        test_clf, testing_features, testing_classes)
 
     tmpdir = mkdtemp() + '/'
     pickle_file = tmpdir + '/test.plk'
@@ -1440,11 +1603,17 @@ def test_generate_export_codes_regression():
     joblib.dump(pickle_model, pickle_file)
     pickle_model = joblib.load(pickle_file)
     load_clf = pickle_model['model']
-    load_clf_score = SCORERS['neg_mean_squared_error'](load_clf, testing_features, testing_classes)
+    load_clf_score = SCORERS['neg_mean_squared_error'](
+        load_clf, testing_features, testing_classes)
     assert test_clf_score == load_clf_score
 
-    pipeline_text = generate_export_codes('test.plk', test_clf, filename=['test_dataset.tsv'],
-                                        target_name=target_name, mode="regression", random_state=42)
+    pipeline_text = generate_export_codes(
+        'test.plk',
+        test_clf,
+        filename=['test_dataset.tsv'],
+        target_name=target_name,
+        mode="regression",
+        random_state=42)
 
     expected_text = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
@@ -1495,6 +1664,6 @@ predict_target = model.predict(input_data.values)
         target_name=target_name,
         model=str(load_clf).replace('\n', '\n#')
     )
-    
+
     assert_equal(pipeline_text, expected_text)
     rmtree(tmpdir)
