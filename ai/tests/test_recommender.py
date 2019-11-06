@@ -26,7 +26,13 @@ KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv
 KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
 
 data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
-metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, float_precision='round_trip')
+metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, 
+        float_precision='round_trip')
+
+def get_metafeatures(d):
+    """Fetch dataset metafeatures from file"""
+    df = metafeatures.loc[[d]]
+    return df
 
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
@@ -34,7 +40,9 @@ pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
-data.set_index('dataset')
+data['_id'] = data['dataset'].apply(
+        lambda x: get_metafeatures(x)['_id'])
+# data.set_index('_id')
 #ml - param combos
 
 test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
@@ -42,10 +50,6 @@ test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
         KNNDatasetRecommender, KNNMLRecommender, SlopeOneRecommender, 
         SVDRecommender ]
 
-def get_metafeatures(d):
-    """Fetch dataset metafeatures from file"""
-    df = metafeatures.loc[[d]]
-    return df
 
 def update_dataset_mf(dataset_mf,results_data):
     """Grabs metafeatures of datasets in results_data
@@ -97,7 +101,7 @@ def check_rec(rec):
     rec_obj.update(new_data, dataset_mf)
     # test making recommendations
     for n in np.arange(epochs):
-        for d in list(data.dataset.unique())[:10]:
+        for d in list(data['_id'].unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
                                           dataset_mf=get_metafeatures(d))
@@ -131,7 +135,7 @@ def check_n_recs(rec):
     rec_obj.update(new_data, dataset_mf)
     # test updating scores
     for n_recs in np.arange(5):
-        for d in list(data.dataset.unique())[:10]:
+        for d in list(data['_id'].unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
                                              dataset_mf=get_metafeatures(d))
             assert(len(ml)==n_recs)

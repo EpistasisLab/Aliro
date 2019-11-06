@@ -44,7 +44,7 @@ def load_test_data():
     '''
     return [
         ("benchmark5-metafeaturesFromDirectory", 
-         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
+         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-smaller.tsv.gz"], 
          'data/knowledgebases/test/jsonmetafeatures',
          '',
          'class',

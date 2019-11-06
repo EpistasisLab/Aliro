@@ -79,6 +79,8 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
     warnings = _validate_knowledgebase(resultsData, metafeaturesData)
 
 
+    print('metafeaturesData keys:',metafeaturesData.keys())
+    print('resultsData datasets:', resultsData.dataset.unique())
     # add an id to results so we can index them by dataset hash, 
     # i.e., the '_id' variable in metafeaturesData
     resultsData['_id'] = resultsData['dataset'].apply(
