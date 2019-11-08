@@ -31,6 +31,7 @@ metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0,
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
+    print('getting metafeatures for',d)
     df = metafeatures.loc[[d]]
     return df
 
