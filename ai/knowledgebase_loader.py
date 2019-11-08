@@ -79,12 +79,11 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
     warnings = _validate_knowledgebase(resultsData, metafeaturesData)
 
 
-    print('metafeaturesData keys:',metafeaturesData.keys())
-    print('resultsData datasets:', resultsData.dataset.unique())
     # add an id to results so we can index them by dataset hash, 
     # i.e., the '_id' variable in metafeaturesData
-    resultsData['_id'] = resultsData['dataset'].apply(
-            lambda x: metafeaturesData[x]['_id'])
+    # resultsData['_id'] = resultsData['dataset'].apply(
+    #         lambda x: metafeaturesData[x]['_id'] 
+    #         if x in metafeaturesData.keys() else x)
 
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
             'warnings': warnings}
@@ -110,11 +109,15 @@ def dedupe_results_dataframe(resultsData):
     return resultsData
 
 
-def load_default_knowledgebases(usePmlb=True, userKbResultsPath=USER_KB_RESULTS_PATH, userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
+def load_default_knowledgebases(usePmlb=True, 
+        userKbResultsPath=USER_KB_RESULTS_PATH, 
+        userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
     """
-    Convienence method to load the pmlb knowledgebase and any user-added knowledgebases
+    Convienence method to load the pmlb knowledgebase and any user-added 
+    knowledgebases
     """
-    logger.info(f"load_default_knowledgebases('{usePmlb}', '{userKbResultsPath}', '{userKbMetafeaturesPath}'")
+    logger.info(f"load_default_knowledgebases('{usePmlb}', "
+            "'{userKbResultsPath}', '{userKbMetafeaturesPath}'")
 
     resFileExtensions = ['.tsv', '.gz']
     mfFileExtensions = ['.csv', '.tsv', '.gz']
@@ -132,14 +135,16 @@ def load_default_knowledgebases(usePmlb=True, userKbResultsPath=USER_KB_RESULTS_
         for root, dirs, files in os.walk(userKbResultsPath):
             for name in files:
                 extension = os.path.splitext(name)[1]
-                if not name.startswith('.') and (extension in resFileExtensions):
+                if (not name.startswith('.') 
+                        and (extension in resFileExtensions)):
                     resultsFiles.append(os.path.join(root, name))
 
     if (userKbMetafeaturesPath):
         for root, dirs, files in os.walk(userKbMetafeaturesPath):
             for name in files:
                 extension = os.path.splitext(name)[1]
-                if not name.startswith('.') and (extension in mfFileExtensions):
+                if (not name.startswith('.') 
+                        and (extension in mfFileExtensions)):
                     metafeaturesFiles.append(os.path.join(root, name))
 
     return load_knowledgebase(
@@ -158,7 +163,8 @@ def generate_metafeatures_file(
     Generate metafeatures file for all datsets in the given directory
 
     """
-    logger.info(f"generate_metafeatures_file({outputPath}, {datasetDirectory}, {outputFilename}, ...)")
+    logger.info(f"generate_metafeatures_file({outputPath}, {datasetDirectory},"
+            " {outputFilename}, ...)")
 
     os.makedirs(outputPath, exist_ok=True)
 
@@ -167,11 +173,13 @@ def generate_metafeatures_file(
 
     df = pd.DataFrame(metafeaturesData).transpose()
 
-    logger.debug(f"generated metafeatures for {len(metafeaturesData)} datasets")
+    logger.debug(f"generated metafeatures for {len(metafeaturesData)} "
+            "datasets")
     #logger.debug(f"metafeaturesData: {metafeaturesData}")
     logger.debug(df.head())
 
-    df.to_csv(os.path.join(outputPath, outputFilename), header=True) #, quoting=csv.QUOTE_NONNUMERIC)
+    #, quoting=csv.QUOTE_NONNUMERIC)
+    df.to_csv(os.path.join(outputPath, outputFilename), header=True) 
 
     return metafeaturesData
 
@@ -180,7 +188,7 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
     """
     Validate knowledgebase
     """
-    requiredResultsFields = ['dataset', 'algorithm']
+    requiredResultsFields = ['dataset', 'algorithm', '_id']
 
     warnings = []
 
@@ -195,7 +203,9 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
     missingMfDatasets = list(set(resultsDf.dataset.unique()) 
           - set(metafeaturesDict.keys()))
     if missingMfDatasets : 
-      warnings.append(f"Found {len(missingMfDatasets)} of {len(resultsDf.dataset.unique())} experiment datasets with no associated metadata: {missingMfDatasets}")
+      warnings.append(f"Found {len(missingMfDatasets)} of "
+              "{len(resultsDf.dataset.unique())} experiment datasets with no "
+              "associated metadata: {missingMfDatasets}")
 
     # check that all the metafeatures were created with a version compatable
     # with the current version of datasest_describe.py
@@ -204,7 +214,9 @@ def _validate_knowledgebase(resultsDf, metafeaturesDict):
         if ("_metafeature_version" in v.keys()):
             versions.append(v['_metafeature_version'])
         else:
-            warnings.append(f"Required key '_metafeature_version' missing from metafeatures data for '{k}'. Existing keys: {v.keys()}.")
+            warnings.append(f"Required key '_metafeature_version' missing "
+                    "from metafeatures data for '{k}'. "
+                    "Existing keys: {v.keys()}.")
 
 
     versions = np.array(versions)
@@ -244,7 +256,8 @@ def _load_json_metafeatures_from_directory(metafeatureDirectory, datasetNames):
     :param metafeatureDirectory
     :param datasetNames - list of String dataset names
     """
-    logger.info(f"Loading json metafeatures from directory '{metafeatureDirectory}'")
+    logger.info(f"Loading json metafeatures from directory "
+            "'{metafeatureDirectory}'")
     
     metafeaturesData = {}
 

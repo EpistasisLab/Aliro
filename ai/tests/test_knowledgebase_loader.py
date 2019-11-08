@@ -1,10 +1,11 @@
 
 
-import ai.knowledgebase_loader as knowledgebase_loader
+import ai.knowledgebase_loader as kb_loader
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
-from nose.tools import nottest, raises, assert_equals, assert_is_instance, assert_dict_equal
+from nose.tools import (nottest, raises, assert_equals, 
+        assert_is_instance, assert_dict_equal)
 from parameterized import parameterized
 import pandas as pd
 import pprint
@@ -25,7 +26,8 @@ def isClose(a, b, rel_tol=1e-09, abs_tol=0.0):
         return a == b
 
     ##if not(abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)):
-    ##    print(f"tol check failed: {a}, {b}, {max(rel_tol * max(abs(a), abs(b)), abs_tol)}, {abs(a-b)}")
+    ##    print(f"tol check failed: {a}, {b}, {max(rel_tol * max(abs(a), 
+    ##      abs(b)), abs_tol)}, {abs(a-b)}")
 
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
@@ -44,7 +46,8 @@ def load_test_data():
     '''
     return [
         ("benchmark5-metafeaturesFromDirectory", 
-         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-smaller.tsv.gz"], 
+         ["data/knowledgebases/"
+             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          'data/knowledgebases/test/jsonmetafeatures',
          '',
          'class',
@@ -53,7 +56,8 @@ def load_test_data():
          1
          ),
         ("benchmark5-metafeaturesFromFile", 
-         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
+         ["data/knowledgebases/"
+             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          '',
          ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
          'class',
@@ -62,8 +66,10 @@ def load_test_data():
          0
          ),
         ("multiResultFile-metafeaturesFromFile", 
-         ["data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered1.tsv",
-            "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered2.tsv"], 
+         [("data/knowledgebases/test/results/"
+             "sklearn-benchmark5-data-knowledgebase_filtered1.tsv"),
+            ("data/knowledgebases/test/results/"
+            "sklearn-benchmark5-data-knowledgebase_filtered2.tsv")], 
          '',
          ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
          'class',
@@ -72,7 +78,8 @@ def load_test_data():
          0
          ),
         ("benchmark5-metafeaturesFromMultiFile", 
-         ["data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
+         ["data/knowledgebases/"
+             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          '',
          ['data/knowledgebases/test/metafeatures/pmlb_metafeatures1.csv',
             'data/knowledgebases/test/metafeatures/pmlb_metafeatures2.csv'],
@@ -84,20 +91,26 @@ def load_test_data():
     ]
 
 def load_default_kb_data():
+    # /test/results contains dupes from pmlb
     return [
         ("pmlbOnly", True, None, None, 79608, 165),
-        ("userOnly", False, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 6, 165),
-        ("pmlbAndUser", True, "data/knowledgebases/test/results", "data/knowledgebases/test/metafeatures", 79608, 165) # /test/results contains dupes from pmlb
+        ("userOnly", False, "data/knowledgebases/test/results", 
+            "data/knowledgebases/test/metafeatures", 6, 165),
+        ("pmlbAndUser", True, "data/knowledgebases/test/results", 
+            "data/knowledgebases/test/metafeatures", 79608, 165) 
     ]
 
 def results_files():
     return [
     (   "benchmark5", 
-        "data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"),
+        "data/knowledgebases/"
+        "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"),
     (   "test1",
-        "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered1.tsv"),
+        "data/knowledgebases/test/results/"
+        "sklearn-benchmark5-data-knowledgebase_filtered1.tsv"),
     (   "test2",
-        "data/knowledgebases/test/results/sklearn-benchmark5-data-knowledgebase_filtered2.tsv"),
+        "data/knowledgebases/test/results/"
+        "sklearn-benchmark5-data-knowledgebase_filtered2.tsv"),
     ]
 
 
@@ -108,7 +121,7 @@ class TestResultUtils(unittest.TestCase):
         jsonMetafeatureDirectory, metafeaturesFiles, targetField, 
         expectedResultsCount, expectedMetafeaturesCount, expectedWarningCount):
 
-        result = knowledgebase_loader.load_knowledgebase(
+        result = kb_loader.load_knowledgebase(
             resultsFiles=resultsFiles,
             metafeaturesFiles=metafeaturesFiles,
             jsonMetafeatureDirectory=jsonMetafeatureDirectory)
@@ -124,15 +137,17 @@ class TestResultUtils(unittest.TestCase):
 
         print("test_load_knowledgebase result.warnings:")
         print(result['warnings'])
-        self.assertEquals(len(result['warnings']), expectedWarningCount, msg = f"warnings: {result['warnings']}")
+        self.assertEquals(len(result['warnings']), expectedWarningCount, 
+                msg = f"warnings: {result['warnings']}")
 
-        self.assertEquals(len(result['metafeaturesData']), expectedMetafeaturesCount)
+        self.assertEquals(len(result['metafeaturesData']), 
+                expectedMetafeaturesCount)
         self.assertEquals(len(result['resultsData']), expectedResultsCount)
 
 
     @parameterized.expand(results_files)
     def test_load_results_from_file(self, name, testResultsFiles):
-        data = knowledgebase_loader._load_results_from_file(testResultsFiles)
+        data = kb_loader._load_results_from_file(testResultsFiles)
         assert isinstance(data, pd.DataFrame)
 
         self.assertGreater(len(data), 1)
@@ -143,7 +158,7 @@ class TestResultUtils(unittest.TestCase):
         testResultsDataDirectory = "data/datasets/pmlb_small"
         targetField = "class"
 
-        data = knowledgebase_loader._generate_metadata_from_directory(
+        data = kb_loader._generate_metadata_from_directory(
                 testResultsDataDirectory, targetField=targetField)
         assert isinstance(data, dict)
 
@@ -151,10 +166,11 @@ class TestResultUtils(unittest.TestCase):
         #assert expectedMetafeaturesData.equals(data)
 
     @parameterized.expand(load_default_kb_data)
-    def test_load_default_knowledgebases(self, name, usePmlb, userKbResultsPath, userKbMetafeaturesPath,
-        expectedResultsCount, expectedMetafeaturesCount):
+    def test_load_default_knowledgebases(self, name, usePmlb, 
+            userKbResultsPath, userKbMetafeaturesPath,
+            expectedResultsCount, expectedMetafeaturesCount):
         """the PMLB knowledgebase is loaded correctly"""
-        result = knowledgebase_loader.load_default_knowledgebases(
+        result = kb_loader.load_default_knowledgebases(
             usePmlb=usePmlb,
             userKbResultsPath=userKbResultsPath,
             userKbMetafeaturesPath=userKbMetafeaturesPath
@@ -166,8 +182,10 @@ class TestResultUtils(unittest.TestCase):
         assert isinstance(result['resultsData'], pd.DataFrame)
         assert isinstance(result['metafeaturesData'], dict)
 
-        self.assertEquals(len(result['resultsData']), expectedResultsCount)
-        self.assertEquals(len(result['metafeaturesData']), expectedMetafeaturesCount)
+        self.assertEquals(len(result['resultsData']), 
+                expectedResultsCount)
+        self.assertEquals(len(result['metafeaturesData']), 
+                expectedMetafeaturesCount)
 
         print("test_load_default_knowledgebases result.warnings:")
         print(result['warnings'])
@@ -176,9 +194,11 @@ class TestResultUtils(unittest.TestCase):
 
     def test_load_json_metafeatures_from_directory(self):
         testDirectory = "data/knowledgebases/test/jsonmetafeatures"
-        testDatasets = ["adult", "agaricus-lepiota", "allbp", "allhyper", "allhypo"]
+        testDatasets = ["adult", "agaricus-lepiota", "allbp", "allhyper", 
+                "allhypo"]
 
-        result = knowledgebase_loader._load_json_metafeatures_from_directory(testDirectory, testDatasets)
+        result = kb_loader._load_json_metafeatures_from_directory(
+                testDirectory, testDatasets)
         assert len(result) == len(testDatasets)
 
         for dataset in testDatasets:
@@ -186,7 +206,7 @@ class TestResultUtils(unittest.TestCase):
 
     def test_load_metafeatures_from_file(self):
         pmlbMetafeaturesFile = "data/knowledgebases/pmlb_metafeatures.csv.gz"
-        result = knowledgebase_loader._load_metadata_from_file(pmlbMetafeaturesFile)
+        result = kb_loader._load_metadata_from_file(pmlbMetafeaturesFile)
         assert len(result) == 165
 
     def test_generate_metafeatures_file(self):
@@ -194,7 +214,7 @@ class TestResultUtils(unittest.TestCase):
         outputFilename = 'metafeatures.csv.gz'
         targetField = 'class'
 
-        mfGen = knowledgebase_loader.generate_metafeatures_file(
+        mfGen = kb_loader.generate_metafeatures_file(
             outputFilename=outputFilename,
             outputPath=TEST_OUTPUT_PATH, 
             datasetDirectory=datasetDirectory,
@@ -204,7 +224,8 @@ class TestResultUtils(unittest.TestCase):
 
         assert len(mfGen) > 10
 
-        mfLoad = knowledgebase_loader._load_metadata_from_file(f"{TEST_OUTPUT_PATH}/{outputFilename}")
+        mfLoad = kb_loader._load_metadata_from_file(
+                f"{TEST_OUTPUT_PATH}/{outputFilename}")
 
         self.assertIsInstance(mfGen, dict)
         self.assertIsInstance(mfLoad, dict)
@@ -218,7 +239,8 @@ class TestResultUtils(unittest.TestCase):
         assert that two metafeature dictionaries are equal
     
         cannot do direct dict equalty because:
-            - metafeatures loaded from file are of type <str:Dict>, metafeatures loaded generated are of type <str:OrderedDict>
+            - metafeatures loaded from file are of type <str:Dict>, 
+            metafeatures loaded generated are of type <str:OrderedDict>
             - can contain nan values which are not equal in python
         '''
         tolerance = 0
@@ -232,8 +254,10 @@ class TestResultUtils(unittest.TestCase):
                 #print(f"{key}:{field}  {type(gen)}:{type(load)}  {gen}:{load}")
                 self.assertTrue(
                     #(gen == load) or 
-                    isClose(gen, load, abs_tol=tolerance) or
-                    ((gen==None or math.isnan(gen)) and (load==None or math.isnan(load))), 
-                    msg= f"For key/field '{key}'/'{field}', values not equal: {type(gen)}:{type(load)}  '{gen}':'{load}'")
+                    isClose(gen, load, abs_tol=tolerance) 
+                    or ((gen==None or math.isnan(gen)) 
+                        and (load==None or math.isnan(load))), 
+                    msg= (f"For key/field '{key}'/'{field}', values not equal:"
+                        " {type(gen)}:{type(load)}  '{gen}':'{load}'"))
 
         self.assertEqual(set(mf1.keys()), set(mf2.keys()))
