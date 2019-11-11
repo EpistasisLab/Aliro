@@ -42,8 +42,8 @@ class Results extends Component {
         if(typeof expScores[scoreKey].toFixed === 'function'){
           let tempLabel;
           scoreKey.includes('train')
-            ? tempLabel = 'train (' + expScores[scoreKey].toFixed(2) + ')'
-            : tempLabel = 'test (' + expScores[scoreKey].toFixed(2) + ')';
+            ? tempLabel = 'Train (' + expScores[scoreKey].toFixed(2) + ')'
+            : tempLabel = 'Test (' + expScores[scoreKey].toFixed(2) + ')';
           testList.push(
             [tempLabel, expScores[scoreKey]]
           )
@@ -139,30 +139,35 @@ class Results extends Component {
                   scoreValueList={balancedAccList}
                   chartKey="all"
                   chartColor="#7D5BA6"
+                  type="classification"
                 />
                 <Score
                   scoreName="AUC"
                   scoreValueList={aucList}
                   chartKey="auc_scores"
                   chartColor="#55D6BE"
+                  type="classification"
                 />
                 <Score
                   scoreName="Precision"
                   scoreValueList={precisionList}
                   chartKey="precision_scores"
                   chartColor="#55D6BE"
+                  type="classification"
                 />
                 <Score
                   scoreName="Recall"
                   scoreValueList={recallList}
                   chartKey="recall_scores"
                   chartColor="#55D6BE"
+                  type="classification"
                 />
                 <Score
                   scoreName="F1 Score"
                   scoreValueList={f1List}
                   chartKey="f1_scores"
                   chartColor="#55D6BE"
+                  type="classification"
                 />
               </Grid.Column>
             </Grid.Row>
@@ -222,18 +227,21 @@ class Results extends Component {
                   scoreValueList={R2List}
                   chartKey="R2"
                   chartColor="#7D5BA6"
+                  type="regression"
                 />
                 <Score
                   scoreName="MSE"
                   scoreValueList={MSEList}
                   chartKey="MSE"
                   chartColor="#55D6BE"
+                  type="regression"
                 />
                 <Score
                   scoreName="MAE"
                   scoreValueList={MAEList}
                   chartKey="MAE"
                   chartColor="#55D6BE"
+                  type="regression"
                 />
               </Grid.Column>
             </Grid.Row>
