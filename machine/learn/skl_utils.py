@@ -39,7 +39,7 @@ if 'DT_MAX_DEPTH' in os.environ:
 
 
 def balanced_accuracy(y_true, y_pred):
-    """Default scoring function: balanced accuracy.
+    """Default scoring function of classification: balanced accuracy.
     Balanced accuracy computes each class' accuracy on a per-class basis using a
     one-vs-rest encoding, then computes an unweighted average of the class accuracies.
     Parameters
@@ -51,7 +51,7 @@ def balanced_accuracy(y_true, y_pred):
     Returns
     -------
     fitness: float
-        Returns a float value indicating the individual's balanced accuracy
+        Returns a float value indicating balanced accuracy
         0.5 is as good as chance, and 1.0 is perfect predictive accuracy
     """
     all_classes = list(set(np.append(y_true, y_pred)))
@@ -75,8 +75,28 @@ def balanced_accuracy(y_true, y_pred):
     return np.mean(all_class_accuracies)
 
 
+def pearsonr(y_true, y_pred):
+    """Scoring function: Calculates a Pearson correlation coefficient.
+
+    Parameters
+    ----------
+    y_true: numpy.ndarray {n_samples}
+        True class labels
+    y_pred: numpy.ndarray {n_samples}
+        Predicted class labels by the estimator
+    Returns
+    -------
+    fitness: float
+        Returns a float value indicating Pearson correlation coefficient
+    """
+    from scipy.stats import pearsonr
+    return pearsonr(y_true, y_pred)[0]
+
+
+
 # make new SCORERS
 SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
+SCORERS['pearsonr'] = make_scorer(pearsonr)
 
 
 def generate_results(model, input_data,
@@ -212,7 +232,9 @@ def generate_results(model, input_data,
     else:
         scoring = ["r2",
                    "neg_mean_squared_error",
-                   "neg_mean_absolute_error"]
+                   "neg_mean_absolute_error",
+                   "explained_variance",
+                   "pearsonr"]
         metric = 'r2'
 
     with warnings.catch_warnings():
