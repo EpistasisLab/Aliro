@@ -104,11 +104,12 @@ describe('run regression experiment', () => {
 
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
+		util.delay(15000)
 		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"n_estimators":10000
+			"n_estimators":15000
 		};
 
 		let datasetName = "192_vineyard.csv";
