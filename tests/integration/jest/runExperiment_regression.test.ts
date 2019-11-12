@@ -105,11 +105,11 @@ describe('run regression experiment', () => {
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
 		util.delay(15000)
-		jest.setTimeout(util.JEST_TIMEOUT)
+		jest.setTimeout(util.JEST_TIMEOUT+10000)
 
 		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"n_estimators":15000
+			"n_estimators":12000
 		};
 
 		let datasetName = "192_vineyard.csv";
@@ -173,7 +173,7 @@ describe('run regression experiment', () => {
 		expect(experimentResults._status).toEqual('cancelled')
 
 		// hacky...
-		util.delay(20000)
+		util.delay(30000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});
