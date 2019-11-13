@@ -315,32 +315,21 @@
             }
         },
         "max_depth": {
-            "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
-            "type": ["int", "none"],
+            "description": "Maximum tree depth for base learners.",
+            "type": "int",
             "default": 3,
             "ui": {
                 "style": "radio",
                 "choices": [1, 3, 5, 10]
             }
         },
-        "min_samples_split": {
-            "description": "The minimum number of samples required to split an internal node.",
-            "type": ["int", "float"],
-            "default": 2,
+        "min_child_weight": {
+            "description": "Minimum sum of instance weight(hessian) needed in a child.",
+            "type": "int",
+            "default": 3,
             "ui": {
                 "style": "radio",
-                "choices": [2, 5, 10, 20],
-                "grid_search": [10, 20]
-            }
-        },
-        "min_samples_leaf": {
-            "description": "The minimum number of samples required to be at a leaf node.",
-            "type": ["int", "float"],
-            "default": 1,
-            "ui": {
-                "style": "radio",
-                "choices": [1, 5, 10, 20],
-                "grid_search": [10, 20]
+                "choices": [1, 3, 5, 10, 20]
             }
         },
         "subsample": {
@@ -350,16 +339,6 @@
             "ui": {
                 "style": "radio",
                 "choices": [0.5, 1]
-            }
-        },
-        "max_features": {
-            "description": "The number of features to consider when looking for the best split.",
-            "type": ["int", "float", "string", "none"],
-            "default": "sqrt",
-            "ui": {
-                "style": "radio",
-                "choices": ["Square root", "Log2"],
-                "values": ["sqrt", "log2"]
             }
         }
     },
@@ -1061,73 +1040,52 @@
     "url": "https://xgboost.readthedocs.io/en/latest/tutorials/model.html",
     "static_parameters" : {"objective": "reg:squarederror"},
     "schema": {
-        "n_estimators": {
-            "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
-            "type": "int",
-            "default": 100,
-            "ui": {
-                "style": "radio",
-                "choices": [100, 500],
-                "grid_search": [100]
-            }
-        },
-        "learning_rate": {
-            "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
-            "type": "float",
-            "default": 0.1,
-            "ui": {
-                "style": "radio",
-                "choices": [0.01, 0.1, 1]
-            }
-        },
-        "max_depth": {
-            "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the input variables.",
-            "type": ["int", "none"],
-            "default": 3,
-            "ui": {
-                "style": "radio",
-                "choices": [1, 3, 5, 10]
-            }
-        },
-        "min_samples_split": {
-            "description": "The minimum number of samples required to split an internal node.",
-            "type": ["int", "float"],
-            "default": 2,
-            "ui": {
-                "style": "radio",
-                "choices": [2, 5, 10, 20],
-                "grid_search": [10, 20]
-            }
-        },
-        "min_samples_leaf": {
-            "description": "The minimum number of samples required to be at a leaf node.",
-            "type": ["int", "float"],
-            "default": 1,
-            "ui": {
-                "style": "radio",
-                "choices": [1, 5, 10, 20],
-                "grid_search": [10, 20]
-            }
-        },
-        "subsample": {
-            "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample \u003c 1.0 leads to a reduction of variance and an increase in bias.",
-            "type": "float",
-            "default": 1,
-            "ui": {
-                "style": "radio",
-                "choices": [0.5, 1]
-            }
-        },
-        "max_features": {
-            "description": "The number of features to consider when looking for the best split.",
-            "type": ["int", "float", "string", "none"],
-            "default": "sqrt",
-            "ui": {
-                "style": "radio",
-                "choices": ["Square root", "Log2"],
-                "values": ["sqrt", "log2"]
-            }
-        }
+      "n_estimators": {
+          "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
+          "type": "int",
+          "default": 100,
+          "ui": {
+              "style": "radio",
+              "choices": [100, 500],
+              "grid_search": [100]
+          }
+      },
+      "learning_rate": {
+          "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
+          "type": "float",
+          "default": 0.1,
+          "ui": {
+              "style": "radio",
+              "choices": [0.01, 0.1, 1]
+          }
+      },
+      "max_depth": {
+          "description": "Maximum tree depth for base learners.",
+          "type": "int",
+          "default": 3,
+          "ui": {
+              "style": "radio",
+              "choices": [1, 3, 5, 10]
+          }
+      },
+      "min_child_weight": {
+          "description": "Minimum sum of instance weight(hessian) needed in a child.",
+          "type": "int",
+          "default": 3,
+          "ui": {
+              "style": "radio",
+              "choices": [1, 3, 5, 10, 20]
+          }
+      },
+      "subsample": {
+          "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample \u003c 1.0 leads to a reduction of variance and an increase in bias.",
+          "type": "float",
+          "default": 1,
+          "ui": {
+              "style": "radio",
+              "choices": [0.5, 1]
+          }
+      }
     },
     "category": "regression"
 }
