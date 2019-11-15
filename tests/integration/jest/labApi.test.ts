@@ -182,7 +182,7 @@ describe('lab', () => {
 			it('existing metafeature id', async () => {
 				expect.assertions(3);
 
-				let filepath = `${util.DATASET_PATH}/banana.csv`
+				let filepath = `${util.DATASET_PATH}/banana_copy.csv`
 
 				let form = new FormData();
 
