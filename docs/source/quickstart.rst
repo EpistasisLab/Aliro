@@ -27,6 +27,7 @@ Upload a dataset by clicking the "+ Add new" button.
 This will take you to the Dataset Upload screen where you can select a .csv or .tsv file to upload. 
 You will see a preview of the data. 
 Specify the name of the dependent column, as well as any nominal or ordinal features.
+Some example datasets can be found in the classification section of the `Penn Machine Learning Benchmarks github repository <https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets/classification>`_. 
 
 
 ============================
