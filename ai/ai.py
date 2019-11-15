@@ -41,7 +41,7 @@ class AI():
     - posting the recommendations to the API.
     - handling communication with the API.
 
-    :param rec: ai.BaseRecommender - recommender to use
+    :param rec_class: ai.BaseRecommender - recommender to use
     :param api_path: string - path to the lab api server
     :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
@@ -58,7 +58,7 @@ class AI():
     """
 
     def __init__(self,
-                rec=None,
+                rec_class=None,
                 api_path=None,
                 extra_payload=dict(),
                 user='testuser',
@@ -71,17 +71,28 @@ class AI():
                 term_condition='n_recs',
                 max_time=5):
         """Initializes AI managing agent."""
-        # recommender settings
-        if api_path == None:
-            api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
-                        os.environ['LAB_PORT'])
-        self.rec = rec
+
+        # default supervised learning recommender settings
+        self.DEFAULT_REC_CLASS = RandomRecommender
+        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
+
+        # recommendation engines for different problem types
+        # will be expanded as more types of probles are supported
+        # (classification, regression, unsupervised, etc.)
+        self.rec_engines = {
+            "classification":None
+        }
+
+        # Request manager settings
         self.n_recs=n_recs if n_recs>0 else 1
         self.continuous= n_recs<1
 
         # api parameters, will be removed from self once the recommenders no longer
         # call the api directly.
         # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
+        if api_path == None:
+            api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
+                        os.environ['LAB_PORT'])
         self.user=user
         self.api_path=api_path
         self.api_key=os.environ['APIKEY']
@@ -104,24 +115,8 @@ class AI():
 
         self.load_options() #loads algorithm parameters to self.ui_options
 
-        # create a default recommender if not set
-        if (rec):
-            self.rec = rec
-        else:
-            self.rec = RandomRecommender(ml_p = self.labApi.get_all_ml_p())
+        self.initilize_recommenders(rec_class) # set self.rec_engines
 
-        # set the registered ml parameters in the recommender
-        ml_p = self.labApi.get_all_ml_p()
-        assert ml_p is not None
-        assert len(ml_p) > 0
-        self.rec.ml_p = ml_p
-        # if hasattr(self.rec,'mlp_combos'):
-        #     self.rec.mlp_combos = self.rec.ml_p['algorithm']+'|'+self.rec.ml_p['parameters']
-
-        logger.debug('self.rec.ml_p:\n'+str(self.rec.ml_p.head()))
-
-        # tmp = self.labApi.get_all_ml_p()
-        # tmp.to_csv('ml_p_options.csv')
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
@@ -132,7 +127,10 @@ class AI():
         self.dataset_threads = {}
 
         # local dataframe of datasets and their metafeatures
-        self.dataset_mf = pd.DataFrame()
+        self.dataset_mf_cache = pd.DataFrame()
+
+        # store dataset_id to hash dictionary
+        self.dataset_mf_cache_id_hash_lookup = {}
 
         if use_knowledgebase:
             self.load_knowledgebase()
@@ -159,12 +157,38 @@ class AI():
         # for comma-separated list of datasets in datasets, turn AI request on
         assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
 
-        # store dataset_id to hash dictionary
-        self.dataset_id_to_hash = {}
 
     ##-----------------
     ## Init methods
-    ##-----------------       
+    ##-----------------  
+    def initilize_recommenders(self, rec_class):
+        """
+        Initilize classification recommender
+        """
+
+        # Create supervised learning recommenders
+        if (rec_class):
+            self.rec_engines["classification"] = rec_class(**self.DEFAULT_REC_ARGS)
+        else:
+            self.rec_engines["classification"]  = self.DEFAULT_REC_CLASS(**self.DEFAULT_REC_ARGS)
+
+        # set the registered ml parameters in the recommenders
+        ml_p = self.labApi.get_all_ml_p()
+        assert ml_p is not None
+        assert len(ml_p) > 0
+        self.rec_engines["classification"].ml_p = ml_p
+        # if hasattr(self.rec_engines["classification"],'mlp_combos'):
+        #     self.rec_engines["classification"].mlp_combos = self.rec_engines["classification"].ml_p['algorithm']+'|'+self.rec_engines["classification"].ml_p['parameters']
+        # ml_p.to_csv('ml_p_options.csv')
+
+
+        logger.debug("recomendation engines initilized: ")
+        for prob_type, rec in self.rec_engines.items():
+            logger.debug(f'\tproblemType: {prob_type} - {rec}')
+            logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
+        
+
+
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
@@ -180,9 +204,10 @@ class AI():
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # use _id to index the metafeatures, and
         # keep only metafeatures with results
-        self.dataset_mf = all_df_mf.loc[kb['resultsData']['_id'].unique()]
+        self.dataset_mf_cache = all_df_mf.loc[kb['resultsData']['_id'].unique()]
+
         # self.update_dataset_mf(kb['resultsData'])
-        self.rec.update(kb['resultsData'], self.dataset_mf, source='knowledgebase')
+        self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
 
         logger.info('pmlb knowledgebase loaded')
 
@@ -203,29 +228,46 @@ class AI():
     ##-----------------
     ## Utility methods
     ##-----------------
-    def update_dataset_mf(self, results_data):
-        """Grabs metafeatures of datasets in results_data
-        and concatenates them to self.dataset_mf
+    def get_results_metafeatures(self, results_data):
+        """
+        Return a pandas dataframe of metafeatures associated with the datasets
+        in results_data.
+
+        Retireves metafeatures from self.dataset_mf_cache if they exist,
+        otherwise queries the api and updates the cache.
         
         :param results_data: experiment results with associated datasets
         
         """
         logger.debug('results_data:'+str(results_data.columns))
         logger.debug('results_data:'+str(results_data.head()))
-        dataset_metafeatures = []
 
-        for d in results_data['dataset_id'].unique():
-            if len(self.dataset_mf)==0 or d not in self.dataset_id_to_hash.keys():
-                # fetch metafeatures from server for dataset and append
+        dataset_metafeatures = []
+        
+        dataset_indicies = results_data['dataset_id'].unique()
+
+        # add dataset metafeatures to the cache
+        for d in dataset_indicies:
+            # H TODO
+            #if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
+            if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache_id_hash_lookup.keys():
                 df = self.labApi.get_metafeatures(d)        
-                self.dataset_id_to_hash.update({d:df['_id']})
-                # print('metafeatures:',df)
+                df['dataset'] = d
                 dataset_metafeatures.append(df)
+                self.dataset_mf_cache_id_hash_lookup.update({d:df['_id']})
         if dataset_metafeatures:
-            df_mf = pd.concat(dataset_metafeatures).set_index('_id')
-            # print('df_mf:',df_mf['dataset'], df_mf) 
-            self.dataset_mf = self.dataset_mf.append(df_mf)
-            # print('self.dataset_mf:\n',self.dataset_mf)
+            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
+            self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
+
+
+        logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
+        logger.info(f'indicies: \n\n {dataset_indicies}')
+
+        new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
+        assert len(new_mf) == len(dataset_indicies)
+        logger.info(f"new_mf: {new_mf}")
+
+        return new_mf
 
     ##-----------------
     ## Loop methods
@@ -255,12 +297,13 @@ class AI():
         """Update recommender models based on new experiment results in 
         self.new_data, and then clear self.new_data. 
         """
-
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            self.update_dataset_mf(self.new_data)
+            new_mf = self.get_results_metafeatures(self.new_data)
+
             self.new_data['_id'] = self.new_data['dataset_id'].apply(
-                    lambda x: self.dataset_id_to_hash[x])
-            self.rec.update(self.new_data,self.dataset_mf)
+                    lambda x: self.dataset_mf_cache_id_hash_lookup[x])
+
+            self.rec_engines["classification"].update(self.new_data, new_mf)
 
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     ': recommender updated')
@@ -318,7 +361,7 @@ class AI():
     ##-----------------
     ## Syncronous actions an AI request can take
     ##-----------------
-    def generate_recommendations(self, datasetId, numOfRecs):
+    def generate_recommendations(self, datasetId, numOfRecs, predictionType = "classification"):
         """Generate ml recommendation payloads for the given dataset.
 
         :param datasetId
@@ -332,7 +375,9 @@ class AI():
 
         metafeatures = self.labApi.get_metafeatures(datasetId)
 
-        ml, p, ai_scores = self.rec.recommend(dataset_id=metafeatures['_id'].values[0],
+
+        ml, p, ai_scores = self.rec_engines[predictionType].recommend(
+            dataset_id=metafeatures['_id'].values[0],
             n_recs=numOfRecs,
             dataset_mf=metafeatures)
 
@@ -394,11 +439,11 @@ class AI():
         raise RuntimeError("save_state is not currently supported")
         out = open(self.rec_score_file,'wb')
         state={}
-        if(hasattr(self.rec, 'scores')):
+        if(hasattr(self.rec_engines["classification"], 'scores')):
             #TODO: make this a more generic. Maybe just save the
             # AI or rec object itself.
-            # state['trained_dataset_models'] = self.rec.trained_dataset_models
-            state['scores'] = self.rec.scores
+            # state['trained_dataset_models'] = self.rec_engines["classification"].trained_dataset_models
+            state['scores'] = self.rec_engines["classification"].scores
             state['last_update'] = self.last_update
         pickle.dump(state, out)
 
@@ -411,9 +456,9 @@ class AI():
         if os.stat(self.rec_score_file).st_size != 0:
             filehandler = open(self.rec_score_file,'rb')
             state = pickle.load(filehandler)
-            if(hasattr(self.rec, 'scores')):
-              self.rec.scores = state['scores']
-              # self.rec.trained_dataset_models = state['trained_dataset_models']
+            if(hasattr(self.rec_engines["classification"], 'scores')):
+              self.rec_engines["classification"].scores = state['scores']
+              # self.rec_engines["classification"].trained_dataset_models = state['trained_dataset_models']
               self.last_update = state['last_update']
               logger.info('loaded previous state from '+self.last_update)
 
@@ -460,7 +505,6 @@ def main():
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
-    rec_args={}
 
     # set logging level
     if args.VERBOSE:
@@ -469,6 +513,7 @@ def main():
         logger.setLevel(logging.INFO)
 
     logger.debug(str(args))
+
     # dictionary of default recommenders to choose from at the command line.
     name_to_rec = {'random': RandomRecommender,
             'average': AverageRecommender,
@@ -481,11 +526,9 @@ def main():
             'slopeone': SlopeOneRecommender
             }
 
-    rec_args['metric'] = 'accuracy'
-
     print('=======','Penn AI','=======')#,sep='\n')
 
-    pennai = AI(rec=name_to_rec[args.REC](**rec_args),
+    pennai = AI(rec_class=name_to_rec[args.REC],
             api_path=args.API_PATH, user=args.USER,
             verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
             datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE,

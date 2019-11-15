@@ -2,15 +2,13 @@ version: '3'
 
 services:
   lab:
-    build:
-      context: .
-      dockerfile: dockers/lab/Dockerfile
+    image: "moorelab/pennai_lab:${TAG}"
     tty: true
     stdin_open: true
     volumes:
-      - "./:/appsrc"
-      - "/appsrc/lab/webapp/node_modules"
-      - "/appsrc/lab/node_modules"
+      - "/appsrc"
+      - "./data/datasets/user:/appsrc/data/datasets/user"
+      - "./target:/appsrc/target"
     ports:
       - "5080:5080"
     env_file:
@@ -20,14 +18,12 @@ services:
       - dbmongo
 
   machine:
-    build:
-      context: .
-      dockerfile: dockers/machine/Dockerfile
+    image: "moorelab/pennai_machine:${TAG}"
     tty: true
     stdin_open: true
     volumes:
-      - "./:/appsrc"
-      - "/appsrc/machine/node_modules"
+      - "/appsrc"
+      - "./target:/appsrc/target"
     ports:
       - "5081:5081"
     env_file: ./config/common.env
@@ -38,9 +34,7 @@ services:
       - dbmongo
 
   dbmongo:
-    build:
-      context: .
-      dockerfile: dockers/dbmongo/Dockerfile
+    image: "moorelab/pennai_dbmongo:${TAG}"
     tty: true
     stdin_open: true
     ports:

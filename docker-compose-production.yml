@@ -1,3 +1,4 @@
+# Build production images
 version: '3'
 
 services:
@@ -13,7 +14,6 @@ services:
       - "./data/datasets/user:/appsrc/data/datasets/user"
       - "./target:/appsrc/target"
     ports:
-      - "443:443"
       - "5080:5080"
     env_file:
       - ./config/common.env
