@@ -92,7 +92,7 @@ def pearsonr(y_true, y_pred):
     from scipy.stats import pearsonr
     r = pearsonr(y_true, y_pred)[0]
     if np.isnan(r):
-        r = -1
+        r = 0.0
     return r
 
 
