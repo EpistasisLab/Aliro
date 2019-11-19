@@ -784,17 +784,23 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
     ax.set_xlabel('Observed Value')
     ax.set_ylabel('Predicted Value')
-    ax.plot([0,1],[0,1], color="red", transform=ax.transAxes)
+    ax.plot([0,1],[0,1],
+            color="red",
+            transform=ax.transAxes,
+            linestyle='dashed')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    r = plt.figure(figsize=(6,6), dpi=300)
-    plt.title("Cross-Validated Residuals")
-    plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
-    plt.xlabel('Predicted Value')
-    plt.ylabel('Residuals')
-    r.tight_layout()
+    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    ax.set_title("Cross-Validated Residuals")
+    ax.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    ax.set_xlabel('Predicted Value')
+    ax.set_ylabel('Residuals')
+    plt.axhline(y=0.0,
+                color="red",
+                linestyle='dashed')
+    plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
     plt.close()
 
