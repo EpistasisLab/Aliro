@@ -782,8 +782,8 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     fig, ax = plt.subplots(figsize=(6,6), dpi=300)
     ax.set_title("Cross-Validated Predictions")
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
-    ax.set_xlabel('Observed Value')
-    ax.set_ylabel('Predicted Value')
+    ax.set_xlabel('Observed Values')
+    ax.set_ylabel('Predicted Values')
     ax.plot([0,1],[0,1],
             color="red",
             transform=ax.transAxes,
@@ -795,7 +795,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     fig, ax = plt.subplots(figsize=(6,6), dpi=300)
     ax.set_title("Cross-Validated Residuals")
     ax.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
-    ax.set_xlabel('Predicted Value')
+    ax.set_xlabel('Predicted Values')
     ax.set_ylabel('Residuals')
     plt.axhline(y=0.0,
                 color="red",
