@@ -29,18 +29,31 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
           expList={scoreValueList}
           chartKey={chartKey}
           chartColor={chartColor}
+          min={0.5}
+          max={1.0}
         />
       );
-    } else if (scoreValueList && type == "regression") {
+    } else if (scoreValueList && type == "r2_or_vaf") {
       return (
-        <BarPlot
+        <GaugeAll
           expList={scoreValueList}
           chartKey={chartKey}
           chartColor={chartColor}
+          min={0}
+          max={1.0}
+        />
+      );
+    } else if (scoreValueList && type == "pearsonr") {
+      return (
+        <GaugeAll
+          expList={scoreValueList}
+          chartKey={chartKey}
+          chartColor={chartColor}
+          min={-1.0}
+          max={1.0}
         />
       );
     }
-
     /*return (
       <Gauge
         value={scoreValue}

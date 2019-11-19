@@ -188,12 +188,18 @@ class Results extends Component {
       });
       // r2
       let R2Keys = ['train_r2_score', 'r2_score'];
+      // r
+      let RKeys = ['train_pearsonr_score', 'pearsonr_score'];
+      // r2
+      let VAFKeys = ['train_explained_variance_score', 'explained_variance_score'];
       // MSE
       let MSEKeys = ['train_neg_mean_squared_error_score', 'neg_mean_squared_error_score']
       // MAE
       let MAEKeys = ['train_neg_mean_absolute_error_score', 'neg_mean_absolute_error_score'];
 
       let R2List = this.getGaugeArray(R2Keys);
+      let RList = this.getGaugeArray(RKeys);
+      let VAFList = this.getGaugeArray(VAFKeys);
       let MSEList = this.getGaugeArray(MSEKeys);
       let MAEList = this.getGaugeArray(MAEKeys);
 
@@ -226,22 +232,22 @@ class Results extends Component {
                   scoreName="R2"
                   scoreValueList={R2List}
                   chartKey="R2"
-                  chartColor="#7D5BA6"
-                  type="regression"
+                  chartColor="#55D6BE"
+                  type="r2_or_vaf"
                 />
                 <Score
-                  scoreName="MSE"
-                  scoreValueList={MSEList}
-                  chartKey="MSE"
+                  scoreName="Explained Variance"
+                  scoreValueList={VAFList}
+                  chartKey="VAF"
                   chartColor="#55D6BE"
-                  type="regression"
+                  type="r2_or_vaf"
                 />
                 <Score
-                  scoreName="MAE"
-                  scoreValueList={MAEList}
-                  chartKey="MAE"
+                  scoreName="Pearson's r"
+                  scoreValueList={RList}
+                  chartKey="pearsonr"
                   chartColor="#55D6BE"
-                  type="regression"
+                  type="pearsonr"
                 />
               </Grid.Column>
             </Grid.Row>
