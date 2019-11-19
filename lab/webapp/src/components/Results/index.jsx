@@ -175,7 +175,7 @@ class Results extends Component {
         </div>
       );
     } else if(experiment.data.prediction_type == "regression") { // regression
-      let importanceScore, reg_cv_pred, reg_cv_resi;
+      let importanceScore, reg_cv_pred, reg_cv_resi, qq_plot_cv_resi;
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('imp_score')) {
@@ -184,6 +184,8 @@ class Results extends Component {
           reg_cv_pred = file;
         } else if(filename.includes('reg_cv_resi')) {
           reg_cv_resi = file;
+        } else if(filename.includes('qq_plot_cv_resi')) {
+          qq_plot_cv_resi = file;
         }
       });
       // r2
@@ -226,6 +228,7 @@ class Results extends Component {
               <Grid.Column>
                 <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
+                <RegFigure file={qq_plot_cv_resi} />
               </Grid.Column>
               <Grid.Column>
                 <Score
