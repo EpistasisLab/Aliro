@@ -784,9 +784,9 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
     ax.set_xlabel('Observed Values')
     ax.set_ylabel('Predicted Values')
-    ax.plot([0,1],[0,1],
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x,
             color="red",
-            transform=ax.transAxes,
             linestyle='dashed')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
@@ -802,6 +802,23 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
                 linestyle='dashed')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.close()
+    # add q-q plot for normalized CV residuals
+    from scipy.stats import probplot
+    z = (resi_y-np.mean(resi_y))/np.std(resi_y)
+    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    series1  = probplot(z, dist="norm")
+    ax.scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
+    ax.set_title("Q-Q Plot for Normalized Residuals")
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x,
+            color="red",
+            linestyle='dashed')
+    ax.set_xlabel('Theoretical Quantiles')
+    ax.set_ylabel('Ordered Normalized Residuals')
+
+    plt.tight_layout()
+    plt.savefig(tmpdir + _id + '/qq_plot_cv_resi_' + _id + '.png')
     plt.close()
 
 
