@@ -3,8 +3,8 @@ import c3 from 'c3';
 
 class GaugeAll extends Component {
   componentDidMount() {
-    const { expList, chartKey, chartColor } = this.props;
-    expList && this.renderChart(expList, chartKey, chartColor);
+    const { expList, chartKey, chartColor, min, max } = this.props;
+    expList && this.renderChart(expList, chartKey, chartColor, min, max);
   }
 /*
 colors: {
@@ -17,7 +17,7 @@ use anonymous function to 'disable' interaction
 look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
-  renderChart(expList, chartKey, chartColor) {
+  renderChart(expList, chartKey, chartColor, min, max) {
     //window.console.log('exp list: ', expList);
     let tempIndex = 0;
     c3.generate({
@@ -55,8 +55,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
           },
           show: true
         },
-        min: 0.5,
-        max: 1.0
+        min: min,
+        max: max
       },
       interaction: {
         enabled: false
