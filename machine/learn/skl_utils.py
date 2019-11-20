@@ -92,7 +92,7 @@ def pearsonr(y_true, y_pred):
     from scipy.stats import pearsonr
     r = pearsonr(y_true, y_pred)[0]
     if np.isnan(r):
-        r = -1
+        r = 0.0
     return r
 
 
@@ -781,20 +781,43 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     fig, ax = plt.subplots(figsize=(6,6), dpi=300)
     ax.set_title("Cross-Validated Predictions")
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
-    ax.set_xlabel('Observed Value')
-    ax.set_ylabel('Predicted Value')
-    ax.plot([0,1],[0,1], color="red", transform=ax.transAxes)
+    ax.set_xlabel('Observed Values')
+    ax.set_ylabel('Predicted Values')
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x,
+            color="red",
+            linestyle='dashed')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    r = plt.figure(figsize=(6,6), dpi=300)
-    plt.title("Cross-Validated Residuals")
-    plt.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
-    plt.xlabel('Predicted Value')
-    plt.ylabel('Residuals')
-    r.tight_layout()
+    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    ax.set_title("Cross-Validated Residuals")
+    ax.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    ax.set_xlabel('Predicted Values')
+    ax.set_ylabel('Residuals')
+    plt.axhline(y=0.0,
+                color="red",
+                linestyle='dashed')
+    plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
+    plt.close()
+    # add q-q plot for normalized CV residuals
+    from scipy.stats import probplot
+    z = (resi_y-np.mean(resi_y))/np.std(resi_y)
+    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    series1  = probplot(z, dist="norm")
+    ax.scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
+    ax.set_title("Q-Q Plot for Normalized Residuals")
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x,
+            color="red",
+            linestyle='dashed')
+    ax.set_xlabel('Theoretical Quantiles')
+    ax.set_ylabel('Ordered Normalized Residuals')
+
+    plt.tight_layout()
+    plt.savefig(tmpdir + _id + '/qq_plot_cv_resi_' + _id + '.png')
     plt.close()
 
 
