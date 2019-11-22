@@ -199,8 +199,8 @@ class AI():
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
 
-        all_df_mf = pd.DataFrame.from_records(
-                kb['metafeaturesData']).transpose().set_index('_id')
+        all_df_mf = kb['metafeaturesData'].set_index('_id')
+
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # use _id to index the metafeatures, and
         # keep only metafeatures with results
@@ -248,8 +248,6 @@ class AI():
 
         # add dataset metafeatures to the cache
         for d in dataset_indicies:
-            # H TODO
-            #if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
             if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache_id_hash_lookup.keys():
                 df = self.labApi.get_metafeatures(d)        
                 df['dataset'] = d
@@ -260,7 +258,8 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
+        logger.info(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
+        #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
         logger.info(f'indicies: \n\n {dataset_indicies}')
 
         new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
