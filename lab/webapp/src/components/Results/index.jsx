@@ -175,7 +175,7 @@ class Results extends Component {
         </div>
       );
     } else if(experiment.data.prediction_type == "regression") { // regression
-      let importanceScore, reg_cv_pred, reg_cv_resi;
+      let importanceScore, reg_cv_pred, reg_cv_resi, qq_plot_cv_resi;
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('imp_score')) {
@@ -184,16 +184,24 @@ class Results extends Component {
           reg_cv_pred = file;
         } else if(filename.includes('reg_cv_resi')) {
           reg_cv_resi = file;
+        } else if(filename.includes('qq_plot_cv_resi')) {
+          qq_plot_cv_resi = file;
         }
       });
       // r2
       let R2Keys = ['train_r2_score', 'r2_score'];
+      // r
+      let RKeys = ['train_pearsonr_score', 'pearsonr_score'];
+      // r2
+      let VAFKeys = ['train_explained_variance_score', 'explained_variance_score'];
       // MSE
       let MSEKeys = ['train_neg_mean_squared_error_score', 'neg_mean_squared_error_score']
       // MAE
       let MAEKeys = ['train_neg_mean_absolute_error_score', 'neg_mean_absolute_error_score'];
 
       let R2List = this.getGaugeArray(R2Keys);
+      let RList = this.getGaugeArray(RKeys);
+      let VAFList = this.getGaugeArray(VAFKeys);
       let MSEList = this.getGaugeArray(MSEKeys);
       let MAEList = this.getGaugeArray(MAEKeys);
 
@@ -220,28 +228,29 @@ class Results extends Component {
               <Grid.Column>
                 <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
+                <RegFigure file={qq_plot_cv_resi} />
               </Grid.Column>
               <Grid.Column>
                 <Score
                   scoreName="R2"
                   scoreValueList={R2List}
                   chartKey="R2"
-                  chartColor="#7D5BA6"
-                  type="regression"
+                  chartColor="#55D6BE"
+                  type="r2_or_vaf"
                 />
                 <Score
-                  scoreName="MSE"
-                  scoreValueList={MSEList}
-                  chartKey="MSE"
+                  scoreName="Explained Variance"
+                  scoreValueList={VAFList}
+                  chartKey="VAF"
                   chartColor="#55D6BE"
-                  type="regression"
+                  type="r2_or_vaf"
                 />
                 <Score
-                  scoreName="MAE"
-                  scoreValueList={MAEList}
-                  chartKey="MAE"
+                  scoreName="Pearson's r"
+                  scoreValueList={RList}
+                  chartKey="pearsonr"
                   chartColor="#55D6BE"
-                  type="regression"
+                  type="pearsonr"
                 />
               </Grid.Column>
             </Grid.Row>
