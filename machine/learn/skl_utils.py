@@ -90,7 +90,14 @@ def pearsonr(y_true, y_pred):
         Returns a float value indicating Pearson correlation coefficient
     """
     from scipy.stats import pearsonr
+<<<<<<< HEAD
     return pearsonr(y_true, y_pred)[0]
+=======
+    r = pearsonr(y_true, y_pred)[0]
+    if np.isnan(r):
+        r = -1
+    return r
+>>>>>>> dc459e0f5c0b3220d22cc764da23f6180db55b47
 
 
 
