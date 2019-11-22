@@ -130,13 +130,15 @@ class TestResultUtils(unittest.TestCase):
         assert 'metafeaturesData' in result
 
         assert isinstance(result['resultsData'], pd.DataFrame)
-        assert isinstance(result['metafeaturesData'], dict)
+        assert isinstance(result['metafeaturesData'], pd.DataFrame)
 
         self.assertGreater(len(result['resultsData']), 1)
-        self.assertGreater(len(result['metafeaturesData'].keys()), 1)
+        self.assertGreater(len(result['metafeaturesData']), 1)
 
-        print("test_load_knowledgebase result.warnings:")
-        print(result['warnings'])
+        print(f"test_load_knowledgebase found "
+            f"{len(result['warnings'])} result.warnings:")
+        print("\n".join(result['warnings']))
+
         self.assertEquals(len(result['warnings']), expectedWarningCount, 
                 msg = f"warnings: {result['warnings']}")
 
@@ -180,15 +182,17 @@ class TestResultUtils(unittest.TestCase):
         assert 'metafeaturesData' in result
 
         assert isinstance(result['resultsData'], pd.DataFrame)
-        assert isinstance(result['metafeaturesData'], dict)
+        assert isinstance(result['metafeaturesData'], pd.DataFrame)
 
         self.assertEquals(len(result['resultsData']), 
                 expectedResultsCount)
         self.assertEquals(len(result['metafeaturesData']), 
                 expectedMetafeaturesCount)
 
-        print("test_load_default_knowledgebases result.warnings:")
-        print(result['warnings'])
+        print(f"test_load_default_knowledgebases found "
+            f"{len(result['warnings'])} result.warnings:")
+        print("\n".join(result['warnings']))
+
         assert len(result['warnings']) == 0
 
 
