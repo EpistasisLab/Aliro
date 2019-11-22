@@ -17,7 +17,7 @@ import json
 import csv
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARN)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -25,16 +25,17 @@ logger.addHandler(ch)
 
 
 PMLB_KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
-PMLB_KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
+PMLB_KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz'
 
 USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
 USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
 
-def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDirectory=''):
+def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], jsonMetafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
-    :param resultsFiles: list<string> - list of experiment results in tsv form, can be compressed files.
+    :param resultsFiles: dict with regression and classification fields that
+        contain list<string> - list of experiment results in tsv form, can be compressed files.
     :param metafeaturesFiles - list<string> - list of files that contain metafeatures for the experiment datasets in csv form, can be compressed files.
     :param jsonMetafeatureDirectory - root of a directory structure that contains .json files for metafeatures
 
@@ -52,21 +53,27 @@ def load_knowledgebase(resultsFiles=[], metafeaturesFiles=[], jsonMetafeatureDir
     logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '{jsonMetafeatureDirectory}')")
 
     # load experiment results
-    frames = []
-    for resultsFile in resultsFiles:
-        frames.append(_load_results_from_file(resultsFile))
+    frames = {} 
+    for pred_type,resultsFile in resultsFiles.items():
+        frames[pred_type].append(_load_results_from_file(resultsFile))
     
-    resultsData = pd.concat(frames)
-    dedupe_results_dataframe(resultsData)
-    dataset_names = resultsData['dataset']
+    dataset_names = []
+    for k in frames.keys():
+        resultsData[k] = pd.concat(frames)
+        dedupe_results_dataframe(resultsData[k])
+        dataset_names.append(resultsData[k]['dataset'])
     
     # load dataset metafeatures
     metafeaturesData = {}
     if jsonMetafeatureDirectory:
-        metafeaturesData.update(_load_json_metafeatures_from_directory(jsonMetafeatureDirectory, dataset_names))
+        metafeaturesData.update(
+                _load_json_metafeatures_from_directory(
+                    jsonMetafeatureDirectory, dataset_names))
 
     if metafeaturesFiles:
-        assert isinstance(metafeaturesFiles, list), f"load_knowledgebase.metafeaturesFiles must be a list; got '{metafeaturesFiles}'"
+        assert (isinstance(metafeaturesFiles, list), 
+        f"load_knowledgebase.metafeaturesFiles must be a list;"
+        " got '{metafeaturesFiles}'")
         for mfFile in metafeaturesFiles:
             metafeaturesData.update(_load_metadata_from_file(mfFile))
 
@@ -103,11 +110,15 @@ def dedupe_results_dataframe(resultsData):
     return resultsData
 
 
-def load_default_knowledgebases(usePmlb=True, userKbResultsPath=USER_KB_RESULTS_PATH, userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
+def load_default_knowledgebases(usePmlb=True, 
+        userKbResultsPath=USER_KB_RESULTS_PATH, 
+        userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
     """
-    Convienence method to load the pmlb knowledgebase and any user-added knowledgebases
+    Convienence method to load the pmlb knowledgebase and any user-added 
+    knowledgebases
     """
-    logger.info(f"load_default_knowledgebases('{usePmlb}', '{userKbResultsPath}', '{userKbMetafeaturesPath}'")
+    logger.info(f("load_default_knowledgebases('{usePmlb}', "
+            "'{userKbResultsPath}', '{userKbMetafeaturesPath}'"))
 
     resFileExtensions = ['.tsv', '.gz']
     mfFileExtensions = ['.csv', '.tsv', '.gz']
@@ -147,7 +158,8 @@ def generate_metafeatures_file(
     predictionType = "classification",
     targetField = 'class', 
     checkSubdirectories = True, 
-    fileExtensions = ['.csv', '.tsv']):
+    fileExtensions = ['.csv', '.tsv'],
+    **kwargs):
     """
     Generate metafeatures file for all datsets in the given directory
 
@@ -157,7 +169,8 @@ def generate_metafeatures_file(
     os.makedirs(outputPath, exist_ok=True)
 
     metafeaturesData = _generate_metadata_from_directory(
-        datasetDirectory, predictionType, targetField, checkSubdirectories, fileExtensions)
+        datasetDirectory, predictionType, targetField, 
+        checkSubdirectories, fileExtensions, **kwargs)
 
     df = pd.DataFrame(metafeaturesData).transpose()
 
@@ -258,7 +271,8 @@ def _load_metadata_from_file(metafeaturesFile):
 
 def _generate_metadata_from_directory(datasetDirectory,
     prediction_type = "classification", targetField = 'class', 
-    checkSubdirectories = True, fileExtensions = ['.csv', '.tsv']):
+    checkSubdirectories = True, fileExtensions = ['.csv', '.tsv'],
+    **kwargs):
     """Extract metafeatures for all dataset files in the directory
 
     :returns dict: dataset name(str):metafeatures(dataFrame)
@@ -272,7 +286,9 @@ def _generate_metadata_from_directory(datasetDirectory,
 
     for root, dirs, files in os.walk(datasetDirectory):
         for name in files:
+            print(name)
             extension = os.path.splitext(name)[1]
+            # print('extension',extension, 'fileExtensions:',fileExtensions)
             if not name.startswith('.') and (extension in fileExtensions):
                 # split twice to handle double extensions, i.e.
                 #   'myfile.tsv.gz' => 'myfile'
@@ -280,7 +296,7 @@ def _generate_metadata_from_directory(datasetDirectory,
                 datapath = os.path.join(root, name)
                 logger.debug(f"Generating metadata for {datapath}")
                 metafeatures = mf.generate_metafeatures_from_filepath(
-                        datapath, prediction_type, targetField)
+                        datapath, prediction_type, targetField, **kwargs)
                 metafeaturesData[dataset] = metafeatures
 
     return metafeaturesData
