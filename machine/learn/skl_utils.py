@@ -96,7 +96,6 @@ def pearsonr(y_true, y_pred):
     return r
 
 
-
 # make new SCORERS
 SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 SCORERS['pearsonr'] = make_scorer(pearsonr)
