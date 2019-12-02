@@ -427,10 +427,7 @@ def setup_model_params(model, parameter_name, value):
 
 
 def compute_imp_score(model, metric, features, target, random_state):
-    """compute importance scores for features.
-    If coef_ or feature_importances_ attribute is available for the model,
-    the the importance scores will be based on the attribute. If not,
-    then permuation importance scores will be estimated
+    """Compute permuation importance scores for features.
     Parameters
     ----------
     tmpdir: string
@@ -460,28 +457,16 @@ def compute_imp_score(model, metric, features, target, random_state):
         Importance score type
 
     """
-    # exporting/computing importance score
-    if hasattr(model, 'coef_'):
-        coefs = model.coef_
-        if coefs.ndim > 1:
-            coefs = safe_sqr(coefs).sum(axis=0)
-            imp_score_type = "Sum of Squares of Coefficients"
-        else:
-            coefs = safe_sqr(coefs)
-            imp_score_type = "Squares of Coefficients"
-    else:
-        coefs = getattr(model, 'feature_importances_', None)
-        imp_score_type = "Gini Importance"
-    if coefs is None or np.isnan(coefs).any():
-        coefs, _ = feature_importance_permutation(
-            predict_method=model.predict,
-            X=features,
-            y=target,
-            num_rounds=5,
-            metric=metric,
-            seed=random_state,
-        )
-        imp_score_type = "Permutation Feature Importance"
+
+    coefs, _ = feature_importance_permutation(
+        predict_method=model.predict,
+        X=features,
+        y=target,
+        num_rounds=5,
+        metric=metric,
+        seed=random_state,
+    )
+    imp_score_type = "Permutation Feature Importance"
 
     return coefs, imp_score_type
 
