@@ -4,7 +4,8 @@ import * as actions from 'data/experiments/selected/actions';
 import SceneHeader from '../SceneHeader';
 import FetchError from '../FetchError';
 import AlgorithmDetails from './components/AlgorithmDetails';
-import RunDetails from './components/RunDetails';
+import RunDetails from './components/RunDetails'
+import MSEMAEDetails from './components/MSEMAEDetails';;
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
 import ImportanceScore from './components/ImportanceScore';
@@ -192,16 +193,11 @@ class Results extends Component {
       let RKeys = ['train_pearsonr_score', 'pearsonr_score'];
       // r2
       let VAFKeys = ['train_explained_variance_score', 'explained_variance_score'];
-      // MSE
-      let MSEKeys = ['train_neg_mean_squared_error_score', 'neg_mean_squared_error_score']
-      // MAE
-      let MAEKeys = ['train_neg_mean_absolute_error_score', 'neg_mean_absolute_error_score'];
 
       let R2List = this.getGaugeArray(R2Keys);
       let RList = this.getGaugeArray(RKeys);
       let VAFList = this.getGaugeArray(VAFKeys);
-      let MSEList = this.getGaugeArray(MSEKeys);
-      let MAEList = this.getGaugeArray(MAEKeys);
+
 
       return (
         <div>
@@ -248,6 +244,9 @@ class Results extends Component {
                   chartKey="pearsonr"
                   chartColor="#55D6BE"
                   type="pearsonr"
+                />
+                <MSEMAEDetails
+                  scores={experiment.data.scores}
                 />
               </Grid.Column>
             </Grid.Row>
