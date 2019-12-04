@@ -965,7 +965,8 @@ def test_generate_results_1():
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
-    os.mkdir(outdir)
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
     generate_results(
         model=test_clf,
         input_data=test_clf_input_df,
@@ -1054,8 +1055,8 @@ def test_generate_results_2():
 def test_generate_results_3():
     """Test generate results can produce expected outputs in regression
     mode."""
-    #tmpdir = mkdtemp() + '/'
-    tmpdir = 'machine/learn/tmp/'
+    tmpdir = mkdtemp() + '/'
+    #tmpdir = 'machine/learn/tmp/'
     _id = 'test_id'
     outdir = tmpdir + _id
     if not os.path.isdir(outdir):
@@ -1081,7 +1082,7 @@ def test_generate_results_3():
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
-    # rmtree(tmpdir)
+    rmtree(tmpdir)
 
 
 def test_generate_results_4():

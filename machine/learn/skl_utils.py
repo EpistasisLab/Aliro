@@ -348,21 +348,13 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        # determine if target is binary or multiclass
-        class_names = model.classes_
-
-        cnf_matrix = confusion_matrix(
-            target, predicted_classes, labels=class_names)
-        cnf_matrix_dict = {
-            'cnf_matrix': cnf_matrix.tolist(),
-            'class_names': class_names.tolist()
-        }
-        save_json_fmt(outdir=tmpdir, _id=_id,
-                      fname="cnf_matrix.json", content=cnf_matrix_dict)
-
-        # export plot
-        if figure_export:
-            plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
+        plot_confusion_matrix(tmpdir,
+                            _id,
+                            features,
+                            target,
+                            model.classes_,
+                            cv_scores,
+                            figure_export)
 
         if num_classes == 2:
             plot_roc_curve(
@@ -492,7 +484,7 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
+def plot_confusion_matrix(tmpdir, _id, X, y, class_names, cv_scores, figure_export):
     """Make plot for confusion matrix.
 
     Parameters
@@ -501,36 +493,58 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    cnf_matrix: np.darray
-        Confusion matrix
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
     class_names: list
         List of class names
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    figure_export: boolean
+        If true, then export roc curve plot
     Returns
     -------
     None
     """
-    cm = cnf_matrix
-    classes = class_names
+    pred_y = np.empty(y.shape)
+    cv = StratifiedKFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        pred_y[test] = est.predict(X[test])
+    cnf_matrix = confusion_matrix(
+        y, pred_y, labels=class_names)
+    cnf_matrix_dict = {
+        'cnf_matrix': cnf_matrix.tolist(),
+        'class_names': class_names.tolist()
+    }
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-    np.set_printoptions(precision=2)
-    plt.figure()
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('Confusion Matrix')
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+    # export plot
+    if figure_export:
+        cm = cnf_matrix
+        classes = class_names
 
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 ha="center", va="center",
-                 color="gray" if cm[i, j] > thresh else "black")
+        np.set_printoptions(precision=2)
+        plt.figure()
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.title('Confusion Matrix')
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes, rotation=45)
+        plt.yticks(tick_marks, classes)
 
-    plt.subplots_adjust(bottom=0.15)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
-    plt.close()
+        thresh = cm.max() / 2.
+        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+            plt.text(j, i, cm[i, j],
+                     ha="center", va="center",
+                     color="gray" if cm[i, j] > thresh else "black")
+
+        plt.subplots_adjust(bottom=0.15)
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+        plt.close()
 
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
