@@ -965,7 +965,8 @@ def test_generate_results_1():
     tmpdir = mkdtemp() + '/'
     _id = 'test_id'
     outdir = tmpdir + _id
-    os.mkdir(outdir)
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
     generate_results(
         model=test_clf,
         input_data=test_clf_input_df,
@@ -1054,8 +1055,8 @@ def test_generate_results_2():
 def test_generate_results_3():
     """Test generate results can produce expected outputs in regression
     mode."""
-    #tmpdir = mkdtemp() + '/'
-    tmpdir = 'machine/learn/tmp/'
+    tmpdir = mkdtemp() + '/'
+    #tmpdir = 'machine/learn/tmp/'
     _id = 'test_id'
     outdir = tmpdir + _id
     if not os.path.isdir(outdir):
@@ -1081,7 +1082,7 @@ def test_generate_results_3():
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
-    # rmtree(tmpdir)
+    rmtree(tmpdir)
 
 
 def test_generate_results_4():
@@ -1377,79 +1378,10 @@ def test_plot_dot_plot_2():
     rmtree(tmpdir)
 
 
-def test_compute_imp_score():
-    """Test compute_imp_score function returns 'Sum of Squares of Coefficients'
-    with LogisticRegression on multiclass dataset."""
-    model = LogisticRegression()
-    model.fit(training_features_1, training_classes_1)
-    coefs, imp_score_type = compute_imp_score(model,
-                                              'accuracy',
-                                              training_features_1,
-                                              training_classes_1,
-                                              42)
-    assert imp_score_type == "Sum of Squares of Coefficients"
-
-
-def test_compute_imp_score_2():
-    """Test compute_imp_score function returns 'Coefficient' with
-    LinearRegression on regression dataset."""
-    model = LinearRegression()
-    model.fit(training_features_4, training_classes_4)
-    coefs, imp_score_type = compute_imp_score(model,
-                                              'r2',
-                                              training_features_4,
-                                              training_classes_4,
-                                              42)
-    assert imp_score_type == "Squares of Coefficients"
-
-
-def test_compute_imp_score_3():
-    """Test compute_imp_score function returns 'Gini Importance' with
-    DecisionTreeClassifier on multiclass dataset."""
-    model = DecisionTreeClassifier()
-    model.fit(training_features_1, training_classes_1)
-    coefs, imp_score_type = compute_imp_score(model,
-                                              'accuracy',
-                                              training_features_1,
-                                              training_classes_1,
-                                              42)
-    assert imp_score_type == "Gini Importance"
-
-
-def test_compute_imp_score_4():
+def test_compute_imp_score_1():
     """Test compute_imp_score function returns 'Permutation Feature Importance'
     with KNeighborsClassifier on multiclass dataset."""
     model = KNeighborsClassifier()
-    model.fit(training_features_1, training_classes_1)
-    coefs, imp_score_type = compute_imp_score(model,
-                                              'accuracy',
-                                              training_features_1,
-                                              training_classes_1,
-                                              42)
-    assert imp_score_type == "Permutation Feature Importance"
-
-
-def test_compute_imp_score_5():
-    """Test compute_imp_score function returns 'Sum of Squares of Coefficients'
-    with LogisticRegression on multiclass dataset."""
-    model = LogisticRegression()
-    model.fit(training_features_1, training_classes_1)
-    coefs, imp_score_type = compute_imp_score(model,
-                                              'accuracy',
-                                              training_features_1,
-                                              training_classes_1,
-                                              42)
-    assert imp_score_type == "Sum of Squares of Coefficients"
-
-
-def test_compute_imp_score_6():
-    """Test compute_imp_score function returns 'Permutation Feature Importance'
-    with object if one of gini importances is Nan."""
-    class C(DecisionTreeClassifier):
-        @property
-        def feature_importances_(self):
-            return np.array([1.0, np.nan])
-    model = C()
     model.fit(training_features_1, training_classes_1)
     coefs, imp_score_type = compute_imp_score(model,
                                               'accuracy',
