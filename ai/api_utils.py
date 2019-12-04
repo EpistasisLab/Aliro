@@ -207,7 +207,7 @@ class LabApi:
             if ('_options' in d.keys() and '_scores' in d.keys()
                 and '_dataset_id' in d.keys()):
                 frame={
-                    'dataset':d['_dataset_id'],
+                    'dataset_id':d['_dataset_id'],
                     'algorithm':d['_project_id'],
                     'parameters':d['_options'], 
                     'prediction_type':d['_prediction_type'],
@@ -304,10 +304,9 @@ class LabApi:
 
             data = data[0]
             mf = [data['metafeatures']]
-            # print('mf:',mf)
             df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
-            # print('df:',df)
-            # df['dataset_id'] = data['_id']
+            print('api_utils:get_metafeatures')
+            #include dataset name
             df['dataset'] = data['name']
             df.sort_index(axis=1, inplace=True)
 

@@ -36,7 +36,7 @@ def generate_metafeatures_from_filepath(input_file, prediction_type, target_fiel
     df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
     dataset = Dataset(df, dependent_col = target_field, prediction_type=prediction_type)
 
-    return generate_metafeatures(dataset, target_field)
+    return generate_metafeatures(dataset)
 
 def generate_metafeatures_from_server(file_id, prediction_type, target_field, **kwargs):
     # Read the data set into memory
@@ -44,16 +44,17 @@ def generate_metafeatures_from_server(file_id, prediction_type, target_field, **
     df = pd.read_csv(StringIO(raw_data), sep=None, engine='python',**kwargs)
     dataset = Dataset(df, dependent_col = target_field, prediction_type=prediction_type)
 
-    return generate_metafeatures(dataset, target_field)
+    return generate_metafeatures(dataset)
 
 
-def generate_metafeatures(dataset, target_field):
-    """Generate metafeatures for a pandas dataset"""
+def generate_metafeatures(dataset):
+    """Generate metafeatures for a dataset_describe.Dataset"""
     meta_features = OrderedDict() 
     for i in dir(dataset):
         result = getattr(dataset, i)
-        if not i.startswith('__') and not i.startswith('_') and hasattr(result, '__call__'):
-            meta_features[i] = result()
+        if not i.startswith('_') and hasattr(result, '__call__'):
+            iParm = i.replace(Dataset.META_PREFIX, "_")
+            meta_features[iParm] = result()
     return meta_features
 
 
