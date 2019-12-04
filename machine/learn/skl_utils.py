@@ -348,21 +348,13 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        # determine if target is binary or multiclass
-        class_names = model.classes_
-
-        cnf_matrix = confusion_matrix(
-            target, predicted_classes, labels=class_names)
-        cnf_matrix_dict = {
-            'cnf_matrix': cnf_matrix.tolist(),
-            'class_names': class_names.tolist()
-        }
-        save_json_fmt(outdir=tmpdir, _id=_id,
-                      fname="cnf_matrix.json", content=cnf_matrix_dict)
-
-        # export plot
-        if figure_export:
-            plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
+        plot_confusion_matrix(tmpdir,
+                            _id,
+                            features,
+                            target,
+                            model.classes_,
+                            cv_scores,
+                            figure_export)
 
         if num_classes == 2:
             plot_roc_curve(
@@ -426,10 +418,7 @@ def setup_model_params(model, parameter_name, value):
 
 
 def compute_imp_score(model, metric, features, target, random_state):
-    """compute importance scores for features.
-    If coef_ or feature_importances_ attribute is available for the model,
-    the the importance scores will be based on the attribute. If not,
-    then permuation importance scores will be estimated
+    """Compute permuation importance scores for features.
     Parameters
     ----------
     tmpdir: string
@@ -459,28 +448,16 @@ def compute_imp_score(model, metric, features, target, random_state):
         Importance score type
 
     """
-    # exporting/computing importance score
-    if hasattr(model, 'coef_'):
-        coefs = model.coef_
-        if coefs.ndim > 1:
-            coefs = safe_sqr(coefs).sum(axis=0)
-            imp_score_type = "Sum of Squares of Coefficients"
-        else:
-            coefs = safe_sqr(coefs)
-            imp_score_type = "Squares of Coefficients"
-    else:
-        coefs = getattr(model, 'feature_importances_', None)
-        imp_score_type = "Gini Importance"
-    if coefs is None or np.isnan(coefs).any():
-        coefs, _ = feature_importance_permutation(
-            predict_method=model.predict,
-            X=features,
-            y=target,
-            num_rounds=5,
-            metric=metric,
-            seed=random_state,
-        )
-        imp_score_type = "Permutation Feature Importance"
+
+    coefs, _ = feature_importance_permutation(
+        predict_method=model.predict,
+        X=features,
+        y=target,
+        num_rounds=5,
+        metric=metric,
+        seed=random_state,
+    )
+    imp_score_type = "Permutation Feature Importance"
 
     return coefs, imp_score_type
 
@@ -507,7 +484,7 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
+def plot_confusion_matrix(tmpdir, _id, X, y, class_names, cv_scores, figure_export):
     """Make plot for confusion matrix.
 
     Parameters
@@ -516,36 +493,58 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    cnf_matrix: np.darray
-        Confusion matrix
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
     class_names: list
         List of class names
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    figure_export: boolean
+        If true, then export roc curve plot
     Returns
     -------
     None
     """
-    cm = cnf_matrix
-    classes = class_names
+    pred_y = np.empty(y.shape)
+    cv = StratifiedKFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        pred_y[test] = est.predict(X[test])
+    cnf_matrix = confusion_matrix(
+        y, pred_y, labels=class_names)
+    cnf_matrix_dict = {
+        'cnf_matrix': cnf_matrix.tolist(),
+        'class_names': class_names.tolist()
+    }
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-    np.set_printoptions(precision=2)
-    plt.figure()
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('Confusion Matrix')
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+    # export plot
+    if figure_export:
+        cm = cnf_matrix
+        classes = class_names
 
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 ha="center", va="center",
-                 color="gray" if cm[i, j] > thresh else "black")
+        np.set_printoptions(precision=2)
+        plt.figure()
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.title('Confusion Matrix')
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes, rotation=45)
+        plt.yticks(tick_marks, classes)
 
-    plt.subplots_adjust(bottom=0.15)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
-    plt.close()
+        thresh = cm.max() / 2.
+        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+            plt.text(j, i, cm[i, j],
+                     ha="center", va="center",
+                     color="gray" if cm[i, j] > thresh else "black")
+
+        plt.subplots_adjust(bottom=0.15)
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+        plt.close()
 
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
@@ -778,7 +777,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         pred_y[test] = est.predict(X[test])
         resi_y[test] = pred_y[test] - y[test]
 
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    fig, ax = plt.subplots(figsize=(8,6), dpi=300)
     ax.set_title("Cross-Validated Predictions")
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
     ax.set_xlabel('Observed Values')
@@ -791,33 +790,28 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
-    ax.set_title("Cross-Validated Residuals")
-    ax.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
-    ax.set_xlabel('Predicted Values')
-    ax.set_ylabel('Residuals')
-    plt.axhline(y=0.0,
+    fig, ax = plt.subplots(1, 2, figsize=(8,6), dpi=300)
+    ax[0].set_title("Cross-Validated Residuals")
+    ax[0].scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    ax[0].set_xlabel('Predicted Values')
+    ax[0].set_ylabel('Residuals')
+    ax[0].axhline(y=0.0,
                 color="red",
                 linestyle='dashed')
-    plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
-    plt.close()
     # add q-q plot for normalized CV residuals
     from scipy.stats import probplot
     z = (resi_y-np.mean(resi_y))/np.std(resi_y)
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
     series1  = probplot(z, dist="norm")
-    ax.scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
-    ax.set_title("Q-Q Plot for Normalized Residuals")
-    x = np.linspace(*ax.get_xlim())
-    ax.plot(x, x,
+    ax[1].scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
+    ax[1].set_title("Q-Q Plot for Normalized Residuals")
+    x = np.linspace(*ax[1].get_xlim())
+    ax[1].plot(x, x,
             color="red",
             linestyle='dashed')
-    ax.set_xlabel('Theoretical Quantiles')
-    ax.set_ylabel('Ordered Normalized Residuals')
-
+    ax[1].set_xlabel('Theoretical Quantiles')
+    ax[1].set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/qq_plot_cv_resi_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
     plt.close()
 
 
