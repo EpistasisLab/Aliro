@@ -120,8 +120,8 @@ class MetaRecommender(BaseRecommender):
             df.sort_index(axis=1, inplace=True)
             # print('df:',df)
         except Exception as e:
-            print(e)
-            pdb.set_trace() 
+            print('Error',__file__, 'params_to_features:', e)
+            # pdb.set_trace() 
         return df
 
     def features_to_params(self, df ):

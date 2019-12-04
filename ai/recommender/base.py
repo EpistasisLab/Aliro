@@ -51,8 +51,6 @@ class BaseRecommender:
         # get ml+p combos (note: this triggers a property in base recommender)
         self.ml_p = ml_p
 
-        # store dataset_id to hash dictionary
-        self.dataset_id_to_hash = {}
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -81,12 +79,12 @@ class BaseRecommender:
         # store parameter_hash variable in results_data 
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: str(hash(frozenset(x.items()))))
-        
+       
         # store hash dataset ids
-        self.dataset_id_to_hash.update({d:results_mf.loc[d]['dataset_hash'] 
-                for d in results_mf.index})
-        results_data['dataset_hash'] = results_data['dataset'].apply(lambda x:
-                self.dataset_id_to_hash[x])
+        # self.dataset_id_to_hash.update({d:results_mf.loc[d]['dataset_id']
+        #         for d in results_mf.index})
+        # results_data['_id'] = results_data['dataset_id'].apply(lambda x:
+        #         self.dataset_id_to_hash[x])
 
         # update results list 
         if source == 'pennai':
@@ -97,6 +95,7 @@ class BaseRecommender:
 
         Parameters
         ----------
+
         dataset_id: string
             ID of the dataset for which the recommender is generating 
             recommendations.
@@ -106,8 +105,8 @@ class BaseRecommender:
         dataset_mf: DataFrame 
             metafeatures of the dataset represented by dataset_id
         """
-        self.dataset_id_to_hash.update(
-                {dataset_id:dataset_mf['dataset_hash'].values[0]})
+        # self.dataset_id_to_hash.update(
+        #         {dataset_id:dataset_mf['_id'].values[0]})
 
     @property
     def ml_p(self):
@@ -136,7 +135,7 @@ class BaseRecommender:
     def update_trained_dataset_models_from_df(self, results_data):
         '''stores the trained_dataset_models to aid in filtering repeats.'''
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
-                                       results_data['dataset_hash'].values + '|' +
+                                       results_data['_id'].values + '|' +
                                        results_data['algorithm'].values + '|' +
                                        results_data['parameter_hash'].values)
 
@@ -152,7 +151,7 @@ class BaseRecommender:
         '''update the recommender's memory with the new algorithm-parameter combos 
            that it recommended'''
         if dataset_id is not None:
-            datahash = self.dataset_id_to_hash[dataset_id]
+            # datahash = self.dataset_id_to_hash[dataset_id]
             self.trained_dataset_models.update(
-                                    ['|'.join([datahash, ml, p])
+                                    ['|'.join([dataset_id, ml, p])
                                     for ml, p in zip(ml_rec, phash_rec)])
