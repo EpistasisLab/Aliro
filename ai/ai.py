@@ -162,7 +162,7 @@ class AI():
     ##-----------------
     def initilize_recommenders(self, rec_class):
         """
-        Initilize classification recommender
+        Initilize classification and regression recommenders
         """
 
         for prediction_type in self.rec_engines.keys():
@@ -208,8 +208,11 @@ class AI():
         # keep only metafeatures with results
         self.dataset_mf_cache = all_df_mf.loc[kb['resultsData']['_id'].unique()]
 
-        # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
+        # TODO - load regression knowledgebase
+        self.rec_engines["classification"].update(
+            kb['resultsData'], 
+            self.dataset_mf_cache, 
+            source='knowledgebase')
 
         logger.info('pmlb knowledgebase loaded')
 
@@ -365,12 +368,11 @@ class AI():
 
         recommendations = []
 
-        #TODO: Temporary till updated metafeatures get merged...
         metafeatures = self.labApi.get_metafeatures(datasetId)
-        #assert metafeatures['_prediction_type']
-        #predictionType = metafeatures['_prediction_type']
-        predictionType = "classification"
+        assert '_prediction_type' in metafeatures.columns
+        predictionType = metafeatures['_prediction_type'].values[0]
 
+        logger.info("prediction_type: " + predictionType)
 
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
             dataset_id=metafeatures['_id'].values[0],

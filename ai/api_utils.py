@@ -305,10 +305,13 @@ class LabApi:
             data = data[0]
             mf = [data['metafeatures']]
             df = pd.DataFrame.from_records(mf,columns=mf[0].keys())
-            print('api_utils:get_metafeatures')
+
             #include dataset name
             df['dataset'] = data['name']
             df.sort_index(axis=1, inplace=True)
+
+            #logger.debug("metafeatures:")
+            #logger.debug(df.head())
 
             return df
 
