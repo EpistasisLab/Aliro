@@ -310,7 +310,7 @@ def generate_results(model, input_data,
             scores['{}_score'.format(score_name)] = test_scores.mean()
 
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model, filename, target_name, random_state)
+    export_model(tmpdir, _id, model, filename, target_name, mode, random_state)
 
     # get predicted classes
     predicted_classes = model.predict(features)
@@ -815,7 +815,13 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.close()
 
 
-def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
+def export_model(tmpdir,
+                _id,
+                model,
+                filename,
+                target_name,
+                mode="classification",
+                random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
     ----------
@@ -829,6 +835,9 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
         File name of input dataset
     target_name: string
         Target name in input data
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
     random_state: int
         Random seed in model
 
@@ -843,10 +852,13 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
     joblib.dump(pickle_model, pickle_file)
-    pipeline_text = generate_export_codes(
-        pickle_file_name, model, filename, target_name, random_state)
-    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
-    export_scripts.write(pipeline_text)
+    pipeline_text1, pipeline_text2 = generate_export_codes(
+        pickle_file_name, model, filename, target_name, mode, random_state)
+    export_scripts = open("{0}{1}/scripts_reproduce_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text1)
+    export_scripts.close()
+    export_scripts = open("{0}{1}/scripts_application_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text2)
     export_scripts.close()
 
 
@@ -879,7 +891,11 @@ def generate_export_codes(
        The Python scripts for applying the current
        optimized pipeline in stand-alone python environment
     """
-    pipeline_text = """# Python version: {python_version}
+    if mode == 'classification':
+        fold = "StratifiedKFold"
+    elif mode == 'regression':
+        fold = "KFold"
+    exported_codes_1 = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = {random_state}
 # Training dataset filename = {dataset}
@@ -889,7 +905,8 @@ import numpy as np
 import pandas as pd
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, {fold}
 
 # NOTE: Edit variables below with appropriate values
 # path to your pickle file, below is the downloaded pickle file
@@ -899,6 +916,13 @@ dataset = '{dataset}'
 # target column name
 target_column = '{target_name}'
 seed = {random_state}
+
+# load fitted model
+pickle_model = joblib.load(pickle_file)
+model = pickle_model['model']
+
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python')
 """.format(
         python_version=version.replace('\n', ''),
         numpy_version=np.__version__,
@@ -908,10 +932,12 @@ seed = {random_state}
         target_name=target_name,
         pickle_file_name=pickle_file_name,
         random_state=random_state,
-        model=str(model).replace('\n', '\n#')
+        model=str(model).replace('\n', '\n#'),
+        fold=fold
     )
+    exported_codes_2 = exported_codes_1
     if mode == "classification":
-        pipeline_text += """
+        exported_codes_1 += """
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
 # It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
@@ -932,39 +958,71 @@ def balanced_accuracy(y_true, y_pred):
         all_class_accuracies.append(this_class_accuracy)
     return np.mean(all_class_accuracies)
 
-# load fitted model
-pickle_model = joblib.load(pickle_file)
-model = pickle_model['model']
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-# read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python')
+scorer = make_scorer(balanced_accuracy)
 
+# reproducing balanced accuracy scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring=scorer,
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
 
-# Application 1: cross validation of fitted model
-testing_features = input_data.drop(target_column, axis=1).values
-testing_target = input_data[target_column].values
-predicted_target = model.predict(testing_features)
-# Get holdout score for fitted model
-print("Holdout score: ", end="")
-print(balanced_accuracy(testing_target, predicted_target))
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
 
-
-# Application 2: predict outcome by fitted model
-# In this application, the input dataset may not include target column
-input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
-predict_target = model.predict(input_data.values)
+# reproducing confusion matrix
+pred_cv_target = np.empty(target.shape)
+cv = StratifiedKFold(n_splits=10)
+for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
+    train, test = cv_split
+    pred_cv_target[test] = est.predict(X[test])
+cnf_matrix = confusion_matrix(
+    target, pred_cv_target, labels=model.classes_)
+print("Confusion Matrix:", cnf_matrix)
 """
     elif mode == "regression":
-        pipeline_text += """
-# load fitted model
-pickle_model = joblib.load(pickle_file)
-model = pickle_model['model']
+        exported_codes_1 += """
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-# read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python')
+# reproducing r2 scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring='r2',
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
+
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
+"""
 
 
-# Application 1: cross validation of fitted model
+
+    exported_codes_2 += """
+# Application 1: cross validation of fitted model on a new dataset
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -978,4 +1036,4 @@ input_data.drop(target_column, axis=1, inplace=True) # Please comment this line 
 predict_target = model.predict(input_data.values)
 """
 
-    return pipeline_text
+    return exported_codes_1, exported_codes_2
