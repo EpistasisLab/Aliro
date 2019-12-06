@@ -713,6 +713,13 @@ api_projects_data = [{
 
 ]
 api_dataset_metafeatures = [{"name":"ring","metafeatures": {
+            "_categorical_cols" : [],
+            "_data_hash" : "8adacf9049167b6fcc4afb79a3222b480210dfaf42aa637b36b1e3dcdecff964",
+            "_dependent_col" : "target",
+            "_id" : "31a3e27b877742da292f3afb43d05055e3146d7e1e38def0bad16b6fe3600896",
+            "_independent_cols" : ['At1', 'At2', 'At3', 'At4', 'At5', 'At6', 'At7'],
+            "_metafeature_version" : 2 ,
+            "_prediction_type" : "classification",
             "class_prob_max": 0.5048648648648648,
             "class_prob_mean": 0.5,
             "class_prob_median": 0.5,
@@ -757,7 +764,6 @@ api_dataset_metafeatures = [{"name":"ring","metafeatures": {
             "symbols_skew": None,
             "symbols_std": None,
             "symbols_sum": None,
-            "dataset_hash":'4x2x3x1',
         }}]
 
 api_datasets_data_empty = []        
@@ -1612,6 +1618,13 @@ api_dataset_ai_on = [{
     "name": "appendicitis",
     "username": "testuser",
     "metafeatures": {
+        "_categorical_cols" : [],
+        "_data_hash" : "8adacf9049167b6fcc4afb79a3222b480210dfaf42aa637b36b1e3dcdecff964",
+        "_dependent_col" : "target",
+        "_id" : "31a3e27b877742da292f3afb43d05055e3146d7e1e38def0bad16b6fe3600896",
+        "_independent_cols" : ['At1', 'At2', 'At3', 'At4', 'At5', 'At6', 'At7'],
+        "_metafeature_version" : 2 ,
+        "_prediction_type" : "classification",
         "class_prob_max": 0.8018867924528302,
         "class_prob_mean": 0.5,
         "class_prob_median": 0.5,
@@ -1626,7 +1639,6 @@ api_dataset_ai_on = [{
         "corr_with_dependent_abs_min": None,
         "corr_with_dependent_abs_skew": None,
         "corr_with_dependent_abs_std": None,
-        "dataset_hash": "db273af669a33c0303948622cf694a232519c3ca3aac8077fb008f4a60d30e17",
         "diversity_fraction": 0.822528983974963,
         "entropy_dependent": 0.49777562247179563,
         "kurtosis_kurtosis": 4.4521501032930715,
@@ -1636,7 +1648,6 @@ api_dataset_ai_on = [{
         "kurtosis_min": -0.064662454053662,
         "kurtosis_skew": 2.049814018854758,
         "kurtosis_std": 1.7321483030218765,
-        "metafeature_version": 1,
         "n_categorical": 0,
         "n_classes": 2,
         "n_columns": 8,

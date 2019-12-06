@@ -216,6 +216,36 @@ describe('lab', () => {
 				}
 			});
 
+			it('existing metafeature id', async () => {
+				expect.assertions(3);
+
+				let filepath = `${util.DATASET_PATH}/banana_copy.csv`
+
+				let form = new FormData();
+
+				let metadata =  JSON.stringify({
+						'name': 'banana_copy',
+			            'username': 'testuser',
+			            'timestamp': Date.now(),
+			            'dependent_col' : 'class'
+		            })
+
+				form.append('_metadata', metadata)
+				form.append('_files', fs.createReadStream(filepath));
+
+				let result
+
+				try {
+					result = await labApi.putDataset(form);
+				}
+				catch (e) {
+					var json = await e.response.json()
+					expect(json.error).toBeTruthy()
+					expect(e.response.status).toEqual(400)
+					expect(json.error).toEqual("Unable to upload file. Error: metafeatures validation failed, dataset with metafeature signature '6526f294170ebc6066c53ad1f2b01b5b4c61708bd455fa08b1e60895a74a4a83' has already been registered, count: 1.")
+				}
+			});
+
 			it('missing param _metadata', async () => {
 				expect.assertions(2);
 

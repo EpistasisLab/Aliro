@@ -29,14 +29,15 @@ class Dataset:
 
     prediction_type = {'regression'|'classification'}
     """
-    VERSION = 1.0
+    VERSION = 2.0
+    META_PREFIX = "m_"
 
     df = None
     df_encoded = None
     categorical_cols = None
     dependent_col = None
     prediction_type = None
-    independent_col = None
+    independent_cols = None
     def __init__(self, df, prediction_type = None, dependent_col = None, categorical_cols = None):
         
         self.df = df
@@ -44,8 +45,11 @@ class Dataset:
         self._set_categorical_columns(categorical_cols)
         self._set_prediction_type(prediction_type)
 
-        self.independent_col = list(set(self.df.columns.tolist()) - set([self.dependent_col]))
+        self.independent_cols = list(set(self.df.columns.tolist()) - set([self.dependent_col]))
         self._categorical_column_encoder()
+
+        self.categorical_cols.sort()
+        self.independent_cols.sort()
 
         
     def _set_dependent_col(self, dependent_col):
@@ -126,21 +130,52 @@ class Dataset:
                 # nominal - so make dummy"
                 self.df_encoded = pd.get_dummies(self.df_encoded, columns=[col])
         
-    def metafeature_version(self):
+    def m_metafeature_version(self):
         """
         version of the code used to generate metafeatures.
 
-        If the way metafeatures are generated changes (in particular dataset_hash),
+        If the way metafeatures are generated changes (in particular dataset id),
         The version number should be updated.
         """
         return self.VERSION
 
-    def dataset_hash(self):
+    def m_data_hash(self):
         """
-        Generates a hash for the dataset
+        Generates a hash for the dataset data
         """
         rowHashes = hash_pandas_object(self.df).values
         return hashlib.sha256(rowHashes).hexdigest()
+
+    def m_dependent_col(self):
+        return self.dependent_col
+
+    def m_independent_cols(self):
+        return repr(self.independent_cols)
+
+    def m_categorical_cols(self):
+        return repr(self.categorical_cols)
+
+    def m_prediction_type(self):
+        return self.prediction_type
+
+    def _id_obj_str(self):
+        idObj = {
+            "m_data_hash" : self.m_data_hash(),
+            "m_dependent_col" : self.m_dependent_col(),
+            "m_independent_cols" : self.independent_cols,
+            "m_categorical_cols" : self.categorical_cols,
+            "m_prediction_type" : self.m_prediction_type(),
+        }
+
+        return repr(sorted(idObj.items()))
+
+    def m_id(self):
+        """
+        Id to identify a dataset and the parameters used to uniquely generate the metadata
+        """
+
+        idObjStr = self._id_obj_str()
+        return hashlib.sha256(idObjStr.encode('utf-8')).hexdigest()
 
     def n_rows(self):
         return self.df.shape[0]
@@ -473,7 +508,7 @@ class Dataset:
 
         if self.kurtosis_dict == None:
             self.kurtosis_dict = {}
-            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            numerical_cols = list(set(self.independent_cols) - set(self.categorical_cols)) 
             for column in numerical_cols:
                 self.kurtosis_dict[column] = kurtosis(self.df[column].dropna(), bias = False)
             return self.kurtosis_dict
@@ -592,7 +627,7 @@ class Dataset:
 
         if self.skew_dict == None:
             self.skew_dict = {}
-            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            numerical_cols = list(set(self.independent_cols) - set(self.categorical_cols)) 
             for column in numerical_cols:
                 self.skew_dict[column] = skew(self.df[column].dropna(), bias = False)
             return self.skew_dict
