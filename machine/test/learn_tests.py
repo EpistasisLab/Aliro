@@ -471,7 +471,7 @@ class APITESTCLASS(unittest.TestCase):
             # only has roc for binary outcome
             assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+            assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
@@ -526,7 +526,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -583,7 +583,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -638,7 +638,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -676,7 +676,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -715,7 +715,7 @@ class APITESTCLASS(unittest.TestCase):
         # only has roc for binary outcome
         assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -783,7 +783,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         assert os.path.isfile(
             '{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
@@ -851,7 +851,7 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/feature_importances.json'.format(outdir))
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-        assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+        assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         assert os.path.isfile(
             '{}/grid_search_results_{}.csv'.format(outdir, _id))
         # test pickle file
@@ -986,7 +986,7 @@ def test_generate_results_1():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1030,7 +1030,7 @@ def test_generate_results_2():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1078,7 +1078,7 @@ def test_generate_results_3():
     assert os.path.isfile('{}/reg_cv_pred_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/reg_cv_resi_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1107,7 +1107,7 @@ def test_generate_results_4():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1181,7 +1181,7 @@ def test_generate_results_6():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1240,7 +1240,7 @@ def test_generate_results_7():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert not os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1286,7 +1286,7 @@ def test_generate_results_9():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1330,7 +1330,7 @@ def test_generate_results_10():
     # only has roc for binary outcome
     assert not os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
     assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-    assert os.path.isfile('{}/scripts_{}.py'.format(outdir, _id))
+    assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
     # test pickle file
     pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
     assert os.path.isfile(pickle_file)
@@ -1429,14 +1429,14 @@ def test_generate_export_codes():
         load_clf, testing_features, testing_classes)
     assert test_clf_score == load_clf_score
 
-    pipeline_text = generate_export_codes(
+    pipeline_text1, pipeline_text2 = generate_export_codes(
         'test.plk',
         test_clf,
         filename=['test_dataset.tsv'],
         target_name=target_name,
         random_state=42)
 
-    expected_text = """# Python version: {python_version}
+    expected_text_1 = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
@@ -1446,7 +1446,8 @@ import numpy as np
 import pandas as pd
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, StratifiedKFold
 
 # NOTE: Edit variables below with appropriate values
 # path to your pickle file, below is the downloaded pickle file
@@ -1456,6 +1457,13 @@ dataset = 'test_dataset.tsv'
 # target column name
 target_column = '{target_name}'
 seed = 42
+
+# load fitted model
+pickle_model = joblib.load(pickle_file)
+model = pickle_model['model']
+
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python')
 
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
 # It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
@@ -1477,6 +1485,70 @@ def balanced_accuracy(y_true, y_pred):
         all_class_accuracies.append(this_class_accuracy)
     return np.mean(all_class_accuracies)
 
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+
+scorer = make_scorer(balanced_accuracy)
+
+# reproducing balanced accuracy scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring=scorer,
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
+
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
+
+# reproducing confusion matrix
+pred_cv_target = np.empty(target.shape)
+cv = StratifiedKFold(n_splits=10)
+for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
+    train, test = cv_split
+    pred_cv_target[test] = est.predict(X[test])
+cnf_matrix = confusion_matrix(
+    target, pred_cv_target, labels=model.classes_)
+print("Confusion Matrix:", cnf_matrix)
+""".format(
+        python_version=sys.version.replace('\n', ''),
+        numpy_version=np.__version__,
+        pandas_version=pd.__version__,
+        skl_version=skl_version,
+        target_name=target_name,
+        model=str(load_clf).replace('\n', '\n#')
+    )
+    expected_text_2 = """# Python version: {python_version}
+# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# random seed = 42
+# Training dataset filename = test_dataset.tsv
+# Pickle filename = test.plk
+# Model in the pickle file: {model}
+import numpy as np
+import pandas as pd
+from sklearn.externals import joblib
+from sklearn.utils import check_X_y
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, StratifiedKFold
+
+# NOTE: Edit variables below with appropriate values
+# path to your pickle file, below is the downloaded pickle file
+pickle_file = 'test.plk'
+# file path to the dataset
+dataset = 'test_dataset.tsv'
+# target column name
+target_column = '{target_name}'
+seed = 42
+
 # load fitted model
 pickle_model = joblib.load(pickle_file)
 model = pickle_model['model']
@@ -1484,14 +1556,12 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-
-# Application 1: cross validation of fitted model
+# Application 1: cross validation of fitted model on a new dataset
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
-predicted_target = model.predict(testing_features)
 # Get holdout score for fitted model
 print("Holdout score: ", end="")
-print(balanced_accuracy(testing_target, predicted_target))
+print(model.score(testing_features, testing_target))
 
 
 # Application 2: predict outcome by fitted model
@@ -1507,7 +1577,8 @@ predict_target = model.predict(input_data.values)
         model=str(load_clf).replace('\n', '\n#')
     )
 
-    assert_equal(pipeline_text, expected_text)
+    assert_equal(pipeline_text1, expected_text_1)
+    assert_equal(pipeline_text2, expected_text_2)
     rmtree(tmpdir)
 
 
@@ -1539,7 +1610,7 @@ def test_generate_export_codes_regression():
         load_clf, testing_features, testing_classes)
     assert test_clf_score == load_clf_score
 
-    pipeline_text = generate_export_codes(
+    pipeline_text1, pipeline_text2 = generate_export_codes(
         'test.plk',
         test_clf,
         filename=['test_dataset.tsv'],
@@ -1547,7 +1618,7 @@ def test_generate_export_codes_regression():
         mode="regression",
         random_state=42)
 
-    expected_text = """# Python version: {python_version}
+    expected_text_1 = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
@@ -1557,7 +1628,8 @@ import numpy as np
 import pandas as pd
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, KFold
 
 # NOTE: Edit variables below with appropriate values
 # path to your pickle file, below is the downloaded pickle file
@@ -1575,8 +1647,66 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-# Application 1: cross validation of fitted model
+# reproducing r2 scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring='r2',
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
+
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
+""".format(
+        python_version=sys.version.replace('\n', ''),
+        numpy_version=np.__version__,
+        pandas_version=pd.__version__,
+        skl_version=skl_version,
+        target_name=target_name,
+        model=str(load_clf).replace('\n', '\n#')
+    )
+    expected_text_2 = """# Python version: {python_version}
+# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# random seed = 42
+# Training dataset filename = test_dataset.tsv
+# Pickle filename = test.plk
+# Model in the pickle file: {model}
+import numpy as np
+import pandas as pd
+from sklearn.externals import joblib
+from sklearn.utils import check_X_y
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, KFold
+
+# NOTE: Edit variables below with appropriate values
+# path to your pickle file, below is the downloaded pickle file
+pickle_file = 'test.plk'
+# file path to the dataset
+dataset = 'test_dataset.tsv'
+# target column name
+target_column = '{target_name}'
+seed = 42
+
+# load fitted model
+pickle_model = joblib.load(pickle_file)
+model = pickle_model['model']
+
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python')
+
+# Application 1: cross validation of fitted model on a new dataset
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -1597,5 +1727,6 @@ predict_target = model.predict(input_data.values)
         model=str(load_clf).replace('\n', '\n#')
     )
 
-    assert_equal(pipeline_text, expected_text)
+    assert_equal(pipeline_text1, expected_text_1)
+    assert_equal(pipeline_text2, expected_text_2)
     rmtree(tmpdir)
