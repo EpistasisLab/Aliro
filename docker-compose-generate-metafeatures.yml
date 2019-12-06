@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  unit_tester:
+    build:
+      context: .
+      dockerfile: tests/unit/Dockerfile
+    working_dir: /appsrc/data/knowledgebases/processing
+    #command: bash -c "python generate_metafeatures.py -outfilename pmlb_metafeatures.csv.gz -data_dir ../../datasets/pmlb/classification/ -data_extension .gz"
+    command: bash -c "python generate_metafeatures.py -outfilename pmlb_small_metafeatures.csv.gz -data_dir ../../datasets/pmlb_small/ -label class"
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/lab/webapp/node_modules"

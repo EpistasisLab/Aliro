@@ -85,7 +85,7 @@ class AverageRecommender(BaseRecommender):
 
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
-        dataset_hash = self.dataset_id_to_hash[dataset_id]
+        dataset_hash = dataset_id
 
         # return ML+P for best average y
         try:
