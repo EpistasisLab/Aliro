@@ -310,7 +310,7 @@ def generate_results(model, input_data,
             scores['{}_score'.format(score_name)] = test_scores.mean()
 
     # dump fitted module as pickle file
-    export_model(tmpdir, _id, model, filename, target_name, random_state)
+    export_model(tmpdir, _id, model, filename, target_name, mode, random_state)
 
     # get predicted classes
     predicted_classes = model.predict(features)
@@ -348,21 +348,13 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        # determine if target is binary or multiclass
-        class_names = model.classes_
-
-        cnf_matrix = confusion_matrix(
-            target, predicted_classes, labels=class_names)
-        cnf_matrix_dict = {
-            'cnf_matrix': cnf_matrix.tolist(),
-            'class_names': class_names.tolist()
-        }
-        save_json_fmt(outdir=tmpdir, _id=_id,
-                      fname="cnf_matrix.json", content=cnf_matrix_dict)
-
-        # export plot
-        if figure_export:
-            plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names)
+        plot_confusion_matrix(tmpdir,
+                            _id,
+                            features,
+                            target,
+                            model.classes_,
+                            cv_scores,
+                            figure_export)
 
         if num_classes == 2:
             plot_roc_curve(
@@ -426,10 +418,7 @@ def setup_model_params(model, parameter_name, value):
 
 
 def compute_imp_score(model, metric, features, target, random_state):
-    """compute importance scores for features.
-    If coef_ or feature_importances_ attribute is available for the model,
-    the the importance scores will be based on the attribute. If not,
-    then permuation importance scores will be estimated
+    """Compute permuation importance scores for features.
     Parameters
     ----------
     tmpdir: string
@@ -459,28 +448,16 @@ def compute_imp_score(model, metric, features, target, random_state):
         Importance score type
 
     """
-    # exporting/computing importance score
-    if hasattr(model, 'coef_'):
-        coefs = model.coef_
-        if coefs.ndim > 1:
-            coefs = safe_sqr(coefs).sum(axis=0)
-            imp_score_type = "Sum of Squares of Coefficients"
-        else:
-            coefs = safe_sqr(coefs)
-            imp_score_type = "Squares of Coefficients"
-    else:
-        coefs = getattr(model, 'feature_importances_', None)
-        imp_score_type = "Gini Importance"
-    if coefs is None or np.isnan(coefs).any():
-        coefs, _ = feature_importance_permutation(
-            predict_method=model.predict,
-            X=features,
-            y=target,
-            num_rounds=5,
-            metric=metric,
-            seed=random_state,
-        )
-        imp_score_type = "Permutation Feature Importance"
+
+    coefs, _ = feature_importance_permutation(
+        predict_method=model.predict,
+        X=features,
+        y=target,
+        num_rounds=5,
+        metric=metric,
+        seed=random_state,
+    )
+    imp_score_type = "Permutation Feature Importance"
 
     return coefs, imp_score_type
 
@@ -507,7 +484,7 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
+def plot_confusion_matrix(tmpdir, _id, X, y, class_names, cv_scores, figure_export):
     """Make plot for confusion matrix.
 
     Parameters
@@ -516,36 +493,58 @@ def plot_confusion_matrix(tmpdir, _id, cnf_matrix, class_names):
         Temporary directory for saving experiment results
     _id: string
         Experiment ID in PennAI
-    cnf_matrix: np.darray
-        Confusion matrix
+    X: np.darray/pd.DataFrame
+        Features in training dataset
+    y: np.darray/pd.DataFrame
+        Target in training dataset
     class_names: list
         List of class names
+    cv_scores: dictionary
+        Return from sklearn.model_selection.cross_validate
+    figure_export: boolean
+        If true, then export roc curve plot
     Returns
     -------
     None
     """
-    cm = cnf_matrix
-    classes = class_names
+    pred_y = np.empty(y.shape)
+    cv = StratifiedKFold(n_splits=10)
+    for cv_split, est in zip(cv.split(X, y), cv_scores['estimator']):
+        train, test = cv_split
+        pred_y[test] = est.predict(X[test])
+    cnf_matrix = confusion_matrix(
+        y, pred_y, labels=class_names)
+    cnf_matrix_dict = {
+        'cnf_matrix': cnf_matrix.tolist(),
+        'class_names': class_names.tolist()
+    }
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="cnf_matrix.json", content=cnf_matrix_dict)
 
-    np.set_printoptions(precision=2)
-    plt.figure()
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('Confusion Matrix')
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+    # export plot
+    if figure_export:
+        cm = cnf_matrix
+        classes = class_names
 
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 ha="center", va="center",
-                 color="gray" if cm[i, j] > thresh else "black")
+        np.set_printoptions(precision=2)
+        plt.figure()
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.title('Confusion Matrix')
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes, rotation=45)
+        plt.yticks(tick_marks, classes)
 
-    plt.subplots_adjust(bottom=0.15)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
-    plt.close()
+        thresh = cm.max() / 2.
+        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+            plt.text(j, i, cm[i, j],
+                     ha="center", va="center",
+                     color="gray" if cm[i, j] > thresh else "black")
+
+        plt.subplots_adjust(bottom=0.15)
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
+        plt.close()
 
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
@@ -778,7 +777,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         pred_y[test] = est.predict(X[test])
         resi_y[test] = pred_y[test] - y[test]
 
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
+    fig, ax = plt.subplots(figsize=(8,6), dpi=300)
     ax.set_title("Cross-Validated Predictions")
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
     ax.set_xlabel('Observed Values')
@@ -791,37 +790,38 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
-    ax.set_title("Cross-Validated Residuals")
-    ax.scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
-    ax.set_xlabel('Predicted Values')
-    ax.set_ylabel('Residuals')
-    plt.axhline(y=0.0,
+    fig, ax = plt.subplots(1, 2, figsize=(8,6), dpi=300)
+    ax[0].set_title("Cross-Validated Residuals")
+    ax[0].scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
+    ax[0].set_xlabel('Predicted Values')
+    ax[0].set_ylabel('Residuals')
+    ax[0].axhline(y=0.0,
                 color="red",
                 linestyle='dashed')
-    plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
-    plt.close()
     # add q-q plot for normalized CV residuals
     from scipy.stats import probplot
     z = (resi_y-np.mean(resi_y))/np.std(resi_y)
-    fig, ax = plt.subplots(figsize=(6,6), dpi=300)
     series1  = probplot(z, dist="norm")
-    ax.scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
-    ax.set_title("Q-Q Plot for Normalized Residuals")
-    x = np.linspace(*ax.get_xlim())
-    ax.plot(x, x,
+    ax[1].scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
+    ax[1].set_title("Q-Q Plot for Normalized Residuals")
+    x = np.linspace(*ax[1].get_xlim())
+    ax[1].plot(x, x,
             color="red",
             linestyle='dashed')
-    ax.set_xlabel('Theoretical Quantiles')
-    ax.set_ylabel('Ordered Normalized Residuals')
-
+    ax[1].set_xlabel('Theoretical Quantiles')
+    ax[1].set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
-    plt.savefig(tmpdir + _id + '/qq_plot_cv_resi_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
     plt.close()
 
 
-def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
+def export_model(tmpdir,
+                _id,
+                model,
+                filename,
+                target_name,
+                mode="classification",
+                random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
     ----------
@@ -835,6 +835,9 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
         File name of input dataset
     target_name: string
         Target name in input data
+    mode:  string
+        'classification': Run classification analysis
+        'regression': Run regression analysis
     random_state: int
         Random seed in model
 
@@ -849,10 +852,13 @@ def export_model(tmpdir, _id, model, filename, target_name, random_state=42):
     pickle_model['model'] = model
     pickle_model['data_filename'] = filename
     joblib.dump(pickle_model, pickle_file)
-    pipeline_text = generate_export_codes(
-        pickle_file_name, model, filename, target_name, random_state)
-    export_scripts = open("{0}{1}/scripts_{1}.py".format(tmpdir, _id), "w")
-    export_scripts.write(pipeline_text)
+    pipeline_text1, pipeline_text2 = generate_export_codes(
+        pickle_file_name, model, filename, target_name, mode, random_state)
+    export_scripts = open("{0}{1}/scripts_reproduce_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text1)
+    export_scripts.close()
+    export_scripts = open("{0}{1}/scripts_application_{1}.py".format(tmpdir, _id), "w")
+    export_scripts.write(pipeline_text2)
     export_scripts.close()
 
 
@@ -885,7 +891,11 @@ def generate_export_codes(
        The Python scripts for applying the current
        optimized pipeline in stand-alone python environment
     """
-    pipeline_text = """# Python version: {python_version}
+    if mode == 'classification':
+        fold = "StratifiedKFold"
+    elif mode == 'regression':
+        fold = "KFold"
+    exported_codes_1 = """# Python version: {python_version}
 # Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
 # random seed = {random_state}
 # Training dataset filename = {dataset}
@@ -895,7 +905,8 @@ import numpy as np
 import pandas as pd
 from sklearn.externals import joblib
 from sklearn.utils import check_X_y
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.model_selection import cross_validate, {fold}
 
 # NOTE: Edit variables below with appropriate values
 # path to your pickle file, below is the downloaded pickle file
@@ -905,6 +916,13 @@ dataset = '{dataset}'
 # target column name
 target_column = '{target_name}'
 seed = {random_state}
+
+# load fitted model
+pickle_model = joblib.load(pickle_file)
+model = pickle_model['model']
+
+# read input data
+input_data = pd.read_csv(dataset, sep=None, engine='python')
 """.format(
         python_version=version.replace('\n', ''),
         numpy_version=np.__version__,
@@ -914,10 +932,12 @@ seed = {random_state}
         target_name=target_name,
         pickle_file_name=pickle_file_name,
         random_state=random_state,
-        model=str(model).replace('\n', '\n#')
+        model=str(model).replace('\n', '\n#'),
+        fold=fold
     )
+    exported_codes_2 = exported_codes_1
     if mode == "classification":
-        pipeline_text += """
+        exported_codes_1 += """
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
 # It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
@@ -938,39 +958,71 @@ def balanced_accuracy(y_true, y_pred):
         all_class_accuracies.append(this_class_accuracy)
     return np.mean(all_class_accuracies)
 
-# load fitted model
-pickle_model = joblib.load(pickle_file)
-model = pickle_model['model']
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-# read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python')
+scorer = make_scorer(balanced_accuracy)
 
+# reproducing balanced accuracy scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring=scorer,
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
 
-# Application 1: cross validation of fitted model
-testing_features = input_data.drop(target_column, axis=1).values
-testing_target = input_data[target_column].values
-predicted_target = model.predict(testing_features)
-# Get holdout score for fitted model
-print("Holdout score: ", end="")
-print(balanced_accuracy(testing_target, predicted_target))
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
 
-
-# Application 2: predict outcome by fitted model
-# In this application, the input dataset may not include target column
-input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
-predict_target = model.predict(input_data.values)
+# reproducing confusion matrix
+pred_cv_target = np.empty(target.shape)
+cv = StratifiedKFold(n_splits=10)
+for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
+    train, test = cv_split
+    pred_cv_target[test] = est.predict(X[test])
+cnf_matrix = confusion_matrix(
+    target, pred_cv_target, labels=model.classes_)
+print("Confusion Matrix:", cnf_matrix)
 """
     elif mode == "regression":
-        pipeline_text += """
-# load fitted model
-pickle_model = joblib.load(pickle_file)
-model = pickle_model['model']
+        exported_codes_1 += """
+# reproducing training score and testing score from PennAI
+features = input_data.drop(target_column, axis=1).values
+target = input_data[target_column].values
+# Checking dataset
+features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
 
-# read input data
-input_data = pd.read_csv(dataset, sep=None, engine='python')
+# reproducing r2 scores
+# computing cross-validated metrics
+cv_scores = cross_validate(
+    estimator=model,
+    X=features,
+    y=target,
+    scoring='r2',
+    cv=cv,
+    return_train_score=True,
+    return_estimator=True
+)
+train_scores = cv_scores['train_score'].mean()
+test_scores = cv_scores['test_score'].mean()
+
+print("Training score: ", train_score)
+print("Testing score: ", test_score)
+"""
 
 
-# Application 1: cross validation of fitted model
+
+    exported_codes_2 += """
+# Application 1: cross validation of fitted model on a new dataset
 testing_features = input_data.drop(target_column, axis=1).values
 testing_target = input_data[target_column].values
 # Get holdout score for fitted model
@@ -984,4 +1036,4 @@ input_data.drop(target_column, axis=1, inplace=True) # Please comment this line 
 predict_target = model.predict(input_data.values)
 """
 
-    return pipeline_text
+    return exported_codes_1, exported_codes_2

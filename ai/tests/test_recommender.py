@@ -26,15 +26,29 @@ KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv
 KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
 
 data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
-metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, float_precision='round_trip')
+metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, 
+        float_precision='round_trip')
 
+def get_metafeatures(d):
+    """Fetch dataset metafeatures from file"""
+    # print('getting metafeatures for',d)
+    df = metafeatures.loc[[d]]
+    return df
+
+def get_metafeatures_by_id(d):
+    """Fetch dataset metafeatures from file"""
+    # print('getting metafeatures for',d)
+    df = metafeatures.loc[metafeatures._id == d]
+    return df
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
-data.set_index('dataset')
+# data['_id'] = data['dataset'].apply(
+#         lambda x: get_metafeatures(x)['_id'])
+# data.set_index('_id')
 #ml - param combos
 
 test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
@@ -42,10 +56,6 @@ test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
         KNNDatasetRecommender, KNNMLRecommender, SlopeOneRecommender, 
         SVDRecommender ]
 
-def get_metafeatures(d):
-    """Fetch dataset metafeatures from file"""
-    df = metafeatures.loc[[d]]
-    return df
 
 def update_dataset_mf(dataset_mf,results_data):
     """Grabs metafeatures of datasets in results_data
@@ -69,8 +79,8 @@ def update_dataset_mf(dataset_mf,results_data):
         # print('df_mf:',df_mf['dataset'], df_mf)
         dataset_mf = dataset_mf.append(df_mf)
         # print('dataset_mf:\n',dataset_mf)
-    dataset_mf['metafeature_version'] = 1.0
-    dataset_mf['dataset_hash'] = 'test_hash'
+    dataset_mf['_metafeature_version'] = 2.0
+    # dataset_mf['_id'] = 'test_hash'
 
     return dataset_mf
 
@@ -97,10 +107,10 @@ def check_rec(rec):
     rec_obj.update(new_data, dataset_mf)
     # test making recommendations
     for n in np.arange(epochs):
-        for d in list(data.dataset.unique())[:10]:
+        for d in list(data['_id'].unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,
                                           n_recs=n_recs,
-                                          dataset_mf=get_metafeatures(d))
+                                          dataset_mf=get_metafeatures_by_id(d))
             logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
                 rec.__name__,n,d,ml,p,scores))
 
@@ -131,9 +141,9 @@ def check_n_recs(rec):
     rec_obj.update(new_data, dataset_mf)
     # test updating scores
     for n_recs in np.arange(5):
-        for d in list(data.dataset.unique())[:10]:
+        for d in list(data['_id'].unique())[:10]:
             ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
-                                             dataset_mf=get_metafeatures(d))
+                                         dataset_mf=get_metafeatures_by_id(d))
             assert(len(ml)==n_recs)
             assert(len(p)==n_recs)
             assert(len(scores)==n_recs)

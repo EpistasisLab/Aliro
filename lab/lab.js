@@ -1306,6 +1306,24 @@ var validateDatasetMetadata = function(metadata) {
             throw new Error(`Metadata validation failed, dataset with name '${metadata.name}' has already been registered, count: ${count}.`)
         return true
     })
+
+
+}
+
+
+/**
+* Verify that the metafeatures for a file to be registered.
+*
+* @Promise that returns a bool
+*/
+var validateDatasetMetafeatures = function(metafeatures) {
+    // verify a dataset with the same data and metadata has not been uploaded
+    return db.datasets.countAsync({ "metafeatures._id": metafeatures._id})
+    .then((count) => {
+        if (count != 0)
+            throw new Error(`metafeatures validation failed, dataset with metafeature signature '${metafeatures._id}' has already been registered, count: ${count}.`)
+        return metafeatures
+    })
 }
 
 
@@ -1328,13 +1346,14 @@ var registerDataset = function(fileId, prediction_type, dependent_col, categoric
     return validateDatasetMetadata(metadata)
     .then((result) => {return validateDatafileByFileIdAsync(fileId, prediction_type, dependent_col, categorical_features, ordinal_features)})
     .then((result) => {return generateFeaturesFromFileIdAsync(fileId, prediction_type, dependent_col)})
+    .then((metafeatures) => {return validateDatasetMetafeatures(metafeatures)})
     
-    // create a new datasets instance and with the dataset dataProfile
-    .then((dataProfile) => {
+    // create a new datasets instance and with the dataset metafeatures
+    .then((metafeatures) => {
         return db.datasets.insertAsync({
             name: metadata.name,
             username: metadata.username,
-            metafeatures: dataProfile,
+            metafeatures: metafeatures,
             files: []
         }, {})
     })
