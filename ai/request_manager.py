@@ -167,8 +167,11 @@ class AiRequest:
 
 
     def process_request(self):
-        logger.debug(f"===={self.datasetName} AI.State={self.state}, queue={self.datasetThread.workQueue.qsize()}, processingRequest={self.datasetThread.processingRequest}====")
-        logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}  self.datasetThread.is_alive()={self.datasetThread.is_alive()}")
+        logger.debug(f"===={self.datasetName} AI.State={self.state}, "
+                "queue={self.datasetThread.workQueue.qsize()},"
+                " processingRequest={self.datasetThread.processingRequest}====")
+        logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}"
+                "  self.datasetThread.is_alive()={self.datasetThread.is_alive()}")
         if (self.state in [AiState.INACTIVE, AiState.THREAD_DIED]):
             return
 

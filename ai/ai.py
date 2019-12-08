@@ -24,7 +24,7 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -128,6 +128,9 @@ class AI():
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
 
+        # store dataset_id to hash dictionary
+        self.dataset_mf_cache_id_hash_lookup = {}
+
         if use_knowledgebase:
             self.load_knowledgebase()
 
@@ -153,12 +156,13 @@ class AI():
         # for comma-separated list of datasets in datasets, turn AI request on
         assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
 
+
     ##-----------------
     ## Init methods
     ##-----------------
     def initilize_recommenders(self, rec_class):
         """
-        Initilize classification recommender
+        Initilize classification and regression recommenders
         """
 
         for prediction_type in self.rec_engines.keys():
@@ -197,29 +201,18 @@ class AI():
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
 
-        #TODO: Verify that conversion from name to id is needed....
-        # WGL: yes at the moment we need this until hash is implemented.
-        # we can add a check at dataset upload to prevent repeat dataset names in
-        # the mean time.
-        # pdb.set_trace()
-        # self.user_datasets = self.labApi.get_user_datasets(self.user)
-        # self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
-        # kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
-        #                                   lambda x: self.dataset_name_to_id[x]
-        #                                   if x in self.dataset_name_to_id.keys()
-        #                                   else x)
-        # metafeatures = {}
-        # for k,v in kb['metafeaturesData'].items():
-        #     if k in self.dataset_name_to_id.keys():
-        #         metafeatures[self.dataset_name_to_id[k]] = v
-        #     else:
-        #         metafeatures[k] = v
-        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
+        all_df_mf = kb['metafeaturesData'].set_index('_id')
+
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
+        # use _id to index the metafeatures, and
         # keep only metafeatures with results
-        self.dataset_mf_cache = all_df_mf.reindex(kb['resultsData'].dataset.unique())
-        # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
+        self.dataset_mf_cache = all_df_mf.loc[kb['resultsData']['_id'].unique()]
+
+        # TODO - load regression knowledgebase
+        self.rec_engines["classification"].update(
+            kb['resultsData'], 
+            self.dataset_mf_cache, 
+            source='knowledgebase')
 
         logger.info('pmlb knowledgebase loaded')
 
@@ -242,21 +235,24 @@ class AI():
         #logger.debug('results_data:'+str(results_data.head()))
 
         dataset_metafeatures = []
-        dataset_indicies = results_data['dataset'].unique()
+        
+        dataset_indicies = results_data['dataset_id'].unique()
 
         # add dataset metafeatures to the cache
         for d in dataset_indicies:
-            if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
+            if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache_id_hash_lookup.keys():
                 df = self.labApi.get_metafeatures(d)
                 df['dataset'] = d
                 dataset_metafeatures.append(df)
+                self.dataset_mf_cache_id_hash_lookup.update({d:df['_id']})
         if dataset_metafeatures:
             df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
+        logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
         #logger.debug(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        #logger.debug(f'indicies: \n\n {dataset_indicies}')
+        logger.debug(f'indicies: \n\n {dataset_indicies}')
 
         new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
         assert len(new_mf) == len(dataset_indicies)
@@ -293,9 +289,15 @@ class AI():
         self.new_data, and then clear self.new_data.
         """
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
+
             for predictionType in self.new_data.prediction_type.unique():
                 filterRes = self.new_data[self.new_data['prediction_type']==predictionType]
                 filterMf = self.get_results_metafeatures(filterRes)
+
+                filterRes['_id'] = filterRes['dataset_id'].apply(
+                    lambda x: self.dataset_mf_cache_id_hash_lookup[x])
+
+
                 self.rec_engines[predictionType].update(filterRes, filterMf)
                 logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     f': {predictionType} recommender updated with {len(filterRes.index)} result(s)')
@@ -329,9 +331,9 @@ class AI():
                 self.labApi.set_ai_status(datasetId = r['_id'],
                                             aiStatus = 'on')
 
-                self.requestManager.add_request(datasetId=r['_id'],
-                                                datasetName=r['name'])
-
+                self.requestManager.add_request(
+                        datasetId=r['_id'], 
+                        datasetName=r['name']) 
         time.sleep(.1)
         # get all datasets that have a manual 'off' status
         # and terminate their ai requests
@@ -366,14 +368,14 @@ class AI():
 
         recommendations = []
 
-        #TODO: Temporary till updated metafeatures get merged...
         metafeatures = self.labApi.get_metafeatures(datasetId)
-        #assert metafeatures['_prediction_type']
-        #predictionType = metafeatures['_prediction_type']
-        predictionType = "classification"
+        assert '_prediction_type' in metafeatures.columns
+        predictionType = metafeatures['_prediction_type'].values[0]
+
+        logger.info("prediction_type: " + predictionType)
 
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
-            dataset_id=datasetId,
+            dataset_id=metafeatures['_id'].values[0],
             n_recs=numOfRecs,
             dataset_mf=metafeatures)
 
