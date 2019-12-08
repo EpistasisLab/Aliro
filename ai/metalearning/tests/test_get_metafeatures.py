@@ -174,13 +174,17 @@ class Dataset_Describe(unittest.TestCase):
 
 
     @parameterized.expand(main_args_bad)
-    def test_validate_main_bad(self, file_path, target, identifier_type, prediction_type):
+    def test_validate_main_bad(self, file_path, target, identifier_type, 
+            prediction_type):
         result = io.StringIO()
         testargs = ["program.py", file_path]
 
-        if target: testargs.extend(['-target', target])
-        if identifier_type: testargs.extend(['-identifier_type', identifier_type])
-        if prediction_type: testargs.extend(['-prediction_type', prediction_type])
+        if target: 
+            testargs.extend(['-target', target])
+        if identifier_type: 
+            testargs.extend(['-identifier_type', identifier_type])
+        if prediction_type: 
+            testargs.extend(['-prediction_type', prediction_type])
 
         logger.debug("testargs: " + str(testargs))
 
