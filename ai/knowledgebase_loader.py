@@ -30,14 +30,20 @@ PMLB_KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_classification_metafeature
 USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
 USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
 
-def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], jsonMetafeatureDirectory=''):
+def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], 
+        jsonMetafeatureDirectory=''):
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
     :param resultsFiles: dict with regression and classification fields that
-        contain list<string> - list of experiment results in tsv form, can be compressed files.
-    :param metafeaturesFiles - list<string> - list of files that contain metafeatures for the experiment datasets in csv form, can be compressed files.
-    :param jsonMetafeatureDirectory - root of a directory structure that contains .json files for metafeatures
+        contain list<string> 
+        - list of experiment results in tsv form, can be compressed files.
+    :param metafeaturesFiles - list<string> 
+        - list of files that contain metafeatures for the experiment datasets 
+        in csv form, can be compressed files.
+    :param jsonMetafeatureDirectory 
+        - root of a directory structure that contains .json files for 
+        metafeatures
 
     :returns dict {
         resultsData: DataFrame with columns corresponding to:
@@ -45,7 +51,8 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], jsonMetafeatureDir
     				'dataset',
 	                'algorithm',
 	                'parameters',
-                    classification or regression accuracy metrics (i.e. 'accuracy', 'macrof1', 'bal_accuracy')
+                    classification or regression accuracy metrics 
+                    (i.e. 'accuracy', 'macrof1', 'bal_accuracy')
   
         metafeaturesData: Dataframe with columns corresponding to:
                     '_id',
@@ -56,7 +63,8 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], jsonMetafeatureDir
         warnings: list of warning Strings
 				}
     """
-    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '{jsonMetafeatureDirectory}')")
+    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '
+            ''{jsonMetafeatureDirectory}')")
 
     # load experiment results
     frames = {} 
@@ -218,7 +226,8 @@ def _validate_knowledgebase(resultsDf, metafeaturesDf):
     Validate knowledgebase
     """
     requiredResultsFields = ['_id', 'dataset', 'algorithm']
-    requiredMetafeatureFields = ['_id', '_metafeature_version', '_prediction_type']
+    requiredMetafeatureFields = ['_id', '_metafeature_version', 
+            '_prediction_type']
 
     warnings = []
 
