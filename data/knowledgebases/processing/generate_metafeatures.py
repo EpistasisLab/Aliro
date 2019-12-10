@@ -25,11 +25,12 @@ if __name__ == '__main__':
     parser.add_argument('-pred_type',action='store',dest='pred_type',type=str,
             default='classification',help='classification or regression')
     parser.add_argument('-savedir',action='store',dest='savedir',type=str,
-            default='../', help='Where to save metafeatures')
+            default='data/knowledgebases/metafeatures/',
+            help='Where to save metafeatures')
     parser.add_argument('-savename',action='store',dest='savename',type=str,
             default='data/knowledgebases/metafeatures/',
             help='Name of saved metafeatures file')
-    parser.add_argument('-data_extension','--e', action='append', 
+    parser.add_argument('-data_extension','--e', action='store', 
             dest="file_extensions",
             help='allowed data file extensions', required=False, 
             default=','.join(['.csv', '.tsv', '.gz']))
@@ -46,8 +47,8 @@ if __name__ == '__main__':
     print(f"\tdata file extensions: {file_extensions}")
     print(f"\tdata target field: '{args.label}'")
 
-    print(f"\toutput path: '{OUTPUT_PATH}'")
-    print(f"\toutput filename: '{args.outfilename}'")
+    print(f"\toutput path: '{args.savedir}'")
+    print(f"\toutput filename: '{args.savename}'")
     mfGen = generate_metafeatures_file(
                 datasetDirectory = args.data_dir, 
                 outputPath = args.savedir, 
@@ -55,8 +56,7 @@ if __name__ == '__main__':
                 predictionType = args.pred_type,
                 targetField = args.label, 
                 checkSubdirectories = not(args.flat),
-                fileExtensions = file_extensions,
-                **{'compression':'gzip'}
+                fileExtensions = file_extensions
                 )
 
     print(f"Generated metafeatures for {len(mfGen)} datasets")

@@ -199,33 +199,32 @@ class AI():
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
         kb = knowledgebase_loader.load_default_knowledgebases()
+        
+        all_df_mf = kb['metafeaturesData'].set_index('_id')
 
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
-        kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
-                                          lambda x: self.ml_name_to_id[x])
+        
+        for pred_type in ['classification','regression']:
+            kb['resultsData'][pred_type]['algorithm'] = \
+                    kb['resultsData'][pred_type]['algorithm'].apply(
+                                              lambda x: self.ml_name_to_id[x])
 
-        all_df_mf = kb['metafeaturesData'].set_index('_id')
 
-        # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
-        # use _id to index the metafeatures, and
-        # keep only metafeatures with results
-        self.dataset_mf_cache = all_df_mf.loc[
-                kb['resultsData']['_id'].unique()]
+            # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
+            # use _id to index the metafeatures, and
+            # keep only metafeatures with results
+            self.dataset_mf_cache.append(
+                all_df_mf.loc[kb['resultsData'][pred_type]['_id'].unique()]
+                    )
 
-        # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines["classification"].update(kb['resultsData'], 
-                self.dataset_mf_cache, source='knowledgebase')
+            logger.info('updating AI with ' + pred_type+' knowledgebase')
+            # self.update_dataset_mf(kb['resultsData'])
+            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+                    self.dataset_mf_cache, source='knowledgebase')
 
-        logger.info('pmlb knowledgebase loaded')
+            logger.info('pmlb '+pred_type+' knowledgebase loaded')
 
-        # TODO - load regression knowledgebase
-        self.rec_engines["classification"].update(
-            kb['resultsData'], 
-            self.dataset_mf_cache, 
-            source='knowledgebase')
-
-        logger.info('pmlb knowledgebase loaded')
 
 
     ##-----------------
@@ -247,10 +246,10 @@ class AI():
 
         dataset_metafeatures = []
         
-        dataset_indicies = results_data['dataset_id'].unique()
+        dataset_indices = results_data['dataset_id'].unique()
 
         # add dataset metafeatures to the cache
-        for d in dataset_indicies:
+        for d in dataset_indices:
             if (len(self.dataset_mf_cache)==0 
                 or d not in self.dataset_mf_cache_id_hash_lookup.keys()):
                 df = self.labApi.get_metafeatures(d)        
@@ -266,8 +265,8 @@ class AI():
         #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
         logger.info(f'indices: \n\n {dataset_indices}')
 
-        new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
-        assert len(new_mf) == len(dataset_indicies)
+        new_mf = self.dataset_mf_cache.loc[dataset_indices, :]
+        assert len(new_mf) == len(dataset_indices)
         #logger.debug(f"new_mf: {new_mf}")
 
         return new_mf

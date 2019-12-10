@@ -24,8 +24,14 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-PMLB_KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
-PMLB_KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz'
+PMLB_KB_CLASSIFICATION_RESULTS_PATH = ('data/knowledgebases/'
+        'sklearn-benchmark5-data-knowledgebase.tsv.gz')
+PMLB_KB_CLASSIFICATION_METAFEATURES_PATH = ('data/knowledgebases/'
+        'pmlb_classification_metafeatures.csv.gz')
+PMLB_KB_REGRESSION_RESULTS_PATH = ('data/knowledgebases/'
+        'pmlb_regression_results.tsv.gz')
+PMLB_KB_REGRESSION_METAFEATURES_PATH = ('data/knowledgebases/'
+        'pmlb_regression_metafeatures.csv.gz')
 
 USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
 USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
@@ -35,10 +41,10 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
     """Load experiment results from from file and generate metadata for the 
     experiment datasets.
 
-    :param resultsFiles: dict with regression and classification fields that
-        contain list<string> 
+    :param resultsFiles - list<(string,string)> 
+        a list of tuples that contain resultsFile, pred_type 
         - list of experiment results in tsv form, can be compressed files.
-    :param metafeaturesFiles - list<string> 
+    :param metafeaturesFiles - list<tuple<string,string>> 
         - list of files that contain metafeatures for the experiment datasets 
         in csv form, can be compressed files.
     :param jsonMetafeatureDirectory 
@@ -46,11 +52,13 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         metafeatures
 
     :returns dict {
+        dict {
+        pred_type
         resultsData: DataFrame with columns corresponding to:
                     '_id',
-    				'dataset',
-	                'algorithm',
-	                'parameters',
+    		    'dataset',
+	            'algorithm',
+	            'parameters',
                     classification or regression accuracy metrics 
                     (i.e. 'accuracy', 'macrof1', 'bal_accuracy')
   
@@ -63,21 +71,27 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         warnings: list of warning Strings
 				}
     """
-    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', '
-            ''{jsonMetafeatureDirectory}')")
+    logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', "
+            "'{jsonMetafeatureDirectory}')")
 
     # load experiment results
     frames = {} 
-    for pred_type,resultsFile in resultsFiles.items():
+    for pred_type,resultsFile in resultsFiles:
+        if pred_type not in frames.keys():
+            frames[pred_type] = []
         frames[pred_type].append(_load_results_from_file(resultsFile))
     
     dataset_names = []
+    resultsData={}
     for k in frames.keys():
-        resultsData[k] = pd.concat(frames)
+        print('concat..')
+        resultsData[k] = pd.concat(frames[k])
+        print('dedup..')
         dedupe_results_dataframe(resultsData[k])
         dataset_names.append(resultsData[k]['dataset'])
     
     # load dataset metafeatures
+    print('load metafeatures...')
     metafeaturesDict = {}
     if jsonMetafeatureDirectory:
         metafeaturesData.update(
@@ -85,9 +99,9 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
                     jsonMetafeatureDirectory, dataset_names))
 
     if metafeaturesFiles:
-        assert (isinstance(metafeaturesFiles, list), 
-        f"load_knowledgebase.metafeaturesFiles must be a list;"
-        " got '{metafeaturesFiles}'")
+        assert isinstance(metafeaturesFiles, list), \
+                (f"load_knowledgebase.metafeaturesFiles must be a list;"
+                " got '{metafeaturesFiles}'")
         for mfFile in metafeaturesFiles:
             metafeaturesDict.update(_load_metadata_from_file(mfFile))
 
@@ -99,8 +113,8 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
                 metafeaturesDict).transpose()
 
     # check that all result datasets have metadata
-    warnings = _validate_knowledgebase(resultsData, metafeaturesData)
-
+    for k,v in resultsData.items():
+        warnings = _validate_knowledgebase(v, metafeaturesData)
 
     # add an id to results so we can index them by dataset hash, 
     # i.e., the '_id' variable in metafeaturesData
@@ -161,8 +175,14 @@ def load_default_knowledgebases(usePmlb=True,
 
     # load pmlb
     if usePmlb:
-        resultsFiles.append(PMLB_KB_RESULTS_PATH)
-        metafeaturesFiles.append(PMLB_KB_METAFEATURES_PATH)
+        resultsFiles.append(('classification', 
+                PMLB_KB_CLASSIFICATION_RESULTS_PATH))
+        resultsFiles.append(('regression',
+                PMLB_KB_REGRESSION_RESULTS_PATH))
+        metafeaturesFiles.append(
+                PMLB_KB_CLASSIFICATION_METAFEATURES_PATH)
+        metafeaturesFiles.append(
+                PMLB_KB_REGRESSION_METAFEATURES_PATH)
 
     # if additional directories for results or metafeatures provided, use them
     if (userKbResultsPath):
@@ -216,7 +236,8 @@ def generate_metafeatures_file(
     logger.debug(df.head())
 
     #, quoting=csv.QUOTE_NONNUMERIC)
-    df.to_csv(os.path.join(outputPath, outputFilename), header=True) 
+    df.to_csv(os.path.join(outputPath, outputFilename), header=True,
+            compression='gzip') 
 
     return metafeaturesData
 
@@ -288,7 +309,7 @@ def _load_results_from_file(resultsFile):
             lambda x: eval(x))
     logger.info(f'returning {len(results_data)} results from {resultsFile}')
     
-    assert(not results_data.isna().any().any())
+    assert not results_data.isna().any().any()
     logger.debug(f'results_data:\n{results_data.head()}')
     return results_data
 
