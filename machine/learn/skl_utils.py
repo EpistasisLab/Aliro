@@ -349,12 +349,12 @@ def generate_results(model, input_data,
 
     if mode == 'classification':
         plot_confusion_matrix(tmpdir,
-                            _id,
-                            features,
-                            target,
-                            model.classes_,
-                            cv_scores,
-                            figure_export)
+                              _id,
+                              features,
+                              target,
+                              model.classes_,
+                              cv_scores,
+                              figure_export)
 
         if num_classes == 2:
             plot_roc_curve(
@@ -484,7 +484,14 @@ def save_json_fmt(outdir, _id, fname, content):
         json.dump(content, outfile)
 
 
-def plot_confusion_matrix(tmpdir, _id, X, y, class_names, cv_scores, figure_export):
+def plot_confusion_matrix(
+        tmpdir,
+        _id,
+        X,
+        y,
+        class_names,
+        cv_scores,
+        figure_export):
     """Make plot for confusion matrix.
 
     Parameters
@@ -777,7 +784,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
         pred_y[test] = est.predict(X[test])
         resi_y[test] = pred_y[test] - y[test]
 
-    fig, ax = plt.subplots(figsize=(8,6), dpi=300)
+    fig, ax = plt.subplots(figsize=(8, 6), dpi=300)
     ax.set_title("Cross-Validated Predictions")
     ax.scatter(y, pred_y, edgecolors=(0, 0, 0))
     ax.set_xlabel('Observed Values')
@@ -790,24 +797,24 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.savefig(tmpdir + _id + '/reg_cv_pred_' + _id + '.png')
     plt.close()
 
-    fig, ax = plt.subplots(1, 2, figsize=(8,6), dpi=300)
+    fig, ax = plt.subplots(1, 2, figsize=(8, 6), dpi=300)
     ax[0].set_title("Cross-Validated Residuals")
     ax[0].scatter(pred_y, resi_y, edgecolors=(0, 0, 0))
     ax[0].set_xlabel('Predicted Values')
     ax[0].set_ylabel('Residuals')
     ax[0].axhline(y=0.0,
-                color="red",
-                linestyle='dashed')
+                  color="red",
+                  linestyle='dashed')
     # add q-q plot for normalized CV residuals
     from scipy.stats import probplot
-    z = (resi_y-np.mean(resi_y))/np.std(resi_y)
-    series1  = probplot(z, dist="norm")
-    ax[1].scatter(series1[0][0],series1[0][1], edgecolors=(0, 0, 0))
+    z = (resi_y - np.mean(resi_y)) / np.std(resi_y)
+    series1 = probplot(z, dist="norm")
+    ax[1].scatter(series1[0][0], series1[0][1], edgecolors=(0, 0, 0))
     ax[1].set_title("Q-Q Plot for Normalized Residuals")
     x = np.linspace(*ax[1].get_xlim())
     ax[1].plot(x, x,
-            color="red",
-            linestyle='dashed')
+               color="red",
+               linestyle='dashed')
     ax[1].set_xlabel('Theoretical Quantiles')
     ax[1].set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
@@ -816,12 +823,12 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
 
 
 def export_model(tmpdir,
-                _id,
-                model,
-                filename,
-                target_name,
-                mode="classification",
-                random_state=42):
+                 _id,
+                 model,
+                 filename,
+                 target_name,
+                 mode="classification",
+                 random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
     Parameters
     ----------
@@ -854,10 +861,12 @@ def export_model(tmpdir,
     joblib.dump(pickle_model, pickle_file)
     pipeline_text1, pipeline_text2 = generate_export_codes(
         pickle_file_name, model, filename, target_name, mode, random_state)
-    export_scripts = open("{0}{1}/scripts_reproduce_{1}.py".format(tmpdir, _id), "w")
+    export_scripts = open(
+        "{0}{1}/scripts_reproduce_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text1)
     export_scripts.close()
-    export_scripts = open("{0}{1}/scripts_application_{1}.py".format(tmpdir, _id), "w")
+    export_scripts = open(
+        "{0}{1}/scripts_application_{1}.py".format(tmpdir, _id), "w")
     export_scripts.write(pipeline_text2)
     export_scripts.close()
 
@@ -896,7 +905,8 @@ def generate_export_codes(
     elif mode == 'regression':
         fold = "KFold"
     exported_codes_1 = """# Python version: {python_version}
-# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# Results were generated with numpy v{numpy_version},
+# pandas v{pandas_version} and scikit-learn v{skl_version}.
 # random seed = {random_state}
 # Training dataset filename = {dataset}
 # Pickle filename = {pickle_file_name}
@@ -938,8 +948,11 @@ input_data = pd.read_csv(dataset, sep=None, engine='python')
     exported_codes_2 = exported_codes_1
     if mode == "classification":
         exported_codes_1 += """
-# Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
-# It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
+# Balanced accuracy below was described in [Urbanowicz2015]:
+# the average of sensitivity and specificity is computed for each class
+# and then averaged over total number of classes.
+# It is NOT the same as sklearn.metrics.balanced_accuracy_score,
+# which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
     all_classes = list(set(np.append(y_true, y_pred)))
     all_class_accuracies = []
@@ -962,7 +975,11 @@ def balanced_accuracy(y_true, y_pred):
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+features, target = check_X_y(features,
+                             target,
+                             dtype=None,
+                             order="C",
+                             force_all_finite=True)
 
 scorer = make_scorer(balanced_accuracy)
 
@@ -999,7 +1016,11 @@ print("Confusion Matrix:", cnf_matrix)
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+features, target = check_X_y(features,
+                             target,
+                             dtype=None,
+                             order="C",
+                             force_all_finite=True)
 
 # reproducing r2 scores
 # computing cross-validated metrics
@@ -1019,8 +1040,6 @@ print("Training score: ", train_score)
 print("Testing score: ", test_score)
 """
 
-
-
     exported_codes_2 += """
 # Application 1: cross validation of fitted model on a new dataset
 testing_features = input_data.drop(target_column, axis=1).values
@@ -1032,7 +1051,8 @@ print(model.score(testing_features, testing_target))
 
 # Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
-input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
+# Please comment this line below if there is no target column in input dataset
+input_data.drop(target_column, axis=1, inplace=True)
 predict_target = model.predict(input_data.values)
 """
 

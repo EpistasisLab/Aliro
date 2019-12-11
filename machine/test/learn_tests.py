@@ -471,7 +471,8 @@ class APITESTCLASS(unittest.TestCase):
             # only has roc for binary outcome
             assert os.path.isfile('{}/roc_curve_{}.png'.format(outdir, _id))
             assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
-            assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
+            assert os.path.isfile(
+                '{}/scripts_reproduce_{}.py'.format(outdir, _id))
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
@@ -1437,7 +1438,8 @@ def test_generate_export_codes():
         random_state=42)
 
     expected_text_1 = """# Python version: {python_version}
-# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# Results were generated with numpy v{numpy_version},
+# pandas v{pandas_version} and scikit-learn v{skl_version}.
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
 # Pickle filename = test.plk
@@ -1465,8 +1467,11 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-# Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
-# It is NOT the same as sklearn.metrics.balanced_accuracy_score, which is defined as the average of recall obtained on each class.
+# Balanced accuracy below was described in [Urbanowicz2015]:
+# the average of sensitivity and specificity is computed for each class
+# and then averaged over total number of classes.
+# It is NOT the same as sklearn.metrics.balanced_accuracy_score,
+# which is defined as the average of recall obtained on each class.
 def balanced_accuracy(y_true, y_pred):
     all_classes = list(set(np.append(y_true, y_pred)))
     all_class_accuracies = []
@@ -1489,7 +1494,11 @@ def balanced_accuracy(y_true, y_pred):
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+features, target = check_X_y(features,
+                             target,
+                             dtype=None,
+                             order="C",
+                             force_all_finite=True)
 
 scorer = make_scorer(balanced_accuracy)
 
@@ -1528,7 +1537,8 @@ print("Confusion Matrix:", cnf_matrix)
         model=str(load_clf).replace('\n', '\n#')
     )
     expected_text_2 = """# Python version: {python_version}
-# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# Results were generated with numpy v{numpy_version},
+# pandas v{pandas_version} and scikit-learn v{skl_version}.
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
 # Pickle filename = test.plk
@@ -1566,7 +1576,8 @@ print(model.score(testing_features, testing_target))
 
 # Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
-input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
+# Please comment this line below if there is no target column in input dataset
+input_data.drop(target_column, axis=1, inplace=True)
 predict_target = model.predict(input_data.values)
 """.format(
         python_version=sys.version.replace('\n', ''),
@@ -1576,7 +1587,6 @@ predict_target = model.predict(input_data.values)
         target_name=target_name,
         model=str(load_clf).replace('\n', '\n#')
     )
-
     assert_equal(pipeline_text1, expected_text_1)
     assert_equal(pipeline_text2, expected_text_2)
     rmtree(tmpdir)
@@ -1619,7 +1629,8 @@ def test_generate_export_codes_regression():
         random_state=42)
 
     expected_text_1 = """# Python version: {python_version}
-# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# Results were generated with numpy v{numpy_version},
+# pandas v{pandas_version} and scikit-learn v{skl_version}.
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
 # Pickle filename = test.plk
@@ -1651,7 +1662,11 @@ input_data = pd.read_csv(dataset, sep=None, engine='python')
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
-features, target = check_X_y(features, target, dtype=None, order="C", force_all_finite=True)
+features, target = check_X_y(features,
+                             target,
+                             dtype=None,
+                             order="C",
+                             force_all_finite=True)
 
 # reproducing r2 scores
 # computing cross-validated metrics
@@ -1678,7 +1693,8 @@ print("Testing score: ", test_score)
         model=str(load_clf).replace('\n', '\n#')
     )
     expected_text_2 = """# Python version: {python_version}
-# Results were generated with numpy v{numpy_version}, pandas v{pandas_version} and scikit-learn v{skl_version}
+# Results were generated with numpy v{numpy_version},
+# pandas v{pandas_version} and scikit-learn v{skl_version}.
 # random seed = 42
 # Training dataset filename = test_dataset.tsv
 # Pickle filename = test.plk
@@ -1716,7 +1732,8 @@ print(model.score(testing_features, testing_target))
 
 # Application 2: predict outcome by fitted model
 # In this application, the input dataset may not include target column
-input_data.drop(target_column, axis=1, inplace=True) # Please comment this line if there is no target column in input dataset
+# Please comment this line below if there is no target column in input dataset
+input_data.drop(target_column, axis=1, inplace=True)
 predict_target = model.predict(input_data.values)
 """.format(
         python_version=sys.version.replace('\n', ''),
