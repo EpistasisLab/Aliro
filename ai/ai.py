@@ -20,7 +20,7 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
@@ -74,8 +74,15 @@ class AI():
         """Initializes AI managing agent."""
 
         # default supervised learning recommender settings
-        self.DEFAULT_REC_CLASS = RandomRecommender
-        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
+        self.DEFAULT_REC_CLASS = {'classification':RandomRecommender,
+                                  'regression':RandomRecommender
+                                  }
+        self.DEFAULT_REC_ARGS = {
+                'classification': {'metric':'accuracy'},
+                'regression': {
+                    'metric':'r2_cv_mean'
+                    }
+                }
 
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
@@ -168,8 +175,8 @@ class AI():
         """
 
         for prediction_type in self.rec_engines.keys():
-            logger.info(f'initilizing rec engine for problem type '
-                    '"{prediction_type}"')
+            logger.info('initiliazing rec engine for problem type "'
+                    +prediction_type+'"')
 
             # get the ml parameters for the given recommender type
             logger.debug("getting ml_p")
@@ -179,14 +186,14 @@ class AI():
 
             # Create supervised learning recommenders
             logger.debug("initilizing engine")
-            recArgs = self.DEFAULT_REC_ARGS
+            recArgs = self.DEFAULT_REC_ARGS[prediction_type]
             recArgs['ml_p'] = ml_p
 
             if (rec_class):
                 self.rec_engines[prediction_type] = rec_class(**recArgs)
             else:
-                self.rec_engines[prediction_type]  = self.DEFAULT_REC_CLASS(
-                        **recArgs)
+                self.rec_engines[prediction_type]  = \
+                        self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
 
 
         logger.debug("recomendation engines initilized: ")
@@ -208,10 +215,20 @@ class AI():
         for pred_type in ['classification','regression']:
             kb['resultsData'][pred_type]['algorithm'] = \
                     kb['resultsData'][pred_type]['algorithm'].apply(
-                                              lambda x: self.ml_name_to_id[x])
+                      lambda x: self.ml_name_to_id[x] 
+                      if x in self.ml_name_to_id.keys() 
+                      else 'REMOVE! ' + x)
+            # filter any kb results that we don't have an algorithm for
+            for algs in kb['resultsData'][pred_type]['algorithm'].unique():
+                if 'REMOVE!' in algs:
+                    logger.warn('Removing knowledgebase results for algorithm '
+                            +algs[7:]
+                            +' because that algorithm is not available')
+            kb['resultsData'][pred_type] = kb['resultsData'][pred_type].loc[
+                    ~(kb['resultsData'][pred_type]['algorithm'].str.contains(
+                        'REMOVE!'))
+                    ]
 
-
-            # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
             # use _id to index the metafeatures, and
             # keep only metafeatures with results
             self.dataset_mf_cache.append(
@@ -224,7 +241,6 @@ class AI():
                     self.dataset_mf_cache, source='knowledgebase')
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')
-
 
 
     ##-----------------
