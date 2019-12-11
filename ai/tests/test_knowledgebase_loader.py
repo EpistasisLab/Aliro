@@ -51,18 +51,28 @@ def load_test_data():
          'data/knowledgebases/test/jsonmetafeatures',
          '',
          'class',
-         79608,
+         2360, # this corresponds to the number of results from datasets w mf
          5,
          1
          ),
-        ("benchmark5-metafeaturesFromFile", 
+        ("benchmark5-classification_metafeaturesFromFile", 
          ["data/knowledgebases/"
              "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"], 
          '',
-         ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
+         ['data/knowledgebases/pmlb_classification_metafeatures.csv.gz'],
          'class',
          79608,
-         165,
+         161,
+         0
+         ),
+        ("benchmark5-regression_metafeaturesFromFile", 
+         ["data/knowledgebases/"
+             "pmlb_regression_results-small.tsv.gz"], 
+         '',
+         ['data/knowledgebases/pmlb_regression_metafeatures.csv.gz'],
+         'target',
+         100,
+         65,
          0
          ),
         ("multiResultFile-metafeaturesFromFile", 
@@ -71,10 +81,10 @@ def load_test_data():
             ("data/knowledgebases/test/results/"
             "sklearn-benchmark5-data-knowledgebase_filtered2.tsv")], 
          '',
-         ['data/knowledgebases/pmlb_metafeatures.csv.gz'],
+         ['data/knowledgebases/pmlb_classification_metafeatures.csv.gz'],
          'class',
          6,
-         165,
+         1,
          0
          ),
         ("benchmark5-metafeaturesFromMultiFile", 
@@ -85,7 +95,7 @@ def load_test_data():
             'data/knowledgebases/test/metafeatures/pmlb_metafeatures2.csv'],
          'class',
          79608,
-         165,
+         161,
          0
          ),
     ]
@@ -93,11 +103,11 @@ def load_test_data():
 def load_default_kb_data():
     # /test/results contains dupes from pmlb
     return [
-        ("pmlbOnly", True, None, None, 79608, 165),
+        ("pmlbOnly", True, None, None, 1547144, 281),
         ("userOnly", False, "data/knowledgebases/test/results", 
-            "data/knowledgebases/test/metafeatures", 6, 165),
+            "data/knowledgebases/test/metafeatures", 6, 1),
         ("pmlbAndUser", True, "data/knowledgebases/test/results", 
-            "data/knowledgebases/test/metafeatures", 79608, 165) 
+            "data/knowledgebases/test/metafeatures", 1547144, 281) 
     ]
 
 def results_files():
@@ -116,6 +126,33 @@ def results_files():
 
 class TestResultUtils(unittest.TestCase):
 
+    def check_result(self, result, expectedResultsCount=0, 
+            expectedMetafeaturesCount=0, expectedWarningCount=0):
+        """checks results of load_knowledgebase calls with expectations"""
+
+        assert 'resultsData' in result
+        assert 'metafeaturesData' in result
+
+        assert isinstance(result['resultsData'], dict)
+        total_results = 0
+        for v in result['resultsData'].values():
+            assert isinstance(v, pd.DataFrame)
+            self.assertGreater(len(v), 0)
+            total_results+= len(v)
+
+        self.assertEquals(total_results, expectedResultsCount)
+
+        assert isinstance(result['metafeaturesData'], pd.DataFrame)
+
+        print(f"found {len(result['warnings'])} result.warnings:")
+        print("\n".join(result['warnings']))
+
+        self.assertEquals(len(result['warnings']), expectedWarningCount, 
+                msg = f"warnings: {result['warnings']}")
+
+        self.assertEquals(len(result['metafeaturesData']), 
+                expectedMetafeaturesCount)
+    
     @parameterized.expand(load_test_data)
     def test_load_knowledgebase(self, testName, resultsFiles, 
         jsonMetafeatureDirectory, metafeaturesFiles, targetField, 
@@ -126,25 +163,34 @@ class TestResultUtils(unittest.TestCase):
             metafeaturesFiles=metafeaturesFiles,
             jsonMetafeatureDirectory=jsonMetafeatureDirectory)
 
-        assert 'resultsData' in result
-        assert 'metafeaturesData' in result
+        print('expectedResultsCount',expectedResultsCount)
+        print('expectedWarningCount',expectedWarningCount)
+        print('expectedMetafeaturesCount',expectedMetafeaturesCount)
+        self.check_result(result, 
+                expectedResultsCount=expectedResultsCount,
+                expectedMetafeaturesCount=expectedMetafeaturesCount,
+                expectedWarningCount=expectedWarningCount)
+        # assert 'resultsData' in result
+        # assert 'metafeaturesData' in result
 
-        assert isinstance(result['resultsData'], pd.DataFrame)
-        assert isinstance(result['metafeaturesData'], pd.DataFrame)
+        # assert isinstance(result['resultsData'], dict)
+        # for v in result['resultsData'].values():
+        #     assert isinstance(v, pd.DataFrame)
+        #     self.assertGreater(len(v), 1)
+        # assert isinstance(result['metafeaturesData'], pd.DataFrame)
 
-        self.assertGreater(len(result['resultsData']), 1)
-        self.assertGreater(len(result['metafeaturesData']), 1)
+        # self.assertGreater(len(result['metafeaturesData']), 1)
 
-        print(f"test_load_knowledgebase found "
-            f"{len(result['warnings'])} result.warnings:")
-        print("\n".join(result['warnings']))
+        # print(f"test_load_knowledgebase found "
+        #     f"{len(result['warnings'])} result.warnings:")
+        # print("\n".join(result['warnings']))
 
-        self.assertEquals(len(result['warnings']), expectedWarningCount, 
-                msg = f"warnings: {result['warnings']}")
+        # self.assertEquals(len(result['warnings']), expectedWarningCount, 
+        #         msg = f"warnings: {result['warnings']}")
 
-        self.assertEquals(len(result['metafeaturesData']), 
-                expectedMetafeaturesCount)
-        self.assertEquals(len(result['resultsData']), expectedResultsCount)
+        # self.assertEquals(len(result['metafeaturesData']), 
+        #         expectedMetafeaturesCount)
+        # self.assertEquals(len(result['resultsData']), expectedResultsCount)
 
 
     @parameterized.expand(results_files)
@@ -181,22 +227,26 @@ class TestResultUtils(unittest.TestCase):
             userKbMetafeaturesPath=userKbMetafeaturesPath
             )
 
-        assert 'resultsData' in result
-        assert 'metafeaturesData' in result
+        self.check_result(result, 
+                expectedResultsCount=expectedResultsCount, 
+                expectedMetafeaturesCount=expectedMetafeaturesCount
+                )
+        # assert 'resultsData' in result
+        # assert 'metafeaturesData' in result
 
-        assert isinstance(result['resultsData'], pd.DataFrame)
-        assert isinstance(result['metafeaturesData'], pd.DataFrame)
+        # assert isinstance(result['resultsData'], pd.DataFrame)
+        # assert isinstance(result['metafeaturesData'], pd.DataFrame)
 
-        self.assertEquals(len(result['resultsData']), 
-                expectedResultsCount)
-        self.assertEquals(len(result['metafeaturesData']), 
-                expectedMetafeaturesCount)
+        # self.assertEquals(len(result['resultsData']), 
+        #         expectedResultsCount)
+        # self.assertEquals(len(result['metafeaturesData']), 
+        #         expectedMetafeaturesCount)
 
-        print(f"test_load_default_knowledgebases found "
-            f"{len(result['warnings'])} result.warnings:")
-        print("\n".join(result['warnings']))
+        # print(f"test_load_default_knowledgebases found "
+        #     f"{len(result['warnings'])} result.warnings:")
+        # print("\n".join(result['warnings']))
 
-        assert len(result['warnings']) == 0
+        # assert len(result['warnings']) == 0
 
 
     def test_load_json_metafeatures_from_directory(self):
@@ -212,7 +262,8 @@ class TestResultUtils(unittest.TestCase):
             assert dataset in result.keys()
 
     def test_load_metafeatures_from_file(self):
-        pmlbMetafeaturesFile = "data/knowledgebases/pmlb_metafeatures.csv.gz"
+        pmlbMetafeaturesFile = \
+                "data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
         result = kb_loader._load_metadata_from_file(pmlbMetafeaturesFile)
         assert len(result) == 165
 

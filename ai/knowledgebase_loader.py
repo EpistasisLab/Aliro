@@ -1,10 +1,10 @@
 """
-Utility functions for loading experiment results that can be used for building an 
-initial knowledgebase for the recommenders.
+Utility functions for loading experiment results that can be used for building 
+an initial knowledgebase for the recommenders.
 
 
-A knowledgebase consists of a relational dataset of previously run experiments, and 
-the metafeatures of the datasets in those experiments.
+A knowledgebase consists of a relational dataset of previously run experiments, 
+and the metafeatures of the datasets in those experiments.
 """
 
 import pandas as pd
@@ -17,7 +17,7 @@ import json
 import csv
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -72,31 +72,24 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
 				}
     """
     logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', "
-            "'{jsonMetafeatureDirectory}')")
+            f"'{jsonMetafeatureDirectory}')")
 
     # load experiment results
-    frames = {} 
-    for pred_type,resultsFile in resultsFiles:
-        if pred_type not in frames.keys():
-            frames[pred_type] = []
-        frames[pred_type].append(_load_results_from_file(resultsFile))
-    
-    dataset_names = []
-    resultsData={}
-    for k in frames.keys():
-        print('concat..')
-        resultsData[k] = pd.concat(frames[k])
-        print('dedup..')
-        dedupe_results_dataframe(resultsData[k])
-        dataset_names.append(resultsData[k]['dataset'])
+    frames = []
+    for resultsFile in resultsFiles:
+        frames.append(_load_results_from_file(resultsFile))
+    all_resultsData = pd.concat(frames, sort=False)
+    dedupe_results_dataframe(all_resultsData)
+    dataset_names = all_resultsData['dataset'].unique() 
     
     # load dataset metafeatures
     print('load metafeatures...')
     metafeaturesDict = {}
     if jsonMetafeatureDirectory:
-        metafeaturesData.update(
+        metafeaturesDict.update(
                 _load_json_metafeatures_from_directory(
-                    jsonMetafeatureDirectory, dataset_names))
+                    jsonMetafeatureDirectory, dataset_names)
+                )
 
     if metafeaturesFiles:
         assert isinstance(metafeaturesFiles, list), \
@@ -111,16 +104,12 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
 
     metafeaturesData = pd.DataFrame.from_records(
                 metafeaturesDict).transpose()
+    # filter any extraneous metafeaturesData (e.g. from extra datasets)
+    metafeaturesData = metafeaturesData.loc[metafeaturesData['_id'].isin(
+        all_resultsData['_id'].unique())]
 
     # check that all result datasets have metadata
-    for k,v in resultsData.items():
-        warnings = _validate_knowledgebase(v, metafeaturesData)
-
-    # add an id to results so we can index them by dataset hash, 
-    # i.e., the '_id' variable in metafeaturesData
-    # resultsData['_id'] = resultsData['dataset'].apply(
-    #         lambda x: metafeaturesData[x]['_id'] 
-    #         if x in metafeaturesData.keys() else x)
+    warnings = _validate_knowledgebase(all_resultsData, metafeaturesData)
 
     if (warnings):
         logger.warn(f"Warnings while running load_knowledgebase()"
@@ -131,6 +120,13 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         logger.warn(f"Found {len(warnings)} warning(s):")
         logger.warn("\n".join(warnings))
 
+    # split knowledgebases by prediction type
+    resultsData = {}
+    for pred_type in metafeaturesData['_prediction_type'].unique():
+        relevant_dataset_ids = metafeaturesData.loc[
+                metafeaturesData['_prediction_type']==pred_type,'_id']
+        resultsData[pred_type] = all_resultsData.loc[
+                all_resultsData['_id'].isin(relevant_dataset_ids)]
 
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
             'warnings': warnings}
@@ -148,11 +144,10 @@ def dedupe_results_dataframe(resultsData):
     compCols.remove("parameters")
 
     resultsData.drop_duplicates(subset=compCols, inplace=True)
-    # drop duplicates with rounding
-    #resultsData.loc[resultsData.round().drop_duplicates(subset=compCols).index]
 
     resultsData.drop(columns=['parmHash'], inplace=True)
-    logger.info(f"loaded {rawCount} experiments, {len(resultsData)} after dropDuplicates")
+    logger.info(f"loaded {rawCount} experiments, {len(resultsData)} "
+            "after dropDuplicates")
 
     return resultsData
 
@@ -165,7 +160,7 @@ def load_default_knowledgebases(usePmlb=True,
     knowledgebases
     """
     logger.info(f"load_default_knowledgebases('{usePmlb}', "
-            "'{userKbResultsPath}', '{userKbMetafeaturesPath}'")
+            f"'{userKbResultsPath}', '{userKbMetafeaturesPath}'")
 
     resFileExtensions = ['.tsv', '.gz']
     mfFileExtensions = ['.csv', '.tsv', '.gz']
@@ -175,10 +170,10 @@ def load_default_knowledgebases(usePmlb=True,
 
     # load pmlb
     if usePmlb:
-        resultsFiles.append(('classification', 
-                PMLB_KB_CLASSIFICATION_RESULTS_PATH))
-        resultsFiles.append(('regression',
-                PMLB_KB_REGRESSION_RESULTS_PATH))
+        resultsFiles.append( 
+                PMLB_KB_CLASSIFICATION_RESULTS_PATH)
+        resultsFiles.append(
+                PMLB_KB_REGRESSION_RESULTS_PATH)
         metafeaturesFiles.append(
                 PMLB_KB_CLASSIFICATION_METAFEATURES_PATH)
         metafeaturesFiles.append(
@@ -220,7 +215,7 @@ def generate_metafeatures_file(
 
     """
     logger.info(f"generate_metafeatures_file({outputPath}, {datasetDirectory},"
-            " {outputFilename}, ...)")
+            f" {outputFilename}, ...)")
 
     os.makedirs(outputPath, exist_ok=True)
 
@@ -267,17 +262,8 @@ def _validate_knowledgebase(resultsDf, metafeaturesDf):
             warnings.append("Knowledgebase metafeature data "
                 f"missing required field '{reqField}'")
 
-    if warnings: return warnings
-
-    # check that all the datasets in resultsDf are in metafeaturesDf
-    '''
-    missingMfDatasetIds = list(set(resultsDf._id.unique()) 
-          - set(metafeaturesDf._id.unique()))
-    if missingMfDatasetIds:
-      warnings.append(f"Found {len(missingMfDatasetIds)} of "
-              f"{len(resultsDf.dataset.unique())} experiment datasets with no "
-              f"associated metadata: {missingMfDatasetIds}")
-    '''
+    if warnings: 
+        return warnings
 
     resMissingMf = resultsDf[~resultsDf['_id'].isin(metafeaturesDf['_id'])]
     resMissingMfUnique = resMissingMf[['_id', 'dataset']].drop_duplicates()
@@ -285,7 +271,8 @@ def _validate_knowledgebase(resultsDf, metafeaturesDf):
     if len(resMissingMfUnique.index) > 0:
         warnings.append(f"Found {len(resMissingMfUnique.index)} of "
               f"{len(resultsDf._id.unique())} experiment datasets with no "
-              "associated metadata: " +  resMissingMfUnique.to_string())
+              "associated metadata: " +  resMissingMfUnique.to_string()
+              +'.\nResults missing metadata will not be loaded.')
 
 
     # check that all the metafeatures were created with a version compatable
@@ -327,26 +314,28 @@ def _load_json_metafeatures_from_directory(metafeatureDirectory, datasetNames):
     :param datasetNames - list of String dataset names
     """
     logger.info(f"Loading json metafeatures from directory "
-            "'{metafeatureDirectory}'")
+            f"'{metafeatureDirectory}'")
     
     metafeaturesData = {}
 
     for dataset in np.unique(datasetNames):
-        mfPath = os.path.join(metafeatureDirectory, dataset, 'metafeatures.json')
+        mfPath = os.path.join(metafeatureDirectory, dataset, 
+                'metafeatures.json')
         if os.path.exists(mfPath):
             #logger.debug(f'loading {mfPath}')
             with open(mfPath) as data_file:    
                 data = json.load(data_file)
             metafeaturesData[dataset] = data 
         else:
-            #raise ValueError(f"Couldn't find metafeature file for dataset '{dataset}'")
-            logger.warn(f"Couldn't find metafeature file for dataset '{dataset}'")
+            logger.warn(f"Couldn't find metafeature file for dataset "
+                    f"'{dataset}'")
 
     return metafeaturesData
 
 def _load_metadata_from_file(metafeaturesFile):
     logger.info(f"Loading metadata from file '{metafeaturesFile}")
-    metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0, float_precision='round_trip') #, quoting=csv.QUOTE_NONNUMERIC)
+    metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0, 
+            float_precision='round_trip') #, quoting=csv.QUOTE_NONNUMERIC)
     logger.debug("loaded metafeature file as df:")
     logger.debug(metafeaturesDf.head())
 
@@ -360,10 +349,14 @@ def _generate_metadata_from_directory(datasetDirectory,
 
     :returns dict: dataset name(str):metafeatures(dataFrame)
     """
-    logger.info(f"generating metafeatures for files in directory '{datasetDirectory}', targetField={targetField}, checkSubdirectories={checkSubdirectories}, fileExtensions={fileExtensions}")
+    logger.info(f"generating metafeatures for files in directory "
+            f"'{datasetDirectory}', targetField={targetField}, "
+            f"checkSubdirectories={checkSubdirectories}, "
+            f"fileExtensions={fileExtensions}")
 
     if (not datasetDirectory):
-        raise ValueError("Could not generate metadata from directory, 'datasetDirectory' must be specified")
+        raise ValueError("Could not generate metadata from directory, "
+                "'datasetDirectory' must be specified")
 
     metafeaturesData = {}
 
