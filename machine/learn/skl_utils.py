@@ -298,10 +298,13 @@ def generate_results(model, input_data,
             scores['train_score'] = abs(train_scores.mean())
             scores['test_score'] = abs(test_scores.mean())
         # for api will fix later
+
         if score_name == "balanced_accuracy":
-            scores['accuracy_score'] = scores['test_score']
-            scores['balanced_accuracy'] = scores['test_score']
-        elif score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
+            scores['accuracy_score'] = test_scores.mean()
+        # for experiment tables
+        if score_name == "balanced_accuracy" or score_name == "r2":
+            scores['exp_table_score'] = test_scores.mean()
+        if score_name in ["neg_mean_squared_error", "neg_mean_absolute_error"]:
             scores['train_{}_score'.format(score_name)] = abs(
                 train_scores.mean())
             scores['{}_score'.format(score_name)] = abs(test_scores.mean())
