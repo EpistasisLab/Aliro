@@ -53,7 +53,7 @@ function ExperimentsTableHeader({
             sorted={getIsSorted('scores-accuracy_score')}
             onClick={() => onSort('scores-accuracy_score')}
           >
-            {'Accuracy/R2'}
+            {'Score'}
           </Table.HeaderCell>
         )}
         <Table.HeaderCell
