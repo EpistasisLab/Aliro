@@ -221,7 +221,9 @@ class LabApi:
                 elif(d['_prediction_type'] == "regression"):
                     frame['r2_cv_mean'] = d['_scores']['r2_score']
                 else:
-                    msg = (f'error in get_new_experiments_as_dataframe(), experiment has unhandled _prediction_type {d["_prediction_type"]}')
+                    msg = (f'error in get_new_experiments_as_dataframe(), '
+                            'experiment has unhandled _prediction_type '
+                            f'{d["_prediction_type"]}')
                     raise RuntimeError(msg)
 
                 processed_data.append(frame)
