@@ -120,8 +120,8 @@ var annotate_dataset = function(dataset) {
             var experiment = experiments[j];
             var _status = experiment['_status'];
             var _scores = experiment['_scores'];
-            if (_scores !== undefined && _scores['accuracy_score'] >= best_accuracy_score) {
-                best_accuracy_score = _scores['accuracy_score']
+            if (_scores !== undefined && _scores['exp_table_score'] >= best_accuracy_score) {
+                best_accuracy_score = _scores['exp_table_score']
                 best_experiment_id = experiment['_id']
                 if (experiment['algorithm'] && experiment['algorithm']['name']) {
                     best_experiment_name = experiment['algorithm']['name']

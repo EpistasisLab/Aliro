@@ -95,7 +95,7 @@ class Results extends Component {
         }
       });
       // balanced accuracy
-      let balancedAccKeys = ['train_score', 'accuracy_score'];
+      let balancedAccKeys = ['train_balanced_accuracy_score', 'balanced_accuracy_score'];
       // precision scores
       let precisionKeys = ['train_precision_score', 'precision_score']
       // AUC
