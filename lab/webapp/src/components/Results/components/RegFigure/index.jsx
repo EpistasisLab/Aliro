@@ -38,7 +38,9 @@ class RegFigure extends Component {
       figurename = "Cross-Validated Predictions";
     } else if(filename.includes("reg_cv_resi")) {
       figurename = "Cross-Validated Residuals";
-    } 
+    } else if(filename.includes("reg_cv_qq")) {
+      figurename = "Q-Q Plot for Normalized Residuals";
+    }
 
     if(!file) {
       return (
