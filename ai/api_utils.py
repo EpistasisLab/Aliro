@@ -5,13 +5,14 @@ API utility functions for Penn-AI
 import pandas as pd
 import numpy as np
 import pdb
-import json
+import simplejson as json
 import requests
 import itertools as it
 import logging
 import sys
 from enum import Enum, auto, unique
 from sklearn.model_selection import ParameterGrid # utility for hyperparams
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -27,21 +28,6 @@ class AI_STATUS(Enum):
     FINISHED = "finished"
     REQUESTED = "requested"
 
-
-class NumpyJsonEncoder(json.JSONEncoder):
-    """ Encoder for numpy in json
-    """
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        elif obj is None:
-            return "None"
-        else:
-            return super(NumpyJsonEncoder, self).default(obj)
 
 class LabApi:
     """Class for communicating with the PennAI server
@@ -101,19 +87,13 @@ class LabApi:
         """
         logger.info("launch_experiment(" + str(algorithmId) + ", " + str(payload))
         assert algorithmId
-
-        payload.update(self.static_payload)
-        experimentData = json.dumps(payload,cls=NumpyJsonEncoder)
-
         rec_path = '/'.join([self.projects_path, algorithmId, 'experiment'])
 
-        try:
-            res=requests.request("POST", rec_path, data=experimentData,
-                    headers=self.header)
-        except:
-            logger.error("Unexpected error in launch_experiment for path '",
-                    rec_path, "':", sys.exc_info()[0])
-            raise
+        # 503 code is returned if no capactiy available
+        # This is a valid scenario and should not cause an exception
+        res = self.__request(path=rec_path, payload=payload, 
+            headers=self.header,
+            acceptableNotOkStatusCodes=[503])
 
         submitResponses = json.loads(res.text)
 
@@ -406,7 +386,8 @@ class LabApi:
 
 
     def __request(self, path, payload = None, method = 'POST',
-            headers = {'content-type': 'application/json'}):
+            headers = {'content-type': 'application/json'},
+            acceptableNotOkStatusCodes = []):
         """
         Attempt to make an api request and return the result.
         Throw an exception if the request fails or if a status code >400 is returned.
@@ -425,14 +406,16 @@ class LabApi:
 
         res = None
         try:
-            res = requests.request(method, path, data=json.dumps(payload),
+            res = requests.request(method, path, 
+                    data=json.dumps(payload, ignore_nan=True),
                     headers=headers)
         except:
             logger.error("Unexpected error in LabApi.__request for path '" +
                     str(method) + ":" + str(path) + "':" + str(sys.exc_info()[0]))
             raise
 
-        if res.status_code != requests.codes.ok:
+        if ((res.status_code != requests.codes.ok) 
+            and (res.status_code not in acceptableNotOkStatusCodes)):
             msg = ("Request " + str(method) + " status_code not ok, path: '" +
                     str(path) + "'' status code: '" + str(res.status_code) +
                     "'' response text: " + str(res.text))
