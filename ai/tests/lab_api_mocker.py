@@ -17,6 +17,7 @@ class MockResponse:
         self.json_data = json_data
         self.status_code = status_code
         self.text = json_data
+        self.ok = status_code < 300
 
     def json(self):
         return self.json_data
