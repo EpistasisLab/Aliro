@@ -414,10 +414,11 @@ class LabApi:
                     str(method) + ":" + str(path) + "':" + str(sys.exc_info()[0]))
             raise
 
-        if ((res.status_code != requests.codes.ok) 
+        # check the status code
+        if ((not res.ok)
             and (res.status_code not in acceptableNotOkStatusCodes)):
             msg = ("Request " + str(method) + " status_code not ok, path: '" +
-                    str(path) + "'' status code: '" + str(res.status_code) +
+                    str(path) + "' status code: '" + str(res.status_code) +
                     "'' response text: " + str(res.text))
             logger.error(msg)
             raise RuntimeError(msg)
