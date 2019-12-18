@@ -123,6 +123,33 @@ def results_files():
         "sklearn-benchmark5-data-knowledgebase_filtered2.tsv"),
     ]
 
+def dupe_results_data():
+    #columns, data, originalShape, dedupeShape
+    return [
+
+        (
+            ["parameters", "r2_cv_mean", "explained_variance_cv_mean", "neg_mean_squared_error_cv_mean",
+             "neg_mean_absolute_error_cv_mean", "time", "seed", "dataset", "algorithm", "_id"],
+
+            [
+                [{'alpha': 0.9, 'criterion': 'friedman_mse', 'init': None}, 0.1992009361802493, 0.23368152052158514, -0.7399201059000751, -0.6496514345462184,
+                 0.033953523635864256, 24800, "658_fri_c3_250_25", "GradientBoostingRegressor", "68203b2f4c735c5c6c510719a2b02ce0d8138457cccc8015d0479c297906bbdf"],
+                [{'C': 0.0001, 'cache_size': 700, 'coef0': 10, 'degree': 2}, -0.2871841075837208, 7.206677874449507e-06, -9544.785895105535, -70.89032992668359,
+                 0.0009400367736816408, 24800, "706_sleuth_case1202", "SVR", "9f587c3497db3e74321d0bbc9cbf051af08552f665262f736665f338809582ee"],
+                [{'criterion': 'mse', 'max_depth': 5, 'max_features': None}, 0.10941330863886542, 0.1255369211644101, -0.873978489465834, -0.7157552225552044,
+                 0.0013549327850341795, 24800, "623_fri_c4_1000_10", "DecisionTreeRegressor", "c4991f7f7db210de7f3439643c94f0e4db1589478dedda01c3fea698ed6b1c96"],
+                [{'max_depth': 5, 'criterion': 'mse', 'max_features': None}, 0.10941330863886542, 0.1255369211644101, -0.873978489465834, -0.7157552225552044,
+                 0.0013549327850341795, 24800, "623_fri_c4_1000_10", "DecisionTreeRegressor", "c4991f7f7db210de7f3439643c94f0e4db1589478dedda01c3fea698ed6b1c96"],
+                [{'C': 0.01, 'cache_size': 700, 'coef0': 0.0, 'degree': 2}, -0.07517126969691883, 1.7985612998927535e-15, -20.307712846815406, -
+                 3.6415499898232495, 0.003330850601196289, 24800, "229_pwLinear", "SVR", "b84b30823e3a0b65441d703d4fd1a1e45535cb2e976590a7e8379db6a187ab38"],
+                [{'cache_size': 700, 'C': 0.01, 'coef0': 0.0, 'degree': 2}, -0.07517126969691883, 1.7985612998927535e-15, -20.307712846815406, -
+                 3.6415499898232495, 0.003330850601196289, 24800, "229_pwLinear", "SVR", "b84b30823e3a0b65441d703d4fd1a1e45535cb2e976590a7e8379db6a187ab38"],
+            ],
+            (6, 10),
+            (4, 10)
+        )
+    ]
+
 
 class TestResultUtils(unittest.TestCase):
 
@@ -200,7 +227,6 @@ class TestResultUtils(unittest.TestCase):
 
         self.assertGreater(len(data), 1)
         #assert expectedResultsData.equals(data)
-
 
     def test_generate_metadata_from_directory(self):
         testResultsDataDirectory = "data/datasets/pmlb_small"
@@ -291,6 +317,14 @@ class TestResultUtils(unittest.TestCase):
 
         #assert that mfLoad and mfGen are equal
         self.assert_metafeature_dict_equality(mfGen, mfLoad)
+
+    @parameterized.expand(dupe_results_data)
+    def test_dedupe_results_dataframe(self, columns, data, originalShape, dedupeShape):
+        df = pd.DataFrame(data, columns = columns) 
+
+        self.assertEquals(df.shape, originalShape)
+        kb_loader.dedupe_results_dataframe(df)
+        self.assertEquals(df.shape, dedupeShape)
 
 
     def assert_metafeature_dict_equality(self, mf1, mf2):
