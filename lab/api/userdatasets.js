@@ -111,7 +111,7 @@ var annotate_dataset = function(dataset) {
     var running = 0;
     var finished = 0;
     var failed = 0;
-    var best_accuracy_score = 0;
+    var best_score = 0;
     var best_experiment_id;
     var best_experiment_name;
     if (dataset['experiments']) {
@@ -120,8 +120,8 @@ var annotate_dataset = function(dataset) {
             var experiment = experiments[j];
             var _status = experiment['_status'];
             var _scores = experiment['_scores'];
-            if (_scores !== undefined && _scores['exp_table_score'] >= best_accuracy_score) {
-                best_accuracy_score = _scores['exp_table_score']
+            if (_scores !== undefined && _scores['exp_table_score'] >= best_score) {
+                best_score = _scores['exp_table_score']
                 best_experiment_id = experiment['_id']
                 if (experiment['algorithm'] && experiment['algorithm']['name']) {
                     best_experiment_name = experiment['algorithm']['name']
@@ -162,7 +162,7 @@ var annotate_dataset = function(dataset) {
         validation['best_result'] = {}
         validation['best_result']['_id'] = best_experiment_id;
         validation['best_result']['algorithm'] = best_experiment_name;
-        validation['best_result']['accuracy_score'] = best_accuracy_score;
+        validation['best_result']['score'] = best_score;
     }
     validation['notifications'] = {
         new: 0,

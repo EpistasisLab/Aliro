@@ -13,7 +13,7 @@ function BestResult({ result, hasMetadata }) {
 
   const getResultLink = () => `/#/results/${result._id}`;
 
-  const getPercent = () => (result.accuracy_score * 100).toFixed(2);
+  const getPercent = () => (result.score * 100).toFixed(2);
 
   if(!result) {
     return (
