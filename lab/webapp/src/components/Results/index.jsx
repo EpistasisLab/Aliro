@@ -95,7 +95,7 @@ class Results extends Component {
         }
       });
       // balanced accuracy
-      let balancedAccKeys = ['train_score', 'accuracy_score'];
+      let balancedAccKeys = ['train_balanced_accuracy_score', 'balanced_accuracy_score'];
       // precision scores
       let precisionKeys = ['train_precision_score', 'precision_score']
       // AUC
@@ -176,7 +176,7 @@ class Results extends Component {
         </div>
       );
     } else if(experiment.data.prediction_type == "regression") { // regression
-      let importanceScore, reg_cv_pred, reg_cv_resi;
+      let importanceScore, reg_cv_pred, reg_cv_resi, reg_cv_qq;
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('imp_score')) {
@@ -185,7 +185,10 @@ class Results extends Component {
           reg_cv_pred = file;
         } else if(filename.includes('reg_cv_resi')) {
           reg_cv_resi = file;
+        } else if(filename.includes('reg_cv_qq')) {
+          reg_cv_qq = file;
         }
+
       });
       // r2
       let R2Keys = ['train_r2_score', 'r2_score'];
@@ -222,8 +225,12 @@ class Results extends Component {
               <Grid.Column>
                 <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
+                <RegFigure file={reg_cv_qq} />
               </Grid.Column>
               <Grid.Column>
+                <MSEMAEDetails
+                  scores={experiment.data.scores}
+                />
                 <Score
                   scoreName="R2"
                   scoreValueList={R2List}
@@ -244,9 +251,6 @@ class Results extends Component {
                   chartKey="pearsonr"
                   chartColor="#55D6BE"
                   type="pearsonr"
-                />
-                <MSEMAEDetails
-                  scores={experiment.data.scores}
                 />
               </Grid.Column>
             </Grid.Row>

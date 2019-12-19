@@ -204,10 +204,10 @@ body {
     left: 0.5rem;
 }
 
-.pennai .dataset-card .best-result .ui.progress .bar .progress::after {
+/*.pennai .dataset-card .best-result .ui.progress .bar .progress::after {
     margin-left: 0.4rem;
     content: "accuracy";
-}
+}*/
 
 .pennai .dataset-card .experiments.table {
     background-color: rgba(255,255,255,.08);
