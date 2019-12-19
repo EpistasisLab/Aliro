@@ -1,6 +1,6 @@
 import React from 'react';
 import InvertedCard from '../../../InvertedCard';
-import { Header, Grid, Icon } from 'semantic-ui-react';
+import { Header, Grid, Icon} from 'semantic-ui-react';
 
 function foldcheck(fold) {
   let iconname = 'checkmark';
@@ -25,48 +25,94 @@ function MSEMAEDetails({scores}) {
     <InvertedCard
       header="MSE and MAE"
       content={
-        <Grid columns={3}>
+        <Grid columns={4}>
           <Grid.Column>
             <Header
               inverted
-              color="grey"
-              size="tiny"
-              content="Train MSE"
-              subheader={scores['train_neg_mean_squared_error_score'].toFixed(2)}
+              as='h4'
+              content="Metric"
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              color="grey"
-              size="tiny"
-              content="Test MSE"
-              subheader={scores['neg_mean_squared_error_score'].toFixed(2)}
+              as='h4'
+              content="Train Score"
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
-            <Icon name={mseicons[0]} inverted color={mseicons[1]} size="large"/>
+            <Header
+              inverted
+              as='h4'
+              content="Test Score"
+            />
           </Grid.Column>
           <Grid.Column>
             <Header
               inverted
-              color="grey"
-              size="tiny"
-              content="Train MAE"
-              subheader={scores['train_neg_mean_absolute_error_score'].toFixed(2)}
+              as='h4'
+              content="Train/Test"
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Header
+              inverted
+              as='h5'
+              content="MSE"
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              color="grey"
-              size="tiny"
-              content="Test MAE"
-              subheader={scores['neg_mean_absolute_error_score'].toFixed(2)}
+              as='h5'
+              content={scores['train_neg_mean_squared_error_score'].toFixed(2)}
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
-            <Icon name={maeicons[0]} inverted color={maeicons[1]} size="large"/>
+            <Header
+              inverted
+              as='h5'
+              content={scores['neg_mean_squared_error_score'].toFixed(2)}
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Header inverted as='h5'>
+              {msefold.toFixed(2)}
+              <Icon name={mseicons[0]}
+              inverted
+              color={mseicons[1]}
+              size="tiny"/>
+            </Header>
+          </Grid.Column>
+          <Grid.Column>
+            <Header
+              inverted
+              as='h5'
+              content="MAE"
+            />
+          </Grid.Column>
+          <Grid.Column textAlign="center">
+            <Header
+              inverted
+              as='h5'
+              content={scores['train_neg_mean_absolute_error_score'].toFixed(2)}
+            />
+          </Grid.Column>
+          <Grid.Column textAlign="center">
+            <Header
+              inverted
+              as='h5'
+              content={scores['neg_mean_absolute_error_score'].toFixed(2)}
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Header inverted as='h5'>
+              {maefold.toFixed(2)}
+              <Icon name={maeicons[0]}
+              inverted
+              color={maeicons[1]}
+              size="tiny"/>
+            </Header>
           </Grid.Column>
         </Grid>
       }

@@ -16,6 +16,14 @@ import pdb
 import json
 import csv
 
+# add trace level
+logging.TRACE = logging.DEBUG + 5
+logging.addLevelName(logging.TRACE, "TRACE")
+class TraceLogger(logging.getLoggerClass()):
+    def trace(self, msg, *args, **kwargs):
+        self.log(logging.TRACE, msg, *args, **kwargs)
+logging.setLoggerClass(TraceLogger)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
@@ -56,9 +64,9 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         pred_type
         resultsData: DataFrame with columns corresponding to:
                     '_id',
-    		    'dataset',
-	            'algorithm',
-	            'parameters',
+                'dataset',
+                'algorithm',
+                'parameters',
                     classification or regression accuracy metrics 
                     (i.e. 'accuracy', 'macrof1', 'bal_accuracy')
   
@@ -69,7 +77,7 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
                     metafeature columns as defined in get_metafeatures.py
 
         warnings: list of warning Strings
-				}
+                }
     """
     logger.info(f"load_knowledgebase('{resultsFiles}', {metafeaturesFiles}', "
             f"'{jsonMetafeatureDirectory}')")
@@ -78,12 +86,15 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
     frames = []
     for resultsFile in resultsFiles:
         frames.append(_load_results_from_file(resultsFile))
+
+    logger.info("concatinating results....")
     all_resultsData = pd.concat(frames, sort=False)
+    
     dedupe_results_dataframe(all_resultsData)
     dataset_names = all_resultsData['dataset'].unique() 
     
     # load dataset metafeatures
-    print('load metafeatures...')
+    logger.info('load metafeatures...')
     metafeaturesDict = {}
     if jsonMetafeatureDirectory:
         metafeaturesDict.update(
@@ -133,19 +144,27 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
 
 
 def dedupe_results_dataframe(resultsData):
+    logger.trace("dedupe_results_dataframe()")
+
+    logger.trace("generating parmHash")
     resultsData['parmHash'] = resultsData.apply(
             lambda x: hash(frozenset(x['parameters'].items())), axis = 1)
+    logger.trace("parmHash generated")
 
     rawCount = len(resultsData)
     pd.set_option('display.max_columns', None)
     #logger.debug(resultsData.head())
 
+    logger.trace("removing parameters....")
     compCols = list(resultsData.columns)
     compCols.remove("parameters")
 
+    logger.trace("drop_duplicates...")
     resultsData.drop_duplicates(subset=compCols, inplace=True)
 
+    logger.trace("drop paramHash")
     resultsData.drop(columns=['parmHash'], inplace=True)
+
     logger.info(f"loaded {rawCount} experiments, {len(resultsData)} "
             "after dropDuplicates")
 
@@ -289,15 +308,18 @@ def _load_results_from_file(resultsFile):
     """
     Load experiment results from file
     """
+    logger.info("_load_results_from_file()")
     results_data = pd.read_csv(resultsFile, sep='\t')
 
     # convert params to dictionary 
+    logger.trace("converting parameters to dictionary")
     results_data['parameters'] = results_data['parameters'].apply(
             lambda x: eval(x))
     logger.info(f'returning {len(results_data)} results from {resultsFile}')
     
     assert not results_data.isna().any().any()
     logger.debug(f'results_data:\n{results_data.head()}')
+    logger.trace("returning from _load_results_from_file()")
     return results_data
 
 

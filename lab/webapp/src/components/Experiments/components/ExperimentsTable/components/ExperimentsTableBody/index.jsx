@@ -144,6 +144,7 @@ function ExperimentsTableBody({
       });
   };
 
+
   return (
     <Table.Body>
       {experiments.map(experiment => {
@@ -168,8 +169,8 @@ function ExperimentsTableBody({
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.scores.accuracy_score ?
-                    experiment.scores.accuracy_score.toFixed(2) : '-'
+                  {experiment.scores.exp_table_score ?
+                    experiment.scores.exp_table_score.toFixed(2) : '-'
                   }
                   {shouldDisplayAwards && renderAwardPopup(experiment)}
                 </a>
