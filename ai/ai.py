@@ -20,7 +20,7 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-from collections import OrderedDict, defaultdict
+
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
