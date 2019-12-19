@@ -194,9 +194,9 @@ class LabApi:
                 }
 
                 if(d['_prediction_type'] == "classification"):
-                    frame['accuracy'] = d['_scores']['accuracy_score'],#! This is balanced
-                    # accuracy!
-                    frame['f1'] = d['_scores']['f1_score'],
+                    #! This is balanced accuracy!
+                    frame['accuracy'] = d['_scores']['accuracy_score']
+                    frame['f1'] = d['_scores']['f1_score']
 
                 elif(d['_prediction_type'] == "regression"):
                     frame['r2_cv_mean'] = d['_scores']['r2_score']
@@ -215,7 +215,8 @@ class LabApi:
 
         new_experiments = pd.DataFrame(processed_data)
 
-        assert not new_experiments.isna().any(), "Nan results in experiments"
+        assert not new_experiments.isna().any().any(), \
+                "Nan results in experiments"
 
         return new_experiments
 

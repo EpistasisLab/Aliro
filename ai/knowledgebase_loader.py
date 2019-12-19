@@ -87,7 +87,7 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
     for resultsFile in resultsFiles:
         frames.append(_load_results_from_file(resultsFile))
 
-    logger.info("concatinating results....")
+    logger.info("concatenating results....")
     all_resultsData = pd.concat(frames, sort=False)
     
     dedupe_results_dataframe(all_resultsData)
@@ -138,6 +138,9 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
                 metafeaturesData['_prediction_type']==pred_type,'_id']
         resultsData[pred_type] = all_resultsData.loc[
                 all_resultsData['_id'].isin(relevant_dataset_ids)]
+        # drop columns irrelevant to this pred_type
+        resultsData[pred_type] = resultsData[pred_type].dropna(
+                axis=1,how='all')
 
     return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
             'warnings': warnings}
