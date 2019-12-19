@@ -235,6 +235,8 @@ class LabApi:
 
         new_experiments = pd.DataFrame(processed_data)
 
+        assert not new_experiments.isna().any(), "Nan results in experiments"
+
         return new_experiments
 
     def set_ai_status(self, datasetId, aiStatus):
