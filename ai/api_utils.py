@@ -91,7 +91,7 @@ class LabApi:
 
         # 503 code is returned if no capactiy available
         # This is a valid scenario and should not cause an exception
-        res = self.__request(path=rec_path, payload=payload, 
+        res = self.__request(path=rec_path, payload=payload,
             headers=self.header,
             acceptableNotOkStatusCodes=[503])
 
@@ -215,8 +215,8 @@ class LabApi:
 
         new_experiments = pd.DataFrame(processed_data)
 
-        assert not new_experiments.isna().any().any(), \
-                "Nan results in experiments"
+        #assert not new_experiments.isna().any().any(), \
+                #"Nan results in experiments"
 
         return new_experiments
 
@@ -409,7 +409,7 @@ class LabApi:
 
         res = None
         try:
-            res = requests.request(method, path, 
+            res = requests.request(method, path,
                     data=json.dumps(payload, ignore_nan=True),
                     headers=headers)
         except:
