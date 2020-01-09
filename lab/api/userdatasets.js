@@ -114,8 +114,10 @@ var annotate_dataset = function(dataset) {
     var best_score = 0;
     var best_experiment_id;
     var best_experiment_name;
+    var prediction_type;
     if (dataset['experiments']) {
         experiments = dataset['experiments']
+        prediction_type = experiments[0]['_prediction_type']
         for (var j = 0; j < experiments.length; j++) {
             var experiment = experiments[j];
             var _status = experiment['_status'];
@@ -163,6 +165,7 @@ var annotate_dataset = function(dataset) {
         validation['best_result']['_id'] = best_experiment_id;
         validation['best_result']['algorithm'] = best_experiment_name;
         validation['best_result']['score'] = best_score;
+        validation['best_result']['prediction_type'] = prediction_type;    
     }
     validation['notifications'] = {
         new: 0,
