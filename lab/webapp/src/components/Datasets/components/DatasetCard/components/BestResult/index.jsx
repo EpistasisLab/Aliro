@@ -23,6 +23,14 @@ function BestResult({ result, hasMetadata }) {
     );
   }
 
+  // add label for best results
+  var label = "";
+  if (result.prediction_type == "classification") {
+    label = "Balanced Accuracy";
+  } else if (result.prediction_type == "regression") {
+    label = "R2";
+  }
+
   return (
     <Segment
       inverted
@@ -42,6 +50,7 @@ function BestResult({ result, hasMetadata }) {
         progress
         percent={getPercent()}
         className="accuracy-score"
+        label={label}
       />
     </Segment>
   );
