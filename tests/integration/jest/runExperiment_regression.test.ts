@@ -22,7 +22,7 @@ describe('run regression experiment', () => {
 	it('run DecisionTreeRegressor experiment on 192_vineyard', async () => {
 		console.log('run DecisionTreeRegressor experiment on 192_vineyard')
 
-		jest.setTimeout(util.JEST_TIMEOUT)
+		jest.setTimeout(util.JEST_TIMEOUT*2)
 
 		let algoName = 'DecisionTreeRegressor'
 		let algoParms = {

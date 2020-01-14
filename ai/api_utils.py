@@ -205,7 +205,9 @@ class LabApi:
                             'experiment has unhandled _prediction_type '
                             f'{d["_prediction_type"]}')
                     raise RuntimeError(msg)
-
+                new_experiment = pd.DataFrame([frame])
+                assert not new_experiment.isna().any().any(), \
+                        "Nan results in experiment"
                 processed_data.append(frame)
             else:
               logger.error("new results are missing these fields:",

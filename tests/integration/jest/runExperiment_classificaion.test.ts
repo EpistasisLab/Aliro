@@ -182,7 +182,7 @@ describe('run experiment', () => {
 
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(util.JEST_TIMEOUT)
+		jest.setTimeout(util.JEST_TIMEOUT*2)
 
 		let algoName = 'SVC'
 		let algoParms = {
