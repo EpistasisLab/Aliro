@@ -2,6 +2,7 @@
 
 PROD_BASE_DIR="target/production"
 
+
 # get the current version
 source .env 
 echo "tag: $TAG"
@@ -32,11 +33,11 @@ cp release/docker-compose-hub-image.yml "${PROD_BUILD_DIR}/docker-compose.yml"
 zip -r $PROD_ZIP_FILENAME $PROD_BUILD_DIR
 
 # build production images
+echo "Building docker production images"
 #docker volume prune
-#docker-compose build -f docker-compose-production.yml build -m 8g
+docker-compose -f docker-compose-production.yml build -m 10g
 
-# tag in git
-
-# create git relase and attach zip
-
-# push to dockerhub
+echo "Tagging production images"
+docker tag pennai_lab:${TAG} moorelab/pennai_lab:${TAG}
+docker tag pennai_machine:${TAG} moorelab/pennai_machine:${TAG}
+docker tag pennai_dbmongo:${TAG} moorelab/pennai_dbmongo:${TAG}
