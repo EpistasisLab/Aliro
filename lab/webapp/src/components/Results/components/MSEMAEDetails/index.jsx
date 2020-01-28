@@ -1,18 +1,21 @@
 import React from 'react';
 import InvertedCard from '../../../InvertedCard';
-import { Header, Grid, Icon} from 'semantic-ui-react';
+import { Header, Grid, Icon, Button, Popup} from 'semantic-ui-react';
 
 function foldcheck(fold) {
   let iconname = 'checkmark';
   let iconcolor = 'green';
+  let iconmsg = "The model looks good!";
   if(fold>2){
     iconname = 'angle double up';
     iconcolor = 'red';
+    iconmsg = 'Warning! The model is overfited!';
   } else if(fold>1.5){
     iconname = 'angle up';
     iconcolor = 'yellow';
+    iconmsg = 'Warning! The model maybe overfited!';
   }
-  return [iconname, iconcolor];
+  return [iconname, iconcolor, iconmsg];
 }
 
 function MSEMAEDetails({scores}) {
@@ -76,13 +79,18 @@ function MSEMAEDetails({scores}) {
             />
           </Grid.Column>
           <Grid.Column>
-            <Header inverted as='h5'>
-              {msefold.toFixed(2)}
-              <Icon name={mseicons[0]}
-              inverted
-              color={mseicons[1]}
-              size="tiny"/>
-            </Header>
+          <Header inverted as='h5'>
+            {msefold.toFixed(2)}
+            {'  '}
+            <Popup content={mseicons[2]}
+            trigger={<Button basic inverted icon size="tiny">
+                        <Icon name={mseicons[0]}
+                        inverted
+                        color={mseicons[1]}
+                        />
+                      </Button>}
+            />
+          </Header>
           </Grid.Column>
           <Grid.Column>
             <Header
@@ -108,10 +116,15 @@ function MSEMAEDetails({scores}) {
           <Grid.Column>
             <Header inverted as='h5'>
               {maefold.toFixed(2)}
-              <Icon name={maeicons[0]}
-              inverted
-              color={maeicons[1]}
-              size="tiny"/>
+              {'  '}
+              <Popup content={maeicons[2]}
+              trigger={<Button basic inverted icon size="tiny">
+                          <Icon name={maeicons[0]}
+                          inverted
+                          color={maeicons[1]}
+                          />
+                        </Button>}
+              />
             </Header>
           </Grid.Column>
         </Grid>
