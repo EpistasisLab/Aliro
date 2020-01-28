@@ -1,9 +1,9 @@
 """
-Utility functions for loading experiment results that can be used for building 
+Utility functions for loading experiment results that can be used for building
 an initial knowledgebase for the recommenders.
 
 
-A knowledgebase consists of a relational dataset of previously run experiments, 
+A knowledgebase consists of a relational dataset of previously run experiments,
 and the metafeatures of the datasets in those experiments.
 """
 
@@ -33,30 +33,30 @@ logger.addHandler(ch)
 
 
 PMLB_KB_CLASSIFICATION_RESULTS_PATH = ('data/knowledgebases/'
-        'sklearn-benchmark5-data-knowledgebase.tsv.gz')
+        'sklearn-benchmark5-data-knowledgebase.pkl.gz')
 PMLB_KB_CLASSIFICATION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_classification_metafeatures.csv.gz')
 PMLB_KB_REGRESSION_RESULTS_PATH = ('data/knowledgebases/'
-        'pmlb_regression_results.tsv.gz')
+        'pmlb_regression_results.pkl.gz')
 PMLB_KB_REGRESSION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_regression_metafeatures.csv.gz')
 
 USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
 USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
 
-def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[], 
+def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         jsonMetafeatureDirectory=''):
-    """Load experiment results from from file and generate metadata for the 
+    """Load experiment results from from file and generate metadata for the
     experiment datasets.
 
-    :param resultsFiles - list<(string,string)> 
-        a list of tuples that contain resultsFile, pred_type 
+    :param resultsFiles - list<(string,string)>
+        a list of tuples that contain resultsFile, pred_type
         - list of experiment results in tsv form, can be compressed files.
-    :param metafeaturesFiles - list<tuple<string,string>> 
-        - list of files that contain metafeatures for the experiment datasets 
+    :param metafeaturesFiles - list<tuple<string,string>>
+        - list of files that contain metafeatures for the experiment datasets
         in csv form, can be compressed files.
-    :param jsonMetafeatureDirectory 
-        - root of a directory structure that contains .json files for 
+    :param jsonMetafeatureDirectory
+        - root of a directory structure that contains .json files for
         metafeatures
 
     :returns dict {
@@ -67,9 +67,9 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
                 'dataset',
                 'algorithm',
                 'parameters',
-                    classification or regression accuracy metrics 
+                    classification or regression accuracy metrics
                     (i.e. 'accuracy', 'macrof1', 'bal_accuracy')
-  
+
         metafeaturesData: Dataframe with columns corresponding to:
                     '_id',
                     '_metafeature_version',
@@ -89,10 +89,11 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
 
     logger.info("concatenating results....")
     all_resultsData = pd.concat(frames, sort=False)
-    
+
+    logger.info("deduplicating results....")
     dedupe_results_dataframe(all_resultsData)
-    dataset_names = all_resultsData['dataset'].unique() 
-    
+    dataset_names = all_resultsData['dataset'].unique()
+
     # load dataset metafeatures
     logger.info('load metafeatures...')
     metafeaturesDict = {}
@@ -142,7 +143,7 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
         resultsData[pred_type] = resultsData[pred_type].dropna(
                 axis=1,how='all')
 
-    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData, 
+    return {'resultsData': resultsData, 'metafeaturesData': metafeaturesData,
             'warnings': warnings}
 
 
@@ -174,17 +175,17 @@ def dedupe_results_dataframe(resultsData):
     return resultsData
 
 
-def load_default_knowledgebases(usePmlb=True, 
-        userKbResultsPath=USER_KB_RESULTS_PATH, 
+def load_default_knowledgebases(usePmlb=True,
+        userKbResultsPath=USER_KB_RESULTS_PATH,
         userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
     """
-    Convienence method to load the pmlb knowledgebase and any user-added 
+    Convienence method to load the pmlb knowledgebase and any user-added
     knowledgebases
     """
     logger.info(f"load_default_knowledgebases('{usePmlb}', "
             f"'{userKbResultsPath}', '{userKbMetafeaturesPath}'")
 
-    resFileExtensions = ['.tsv', '.gz']
+    resFileExtensions = ['.json', 'pkl', '.tsv', '.gz']
     mfFileExtensions = ['.csv', '.tsv', '.gz']
 
     resultsFiles = []
@@ -192,7 +193,7 @@ def load_default_knowledgebases(usePmlb=True,
 
     # load pmlb
     if usePmlb:
-        resultsFiles.append( 
+        resultsFiles.append(
                 PMLB_KB_CLASSIFICATION_RESULTS_PATH)
         resultsFiles.append(
                 PMLB_KB_REGRESSION_RESULTS_PATH)
@@ -206,7 +207,7 @@ def load_default_knowledgebases(usePmlb=True,
         for root, dirs, files in os.walk(userKbResultsPath):
             for name in files:
                 extension = os.path.splitext(name)[1]
-                if (not name.startswith('.') 
+                if (not name.startswith('.')
                         and (extension in resFileExtensions)):
                     resultsFiles.append(os.path.join(root, name))
 
@@ -214,7 +215,7 @@ def load_default_knowledgebases(usePmlb=True,
         for root, dirs, files in os.walk(userKbMetafeaturesPath):
             for name in files:
                 extension = os.path.splitext(name)[1]
-                if (not name.startswith('.') 
+                if (not name.startswith('.')
                         and (extension in mfFileExtensions)):
                     metafeaturesFiles.append(os.path.join(root, name))
 
@@ -225,11 +226,11 @@ def load_default_knowledgebases(usePmlb=True,
 
 def generate_metafeatures_file(
     datasetDirectory,
-    outputPath,  
-    outputFilename = "metafeatures.csv", 
+    outputPath,
+    outputFilename = "metafeatures.csv",
     predictionType = "classification",
-    targetField = 'class', 
-    checkSubdirectories = True, 
+    targetField = 'class',
+    checkSubdirectories = True,
     fileExtensions = ['.csv', '.tsv'],
     **kwargs):
     """
@@ -242,7 +243,7 @@ def generate_metafeatures_file(
     os.makedirs(outputPath, exist_ok=True)
 
     metafeaturesData = _generate_metadata_from_directory(
-        datasetDirectory, predictionType, targetField, 
+        datasetDirectory, predictionType, targetField,
         checkSubdirectories, fileExtensions, **kwargs)
 
     df = pd.DataFrame(metafeaturesData).transpose()
@@ -254,7 +255,7 @@ def generate_metafeatures_file(
 
     #, quoting=csv.QUOTE_NONNUMERIC)
     df.to_csv(os.path.join(outputPath, outputFilename), header=True,
-            compression='gzip') 
+            compression='gzip')
 
     return metafeaturesData
 
@@ -264,7 +265,7 @@ def _validate_knowledgebase(resultsDf, metafeaturesDf):
     Validate knowledgebase
     """
     requiredResultsFields = ['_id', 'dataset', 'algorithm']
-    requiredMetafeatureFields = ['_id', '_metafeature_version', 
+    requiredMetafeatureFields = ['_id', '_metafeature_version',
             '_prediction_type']
 
     warnings = []
@@ -274,17 +275,17 @@ def _validate_knowledgebase(resultsDf, metafeaturesDf):
 
     # check that resultsDf has required fields
     for reqField in requiredResultsFields:
-        if not reqField in resultsDf.columns: 
+        if not reqField in resultsDf.columns:
             warnings.append("Knowledgebase experiments data "
                 f"missing required field '{reqField}'")
 
     # check that metafeaturesDf has required fields
     for reqField in requiredMetafeatureFields:
-        if not reqField in metafeaturesDf.columns: 
+        if not reqField in metafeaturesDf.columns:
             warnings.append("Knowledgebase metafeature data "
                 f"missing required field '{reqField}'")
 
-    if warnings: 
+    if warnings:
         return warnings
 
     resMissingMf = resultsDf[~resultsDf['_id'].isin(metafeaturesDf['_id'])]
@@ -312,16 +313,29 @@ def _load_results_from_file(resultsFile):
     Load experiment results from file
     """
     logger.info("_load_results_from_file()")
-    results_data = pd.read_csv(resultsFile, sep='\t')
 
-    # convert params to dictionary 
-    logger.trace("converting parameters to dictionary")
-    results_data['parameters'] = results_data['parameters'].apply(
-            lambda x: eval(x))
-    logger.info(f'returning {len(results_data)} results from {resultsFile}')
-    
-    assert not results_data.isna().any().any()
-    logger.debug(f'results_data:\n{results_data.head()}')
+    # resultsfile is a tsv file
+    if resultsFile.endswith('tsv.gz') or resultsFile.endswith('tsv'):
+        results_data = pd.read_csv(resultsFile, sep='\t')
+
+        # convert params to dictionary
+        logger.trace("converting parameters to dictionary")
+        results_data['parameters'] = results_data['parameters'].apply(
+                lambda x: eval(x))
+        logger.info(f'returning {len(results_data)} results from {resultsFile}')
+
+        assert not results_data.isna().any().any()
+        logger.debug(f'results_data:\n{results_data.head()}')
+        logger.trace("saving results_data to json "
+                    "from _load_results_from_file()")
+    elif resultsFile.endswith('.pkl') or resultsFile.endswith('.pkl.gz'):
+        results_data = pd.read_pickle(resultsFile)
+        logger.debug(f'results_data:\n{results_data.head()}')
+    elif resultsFile.endswith('.json') or resultsFile.endswith('.json.gz'):
+        results_data = pd.read_json(resultsFile)
+        logger.debug(f'results_data:\n{results_data.head()}')
+    else:
+        raise ValueError("Unknown knowlegde base format!")
     logger.trace("returning from _load_results_from_file()")
     return results_data
 
@@ -340,17 +354,17 @@ def _load_json_metafeatures_from_directory(metafeatureDirectory, datasetNames):
     """
     logger.info(f"Loading json metafeatures from directory "
             f"'{metafeatureDirectory}'")
-    
+
     metafeaturesData = {}
 
     for dataset in np.unique(datasetNames):
-        mfPath = os.path.join(metafeatureDirectory, dataset, 
+        mfPath = os.path.join(metafeatureDirectory, dataset,
                 'metafeatures.json')
         if os.path.exists(mfPath):
             #logger.debug(f'loading {mfPath}')
-            with open(mfPath) as data_file:    
+            with open(mfPath) as data_file:
                 data = json.load(data_file)
-            metafeaturesData[dataset] = data 
+            metafeaturesData[dataset] = data
         else:
             logger.warn(f"Couldn't find metafeature file for dataset "
                     f"'{dataset}'")
@@ -359,7 +373,7 @@ def _load_json_metafeatures_from_directory(metafeatureDirectory, datasetNames):
 
 def _load_metadata_from_file(metafeaturesFile):
     logger.info(f"Loading metadata from file '{metafeaturesFile}")
-    metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0, 
+    metafeaturesDf = pd.read_csv(metafeaturesFile, index_col=0,
             float_precision='round_trip') #, quoting=csv.QUOTE_NONNUMERIC)
     logger.debug("loaded metafeature file as df:")
     logger.debug(metafeaturesDf.head())
@@ -367,7 +381,7 @@ def _load_metadata_from_file(metafeaturesFile):
     return metafeaturesDf.to_dict(orient='index')
 
 def _generate_metadata_from_directory(datasetDirectory,
-    prediction_type = "classification", targetField = 'class', 
+    prediction_type = "classification", targetField = 'class',
     checkSubdirectories = True, fileExtensions = ['.csv', '.tsv'],
     **kwargs):
     """Extract metafeatures for all dataset files in the directory
@@ -393,7 +407,7 @@ def _generate_metadata_from_directory(datasetDirectory,
             if not name.startswith('.') and (extension in fileExtensions):
                 # split twice to handle double extensions, i.e.
                 #   'myfile.tsv.gz' => 'myfile'
-                dataset = os.path.splitext(os.path.splitext(name)[0])[0]  
+                dataset = os.path.splitext(os.path.splitext(name)[0])[0]
                 datapath = os.path.join(root, name)
                 logger.info(f"Generating metadata for {datapath}")
                 metafeatures = mf.generate_metafeatures_from_filepath(
@@ -401,4 +415,3 @@ def _generate_metadata_from_directory(datasetDirectory,
                 metafeaturesData[dataset] = metafeatures
 
     return metafeaturesData
-
