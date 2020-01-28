@@ -169,7 +169,7 @@ function ExperimentsTableBody({
             ) : (
               <Table.Cell selectable>
                 <a href={experimentLink}>
-                  {experiment.scores.exp_table_score ?
+                  {(typeof experiment.scores.exp_table_score != "undefined") ?
                     experiment.scores.exp_table_score.toFixed(2) : '-'
                   }
                   {shouldDisplayAwards && renderAwardPopup(experiment)}
