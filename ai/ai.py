@@ -24,11 +24,14 @@ from collections import OrderedDict
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
 ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
 
 
 class AI():
@@ -258,13 +261,13 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.info(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
+        logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
         #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        logger.info(f'indicies: \n\n {dataset_indicies}')
+        logger.debug(f'indicies: \n\n {dataset_indicies}')
 
         new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
         assert len(new_mf) == len(dataset_indicies)
-        logger.info(f"new_mf: {new_mf}")
+        logger.debug(f"new_mf: {new_mf}")
 
         return new_mf
 

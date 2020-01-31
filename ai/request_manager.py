@@ -142,6 +142,8 @@ class AiRequest:
         else:
             self.recBatchSize = self.defaultRecBatchSize
 
+        logger.info(f'new_request() termCondition={self.termCondition}; recBatchSize={self.recBatchSize}')
+
         self.state = AiState.INITILIZE
 
 
@@ -151,14 +153,14 @@ class AiRequest:
         ##logger.debug("=======")
         ##logger.debug("=======")
         ##logger.debug("=======")
-        logger.info("AiRequest terminate_request ({},{})".format(self.datasetName, self.datasetId))
-        logger.debug("queue size: {}".format(self.datasetThread.workQueue.qsize()))
+        logger.info(f'AiRequest terminate_request ({self.datasetName},{self.datasetId})')
+        logger.debug(f'queue size: {self.datasetThread.workQueue.qsize()}')
         
         q_utils.removeAllExperimentsFromQueue(ai=self.ai,
                                     datasetId=self.datasetId)
 
-        logger.debug("Removed experiments from queue, isQueueEmpty()={}".format(q_utils.isQueueEmpty(self.ai, self.datasetId)))
-        logger.debug("queue size: {}".format(self.datasetThread.workQueue.qsize()))
+        logger.debug(f'Removed experiments from queue, isQueueEmpty()={q_utils.isQueueEmpty(self.ai, self.datasetId)}')
+        logger.debug(f'queue size: {self.datasetThread.workQueue.qsize()}')
 
         if (setServerAiState):
             self.ai.labApi.set_ai_status(self.datasetId, 'finished')
@@ -168,10 +170,10 @@ class AiRequest:
 
     def process_request(self):
         logger.debug(f"===={self.datasetName} AI.State={self.state}, "
-                "queue={self.datasetThread.workQueue.qsize()},"
-                " processingRequest={self.datasetThread.processingRequest}====")
+                f"queue={self.datasetThread.workQueue.qsize()},"
+                f" processingRequest={self.datasetThread._processingRequest}====")
         logger.debug(f"====     _killActiveRequest={self.datasetThread._killActiveRequest}"
-                "  self.datasetThread.is_alive()={self.datasetThread.is_alive()}")
+                f"  self.datasetThread.is_alive()={self.datasetThread.is_alive()}")
         if (self.state in [AiState.INACTIVE, AiState.THREAD_DIED]):
             return
 
@@ -182,20 +184,24 @@ class AiRequest:
             self.terminate_request(setServerAiState=True)
 
         elif (self.state == AiState.THREAD_DIED_TERMINATE):
-            logger.error(f"Queue error encountered; terminating request for {self.datasetName}")
+            logger.error(f'Queue error encountered; terminating request for {self.datasetName}')
             self.terminate_request(setServerAiState=True, nextState=AiState.THREAD_DIED)
 
         elif (self.state == AiState.WAIT_FOR_QUEUE_EMPTY):
             return
 
         elif (self.state == AiState.ADD_RECOMMENDATIONS):
-            logger.debug("AiRequest adding recs ({},{})".format(self.datasetName, self.datasetId))
+            logger.debug("AiRequest adding recs ({},{},{})".format(self.datasetName, self.datasetId, self.recBatchSize))
             recs = self.ai.generate_recommendations(self.datasetId, 
                         self.recBatchSize)
 
+            logger.info(f"recs: {recs}")
+
+            logger.debug(f'queue size: {self.datasetThread.workQueue.qsize()}')
             q_utils.addExperimentsToQueue(ai=self.ai, 
                                      datasetId=self.datasetId, 
                                      experimentPayloads=recs)
+            logger.debug(f'queue size: {self.datasetThread.workQueue.qsize()}')
             self.state = AiState.WAIT_FOR_QUEUE_EMPTY
 
 
@@ -212,6 +218,8 @@ class AiRequest:
 
         # always start by adding recommendations
         if self.state == AiState.INITILIZE:
+            q_utils.initilizeQueue(ai=self.ai, 
+                            datasetId=self.datasetId)
             self.state = AiState.ADD_RECOMMENDATIONS
             return
 
