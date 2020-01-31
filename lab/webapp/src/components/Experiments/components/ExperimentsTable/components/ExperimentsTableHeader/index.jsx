@@ -50,8 +50,8 @@ function ExperimentsTableHeader({
         ) : (
           <Table.HeaderCell
             rowSpan={shouldDisplayParams && 2}
-            sorted={getIsSorted('scores-accuracy_score')}
-            onClick={() => onSort('scores-accuracy_score')}
+            sorted={getIsSorted('scores-exp_table_score')}
+            onClick={() => onSort('scores-exp_table_score')}
           >
             {'Score'}
           </Table.HeaderCell>
