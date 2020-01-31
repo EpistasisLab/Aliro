@@ -378,7 +378,7 @@ class LabApi:
 
         if (len(all_ml_p) > 0):
             logger.info(str(len(all_ml_p)) + ' ml-parameter options loaded')
-            logger.info('algs:' + str(all_ml_p.algorithm.unique()))
+            logger.info('get_all_ml_p() algorithms:' + str(all_ml_p.algorithm.unique()))
         else:
             logger.error('get_all_ml_p() parsed no results')
 

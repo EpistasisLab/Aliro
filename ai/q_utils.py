@@ -11,7 +11,7 @@ import traceback
 import sys
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 exitFlag = 0
 
@@ -26,7 +26,8 @@ class DatasetThread (threading.Thread):
         self.workQueue = queue.Queue() # queue of experiment payloads
         self.ai = ai # instance of an ai object
 
-        self.processingRequest = False # true if process_data() is actively processing a request
+        self._prLock = threading.Lock()
+        self._processingRequest = False # true if process_data() is actively processing a request
         
         # multi-thread variables
         self._killActiveRequest = False # true if there was a request to kill all active requests.  
@@ -110,11 +111,21 @@ def removeAllExperimentsFromQueue(ai, datasetId):
         except queue.Empty:
             pass
 
+def initilizeQueue(ai, datasetId):
+    dsThread = ai.dataset_threads[datasetId]    
+    workQueue = dsThread.workQueue
+
+    with dsThread._karLock:
+        dsThread._killActiveRequest = False
 
 
 def isQueueEmpty(ai, datasetId):
     dataset_thread = ai.dataset_threads[datasetId]
-    return dataset_thread.workQueue.empty() and (dataset_thread.processingRequest == False)
+
+    with dataset_thread._prLock:
+        isEmpty = dataset_thread.workQueue.empty() and (dataset_thread._processingRequest == False)
+    
+    return isEmpty
 
 
 def process_data(dsThread):
@@ -132,7 +143,8 @@ def process_data(dsThread):
             data = dsThread.workQueue.get(timeout=.1) #blocks until timeout
 
             try:
-                dsThread.processingRequest = True
+                with dsThread._prLock:
+                    dsThread._processingRequest = True
                 logger.debug(f"==={dsThread.name} - Initilizing recommendation transfer")
 
                 requestProcessed = False # True if the request was sent or a command to kill the active request was recieved
@@ -156,7 +168,9 @@ def process_data(dsThread):
                     logger.debug(f"{dsThread.workQueue.qsize()} jobs in queue for {dsThread.name}")
 
             finally:
-                dsThread.processingRequest = False
+                dsThread.workQueue.task_done()
+                with dsThread._prLock:
+                    dsThread._processingRequest = False
                 
 
         except queue.Empty:
