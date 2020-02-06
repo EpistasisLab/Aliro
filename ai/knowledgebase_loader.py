@@ -323,19 +323,16 @@ def _load_results_from_file(resultsFile):
         results_data['parameters'] = results_data['parameters'].apply(
                 lambda x: eval(x))
         logger.info(f'returning {len(results_data)} results from {resultsFile}')
-
-        assert not results_data.isna().any().any()
-        logger.debug(f'results_data:\n{results_data.head()}')
-        logger.trace("saving results_data to json "
-                    "from _load_results_from_file()")
     elif resultsFile.endswith('.pkl') or resultsFile.endswith('.pkl.gz'):
         results_data = pd.read_pickle(resultsFile)
-        logger.debug(f'results_data:\n{results_data.head()}')
     elif resultsFile.endswith('.json') or resultsFile.endswith('.json.gz'):
         results_data = pd.read_json(resultsFile)
-        logger.debug(f'results_data:\n{results_data.head()}')
     else:
         raise ValueError("Unknown knowlegde base format!")
+    assert not results_data.isna().any().any()
+    logger.debug(f'results_data:\n{results_data.head()}')
+    logger.trace("saving results_data to json "
+                "from _load_results_from_file()")
     logger.trace("returning from _load_results_from_file()")
     return results_data
 
