@@ -83,7 +83,6 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
   var icons = foldcheck(fold);
   let headericon = (
     <Popup
-      on="click"
       position="top center"
       content={icons[2]}
       trigger={
