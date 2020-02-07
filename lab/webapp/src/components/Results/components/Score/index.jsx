@@ -4,12 +4,29 @@ import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
 import GaugeAll from '../../../GaugeAll';
 import BarPlot from '../../../BarPlot';
-import { Header } from 'semantic-ui-react';
+import { Header, Icon, Popup} from 'semantic-ui-react';
 /**
 * Hijacking this component to do two things:
 *   1.) create single Gauge component or basic message based on given props
 *   2.) make multi gauge (GuageAll) component to display chart with several entries
 */
+
+function foldcheck(fold) {
+  let iconname = 'checkmark';
+  let iconcolor = 'green';
+  let iconmsg = "The model looks good!";
+  if(fold > 1.5 || fold < 0 ){
+    iconname = 'angle double up';
+    iconcolor = 'red';
+    iconmsg = 'Warning! The model is overfited!';
+  } else if(fold>1.2){
+    iconname = 'angle up';
+    iconcolor = 'yellow';
+    iconmsg = 'Warning! The model maybe overfited!';
+  }
+  return [iconname, iconcolor, iconmsg];
+}
+
 function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type }) {
   const getCardContent = () => {
     if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
@@ -62,10 +79,29 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
       />
     );*/
   };
+  let fold = scoreValueList[0][1]/scoreValueList[1][1];
+  var icons = foldcheck(fold);
+  let headericon = (
+    <Popup
+      on="click"
+      position="top center"
+      content={icons[2]}
+      trigger={
+        <Icon
+          inverted
+          color={icons[1]}
+          name={icons[0]}
+          className="info-icon float-right"
+        />
+      }
+    />
+  );
+
 
   return (
     <InvertedCard
       header={scoreName}
+      headericon={headericon}
       content={getCardContent()}
     />
   );

@@ -1,24 +1,32 @@
 import React from 'react';
 import { Segment, Header, Popup, Button } from 'semantic-ui-react';
 
-function InvertedCard({ 
-  header, 
-  tooltip, 
-  options, 
-  content, 
-  footer 
+function InvertedCard({
+  header,
+  headericon,
+  tooltip,
+  options,
+  content,
+  footer
 }) {
   return (
     <div className="inverted-card">
       <Segment inverted attached="top">
-        <Header inverted size="medium" content={header} />
+        <Header inverted size="medium">
+          {header}
+          {headericon &&
+            <span className="float-right">
+              {headericon}
+            </span>
+          }
+        </Header>
         {tooltip &&
           <span className="float-right">
             <Popup
               trigger={<Button circular icon="info" />}
               content={tooltip}
             />
-          </span>  
+          </span>
         }
         {options &&
           <span className="float-right">
