@@ -18,11 +18,11 @@ function foldcheck(fold) {
   if(fold > 1.5 || fold < 0 ){
     iconname = 'angle double up';
     iconcolor = 'red';
-    iconmsg = 'Warning! The model is overfited!';
+    iconmsg = 'Warning! The model is overfitted!';
   } else if(fold>1.2){
     iconname = 'angle up';
     iconcolor = 'yellow';
-    iconmsg = 'Warning! The model maybe overfited!';
+    iconmsg = 'Warning! The model maybe overfitted!';
   }
   return [iconname, iconcolor, iconmsg];
 }
