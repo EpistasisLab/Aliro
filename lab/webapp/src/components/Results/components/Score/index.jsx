@@ -22,7 +22,7 @@ function foldcheck(fold) {
   } else if(fold>1.2){
     iconname = 'angle up';
     iconcolor = 'yellow';
-    iconmsg = 'Warning! The model maybe overfitted!';
+    iconmsg = 'Warning! The model may be overfitted!';
   }
   return [iconname, iconcolor, iconmsg];
 }
