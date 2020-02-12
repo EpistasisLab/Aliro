@@ -1012,7 +1012,7 @@ print("Testing score: ", test_score)
 pred_cv_target = np.empty(target.shape)
 for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
     train, test = cv_split
-    pred_cv_target[test] = est.predict(X[test])
+    pred_cv_target[test] = est.predict(features[test])
 cnf_matrix = confusion_matrix(
     target, pred_cv_target, labels=model.classes_)
 print("Confusion Matrix:", cnf_matrix)
