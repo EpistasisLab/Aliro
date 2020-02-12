@@ -992,6 +992,7 @@ scorer = make_scorer(balanced_accuracy)
 
 # reproducing balanced accuracy scores
 # computing cross-validated metrics
+cv = StratifiedKFold(n_splits=10)
 cv_scores = cross_validate(
     estimator=model,
     X=features,
@@ -1009,7 +1010,6 @@ print("Testing score: ", test_score)
 
 # reproducing confusion matrix
 pred_cv_target = np.empty(target.shape)
-cv = StratifiedKFold(n_splits=10)
 for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
     train, test = cv_split
     pred_cv_target[test] = est.predict(X[test])
