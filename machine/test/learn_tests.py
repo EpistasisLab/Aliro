@@ -1504,6 +1504,7 @@ scorer = make_scorer(balanced_accuracy)
 
 # reproducing balanced accuracy scores
 # computing cross-validated metrics
+cv = StratifiedKFold(n_splits=10)
 cv_scores = cross_validate(
     estimator=model,
     X=features,
@@ -1513,15 +1514,14 @@ cv_scores = cross_validate(
     return_train_score=True,
     return_estimator=True
 )
-train_scores = cv_scores['train_score'].mean()
-test_scores = cv_scores['test_score'].mean()
+train_score = cv_scores['train_score'].mean()
+test_score = cv_scores['test_score'].mean()
 
 print("Training score: ", train_score)
 print("Testing score: ", test_score)
 
 # reproducing confusion matrix
 pred_cv_target = np.empty(target.shape)
-cv = StratifiedKFold(n_splits=10)
 for cv_split, est in zip(cv.split(features, target), cv_scores['estimator']):
     train, test = cv_split
     pred_cv_target[test] = est.predict(X[test])
@@ -1675,12 +1675,12 @@ cv_scores = cross_validate(
     X=features,
     y=target,
     scoring='r2',
-    cv=cv,
+    cv=10,
     return_train_score=True,
     return_estimator=True
 )
-train_scores = cv_scores['train_score'].mean()
-test_scores = cv_scores['test_score'].mean()
+train_score = cv_scores['train_score'].mean()
+test_score = cv_scores['test_score'].mean()
 
 print("Training score: ", train_score)
 print("Testing score: ", test_score)
