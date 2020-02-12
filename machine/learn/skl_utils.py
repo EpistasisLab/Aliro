@@ -1002,8 +1002,8 @@ cv_scores = cross_validate(
     return_train_score=True,
     return_estimator=True
 )
-train_scores = cv_scores['train_score'].mean()
-test_scores = cv_scores['test_score'].mean()
+train_score = cv_scores['train_score'].mean()
+test_score = cv_scores['test_score'].mean()
 
 print("Training score: ", train_score)
 print("Testing score: ", test_score)
@@ -1036,12 +1036,12 @@ cv_scores = cross_validate(
     X=features,
     y=target,
     scoring='r2',
-    cv=cv,
+    cv=10,
     return_train_score=True,
     return_estimator=True
 )
-train_scores = cv_scores['train_score'].mean()
-test_scores = cv_scores['test_score'].mean()
+train_score = cv_scores['train_score'].mean()
+test_score = cv_scores['test_score'].mean()
 
 print("Training score: ", train_score)
 print("Testing score: ", test_score)
