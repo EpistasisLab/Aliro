@@ -14,15 +14,15 @@ import { Header, Icon, Popup} from 'semantic-ui-react';
 function foldcheck(fold) {
   let iconname = 'checkmark';
   let iconcolor = 'green';
-  let iconmsg = "The model looks good!";
+  let iconmsg = "The model is not overfitted based on this score.";
   if(fold > 1.5 || fold < 0 ){
     iconname = 'angle double up';
     iconcolor = 'red';
-    iconmsg = 'Warning! The model is overfitted!';
+    iconmsg = 'Warning! The model is overfitted based on this score!';
   } else if(fold>1.2){
     iconname = 'angle up';
     iconcolor = 'yellow';
-    iconmsg = 'Warning! The model may be overfitted!';
+    iconmsg = 'Warning! The model may be overfitted based on this score!';
   }
   return [iconname, iconcolor, iconmsg];
 }
