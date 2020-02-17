@@ -27,11 +27,12 @@ fi
 
 
 # create git relase and attach zip
-echo "Creating Github release and pushing production zip"
+# TODO
+#echo "Creating Github release and pushing production zip"
 
 
 # push to dockerhub
 echo "Pushing to images to DockerHub"
-#docker push moorelab/pennai_lab:${TAG}
-#docker push moorelab/pennai_machine:${TAG}
-#docker push moorelab/pennai_dbmongo:${TAG}
+docker push moorelab/pennai_lab:${TAG}
+docker push moorelab/pennai_machine:${TAG}
+docker push moorelab/pennai_dbmongo:${TAG}

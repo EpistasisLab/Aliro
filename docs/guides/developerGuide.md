@@ -184,15 +184,15 @@ Release procedure:
 
 2. Push the code to github, merge it to the `production` branch, and tag the commit with the same version as the .env file
 
-3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
+3. Build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
+*  Create local lab, machine, and dbmongo production images with the tag defined in the .env file  
+* Create the production .zip named `target/production/pennai-${VERSION}.zip`
 
 4. Push the images to docker hub with the version tag and the `latest` tag.
 
-5. Generate the user production .zip by running `bash release.sh`.  The file will be named `target/production/pennai-${VERSION}.zip`.
+5. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
 
-6. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
-
-7. If the test is successful, create a github release using the tagged production commit and attach the zipped production directory as an archive asset.
+6. If the test is successful, create a github release using the tagged production commit and attach the zipped production directory as an archive asset.
 
 
 ### Installing a production build
