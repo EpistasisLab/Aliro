@@ -590,7 +590,7 @@ class FileUpload extends Component {
                <Divider inverted horizontal>
                 <Header inverted as='h4'>
                   <Icon name='bar chart' />
-                  Specification
+                  Feature Specification
                 </Header>
               </Divider>
 
