@@ -15,5 +15,8 @@
 **/__pycache__
 **/tmp
 **/.git
-data/pmlb*
+data/datasets/user
+data/datasets/pmlb*
+data/knowledgebases/user
 mock_experiment/
+release/
