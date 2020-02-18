@@ -21,7 +21,7 @@ PennAI is a multi-container docker project that uses ([Docker-Compose](https://d
 ## Using PennAI
 
 ### Starting and Stopping
-To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the server to shut down.  It may take a few minutes to build the first time PennAI is run.
+To start PennAI, from the command line, navigate to the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the server to shut down.  It may take a few minutes to build the first time PennAI is run.
 
 To reset the datasets and experiments in the server, start PennAI with the command `docker-compose up --force-recreate`  or run the command `docker-compose down` after the server has stopped.
 
