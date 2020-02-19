@@ -24,11 +24,14 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
 ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
 
 
 class AI():
@@ -277,7 +280,7 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.info(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
+        logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
         #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
         logger.info(f'indices: \n\n {dataset_indices}')
 

@@ -33,7 +33,8 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
 
 ## Development Notes
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.
-- Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docs](https://docs.docker.com/compose/reference/build/)
+- Whenever there are updates to any of the npm libraries as configured with `package.json` files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting PennAI `docker-compose up --renew-anon-volumes` or `docker-compose up -V`.
+- Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docker build docs,](https://docs.docker.com/compose/reference/build/)
 - To get the cpu and memory status of the running containers use `docker stats`
 - To clear out all files not checked into git, use `git clean -xdf`
 - Use `docker-compose build --no-cache lab` to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)
@@ -49,13 +50,35 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
   ```
 	- Note: If `docker exec -it "pennai_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
 	- Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
-- When developing the UI, webpack can be run in dev mode so that bundle.js will be automatically be rebuilt when changes to the web code are detected.  User will need to refresh with ctrl+5f for the changes to be seen in the browser.  To do so, after PennAi is up, do the following:
 
+### Web Development
+The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+5f for the changes to be seen in the browser.  
+
+There are two ways to enable watch mode:
+
+* To enable watch mode after PennAi has been started, do the following:
     ```
     docker exec -it "pennai_lab_1" /bin/bash
     cd $PROJECT_ROOT/lab/webapp
     npm run build-dev
     ```
+
+* To automatically start in watch mode, add the line `WEBDEV=1` to the configuration file `config\ai.env`
+
+### NPM Package Management
+To update or add NPM package dependencies:
+* Update the appropriate `package.json` file
+* Rebuild the images (`docker-compose build`, `docker-compose -f .\docker-compose-int-test.yml build` etc.)
+* Refresh anonymous volumes when restarting PennAI with `docker-compose up --renew-anon-volumes` or `docker-compose up -V`
+
+---
+
+Package management for node is configured in three places: the main backend API (`lab\package.json`), the frontend UI (`lab\webapp\package.json`), and the machine container API (`machine\package.json`).
+
+Node package installation (`npm install`) takes palace as part of the `docker build` process.  If there are changes to a `package.json` file, then during the build those changes will be detected and the updated npm packages will be installed.  
+
+When not using the production docker-compose file, node packages are installed in docker anonymous volumes `lab/node_modules`, `lab/webapp/node_modules`, `machine/node_modules`.  When starting PennAI after the packages have been rebuilt, the `--renew-anon-volumes` flag should be used.
+
 
 ##  Architecture Overview
 PennAI is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  
@@ -161,15 +184,15 @@ Release procedure:
 
 2. Push the code to github, merge it to the `production` branch, and tag the commit with the same version as the .env file
 
-3. Build the production images using `docker-compose -f docker-compose-production.yml build`.  This will create local lab, machine, and dbmongo images with the tag defined in the .env file.
+3. Build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
+*  Create local lab, machine, and dbmongo production images with the tag defined in the .env file  
+* Create the production .zip named `target/production/pennai-${VERSION}.zip`
 
 4. Push the images to docker hub with the version tag and the `latest` tag.
 
-5. Generate the user production .zip by running `bash release.sh`.  The file will be named `target/production/pennai-${VERSION}.zip`.
+5. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
 
-6. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
-
-7. Create a github release using the tagged production commit, and attach the zipped production directory as an archive asset.
+6. If the test is successful, create a github release using the tagged production commit and attach the zipped production directory as an archive asset.
 
 
 ### Installing a production build
