@@ -2,8 +2,17 @@
 wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
 cd ${PROJECT_ROOT}/lab/webapp
-npm run build
 
+# start the frontend
+if [ ${WEBDEV} -eq 1 ]; then
+    echo "Starting frontend in build-dev mode"
+    npm run build-dev &
+else
+    echo "Starting frontend in build mode"
+    npm run build
+fi
+
+# start the backend
 cd ${PROJECT_ROOT}/lab
 pm2 start lab.config.js --watch
 pm2 logs &

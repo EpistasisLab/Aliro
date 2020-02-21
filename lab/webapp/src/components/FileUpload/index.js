@@ -22,7 +22,8 @@ import {
   Header,
   Accordion,
   Icon,
-  Label
+  Label,
+  Divider
 } from 'semantic-ui-react';
 
 class FileUpload extends Component {
@@ -313,20 +314,26 @@ class FileUpload extends Component {
    * Upon error display error message to user, on success redirect to dataset page
    * @returns {void} - no return value
    */
-  handleUpload = () => {
+  handleUpload = (event) => {
+    if (this.state.disabled) {
+      return;
+    }
+    this.setState({disabled:true});
+
     const { uploadDataset } = this.props;
+
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let data = this.generateFileData(); // should be FormData
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
-        this.setState({errorResp: data.errorResp});
+        this.setState({
+          errorResp: data.errorResp, 
+          disabled:false});
       } else {
         // after uploading a dataset request new list of datasets to update the page
         uploadDataset(data).then(stuff => {
           //window.console.log('FileUpload props after download', this.props);
-
-
           //let resp = Object.keys(this.props.dataset.fileUploadResp);
           let resp = this.props.dataset.fileUploadResp;
           let errorRespObj = this.props.dataset.fileUploadError;
@@ -338,9 +345,11 @@ class FileUpload extends Component {
           if (!errorRespObj && resp.dataset_id) {
             this.props.fetchDatasets();
             window.location = '#/datasets';
+            this.setState({disabled:false});
           } else {
             this.setState({
-               errorResp: errorRespObj.errorResp.error || "Something went wrong"
+               errorResp: errorRespObj.errorResp.error || "Something went wrong",
+               disabled:false
               })
           }
         });
@@ -350,7 +359,8 @@ class FileUpload extends Component {
     } else {
       window.console.log('no file available');
       this.setState({
-        errorResp: 'No file available'
+        errorResp: 'No file available',
+        disabled:false
       });
     }
 
@@ -632,7 +642,13 @@ class FileUpload extends Component {
               id="file-upload-form-input-area"
               className={formInputClass}
             >
-            <br/>
+               <Divider inverted horizontal>
+                <Header inverted as='h4'>
+                  <Icon name='bar chart' />
+                  Feature Specification
+                </Header>
+              </Divider>
+
               <Form.Input
                 label="Dependent Column"
                 id="dependent_column_text_field_input"
@@ -701,11 +717,14 @@ class FileUpload extends Component {
                   open={errorMsg ? true : false}
                   id="file_upload_popup_and_button"
                   position='bottom left'
+                  on='click'
                   flowing
                   trigger={
                     <Button
                       inverted
                       color="blue"
+                      disabled={this.state.disabled}
+                      loading={this.state.disabled}
                       compact
                       size="small"
                       icon="upload"

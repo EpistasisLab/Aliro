@@ -5,15 +5,15 @@ import { Header, Grid, Icon, Button, Popup} from 'semantic-ui-react';
 function foldcheck(fold) {
   let iconname = 'checkmark';
   let iconcolor = 'green';
-  let iconmsg = "The model looks good!";
+  let iconmsg = "The model is not overfitted based on this score.";
   if(fold>2){
     iconname = 'angle double up';
     iconcolor = 'red';
-    iconmsg = 'Warning! The model is overfited!';
+    iconmsg = 'Warning! The model is overfitted based on this score!';
   } else if(fold>1.5){
     iconname = 'angle up';
     iconcolor = 'yellow';
-    iconmsg = 'Warning! The model maybe overfited!';
+    iconmsg = 'Warning! The model may be overfitted based on this score!';
   }
   return [iconname, iconcolor, iconmsg];
 }
@@ -81,14 +81,15 @@ function MSEMAEDetails({scores}) {
           <Grid.Column>
           <Header inverted as='h5'>
             {msefold.toFixed(2)}
-            {'  '}
             <Popup content={mseicons[2]}
-            trigger={<Button basic inverted icon size="tiny">
-                        <Icon name={mseicons[0]}
-                        inverted
-                        color={mseicons[1]}
-                        />
-                      </Button>}
+            trigger={
+              <Icon
+                name={mseicons[0]}
+                inverted
+                color={mseicons[1]}
+                size="tiny"
+                className="info-icon float-right"
+              />}
             />
           </Header>
           </Grid.Column>
@@ -116,14 +117,15 @@ function MSEMAEDetails({scores}) {
           <Grid.Column>
             <Header inverted as='h5'>
               {maefold.toFixed(2)}
-              {'  '}
               <Popup content={maeicons[2]}
-              trigger={<Button basic inverted icon size="tiny">
-                          <Icon name={maeicons[0]}
-                          inverted
-                          color={maeicons[1]}
-                          />
-                        </Button>}
+              trigger={
+                <Icon
+                  name={maeicons[0]}
+                  inverted
+                  color={maeicons[1]}
+                  size="tiny"
+                  className="info-icon float-right"
+                />}
               />
             </Header>
           </Grid.Column>

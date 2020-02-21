@@ -33,6 +33,89 @@ services:
       - lab
       - dbmongo
 
+##########################################################
+# Uncomment for additoinal 'machine' container instances #
+##########################################################
+#  machine_2:
+#    image: "moorelab/pennai_machine:${TAG}"
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "/appsrc"
+#      - "./target:/appsrc/target"
+#    ports:
+#      - "5082:5082"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5081
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_3:
+#    image: "moorelab/pennai_machine:${TAG}"
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "/appsrc"
+#      - "./target:/appsrc/target"
+#    ports:
+#      - "5083:5083"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5081
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_4:
+#    image: "moorelab/pennai_machine:${TAG}"
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "/appsrc"
+#      - "./target:/appsrc/target"
+#    ports:
+#      - "5084:5084"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5081
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_5:
+#    image: "moorelab/pennai_machine:${TAG}"
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "/appsrc"
+#      - "./target:/appsrc/target"
+#    ports:
+#      - "5085:5085"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5081
+#    depends_on:
+#      - lab
+#      - dbmongo
+#
+#  machine_6:
+#    image: "moorelab/pennai_machine:${TAG}"
+#    tty: true
+#    stdin_open: true
+#    volumes:
+#      - "/appsrc"
+#      - "./target:/appsrc/target"
+#    ports:
+#      - "5086:5086"
+#    env_file: ./config/common.env
+#    environment:
+#      - MACHINE_PORT=5081
+#    depends_on:
+#      - lab
+#      - dbmongo
+
   dbmongo:
     image: "moorelab/pennai_dbmongo:${TAG}"
     tty: true
