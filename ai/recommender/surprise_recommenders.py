@@ -271,6 +271,7 @@ class SVDRecommender(SurpriseRecommender):
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
                           reg_qi=None, random_state=None, verbose=False)
     
+    
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.info('updating SVD model')
@@ -282,7 +283,9 @@ class SVDRecommender(SurpriseRecommender):
         logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
-        self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        # self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        # self.algo.n_epochs = max(10,self.algo.n_epochs)
+        self.algo.n_epochs = self.max_epochs
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
         if self.first_fit:

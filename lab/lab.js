@@ -1275,7 +1275,7 @@ var stageDatasetFile = function(fileObj) {
 *
 */
 var validateStagingFile = function(fileObj) {
-    var MAX_FILE_SIZE = 8 * 1000000
+    var MAX_FILE_SIZE = 20 * 1000000
 
     return new Promise((resolve, reject) => { 
         console.log(`fileSize: ${fileObj.size}`)
