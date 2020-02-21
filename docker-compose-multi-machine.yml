@@ -133,6 +133,82 @@ services:
       - lab
       - dbmongo
 
+  machine_7:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5087:5087"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5087
+      - MACHINE_HOST=machine_7
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_8:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5088:5088"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5088
+      - MACHINE_HOST=machine_8
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_9:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5089:5089"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5089
+      - MACHINE_HOST=machine_9
+    depends_on:
+      - lab
+      - dbmongo
+
+  machine_10:
+    build:
+      context: .
+      dockerfile: dockers/machine/Dockerfile
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/appsrc"
+      - "/appsrc/machine/node_modules"
+    ports:
+      - "5090:5090"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5090
+      - MACHINE_HOST=machine_10
+    depends_on:
+      - lab
+      - dbmongo
+
   dbmongo:
     build:
       context: .
