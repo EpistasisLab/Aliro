@@ -24,11 +24,14 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
 ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
 
 
 class AI():
@@ -235,13 +238,13 @@ class AI():
                 all_df_mf.loc[kb['resultsData'][pred_type]['_id'].unique()]
                     )
 
-            logger.info('updating AI with ' + pred_type+' knowledgebase')
+            logger.info(f"updating AI with {pred_type} knowledgebase ("
+                f"{len(kb['resultsData'][pred_type])} results)")
             # self.update_dataset_mf(kb['resultsData'])
             self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
                     self.dataset_mf_cache, source='knowledgebase')
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')
-
 
     ##-----------------
     ## Utility methods
@@ -277,7 +280,7 @@ class AI():
             self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
 
 
-        logger.info(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
+        logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
         #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
         logger.info(f'indices: \n\n {dataset_indices}')
 

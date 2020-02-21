@@ -312,7 +312,7 @@ def _load_results_from_file(resultsFile):
     """
     Load experiment results from file
     """
-    logger.info("_load_results_from_file()")
+    logger.info(f'_load_results_from_file({resultsFile})')
 
     # resultsfile is a tsv file
     if resultsFile.endswith('tsv.gz') or resultsFile.endswith('tsv'):
