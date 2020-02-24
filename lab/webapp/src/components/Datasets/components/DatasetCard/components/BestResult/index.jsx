@@ -13,7 +13,7 @@ function BestResult({ result, hasMetadata }) {
 
   const getResultLink = () => `/#/results/${result._id}`;
 
-  const getPercent = () => (result.accuracy_score * 100).toFixed(2);
+  const getPercent = () => (result.score * 100).toFixed(2);
 
   if(!result) {
     return (
@@ -23,10 +23,18 @@ function BestResult({ result, hasMetadata }) {
     );
   }
 
+  // add label for best results
+  var label = "";
+  if (result.prediction_type == "classification") {
+    label = "Balanced Accuracy";
+  } else if (result.prediction_type == "regression") {
+    label = "R2";
+  }
+
   return (
-    <Segment 
-      inverted 
-      attached 
+    <Segment
+      inverted
+      attached
       href={getResultLink()}
       className="panel-body best-result"
     >
@@ -37,11 +45,12 @@ function BestResult({ result, hasMetadata }) {
           <span>{`#${result._id}`}</span>
         </Header.Subheader>
       </Header>
-      <Progress 
+      <Progress
         inverted
         progress
         percent={getPercent()}
         className="accuracy-score"
+        label={label}
       />
     </Segment>
   );

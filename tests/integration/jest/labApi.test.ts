@@ -11,24 +11,27 @@ import FormData = require('form-data');
 
 describe('lab', () => {
 	describe('api', () => {
+		//
 		describe.each`
-			testname					| filename						| categorical	| ordinal
-			${'numeric'}				| ${'appendicitis_2.csv'}		| ${[]}			| ${{}}
-			${'categorical'}			| ${'appendicitis_cat.csv'}		| ${["cat"]}	| ${{}}
-			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${["cat"]}	| ${ {"ord" : ["first", "second", "third"]} }
-			`("putDatasetGood", ({testname, filename, categorical, ordinal}) => {
+			testname					| filename						| prediction_type		| target			| categorical	| ordinal
+			${'numeric'}				| ${'appendicitis_2.csv'}		| ${'classification'}	| ${'target_class'}	| ${[]}			| ${{}}
+			${'categorical'}			| ${'appendicitis_cat.csv'}		| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${{}}
+			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${ {"ord" : ["first", "second", "third"]}}
+			${'regression'}				| ${'192_vineyard.csv'}			| ${'regression'}		| ${'target'}		|${[]}			| ${{}}
+			`("putDatasetGood", ({testname, filename, prediction_type, target, categorical, ordinal}) => {
 				it(`${testname}`, async () => {
 					jest.setTimeout(15000)
 					let filepath = `${util.DATASET_PATH}/${filename}`
 
-					console.log(`${testname} ${filename} ${categorical} ${ordinal}`)
+					console.log(`${testname} ${filename} ${prediction_type}, ${target}, ${categorical} ${ordinal}`)
 					let form = new FormData();
 
 					let metadata =  JSON.stringify({
 							'name': filename,
 				            'username': 'testuser',
 				            'timestamp': Date.now(),
-				            'dependent_col' : 'target_class',
+				            'dependent_col' : target,
+				            'prediction_type' : prediction_type,
 				            'categorical_features' : categorical,
 				            'ordinal_features' : ordinal
 			            })
@@ -40,6 +43,8 @@ describe('lab', () => {
 
 					try {
 						result = await labApi.putDataset(form);
+						console.log(`result:`)
+						console.log(result)
 					}
 					catch (e) {
 						var json = await e.response.json()
@@ -57,6 +62,38 @@ describe('lab', () => {
 
 
 		describe('putDatasetBad', () => {
+			it('invalid prediction_type', async () => {
+				expect.assertions(3);
+
+				let filepath = `${util.DATASET_PATH}/appendicitis_2.csv`
+
+				let form = new FormData();
+
+				let metadata =  JSON.stringify({
+						'name': 'appendicitis_2_bad_prediction_type.csv',
+			            'username': 'testuser',
+			            'timestamp': Date.now(),
+			            'dependent_col' : 'target_class',
+			            'prediction_type' : "badTestPredictionType",
+			            'categorical_features' : []		
+		            })
+
+				form.append('_metadata', metadata)
+				form.append('_files', fs.createReadStream(filepath));
+
+				let result
+
+				try {
+					result = await labApi.putDataset(form);
+				}
+				catch (e) {
+					var json = await e.response.json()
+					expect(json.error).toBeTruthy()
+					expect(e.response.status).toEqual(400)
+					expect(json.error).toEqual("invalid prediction_type: badTestPredictionType")
+				}
+			});
+
 			it('string data in file', async () => {
 				expect.assertions(3);
 

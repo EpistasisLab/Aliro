@@ -22,8 +22,10 @@ logger.setLevel(logging.INFO)
 # print('loading pmlb results data...')
 # TODO: replace this dataset loading and metafeature loading with calls to 
 # knowledgebase loader
-KB_RESULTS_PATH = 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
-KB_METAFEATURES_PATH = 'data/knowledgebases/pmlb_metafeatures.csv.gz'
+KB_RESULTS_PATH = \
+        'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
+KB_METAFEATURES_PATH = \
+        'data/knowledgebases/pmlb_classification_metafeatures.csv.gz'
 
 data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
 metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, 

@@ -11,6 +11,8 @@ import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
 import {
   Button,
+  Radio,
+  Dropdown,
   Input,
   Form,
   Segment,
@@ -45,21 +47,28 @@ class FileUpload extends Component {
     this.handleDepColField = this.handleDepColField.bind(this);
     this.handleCatFeatures = this.handleCatFeatures.bind(this);
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
+    this.handlePredictionType = this.handlePredictionType.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
     this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
+    this.defaultPredictionType = "classification"
+
     // help text for dataset upload form - dependent column, categorical & ordinal features
-    this.depColHelpText = `The column that describes how each row is classified.
+    this.depColHelpText = `The column that describes the label or output for each row.
     For example, if analyzing a dataset of patients with different types of diabetes,
     this column may have the values "type1", "type2", or "none".`;
+
+    this.predictionTypeHelp = (<p><i>Classification</i> algorithms to are used to model discrete categorical outputs.
+      Examples include modeling the color car someone might buy ("red", "green", "blue"...) or a disease state ("type1Diabetes", "type2Diabetes", "none"...)
+   <br/><br/><i>Regression</i> algorithms are used to model a continuous valued output.  Examples include modeling the amount of money a house is predicted to sell for.</p>);
 
     this.catFeatHelpText = (<p>Categorical features have a discrete number of categories that do not have an intrinsic order.
     Some examples include sex ("male", "female") or eye color ("brown", "green", "blue"...).
     <br/><br/>
-    Describe these features using a comma separated list of the field names:
+    Describe these features using a comma separated list of the field names.  Example: <br/>
     <i>sex, eye_color</i></p>);
 
     this.ordFeatHelpText = (<p>Ordinal features have a discrete number of categories,
@@ -67,7 +76,7 @@ class FileUpload extends Component {
     "medium", "large"), or rank results ("first", "second", "third").
     <br/><br/>
     Describe these features using a json map. The map key is the name of the field,
-     and the map value is an ordered list of the values the field can take:
+     and the map value is an ordered list of the values the field can take.  Example:<br/>
     <i>{"{\"rank\":[\"first\", \"second\", \"third\"], \"size\":[\"small\", \"medium\", \"large\"]}"}</i></p>);
   }
 
@@ -81,6 +90,7 @@ class FileUpload extends Component {
       catFeatures: '',
       ordinalFeatures: '',
       ordinalIndex: 0,
+      predictionType: this.defaultPredictionType,
       activeAccordionIndexes: [],
       errorResp: undefined
     });
@@ -147,20 +157,33 @@ class FileUpload extends Component {
     });
   }
 
+  handlePredictionType(e, data) {
+    this.setState({
+      predictionType: data.value,
+      errorResp: undefined
+    });
+  }
+
   /**
    * Helper method to consolidate user input to send with file upload form
    * @returns {FormData} - FormData object containing user input data
    */
   generateFileData = () => {
+    const allowedPredictionTypes = ["classification", "regression"]
 
     const data = new FormData();
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
     let ordFeatures = this.state.ordinalFeatures;
     let catFeatures = this.state.catFeatures;
+    let predictionType = this.state.predictionType;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
       // get raw user input from state
+
+      if (!allowedPredictionTypes.includes(predictionType)) {
+        return { errorResp: `Invalid prediction type: ${predictionType}`};
+      }
 
       // try to parse ord features input as JSON if not empty
       if(ordFeatures !== '') {
@@ -191,6 +214,7 @@ class FileUpload extends Component {
                 'username': 'testuser',
                 'timestamp': Date.now(),
                 'dependent_col' : depCol,
+                'prediction_type' : predictionType,
                 'categorical_features': catFeatures,
                 'ordinal_features': ordFeatures
               });
@@ -421,6 +445,36 @@ class FileUpload extends Component {
     return dataPrevTable;
   }
 
+
+  getPredictionSelector() {
+    const predictionOptions = [
+      {
+        key: "classification",
+        text: "classification",
+        value: "classification"
+      },
+      {
+        key: "regression",
+        text: "regression",
+        value: "regression"
+      },
+    ]
+
+
+    const predictionSelector = (
+      <Segment inverted>
+      <Dropdown
+        placeholder='Select Prediction Type'
+        defaultValue={this.defaultPredictionType}
+        options = {predictionOptions}
+        onChange = {this.handlePredictionType}
+        />
+      </Segment>
+    )
+
+    return predictionSelector;
+  }
+
   /**
    * Small helper method to create semantic ui accordion for categorical &
    * ordinal text inputs
@@ -541,6 +595,7 @@ class FileUpload extends Component {
     let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let accordionInputs = this.getAccordionInputs();
+    let predictionSelector = this.getPredictionSelector();
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
     // if error message present, display for 4.5 seconds
@@ -624,6 +679,32 @@ class FileUpload extends Component {
                   />
                 }
               />
+              <Form.Input
+                className="file-upload-prediction-title"
+                label="Prediction Type"
+              >
+                {predictionSelector}
+              </Form.Input>
+              <Popup
+                on="click"
+                position="right center"
+                header="Prediction Type Help"
+                content={
+                  <div className="content">
+                      {this.predictionTypeHelp}
+                  </div>
+                }
+                trigger={
+                  <Icon
+                    className="file-upload-dependent-help-icon"
+                    inverted
+                    size="large"
+                    color="orange"
+                    name="info circle"
+                  />
+                }
+              />
+              
               <Form.Input
                 className="file-upload-accordion-title"
                 label="Categorical & Ordinal Features"

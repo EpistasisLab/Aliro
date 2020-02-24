@@ -227,6 +227,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 *      _metadata: [
 *        name: "datasetName",
 *        username: "testUser",
+*        prediction_type: "classification",
 *        dependent_col: "class",
 *        categorical_features : ["cat_feat_1", "cat_feat_2"],
 *        ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
@@ -238,6 +239,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 * @param _metadata - json
 *    name - file name
 *    username - owner of the dataset
+*    prediction_type - "regression" or "classification"
 *    dependent_col - name of the target column
 *    categorical_features - list of categorical features
 *    ordinal_features - map of ordinal features.  key is the feature name, value is an ordered list of the values that feature can take
@@ -264,7 +266,9 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     }
 
     // Validate
-    var possibleMetadataKeys = ['name', 'username', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
+    var possibleMetadataKeys = ['name', 'username', 'prediction_type', 'dependent_col', 'categorical_features', 'ordinal_features', 'timestamp']
+    var possiblePredictionType = ['classification', 'regression']
+
     if (!metadata) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata"});
@@ -277,7 +281,12 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     } if (!metadata.hasOwnProperty('username')) {
         res.status(400);
         return res.send({error: "Missing parameter _metadata.username"});
-    } if (!req.hasOwnProperty('files')) {
+    } if (metadata.hasOwnProperty('prediction_type') && !possiblePredictionType.includes(metadata['prediction_type'])) {
+        res.status(400);
+        return res.send({error: `invalid prediction_type: ${metadata['prediction_type']}`}) 
+    }
+
+    if (!req.hasOwnProperty('files')) {
         res.status(400);
         return res.send({error: "Missing parameter _files"});
     } if (req.files.length != 1) {
@@ -287,6 +296,7 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
         res.status(400);
         return res.send({error: `_files[0] has size 0`});
     } 
+
     var invalidKeys = Object.getOwnPropertyNames(metadata).filter(key => !(possibleMetadataKeys.includes(key)))
     if (invalidKeys.length > 0) {
         res.status(400);
@@ -298,9 +308,10 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     var dependent_col = metadata['dependent_col'];
     var categorical_features = metadata['categorical_features'] 
     var ordinal_features = metadata['ordinal_features']
+    var prediction_type = metadata['prediction_type'] || "classification"
 
     stageDatasetFile(req.files[0])
-    .then((file_id) => {return registerDataset(file_id, dependent_col, categorical_features, ordinal_features, metadata)})
+    .then((file_id) => {return registerDataset(file_id, prediction_type, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
         //console.log(`==added file, dataset_id: ${dataset_id}==`)
         res.send({
@@ -728,8 +739,6 @@ var submitJob = (projId, options, files, datasetId, username) => {
 
     //check for duplicate experiments
     return new Promise((resolve, reject) => {
-
-        //if ((!datasetId || datasetId == undefined || datasetId == "") && (dataset['files'] === undefined || dataset['files'].length == 0)){
         if (!datasetId || datasetId == undefined || datasetId == "") {
             reject({
                 error: "Experiment failed to run: datasetId not defined"
@@ -737,93 +746,116 @@ var submitJob = (projId, options, files, datasetId, username) => {
             return;
         }
 
-        // find machines that could potentally handle the project
-        db.machines.find({
-            //_project_id: db.toObjectID(projId)
-            }, {
-                address: 1
-            }).toArrayAsync() // Get machine hostnames
-            .then((machines) => {
-                //console.log("===machines: ", machines)
-                //console.log("===machines.projects: ", machines.projects)
+        db.datasets.findByIdAsync(datasetId, {
+            files: 1
+        })
+        .then((dataset) => {
+            if ((dataset['files'] === undefined) || (dataset['files'][0]['prediction_type'] === undefined)) {
+                reject({
+                    error: `Experiment failed to run: prediction_type not defined for dataset ${datasetId}`
+                });
+                return;
+            }
 
-                if (machines.length == 0) {
-                    reject({
-                        error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
-                    });
-                    return;
-                }
+            var predictionType = dataset['files'][0]['prediction_type']
+            console.log(`found dataset prediction type ${predictionType}`)
 
-                // Check machine capacities
-                var macsP = Array(machines.length);
-                for (var i = 0; i < machines.length; i++) {
-                    macsP[i] = rp({
-                        uri: machines[i].address + "/projects/" + projId + "/capacity",
-                        method: "GET",
-                        data: null
-                    });
-                }
+            // find machines that could potentally handle the project
+            db.machines.find({
+                //_project_id: db.toObjectID(projId)
+                }, {
+                    address: 1
+                }).toArrayAsync() // Get machine hostnames
+                .then((machines) => {
+                    //console.log("===machines: ", machines)
+                    //console.log("===machines.projects: ", machines.projects)
 
-                // Loop over reponses
-                Promise.any(macsP)
-                    // First machine with capacity, so use
-                    .then((availableMac) => {
-                        availableMac = JSON.parse(availableMac);
-
-                        // Create experiment
-                        db.experiments.insertAsync({
-                                _options: options,
-                                _dataset_id: db.toObjectID(datasetId),
-                                _project_id: db.toObjectID(projId),
-                                _machine_id: db.toObjectID(availableMac._id),
-                                username: username,
-                                files: [],
-                                _status: "running"
-                            }, {})
-                            .then((exp) => {
-                                options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
-
-                                if (datasetId == "") {
-                                    var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
-                                } else {
-                                    var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
-                                }
-                                // Wait for file upload to complete
-                                Promise.all(filesP)
-                                    .then(() => {
-                                        // Send project
-                                        rp({
-                                                uri: availableMac.address + "/projects/" + projId,
-                                                method: "POST",
-                                                json: options,
-                                                gzip: true
-                                            })
-                                            .then((body) => {
-                                                resolve(body);
-                                            })
-                                            .catch((err) => {
-                                                //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
-                                                console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
-                                                db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
-                                                reject({
-                                                    error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
-                                                });
-                                            });
-                                    })
-                                    .catch((err) => {
-                                        reject(err);
-                                    });
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    })
-                    // No machines responded, therefore fail
-                    .catch(() => {
+                    if (machines.length == 0) {
                         reject({
-                            error: "No machine capacity available"
+                            error: "Experiment failed to run: project '" + projId + "' not suppored by any machine."
                         });
+                        return;
+                    }
+
+                    // Check machine capacities
+                    var macsP = Array(machines.length);
+                    for (var i = 0; i < machines.length; i++) {
+                        macsP[i] = rp({
+                            uri: machines[i].address + "/projects/" + projId + "/capacity",
+                            method: "GET",
+                            data: null
+                        });
+                    }
+
+
+                    // Loop over reponses
+                    Promise.any(macsP)
+                        // First machine with capacity, so use
+                        .then((availableMac) => {
+                            availableMac = JSON.parse(availableMac);
+
+                            // Create experiment
+                            db.experiments.insertAsync({
+                                    _options: options,
+                                    _dataset_id: db.toObjectID(datasetId),
+                                    _project_id: db.toObjectID(projId),
+                                    _machine_id: db.toObjectID(availableMac._id),
+                                    _prediction_type: predictionType,
+                                    username: username,
+                                    files: [],
+                                    _status: "running"
+                                }, {})
+                                .then((exp) => {
+                                    options._id = exp.ops[0]._id.toString(); // Add experiment ID to sent options
+
+                                    if (datasetId == "") {
+                                        var filesP = processExperimentFiles(exp.ops[0], files); // Add files to project
+                                    } else {
+                                        var filesP = linkDataset(exp.ops[0], datasetId); // Add files to project
+                                    }
+                                    // Wait for file upload to complete
+                                    Promise.all(filesP)
+                                        .then(() => {
+                                            // Send project
+                                            rp({
+                                                    uri: availableMac.address + "/projects/" + projId,
+                                                    method: "POST",
+                                                    json: options,
+                                                    gzip: true
+                                                })
+                                                .then((body) => {
+                                                    resolve(body);
+                                                })
+                                                .catch((err) => {
+                                                    //console.log("=======\n=======\n=======\n=======\n=======\n=======\n======")
+                                                    console.log(`Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`)
+                                                    db.experiments.removeByIdAsync(exp.ops[0]._id); // Delete failed experiment
+                                                    reject({
+                                                        error: `Experiment failed to run: project '${projId}' experiment '${exp.ops[0]._id}' failed on machine ${availableMac.address}, error: ${err}`
+                                                    });
+                                                });
+                                        })
+                                        .catch((err) => {
+                                            reject(err);
+                                        });
+                                })
+                                .catch((err) => {
+                                    reject(err);
+                                });
+                        })
+                        // No machines responded, therefore fail
+                        .catch(() => {
+                            reject({
+                                error: "No machine capacity available"
+                            });
+                        });
+                })
+                // Could not retireve dataset
+                .catch(() => {
+                    reject({
+                        error: `Unable to find dataset with db id ${datasetId}`
                     });
+                });
             })
             .catch((err) => {
                 reject(err);
@@ -1303,7 +1335,7 @@ var validateDatasetMetafeatures = function(metafeatures) {
 * @return Promise that returns the datasetId
 *
 */
-var registerDataset = function(fileId, dependent_col, categorical_features, ordinal_features, metadata) {
+var registerDataset = function(fileId, prediction_type, dependent_col, categorical_features, ordinal_features, metadata) {
     console.log(`registerDataset: ${fileId}`)
 
     assert(fileId, `registerDataset failed, invalid fileId: ${fileId}`)
@@ -1312,8 +1344,8 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
 
     // generate dataset profile
     return validateDatasetMetadata(metadata)
-    .then((result) => {return validateDatafileByFileIdAsync(fileId, dependent_col, categorical_features, ordinal_features)})
-    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, dependent_col)})
+    .then((result) => {return validateDatafileByFileIdAsync(fileId, prediction_type, dependent_col, categorical_features, ordinal_features)})
+    .then((result) => {return generateFeaturesFromFileIdAsync(fileId, prediction_type, dependent_col)})
     .then((metafeatures) => {return validateDatasetMetafeatures(metafeatures)})
     
     // create a new datasets instance and with the dataset metafeatures
@@ -1349,6 +1381,7 @@ var registerDataset = function(fileId, dependent_col, categorical_features, ordi
                     _id: gridStore.fileId,
                     filename: gridStore.filename,
                     mimetype: gridStore.metadata.contentType,
+                    prediction_type: prediction_type,
                     dependent_col: dependent_col,
                     categorical_features: categorical_features,
                     ordinal_features: ordinal_features,

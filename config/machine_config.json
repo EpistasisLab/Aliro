@@ -1,3 +1,14 @@
 {
-    "algorithms": ["DecisionTreeClassifier","GradientBoostingClassifier","KNeighborsClassifier","SVC","LogisticRegression","RandomForestClassifier"]
+  "algorithms": ["DecisionTreeClassifier",
+                "GradientBoostingClassifier",
+                "KNeighborsClassifier",
+                "SVC",
+                "LogisticRegression",
+                "RandomForestClassifier",
+                "DecisionTreeRegressor",
+                "XGBRegressor",
+                "SVR",
+                "KNeighborsRegressor",
+                "KernelRidge",
+                "RandomForestRegressor"]
 }

@@ -1,0 +1,4 @@
+{
+	"target_column": "target",
+	"prediction_type": "regression"
+}

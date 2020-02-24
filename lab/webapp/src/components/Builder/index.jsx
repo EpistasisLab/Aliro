@@ -19,8 +19,8 @@ class Builder extends Component {
   }
 
   componentDidMount() {
-    const { defaultAlgorithms, setCurrentAlgorithm } = this.props;
-    setCurrentAlgorithm(defaultAlgorithms[0]);
+    const { defaultAlgorithms, availableAlgorithms, setCurrentAlgorithm } = this.props;
+    setCurrentAlgorithm(availableAlgorithms[0]);
     
     if(!this.props.dataset) {
       fetch(`/api/datasets/${this.props.location.query.dataset}`)
@@ -42,8 +42,8 @@ class Builder extends Component {
   }
 
   componentWillUnmount() {
-    const { defaultAlgorithms, setCurrentAlgorithm, clearError } = this.props;
-    setCurrentAlgorithm(defaultAlgorithms[0]);
+    const { defaultAlgorithms, availableAlgorithms, setCurrentAlgorithm, clearError } = this.props;
+    setCurrentAlgorithm(availableAlgorithms[0]);
     clearError();
   }
 
@@ -65,7 +65,8 @@ class Builder extends Component {
   render() {
     const dataset = this.props.dataset || this.state.dataset;
     const { 
-      defaultAlgorithms, 
+      defaultAlgorithms,
+      availableAlgorithms,
       currentAlgorithm, 
       currentParams,
       isSubmitting,
@@ -77,12 +78,12 @@ class Builder extends Component {
       <div className="builder-scene">
         <SceneHeader 
           header={
-            'Build New Experiment' + `${dataset ? `: ${formatDataset(dataset.name)}` : '' }`
+            'Build New Experiment' + `${dataset ? `: ${formatDataset(dataset.name)}` : '' + '${}' }`
           } 
         />
         <Grid stretched>
           <AlgorithmOptions
-            algorithms={defaultAlgorithms}
+            algorithms={availableAlgorithms}
             currentAlgorithm={currentAlgorithm}
             setCurrentAlgorithm={setCurrentAlgorithm}
           />
@@ -121,9 +122,13 @@ class Builder extends Component {
   }
 }
 
-const mapStateToProps = (state, props) => ({
+const mapStateToProps = (state, props) => (
+{
   dataset: state.datasets.byId[props.location.query.dataset],
   defaultAlgorithms: state.preferences.data.algorithms,
+  availableAlgorithms: state.preferences.data.algorithms.filter(function(algo) {
+      return algo.category==state.datasets.byId[props.location.query.dataset].files[0].prediction_type
+   }),
   currentAlgorithm: state.builder.currentAlgorithm,
   currentParams: state.builder.currentParams,
   isSubmitting: state.builder.isSubmitting,

@@ -11,18 +11,25 @@ const DatasetCard = ({ dataset, toggleAI }) => {
 	const datasetLink = `/#/datasets/${dataset._id}`;
   const builderLink = `/#/builder?dataset=${dataset._id}`;
 
+	var icon_type = "question circle";
+	if (dataset.metafeatures._prediction_type == "classification") {
+			icon_type = "list";
+	} else if (dataset.metafeatures._prediction_type == "regression") {
+			icon_type = "line graph";
+	}
   return (
     <Grid.Column className="dataset-card">
       <Segment inverted attached="top" className="panel-header">
         <Popup
           position="right center"
           header={formatDataset(dataset.name)}
-          content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}`}
+          content={`Rows: ${dataset.metafeatures.n_rows}, Cols: ${dataset.metafeatures.n_columns}, Classes: ${dataset.metafeatures.n_classes}  Prediction type: ${dataset.files[0].prediction_type}`}
           trigger={
             <Header
               as="a"
               inverted
               size="large"
+							icon={icon_type}
               content={formatDataset(dataset.name)}
               href={datasetLink}
               className="title"

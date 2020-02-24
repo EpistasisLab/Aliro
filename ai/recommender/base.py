@@ -68,8 +68,9 @@ class BaseRecommender:
         """
         if results_data.isna().values.any():
             logger.warning('There are NaNs in results_data.')
-            logger.warning(str(results_data))
-            logger.errort('Dropping NaN results.')
+            #logger.warning(str(results_data))
+            logger.warning(results_data.head())
+            logger.error('Dropping NaN results.')
             results_data.dropna(inplace=True) 
 
         # update parameter hash table
