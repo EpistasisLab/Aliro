@@ -18,28 +18,23 @@ afterAll(() => {
 });
 */
 
-describe('run experiment', () => {
-	it('run decisionTree experiment on banana', async () => {	
-		console.log('run decisionTree experiment on banana')
+describe('run regression experiment', () => {
+	it('run DecisionTreeRegressor experiment on 192_vineyard', async () => {
+		console.log('run DecisionTreeRegressor experiment on 192_vineyard')
 
-		jest.setTimeout(util.JEST_TIMEOUT)
-	/*
-		let algoName = 'DecisionTreeClassifier'
+		jest.setTimeout(util.JEST_TIMEOUT*2)
+
+		let algoName = 'DecisionTreeRegressor'
 		let algoParms = {
-			"criterion": "gini",
-			"max_depth": 1,
+			"criterion": "mse",
+			"max_depth": 3,
 			"min_samples_split": 2,
 			"min_samples_leaf": 1,
-		};
-	*/
-		let algoName = 'LogisticRegression'
-		let algoParms = {
-			"penalty": "l1",
-			"C": 1.0,
-			"dual": false,
+			"min_weight_fraction_leaf": 0.0,
+			"max_features": "sqrt"
 		};
 
-		let datasetName = 'banana'
+		let datasetName = "192_vineyard.csv";
 
 		//-------------------
 	 	// get dataset
@@ -107,97 +102,17 @@ describe('run experiment', () => {
 	});
 
 
-	it('run decisionTree experiment with invalid parms on banana', async () => {	
-		console.log('run decisionTree experiment with invalid parms on banana')
-
-		jest.setTimeout(util.JEST_TIMEOUT)
-
-		let algoName = 'LogisticRegression'
-		let algoParms = {
-			"penalty": "l1",
-			"C": 1.0,
-			"dual": true,
-		};
-
-		let datasetName = 'banana'
-		let expectedError = 'ValueError: Unsupported set of arguments: The combination of penalty=\'l1\' and loss=\'logistic_regression\' are not supported when dual=True, Parameters: penalty=\'l1\', loss=\'logistic_regression\', dual=True'
-
-
-		//-------------------
-	 	// get dataset
-	 	var datasets = await labApi.fetchDatasets();
-	 	expect(datasets.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_DATASET_COUNT);
-	 	var datasetId = datasets.find(function(element) {return element.name == datasetName;})._id;
-	 	expect(datasetId).toBeTruthy();
-
-	 	// get algorithm
-	 	var algorithms = await labApi.fetchAlgorithms();
-	 	expect(algorithms.length).toBeGreaterThanOrEqual(util.MIN_EXPECTED_LAB_ALGO_COUNT);
-	 	var algoId = algorithms.find(function(element) {return element.name == algoName;})._id;
-	 	expect(algoId).toBeTruthy();
-
-	 	algoParms.dataset = datasetId
-
-	 	// fetch previously run experiments
-		var prevExperiments = await labApi.fetchExperiments()
-
-		// submit simple experiment
-		try {
-			var submitResult = await labApi.submitExperiment(algoId, algoParms)
-		} catch (e) {
-			console.log("submitExperiment exception")
-			var json = await e.response.json() // get the specific error description
-			expect(json).toBeFalsy()
-			expect(e).toBeFalsy() // break even if no message body returned
-		}
-
-		expect(submitResult).toBeTruthy()
-		//console.log("SubmitResult: ", submitResult)
-
-		// expect that the experiment started running
-		var experimentResults = await labApi.fetchExperiment(submitResult._id)
-		//console.log("experimentResults: ", experimentResults)
-		expect(experimentResults._status).toBeTruthy()
-		expect(experimentResults._status).toEqual('running')
-
-
-		// wait for the experiment to finish running, probably a better way to do this then delay...
-		var count = 0
-		console.log("starting timeout...")
-		while (experimentResults._status === ('running') && count < 4) {
-			util.delay(10000)
-			count = count + 1
-			experimentResults = await labApi.fetchExperiment(submitResult._id)
-			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
-		}
-		console.log("finished timeout...")
-
-		// try to ping machine
-		var machineData = await machineApi.fetchProjects()
-		expect(Object.keys(machineData).length).toBeGreaterThan(1)
-		console.log("successfully pinged machine")
-
-		// check that the expected results are there
-		console.log("experimentResults: ", experimentResults)
-		expect(experimentResults._status).toBeTruthy()
-		expect(experimentResults._status).toEqual('fail')
-		expect(experimentResults).toHaveProperty('errorMessage')
-		expect(experimentResults.errorMessage).toEqual(expectedError)
-
-		var capRes = await machineApi.fetchCapacity(algoId)
-		expect(capRes.capacity).toEqual(1)
-	});
-
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		jest.setTimeout(util.JEST_TIMEOUT)
+		util.delay(15000)
+		jest.setTimeout(util.JEST_TIMEOUT+10000)
 
-		let algoName = 'SVC'
+		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"tol":1e-05
+			"n_estimators":12000
 		};
 
-		let datasetName = 'magic'
+		let datasetName = "192_vineyard.csv";
 
 		//-------------------
 	 	// get dataset
@@ -257,8 +172,8 @@ describe('run experiment', () => {
 		var experimentResults = await labApi.fetchExperiment(submitResult._id)
 		expect(experimentResults._status).toEqual('cancelled')
 
-		// hacky... 
-		util.delay(20000)
+		// hacky...
+		util.delay(30000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});

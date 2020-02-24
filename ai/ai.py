@@ -17,10 +17,10 @@ from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 # from ai.recommender.svd_recommender import SVDRecommender
-from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-from collections import OrderedDict
+
 from ai.request_manager import RequestManager
 
 logger = logging.getLogger(__name__)
@@ -46,18 +46,19 @@ class AI():
 
     :param rec_class: ai.BaseRecommender - recommender to use
     :param api_path: string - path to the lab api server
-    :param extra_payload: dict - any additional payload that needs to be specified
+    :param extra_payload: dict - any additional payload that needs to be 
+    specified
     :param user: string - test user
     :param rec_score_file: file - pickled score file to keep persistent scores
     between sessions
     :param verbose: Boolean
-    :param warm_start: Boolean - if true, attempt to load the ai state from the file
-    provided by rec_score_file
+    :param warm_start: Boolean - if true, attempt to load the ai state from the 
+    file provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
-    :param datasets: str or False - if not false, a comma seperated list of datasets
-    to turn the ai on for at startup
+    :param datasets: str or False - if not false, a comma seperated list of 
+    datasets to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-    
+
     """
 
     def __init__(self,
@@ -76,22 +77,30 @@ class AI():
         """Initializes AI managing agent."""
 
         # default supervised learning recommender settings
-        self.DEFAULT_REC_CLASS = RandomRecommender
-        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
+        self.DEFAULT_REC_CLASS = {'classification':RandomRecommender,
+                                  'regression':RandomRecommender
+                                  }
+        self.DEFAULT_REC_ARGS = {
+                'classification': {'metric':'accuracy'},
+                'regression': {
+                    'metric':'r2_cv_mean'
+                    }
+                }
 
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
         # (classification, regression, unsupervised, etc.)
         self.rec_engines = {
-            "classification":None
+            "classification":None,
+            "regression":None
         }
 
         # Request manager settings
         self.n_recs=n_recs if n_recs>0 else 1
         self.continuous= n_recs<1
 
-        # api parameters, will be removed from self once the recommenders no longer
-        # call the api directly.
+        # api parameters, will be removed from self once the recommenders no 
+        # longer call the api directly.
         # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
         if api_path == None:
             api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
@@ -115,8 +124,6 @@ class AI():
             api_key=self.api_key,
             extra_payload=extra_payload,
             verbose=self.verbose)
-
-        self.load_options() #loads algorithm parameters to self.ui_options
 
         self.initilize_recommenders(rec_class) # set self.rec_engines
 
@@ -158,75 +165,86 @@ class AI():
         assert not (warm_start), "The `warm_start` option is not yet supported"
 
         # for comma-separated list of datasets in datasets, turn AI request on
-        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
+        assert (not (datasets), 
+                "The `datasets` option is not yet supported: " + str(datasets))
 
 
     ##-----------------
     ## Init methods
-    ##-----------------  
+    ##-----------------
     def initilize_recommenders(self, rec_class):
         """
-        Initilize classification recommender
+        Initilize classification and regression recommenders
         """
 
-        # Create supervised learning recommenders
-        if (rec_class):
-            self.rec_engines["classification"] = rec_class(**self.DEFAULT_REC_ARGS)
-        else:
-            self.rec_engines["classification"]  = self.DEFAULT_REC_CLASS(**self.DEFAULT_REC_ARGS)
+        for prediction_type in self.rec_engines.keys():
+            logger.info('initiliazing rec engine for problem type "'
+                    +prediction_type+'"')
 
-        # set the registered ml parameters in the recommenders
-        ml_p = self.labApi.get_all_ml_p()
-        assert ml_p is not None
-        assert len(ml_p) > 0
-        self.rec_engines["classification"].ml_p = ml_p
-        # if hasattr(self.rec_engines["classification"],'mlp_combos'):
-        #     self.rec_engines["classification"].mlp_combos = self.rec_engines["classification"].ml_p['algorithm']+'|'+self.rec_engines["classification"].ml_p['parameters']
-        # ml_p.to_csv('ml_p_options.csv')
+            # get the ml parameters for the given recommender type
+            logger.debug("getting ml_p")
+            ml_p = self.labApi.get_all_ml_p(prediction_type)
+            assert ml_p is not None
+            assert len(ml_p) > 0
+
+            # Create supervised learning recommenders
+            logger.debug("initilizing engine")
+            recArgs = self.DEFAULT_REC_ARGS[prediction_type]
+            recArgs['ml_p'] = ml_p
+
+            if (rec_class):
+                self.rec_engines[prediction_type] = rec_class(**recArgs)
+            else:
+                self.rec_engines[prediction_type]  = \
+                        self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
 
 
         logger.debug("recomendation engines initilized: ")
         for prob_type, rec in self.rec_engines.items():
             logger.debug(f'\tproblemType: {prob_type} - {rec}')
-            logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
-        
+            #logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
 
 
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
         kb = knowledgebase_loader.load_default_knowledgebases()
+        
+        all_df_mf = kb['metafeaturesData'].set_index('_id')
 
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
-        kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
-                                          lambda x: self.ml_name_to_id[x])
+        
+        for pred_type in ['classification','regression']:
+            kb['resultsData'][pred_type]['algorithm'] = \
+                    kb['resultsData'][pred_type]['algorithm'].apply(
+                      lambda x: self.ml_name_to_id[x] 
+                      if x in self.ml_name_to_id.keys() 
+                      else 'REMOVE! ' + x)
+            # filter any kb results that we don't have an algorithm for
+            for algs in kb['resultsData'][pred_type]['algorithm'].unique():
+                if 'REMOVE!' in algs:
+                    logger.warn('Removing knowledgebase results for algorithm '
+                            +algs[7:]
+                            +' because that algorithm is not available')
+            kb['resultsData'][pred_type] = kb['resultsData'][pred_type].loc[
+                    ~(kb['resultsData'][pred_type]['algorithm'].str.contains(
+                        'REMOVE!'))
+                    ]
 
-        all_df_mf = kb['metafeaturesData'].set_index('_id')
+            # use _id to index the metafeatures, and
+            # keep only metafeatures with results
+            self.dataset_mf_cache.append(
+                all_df_mf.loc[kb['resultsData'][pred_type]['_id'].unique()]
+                    )
 
-        # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
-        # use _id to index the metafeatures, and
-        # keep only metafeatures with results
-        self.dataset_mf_cache = all_df_mf.loc[kb['resultsData']['_id'].unique()]
+            logger.info(f"updating AI with {pred_type} knowledgebase ("
+                f"{len(kb['resultsData'][pred_type])} results)")
+            # self.update_dataset_mf(kb['resultsData'])
+            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+                    self.dataset_mf_cache, source='knowledgebase')
 
-        # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
-
-        logger.info('pmlb knowledgebase loaded')
-
-    def load_options(self):
-        """Loads algorithm UI parameters and sets them to self.ui_options."""
-
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-              ': loading options...')
-
-        responses = self.labApi.get_projects()
-
-        if len(responses) > 0:
-            self.ui_options = responses
-        else:
-            logger.warning("no algorithms found by load_options()")
-
+            logger.info('pmlb '+pred_type+' knowledgebase loaded')
 
     ##-----------------
     ## Utility methods
@@ -238,20 +256,21 @@ class AI():
 
         Retireves metafeatures from self.dataset_mf_cache if they exist,
         otherwise queries the api and updates the cache.
-        
+
         :param results_data: experiment results with associated datasets
-        
+
         """
-        logger.debug('results_data:'+str(results_data.columns))
-        logger.debug('results_data:'+str(results_data.head()))
+        #logger.debug('results_data:'+str(results_data.columns))
+        #logger.debug('results_data:'+str(results_data.head()))
 
         dataset_metafeatures = []
         
-        dataset_indicies = results_data['dataset_id'].unique()
+        dataset_indices = results_data['dataset_id'].unique()
 
         # add dataset metafeatures to the cache
-        for d in dataset_indicies:
-            if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache_id_hash_lookup.keys():
+        for d in dataset_indices:
+            if (len(self.dataset_mf_cache)==0 
+                or d not in self.dataset_mf_cache_id_hash_lookup.keys()):
                 df = self.labApi.get_metafeatures(d)        
                 df['dataset'] = d
                 dataset_metafeatures.append(df)
@@ -263,11 +282,11 @@ class AI():
 
         logger.debug(f'mf count:\n {len(self.dataset_mf_cache.index.values)}')
         #logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        logger.debug(f'indicies: \n\n {dataset_indicies}')
+        logger.info(f'indices: \n\n {dataset_indices}')
 
-        new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
-        assert len(new_mf) == len(dataset_indicies)
-        logger.debug(f"new_mf: {new_mf}")
+        new_mf = self.dataset_mf_cache.loc[dataset_indices, :]
+        assert len(new_mf) == len(dataset_indices)
+        #logger.debug(f"new_mf: {new_mf}")
 
         return new_mf
 
@@ -275,7 +294,7 @@ class AI():
     ## Loop methods
     ##-----------------
     def check_results(self):
-        """Checks to see if new experiment results have been posted since the 
+        """Checks to see if new experiment results have been posted since the
         previous time step. If so, set them to self.new_data and return True.
 
         :returns: Boolean - True if new results were found
@@ -288,7 +307,7 @@ class AI():
 
         if len(newResults) > 0:
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': ' + str(len(newResults)) + ' new results!')           
+                  ': ' + str(len(newResults)) + ' new results!')
             self.last_update = int(time.time())*1000 # update timestamp
             self.new_data = newResults
             return True
@@ -296,19 +315,25 @@ class AI():
         return False
 
     def update_recommender(self):
-        """Update recommender models based on new experiment results in 
-        self.new_data, and then clear self.new_data. 
+        """Update recommender models based on new experiment results in
+        self.new_data, and then clear self.new_data.
         """
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            new_mf = self.get_results_metafeatures(self.new_data)
+            for predictionType in self.new_data.prediction_type.unique():
+                filterRes = self.new_data[
+                        self.new_data['prediction_type']==predictionType]
+                filterMf = self.get_results_metafeatures(filterRes)
 
-            self.new_data['_id'] = self.new_data['dataset_id'].apply(
+                filterRes['_id'] = filterRes['dataset_id'].apply(
                     lambda x: self.dataset_mf_cache_id_hash_lookup[x])
 
-            self.rec_engines["classification"].update(self.new_data, new_mf)
 
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                    ': recommender updated')
+                self.rec_engines[predictionType].update(filterRes, filterMf)
+                logger.info(
+                        time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                    f': {predictionType} recommender updated with '
+                    '{len(filterRes.index)} result(s)')
+
             # reset new data
             self.new_data = pd.DataFrame()
 
@@ -324,7 +349,7 @@ class AI():
 
 
         # get all dtasets that have an ai 'requested' status
-        # and initilize a new request        
+        # and initilize a new request
         dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
@@ -335,7 +360,7 @@ class AI():
 
             # set AI flag to 'on' to acknowledge requests received
             for r in aiOnRequests:
-                self.labApi.set_ai_status(datasetId = r['_id'], 
+                self.labApi.set_ai_status(datasetId = r['_id'],
                                             aiStatus = 'on')
 
                 self.requestManager.add_request(
@@ -351,7 +376,7 @@ class AI():
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                       ': ai termination request for:'+
                       ';'.join([r['name'] for r in aiOffRequests]))
-            
+
             for r in aiOffRequests:
                 self.requestManager.terminate_request(datasetId=r['_id'])
 
@@ -363,7 +388,7 @@ class AI():
     ##-----------------
     ## Syncronous actions an AI request can take
     ##-----------------
-    def generate_recommendations(self, datasetId, numOfRecs, predictionType = "classification"):
+    def generate_recommendations(self, datasetId, numOfRecs):
         """Generate ml recommendation payloads for the given dataset.
 
         :param datasetId
@@ -371,11 +396,15 @@ class AI():
 
         :returns list of maps that represent request payload objects
         """
-        logger.info("generate_recommendations({},{})".format(datasetId, numOfRecs))
+        logger.info(f'generate_recommendations({datasetId},{numOfRecs}')
 
         recommendations = []
 
         metafeatures = self.labApi.get_metafeatures(datasetId)
+        assert '_prediction_type' in metafeatures.columns
+        predictionType = metafeatures['_prediction_type'].values[0]
+
+        logger.info("prediction_type: " + predictionType)
 
 
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
@@ -386,7 +415,7 @@ class AI():
         for alg,params,score in zip(ml,p,ai_scores):
             # TODO: just return dictionaries of parameters from rec
             # modified_params = eval(params) # turn params into a dictionary
-            
+
             recommendations.append({'dataset_id':datasetId,
                     'algorithm_id':alg,
                     'username':self.user,
@@ -403,7 +432,8 @@ class AI():
 
         :param rec_payload: dictionary - the payload describing the experiment
 
-        :return bool - true if successfully sent, false if no machine capacity available
+        :return bool - true if successfully sent, false if no machine capacity 
+        available
         """
         logger.info(f"transfer_rec({rec_payload})")
 
@@ -423,7 +453,8 @@ class AI():
                 logger.debug(f"Waiting for capacity: {submitstatus['error']}")
                 return False
             else:
-                msg = 'Unrecoverable error during transfer_rec : ' + str(submitstatus)
+                msg = ('Unrecoverable error during transfer_rec : ' 
+                        + str(submitstatus))
                 logger.error(msg)
                 raise RuntimeError(msg)
 
@@ -444,7 +475,6 @@ class AI():
         if(hasattr(self.rec_engines["classification"], 'scores')):
             #TODO: make this a more generic. Maybe just save the
             # AI or rec object itself.
-            # state['trained_dataset_models'] = self.rec_engines["classification"].trained_dataset_models
             state['scores'] = self.rec_engines["classification"].scores
             state['last_update'] = self.last_update
         pickle.dump(state, out)
@@ -460,7 +490,6 @@ class AI():
             state = pickle.load(filehandler)
             if(hasattr(self.rec_engines["classification"], 'scores')):
               self.rec_engines["classification"].scores = state['scores']
-              # self.rec_engines["classification"].trained_dataset_models = state['trained_dataset_models']
               self.last_update = state['last_update']
               logger.info('loaded previous state from '+self.last_update)
 
@@ -477,18 +506,18 @@ def main():
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
-                       'knnml','knndata','slopeone'],
+            choices = ['random','average','knnmeta','svd','cocluster',
+                'knnmeans', 'knnml','knndata','slopeone'],
             help='Recommender algorithm options.')
     parser.add_argument('-api_path',action='store',dest='API_PATH',
-            default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
-                        help='Path to the database.')
+            default=('http://' + os.environ['LAB_HOST'] +':'
+                + os.environ['LAB_PORT']), help='Path to the database.')
     parser.add_argument('-u',action='store',dest='USER',default='testuser',
             help='user name')
     parser.add_argument('-t',action='store',dest='DATASETS',
             help='turn on ai for these datasets')
-    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,
-            help=('Number of recommendations to make at a time. '
+    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,
+            default=1, help=('Number of recommendations to make at a time. '
                 'If zero, will send continuous recommendations.'))
     parser.add_argument('-max_time',action='store',dest='MAX_TIME',type=int,
             default=60, help=('Amount of time to allow recs in seconds. '
@@ -498,12 +527,12 @@ def main():
             help=('Termination condition for the AI.'))
     parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',
             default=True, help='Print out more messages.')
-    parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
-            help='Start from last saved session.')
+    parser.add_argument('-warm',action='store_true',dest='WARM_START',
+            default=False, help='Start from last saved session.')
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True, 
+            dest='USE_KNOWLEDGEBASE', default=True,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
@@ -532,8 +561,9 @@ def main():
 
     pennai = AI(rec_class=name_to_rec[args.REC],
             api_path=args.API_PATH, user=args.USER,
-            verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
-            datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE,
+            verbose=args.VERBOSE, n_recs=args.N_RECS, 
+            warm_start=args.WARM_START, datasets=args.DATASETS, 
+            use_knowledgebase=args.USE_KNOWLEDGEBASE,
             term_condition=args.TERM_COND, max_time=args.MAX_TIME)
 
     n = 0;
@@ -546,7 +576,7 @@ def main():
             # check for user updates to request states
             pennai.check_requests()
 
-            # process any active requests 
+            # process any active requests
             pennai.process_rec()
 
             n = n + 1

@@ -15,6 +15,7 @@ NOSE_TESTS="${NOSE_TESTS} ai/metalearning/tests/test_get_metafeatures.py"
 NOSE_TESTS="${NOSE_TESTS} machine/test/learn_tests.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_loadInitialDatasets.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_validateDataset.py"
+#NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_loader_profile.py"
 
 MOCHA_TESTS="machine/test/test.js"
 

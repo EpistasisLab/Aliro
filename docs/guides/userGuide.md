@@ -45,12 +45,18 @@ To upload new datasets from the website, click the "Add new Datasets" button on 
 #### Adding Initial Datasets to the Data Directory ####
 Labeled datasets can also be loaded when PennAI starts by adding them to the `data/datasets/user` directory.  PennAI must be restarted if new datasets are added while it is running.  If errors are encountered when validating a dataset, they will appear in a log file in `target/logs/loadInitialDatasets.log` and that dataset will not be uploaded.  Data can be placed in subfolders in this directory.
 
-By default, the column with the label should be named 'class'.  If the labeled column has a different name or if the dataset has categorical or orinal features, this can be specified in a json configuration file.  The coresponding configuration file must be in the same directory as the dataset.  If the file is named `myDatafile.*sv`, the configuration file must be named `myDatafile_metadata.json`
+
+  
+An optional json configuration file can be provided with each dataset to specify the column that contains the label, the prediction type (classification or regression), and any categorical or ordinal features.  By default, the label column is assumed to be 'class', the prediction type for the dataset is assumed to be classification, and all fields are numeric.
+
+
+The coresponding configuration file must be in the same directory as the dataset.  If the file is named `myDatafile.*sv`, the configuration file must be named `myDatafile_metadata.json`
 * Example configuration file:
 
 ```
 {
 	"target_column":"my_custom_target_column_name",
+  "prediction_type":"classification",
 	"categorical_features" : ["cat1", "cat2"],
 	"ordinal_features" : {"ord" : ["first", "second", "third"]}
 }

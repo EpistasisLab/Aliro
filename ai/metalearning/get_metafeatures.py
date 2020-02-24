@@ -29,20 +29,20 @@ logger.setLevel(logging.INFO)
 
 
 
-def generate_metafeatures_from_filepath(input_file, target_field, **kwargs):
+def generate_metafeatures_from_filepath(input_file, prediction_type, 
+        target_field, **kwargs):
     """Calls metafeature generating methods from dataset_describe"""
-    
     # Read the data set into memory
-    df = pd.read_csv(input_file, sep=None, engine='python',**kwargs)
-    dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
+    df = pd.read_csv(input_file, sep=None, engine='python', **kwargs)
+    dataset = Dataset(df, dependent_col = target_field, prediction_type=prediction_type)
 
     return generate_metafeatures(dataset)
 
-def generate_metafeatures_from_server(file_id, target_field, **kwargs):
+def generate_metafeatures_from_server(file_id, prediction_type, target_field, **kwargs):
     # Read the data set into memory
     raw_data = get_file_from_server(file_id)
     df = pd.read_csv(StringIO(raw_data), sep=None, engine='python',**kwargs)
-    dataset = Dataset(df, dependent_col = target_field, prediction_type='classification')
+    dataset = Dataset(df, dependent_col = target_field, prediction_type=prediction_type)
 
     return generate_metafeatures(dataset)
 
@@ -89,8 +89,11 @@ def main():
     parser.add_argument('INPUT_FILE', type=str, help='Filepath or fileId.')
     parser.add_argument('-target', action='store', dest='TARGET', type=str, default='class',
                         help='Name of target column', required=True)
-    parser.add_argument('-identifier_type', action='store', dest='IDENTIFIER_TYPE', type=str, choices=['filepath', 'fileid'], default='filepath',
+    parser.add_argument('-identifier_type', action='store', dest='IDENTIFIER_TYPE', type=str.lower, choices=['filepath', 'fileid'], default='filepath',
                         help='Name of target column')
+    parser.add_argument('-prediction_type', action='store', dest='PREDICTION_TYPE', type=str.lower, choices=['classification', 'regression'], default="classification",
+                        help="Classification or regression problem")
+    
     args = parser.parse_args()
 
     # set up the file logger
@@ -110,9 +113,9 @@ def main():
 
     try:
         if(args.IDENTIFIER_TYPE == 'filepath'):
-            meta_features = generate_metafeatures_from_filepath(args.INPUT_FILE, args.TARGET)
+            meta_features = generate_metafeatures_from_filepath(args.INPUT_FILE, args.PREDICTION_TYPE, args.TARGET)
         else:
-            meta_features = generate_metafeatures_from_server(args.INPUT_FILE, args.TARGET)
+            meta_features = generate_metafeatures_from_server(args.INPUT_FILE, args.PREDICTION_TYPE, args.TARGET)
 
         meta_json = simplejson.dumps(meta_features, ignore_nan=True) #, ensure_ascii=False)  
     except Exception as e:

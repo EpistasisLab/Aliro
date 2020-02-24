@@ -42,6 +42,11 @@ def load_good_test_data():
 			"data/datasets/test/test_flat", 
 			"appendicitis.csv",
 			"target_class"),
+		("reg_vineyard", 
+			"data/datasets/test/test_regression", 
+			"192_vineyard.csv",
+			"target"),
+
 	   ]
 
 def load_metadata():
@@ -51,6 +56,7 @@ def load_metadata():
 			"test.csv",
 			True,
 			"my_target_column",
+			"classification",
 			[],
 			{}),
 		("good2", 
@@ -58,6 +64,7 @@ def load_metadata():
 			"test.tsv",
 			True,
 			"my_target_column",
+			"classification",
 			[],
 			{}),
 		("dne", 
@@ -65,15 +72,33 @@ def load_metadata():
 			"i_dont_exist.csv",
 			False,
 			"class",
+			"classification",
+			[],
+			{}),
+		("good_regression", 
+			"data/datasets/test/metadata", 
+			"test_regression.csv",
+			True,
+			"my_target_column",
+			"regression",
 			[],
 			{}),
 	   ]
 
 class TestResultUtils(unittest.TestCase):
 	@parameterized.expand(load_metadata)
-	def test_get_metadata_for_datafile(self, name, root, file, expected_fileExists, expected_target_column, expected_categorical_features, expected_ordinal_features):
-		fileExists, target_column, categorical_features, ordinal_features = loadInitialDatasets.getMetadataForDatafile(root, file)
-		assert(fileExists == expected_fileExists)
-		assert(target_column == expected_target_column)
-		assert(categorical_features == expected_categorical_features)
-		assert(ordinal_features == expected_ordinal_features)
+	def test_get_metadata_for_datafile(self, 
+			name, 
+			root,
+			file,
+			expected_fileExists,
+			expected_target_column,
+			expected_prediction_type,
+			expected_categorical_features, 
+			expected_ordinal_features):
+		fileExists, target_column, prediction_type, categorical_features, ordinal_features = loadInitialDatasets.getMetadataForDatafile(root, file)
+		self.assertEqual(fileExists, expected_fileExists)
+		self.assertEqual(target_column, expected_target_column)
+		self.assertEqual(prediction_type, expected_prediction_type)
+		self.assertEqual(categorical_features, expected_categorical_features)
+		self.assertEqual(ordinal_features, expected_ordinal_features)

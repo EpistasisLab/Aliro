@@ -1,7 +1,7 @@
 #%RAML 1.0
 ---
-title: FGLab API
-baseUri: http://fglab.com/api/{version}
+title: PennAI API
+baseUri: http://localhost:5080/api/{version}
 version: v1
 mediaType: application/json
 /projects:
@@ -186,19 +186,19 @@ mediaType: application/json
           200:
             body:
               binary/octet-stream:
-              example: |
-                {
-                  "_id": "5b634f2a36e5380032a7c55b",
-                  "filename": "model_5b634f2236e5380032a7c55a.pkl",
-                  "mimetype": "application/octet-stream",
-                  "timestamp": 1533234986515
-                }
+                example: |
+                  {
+                    "_id": "5b634f2a36e5380032a7c55b",
+                    "filename": "model_5b634f2236e5380032a7c55a.pkl",
+                    "mimetype": "application/octet-stream",
+                    "timestamp": 1533234986515
+                  }
           400:
             body:
               example: |
-              {
-                "error": "'model_' file for experiment 5b634c99093afb003174b306 does not exist"
-              }
+                {
+                  "error": "'model_' file for experiment 5b634c99093afb003174b306 does not exist"
+                }
     /script:
       get:
         description: Retrieve the python script used to run the model produced by a specific experiment by ID
@@ -206,19 +206,19 @@ mediaType: application/json
           200:
             body:
               binary/octet-stream:
-              example: |
-                {
-                  "_id": "5b634f2a36e5380032a7c55b",
-                  "filename": "script_5b634f2236e5380032a7c55a.python",
-                  "mimetype": "application/octet-stream",
-                  "timestamp": 1533234986515
-                }
+                example: |
+                  {
+                    "_id": "5b634f2a36e5380032a7c55b",
+                    "filename": "script_5b634f2236e5380032a7c55a.python",
+                    "mimetype": "application/octet-stream",
+                    "timestamp": 1533234986515
+                  }
           400:
             body:
               example: |
-              {
-                "error": "'script_' file for experiment 5b634c99093afb003174b306 does not exist"
-              }
+                {
+                  "error": "'script_' file for experiment 5b634c99093afb003174b306 does not exist"
+                }
 /environment:
   get:
     description: Retrieve environment variables
@@ -237,7 +237,7 @@ mediaType: application/json
               "STARTUP_DATASET_PATH": "/appsrc/data/datasets/user",
               "EXP_TIMEOUT": "5",
               "DT_MAX_DEPTH": "6"
-          }
+            }
 /machines:
   get:
     description: Retrieve all machines
@@ -332,7 +332,7 @@ mediaType: application/json
         description: Registers machine projects
         body:
           application/json:
-            example:
+            example:  |
               {
               [ { name: 'BernoulliNB',
                       command: 'python',
@@ -372,7 +372,8 @@ mediaType: application/json
       200:
         body:
           description: List of details for all datasets.  See /datasets/{datasetId} for details.
-          example: {
+          example: |
+            {
             [
                 {
                     "_id": "5bf4841c9fc83c002cdbf5e6",
@@ -383,6 +384,7 @@ mediaType: application/json
                             "_id": "5bf4841c9fc83c002cdbf5e8",
                             "filename": "appendicitis.csv",
                             "mimetype": "text/csv",
+                            "prediction_type": "classification",
                             "dependent_col": "class",
                             "timestamp": 1542751267786
                         }
@@ -443,6 +445,7 @@ mediaType: application/json
                             "_id": "5bf484209fc83c002cdbf5e9",
                             "filename": "breast-cancer.csv",
                             "mimetype": "text/csv",
+                            "prediction_type": "classification",
                             "dependent_col": "class",
                             "timestamp": 1542751267784
                         }
@@ -512,71 +515,72 @@ mediaType: application/json
               ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
             }
             metafeatures - the dataset profile for this dataset
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
           body:
-            example:
+            example: |
               {
-    "_id": "5bf4841c9fc83c002cdbf5e6",
-    "name": "appendicitis",
-    "username": "testuser",
-    "files": [
-        {
-            "_id": "5bf4841c9fc83c002cdbf5e8",
-            "filename": "appendicitis_categorical.csv",
-            "mimetype": "text/csv",
-            "dependent_col": "class",
-            "categorical_features" : ["cat_feat_1", "cat_feat_2"],
-            "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]},
-            "timestamp": 1542751267786
-        }
-    ],
-    "metafeatures": {
-        "class_prob_max": 0.8018867924528302,
-        "class_prob_mean": 0.5,
-        "class_prob_median": 0.5,
-        "class_prob_min": 0.19811320754716982,
-        "class_prob_std": 0.4269323961881042,
-        "corr_with_dependent_abs_25p": null,
-        "corr_with_dependent_abs_75p": null,
-        "corr_with_dependent_abs_kurtosis": null,
-        "corr_with_dependent_abs_max": null,
-        "corr_with_dependent_abs_mean": null,
-        "corr_with_dependent_abs_median": null,
-        "corr_with_dependent_abs_min": null,
-        "corr_with_dependent_abs_skew": null,
-        "corr_with_dependent_abs_std": null,
-        "diversity_fraction": 0.822528983974963,
-        "entropy_dependent": 0.49777562247179563,
-        "kurtosis_kurtosis": 4.452150103293069,
-        "kurtosis_max": 5.319422971587894,
-        "kurtosis_mean": 1.337358676553602,
-        "kurtosis_median": 0.8241556149720961,
-        "kurtosis_min": -0.064662454053662,
-        "kurtosis_skew": 2.049814018854758,
-        "kurtosis_std": 1.7321483030218767,
-        "n_categorical": 0,
-        "n_classes": 2,
-        "n_columns": 8,
-        "n_numerical": 7,
-        "n_rows": 106,
-        "pca_fraction_95": 0.42857142857142855,
-        "ratio_rowcol": 13.25,
-        "skew_kurtosis": -0.8072038717745542,
-        "skew_max": 2.0405760464786686,
-        "skew_mean": 0.23121482439885738,
-        "skew_median": 0.20576966206912586,
-        "skew_min": -1.2122210852887918,
-        "skew_skew": 0.24606691449283033,
-        "skew_std": 1.1148468812633117,
-        "symbols_kurtosis": null,
-        "symbols_max": null,
-        "symbols_mean": null,
-        "symbols_min": null,
-        "symbols_skew": null,
-        "symbols_std": null,
-        "symbols_sum": null
-    }
-}
+                "_id": "5bf4841c9fc83c002cdbf5e6",
+                "name": "appendicitis",
+                "username": "testuser",
+                "files": [
+                    {
+                        "_id": "5bf4841c9fc83c002cdbf5e8",
+                        "filename": "appendicitis_categorical.csv",
+                        "mimetype": "text/csv",
+                        "prediction_type": "classification",
+                        "dependent_col": "class",
+                        "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+                        "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]},
+                        "timestamp": 1542751267786
+                    }
+                ],
+                "metafeatures": {
+                    "class_prob_max": 0.8018867924528302,
+                    "class_prob_mean": 0.5,
+                    "class_prob_median": 0.5,
+                    "class_prob_min": 0.19811320754716982,
+                    "class_prob_std": 0.4269323961881042,
+                    "corr_with_dependent_abs_25p": null,
+                    "corr_with_dependent_abs_75p": null,
+                    "corr_with_dependent_abs_kurtosis": null,
+                    "corr_with_dependent_abs_max": null,
+                    "corr_with_dependent_abs_mean": null,
+                    "corr_with_dependent_abs_median": null,
+                    "corr_with_dependent_abs_min": null,
+                    "corr_with_dependent_abs_skew": null,
+                    "corr_with_dependent_abs_std": null,
+                    "diversity_fraction": 0.822528983974963,
+                    "entropy_dependent": 0.49777562247179563,
+                    "kurtosis_kurtosis": 4.452150103293069,
+                    "kurtosis_max": 5.319422971587894,
+                    "kurtosis_mean": 1.337358676553602,
+                    "kurtosis_median": 0.8241556149720961,
+                    "kurtosis_min": -0.064662454053662,
+                    "kurtosis_skew": 2.049814018854758,
+                    "kurtosis_std": 1.7321483030218767,
+                    "n_categorical": 0,
+                    "n_classes": 2,
+                    "n_columns": 8,
+                    "n_numerical": 7,
+                    "n_rows": 106,
+                    "pca_fraction_95": 0.42857142857142855,
+                    "ratio_rowcol": 13.25,
+                    "skew_kurtosis": -0.8072038717745542,
+                    "skew_max": 2.0405760464786686,
+                    "skew_mean": 0.23121482439885738,
+                    "skew_median": 0.20576966206912586,
+                    "skew_min": -1.2122210852887918,
+                    "skew_skew": 0.24606691449283033,
+                    "skew_std": 1.1148468812633117,
+                    "symbols_kurtosis": null,
+                    "symbols_max": null,
+                    "symbols_mean": null,
+                    "symbols_min": null,
+                    "symbols_skew": null,
+                    "symbols_std": null,
+                    "symbols_sum": null
+                }
+              }
   put:
     description: Register a new datafile
     body:
@@ -586,29 +590,34 @@ mediaType: application/json
           name - file name
           username - owner of the dataset
           dependent_col - name of the target column
+          prediction_type - regression or classification
           categorical_features - (optional) list of categorical features
           ordinal_features - (optional) map of ordinal features.  key is the feature name, value is an exhaustive ordered list of the values that feature can take
-
-        example: {
-          _files:file binary,
-          _metadata: [
-            name: "datasetName",
-            username: "testuser",
-            dependent_col: "class",
-            categorical_features : ["cat_feat_1", "cat_feat_2"],
-            ordinal_features : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
-          ]
+        example: |
+          {
+          "_files": "file binary",
+          "_metadata": 
+            {
+              "name": "datasetName",
+              "username": "testuser",
+              "dependent_col": "class",
+              "prediction_type": "classification",
+              "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+              "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+            }
           }
     responses:
       201:
         body:
-          example: {
-            message: "Files uploaded",
-            dataset_id: dataset_id
+          example: |
+            {
+                message: "Files uploaded",
+                dataset_id: dataset_id
             }
       400:
         body:
-          example: {
+          example: |
+            {
             error: "Missing parameter _metadata.name"
             }
 /webhooks:
@@ -640,117 +649,215 @@ mediaType: application/json
       200:
         body:
           example: |
-          [
-          {
-              "_id": "5ba41716dfe741699222870f",
-              "username": "testuser",
-              "firstname": "Test",
-              "lastname": "User",
-              "algorithms": [
-                  {
-                      "_id": "5ba41716dfe7416992228714",
-                      "name": "DecisionTreeClassifier",
-                      "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
-                      "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
+              [
+                {
+                  "_id": "5ba41716dfe741699222870f",
+                  "username": "testuser",
+                  "firstname": "Test",
+                  "lastname": "User",
+                  "algorithms": [
+                      {
+                          "_id": "5ba41716dfe7416992228714",
+                          "name": "DecisionTreeClassifier",
+                          "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample's features.",
+                          "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
+                          "schema": {
+                              "criterion": {
+                                  "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
+                                  "type": "enum",
+                                  "default": "gini",
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          "Gini impurity",
+                                          "Information gain"
+                                      ],
+                                      "values": [
+                                          "gini",
+                                          "entropy"
+                                      ]
+                                  }
+                              },
+                              "max_depth": {
+                                  "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
+                                  "type": "int",
+                                  "default": 2,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          2,
+                                          4,
+                                          6,
+                                          8
+                                      ]
+                                  }
+                              },
+                              "min_samples_split": {
+                                  "description": "The minimum number of samples required to split an internal node.",
+                                  "type": "int",
+                                  "default": 5,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          5,
+                                          10,
+                                          20
+                                      ]
+                                  }
+                              },
+                              "min_samples_leaf": {
+                                  "description": "The minimum number of samples required to be at a leaf node.",
+                                  "type": "int",
+                                  "default": 5,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          5,
+                                          10,
+                                          20
+                                      ]
+                                  }
+                              }
+                          },
+                          "category": "classification"
+                      },
+                      {
+                          "_id": "5ba41716dfe7416992228717",
+                          "name": "GradientBoostingClassifier",
+                          "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
+                          "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
+                          "schema": {
+                              "n_estimators": {
+                                  "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
+                                  "type": "int",
+                                  "default": 100,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          100,
+                                          250
+                                      ]
+                                  }
+                              },
+                              "learning_rate": {
+                                  "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
+                                  "type": "float",
+                                  "default": 0.1,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          0.01,
+                                          0.1,
+                                          1
+                                      ]
+                                  }
+                              },
+                              "max_depth": {
+                                  "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the in variables.",
+                                  "type": "int",
+                                  "default": 1,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          1,
+                                          5,
+                                          10
+                                      ]
+                                  }
+                              },
+                              "min_samples_split": {
+                                  "description": "The minimum number of samples required to split an internal node.",
+                                  "type": "int",
+                                  "default": 5,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          5,
+                                          10,
+                                          20
+                                      ]
+                                  }
+                              },
+                              "min_samples_leaf": {
+                                  "description": "The minimum number of samples required to be at a leaf node.",
+                                  "type": "int",
+                                  "default": 5,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          5,
+                                          10,
+                                          20
+                                      ]
+                                  }
+                              },
+                              "subsample": {
+                                  "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.",
+                                  "type": "float",
+                                  "default": 1,
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          0.5,
+                                          1
+                                      ]
+                                  }
+                              },
+                              "max_features": {
+                                  "description": "The number of features to consider when looking for the best split.",
+                                  "type": "string",
+                                  "default": "sqrt",
+                                  "ui": {
+                                      "style": "radio",
+                                      "choices": [
+                                          "Square root",
+                                          "Log2"
+                                      ],
+                                      "values": [
+                                          "sqrt",
+                                          "log2"
+                                      ]
+                                  }
+                              }
+                          },
+                          "category": "classification"
+                      },
+                      {
+                      "_id": "5da8d68c4590b0868cbf574e",
+                      "name": "DecisionTreeRegressor",
+                      "path": "sklearn.tree",
+                      "categorical_encoding_strategy": "OrdinalEncoder",
+                      "description": "A Decision Tree Regressor",
+                      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html",
+                      "category": "regression",
                       "schema": {
                           "criterion": {
-                              "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
-                              "type": "enum",
-                              "default": "gini",
+                              "description": "The function to measure the quality of a split. ",
+                              "type": "string",
+                              "default": "mse",
                               "ui": {
                                   "style": "radio",
                                   "choices": [
-                                      "Gini impurity",
-                                      "Information gain"
+                                      "Mean Squared Error",
+                                      "Mean Absolute Error"
                                   ],
                                   "values": [
-                                      "gini",
-                                      "entropy"
+                                      "mse",
+                                      "mae"
                                   ]
                               }
                           },
                           "max_depth": {
                               "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
-                              "type": "int",
-                              "default": 2,
+                              "type": [
+                                  "int",
+                                  "none"
+                              ],
+                              "default": 3,
                               "ui": {
                                   "style": "radio",
                                   "choices": [
-                                      2,
-                                      4,
-                                      6,
-                                      8
-                                  ]
-                              }
-                          },
-                          "min_samples_split": {
-                              "description": "The minimum number of samples required to split an internal node.",
-                              "type": "int",
-                              "default": 5,
-                              "ui": {
-                                  "style": "radio",
-                                  "choices": [
-                                      5,
-                                      10,
-                                      20
-                                  ]
-                              }
-                          },
-                          "min_samples_leaf": {
-                              "description": "The minimum number of samples required to be at a leaf node.",
-                              "type": "int",
-                              "default": 5,
-                              "ui": {
-                                  "style": "radio",
-                                  "choices": [
-                                      5,
-                                      10,
-                                      20
-                                  ]
-                              }
-                          }
-                      },
-                      "category": "ML"
-                  },
-                  {
-                      "_id": "5ba41716dfe7416992228717",
-                      "name": "GradientBoostingClassifier",
-                      "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
-                      "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
-                      "schema": {
-                          "n_estimators": {
-                              "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
-                              "type": "int",
-                              "default": 100,
-                              "ui": {
-                                  "style": "radio",
-                                  "choices": [
-                                      100,
-                                      250
-                                  ]
-                              }
-                          },
-                          "learning_rate": {
-                              "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
-                              "type": "float",
-                              "default": 0.1,
-                              "ui": {
-                                  "style": "radio",
-                                  "choices": [
-                                      0.01,
-                                      0.1,
-                                      1
-                                  ]
-                              }
-                          },
-                          "max_depth": {
-                              "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the in variables.",
-                              "type": "int",
-                              "default": 1,
-                              "ui": {
-                                  "style": "radio",
-                                  "choices": [
-                                      1,
+                                      3,
                                       5,
                                       10
                                   ]
@@ -758,11 +865,15 @@ mediaType: application/json
                           },
                           "min_samples_split": {
                               "description": "The minimum number of samples required to split an internal node.",
-                              "type": "int",
-                              "default": 5,
+                              "type": [
+                                  "int",
+                                  "float"
+                              ],
+                              "default": 2,
                               "ui": {
                                   "style": "radio",
                                   "choices": [
+                                      2,
                                       5,
                                       10,
                                       20
@@ -771,48 +882,65 @@ mediaType: application/json
                           },
                           "min_samples_leaf": {
                               "description": "The minimum number of samples required to be at a leaf node.",
-                              "type": "int",
-                              "default": 5,
+                              "type": [
+                                  "int",
+                                  "float"
+                              ],
+                              "default": 1,
                               "ui": {
                                   "style": "radio",
                                   "choices": [
+                                      1,
                                       5,
                                       10,
                                       20
                                   ]
                               }
                           },
-                          "subsample": {
-                              "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.",
+                          "min_weight_fraction_leaf": {
+                              "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
                               "type": "float",
-                              "default": 1,
+                              "default": 0,
                               "ui": {
                                   "style": "radio",
                                   "choices": [
-                                      0.5,
-                                      1
+                                      0,
+                                      0.05,
+                                      0.1,
+                                      0.15,
+                                      0.2,
+                                      0.25,
+                                      0.3,
+                                      0.35,
+                                      0.4,
+                                      0.45
                                   ]
                               }
                           },
                           "max_features": {
                               "description": "The number of features to consider when looking for the best split.",
-                              "type": "string",
+                              "type": [
+                                  "int",
+                                  "float",
+                                  "string",
+                                  "none"
+                              ],
                               "default": "sqrt",
                               "ui": {
                                   "style": "radio",
                                   "choices": [
                                       "Square root",
-                                      "Log2"
+                                      "Log2",
+                                      "None"
                                   ],
                                   "values": [
                                       "sqrt",
-                                      "log2"
+                                      "log2",
+                                      "None"
                                   ]
                               }
                           }
-                      },
-                      "category": "ML"
-                  }
+                      }
+                  ]
+                }
               ]
-          }
-      ]
