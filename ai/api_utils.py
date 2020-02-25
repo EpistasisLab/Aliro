@@ -28,6 +28,11 @@ class AI_STATUS(Enum):
     FINISHED = "finished"
     REQUESTED = "requested"
 
+@unique
+class RECOMMENDER_STATUS(Enum):
+    DISABLED = 'disabled'
+    INITIALIZING = 'initializing'
+    RUNNING = 'running'
 
 class LabApi:
     """Class for communicating with the PennAI server
@@ -52,6 +57,8 @@ class LabApi:
         self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
         self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
 
+        self.recommender_path = '/'.join([self.api_path,'api/ai'])
+        
         self.api_key=api_key
         self.user=user
         self.verbose=False
@@ -76,6 +83,20 @@ class LabApi:
         logger.debug("self.data_path: " + self.data_path)
         logger.debug("self.status_path: " + self.status_path)
         logger.debug("self.submit_path: " + self.submit_path)
+     
+    def set_recommender_status(self, status):
+        """Attempt to set the recommender status
+
+        :param status 
+        """
+        logger.info("set_recommender_status(" + str(status) + ")")
+
+        payload = {'status':status}
+        data_submit_path = '/'.join([self.recommender_path, "status"])
+        res = self.__request(path=data_submit_path, payload=payload, method="POST")
+
+        data = json.loads(res.text)
+        return data
 
     def launch_experiment(self, algorithmId, payload):
         """Attempt to start a ml experiment.
