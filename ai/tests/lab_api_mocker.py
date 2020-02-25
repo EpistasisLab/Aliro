@@ -185,6 +185,12 @@ def handle_post(path, data):
         return MockResponse(json.dumps(api_experiments_data), 200)
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_running), 200)
+    elif path == "http://lab:5080/api/ai/status":
+        return MockResponse(json.dumps(recommender_running_response), 200)
+#        if dataDict[status] == "running":
+#            return MockResponse(json.dumps(recommender_running_response), 200)
+#        else:
+#            return MockResponse(f'Error: Unknown status "{dataDict}"', 404)
     else:
         logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
@@ -203,6 +209,8 @@ def handle_post_invalid_launch_experiment(path, data):
         return MockResponse(json.dumps(api_experiments_data), 200)
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_invalid), 200)
+    elif path == "http://lab:5080/api/ai/status":
+        return MockResponse(json.dumps(recommender_running_response), 200)
     else:
         logger.error("Unhandled path: " + str(path))
         return MockResponse(None, 404)
@@ -219,6 +227,8 @@ def handle_post_no_datasets(path, data):
         return MockResponse(json.dumps(api_datasets_data_empty), 200)
     elif path == 'http://lab:5080/api/experiments':
         return MockResponse(json.dumps(api_experiments_data), 200)
+    elif path == "http://lab:5080/api/ai/status":
+        return MockResponse(json.dumps(recommender_running_response), 200)
     #elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
     #    return MockResponse(json.dumps(api_launch_experiment_running), 200)
     else:
@@ -230,6 +240,10 @@ def handle_post_no_datasets(path, data):
 #===========================================
 test_dataset_id_no_ai = '5b58f9d506c14c003221b3f1'
 test_dataset_id_ai_on = '5d28e7af736df2003bdd2702'
+
+recommender_running_response = {"message": "AI status set to 'running'"}
+recommender_disabled_response = {"message": "AI status set to 'disabled'"}
+recommender_initializing_response = {"message": "AI status set to 'initializing'"}
 
 api_preferences_data = [
     {
