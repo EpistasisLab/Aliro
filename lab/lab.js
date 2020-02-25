@@ -23,18 +23,55 @@ var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileI
 var Q = require("q");
 const assert = require("assert");
 
-/* App instantiation */
+
+/***************
+* Enums
+***************/
+const aiStatus = {
+    DISABLED: 'disabled',
+    INITIALIZING: 'initializing',
+    RUNNING: 'running',
+
+      // case insensitive method to get status value
+    getStatus(value){
+      if (!value) 
+          throw new Error(`Unknown AI status "${value}"` ) 
+
+      if(Object.keys(this).indexOf(value.toUpperCase()) >= 0 ) {
+        return this[value.toUpperCase()]
+      }
+      else 
+        throw new Error(`Unknown AI status "${value}"` )
+    }
+}
+
+
+/******************
+App instantiation 
+******************/
 // unregister any machine instances before starting the server
 // reset ai status of current datasets
 console.log("unregistering machines")
 db.machines.remove({});
-console.log("resetting ai status")
+
+console.log("resetting dataset ai status")
 db.datasets.updateMany(
     {}, 
     {"$unset" : {ai:""}}
 );
+
 console.log("cleaning up experiments")
 db.experiments.remove({ "_status": "running" })
+
+console.log("initializing ai recommender settings")
+db.settings.update(
+    { type: "ai"},
+    {
+        type: "ai",
+        status: aiStatus.DISABLED
+    },
+    { upsert: true}
+);
 
 var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
@@ -48,6 +85,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
+
 
 /* Startup */
 //emitEvent('updateAllAiStatus', null);
@@ -323,6 +361,29 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
         console.log(`error: ${err}`)
         res.status(400);
         res.send({error:"Unable to upload file. " + err})
+    });
+
+});
+
+
+// set ai status
+app.post("/api/ai/status", jsonParser, (req, res, next) => {
+
+    db.settings.updateAsync(
+        { type: "ai"},
+        {$set: {
+            status: aiStatus.getStatus(req.body.status)
+        }}
+    )
+    .then((result) => {
+        //emitEvent('aiToggled', req);
+
+        res.send({
+            message: "AI status set to '" + aiStatus.getStatus(req.body.status) + "'"
+        });
+    })
+    .catch((err) => {
+        next(err);
     });
 
 });
