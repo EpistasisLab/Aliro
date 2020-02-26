@@ -27,7 +27,7 @@ const assert = require("assert");
 /***************
 * Enums
 ***************/
-const aiStatus = {
+const recommenderStatus = {
     DISABLED: 'disabled',
     INITIALIZING: 'initializing',
     RUNNING: 'running',
@@ -65,10 +65,10 @@ db.experiments.remove({ "_status": "running" })
 
 console.log("initializing ai recommender settings")
 db.settings.update(
-    { type: "ai"},
+    { type: "recommender"},
     {
-        type: "ai",
-        status: aiStatus.DISABLED
+        type: "recommender",
+        status: recommenderStatus.DISABLED
     },
     { upsert: true}
 );
@@ -86,9 +86,6 @@ app.use(bodyParser.json());
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
 
-
-/* Startup */
-//emitEvent('updateAllAiStatus', null);
 
 /* API */
 
@@ -366,20 +363,34 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
 });
 
 
-// set ai status
-app.post("/api/ai/status", jsonParser, (req, res, next) => {
+app.get("/api/recommender", (req, res, next) => {
+    //req.collection.find({}).toArrayAsync()
+    db.settings.find({ type: "recommender"}).toArrayAsync()
+        .then((results) => {
+            console.log("results:")
+            console.log(results)
+            res.status(201);
+            res.send(results[0]);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+// set recommender status
+app.post("/api/recommender/status", jsonParser, (req, res, next) => {
 
     db.settings.updateAsync(
-        { type: "ai"},
+        { type: "recommender"},
         {$set: {
-            status: aiStatus.getStatus(req.body.status)
+            status: recommenderStatus.getStatus(req.body.status)
         }}
     )
     .then((result) => {
         //emitEvent('aiToggled', req);
 
         res.send({
-            message: "AI status set to '" + aiStatus.getStatus(req.body.status) + "'"
+            message: "AI status set to '" + recommenderStatus.getStatus(req.body.status) + "'"
         });
     })
     .catch((err) => {
