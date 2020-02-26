@@ -148,13 +148,11 @@ body {
     vertical-align: middle;
 }
 
-.pennai .dataset-card .ai-label.on,
-.pennai .dataset-card .ai-label.queuing,
-.pennai .dataset-card .ai-label.requested {
+.pennai .dataset-card .ai-label.bright {
     color: rgba(255,255,255,.95);
 }
 
-.pennai .dataset-card .ai-label.off {
+.pennai .dataset-card .ai-label.dim {
     color: rgba(255,255,255,.55);
 }
 
