@@ -57,7 +57,7 @@ class LabApi:
         self.status_path = '/'.join([self.api_path,'api/v1/datasets'])
         self.submit_path = '/'.join([self.api_path,'api/userdatasets'])
 
-        self.recommender_path = '/'.join([self.api_path,'api/ai'])
+        self.recommender_path = '/'.join([self.api_path,'api/recommender'])
         
         self.api_key=api_key
         self.user=user
@@ -83,6 +83,8 @@ class LabApi:
         logger.debug("self.data_path: " + self.data_path)
         logger.debug("self.status_path: " + self.status_path)
         logger.debug("self.submit_path: " + self.submit_path)
+
+        logger.debug("self.recommender_path: " + self.recommender_path)
      
     def set_recommender_status(self, status):
         """Attempt to set the recommender status
