@@ -49,6 +49,14 @@ const recommenderStatus = {
 /******************
 App instantiation 
 ******************/
+// set app configuration
+var settings = {
+    "MAX_FILE_SIZE" : ("MAX_FILE_SIZE" in process.env) ? process.env["MAX_FILE_SIZE"] : (8 * 1000000)
+}
+
+console.log(`Settings: ${settings}`)
+
+
 // unregister any machine instances before starting the server
 // reset ai status of current datasets
 console.log("unregistering machines")
@@ -183,6 +191,7 @@ app.get("/api/environment", (req, res, next) => {
     var envVars = [
         "BUILD_ENV",
         "TAG",
+        "MAX_FILE_SIZE",
         "AI_AUTOSTART",
         "AI_RECOMMENDER",
         "AI_VERBOSE",
@@ -193,6 +202,10 @@ app.get("/api/environment", (req, res, next) => {
         "STARTUP_DATASET_PATH",
         "EXP_TIMEOUT",
         "DT_MAX_DEPTH"
+    ]
+
+    var localVars = [
+        "MAX_FILE_SIZE"
     ]
 
     var payload = {}
@@ -206,6 +219,15 @@ app.get("/api/environment", (req, res, next) => {
           payload[envVar] = process.env[envVar]
       }
         else payload[envVar] = "-NOT SET-"
+    });
+
+    localVars.forEach(function(localVar) {
+      if (localVar in settings) { 
+          console.log(`local var: ${localVar}`)
+          console.log(`val: ${settings[localVar]}`)
+          payload[localVar] = settings[localVar]
+      }
+        else payload[localVar] = "-NOT SET-"
     });
 
     res.send(payload);
@@ -1349,12 +1371,11 @@ var stageDatasetFile = function(fileObj) {
 *
 */
 var validateStagingFile = function(fileObj) {
-    var MAX_FILE_SIZE = 8 * 1000000
-
+   
     return new Promise((resolve, reject) => { 
         console.log(`fileSize: ${fileObj.size}`)
-        if (fileObj.size > MAX_FILE_SIZE)
-            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${MAX_FILE_SIZE}.`)
+        if (fileObj.size > settings['MAX_FILE_SIZE'])
+            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${settings['MAX_FILE_SIZE']}.`)
         resolve(true)
     })
 }
