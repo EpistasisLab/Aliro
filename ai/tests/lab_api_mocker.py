@@ -185,7 +185,7 @@ def handle_post(path, data):
         return MockResponse(json.dumps(api_experiments_data), 200)
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_running), 200)
-    elif path == "http://lab:5080/api/ai/status":
+    elif path == "http://lab:5080/api/recommender/status":
         return MockResponse(json.dumps(recommender_running_response), 200)
 #        if dataDict[status] == "running":
 #            return MockResponse(json.dumps(recommender_running_response), 200)
@@ -209,7 +209,7 @@ def handle_post_invalid_launch_experiment(path, data):
         return MockResponse(json.dumps(api_experiments_data), 200)
     elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
         return MockResponse(json.dumps(api_launch_experiment_invalid), 200)
-    elif path == "http://lab:5080/api/ai/status":
+    elif path == "http://lab:5080/api/recommender/status":
         return MockResponse(json.dumps(recommender_running_response), 200)
     else:
         logger.error("Unhandled path: " + str(path))
@@ -227,7 +227,7 @@ def handle_post_no_datasets(path, data):
         return MockResponse(json.dumps(api_datasets_data_empty), 200)
     elif path == 'http://lab:5080/api/experiments':
         return MockResponse(json.dumps(api_experiments_data), 200)
-    elif path == "http://lab:5080/api/ai/status":
+    elif path == "http://lab:5080/api/recommender/status":
         return MockResponse(json.dumps(recommender_running_response), 200)
     #elif path == "http://lab:5080/api/v1/projects/5ba41716dfe741699222871b/experiment":
     #    return MockResponse(json.dumps(api_launch_experiment_running), 200)
