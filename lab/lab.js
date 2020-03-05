@@ -181,6 +181,8 @@ app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
 // Get environmental vars
 app.get("/api/environment", (req, res, next) => {
     var envVars = [
+        "BUILD_ENV",
+        "TAG",
         "AI_AUTOSTART",
         "AI_RECOMMENDER",
         "AI_VERBOSE",

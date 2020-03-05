@@ -3,6 +3,13 @@ wget localhost:51678/v1/metadata -t 1 -qO- &> /dev/null
 
 cd ${PROJECT_ROOT}/lab/webapp
 
+source /etc/profile.d/tag.sh
+
+echo "/================================\\"
+echo "| Starting PennAI version ${TAG} |"
+echo "| Build environment ${BUILD_ENV} |"
+echo "\\===============================/"
+
 # start the frontend
 if [ ${WEBDEV} -eq 1 ]; then
     echo "Starting frontend in build-dev mode"
