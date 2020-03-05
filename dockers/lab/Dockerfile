@@ -76,6 +76,13 @@ RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
 	&& dos2unix /root/entrypoint.sh
 
+# set version and build environment; tag.sh is sourced in entrypoint.sh
+ENV BUILD_ENV='dev'
+COPY .env /etc/profile.d/
+RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
+RUN dos2unix /etc/profile.d/tag.sh
+RUN sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh
+
 
 # Start the webserver
 CMD ["/bin/bash", "/root/start.sh"]
