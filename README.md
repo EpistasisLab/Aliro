@@ -8,7 +8,7 @@ PennAI: AI-Driven Data Science
 **PennAI** is an easy-to-use data science assistant.
 It allows researchers without machine learning or coding expertise to run supervised machine learning analysis through a clean web interface. 
 It provides results visualization and reproducible scripts so that the analysis can be taken anywhere. 
-And, it has an *AI* assistant that can choose the analysis to run for you.   Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used.
+And, it has an *AI* assistant that can choose the analysis to run for you.   Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used.   PennAI comes with an initial knowledgebase generated from the [PMLB benchmark suite](https://github.com/EpistasisLab/penn-ml-benchmarks).
 
 [**Documentation**](https://epistasislab.github.io/pennai/) 
 
