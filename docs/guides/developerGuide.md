@@ -180,20 +180,33 @@ To create a production release:
 
 Release procedure:
 
-1. Update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/).  Development images should have the suffix `-SNAPSHOT`.
+0. **Test production build.** In the master branch with all changes applied, run `docker-compose -f ./docker-compose-production.yml build` followed by `docker-compose -f ./docker-compose-production.yml up`.  This should start an instance of PennAI using the production build environment.  Test that it works as expected.
 
-2. Push the code to github, merge it to the `production` branch, and tag the commit with the same version as the .env file
+1. **Update the `.env` file with a new version number.** In the master branch, update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/).  Development images should have the suffix `-SNAPSHOT`.
 
-3. Build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
-*  Create local lab, machine, and dbmongo production images with the tag defined in the .env file  
+2. **Push changes to github.**  Merge the master branch into the `production` branch and push the changes to github.
+
+3. **Build production docker images with `bash release/generate_production_release.sh`.** While in the prodution branch, build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
+* Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file  
 * Create the production .zip named `target/production/pennai-${VERSION}.zip`
+```
+git checkout production
+bash release/generate_production_release.sh
+```
 
-4. Push the images to docker hub with the version tag and the `latest` tag.
+4. **Push docker images to DockerHub and tag the production git branch by running `deploy_production_release.sh`.**  While in the produciton branch, run `bash release/deploy_production_release.sh`.  This will:
+* Push the production lab, machine and dbmongo production docker images to dockerHub
+* Tag the production git branch with the version defined in `.env`
+```
+git checkout production
+bash release/deploy_production_release.sh
+```
 
-5. Test that the production release works by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.
+5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version. 
 
-6. If the test is successful, create a github release using the tagged production commit and attach the zipped production directory as an archive asset.
+6. **Create Github Release.**  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file `target/production/pennai-${VERSION}.zip` as an archive asset.
 
+7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `-SNAPSHOT` suffix and push the changes to git.  For example, `0.14` was just released, the new dev tag should be `0.15-SNAPSHOT`.
 
 ### Installing a production build
 1. Download a production build from github
