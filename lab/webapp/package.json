@@ -36,7 +36,7 @@
     "reselect": "^3.0.1",
     "semantic-ui-react": "^0.78.3",
     "socket.io-client": "^2.2.0",
-    "twix": "^1.1.5"
+    "twix": "^1.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -49,13 +49,13 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-15": "^1.4.0",
     "fetch-mock": "^7.3.1",
-    "jest": "^24.8.0",
-    "jest-fetch-mock": "^2.1.1",
-    "jest-html-reporter": "^2.4.1",
+    "jest": "^24.9.0",
+    "jest-fetch-mock": "^2.1.2",
+    "jest-html-reporter": "^2.5.0",
     "jest-junit": "^6.4.0",
     "jest-react-native": "^18.0.0",
-    "react-native": "^0.60.0-rc.1",
-    "react-test-renderer": "^15.4.2",
+    "react-native": "^0.60.6",
+    "react-test-renderer": "^15.6.2",
     "redux-logger": "^3.0.6",
     "redux-mock-store": "^1.5.3",
     "webpack": "^4.18.1",
