@@ -1,4 +1,4 @@
-scikit-learn==0.20.2
+scikit-learn==0.22.1
 tqdm==4.32.2
 pymongo==3.8.0
 pandas==0.24.2
