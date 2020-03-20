@@ -1,5 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -14,6 +16,22 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    //new CleanWebpackPlugin(),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: 'development'
+    }),
+    new HtmlWebpackPlugin({
+       inject: false,
+       template: require('html-webpack-template'),
+
+       title: 'PennAI Launchpad',
+       headHtmlSnippet: `    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="libraries/semantic-ui/semantic.min.css" /> <!-- Semantic UI - 2.3.3 -->
+    <link rel="stylesheet" href="App.css" />`,
+       bodyHtmlSnippet: '<div id="app"></div>',
+     }),
+   ],
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['*', '.js', '.jsx']
@@ -38,10 +56,5 @@ module.exports = {
     },
   watchOptions: {
     poll: true
-  },
-  plugins: [
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development'
-    })
-  ]
+  }
 };
