@@ -39,6 +39,11 @@ function emitEvent(event, req) {
 			return sockets.forEach(socket => 
 				socket.emit('updateAIToggle', JSON.stringify({ _id: req.params.id, nextAIState: req.body.ai }))
 			);
+		case 'recommenderStatusUpdated':
+			console.log(`=socketServer:recommenderStatusUpdated(${req.body.status})`)
+			return sockets.forEach(socket => 
+				socket.emit('recommenderStatusUpdated', JSON.stringify({recommenderStatus: req.body.status }))
+			);
 		case 'expStarted':
 			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
 		  	.then(experiment => {
