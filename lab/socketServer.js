@@ -42,7 +42,7 @@ function emitEvent(event, req) {
 		case 'recommenderStatusUpdated':
 			console.log(`=socketServer:recommenderStatusUpdated(${req.body.status})`)
 			return sockets.forEach(socket => 
-				socket.emit('recommenderStatusUpdated', JSON.stringify({recommenderStatus: req.body.status }))
+				socket.emit('updateRecommender', JSON.stringify({recommenderStatus: req.body.status }))
 			);
 		case 'expStarted':
 			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
