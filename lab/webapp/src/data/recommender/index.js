@@ -14,8 +14,7 @@ const data = (state = {}, action) => {
   }
 };
 
-// initalize to true since preferences are fetched immediately on app load
-const isFetching = (state = true, action) => {
+const isFetching = (state = false, action) => {
   switch(action.type) {
     case FETCH_RECOMMENDER_REQUEST:
       return true;

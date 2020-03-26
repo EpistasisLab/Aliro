@@ -12,7 +12,7 @@ export const fetchRecommender = () => (dispatch) => {
     recommender => {
       dispatch({
         type: FETCH_RECOMMENDER_SUCCESS,
-        payload: recommender[0]
+        payload: recommender
       });
     },
     error => {
