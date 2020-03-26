@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
+import { Loader, Dimmer, Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
 
 function DatasetActions({ dataset, recommender, toggleAI }) {
   const onToggleAI = () => {
@@ -10,15 +10,16 @@ function DatasetActions({ dataset, recommender, toggleAI }) {
   };
 
   // ai states: on, queueing, requested, off, finished
-  // recommender states: initilizing, disabled, active
+  // recommender states: initializing, disabled, active
 
-  // if the recommender is in an off or initilizing state, disable the ai toggle
+  // if the recommender is in an off or initializing state, disable the ai toggle
   const hasMetadata = dataset.has_metadata;
   const aiLabelText = 'AI';
+  
   const recState = recommender.status;
-
   const aiState = dataset.ai; 
 
+  const aiInitializing = (recState === 'initializing') ? true : false;
   const aiDisabled = (recState === 'running') ? dataset.isTogglingAI : true;
   const aiIsChecked = (aiState === 'off' || aiState === 'finished') ? false : true;
 
@@ -29,37 +30,51 @@ function DatasetActions({ dataset, recommender, toggleAI }) {
 
   const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />; 
 
-  return (
-    <span>
-      {hasMetadata &&
+
+  if (aiInitializing) {
+    return (
+      <span>
         <span>
           <span className={aiLabelClass}>
             {aiLabelText}
           </span>
-          <Popup
-            content={aiPopupContent}
-            size="small"
-            hideOnScroll
-            trigger={
-              <Checkbox
-                toggle
-                checked={aiIsChecked}
-                className={aiToggleClass}
-                onChange={onToggleAI}
-                disabled={aiDisabled}
-              />
-            }
-          />
+          <Loader size='small' active inline indeterminate />
         </span>
-      }
-      {/*<Dropdown pointing="top right" icon={dropdownIcon}>
-        <Dropdown.Menu>
-          <Dropdown.Item icon="file" text="Replace file" />
-          <Dropdown.Item icon="trash" text="Delete" />
-        </Dropdown.Menu>
-      </Dropdown>*/}
-    </span>
-  );
+       </span>
+    );
+  } else {
+    return (
+      <span>
+        {hasMetadata &&
+          <span>
+            <span className={aiLabelClass}>
+              {aiLabelText}
+            </span>
+            <Popup
+              content={aiPopupContent}
+              size="small"
+              hideOnScroll
+              trigger={
+                <Checkbox
+                  toggle
+                  checked={aiIsChecked}
+                  className={aiToggleClass}
+                  onChange={onToggleAI}
+                  disabled={aiDisabled}
+                />
+              }
+            />
+          </span>
+        }
+        {/*<Dropdown pointing="top right" icon={dropdownIcon}>
+          <Dropdown.Menu>
+            <Dropdown.Item icon="file" text="Replace file" />
+            <Dropdown.Item icon="trash" text="Delete" />
+          </Dropdown.Menu>
+        </Dropdown>*/}
+      </span>
+    );
+  }
 }
 
 export default DatasetActions;
