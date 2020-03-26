@@ -17,7 +17,20 @@ module.exports = {
     ]
   },
   plugins: [
-    //new CleanWebpackPlugin(),
+     new CleanWebpackPlugin({
+      dry:false,
+      
+      // clean after the build to only clean obsolete assets
+      cleanOnceBeforeBuildPatterns: [],
+
+      // do not clean static assets
+      cleanAfterEveryBuildPatterns: ['**/*', 
+        '!libraries',
+        '!libraries/**/*',
+        '!.gitignore*', 
+        '!App.css*', 
+        '!favicon.ico*'],
+    }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development'
     }),

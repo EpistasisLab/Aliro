@@ -5,6 +5,7 @@ import dataset from './datasets/dataset';
 import experiments from './experiments';
 import machines from './machines';
 import builder from './builder';
+import recommender from './recommender';
 
 const data = combineReducers({
 	preferences,
@@ -12,7 +13,8 @@ const data = combineReducers({
 	dataset,
 	experiments,
 	machines,
-	builder
+	builder,
+	recommender
 });
 
 export default data;
