@@ -29,6 +29,8 @@ class Datasets extends Component {
   render() {
     const { datasets, isFetching, error, fetchDatasets } = this.props;
 
+    const recommender = {status:"running"}; // hardcode to running for now
+
     if(isFetching) {
       return (
         <Loader active inverted size="large" content="Retrieving your datasets..." />
@@ -53,6 +55,7 @@ class Datasets extends Component {
             {datasets.map(dataset => (
               <DatasetCard
                 key={dataset._id}
+                recommender={recommender}
                 dataset={dataset}
               />
             ))}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Checkbox, Popup, Dropdown, Icon } from 'semantic-ui-react';
 
-function DatasetActions({ dataset, toggleAI }) {
+function DatasetActions({ dataset, recommender, toggleAI }) {
   const onToggleAI = () => {
     const aiState = dataset.ai;
     const aiNextState = aiState === 'off' || aiState === 'finished' ? 'requested' : 'off';
@@ -15,18 +15,19 @@ function DatasetActions({ dataset, toggleAI }) {
   // if the recommender is in an off or initilizing state, disable the ai toggle
   const hasMetadata = dataset.has_metadata;
   const aiLabelText = 'AI';
+  const recState = recommender.status;
 
-  const aiState = dataset.ai;
+  const aiState = dataset.ai; 
 
-  const aiDisabled = dataset.isTogglingAI;
+  const aiDisabled = (recState === 'running') ? dataset.isTogglingAI : true;
   const aiIsChecked = (aiState === 'off' || aiState === 'finished') ? false : true;
 
   const aiLabelClass = `ai-label ${(aiIsChecked) ? 'bright' : 'dim' }`;
   const aiToggleClass = `ai-switch ${(aiState === 'on' || aiState === 'queuing') ? 'active' : aiState }`;
 
-  const aiPopupContent = `AI ${aiState}`;
+  const aiPopupContent = (recState === 'running') ? `AI ${aiState}` : `AI recommender ${recState}`;
 
-  const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />;
+  const dropdownIcon = <Icon inverted color="grey" size="large" name="caret down" />; 
 
   return (
     <span>
