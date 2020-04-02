@@ -30,7 +30,8 @@ class BaseRecommender:
 
     """
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
+            random_state=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -49,6 +50,7 @@ class BaseRecommender:
         self.param_htable = {}
         
         # get ml+p combos (note: this triggers a property in base recommender)
+        self.ml_htable = {}
         self.ml_p = ml_p
 
 
@@ -119,6 +121,7 @@ class BaseRecommender:
     def ml_p(self, value):
         logger.debug('setting ml_p')
         if value is not None:
+            #filter out SVC (temporary)
             self._ml_p = value
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
@@ -130,6 +133,9 @@ class BaseRecommender:
                                    str(hash(frozenset(x.items())))))
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
+            # set ml_htable
+            self.ml_htable = {k:v for v,k in zip(value['alg_name'].unique(),
+                value['algorithm'].unique())}
         else:
             logger.warning('value of ml_p is None')
         logger.debug('param_htable:{} objects'.format(len(self.param_htable)))

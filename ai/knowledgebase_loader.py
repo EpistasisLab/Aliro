@@ -33,11 +33,11 @@ logger.addHandler(ch)
 
 
 PMLB_KB_CLASSIFICATION_RESULTS_PATH = ('data/knowledgebases/'
-        'sklearn-benchmark5-data-knowledgebase.pkl.gz')
+        'sklearn-benchmark-data-knowledgebase-r6.tsv.gz')
 PMLB_KB_CLASSIFICATION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_classification_metafeatures.csv.gz')
 PMLB_KB_REGRESSION_RESULTS_PATH = ('data/knowledgebases/'
-        'pmlb_regression_results.pkl.gz')
+        'pmlb_regression_results.tsv.gz')
 PMLB_KB_REGRESSION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_regression_metafeatures.csv.gz')
 

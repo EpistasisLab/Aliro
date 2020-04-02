@@ -125,13 +125,13 @@ class AI():
             extra_payload=extra_payload,
             verbose=self.verbose)
 
-        self.initilize_recommenders(rec_class) # set self.rec_engines
+        self.initialize_recommenders(rec_class) # set self.rec_engines
 
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
 
-        # dictionary of dataset threads, initilized and used by q_utils.
+        # dictionary of dataset threads, initialized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
@@ -172,7 +172,7 @@ class AI():
     ##-----------------
     ## Init methods
     ##-----------------
-    def initilize_recommenders(self, rec_class):
+    def initialize_recommenders(self, rec_class):
         """
         Initilize classification and regression recommenders
         """
@@ -199,7 +199,7 @@ class AI():
                         self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
 
 
-        logger.debug("recomendation engines initilized: ")
+        logger.debug("recomendation engines initialized: ")
         for prob_type, rec in self.rec_engines.items():
             logger.debug(f'\tproblemType: {prob_type} - {rec}')
             #logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
@@ -349,7 +349,7 @@ class AI():
 
 
         # get all dtasets that have an ai 'requested' status
-        # and initilize a new request
+        # and initialize a new request
         dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
