@@ -15,7 +15,7 @@ from sklearn.model_selection import ParameterGrid # utility for hyperparams
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -322,6 +322,18 @@ class LabApi:
 
             return df
 
+    def valid_combo(self, combo, bad_combos):
+        """Checks if parameter combination is valid."""
+        for bad_combo in bad_combos:
+            bc = {}
+            for b in bad_combo:
+                bc.update(b)
+            bad = True
+            for k,v in bc.items():
+                if combo[k] != v:
+                    bad = False
+        return not bad
+
     def get_all_ml_p(self, categoryFilter = None):
         """
         Returns a list of ml and parameter options for the user 'pennai'
@@ -352,7 +364,6 @@ class LabApi:
             logger.error(msg)
             logger.error(response)
             raise RuntimeError(msg)
-
 
         algorithms = response[0]['algorithms']
         logger.debug('response.algorithms length(): ' + str(len(algorithms)))
@@ -387,6 +398,10 @@ class LabApi:
                         x['name'])
 
                 for ahc in all_hyperparam_combos:
+                    if 'invalidParameterCombinations' in x.keys():
+                        if not self.valid_combo(ahc,
+                                x['invalidParameterCombinations']):
+                            continue
                     result.append({'algorithm':x['_id'],
                                    'category':x['category'],
                                    'parameters':ahc,
@@ -394,6 +409,7 @@ class LabApi:
             else:
                 logger.error('warning: ' + str(x['name']) + 'was skipped')
             good_def = True
+
 
         # convert to dataframe, making sure there are no duplicates
         all_ml_p = pd.DataFrame(result)
