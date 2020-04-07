@@ -134,8 +134,11 @@ class BaseRecommender:
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
             # set ml_htable
-            self.ml_htable = {k:v for v,k in zip(value['alg_name'].unique(),
-                value['algorithm'].unique())}
+            if 'alg_name' in value.columns:
+                self.ml_htable = {
+                        k:v for v,k in zip(value['alg_name'].unique(),
+                        value['algorithm'].unique())
+                        }
         else:
             logger.warning('value of ml_p is None')
         logger.debug('param_htable:{} objects'.format(len(self.param_htable)))

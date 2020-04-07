@@ -165,8 +165,8 @@ class AI():
         assert not (warm_start), "The `warm_start` option is not yet supported"
 
         # for comma-separated list of datasets in datasets, turn AI request on
-        assert (not (datasets), 
-                "The `datasets` option is not yet supported: " + str(datasets))
+        assert not datasets, \
+                "The `datasets` option is not yet supported: " + str(datasets)
 
 
     ##-----------------
