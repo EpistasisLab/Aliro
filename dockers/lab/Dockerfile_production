@@ -83,8 +83,18 @@ RUN dos2unix /root/start.sh \
 
 
 # copy knowledgebase
-COPY data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz /appsrc/data/knowledgebases/
-COPY data/knowledgebases/pmlb_metafeatures.csv.gz /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.pkl.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_results.pkl.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+
+
+# set version and build environment; tag.sh is sourced in entrypoint.sh
+ENV BUILD_ENV='prod'
+COPY .env /etc/profile.d/
+RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
+RUN dos2unix /etc/profile.d/tag.sh
+RUN sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh
 
 
 # Start the webserver

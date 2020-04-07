@@ -15,6 +15,8 @@ if [ ! -f '/root/forum' ]; then
     mongo FGLab --eval 'db.datasets.createIndex({name: 1})'
     mongo FGLab --eval 'db.experiments.createIndex({username: 1})'
     mongo FGLab --eval 'db.experiments.createIndex({_dataset_id: 1})'
+    mongo FGLab --eval 'db.settings.createIndex({type: 1})'
+
     touch /root/forum
 fi
 

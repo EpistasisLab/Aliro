@@ -7,7 +7,7 @@ import datetime
 import pickle
 import pdb
 import ai.api_utils as api_utils
-from ai.api_utils import LabApi, AI_STATUS
+from ai.api_utils import LabApi, AI_STATUS, RECOMMENDER_STATUS
 import ai.q_utils as q_utils
 import os
 import ai.knowledgebase_loader as knowledgebase_loader
@@ -125,8 +125,11 @@ class AI():
             extra_payload=extra_payload,
             verbose=self.verbose)
 
-        self.initialize_recommenders(rec_class) # set self.rec_engines
+        # set recommender status
+        self.labApi.set_recommender_status(RECOMMENDER_STATUS.INITIALIZING.value)
 
+        self.initilize_recommenders(rec_class) # set self.rec_engines
+        
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
@@ -168,6 +171,8 @@ class AI():
         assert not datasets, \
                 "The `datasets` option is not yet supported: " + str(datasets)
 
+        # set recommender status
+        self.labApi.set_recommender_status(RECOMMENDER_STATUS.RUNNING.value)
 
     ##-----------------
     ## Init methods

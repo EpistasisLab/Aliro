@@ -2,10 +2,10 @@
 Test the labAPi methods (api_utils.py)
 """
 
-from ai.api_utils import LabApi, AI_STATUS
+from ai.api_utils import LabApi, AI_STATUS, RECOMMENDER_STATUS
 import sys
 from unittest.mock import Mock, patch
-from nose.tools import nottest, raises, assert_is_instance, assert_equal, assert_in, assert_true
+from nose.tools import nottest, raises, assert_is_instance, assert_equal, assert_in, assert_true, assert_dict_equal
 import lab_api_mocker as mocker
 import pandas as pd
 
@@ -62,6 +62,13 @@ class TestLabApi:
 
 		for expectedRow in self.partial_expected_regression_ml_p:
 			assert_in(expectedRow, resDict)
+
+	@patch('requests.request', side_effect=mocker.mocked_requests_request)
+	def test_set_recommender_status(self, mock_request):
+		res = self.labApi.set_recommender_status(RECOMMENDER_STATUS.RUNNING.value)
+		print("type: ", type(res))
+		print(res)
+		assert_dict_equal(res, {"message": "AI status set to 'running'"})
 
 	@patch('requests.request', side_effect=mocker.mocked_requests_request)
 	def test_get_all_ml_p_classification(self, mock_request):

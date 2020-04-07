@@ -23,18 +23,63 @@ var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileI
 var Q = require("q");
 const assert = require("assert");
 
-/* App instantiation */
+
+/***************
+* Enums
+***************/
+const recommenderStatus = {
+    DISABLED: 'disabled',
+    INITIALIZING: 'initializing',
+    RUNNING: 'running',
+
+      // case insensitive method to get status value
+    getStatus(value){
+      if (!value) 
+          throw new Error(`Unknown AI status "${value}"` ) 
+
+      if(Object.keys(this).indexOf(value.toUpperCase()) >= 0 ) {
+        return this[value.toUpperCase()]
+      }
+      else 
+        throw new Error(`Unknown AI status "${value}"` )
+    }
+}
+
+
+/******************
+App instantiation 
+******************/
+// set app configuration
+var settings = {
+    "MAX_FILE_SIZE" : ("MAX_FILE_SIZE" in process.env) ? process.env["MAX_FILE_SIZE"] : (8 * 1000000)
+}
+
+console.log(`Settings: ${settings}`)
+
+
 // unregister any machine instances before starting the server
 // reset ai status of current datasets
 console.log("unregistering machines")
 db.machines.remove({});
-console.log("resetting ai status")
+
+console.log("resetting dataset ai status")
 db.datasets.updateMany(
     {}, 
     {"$unset" : {ai:""}}
 );
+
 console.log("cleaning up experiments")
 db.experiments.remove({ "_status": "running" })
+
+console.log("initializing ai recommender settings")
+db.settings.update(
+    { type: "recommender"},
+    {
+        type: "recommender",
+        status: recommenderStatus.DISABLED
+    },
+    { upsert: true}
+);
 
 var app = express();
 var jsonParser = bodyParser.json({limit: '100mb'}); // Parses application/json
@@ -49,8 +94,6 @@ app.use(bodyParser.json());
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
 
-/* Startup */
-//emitEvent('updateAllAiStatus', null);
 
 /* API */
 
@@ -146,6 +189,9 @@ app.get("/api/v1/files/:id/metafeatures", (req, res, next) => {
 // Get environmental vars
 app.get("/api/environment", (req, res, next) => {
     var envVars = [
+        "BUILD_ENV",
+        "TAG",
+        "MAX_FILE_SIZE",
         "AI_AUTOSTART",
         "AI_RECOMMENDER",
         "AI_VERBOSE",
@@ -156,6 +202,10 @@ app.get("/api/environment", (req, res, next) => {
         "STARTUP_DATASET_PATH",
         "EXP_TIMEOUT",
         "DT_MAX_DEPTH"
+    ]
+
+    var localVars = [
+        "MAX_FILE_SIZE"
     ]
 
     var payload = {}
@@ -169,6 +219,15 @@ app.get("/api/environment", (req, res, next) => {
           payload[envVar] = process.env[envVar]
       }
         else payload[envVar] = "-NOT SET-"
+    });
+
+    localVars.forEach(function(localVar) {
+      if (localVar in settings) { 
+          console.log(`local var: ${localVar}`)
+          console.log(`val: ${settings[localVar]}`)
+          payload[localVar] = settings[localVar]
+      }
+        else payload[localVar] = "-NOT SET-"
     });
 
     res.send(payload);
@@ -323,6 +382,43 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
         console.log(`error: ${err}`)
         res.status(400);
         res.send({error:"Unable to upload file. " + err})
+    });
+
+});
+
+
+app.get("/api/recommender", (req, res, next) => {
+    //req.collection.find({}).toArrayAsync()
+    db.settings.find({ type: "recommender"}).toArrayAsync()
+        .then((results) => {
+            console.log("results:")
+            console.log(results)
+            res.status(201);
+            res.send(results[0]);
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+// set recommender status
+app.post("/api/recommender/status", jsonParser, (req, res, next) => {
+
+    db.settings.updateAsync(
+        { type: "recommender"},
+        {$set: {
+            status: recommenderStatus.getStatus(req.body.status)
+        }}
+    )
+    .then((result) => {
+        //emitEvent('aiToggled', req);
+
+        res.send({
+            message: "AI status set to '" + recommenderStatus.getStatus(req.body.status) + "'"
+        });
+    })
+    .catch((err) => {
+        next(err);
     });
 
 });
@@ -1275,12 +1371,11 @@ var stageDatasetFile = function(fileObj) {
 *
 */
 var validateStagingFile = function(fileObj) {
-    var MAX_FILE_SIZE = 8 * 1000000
-
+   
     return new Promise((resolve, reject) => { 
         console.log(`fileSize: ${fileObj.size}`)
-        if (fileObj.size > MAX_FILE_SIZE)
-            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${MAX_FILE_SIZE}.`)
+        if (fileObj.size > settings['MAX_FILE_SIZE'])
+            throw new Error(`Staging file validation failed, file size is ${fileObj.size} which exceeds ${settings['MAX_FILE_SIZE']}.`)
         resolve(true)
     })
 }

@@ -9,19 +9,20 @@ function DatasetActions({ dataset, toggleAI }) {
     toggleAI(dataset._id, aiNextState);
   };
 
+  // ai states: on, queueing, requested, off, finished
+  // recommender states: initilizing, disabled, active
+
+  // if the recommender is in an off or initilizing state, disable the ai toggle
   const hasMetadata = dataset.has_metadata;
+  const aiLabelText = 'AI';
 
   const aiState = dataset.ai;
 
-  const aiLabelText = 'AI';
-
-  const aiLabelClass = `ai-label ${aiState}`;
-
-  const aiToggleClass = `ai-switch ${(aiState === 'on' || aiState === 'queuing') ? 'active' : aiState }`;
-
+  const aiDisabled = dataset.isTogglingAI;
   const aiIsChecked = (aiState === 'off' || aiState === 'finished') ? false : true;
 
-  const aiIsToggling = dataset.isTogglingAI;
+  const aiLabelClass = `ai-label ${(aiIsChecked) ? 'bright' : 'dim' }`;
+  const aiToggleClass = `ai-switch ${(aiState === 'on' || aiState === 'queuing') ? 'active' : aiState }`;
 
   const aiPopupContent = `AI ${aiState}`;
 
@@ -44,7 +45,7 @@ function DatasetActions({ dataset, toggleAI }) {
                 checked={aiIsChecked}
                 className={aiToggleClass}
                 onChange={onToggleAI}
-                disabled={aiIsToggling}
+                disabled={aiDisabled}
               />
             }
           />
