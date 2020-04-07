@@ -4,6 +4,7 @@ title: PennAI API
 baseUri: http://localhost:5080/api/{version}
 version: v1
 mediaType: application/json
+
 /projects:
   get:
     description: Retrieve all projects
@@ -596,7 +597,7 @@ mediaType: application/json
         example: |
           {
           "_files": "file binary",
-          "_metadata": 
+          "_metadata":
             {
               "name": "datasetName",
               "username": "testuser",
@@ -944,3 +945,31 @@ mediaType: application/json
                   ]
                 }
               ]
+          }
+      ]
+
+/recommender:
+  get:
+  description: Get ai recommender configuration
+  responses:
+    201:
+      body:
+        example: |
+        {
+            "_id": "5e4da9e03c73092763a0a906",
+            "type": "recommender",
+            "status": "disabled"
+        }
+  /status:
+    post:
+      description: Update ai recommender status
+      body:
+        application/json:
+          description: |
+            status - "running", "initializing", or "disabled"
+        example: {status: "running"}
+      responses:
+        201:
+          body:
+            example: {"AI status set to RUNNING"}
+
