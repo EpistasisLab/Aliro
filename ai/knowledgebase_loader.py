@@ -37,7 +37,7 @@ PMLB_KB_CLASSIFICATION_RESULTS_PATH = ('data/knowledgebases/'
 PMLB_KB_CLASSIFICATION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_classification_metafeatures.csv.gz')
 PMLB_KB_REGRESSION_RESULTS_PATH = ('data/knowledgebases/'
-        'pmlb_regression_results.tsv.gz')
+        'pmlb_regression_results.pkl.gz')
 PMLB_KB_REGRESSION_METAFEATURES_PATH = ('data/knowledgebases/'
         'pmlb_regression_metafeatures.csv.gz')
 
