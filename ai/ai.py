@@ -128,7 +128,7 @@ class AI():
         # set recommender status
         self.labApi.set_recommender_status(RECOMMENDER_STATUS.INITIALIZING.value)
 
-        self.initilize_recommenders(rec_class) # set self.rec_engines
+        self.initialize_recommenders(rec_class) # set self.rec_engines
         
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
@@ -183,7 +183,7 @@ class AI():
         """
 
         for prediction_type in self.rec_engines.keys():
-            logger.info('initiliazing rec engine for problem type "'
+            logger.info('initialiazing rec engine for problem type "'
                     +prediction_type+'"')
 
             # get the ml parameters for the given recommender type
@@ -193,7 +193,7 @@ class AI():
             assert len(ml_p) > 0
 
             # Create supervised learning recommenders
-            logger.debug("initilizing engine")
+            logger.debug("initializing engine")
             recArgs = self.DEFAULT_REC_ARGS[prediction_type]
             recArgs['ml_p'] = ml_p
 
