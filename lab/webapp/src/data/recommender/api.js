@@ -1,5 +1,5 @@
 require('es6-promise').polyfill();
-import fetch from 'isomorphic-fetch';
+import 'isomorphic-fetch'
 
 export const fetchRecommender = () => 
   fetch('/api/recommender')
