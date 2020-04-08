@@ -48,6 +48,7 @@ pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
+data['alg_name'] = data['algorithm']
 # data['_id'] = data['dataset'].apply(
 #         lambda x: get_metafeatures(x)['_id'])
 # data.set_index('_id')

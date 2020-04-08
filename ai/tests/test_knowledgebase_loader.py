@@ -45,27 +45,27 @@ def load_test_data():
     expectedWarningCount
     '''
     return [
-        ("benchmark5-metafeaturesFromDirectory",
+        ("benchmark6-metafeaturesFromDirectory",
          ["data/knowledgebases/"
-             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"],
+             "sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"],
          'data/knowledgebases/test/jsonmetafeatures',
          '',
          'class',
-         2360, # this corresponds to the number of results from datasets w mf
+         155, # this corresponds to the number of results from datasets w mf
          5,
          1
          ),
-        ("benchmark5-classification_metafeaturesFromFile",
+        ("benchmark6-classification_metafeaturesFromFile",
          ["data/knowledgebases/"
-             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"],
+             "sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"],
          '',
          ['data/knowledgebases/pmlb_classification_metafeatures.csv.gz'],
          'class',
-         79608,
-         161,
+         5226,
+         164,
          0
          ),
-        ("benchmark5-regression_metafeaturesFromFile",
+        ("benchmark-regression_metafeaturesFromFile",
          ["data/knowledgebases/"
              "pmlb_regression_results-small.tsv.gz"],
          '',
@@ -87,15 +87,15 @@ def load_test_data():
          1,
          0
          ),
-        ("benchmark5-metafeaturesFromMultiFile",
+        ("benchmark6-metafeaturesFromMultiFile",
          ["data/knowledgebases/"
-             "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"],
+             "sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"],
          '',
          ['data/knowledgebases/test/metafeatures/pmlb_metafeatures1.csv',
             'data/knowledgebases/test/metafeatures/pmlb_metafeatures2.csv'],
          'class',
-         79608,
-         161,
+         5226,
+         164,
          0
          ),
     ]
@@ -103,18 +103,18 @@ def load_test_data():
 def load_default_kb_data():
     # /test/results contains dupes from pmlb
     return [
-        ("pmlbOnly", True, None, None, 1547144, 281),
+        ("pmlbOnly", True, None, None, 1519785, 284),
         ("userOnly", False, "data/knowledgebases/test/results",
             "data/knowledgebases/test/metafeatures", 6, 1),
         ("pmlbAndUser", True, "data/knowledgebases/test/results",
-            "data/knowledgebases/test/metafeatures", 1547144, 281)
+            "data/knowledgebases/test/metafeatures", 1519786, 284)
     ]
 
 def results_files():
     return [
-    (   "benchmark5",
+    (   "benchmark6",
         "data/knowledgebases/"
-        "sklearn-benchmark5-data-knowledgebase-small.tsv.gz"),
+        "sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"),
     (   "test1",
         "data/knowledgebases/test/results/"
         "sklearn-benchmark5-data-knowledgebase_filtered1.tsv"),

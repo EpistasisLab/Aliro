@@ -56,6 +56,7 @@ class SurpriseRecommender(BaseRecommender):
         #     self.algo = algo
         
         self.first_fit = True
+        self.min_epochs = 10
         self.max_epochs = 100
     
     @property
@@ -123,9 +124,11 @@ class SurpriseRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating recommendations.
+            ID of the dataset for which the recommender is generating 
+            recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters expected to do 
+            Return a list of length n_recs in order of estimators and 
+            parameters expected to do 
             best.
         """
         # dataset hash table
@@ -183,9 +186,9 @@ class SurpriseRecommender(BaseRecommender):
             top_n.append((iid, est))
             ml = iid.split('|')[0]
             if ml in ml_dist.keys():
-                ml_dist[ml] += 1
+                ml_dist[ml] += 1.0
             else:
-                ml_dist[ml] = 1
+                ml_dist[ml] = 1.0
         n_ml = len(ml_dist.keys())
 
         ######
@@ -195,7 +198,8 @@ class SurpriseRecommender(BaseRecommender):
         # the probability for each ML method is 1/total_methods/(# instances of that
         # method)
         inv_ml_dist = {k:1/n_ml/v for k,v in ml_dist.items()}
-        top_n_dist = np.array([inv_ml_dist[tn[0].split('|')[0]] for tn in top_n])
+        top_n_dist = np.array([inv_ml_dist[tn[0].split('|')[0]] 
+            for tn in top_n])
         top_n_idx = np.arange(len(top_n))
         top_n_idx_s = np.random.choice(top_n_idx, len(top_n), replace=False, 
                                        p=top_n_dist)
@@ -203,7 +207,8 @@ class SurpriseRecommender(BaseRecommender):
         #####
         
         # sort top_n
-        top_n = sorted(top_n, key=lambda x: x[1], reverse=True)[:n]
+        top_n = sorted(top_n, key=lambda x: x[1], reverse=True)
+        top_n = top_n[:n]
 
         logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
@@ -271,6 +276,7 @@ class SVDRecommender(SurpriseRecommender):
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
                           reg_qi=None, random_state=None, verbose=False)
     
+    
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.info('updating SVD model')
@@ -282,7 +288,10 @@ class SVDRecommender(SurpriseRecommender):
         logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
+        # self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        # self.algo.n_epochs = max(10,self.algo.n_epochs)
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
+        self.algo.n_epochs = max(len(results_data),self.min_epochs)
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
         if self.first_fit:

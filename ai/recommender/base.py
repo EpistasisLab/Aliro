@@ -30,7 +30,8 @@ class BaseRecommender:
 
     """
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
+            random_state=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -38,7 +39,7 @@ class BaseRecommender:
         self.ml_type = ml_type
         
         if metric is None:
-            self.metric = 'bal_accuracy' if self.ml_type == 'classifier' else 'mse'
+            self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
         else:
             self.metric = metric
 
@@ -49,6 +50,7 @@ class BaseRecommender:
         self.param_htable = {}
         
         # get ml+p combos (note: this triggers a property in base recommender)
+        self.ml_htable = {}
         self.ml_p = ml_p
 
 
@@ -64,7 +66,8 @@ class BaseRecommender:
             self.metric
 
         results_mf: DataFrame, optional 
-            columns corresponding to metafeatures of each dataset in results_data.
+            columns corresponding to metafeatures of each dataset in 
+            results_data.
         """
         if results_data.isna().values.any():
             logger.warning('There are NaNs in results_data.')
@@ -118,6 +121,7 @@ class BaseRecommender:
     def ml_p(self, value):
         logger.debug('setting ml_p')
         if value is not None:
+            #filter out SVC (temporary)
             self._ml_p = value
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
@@ -129,6 +133,12 @@ class BaseRecommender:
                                    str(hash(frozenset(x.items())))))
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
+            # set ml_htable
+            if 'alg_name' in value.columns:
+                self.ml_htable = {
+                        k:v for v,k in zip(value['alg_name'].unique(),
+                        value['algorithm'].unique())
+                        }
         else:
             logger.warning('value of ml_p is None')
         logger.debug('param_htable:{} objects'.format(len(self.param_htable)))
@@ -142,15 +152,17 @@ class BaseRecommender:
 
         for i,phash in enumerate(results_data['parameter_hash'].values):
             if int(phash) not in self.param_htable.keys():
-                logger.error(phash+' not in self.param_htable. parameter values: '+
-                      str(results_data['parameters'].values[i]))
+                logger.error(phash
+                        +' not in self.param_htable. parameter values: '
+                        + str(results_data['parameters'].values[i]))
         # get unique dataset / parameter / classifier combos in results_data
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
         
-    def update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, phash_rec):
-        '''update the recommender's memory with the new algorithm-parameter combos 
-           that it recommended'''
+    def update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, 
+            phash_rec):
+        '''update the recommender's memory with the new algorithm-parameter 
+        combos that it recommended'''
         if dataset_id is not None:
             # datahash = self.dataset_id_to_hash[dataset_id]
             self.trained_dataset_models.update(
