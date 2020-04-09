@@ -246,7 +246,10 @@ class AI():
             logger.info(f"updating AI with {pred_type} knowledgebase ("
                 f"{len(kb['resultsData'][pred_type])} results)")
             # self.update_dataset_mf(kb['resultsData'])
-            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+            # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+            #         self.dataset_mf_cache, source='knowledgebase')
+            self.rec_engines[pred_type].update_and_save(
+                    kb['resultsData'][pred_type], 
                     self.dataset_mf_cache, source='knowledgebase')
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')

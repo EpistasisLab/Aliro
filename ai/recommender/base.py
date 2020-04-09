@@ -8,7 +8,9 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+import os
 import pdb 
+import pickle
 
 class BaseRecommender:
     """Base recommender for PennAI
@@ -31,7 +33,7 @@ class BaseRecommender:
     """
 
     def __init__(self, ml_type='classifier', metric=None, ml_p=None,
-            random_state=None):
+            random_state=None, filename=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
@@ -52,6 +54,11 @@ class BaseRecommender:
         # get ml+p combos (note: this triggers a property in base recommender)
         self.ml_htable = {}
         self.ml_p = ml_p
+
+        # set a filename for loading and saving the recommender state
+        self.filename = filename
+        if self.filename is not None:
+            self.load()
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
@@ -111,6 +118,44 @@ class BaseRecommender:
         """
         # self.dataset_id_to_hash.update(
         #         {dataset_id:dataset_mf['_id'].values[0]})
+
+    def load(self, custom_name=None):
+        """Load a saved recommender state."""
+        if custom_name is None:
+            fn = self.filename
+        else:
+            fn = custom_name
+
+        if os.path.isfile(fn):
+            logger.info('loading recommender ' + fn + ' from file')
+            f = open(fn, 'rb')
+            tmp_dict = pickle.load(f)
+            f.close()
+
+            self.__dict__.update(tmp_dict)
+        else:
+            logger.warning('Could not load filename '+self.filename)
+
+
+    def save(self, custom_name=None):
+        """Save the current recommender."""
+        if custom_name is None:
+            fn = self.filename
+        else:
+            fn = custom_name
+        if os.path.isfile(fn):
+            logger.warning('overwriting ' + fn)
+
+        logger.info('saving recommender as ' + fn)
+        f = open(fn, 'wb')
+        pickle.dump(self.__dict__, f, 2)
+        f.close()
+
+    def update_and_save(self, results_data, results_mf=None, source='pennai',
+            custom_name=None):
+        """runs self.update() and self.save."""
+        self.update(results_data, results_mf, source)
+        self.save(custom_name)
 
     @property
     def ml_p(self):
