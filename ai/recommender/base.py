@@ -119,12 +119,12 @@ class BaseRecommender:
         # self.dataset_id_to_hash.update(
         #         {dataset_id:dataset_mf['_id'].values[0]})
 
-    def load(self, custom_name=None):
+    def load(self, filename=None):
         """Load a saved recommender state."""
-        if custom_name is None:
+        if filename is None:
             fn = self.filename
         else:
-            fn = custom_name
+            fn = filename
 
         if os.path.isfile(fn):
             logger.info('loading recommender ' + fn + ' from file')
@@ -137,12 +137,12 @@ class BaseRecommender:
             logger.warning('Could not load filename '+self.filename)
 
 
-    def save(self, custom_name=None):
+    def save(self, filename=None):
         """Save the current recommender."""
-        if custom_name is None:
+        if filename is None:
             fn = self.filename
         else:
-            fn = custom_name
+            fn = filename
         if os.path.isfile(fn):
             logger.warning('overwriting ' + fn)
 
@@ -152,10 +152,10 @@ class BaseRecommender:
         f.close()
 
     def update_and_save(self, results_data, results_mf=None, source='pennai',
-            custom_name=None):
+            filename=None):
         """runs self.update() and self.save."""
         self.update(results_data, results_mf, source)
-        self.save(custom_name)
+        self.save(filename)
 
     @property
     def ml_p(self):

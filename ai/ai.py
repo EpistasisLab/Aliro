@@ -81,8 +81,12 @@ class AI():
                                   'regression':RandomRecommender
                                   }
         self.DEFAULT_REC_ARGS = {
-                'classification': {'metric':'accuracy'},
+                'classification': {
+                    'ml_type':'classifier',
+                    'metric':'accuracy'
+                    },
                 'regression': {
+                    'ml_type':'regressor',
                     'metric':'r2_cv_mean'
                     }
                 }
@@ -246,11 +250,16 @@ class AI():
             logger.info(f"updating AI with {pred_type} knowledgebase ("
                 f"{len(kb['resultsData'][pred_type])} results)")
             # self.update_dataset_mf(kb['resultsData'])
-            # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, source='knowledgebase')
-            self.rec_engines[pred_type].update_and_save(
-                    kb['resultsData'][pred_type], 
+            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
                     self.dataset_mf_cache, source='knowledgebase')
+            # the next few commands are used to train the recommenders
+            # on the PMLB knowledgebases and save them
+            # fn = self.rec_engines[pred_type].filename
+            # fn = fn.split('.pkl')[0] + '_pmlb_20200409.pkl'
+            # self.rec_engines[pred_type].update_and_save(
+            #         kb['resultsData'][pred_type], 
+            #         self.dataset_mf_cache, source='knowledgebase',
+            #         filename=fn)
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')
 
@@ -540,7 +549,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True,
+            dest='USE_KNOWLEDGEBASE', default=False,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
