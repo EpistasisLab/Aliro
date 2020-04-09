@@ -56,7 +56,6 @@ class PennAI(BaseEstimator):
 
     def __init__(self,
                 rec_class=None,
-                api_path=None,
                 extra_payload=dict(),
                 rec_score_file='rec_state.obj',
                 verbose=True,
@@ -260,7 +259,7 @@ class PennAI(BaseEstimator):
         return new_mf
 
     ##-----------------
-    ## Loop methods
+    ## Loop 
     ##-----------------
     def check_results(self):
         """Checks to see if new experiment results have been posted since the
@@ -456,7 +455,6 @@ def main():
     print('=======','Penn AI','=======')#,sep='\n')
 
     pennai = AI(rec_class=name_to_rec[args.REC],
-            api_path=args.API_PATH, user=args.USER,
             verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
             datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE,
             term_condition=args.TERM_COND, max_time=args.MAX_TIME)
