@@ -9,7 +9,7 @@ import pdb
 import ai.api_utils as api_utils
 import ai.q_utils as q_utils
 import os
-import ai.knowledgebase_loader as knowledgebase_loader
+from knowledgebase_loader as load_default_knowledgebases
 import logging
 import sys
 from ai.recommender.average_recommender import AverageRecommender
@@ -40,8 +40,6 @@ class PennAI(BaseEstimator):
     - handling communication with the API.
 
     :param rec_class: ai.BaseRecommender - recommender to use
-    :param api_path: string - path to the lab api server
-    :param extra_payload: dict - any additional payload that needs to be specified
     :param rec_score_file: file - pickled score file to keep persistent scores
     between sessions
     :param verbose: Boolean
@@ -56,16 +54,27 @@ class PennAI(BaseEstimator):
 
     def __init__(self,
                 rec_class=None,
-                extra_payload=dict(),
                 rec_score_file='rec_state.obj',
                 verbose=True,
                 warm_start=False,
                 n_recs=1,
-                datasets=False,
-                use_knowledgebase=False,
+                knowledgebase=None,
+                kb_metafeatures=None,
                 term_condition='n_recs',
                 max_time=5):
         """Initializes AI managing agent."""
+
+        self.rec_class = rec_class
+        self.rec_score_file = rec_score_file
+        self.verbose = verbose
+        self.warm_start = warm_start
+        self.n_recs = n_recs
+        self.knowledgebase = knowledgebase
+        self.kb_metafeatures = kb_metafeatures
+        self.term_condition = term_condition
+        self.max_time = max_time
+
+    def fit_init_(self)
 
         # default supervised learning recommender settings
         self.DEFAULT_REC_CLASS = RandomRecommender
@@ -79,30 +88,15 @@ class PennAI(BaseEstimator):
         }
 
         # Request manager settings
-        self.n_recs=n_recs if n_recs>0 else 1
+        self.n_recs_=self.n_recs if self.n_recs>0 else 1
         self.continuous= n_recs<1
-
-        # api parameters, will be removed from self once the recommenders no longer
-        # call the api directly.
-        # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
-        if api_path == None:
-            api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
-                        os.environ['LAB_PORT'])
-        self.api_path=api_path
-        self.api_key=os.environ['APIKEY']
-
-        self.verbose = verbose #False: no printouts, True: printouts on updates
-
-        # file name of stored scores for the recommender
-        self.rec_score_file = rec_score_file
-
         # timestamp of the last time new experiments were processed
         self.last_update = 0
 
 
         self.load_options() #loads algorithm parameters to self.ui_options # todo !!
 
-        self.initilize_recommenders(rec_class) # set self.rec_engines
+        self.initilize_recommenders(self.rec_class) # set self.rec_engines
 
         # build dictionary of ml ids to names conversion
         # print('ml_id_to_name:',self.ml_id_to_name)
@@ -115,14 +109,12 @@ class PennAI(BaseEstimator):
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
 
-        if use_knowledgebase:
-            self.load_knowledgebase()
+        if self.knowledgebase:
+            self.load_kb()
 
-
-        # set termination condition
-        self.term_condition = term_condition
+        # terminate value
         if self.term_condition == 'n_recs':
-            self.term_value = self.n_recs
+            self.term_value = self.n_recs_
         elif self.term_condition == 'time':
             self.term_value = max_time
         else:
@@ -168,10 +160,14 @@ class PennAI(BaseEstimator):
 
 
 
-    def load_knowledgebase(self):
+    def load_kb(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
-        kb = knowledgebase_loader.load_default_knowledgebases()
+
+        kb = load_knowledgebase(
+                            resultsFiles=[self.knowledgebase],
+                            metafeaturesFiles=[self.kb_metafeatures]
+                            )
 
         # replace algorithm names with their ids
         self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
@@ -202,7 +198,7 @@ class PennAI(BaseEstimator):
         # self.update_dataset_mf(kb['resultsData'])
         self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
 
-        logger.info('pmlb knowledgebase loaded')
+        logger.info('Knowledgebase loaded')
 
     def load_options(self):
         """Loads algorithm UI parameters and sets them to self.ui_options."""
@@ -259,7 +255,7 @@ class PennAI(BaseEstimator):
         return new_mf
 
     ##-----------------
-    ## Loop 
+    ## Loop
     ##-----------------
     def check_results(self):
         """Checks to see if new experiment results have been posted since the
