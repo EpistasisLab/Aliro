@@ -291,7 +291,7 @@ class SVDRecommender(SurpriseRecommender):
         # self.algo.n_epochs = min(len(results_data),self.max_epochs)
         # self.algo.n_epochs = max(10,self.algo.n_epochs)
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
-        self.algo.n_epochs = max(len(results_data),self.min_epochs)
+        self.algo.n_epochs = max(self.algo.n_epochs,self.min_epochs)
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
         if self.first_fit:
