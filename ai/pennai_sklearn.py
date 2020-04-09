@@ -134,13 +134,20 @@ class PennAI(BaseEstimator):
         """
 
         df = pd.concat([X, y], axis=1, ignore_index=True)
-
         dataset = Dataset(df=df,
                         dependent_col="pennai_target",
                         prediction_type=self.mode
                         )
+        self.datasetId = dataset.m_data_hash()
 
         meta_features = generate_metafeatures(dataset)
+        mf = [meta_features]
+        df = pd.DataFrame.from_records(mf,columns=meta_features.keys())
+        print('api_utils:get_metafeatures')
+        #include dataset name
+        df['dataset'] = data['name']
+        df.sort_index(axis=1, inplace=True)
+        return df
 
     def get_all_ml_p(self, categoryFilter = None):
         """
@@ -389,9 +396,9 @@ class PennAI(BaseEstimator):
 
         # key code for generate recomendation need call this line or this function into fit
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
-            dataset_id=datasetId,
+            dataset_id=self.datasetId,
             n_recs=numOfRecs,
-            dataset_mf=metafeatures)
+            dataset_mf=self.meta_features)
 
         for alg,params,score in zip(ml,p,ai_scores):
             # TODO: just return dictionaries of parameters from rec
@@ -436,7 +443,9 @@ class PennAI(BaseEstimator):
             y = pd.Series(y, name="pennai_target")
 
         # get meta_features based on X, y
-        meta_features = self.generate_metafeatures_from_X_y(X, y)
+        self.meta_features = self.generate_metafeatures_from_X_y(X, y)
+
+
 
 
 
