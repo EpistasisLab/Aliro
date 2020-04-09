@@ -128,13 +128,13 @@ class AI():
         # set recommender status
         self.labApi.set_recommender_status(RECOMMENDER_STATUS.INITIALIZING.value)
 
-        self.initilize_recommenders(rec_class) # set self.rec_engines
-
+        self.initialize_recommenders(rec_class) # set self.rec_engines
+        
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
         # print('ml_id_to_name:',self.ml_id_to_name)
 
-        # dictionary of dataset threads, initilized and used by q_utils.
+        # dictionary of dataset threads, initialized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
         self.dataset_threads = {}
@@ -168,8 +168,8 @@ class AI():
         assert not (warm_start), "The `warm_start` option is not yet supported"
 
         # for comma-separated list of datasets in datasets, turn AI request on
-        assert (not (datasets), 
-                "The `datasets` option is not yet supported: " + str(datasets))
+        assert not datasets, \
+                "The `datasets` option is not yet supported: " + str(datasets)
 
         # set recommender status
         self.labApi.set_recommender_status(RECOMMENDER_STATUS.RUNNING.value)
@@ -177,13 +177,13 @@ class AI():
     ##-----------------
     ## Init methods
     ##-----------------
-    def initilize_recommenders(self, rec_class):
+    def initialize_recommenders(self, rec_class):
         """
         Initilize classification and regression recommenders
         """
 
         for prediction_type in self.rec_engines.keys():
-            logger.info('initiliazing rec engine for problem type "'
+            logger.info('initialiazing rec engine for problem type "'
                     +prediction_type+'"')
 
             # get the ml parameters for the given recommender type
@@ -193,7 +193,7 @@ class AI():
             assert len(ml_p) > 0
 
             # Create supervised learning recommenders
-            logger.debug("initilizing engine")
+            logger.debug("initializing engine")
             recArgs = self.DEFAULT_REC_ARGS[prediction_type]
             recArgs['ml_p'] = ml_p
 
@@ -204,7 +204,7 @@ class AI():
                         self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
 
 
-        logger.debug("recomendation engines initilized: ")
+        logger.debug("recomendation engines initialized: ")
         for prob_type, rec in self.rec_engines.items():
             logger.debug(f'\tproblemType: {prob_type} - {rec}')
             #logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
@@ -354,7 +354,7 @@ class AI():
 
 
         # get all dtasets that have an ai 'requested' status
-        # and initilize a new request
+        # and initialize a new request
         dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
         aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
 
