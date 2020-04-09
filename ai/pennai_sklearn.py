@@ -6,10 +6,11 @@ import time
 import datetime
 import pickle
 import pdb
-import ai.api_utils as api_utils
-import ai.q_utils as q_utils
+
 import os
-from knowledgebase_loader as load_default_knowledgebases
+from ai.knowledgebase_loader import load_default_knowledgebases
+from ai.metalearning.get_metafeatures import generate_metafeatures
+from ai.metalearning.datasest_describe import Dataset
 import logging
 import sys
 from ai.recommender.average_recommender import AverageRecommender
@@ -50,6 +51,7 @@ class PennAI(BaseEstimator):
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
     :param use_pmlb_knowledgebase: Boolean
+    :param mode: str "classification" or "regression"
 
     """
 
@@ -63,7 +65,8 @@ class PennAI(BaseEstimator):
                 kb_metafeatures=None,
                 ml_p_file=None,
                 term_condition='n_recs',
-                max_time=5):
+                max_time=5,
+                mode="classification"):
         """Initializes AI managing agent."""
 
         self.rec_class = rec_class
@@ -76,18 +79,17 @@ class PennAI(BaseEstimator):
         self.ml_p_file=ml_p_file
         self.term_condition = term_condition
         self.max_time = max_time
+        self.mode = mode
 
     def fit_init_(self)
 
-        # default supervised learning recommender settings
-        self.DEFAULT_REC_CLASS = RandomRecommender
-        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
+
 
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
         # (classification, regression, unsupervised, etc.)
         self.rec_engines = {
-            "classification":None
+            self.mode: None
         }
 
         # Request manager settings
@@ -95,9 +97,6 @@ class PennAI(BaseEstimator):
         self.continuous= n_recs<1
         # timestamp of the last time new experiments were processed
         self.last_update = 0
-
-
-        self.load_options() #loads algorithm parameters to self.ui_options # todo !!
 
         self.initilize_recommenders(self.rec_class) # set self.rec_engines
 
@@ -126,7 +125,22 @@ class PennAI(BaseEstimator):
         # if there is a pickle file, load it as the recommender scores
         assert not (self.warm_start), "The `warm_start` option is not yet supported"
 
+    def generate_metafeatures_from_X_y(self, X, y):
+        """
+        Return meta_features based on input X and y in fit().
+        :param X: pd.DataFrame
+        :param y: pd.Series
 
+        """
+
+        df = pd.concat([X, y], axis=1, ignore_index=True)
+
+        dataset = Dataset(df=df,
+                        dependent_col="pennai_target",
+                        prediction_type=self.mode
+                        )
+
+        meta_features = generate_metafeatures(dataset)
 
     def get_all_ml_p(self, categoryFilter = None):
         """
@@ -205,14 +219,17 @@ class PennAI(BaseEstimator):
     ##-----------------
     def initilize_recommenders(self, rec_class):
         """
-        Initilize classification recommender
+        Initilize recommender
         """
+        # default supervised learning recommender settings
+
+        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
 
         # Create supervised learning recommenders
-        if (rec_class):
-            self.rec_engines["classification"] = rec_class(**self.DEFAULT_REC_ARGS)
+        if self.rec_class is not None:
+            self.rec_engines[self.mode] = self.rec_class(**self.DEFAULT_REC_ARGS)
         else:
-            self.rec_engines["classification"]  = self.DEFAULT_REC_CLASS(**self.DEFAULT_REC_ARGS)
+            self.rec_engines[self.mode]  = RandomRecommender(**self.DEFAULT_REC_ARGS)
 
         # this line also need refactor # todo !!!
         # set the registered ml parameters in the recommenders
@@ -220,7 +237,7 @@ class PennAI(BaseEstimator):
         ml_p = self.get_all_ml_p()
         assert ml_p is not None
         assert len(ml_p) > 0
-        self.rec_engines["classification"].ml_p = ml_p
+        self.rec_engines[self.mode].ml_p = ml_p
         # if hasattr(self.rec_engines["classification"],'mlp_combos'):
         #     self.rec_engines["classification"].mlp_combos = self.rec_engines["classification"].ml_p['algorithm']+'|'+self.rec_engines["classification"].ml_p['parameters']
         # ml_p.to_csv('ml_p_options.csv')
@@ -269,22 +286,9 @@ class PennAI(BaseEstimator):
         # keep only metafeatures with results
         self.dataset_mf_cache = all_df_mf.reindex(kb['resultsData'].dataset.unique())
         # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines["classification"].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
+        self.rec_engines[self.mode].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
 
         logger.info('Knowledgebase loaded')
-
-    def load_options(self):
-        """Loads algorithm UI parameters and sets them to self.ui_options."""
-
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-              ': loading options...')
-
-        responses = self.labApi.get_projects()
-
-        if len(responses) > 0:
-            self.ui_options = responses
-        else:
-            logger.warning("no algorithms found by load_options()")
 
 
     ##-----------------
@@ -357,51 +361,11 @@ class PennAI(BaseEstimator):
         """
         if(hasattr(self,'new_data') and len(self.new_data) >= 1):
             new_mf = self.get_results_metafeatures(self.new_data)
-            self.rec_engines["classification"].update(self.new_data, new_mf)
+            self.rec_engines[self.mode].update(self.new_data, new_mf)
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     ': recommender updated')
             # reset new data
             self.new_data = pd.DataFrame()
-
-    def check_requests(self):
-        """Check to see if any new AI requests have been submitted.
-        If so, add them to self.request_queue.
-
-        :returns: Boolean - True if new AI requests have been submitted
-        """
-
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-              ': checking requests...')
-
-
-        # get all dtasets that have an ai 'requested' status
-        # and initilize a new request
-        dsFilter = {'ai':[AI_STATUS.REQUESTED.value, 'dummy']}
-        aiOnRequests = self.labApi.get_filtered_datasets(dsFilter)
-
-        if len(aiOnRequests) > 0:
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                      ': new ai request for:'+
-                      ';'.join([r['name'] for r in aiOnRequests]))
-
-            # set AI flag to 'on' to acknowledge requests received
-            for r in aiOnRequests:
-                self.labApi.set_ai_status(datasetId = r['_id'],
-                                            aiStatus = 'on')
-
-        time.sleep(.1)
-        # get all datasets that have a manual 'off' status
-        # and terminate their ai requests
-        dsFilter = {'ai':[AI_STATUS.OFF.value, 'dummy']}
-        aiOffRequests = self.labApi.get_filtered_datasets(dsFilter)
-
-        if len(aiOffRequests) > 0:
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                      ': ai termination request for:'+
-                      ';'.join([r['name'] for r in aiOffRequests]))
-
-
-        return True
 
 
     ##-----------------
@@ -454,106 +418,29 @@ class PennAI(BaseEstimator):
         finalize: store best model, or make ensemble of trained models that meet some performance threshold
 
         """
+        # load kb and metafeature
+        # load ml_p
+        self.fit_init_()
+
+        # generate datasetId based on import X, y
+        # make pd.DataFrameBased on X, y
+        if isinstance(X, np.ndarray):
+            X = pd.DataFrame(X)
+        if "pennai_target" in X.columns:
+            raise ValueError('The column name "pennai_target" is not allowed in X, '
+            'please check your dataset and remove/rename that column')
+
+        if isinstance(y, pd.Series):
+            y.rename('pennai_target')
+        elif isinstance(y, np.ndarray):
+            y = pd.Series(y, name="pennai_target")
+
+        # get meta_features based on X, y
+        meta_features = self.generate_metafeatures_from_X_y(X, y)
+
+
+
 
 
     def predict(X):
         """Predict using trained model."""
-
-####################################################################### Manager
-class PennAIClassifier(PennAI,BaseClassifier):
-    """Sklearn-style classifier for PennAI."""
-import argparse
-
-def main():
-    """Handles command line arguments and runs Penn-AI."""
-    parser = argparse.ArgumentParser(
-            description='PennAI is a recommendation system for data science. ',
-            add_help=False)
-    parser.add_argument('-h','--help',action='help',
-                        help="Show this help message and exit.")
-    parser.add_argument('-rec',action='store',dest='REC',default='random',
-            choices = ['random','average','knnmeta','svd','cocluster','knnmeans',
-                       'knnml','knndata','slopeone'],
-            help='Recommender algorithm options.')
-    parser.add_argument('-api_path',action='store',dest='API_PATH',
-            default='http://' + os.environ['LAB_HOST'] +':'+ os.environ['LAB_PORT'],
-                        help='Path to the database.')
-    parser.add_argument('-t',action='store',dest='DATASETS',
-            help='turn on ai for these datasets')
-    parser.add_argument('-n_recs',action='store',dest='N_RECS',type=int,default=1,
-            help=('Number of recommendations to make at a time. '
-                'If zero, will send continuous recommendations.'))
-    parser.add_argument('-max_time',action='store',dest='MAX_TIME',type=int,
-            default=60, help=('Amount of time to allow recs in seconds. '
-                'Only works when term_condition set to "time".'))
-    parser.add_argument('-term_condition',action='store',dest='TERM_COND',
-            type=str, default='n_recs', choices=['n_recs','time','continuous'],
-            help=('Termination condition for the AI.'))
-    parser.add_argument('-v','-verbose',action='store_true',dest='VERBOSE',
-            default=True, help='Print out more messages.')
-    parser.add_argument('-warm',action='store_true',dest='WARM_START',default=False,
-            help='Start from last saved session.')
-    parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
-            type=float, help='Time between pinging the server for updates')
-    parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True,
-            help='Load a knowledgebase for the recommender')
-
-    args = parser.parse_args()
-
-    # set logging level
-    if args.VERBOSE:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-
-    logger.debug(str(args))
-
-    # dictionary of default recommenders to choose from at the command line.
-    name_to_rec = {'random': RandomRecommender,
-            'average': AverageRecommender,
-            'knnmeta': KNNMetaRecommender,
-            'svd': SVDRecommender,
-            'cocluster': CoClusteringRecommender,
-            'knnmeans': KNNWithMeansRecommender,
-            'knndata': KNNDatasetRecommender,
-            'knnml': KNNMLRecommender,
-            'slopeone': SlopeOneRecommender
-            }
-
-    print('=======','Penn AI','=======')#,sep='\n')
-
-    pennai = AI(rec_class=name_to_rec[args.REC],
-            verbose=args.VERBOSE, n_recs=args.N_RECS, warm_start=args.WARM_START,
-            datasets=args.DATASETS, use_knowledgebase=args.USE_KNOWLEDGEBASE,
-            term_condition=args.TERM_COND, max_time=args.MAX_TIME)
-
-    n = 0;
-    try:
-        while True:
-            # check for new experiment results
-            if pennai.check_results():
-                pennai.update_recommender()
-
-            # check for user updates to request states
-            pennai.check_requests()
-
-            # process any active requests
-            pennai.process_rec()
-
-            n = n + 1
-            time.sleep(args.SLEEP_TIME)
-
-    except (KeyboardInterrupt, SystemExit):
-        logger.info('Exit command recieved')
-    except:
-        logger.error("Unhanded exception caught: "+ str(sys.exc_info()[0]))
-        raise
-    finally:
-        # shut down gracefully
-        logger.info("Shutting down AI engine...")
-        logger.info("...Shutting down Request Manager...")
-        logger.info("Goodbye")
-
-if __name__ == '__main__':
-    main()
