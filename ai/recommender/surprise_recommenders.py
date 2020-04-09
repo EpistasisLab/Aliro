@@ -38,12 +38,14 @@ class SurpriseRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None): 
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+            algo=None, filename=None): 
         """Initialize recommendation system."""
         if self.__class__.__name__ == 'SurpriseRecommender':
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
             'directly; use one of the method-specific classes instead.')
-        super().__init__(ml_type, metric, ml_p)
+
+        super().__init__(ml_type, metric, ml_p, filename=self.algo_name+'.pkl')
         
         # store results
         self.results_df = pd.DataFrame()
@@ -274,7 +276,7 @@ class SVDRecommender(SurpriseRecommender):
                           init_std_dev=.2, lr_all=.01,
                           reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
-                          reg_qi=None, random_state=None, verbose=False)
+                          reg_qi=None, random_state=None, verbose=True)
     
     
     def update_model(self,results_data):
@@ -291,7 +293,7 @@ class SVDRecommender(SurpriseRecommender):
         # self.algo.n_epochs = min(len(results_data),self.max_epochs)
         # self.algo.n_epochs = max(10,self.algo.n_epochs)
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
-        self.algo.n_epochs = max(len(results_data),self.min_epochs)
+        self.algo.n_epochs = max(self.algo.n_epochs,self.min_epochs)
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
         if self.first_fit:

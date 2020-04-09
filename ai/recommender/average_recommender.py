@@ -28,9 +28,10 @@ class AverageRecommender(BaseRecommender):
 
     """
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
+            filename='average_recommender.pkl'):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p)
+        super().__init__(ml_type, metric, ml_p, filename=filename)
 
         # empty scores pandas series
         self.scores = pd.Series()
