@@ -46,8 +46,9 @@ class PennAI(BaseEstimator):
     :param warm_start: Boolean - if true, attempt to load the ai state from the file
     provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
-    :param datasets: str or False - if not false, a comma seperated list of datasets
-    to turn the ai on for at startup
+    :param knowledgebase: file - input file for knowledgebase
+    :param kb_metafeatures: inputfile for metafeature
+    :param ml_p_file: inputfile for hyperparams space for all ML algorithms
     :param use_pmlb_knowledgebase: Boolean
 
     """
@@ -60,6 +61,7 @@ class PennAI(BaseEstimator):
                 n_recs=1,
                 knowledgebase=None,
                 kb_metafeatures=None,
+                ml_p_file=None,
                 term_condition='n_recs',
                 max_time=5):
         """Initializes AI managing agent."""
@@ -71,6 +73,7 @@ class PennAI(BaseEstimator):
         self.n_recs = n_recs
         self.knowledgebase = knowledgebase
         self.kb_metafeatures = kb_metafeatures
+        self.ml_p_file=ml_p_file
         self.term_condition = term_condition
         self.max_time = max_time
 
@@ -120,13 +123,83 @@ class PennAI(BaseEstimator):
         else:
             self.term_value = None
 
-
         # if there is a pickle file, load it as the recommender scores
-        assert not (warm_start), "The `warm_start` option is not yet supported"
+        assert not (self.warm_start), "The `warm_start` option is not yet supported"
 
-        # for comma-separated list of datasets in datasets, turn AI request on
-        assert not (datasets), "The `datasets` option is not yet supported: " + str(datasets)
 
+
+    def get_all_ml_p(self, categoryFilter = None):
+        """
+        Returns a list of ml and parameter options based on projects.json
+
+        :returns: pd.DataFrame - unique ml algorithm and parameter combinations
+            with columns 'alg_name', 'category', 'alg_name', 'parameters'
+            'parameters' is a dictionary of parameters
+        """
+        logger.info("get_all_ml_p()")
+        if self.ml_p_file is None:
+            self.ml_p_file_ = "dockers/dbmongo/files/projects.json"
+        else:
+            self.ml_p_file_ = self.ml_p_file
+
+        algorithms = json.load(open(projects_json, encoding="utf8"))
+
+        if (categoryFilter):
+            assert isinstance(categoryFilter, str)
+            algorithms = [a for a in algorithms if a['category'] == categoryFilter]
+
+        result = [] # returned value
+        good_def = True # checks that json for ML is in good form
+
+        for i,x in enumerate(algorithms):
+            logger.debug('Checking ML: ' + str(x['name']))
+            hyperparams = x['schema'].keys()
+            hyperparam_dict = {}
+
+            # get a dictionary of hyperparameters and their values
+            for h in hyperparams:
+                logger.debug('  Checking hyperparams: x[''schema''][h]' +
+                        str(x['schema'][h]))
+                if 'ui' in x['schema'][h]:
+                    if 'values' in x['schema'][h]['ui']:
+                        hyperparam_dict[h] = x['schema'][h]['ui']['values']
+                    else:
+                        hyperparam_dict[h] = x['schema'][h]['ui']['choices']
+                else:
+                    good_def = False
+            if good_def:
+                all_hyperparam_combos = list(ParameterGrid(hyperparam_dict))
+                #print('\thyperparams: ',hyperparam_dict)
+                print(len(all_hyperparam_combos),'hyperparameter combinations for',
+                        x['name'])
+
+                for ahc in all_hyperparam_combos:
+                    if 'invalidParameterCombinations' in x.keys():
+                        if not self.valid_combo(ahc,
+                                x['invalidParameterCombinations']):
+                            continue
+                    result.append({'algorithm':x['_id'],
+                                   'category':x['category'],
+                                   'parameters':ahc,
+                                   'alg_name':x['name']})
+            else:
+                logger.error('warning: ' + str(x['name']) + 'was skipped')
+            good_def = True
+
+
+        # convert to dataframe, making sure there are no duplicates
+        all_ml_p = pd.DataFrame(result)
+        tmp = all_ml_p.copy()
+        tmp['parameters'] = tmp['parameters'].apply(str)
+        assert ( len(all_ml_p) == len(tmp.drop_duplicates()) )
+
+        if (len(all_ml_p) > 0):
+            logger.info(str(len(all_ml_p)) + ' ml-parameter options loaded')
+            logger.info('get_all_ml_p() algorithms:' + str(all_ml_p.algorithm.unique()))
+        else:
+            logger.error('get_all_ml_p() parsed no results')
+
+        return all_ml_p
     ##-----------------
     ## Init methods
     ##-----------------
@@ -144,7 +217,7 @@ class PennAI(BaseEstimator):
         # this line also need refactor # todo !!!
         # set the registered ml parameters in the recommenders
 
-        # ml_p = self.labApi.get_all_ml_p()
+        ml_p = self.get_all_ml_p()
         assert ml_p is not None
         assert len(ml_p) > 0
         self.rec_engines["classification"].ml_p = ml_p
