@@ -7,7 +7,7 @@ import ExperimentStatus from './components/ExperimentStatus';
 import { Grid, Segment, Header, Button, Popup, Message } from 'semantic-ui-react';
 import { formatDataset } from '../../../../utils/formatter';
 
-const DatasetCard = ({ dataset, toggleAI }) => {
+const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 	const datasetLink = `/#/datasets/${dataset._id}`;
   const builderLink = `/#/builder?dataset=${dataset._id}`;
 
@@ -39,6 +39,7 @@ const DatasetCard = ({ dataset, toggleAI }) => {
         <span className="float-right">
           <DatasetActions
             dataset={dataset}
+            recommender={recommender}
             toggleAI={toggleAI}
           />
         </span>
