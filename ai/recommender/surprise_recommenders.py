@@ -45,7 +45,16 @@ class SurpriseRecommender(BaseRecommender):
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
             'directly; use one of the method-specific classes instead.')
 
-        super().__init__(ml_type, metric, ml_p, filename=self.algo_name+'.pkl')
+        if filename is None:
+            filename = (
+                    'ai/recommender/saved/'
+                    + self.algo_name
+                    + '_' + ml_type 
+                    + '_' + metric 
+                    + '_pmlb_20200409'
+                    +'.pkl')
+
+        super().__init__(ml_type, metric, ml_p, filename=filename)
         
         # store results
         self.results_df = pd.DataFrame()
@@ -100,7 +109,8 @@ class SurpriseRecommender(BaseRecommender):
         self.trainset = data.build_full_trainset()
         logger.debug('self.trainset # of ML-P combos: ' + 
                 str(self.trainset.n_items))
-        logger.debug('self.trainset # of datasets: ' + str(self.trainset.n_users))
+        logger.debug('self.trainset # of datasets: ' 
+                + str(self.trainset.n_users))
 
     def update_model(self,results_data):
         """Stores new results and updates algo."""
@@ -277,7 +287,6 @@ class SVDRecommender(SurpriseRecommender):
                           reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None, 
                           lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None, 
                           reg_qi=None, random_state=None, verbose=True)
-    
     
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
