@@ -357,7 +357,7 @@ class PennAI(BaseEstimator):
         # key code for generate recomendation need call this line or this function into fit
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
             dataset_id=self.datasetId,
-            n_recs=self.n_recs,
+            n_recs=self.n_recs_,
             dataset_mf=self.meta_features)
 
         for alg,params,score in zip(ml,p,ai_scores):
