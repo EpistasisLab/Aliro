@@ -411,10 +411,10 @@ app.post("/api/recommender/status", jsonParser, (req, res, next) => {
         }}
     )
     .then((result) => {
-        //emitEvent('aiToggled', req);
+        emitEvent('recommenderStatusUpdated', req);
 
         res.send({
-            message: "AI status set to '" + recommenderStatus.getStatus(req.body.status) + "'"
+            message: "Recommender status set to '" + recommenderStatus.getStatus(req.body.status) + "'"
         });
     })
     .catch((err) => {
