@@ -49,8 +49,8 @@ class PennAI(BaseEstimator):
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
-    :param use_pmlb_knowledgebase: Boolean
-    :param mode: str "classification" or "regression"
+    :param term_condition: terminate condition # todo
+    :param max_time: maximum time in minutes that PennAI can run # todo
 
     """
     mode="classification"
@@ -64,8 +64,8 @@ class PennAI(BaseEstimator):
                 knowledgebase=None,
                 kb_metafeatures=None,
                 ml_p_file=None,
-                term_condition='n_recs',
-                max_time=5):
+                term_condition='n_recs x n_iters',
+                max_time=50):
         """Initializes AI managing agent."""
 
         self.rec_class = rec_class
@@ -78,7 +78,6 @@ class PennAI(BaseEstimator):
         self.ml_p_file=ml_p_file
         self.term_condition = term_condition
         self.max_time = max_time
-        self.mode = mode
 
     def fit_init_(self)
 
@@ -173,7 +172,7 @@ class PennAI(BaseEstimator):
 
         for i,x in enumerate(algorithms):
             logger.debug('Checking ML: ' + str(x['name']))
-            # import scikit obj
+            # import scikit obj from string
             exec('from {} import {}'.format(x['path'], x['name']))
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
@@ -272,23 +271,7 @@ class PennAI(BaseEstimator):
         kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
                                           lambda x: self.ml_name_to_id[x])
 
-        #TODO: Verify that conversion from name to id is needed....
-        # WGL: yes at the moment we need this until hash is implemented.
-        # we can add a check at dataset upload to prevent repeat dataset names in
-        # the mean time.
-        # pdb.set_trace()
-        # self.user_datasets = self.labApi.get_user_datasets(self.user)
-        # self.dataset_name_to_id = {v:k for k,v in self.user_datasets.items()}
-        # kb['resultsData']['dataset'] = kb['resultsData']['dataset'].apply(
-        #                                   lambda x: self.dataset_name_to_id[x]
-        #                                   if x in self.dataset_name_to_id.keys()
-        #                                   else x)
-        # metafeatures = {}
-        # for k,v in kb['metafeaturesData'].items():
-        #     if k in self.dataset_name_to_id.keys():
-        #         metafeatures[self.dataset_name_to_id[k]] = v
-        #     else:
-        #         metafeatures[k] = v
+
         all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
@@ -302,6 +285,8 @@ class PennAI(BaseEstimator):
     ##-----------------
     ## Utility methods
     ##-----------------
+
+    # todo ! to working yet
     def get_results_metafeatures(self, results_data):
         """
         Return a pandas dataframe of metafeatures associated with the datasets
@@ -339,29 +324,6 @@ class PennAI(BaseEstimator):
 
         return new_mf
 
-    ##-----------------
-    ## Loop
-    ##-----------------
-    def check_results(self):
-        """Checks to see if new experiment results have been posted since the
-        previous time step. If so, set them to self.new_data and return True.
-
-        :returns: Boolean - True if new results were found
-        """
-        logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': checking results...')
-
-        newResults = self.labApi.get_new_experiments_as_dataframe(
-                                        last_update=self.last_update)
-
-        if len(newResults) > 0:
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                  ': ' + str(len(newResults)) + ' new results!')
-            self.last_update = int(time.time())*1000 # update timestamp
-            self.new_data = newResults
-            return True
-
-        return False
 
     def update_recommender(self):
         """Update recommender models based on new experiment results in
@@ -403,7 +365,7 @@ class PennAI(BaseEstimator):
             # modified_params = eval(params) # turn params into a dictionary
 
             recommendations.append({'dataset_id':datasetId,
-                    'algorithm':eval(alg),
+                    'algorithm':eval(alg), # convert string to scikit-learn obj
                     'parameters':params,
                     'ai_score':score,
                     })
@@ -444,6 +406,7 @@ class PennAI(BaseEstimator):
 
         for _ in self.n_iters:
             recommendations = self.generate_recommendations(self)
+
             for r in recommendations:
 
                 est = r['algorithm'].set_params(r['parameters'])
@@ -451,11 +414,14 @@ class PennAI(BaseEstimator):
                                             estimator=est,
                                             X=X,
                                             y=y,
-                                            cv=10
+                                            cv=10,
+                                            scoring=self.scoring
                                             )
+                # avg_cv_score is the score to evaluate recomendation
+                r['cv_scores'] = cv_scores
+                r['avg_cv_score'] = np.mean(cv_scores)
 
-
-
+            # update recommender each iteration # to do
 
 
 
