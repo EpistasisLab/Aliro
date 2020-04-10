@@ -21,6 +21,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 from collections import OrderedDict
+from sklearn.model_selection import cross_eval_score
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -46,7 +47,8 @@ class PennAI(BaseEstimator):
     :param verbose: Boolean
     :param warm_start: Boolean - if true, attempt to load the ai state from the file
     provided by rec_score_file
-    :param n_recs: int - number of recommendations to make for each request
+    :param n_recs: int - number of recommendations to make for each iteration
+    :param n_iters: int = total number of iteration
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
@@ -60,7 +62,8 @@ class PennAI(BaseEstimator):
                 rec_score_file='rec_state.obj',
                 verbose=True,
                 warm_start=False,
-                n_recs=1,
+                n_recs=10,
+                n_iters=10,
                 knowledgebase=None,
                 kb_metafeatures=None,
                 ml_p_file=None,
@@ -74,6 +77,7 @@ class PennAI(BaseEstimator):
         self.verbose = verbose
         self.warm_start = warm_start
         self.n_recs = n_recs
+        self.n_iters = n_iters
         self.knowledgebase = knowledgebase
         self.kb_metafeatures = kb_metafeatures
         self.ml_p_file=ml_p_file
@@ -174,6 +178,8 @@ class PennAI(BaseEstimator):
 
         for i,x in enumerate(algorithms):
             logger.debug('Checking ML: ' + str(x['name']))
+            # import scikit obj
+            exec('from {} import {}'.format(x['path'], x['name']))
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
 
@@ -378,11 +384,8 @@ class PennAI(BaseEstimator):
     ##-----------------
     ## Syncronous actions an AI request can take
     ##-----------------
-    def generate_recommendations(self, datasetId, numOfRecs, predictionType = "classification"):
-        """Generate ml recommendation payloads for the given dataset.
-
-        :param datasetId
-        :param numOfRecs
+    def generate_recommendations(self):
+        """
 
         :returns list of maps that represent request payload objects
         """
@@ -397,7 +400,7 @@ class PennAI(BaseEstimator):
         # key code for generate recomendation need call this line or this function into fit
         ml, p, ai_scores = self.rec_engines[predictionType].recommend(
             dataset_id=self.datasetId,
-            n_recs=numOfRecs,
+            n_recs=self.n_recs,
             dataset_mf=self.meta_features)
 
         for alg,params,score in zip(ml,p,ai_scores):
@@ -405,8 +408,7 @@ class PennAI(BaseEstimator):
             # modified_params = eval(params) # turn params into a dictionary
 
             recommendations.append({'dataset_id':datasetId,
-                    'algorithm_id':alg,
-                    'username':'testuser', # todo!!
+                    'algorithm':eval(alg),
                     'parameters':params,
                     'ai_score':score,
                     })
@@ -444,6 +446,19 @@ class PennAI(BaseEstimator):
 
         # get meta_features based on X, y
         self.meta_features = self.generate_metafeatures_from_X_y(X, y)
+
+        for _ in self.n_iters:
+            recommendations = self.generate_recommendations(self)
+            for r in recommendations:
+
+                est = r['algorithm'].set_params(r['parameters'])
+                cv_scores = cross_val_score(
+                                            estimator=est,
+                                            X=X,
+                                            y=y,
+                                            cv=10
+                                            )
+
 
 
 
