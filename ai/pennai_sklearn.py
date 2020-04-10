@@ -21,7 +21,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 from collections import OrderedDict
-from sklearn.model_selection import cross_eval_score
+from sklearn.model_selection import cross_val_score
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -42,11 +42,8 @@ class PennAI(BaseEstimator):
     - handling communication with the API.
 
     :param rec_class: ai.BaseRecommender - recommender to use
-    :param rec_score_file: file - pickled score file to keep persistent scores
-    between sessions
     :param verbose: Boolean
     :param warm_start: Boolean - if true, attempt to load the ai state from the file
-    provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each iteration
     :param n_iters: int = total number of iteration
     :param knowledgebase: file - input file for knowledgebase
@@ -56,10 +53,10 @@ class PennAI(BaseEstimator):
     :param mode: str "classification" or "regression"
 
     """
+    mode="classification"
 
     def __init__(self,
                 rec_class=None,
-                rec_score_file='rec_state.obj',
                 verbose=True,
                 warm_start=False,
                 n_recs=10,
@@ -68,12 +65,10 @@ class PennAI(BaseEstimator):
                 kb_metafeatures=None,
                 ml_p_file=None,
                 term_condition='n_recs',
-                max_time=5,
-                mode="classification"):
+                max_time=5):
         """Initializes AI managing agent."""
 
         self.rec_class = rec_class
-        self.rec_score_file = rec_score_file
         self.verbose = verbose
         self.warm_start = warm_start
         self.n_recs = n_recs
