@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSortedDatasets } from 'data/datasets';
-import * as actions from 'data/datasets/actions';
+import { fetchDatasets } from 'data/datasets/actions';
+import { fetchRecommender } from 'data/recommender/actions';
 import SceneHeader from '../SceneHeader';
 import FileUpload from '../FileUpload';
 import ResponsiveGrid from '../ResponsiveGrid';
@@ -24,10 +25,11 @@ class Datasets extends Component {
   */
   componentDidMount() {
     this.props.fetchDatasets();
+    this.props.fetchRecommender();
   }
 
   render() {
-    const { datasets, isFetching, error, fetchDatasets } = this.props;
+    const { datasets, recommender, isFetching, error, fetchDatasets, fetchRecommender } = this.props;
 
     if(isFetching) {
       return (
@@ -53,6 +55,7 @@ class Datasets extends Component {
             {datasets.map(dataset => (
               <DatasetCard
                 key={dataset._id}
+                recommender={recommender}
                 dataset={dataset}
               />
             ))}
@@ -65,11 +68,17 @@ class Datasets extends Component {
   }
 }
 
+const mapDispatchToProps = {
+  fetchDatasets,
+  fetchRecommender
+}
+
 const mapStateToProps = (state) => ({
   datasets: getSortedDatasets(state),
+  recommender: state.recommender.data,
   isFetching: state.datasets.isFetching,
   error: state.datasets.error
 });
 
 export { Datasets };
-export default connect(mapStateToProps, actions)(Datasets);
+export default connect(mapStateToProps, mapDispatchToProps)(Datasets);

@@ -1,0 +1,2 @@
+# Declare files that will always have LF line endings on checkout.
+release/*.sh text eol=lf
