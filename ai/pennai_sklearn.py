@@ -42,8 +42,9 @@ class PennAI(BaseEstimator):
     - handling communication with the API.
 
     :param rec_class: ai.BaseRecommender - recommender to use
-    :param verbose: Boolean
-    :param warm_start: Boolean - if true, attempt to load the ai state from the file
+    :param verbose: Boolean # todo not working
+    :param warm_start: Boolean - if true, attempt to load the ai state from the plk file
+    :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
     :param n_iters: int = total number of iteration
     :param knowledgebase: file - input file for knowledgebase
@@ -59,6 +60,7 @@ class PennAI(BaseEstimator):
                 rec_class=None,
                 verbose=True,
                 warm_start=False,
+                scoring="accuracy",
                 n_recs=10,
                 n_iters=10,
                 knowledgebase=None,
@@ -71,6 +73,7 @@ class PennAI(BaseEstimator):
         self.rec_class = rec_class
         self.verbose = verbose
         self.warm_start = warm_start
+        self.scoring = scoring
         self.n_recs = n_recs
         self.n_iters = n_iters
         self.knowledgebase = knowledgebase
@@ -230,7 +233,7 @@ class PennAI(BaseEstimator):
         """
         # default supervised learning recommender settings
 
-        self.DEFAULT_REC_ARGS = {'metric':'accuracy'}
+        self.DEFAULT_REC_ARGS = {'metric': self.scoring}
 
         # Create supervised learning recommenders
         if self.rec_class is not None:
