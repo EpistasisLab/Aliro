@@ -14,6 +14,8 @@ import itertools
 import json
 import os
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import shap 
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
@@ -99,6 +101,31 @@ def pearsonr(y_true, y_pred):
 # make new SCORERS
 SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 SCORERS['pearsonr'] = make_scorer(pearsonr)
+
+def get_column_names_from_ColumnTransformer(column_transformer, feature_names):
+    """Get column names after applying Column Transformations
+
+    Parameters
+    ----------
+    column_transformer: sklearn.compose._column_transformer.ColumnTransformer
+        A list of categorical, ordinal and remaining transformations
+    feature_names: list of strings
+        Original list of column/feature names
+    Returns
+    -------
+    new_feature_names: list of strings
+        Feature names generated after column transformations
+    """   
+    new_feature_names = []
+    for transformer_in_columns in column_transformer.transformers_:
+        _, transformer, col_indices  = transformer_in_columns
+        feature_columns = [feature_names[i] for i in col_indices]
+        try: ## Only works for OneHotEncoder transforms
+            names = transformer.get_feature_names(feature_columns)
+            new_feature_names += list(names)
+        except:
+            new_feature_names += feature_columns
+    return new_feature_names
 
 
 def generate_results(model, input_data,
@@ -359,6 +386,26 @@ def generate_results(model, input_data,
                               cv_scores,
                               figure_export)
 
+        if type(model).__name__ == 'Pipeline':
+            step_names = [step[0] for step in model.steps]
+            column_transformer = model[step_names[0]]
+            classifier_model = model[step_names[1]]
+            modified_feature_names = get_column_names_from_ColumnTransformer(column_transformer, feature_names)
+            modified_features = column_transformer.transform(features.copy())
+            plot_shap_summary_curve(tmpdir,
+                                    _id,
+                                    classifier_model,
+                                    modified_features,
+                                    modified_feature_names,
+                                    classifier_model.classes_)
+        else:
+            plot_shap_summary_curve(tmpdir,
+                                    _id,
+                                    model,
+                                    features.copy(), # Send a copy of features as it may get modified
+                                    feature_names,
+                                    model.classes_)
+        
         if num_classes == 2:
             plot_roc_curve(
                 tmpdir,
@@ -556,10 +603,73 @@ def plot_confusion_matrix(
         plt.savefig(tmpdir + _id + '/confusion_matrix_' + _id + '.png')
         plt.close()
 
+
+def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_names):
+    """
+    Plot Summary Curve for Classification models
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in PennAI
+    model: scikit-learn estimator
+        A fitted scikit-learn model
+    features: np.darray/pd.DataFrame
+        Features in training dataset
+    feature_names: np.array
+        List of feature names
+    class_names: list
+        List of class names
+    """
+
+    #Ensure that images are saved properly
+    rcParams.update({'figure.autolayout': True})
+    #SHAP value calculation raises error if dtype is non-numeric
+    features = np.array(features).astype('float64')
+    #Determine model name for sklearn-based models
+    model_name = type(model).__name__
+
+    #Select explainer and set shap values
+    if model_name in [ 'DecisionTreeClassifier', 'RandomForestClassifier' ]:
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(features)
+
+    elif model_name ==  'GradientBoostingClassifier' and len(class_names) == 2:
+        #Gradient Boosting Tree Explainer is only supported for Binary Classification
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(features)
+
+    else:
+        #Handle special case for SVC (probability=False)
+        if 'SVC' in model_name:
+            return
+        #Sample 50 examples for computational speedup
+        num_samples = min(50, len(features))
+        sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
+        features = features[sampled_row_indices]
+        explainer = shap.KernelExplainer(model.predict_proba, features)
+        #l1_reg not set to 'auto' to subside warnings
+        shap_values = explainer.shap_values(features, l1_reg= 'num_features(10)')
+
+    # Handle the case of multi-class SHAP outputs
+    if isinstance(shap_values, list):
+        for i,class_name in enumerate(class_names):
+            plt.figure()
+            shap.summary_plot(shap_values[i], features, feature_names=feature_names, show=False)
+            save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_' + str(class_name) + '_.png'
+            plt.savefig(save_path)
+            plt.close()
+    else:
+        plt.figure()
+        shap.summary_plot(shap_values, features, feature_names=feature_names, show=False)
+        save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_0_.png'
+        plt.savefig(save_path)
+        plt.close()
+
+
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
-
-
 def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     """
     Plot ROC Curve.
