@@ -8,6 +8,7 @@ import RunDetails from './components/RunDetails'
 import MSEMAEDetails from './components/MSEMAEDetails';;
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
+import SummaryCurve from './components/SummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
@@ -84,6 +85,7 @@ class Results extends Component {
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
       let confusionMatrix, rocCurve, importanceScore;
+      let summaryCurveDict = {};
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('confusion_matrix')) {
@@ -92,6 +94,9 @@ class Results extends Component {
           rocCurve = file;
         } else if(filename.includes('imp_score')) {
           importanceScore = file;
+        } else if(filename.includes('shap_summary_curve')) {
+          let class_name = filename.split('_').slice(-2,-1);
+          summaryCurveDict[class_name] = file;
         }
       });
       // balanced accuracy
@@ -133,6 +138,7 @@ class Results extends Component {
               <Grid.Column>
                 <ConfusionMatrix file={confusionMatrix} />
                 <ROCCurve file={rocCurve} />
+                <SummaryCurve fileDict={summaryCurveDict} />
               </Grid.Column>
               <Grid.Column>
                 <Score
