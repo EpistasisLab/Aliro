@@ -16,6 +16,7 @@ import sys
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from ai.metrics import SCORERS
 # from ai.recommender.svd_recommender import SVDRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
@@ -83,8 +84,6 @@ class PennAI(BaseEstimator):
         self.max_time = max_time
 
     def fit_init_(self)
-
-
 
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
@@ -362,7 +361,7 @@ class PennAI(BaseEstimator):
         return recommendations
 
 
-    def fit(X,y):
+    def fit(self, X,y):
         """Trains PennAI on X,y.
 
         initialize: train recommender or load saved recommender state
@@ -441,6 +440,31 @@ class PennAI(BaseEstimator):
         self.estimator.fit(X, y)
 
 
-    def predict(X):
+    def predict(self, X):
         """Predict using trained model."""
+        if not hasattr(self,'estimator'):
+            raise RuntimeError('A estimator has not yet been optimized. Please call fit() first.')
         return self.estimator.predict(X)
+
+    def score(self, X, y):
+        """Return the score on the given testing data using the user-specified scoring function.
+        Parameters
+        ----------
+        X: array-like {n_samples, n_features}
+            Feature matrix of the testing set
+        y: array-like {n_samples}
+            List of class labels for prediction in the testing set
+        Returns
+        -------
+        accuracy_score: float
+            The estimated test set accuracy
+        """
+        if not hasattr(self,'estimator'):
+            raise RuntimeError('A estimator has not yet been optimized. Please call fit() first.')
+        scorer = SCORERS[self.scoring]
+        score = scorer(
+            self.estimator,
+            X,
+            y
+        )
+        return score
