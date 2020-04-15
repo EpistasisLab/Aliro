@@ -4,9 +4,9 @@ import time
 import datetime
 import pickle
 import pdb
-
+import json
 import os
-from ai.knowledgebase_loader import load_default_knowledgebases
+from ai.knowledgebase_loader import load_knowledgebase
 from ai.metalearning.get_metafeatures import generate_metafeatures
 from ai.metalearning.dataset_describe import Dataset
 import logging
@@ -20,7 +20,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 logger = logging.getLogger(__name__)
@@ -29,6 +29,8 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+
+
 
 
 class PennAI(BaseEstimator):
@@ -103,7 +105,7 @@ class PennAI(BaseEstimator):
         "explained_variance": "explained_variance_cv_mean",
         "neg_mean_squared_error": "neg_mean_squared_error_cv_mean"
         }
-        self.metric_ = metric_match(self.scoring_)
+        self.metric_ = metric_match[self.scoring_]
 
         self.rec_engines = {
             self.mode: None
@@ -111,9 +113,9 @@ class PennAI(BaseEstimator):
 
         # Request manager settings
         self.n_recs_=self.n_recs if self.n_recs>0 else 1
-        self.continuous= n_recs<1
+        #self.continuous= self.n_recs<1
         # timestamp of the last time new experiments were processed
-        self.last_update = 0
+        #self.last_update = 0
 
         self.initilize_recommenders(self.rec_class) # set self.rec_engines
 
@@ -149,8 +151,8 @@ class PennAI(BaseEstimator):
         :param y: pd.Series
 
         """
-
-        df = pd.concat([X, y], axis=1, ignore_index=True)
+        df = X.copy()
+        df['pennai_target'] = y
         dataset = Dataset(df=df,
                         dependent_col="pennai_target",
                         prediction_type=self.mode
@@ -161,9 +163,21 @@ class PennAI(BaseEstimator):
         mf = [meta_features]
         df = pd.DataFrame.from_records(mf,columns=meta_features.keys())
         #include dataset name
-        df['dataset'] = data['name']
+        df['dataset'] = self.datasetId
         df.sort_index(axis=1, inplace=True)
         return df
+
+    def valid_combo(self, combo, bad_combos):
+        """Checks if parameter combination is valid."""
+        for bad_combo in bad_combos:
+            bc = {}
+            for b in bad_combo:
+                bc.update(b)
+            bad = True
+            for k,v in bc.items():
+                if combo[k] != v:
+                    bad = False
+        return not bad
 
     def get_all_ml_p(self, categoryFilter = None):
         """
@@ -179,19 +193,16 @@ class PennAI(BaseEstimator):
         else:
             self.ml_p_file_ = self.ml_p_file
 
-        algorithms = json.load(open(projects_json, encoding="utf8"))
-
-        if (categoryFilter):
-            assert isinstance(categoryFilter, str)
-            algorithms = [a for a in algorithms if a['category'] == categoryFilter]
+        self.algorithms = json.load(open(self.ml_p_file_, encoding="utf8"))
+        # exclude algorithm in different mode
+        self.algorithms = [a for a in self.algorithms if a['category'] == self.mode]
 
         result = [] # returned value
         good_def = True # checks that json for ML is in good form
 
-        for i,x in enumerate(algorithms):
+        for i,x in enumerate(self.algorithms):
             logger.debug('Checking ML: ' + str(x['name']))
-            # import scikit obj from string
-            exec('from {} import {}'.format(x['path'], x['name']))
+
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
 
@@ -211,13 +222,14 @@ class PennAI(BaseEstimator):
                 #print('\thyperparams: ',hyperparam_dict)
                 print(len(all_hyperparam_combos),'hyperparameter combinations for',
                         x['name'])
+                #print(all_hyperparam_combos)
 
                 for ahc in all_hyperparam_combos:
                     if 'invalidParameterCombinations' in x.keys():
                         if not self.valid_combo(ahc,
                                 x['invalidParameterCombinations']):
                             continue
-                    result.append({'algorithm':x['_id'],
+                    result.append({'algorithm':x['name'],
                                    'category':x['category'],
                                    'parameters':ahc,
                                    'alg_name':x['name']})
@@ -260,6 +272,8 @@ class PennAI(BaseEstimator):
         # set the registered ml parameters in the recommenders
 
         ml_p = self.get_all_ml_p()
+        #print('ml_p df head')
+        #print(ml_p.head())
         assert ml_p is not None
         assert len(ml_p) > 0
         self.rec_engines[self.mode].ml_p = ml_p
@@ -285,18 +299,20 @@ class PennAI(BaseEstimator):
                             )
 
         # replace algorithm names with their ids
-        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
-        kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
-                                          lambda x: self.ml_name_to_id[x])
+        #self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
+        #kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
+        #                                  lambda x: self.ml_name_to_id[x])
 
+        all_df_mf = kb['metafeaturesData'].set_index('_id', drop=False)
 
-        all_df_mf = pd.DataFrame.from_records(kb['metafeaturesData']).transpose()
         # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
-        self.dataset_mf_cache = all_df_mf.reindex(kb['resultsData'].dataset.unique())
+        df = all_df_mf.loc[kb['resultsData'][self.mode]['_id'].unique()]
+        self.dataset_mf_cache = self.dataset_mf_cache.append(df)
         # self.update_dataset_mf(kb['resultsData'])
-        self.rec_engines[self.mode].update(kb['resultsData'], self.dataset_mf_cache, source='knowledgebase')
 
+        self.rec_engines[self.mode].update(kb['resultsData'][self.mode],
+                self.dataset_mf_cache, source='knowledgebase')
         logger.info('Knowledgebase loaded')
 
 
@@ -317,18 +333,11 @@ class PennAI(BaseEstimator):
         """
 
         d = self.datasetId
-
-        if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
-            df = self.meta_features
-            df['dataset'] = d
-            df.set_index('dataset', inplace=True)
-            self.dataset_mf_cache = self.dataset_mf_cache.append(df)
-
-
+        df = self.meta_features
+        df['dataset'] = d
+        df.set_index('dataset', inplace=True)
+        self.dataset_mf_cache = self.dataset_mf_cache.append(df)
         logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
-        logger.info(f'indicies: \n\n {dataset_indicies}')
-
-        logger.info(f"new_mf: {new_mf}")
 
         return df
 
@@ -351,7 +360,7 @@ class PennAI(BaseEstimator):
 
         :returns list of maps that represent request payload objects
         """
-        logger.info("generate_recommendations({},{})".format(datasetId, numOfRecs))
+        logger.info("generate_recommendations({},{})".format(self.datasetId, self.n_recs_))
 
         recommendations = []
 
@@ -360,7 +369,7 @@ class PennAI(BaseEstimator):
         #metafeatures = self.labApi.get_metafeatures(datasetId)
 
         # key code for generate recomendation need call this line or this function into fit
-        ml, p, ai_scores = self.rec_engines[predictionType].recommend(
+        ml, p, ai_scores = self.rec_engines[self.mode].recommend(
             dataset_id=self.datasetId,
             n_recs=self.n_recs_,
             dataset_mf=self.meta_features)
@@ -395,32 +404,35 @@ class PennAI(BaseEstimator):
         # generate datasetId based on import X, y
         # make pd.DataFrameBased on X, y
         if isinstance(X, np.ndarray):
-            X = pd.DataFrame(X)
+            columns = ["Feature_{}".format(i) for i in range(X.shape[1])]
+            X = pd.DataFrame(X, columns=columns)
         if "pennai_target" in X.columns:
             raise ValueError('The column name "pennai_target" is not allowed in X, '
             'please check your dataset and remove/rename that column')
-
-        if isinstance(y, pd.Series):
-            y.rename('pennai_target')
-        elif isinstance(y, np.ndarray):
-            y = pd.Series(y, name="pennai_target")
 
         # get meta_features based on X, y
         self.meta_features = self.generate_metafeatures_from_X_y(X, y)
         # save all results
         self.recomms = []
-        for _ in self.n_iters:
-            recommendations = self.generate_recommendations(self)
+
+        for i,x in enumerate(self.algorithms):
+            logger.debug('Importing ML methods: ' + str(x['name']))
+            # import scikit obj from string
+            exec('from {} import {}'.format(x['path'], x['name']))
+        for i in range(self.n_iters):
+            print("Start iteration #", i+1)
+            recommendations = self.generate_recommendations()
             new_results = []
             for r in recommendations:
                 # initilize a result
                 res = {
-                'dataset': self.datasetId,
+                '_id': self.datasetId,
                 'algorithm': r['algorithm'],
-                'parameters':r['parameters'],
+                'parameters': r['parameters'],
                 }
+                print(r)
                 # evaluate each recomendation
-                est = eval(r['algorithm']) # convert string to scikit-learn obj
+                est = eval(r['algorithm'])() # convert string to scikit-learn obj
                 est.set_params(**r['parameters'])
                 try:
                     cv_scores = cross_val_score(
@@ -434,14 +446,14 @@ class PennAI(BaseEstimator):
                 except Exception:
                     # todo for better error message
                     logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                            ': recommendation: ' + r + 'is invaild.')
+                            ': recommendation: ' + str(r) + 'is invaild.')
                     continue
                 res[self.metric_] =  np.mean(cv_scores)
                 new_results.append(res)
 
             self.recomms += new_results
             # update recommender each iteration
-            new_results_df = pandas.DataFrame(new_results)
+            new_results_df = pd.DataFrame(new_results)
             self.update_recommender(new_results_df)
             # get best score in new results in this iteration
              # todo for early stop termination
@@ -450,10 +462,14 @@ class PennAI(BaseEstimator):
         self.recomms = pd.DataFrame(self.recomms)
         self.best_result_score = self.recomms[self.metric_].max()
         self.best_result = self.recomms[self.recomms[self.metric_] == self.best_result_score]
-        self.estimator = eval(self.best_result['algorithm'])
-        self.estimator.set_params(**self.best_result['parameters'])
+        self.best_algorithm = self.best_result['algorithm'].values[0]
+        self.best_params = self.best_result['parameters'].values[0]
+        self.estimator = eval(self.best_algorithm)()
+        self.estimator.set_params(**self.best_params)
         # fit best estimator with X, y
         self.estimator.fit(X, y)
+
+        return self
 
 
     def predict(self, X):
