@@ -8,7 +8,7 @@ import pdb
 import os
 from ai.knowledgebase_loader import load_default_knowledgebases
 from ai.metalearning.get_metafeatures import generate_metafeatures
-from ai.metalearning.datasest_describe import Dataset
+from ai.metalearning.dataset_describe import Dataset
 import logging
 import sys
 from ai.recommender.average_recommender import AverageRecommender
@@ -58,7 +58,7 @@ class PennAI(BaseEstimator):
 
     def __init__(self,
                 rec_class=None,
-                verbose=True,
+                verbose=True, # todo
                 warm_start=False,
                 scoring=None,
                 n_recs=10,
@@ -82,7 +82,10 @@ class PennAI(BaseEstimator):
         self.term_condition = term_condition
         self.max_time = max_time
 
-    def fit_init_(self)
+    def fit_init_(self):
+        """
+        fit initilization
+        """
 
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
@@ -334,7 +337,7 @@ class PennAI(BaseEstimator):
         """Update recommender models based on new experiment results in
         new_results_df.
         """
-        if len(new_results_df) >= 1):
+        if len(new_results_df) >= 1:
             new_mf = self.get_results_metafeatures()
             self.rec_engines[self.mode].update(new_results_df, new_mf)
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
@@ -386,8 +389,7 @@ class PennAI(BaseEstimator):
         finalize: store best model, or make ensemble of trained models that meet some performance threshold
 
         """
-        # load kb and metafeature
-        # load ml_p
+
         self.fit_init_()
 
         # generate datasetId based on import X, y
@@ -449,7 +451,7 @@ class PennAI(BaseEstimator):
         self.best_result_score = self.recomms[self.metric_].max()
         self.best_result = self.recomms[self.recomms[self.metric_] == self.best_result_score]
         self.estimator = eval(self.best_result['algorithm'])
-        self.estimator.set_params(**self.best_result['parameters']
+        self.estimator.set_params(**self.best_result['parameters'])
         # fit best estimator with X, y
         self.estimator.fit(X, y)
 
@@ -483,10 +485,10 @@ class PennAI(BaseEstimator):
         )
         return score
 
-def PennAIClassifier(PennAI, ClassifierMixin):
+class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
 
-def PennAIRegressor(PennAI, RegressorMixin):
+class PennAIRegressor(PennAI, RegressorMixin):
     mode = "regression"
     scoring_ = "neg_mean_squared_error"
