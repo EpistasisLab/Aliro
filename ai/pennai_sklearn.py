@@ -144,7 +144,6 @@ class PennAI(BaseEstimator):
         meta_features = generate_metafeatures(dataset)
         mf = [meta_features]
         df = pd.DataFrame.from_records(mf,columns=meta_features.keys())
-        print('api_utils:get_metafeatures')
         #include dataset name
         df['dataset'] = data['name']
         df.sort_index(axis=1, inplace=True)
@@ -290,10 +289,9 @@ class PennAI(BaseEstimator):
     ##-----------------
 
     # todo ! to working yet
-    def get_results_metafeatures(self, results_data):
+    def get_results_metafeatures(self):
         """
-        Return a pandas dataframe of metafeatures associated with the datasets
-        in results_data.
+        Return a pandas dataframe of metafeatures
 
         Retireves metafeatures from self.dataset_mf_cache if they exist,
         otherwise queries the api and updates the cache.
@@ -301,45 +299,33 @@ class PennAI(BaseEstimator):
         :param results_data: experiment results with associated datasets
 
         """
-        logger.debug('results_data:'+str(results_data.columns))
-        logger.debug('results_data:'+str(results_data.head()))
 
-        dataset_metafeatures = []
-        dataset_indicies = results_data['dataset'].unique()
+        d = self.datasetId
 
-        # add dataset metafeatures to the cache
-        for d in dataset_indicies:
-            if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
-                df = self.labApi.get_metafeatures(d)
-                df['dataset'] = d
-                dataset_metafeatures.append(df)
-        if dataset_metafeatures:
-            df_mf = pd.concat(dataset_metafeatures).set_index('dataset')
-            self.dataset_mf_cache = self.dataset_mf_cache.append(df_mf)
+        if len(self.dataset_mf_cache)==0 or d not in self.dataset_mf_cache.index:
+            df = self.meta_features
+            df['dataset'] = d
+            df.set_index('dataset', inplace=True)
+            self.dataset_mf_cache = self.dataset_mf_cache.append(df)
 
 
         logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
         logger.info(f'indicies: \n\n {dataset_indicies}')
 
-        new_mf = self.dataset_mf_cache.loc[dataset_indicies, :]
-        assert len(new_mf) == len(dataset_indicies)
         logger.info(f"new_mf: {new_mf}")
 
-        return new_mf
+        return df
 
 
-    def update_recommender(self):
+    def update_recommender(self, new_results_df):
         """Update recommender models based on new experiment results in
-        self.new_data, and then clear self.new_data.
+        new_results_df.
         """
-        if(hasattr(self,'new_data') and len(self.new_data) >= 1):
-            new_mf = self.get_results_metafeatures(self.new_data)
-            self.rec_engines[self.mode].update(self.new_data, new_mf)
+        if len(new_results_df) >= 1):
+            new_mf = self.get_results_metafeatures()
+            self.rec_engines[self.mode].update(new_results_df, new_mf)
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                     ': recommender updated')
-            # reset new data
-            self.new_data = pd.DataFrame()
-
 
     ##-----------------
     ## Syncronous actions an AI request can take
@@ -367,8 +353,8 @@ class PennAI(BaseEstimator):
             # TODO: just return dictionaries of parameters from rec
             # modified_params = eval(params) # turn params into a dictionary
 
-            recommendations.append({'dataset_id':datasetId,
-                    'algorithm':eval(alg), # convert string to scikit-learn obj
+            recommendations.append({'dataset_id':self.datasetId,
+                    'algorithm': alg,
                     'parameters':params,
                     'ai_score':score,
                     })
@@ -406,29 +392,55 @@ class PennAI(BaseEstimator):
 
         # get meta_features based on X, y
         self.meta_features = self.generate_metafeatures_from_X_y(X, y)
-
+        # save all results
+        self.recomms = []
         for _ in self.n_iters:
             recommendations = self.generate_recommendations(self)
-
+            new_results = []
             for r in recommendations:
+                # initilize a result
+                res = {
+                'dataset': self.datasetId,
+                'algorithm': r['algorithm'],
+                'parameters':r['parameters'],
+                }
+                # evaluate each recomendation
+                est = eval(r['algorithm']) # convert string to scikit-learn obj
+                est.set_params(**r['parameters'])
+                try:
+                    cv_scores = cross_val_score(
+                                                estimator=est,
+                                                X=X,
+                                                y=y,
+                                                cv=10,
+                                                scoring=self.scoring,
+                                                error_score = 'raise'
+                                                )
+                except Exception:
+                    # todo for better error message
+                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
+                            ': recommendation: ' + r + 'is invaild.')
+                    continue
+                res[self.scoring] =  np.mean(cv_scores)
+                new_results.append(res)
 
-                est = r['algorithm'].set_params(r['parameters'])
-                cv_scores = cross_val_score(
-                                            estimator=est,
-                                            X=X,
-                                            y=y,
-                                            cv=10,
-                                            scoring=self.scoring
-                                            )
-                # avg_cv_score is the score to evaluate recomendation
-                r['cv_scores'] = cv_scores
-                r['avg_cv_score'] = np.mean(cv_scores)
-
-            # update recommender each iteration # to do
-
-
-
+            self.recomms += new_results
+            # update recommender each iteration
+            new_results_df = pandas.DataFrame(new_results)
+            self.update_recommender(new_results_df)
+            # get best score in new results in this iteration
+             # todo for early stop termination
+            best_score_iter = new_results_df[self.scoring].max()
+        # convert to pandas.DataFrame from finalize result
+        self.recomms = pd.DataFrame(self.recomms)
+        self.best_result_score = self.recomms[self.scoring].max()
+        self.best_result = self.recomms[self.recomms[self.scoring] == self.best_result_score]
+        self.estimator = eval(self.best_result['algorithm'])
+        self.estimator.set_params(**self.best_result['parameters']
+        # fit best estimator with X, y
+        self.estimator.fit(X, y)
 
 
     def predict(X):
         """Predict using trained model."""
+        return self.estimator.predict(X)
