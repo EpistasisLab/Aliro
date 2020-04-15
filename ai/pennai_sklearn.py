@@ -487,6 +487,6 @@ def PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
 
-def PennAIClassifier(PennAI, RegressorMixin):
+def PennAIRegressor(PennAI, RegressorMixin):
     mode = "regression"
     scoring_ = "neg_mean_squared_error"
