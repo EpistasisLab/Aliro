@@ -1,7 +1,5 @@
-from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
-from time import sleep
 import time
 import datetime
 import pickle
@@ -21,8 +19,9 @@ from ai.metrics import SCORERS
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-from collections import OrderedDict
+
 from sklearn.model_selection import cross_val_score
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -61,7 +60,7 @@ class PennAI(BaseEstimator):
                 rec_class=None,
                 verbose=True,
                 warm_start=False,
-                scoring="accuracy",
+                scoring=None,
                 n_recs=10,
                 n_iters=10,
                 knowledgebase=None,
@@ -88,6 +87,21 @@ class PennAI(BaseEstimator):
         # recommendation engines for different problem types
         # will be expanded as more types of probles are supported
         # (classification, regression, unsupervised, etc.)
+        if self.scoring is not None:
+            self.scoring_ = self.scoring
+
+        # match scoring_ to metric in knowledgebase
+        metric_match ={
+        "accuracy": "accuracy",
+        "balanced_accuracy": "bal_accuracy",
+        "f1": "macrof1",
+        "f1_macro": "macrof1",
+        "r2": "r2_cv_mean",
+        "explained_variance": "explained_variance_cv_mean",
+        "neg_mean_squared_error": "neg_mean_squared_error_cv_mean"
+        }
+        self.metric_ = metric_match(self.scoring_)
+
         self.rec_engines = {
             self.mode: None
         }
@@ -231,7 +245,7 @@ class PennAI(BaseEstimator):
         """
         # default supervised learning recommender settings
 
-        self.DEFAULT_REC_ARGS = {'metric': self.scoring}
+        self.DEFAULT_REC_ARGS = {'metric': self.metric_}
 
         # Create supervised learning recommenders
         if self.rec_class is not None:
@@ -412,7 +426,7 @@ class PennAI(BaseEstimator):
                                                 X=X,
                                                 y=y,
                                                 cv=10,
-                                                scoring=self.scoring,
+                                                scoring=self.scoring_,
                                                 error_score = 'raise'
                                                 )
                 except Exception:
@@ -420,7 +434,7 @@ class PennAI(BaseEstimator):
                     logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                             ': recommendation: ' + r + 'is invaild.')
                     continue
-                res[self.scoring] =  np.mean(cv_scores)
+                res[self.metric_] =  np.mean(cv_scores)
                 new_results.append(res)
 
             self.recomms += new_results
@@ -429,11 +443,11 @@ class PennAI(BaseEstimator):
             self.update_recommender(new_results_df)
             # get best score in new results in this iteration
              # todo for early stop termination
-            best_score_iter = new_results_df[self.scoring].max()
+            best_score_iter = new_results_df[self.metric_].max()
         # convert to pandas.DataFrame from finalize result
         self.recomms = pd.DataFrame(self.recomms)
-        self.best_result_score = self.recomms[self.scoring].max()
-        self.best_result = self.recomms[self.recomms[self.scoring] == self.best_result_score]
+        self.best_result_score = self.recomms[self.metric_].max()
+        self.best_result = self.recomms[self.recomms[self.metric_] == self.best_result_score]
         self.estimator = eval(self.best_result['algorithm'])
         self.estimator.set_params(**self.best_result['parameters']
         # fit best estimator with X, y
@@ -461,10 +475,18 @@ class PennAI(BaseEstimator):
         """
         if not hasattr(self,'estimator'):
             raise RuntimeError('A estimator has not yet been optimized. Please call fit() first.')
-        scorer = SCORERS[self.scoring]
+        scorer = SCORERS[self.scoring_]
         score = scorer(
             self.estimator,
             X,
             y
         )
         return score
+
+def PennAIClassifier(PennAI, ClassifierMixin):
+    mode = "classification"
+    scoring_ = "accuracy"
+
+def PennAIClassifier(PennAI, RegressorMixin):
+    mode = "regression"
+    scoring_ = "neg_mean_squared_error"
