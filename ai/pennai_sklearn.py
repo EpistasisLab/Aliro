@@ -6,6 +6,7 @@ import pickle
 import pdb
 import json
 import os
+import random
 from ai.knowledgebase_loader import load_knowledgebase
 from ai.metalearning.get_metafeatures import generate_metafeatures
 from ai.metalearning.dataset_describe import Dataset
@@ -264,8 +265,8 @@ class PennAI(BaseEstimator):
         # default supervised learning recommender settings
 
         self.DEFAULT_REC_ARGS = {'metric': self.metric_}
-        if self.random_state:
-            self.DEFAULT_REC_ARGS['random_state'] = self.random_state
+        #if self.random_state:
+            #self.DEFAULT_REC_ARGS['random_state'] = self.random_state
         # this line also need refactor # todo !!!
         # set the registered ml parameters in the recommenders
 
@@ -407,6 +408,9 @@ class PennAI(BaseEstimator):
         """
 
         self.fit_init_()
+        if self.random_state is not None:
+            random.seed(self.random_state)
+            np.random.seed(self.random_state)
 
         # generate datasetId based on import X, y
         # make pd.DataFrameBased on X, y
@@ -431,16 +435,20 @@ class PennAI(BaseEstimator):
             recommendations = self.generate_recommendations()
             new_results = []
             for r in recommendations:
+
+                print(r)
+                # evaluate each recomendation
+                est = eval(r['algorithm'])() # convert string to scikit-learn obj
+                params = r['parameters']
+                if hasattr(est, 'random_state') and self.random_state:
+                    params['random_state'] = self.random_state
+                est.set_params(**params)
                 # initilize a result
                 res = {
                 '_id': self.datasetId,
                 'algorithm': r['algorithm'],
-                'parameters': r['parameters'],
+                'parameters': params,
                 }
-                print(r)
-                # evaluate each recomendation
-                est = eval(r['algorithm'])() # convert string to scikit-learn obj
-                est.set_params(**r['parameters'])
                 try:
                     cv_scores = cross_val_score(
                                                 estimator=est,
