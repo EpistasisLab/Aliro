@@ -54,6 +54,7 @@ class PennAI(BaseEstimator):
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
     :param term_condition: terminate condition # todo
     :param max_time: maximum time in minutes that PennAI can run # todo
+    :param random_state: random state for recommenders
 
     """
     mode="classification"
@@ -69,7 +70,8 @@ class PennAI(BaseEstimator):
                 kb_metafeatures=None,
                 ml_p_file=None,
                 term_condition='n_recs x n_iters',
-                max_time=50):
+                max_time=50,
+                random_state=None):
         """Initializes AI managing agent."""
 
         self.rec_class = rec_class
@@ -83,6 +85,7 @@ class PennAI(BaseEstimator):
         self.ml_p_file=ml_p_file
         self.term_condition = term_condition
         self.max_time = max_time
+        self.random_state = random_state
 
     def fit_init_(self):
         """
@@ -261,6 +264,14 @@ class PennAI(BaseEstimator):
         # default supervised learning recommender settings
 
         self.DEFAULT_REC_ARGS = {'metric': self.metric_}
+        if self.random_state:
+            self.DEFAULT_REC_ARGS['random_state'] = self.random_state
+        # this line also need refactor # todo !!!
+        # set the registered ml parameters in the recommenders
+
+        ml_p = self.get_all_ml_p()
+
+        self.DEFAULT_REC_ARGS['ml_p'] = ml_p
 
         # Create supervised learning recommenders
         if self.rec_class is not None:
@@ -268,15 +279,11 @@ class PennAI(BaseEstimator):
         else:
             self.rec_engines[self.mode]  = RandomRecommender(**self.DEFAULT_REC_ARGS)
 
-        # this line also need refactor # todo !!!
-        # set the registered ml parameters in the recommenders
-
-        ml_p = self.get_all_ml_p()
         #print('ml_p df head')
         #print(ml_p.head())
         assert ml_p is not None
         assert len(ml_p) > 0
-        self.rec_engines[self.mode].ml_p = ml_p
+
         # if hasattr(self.rec_engines["classification"],'mlp_combos'):
         #     self.rec_engines["classification"].mlp_combos = self.rec_engines["classification"].ml_p['algorithm']+'|'+self.rec_engines["classification"].ml_p['parameters']
         # ml_p.to_csv('ml_p_options.csv')
@@ -452,12 +459,16 @@ class PennAI(BaseEstimator):
                 new_results.append(res)
 
             self.recomms += new_results
-            # update recommender each iteration
+
             new_results_df = pd.DataFrame(new_results)
+            # get best score
+            best_score_iter = new_results_df[self.metric_].max()
+            # update recommender each iteration
             self.update_recommender(new_results_df)
             # get best score in new results in this iteration
              # todo for early stop termination
-            best_score_iter = new_results_df[self.metric_].max()
+
+
         # convert to pandas.DataFrame from finalize result
         self.recomms = pd.DataFrame(self.recomms)
         self.best_result_score = self.recomms[self.metric_].max()
