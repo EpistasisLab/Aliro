@@ -126,11 +126,6 @@ class PennAI(BaseEstimator):
         # build dictionary of ml ids to names conversion
         # print('ml_id_to_name:',self.ml_id_to_name)
 
-        # dictionary of dataset threads, initilized and used by q_utils.
-        # Keys are datasetIds, values are q_utils.DatasetThread instances.
-        #WGL: this should get moved to the request manager
-        self.dataset_threads = {}
-
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
 
