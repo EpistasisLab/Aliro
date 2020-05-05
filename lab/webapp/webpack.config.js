@@ -3,7 +3,19 @@ var webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-module.exports = {
+//Use a function here so we can check the value of the 'mode' parameter
+//https://webpack.js.org/configuration/mode/
+module.exports = (env, argv) => {
+
+  if (argv.mode === 'development') {
+    console.log('webpack.config.js: mode === development');
+    config.devtool = 'eval-source-map';
+  }
+
+  return config;
+}
+
+var config = {
   entry: [
     './src/index.jsx'
   ],
