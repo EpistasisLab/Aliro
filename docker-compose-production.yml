@@ -5,7 +5,7 @@ services:
   lab:
     build:
       context: .
-      dockerfile: dockers/lab/Dockerfile_production
+      dockerfile: docker/lab/Dockerfile_production
     image: "pennai_lab:${TAG}"
     tty: true
     stdin_open: true
@@ -24,7 +24,7 @@ services:
   machine:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile_production
+      dockerfile: docker/machine/Dockerfile_production
     image: "pennai_machine:${TAG}"
     tty: true
     stdin_open: true
@@ -43,7 +43,7 @@ services:
   dbmongo:
     build:
       context: .
-      dockerfile: dockers/dbmongo/Dockerfile
+      dockerfile: docker/dbmongo/Dockerfile
     image: "pennai_dbmongo:${TAG}"
     tty: true
     stdin_open: true

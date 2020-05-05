@@ -1,7 +1,7 @@
 # Environment Configuration
 
 # Algorithm Configuration
-Machine learning algorithm parameters and UI settings are defined in `/dockers/dbmongo/files/projects.json`
+Machine learning algorithm parameters and UI settings are defined in `/docker/dbmongo/files/projects.json`
 
 ## Schema
 ```
