@@ -34,6 +34,7 @@ logger.addHandler(ch)
 
 
 
+
 class AI():
     """AI managing agent for Penn AI.
 
@@ -75,7 +76,10 @@ class AI():
                 term_condition='n_recs',
                 max_time=5):
         """Initializes AI managing agent."""
-
+        if 'RANDOM_SEED' in os.environ:
+            self.random_state = int(os.environ['RANDOM_SEED'])
+        else:
+            self.random_state = 0
         # default supervised learning recommender settings
         self.DEFAULT_REC_CLASS = {'classification':RandomRecommender,
                                   'regression':RandomRecommender
@@ -83,11 +87,13 @@ class AI():
         self.DEFAULT_REC_ARGS = {
                 'classification': {
                     'ml_type':'classifier',
-                    'metric':'accuracy'
+                    'metric':'accuracy',
+                    'random_state':self.random_state
                     },
                 'regression': {
                     'ml_type':'regressor',
-                    'metric':'r2_cv_mean'
+                    'metric':'r2_cv_mean',
+                    'random_state':self.random_state
                     }
                 }
 
@@ -129,10 +135,6 @@ class AI():
             extra_payload=extra_payload,
             verbose=self.verbose)
 
-        # set recommender status
-        self.labApi.set_recommender_status(RECOMMENDER_STATUS.INITIALIZING.value)
-
-        self.initialize_recommenders(rec_class) # set self.rec_engines
         
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
@@ -141,7 +143,7 @@ class AI():
         # dictionary of dataset threads, initialized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
         #WGL: this should get moved to the request manager
-        self.dataset_threads = {}
+        # self.dataset_threads = {}
 
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
@@ -149,8 +151,13 @@ class AI():
         # store dataset_id to hash dictionary
         self.dataset_mf_cache_id_hash_lookup = {}
 
-        if use_knowledgebase:
-            self.load_knowledgebase()
+        # set recommender status
+        self.labApi.set_recommender_status(
+                RECOMMENDER_STATUS.INITIALIZING.value)
+
+        #initialize recommenders
+        self.use_knowledgebase = use_knowledgebase
+        self.initialize_recommenders(rec_class) # set self.rec_engines
 
 
         # set termination condition
@@ -186,27 +193,45 @@ class AI():
         Initilize classification and regression recommenders
         """
 
-        for prediction_type in self.rec_engines.keys():
+        kb = None
+        if self.use_knowledgebase:
+            kb = self.load_knowledgebase()
+
+        for pred_type in self.rec_engines.keys():
             logger.info('initialiazing rec engine for problem type "'
-                    +prediction_type+'"')
+                    +pred_type+'"')
 
             # get the ml parameters for the given recommender type
             logger.debug("getting ml_p")
-            ml_p = self.labApi.get_all_ml_p(prediction_type)
+            ml_p = self.labApi.get_all_ml_p(pred_type)
             assert ml_p is not None
             assert len(ml_p) > 0
 
             # Create supervised learning recommenders
             logger.debug("initializing engine")
-            recArgs = self.DEFAULT_REC_ARGS[prediction_type]
+            recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
+            recArgs['knowledgebase'] = kb['resultsData'][pred_type]
 
             if (rec_class):
-                self.rec_engines[prediction_type] = rec_class(**recArgs)
+                self.rec_engines[pred_type] = rec_class(**recArgs)
             else:
-                self.rec_engines[prediction_type]  = \
-                        self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
+                self.rec_engines[pred_type]  = \
+                        self.DEFAULT_REC_CLASS[pred_type](**recArgs)
 
+            # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+            #         self.dataset_mf_cache, source='knowledgebase')
+            ##########################################################
+            # the next few commands are used to train the recommenders
+            # on the PMLB knowledgebases and save them
+            fn = self.rec_engines[pred_type].filename
+            logger.info('updating and saving '+fn)
+            self.rec_engines[pred_type].update_and_save(
+                    kb['resultsData'][pred_type], 
+                    self.dataset_mf_cache, 
+                    source='knowledgebase',
+                    filename=fn)
+            ##########################################################
 
         logger.debug("recomendation engines initialized: ")
         for prob_type, rec in self.rec_engines.items():
@@ -217,7 +242,7 @@ class AI():
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
-        kb = knowledgebase_loader.load_default_knowledgebases()
+        kb = knowledgebase_loader.load_default_knowledgebases(dedupe=False)
         
         all_df_mf = kb['metafeaturesData'].set_index('_id')
 
@@ -249,19 +274,11 @@ class AI():
 
             logger.info(f"updating AI with {pred_type} knowledgebase ("
                 f"{len(kb['resultsData'][pred_type])} results)")
-            # self.update_dataset_mf(kb['resultsData'])
-            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
-                    self.dataset_mf_cache, source='knowledgebase')
-            # the next few commands are used to train the recommenders
-            # on the PMLB knowledgebases and save them
-            # fn = self.rec_engines[pred_type].filename
-            # fn = fn.split('.pkl')[0] + '_pmlb_20200409.pkl'
-            # self.rec_engines[pred_type].update_and_save(
-            #         kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, source='knowledgebase',
-            #         filename=fn)
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')
+
+        return kb
+
 
     ##-----------------
     ## Utility methods
