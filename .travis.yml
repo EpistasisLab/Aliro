@@ -25,6 +25,7 @@ jobs:
         - docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v machine/test/learn_tests.py lab/pyutils/tests/*.py
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_a*.py ai/tests/lab_*.py ai/tests/test_re*.py ai/tests/test_k*loader.py
+        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py     
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
         # Tell GitHub not to use jekyll to compile the docs
