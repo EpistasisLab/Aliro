@@ -11,6 +11,7 @@ PennAI is a multi-container docker project that uses ([Docker-Compose](https://d
       - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
       - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
     - **Runtime Memory**: (Mac and Windows only) If using **Windows** or **Mac**, we recommend docker VM to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).  By default, docker VM on Windows or Mac starts with 2G runtime memory.
+    - **File Sharing**: (Windows only)  Share the drive that will contain the PennAI directory with Docker by opening Docker Desktop, navigating to Resources->File Sharing and sharing the drive. [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
   - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
