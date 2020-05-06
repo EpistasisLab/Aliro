@@ -79,31 +79,43 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
       />
     );*/
   };
-  let fold = scoreValueList[0][1]/scoreValueList[1][1];
-  var icons = foldcheck(fold);
-  let headericon = (
-    <Popup
-      position="top center"
-      content={icons[2]}
-      trigger={
-        <Icon
-          inverted
-          color={icons[1]}
-          name={icons[0]}
-          className="info-icon float-right"
-        />
-      }
-    />
-  );
+
+  if(typeof(scoreValue) !== 'number' && !scoreValueList.length){
+    return (
+      <InvertedCard
+        header={scoreName}
+        content={getCardContent()}
+      />
+    );
+  } else {
+    let fold = scoreValueList[0][1]/scoreValueList[1][1];
+    var icons = foldcheck(fold);
+    let headericon = (
+      <Popup
+        position="top center"
+        content={icons[2]}
+        trigger={
+          <Icon
+            inverted
+            color={icons[1]}
+            name={icons[0]}
+            className="info-icon float-right"
+          />
+        }
+      />
+    );
+
+    return (
+      <InvertedCard
+        header={scoreName}
+        headericon={headericon}
+        content={getCardContent()}
+      />
+    );
+  }
 
 
-  return (
-    <InvertedCard
-      header={scoreName}
-      headericon={headericon}
-      content={getCardContent()}
-    />
-  );
+  
 }
 
 
