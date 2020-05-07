@@ -115,7 +115,7 @@ def test_init():
     assert pennai.knowledgebase == classification_kb
     assert pennai.kb_metafeatures == classification_metafeatures
     assert pennai.random_state == 42
-    assert pennai.verbose == True
+    assert pennai.verbose == 0
     assert pennai.warm_start == False
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
