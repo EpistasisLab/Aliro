@@ -50,7 +50,7 @@ def test_fit_RandomRecommender(recommender):
     pennai.fit(X_train, y_train)
 
     assert pennai.score(X_train, y_train)
-    
+
 
 
 def test_verbose_0():
@@ -64,6 +64,23 @@ def test_verbose_0():
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
                             verbose=0
+                           )
+    pennai.fit(X_train, y_train)
+    assert pennai.score(X_train, y_train)
+
+
+def test_n_jobs():
+    """Test PennAIClassifier fit() with n_jobs=2."""
+
+    pennai = PennAIClassifier(
+                            rec_class=RandomRecommender,
+                            n_recs=4,
+                            n_iters=3,
+                            knowledgebase=classification_kb,
+                            kb_metafeatures=classification_metafeatures,
+                            random_state=42,
+                            verbose=1,
+                            n_jobs=2,
                            )
     pennai.fit(X_train, y_train)
     assert pennai.score(X_train, y_train)
@@ -124,6 +141,7 @@ def test_init():
     assert pennai.ml_p_file == None
     assert pennai.max_time_mins == None
     assert pennai.mode == "classification"
+    assert pennai.n_jobs == 1
 
 
 def test_fit_init():
