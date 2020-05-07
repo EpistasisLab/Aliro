@@ -56,7 +56,7 @@ class PennAI(BaseEstimator):
     def __init__(self,
                 rec_class=None,
                 verbose=0,
-                warm_start=False,
+                warm_start=False,# todo
                 scoring=None,
                 n_recs=10,
                 n_iters=10,
