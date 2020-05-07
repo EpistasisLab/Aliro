@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
-import datetime
+from datetime import datetime
 import pickle
 import pdb
 import json
@@ -46,8 +46,7 @@ class PennAI(BaseEstimator):
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
-    :param term_condition: terminate condition # todo
-    :param max_time: maximum time in minutes that PennAI can run # todo
+    :param max_time_mins: maximum time in minutes that PennAI can run # todo
     :param random_state: random state for recommenders
 
     """
@@ -63,8 +62,7 @@ class PennAI(BaseEstimator):
                 knowledgebase=None,
                 kb_metafeatures=None,
                 ml_p_file=None,
-                term_condition='n_recs x n_iters',
-                max_time=50,
+                max_time_mins=None,
                 random_state=None):
         """Initializes AI managing agent."""
 
@@ -77,8 +75,7 @@ class PennAI(BaseEstimator):
         self.knowledgebase = knowledgebase
         self.kb_metafeatures = kb_metafeatures
         self.ml_p_file=ml_p_file
-        self.term_condition = term_condition
-        self.max_time = max_time
+        self.max_time_mins = max_time_mins
         self.random_state = random_state
 
     def fit_init_(self):
@@ -138,14 +135,6 @@ class PennAI(BaseEstimator):
 
         if self.knowledgebase:
             self.load_kb()
-
-        # terminate value
-        if self.term_condition == 'n_recs':
-            self.term_value = self.n_recs_
-        elif self.term_condition == 'time':
-            self.term_value = max_time
-        else:
-            self.term_value = None
 
         # if there is a pickle file, load it as the recommender scores
         assert not (self.warm_start), "The `warm_start` option is not yet supported"
@@ -395,6 +384,15 @@ class PennAI(BaseEstimator):
         return recommendations
 
 
+    def _stop_by_max_time_mins(self):
+        """Stop optimization process once maximum minutes have elapsed."""
+        if self.max_time_mins:
+            total_mins_elapsed = (datetime.now() - self._start_datetime).total_seconds() / 60.
+            return total_mins_elapsed >= self.max_time_mins
+        else:
+            return False
+
+
     def fit(self, X,y):
         """Trains PennAI on X,y.
 
@@ -430,12 +428,19 @@ class PennAI(BaseEstimator):
             logger.debug('Importing ML methods: ' + str(x['name']))
             # import scikit obj from string
             exec('from {} import {}'.format(x['path'], x['name']))
+        self._start_datetime = datetime.now()
         for i in range(self.n_iters):
+            # stop by max_time if step
+            if_stop = self._stop_by_max_time_mins()
+            if if_stop:
+                logger.info("Stop optimization process once"
+                            " {} minutes have elapsed.".format(self.max_time_mins))
+                break
+
             logger.info("Start iteration #{}".format(i+1))
             recommendations = self.generate_recommendations()
             new_results = []
             for r in recommendations:
-
                 logger.debug(r)
                 # evaluate each recomendation
                 est = eval(r['algorithm'])() # convert string to scikit-learn obj
