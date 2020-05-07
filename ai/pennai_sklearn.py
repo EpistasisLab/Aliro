@@ -565,23 +565,6 @@ def bool_or_none(val):
         return val
 
 
-def none(val):
-    """Convert nono argument to None.
-    Parameters
-    ----------
-    val: string
-        Value of a parameter in string type
-
-    Returns
-    -------
-    _: None
-        If input value if "none", then the function will return None,
-        otherwise it will retune string.
-    """
-    if(val.lower() == 'none' or 'null'):
-        return None
-
-
 class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
