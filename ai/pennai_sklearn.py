@@ -24,15 +24,8 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
-ch = logging.StreamHandler()
-formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-
-
-
 
 class PennAI(BaseEstimator):
     """Penn AI standalone sklearn wrapper.
@@ -45,7 +38,7 @@ class PennAI(BaseEstimator):
     - handling communication with the API.
 
     :param rec_class: ai.BaseRecommender - recommender to use
-    :param verbose: Boolean # todo not working
+    :param verbose: interger, 0 quite, 1 info, 2 debug
     :param warm_start: Boolean - if true, attempt to load the ai state from the plk file
     :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
@@ -62,7 +55,7 @@ class PennAI(BaseEstimator):
 
     def __init__(self,
                 rec_class=None,
-                verbose=True, # todo
+                verbose=0,
                 warm_start=False,
                 scoring=None,
                 n_recs=10,
@@ -114,6 +107,20 @@ class PennAI(BaseEstimator):
         self.rec_engines = {
             self.mode: None
         }
+
+        if self.verbose == 2:
+            logger_level = logging.DEBUG
+        elif self.verbose == 1:
+            logger_level = logging.INFO
+        elif self.verbose <= 0:
+            logger_level = logging.ERROR
+
+
+        logger.setLevel(logger_level)
+        ch = logging.StreamHandler()
+        formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
         # Request manager settings
         self.n_recs_=self.n_recs if self.n_recs>0 else 1
@@ -186,7 +193,7 @@ class PennAI(BaseEstimator):
             with columns 'alg_name', 'category', 'alg_name', 'parameters'
             'parameters' is a dictionary of parameters
         """
-        logger.info("get_all_ml_p()")
+
         if self.ml_p_file is None:
             self.ml_p_file_ = "dockers/dbmongo/files/projects.json"
         else:
@@ -219,8 +226,7 @@ class PennAI(BaseEstimator):
             if good_def:
                 all_hyperparam_combos = list(ParameterGrid(hyperparam_dict))
                 #print('\thyperparams: ',hyperparam_dict)
-                print(len(all_hyperparam_combos),'hyperparameter combinations for',
-                        x['name'])
+                logger.debug('{} hyperparameter combinations for {}'.format(len(all_hyperparam_combos),x['name']))
                 #print(all_hyperparam_combos)
 
                 for ahc in all_hyperparam_combos:
@@ -340,7 +346,6 @@ class PennAI(BaseEstimator):
         df['dataset'] = d
         df.set_index('dataset', inplace=True)
         self.dataset_mf_cache = self.dataset_mf_cache.append(df)
-        logger.info(f'mf:\n {list(self.dataset_mf_cache.index.values)}')
 
         return df
 
@@ -426,12 +431,12 @@ class PennAI(BaseEstimator):
             # import scikit obj from string
             exec('from {} import {}'.format(x['path'], x['name']))
         for i in range(self.n_iters):
-            print("Start iteration #", i+1)
+            logger.info("Start iteration #{}".format(i+1))
             recommendations = self.generate_recommendations()
             new_results = []
             for r in recommendations:
 
-                print(r)
+                logger.debug(r)
                 # evaluate each recomendation
                 est = eval(r['algorithm'])() # convert string to scikit-learn obj
                 params = r['parameters']
@@ -491,6 +496,7 @@ class PennAI(BaseEstimator):
         if not hasattr(self,'estimator'):
             raise RuntimeError('A estimator has not yet been optimized. Please call fit() first.')
         return self.estimator.predict(X)
+
 
     def score(self, X, y):
         """Return the score on the given testing data using the user-specified scoring function.
