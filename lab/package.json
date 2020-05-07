@@ -4,7 +4,8 @@
   "description": "your friendly machine learning assistant",
   "main": "lab.js",
   "scripts": {
-    "start": "node lab.js"
+    "start": "node lab.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,10 @@
   },
   "devDependencies": {
     "@types/node": "^10.17.19",
+    "jest": "^26.0.1",
+    "jest-html-reporter": "^3.1.0",
+    "jest-junit": "^10.0.0",
+    "supertest": "^4.0.2",
     "typescript": "^3.8.3"
   },
   "engines": {
@@ -45,5 +50,40 @@
   },
   "cacheDirectories": [
     "node_modules"
-  ]
+  ],
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest",
+      "^.+\\.js?$": "babel-jest",
+      "^.+\\.ts?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fetch-mock)/)"
+    ],
+    "modulePathIgnorePatterns": [
+      "webapp/"
+    ],
+    "reporters": [
+      "default",
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "pageTitle": "Jest Lab Unit Test Suite",
+          "includeFailureMsg": true,
+          "includeConsoleLog": true,
+          "outputPath": "../target/test-reports/html/unit_lab_jest_test_report.html"
+        }
+      ],
+      [
+        "./node_modules/jest-junit",
+        {
+          "suiteName": "Jest Unit Test Suite",
+          "outputDirectory": "/target/test-reports",
+          "outputName": "unit_lab_jest_xunit.xml",
+          "classNameTemplate": "JestWebUnit.{classname}",
+          "titleTemplate": "{title}"
+        }
+      ]
+    ]
+  }
 }

@@ -79,10 +79,10 @@
       [
         "./node_modules/jest-html-reporter",
         {
-          "pageTitle": "Jest Unit Test Suite",
+          "pageTitle": "Jest Webapp Unit Test Suite",
           "includeFailureMsg": true,
           "includeConsoleLog": true,
-          "outputPath": "/target/test-reports/html/unit_jest_test_report.html"
+          "outputPath": "../../target/test-reports/html/unit_webapp_jest_test_report.html"
         }
       ],
       [

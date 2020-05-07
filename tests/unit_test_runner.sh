@@ -43,12 +43,17 @@ rm .coverage
 echo "starting mocha tests"
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
 
-echo "starting jest reports"
-cd "lab/webapp/"
 
-export JEST_HTML_REPORTER_OUTPUT_PATH="${REPORT_PATH}/html/unit_webapp_jest_test_report.html"
+# jest tests
 export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
 
+echo "starting lab jest reports"
+cd "/appsrc/lab/"
+npm run test
+
+
+echo "starting webapp jest reports"
+cd "/appsrc/lab/webapp/"
 npm run test
 
 # todo: check for generated files and potentially remove
