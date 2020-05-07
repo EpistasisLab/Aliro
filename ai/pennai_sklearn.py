@@ -507,6 +507,7 @@ class PennAI(BaseEstimator):
         self.estimator.set_params(**self.best_params)
         # fit best estimator with X, y
         self.estimator.fit(X, y)
+        logger.info("Best model: {}".format(self.estimator))
 
         return self
 
