@@ -119,8 +119,7 @@ def test_init():
     assert pennai.warm_start == False
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
-    assert pennai.term_condition =='n_recs x n_iters'
-    assert pennai.max_time == 50
+    assert pennai.max_time_mins == None
     assert pennai.mode == "classification"
 
 
@@ -163,3 +162,20 @@ def test_load_kb():
     df = all_df_mf.loc[kb['resultsData']["classification"]['_id'].unique()]
     assert pennai.dataset_mf_cache.equals(df)
     # self.update_dataset_mf(kb['resultsData'])
+
+
+def test_max_time_mins():
+    """Test PennAIClassifier fit() with verbose=2."""
+
+    pennai = PennAIClassifier(
+                            rec_class=RandomRecommender,
+                            n_recs=5,
+                            n_iters=10,
+                            knowledgebase=classification_kb,
+                            kb_metafeatures=classification_metafeatures,
+                            random_state=42,
+                            verbose=2,
+                            max_time_mins=0.1
+                           )
+    pennai.fit(X_train, y_train)
+    assert pennai.score(X_train, y_train)
