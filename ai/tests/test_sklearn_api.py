@@ -44,10 +44,13 @@ def test_fit_RandomRecommender(recommender):
                             n_iters=2,
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,
-                            random_state=42
+                            random_state=42,
+                            verbose=0
                            )
     pennai.fit(X_train, y_train)
+
     assert pennai.score(X_train, y_train)
+    
 
 
 def test_verbose_0():
@@ -87,7 +90,7 @@ def test_verbose_2():
 
     pennai = PennAIClassifier(
                             rec_class=RandomRecommender,
-                            n_recs=2,
+                            n_recs=4,
                             n_iters=2,
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,

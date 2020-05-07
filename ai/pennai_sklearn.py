@@ -24,6 +24,8 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
+from joblib import Parallel, delayed
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,7 @@ class PennAI(BaseEstimator):
     - handling communication with the API.
 
     :param rec_class: ai.BaseRecommender - recommender to use
-    :param verbose: interger, 0 quite, 1 info, 2 debug
+    :param verbose: int, 0 quite, 1 info, 2 debug
     :param warm_start: Boolean - if true, attempt to load the ai state from the plk file
     :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
@@ -48,6 +50,8 @@ class PennAI(BaseEstimator):
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
     :param max_time_mins: maximum time in minutes that PennAI can run # todo
     :param random_state: random state for recommenders
+    :param n_jobs: int (default: 1) The number of cores to dedicate to computing the scores with joblib.
+            Assigning this parameter to -1 will dedicate as many cores as are available on your system.
 
     """
     mode="classification"
@@ -63,7 +67,8 @@ class PennAI(BaseEstimator):
                 kb_metafeatures=None,
                 ml_p_file=None,
                 max_time_mins=None,
-                random_state=None):
+                random_state=None,
+                n_jobs=1):
         """Initializes AI managing agent."""
 
         self.rec_class = rec_class
@@ -77,6 +82,7 @@ class PennAI(BaseEstimator):
         self.ml_p_file=ml_p_file
         self.max_time_mins = max_time_mins
         self.random_state = random_state
+        self.n_jobs = n_jobs
 
     def fit_init_(self):
         """
@@ -440,11 +446,22 @@ class PennAI(BaseEstimator):
             logger.info("Start iteration #{}".format(i+1))
             recommendations = self.generate_recommendations()
             new_results = []
+            ests = []
+            ress = []
+
             for r in recommendations:
                 logger.debug(r)
                 # evaluate each recomendation
                 est = eval(r['algorithm'])() # convert string to scikit-learn obj
+                # convert str to bool/none
                 params = r['parameters']
+                for k, v in params.items():
+                    if isinstance(v, str):
+                        new_v = bool_or_none(v)
+                        params[k] = new_v
+
+
+
                 if hasattr(est, 'random_state') and self.random_state:
                     params['random_state'] = self.random_state
                 est.set_params(**params)
@@ -454,21 +471,19 @@ class PennAI(BaseEstimator):
                 'algorithm': r['algorithm'],
                 'parameters': params,
                 }
-                try:
-                    cv_scores = cross_val_score(
-                                                estimator=est,
-                                                X=X,
-                                                y=y,
-                                                cv=10,
-                                                scoring=self.scoring_,
-                                                error_score = 'raise'
-                                                )
-                except Exception:
-                    # todo for better error message
-                    logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                            ': recommendation: ' + str(r) + 'is invaild.')
-                    continue
-                res[self.metric_] =  np.mean(cv_scores)
+                ests.append(est)
+                ress.append(res)
+            # Parallel computing step
+            scores_list = Parallel(n_jobs=self.n_jobs)(delayed(
+                    cross_val_score)(estimator=est,
+                                    X=X,
+                                    y=y,
+                                    cv=10,
+                                    scoring=self.scoring_)
+                    for est in ests)
+            # summary result
+            for res, scores in zip(ress, scores_list):
+                res[self.metric_] =  np.mean(scores)
                 new_results.append(res)
 
             self.recomms += new_results
@@ -525,6 +540,46 @@ class PennAI(BaseEstimator):
             y
         )
         return score
+
+
+def bool_or_none(val):
+    """Convert string to boolean type/None.
+    Parameters
+    ----------
+    val: string
+        Value of a parameter in string type
+
+    Returns
+    -------
+    _: boolean or None
+        Converted value in boolean type
+    """
+    if (val.lower() == 'true'):
+        return True
+    elif (val.lower() == 'false'):
+        return False
+    elif (val.lower() == 'none'):
+        return None
+    else:
+        return val
+
+
+def none(val):
+    """Convert nono argument to None.
+    Parameters
+    ----------
+    val: string
+        Value of a parameter in string type
+
+    Returns
+    -------
+    _: None
+        If input value if "none", then the function will return None,
+        otherwise it will retune string.
+    """
+    if(val.lower() == 'none' or 'null'):
+        return None
+
 
 class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
