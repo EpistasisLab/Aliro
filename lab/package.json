@@ -30,7 +30,6 @@
     "mongoskin": "^2.1.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
-    "q": "^1.5.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "serve-favicon": "^2.3.0",
@@ -38,7 +37,7 @@
     "ws": "^3.3.3"
   },
   "devDependencies": {
-    "@types/node": "^10.17.19",
+    "@types/node": "^10.17.21",
     "jest": "^26.0.1",
     "jest-html-reporter": "^3.1.0",
     "jest-junit": "^10.0.0",
