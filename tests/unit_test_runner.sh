@@ -9,13 +9,13 @@ NOSE_TESTS="ai/tests/test_recommender.py"
 NOSE_TESTS="${NOSE_TESTS} ai/tests/test_ai.py"
 NOSE_TESTS="${NOSE_TESTS} ai/tests/test_ai_and_api_utils.py"
 NOSE_TESTS="${NOSE_TESTS} ai/tests/test_api_utils.py"
-NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_loader.py"
+NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_utils.py"
 NOSE_TESTS="${NOSE_TESTS} ai/metalearning/tests/test_dataset_describe.py"
 NOSE_TESTS="${NOSE_TESTS} ai/metalearning/tests/test_get_metafeatures.py"
 NOSE_TESTS="${NOSE_TESTS} machine/test/learn_tests.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_loadInitialDatasets.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_validateDataset.py"
-#NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_loader_profile.py"
+#NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_utils_profile.py"
 
 MOCHA_TESTS="machine/test/test.js"
 
@@ -43,12 +43,17 @@ rm .coverage
 echo "starting mocha tests"
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
 
-echo "starting jest reports"
-cd "lab/webapp/"
 
-export JEST_HTML_REPORTER_OUTPUT_PATH="${REPORT_PATH}/html/unit_webapp_jest_test_report.html"
+# jest tests
 export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
 
+echo "starting lab jest reports"
+cd "/appsrc/lab/"
+npm run test
+
+
+echo "starting webapp jest reports"
+cd "/appsrc/lab/webapp/"
 npm run test
 
 # todo: check for generated files and potentially remove

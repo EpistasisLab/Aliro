@@ -12,3 +12,4 @@ services:
     volumes:
       - "./:/appsrc"
       - "/appsrc/lab/webapp/node_modules"
+      - "/appsrc/lab/node_modules"

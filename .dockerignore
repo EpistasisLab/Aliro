@@ -1,9 +1,9 @@
 # Allow files and directories
 !**/package.json
 !**/package-lock.json
-!/dockers/dbmongo/files/**
-!/dockers/lab/files/**
-!/dockers/machine/files/**
+!/docker/dbmongo/files/**
+!/docker/lab/files/**
+!/docker/machine/files/**
 
 # Ignore unnecessary files inside allowed directories
 # This should go after the allowed directories
