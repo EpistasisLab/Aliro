@@ -71,6 +71,7 @@ RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 ## PennAI Lab server
 COPY ${docker_filepath}/entrypoint.sh /root/
+RUN ["chmod", "+x", "/root/entrypoint.sh"]
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
