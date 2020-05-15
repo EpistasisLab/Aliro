@@ -8,7 +8,7 @@ Install Docker and docker-compose as per the main installation requirements (see
   - Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
 
 #### Optional dependencies for development/testing:
-  - Python and pyton test runners (needed only to run unit tests locally)
+  - Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)
     - [Python 3.* ](https://www.python.org/downloads/)
     - [nose](https://pypi.org/project/nose/)
   - [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
@@ -96,6 +96,15 @@ The UI component (_Vizualization / UI Engine_ in the diagram above) is a web app
 - Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.  
 
 ## Tests
+
+### Local Test Instructions
+The unit and integration tests can be run locally using the followng commands:
+- Unit: `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit -V`
+- Integration: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`
+
+The test results in html format can be found in the directory `.\target\test-reports\html`
+
+Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with `docker-compose -f .\docker-compose-unit-test.yml build`
 
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
