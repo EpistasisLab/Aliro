@@ -49,21 +49,36 @@ class SurpriseRecommender(BaseRecommender):
         if self.__class__.__name__ == 'SurpriseRecommender':
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
             'directly; use one of the method-specific classes instead.')
-
+        self.set_algo()
+        self.random_state = random_state
+        if hasattr(self.algo, 'random_state'):
+            self.algo.random_state = self.random_state
         # store results
         self.results_df = pd.DataFrame()
         self.first_fit = True 
 
         # reader for translating btw PennAI results and Suprise training set
         self.reader = Reader()
-        
+
+        self.ml_type = ml_type
+
+        if metric is None:
+            logger.debug('metric is None, setting...')
+            self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
+        else:
+            self.metric = metric
+        assert(self.metric is not None)
+
+        logger.debug('self.algo_name: '+self.algo_name)
+        logger.debug('ml_type: '+self.ml_type)
+        logger.debug('metric: '+self.metric)
 
         if filename is None:
             filename = (
                     'ai/recommender/saved/'
                     + self.algo_name
-                    + '_' + ml_type 
-                    + '_' + metric 
+                    + '_' + self.ml_type 
+                    + '_' + self.metric 
                     + '_pmlb_20200505'
                     +'.pkl.gz')
 
@@ -73,14 +88,14 @@ class SurpriseRecommender(BaseRecommender):
         # note: anything set after super().__init() will change the field 
         # of any recommender from a file
 
-        if hasattr(self.algo, 'random_state'):
-            self.algo.random_state = self.random_state
         
         self.min_epochs = 10
         self.max_epochs = 100
     
     @property
     def algo_name(self):
+        if type(self.algo).__name__ is None:
+            return type(self).__name__
         return type(self.algo).__name__
 
     def set_training_data(self, results_data, results_mf=None, source='pennai'):
@@ -296,24 +311,32 @@ class CoClusteringRecommender(SurpriseRecommender):
     """Generates recommendations via CoClustering, see
     https://surprise.readthedocs.io/en/stable/co_clustering.html
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
-            algo=None): 
-        super().__init__(ml_type, metric, ml_p, algo)
-        # set n clusters for ML equal to # of ML methods
-        self.algo = CoClustering(n_cltr_i = self.ml_p.algorithm.nunique(),
-                                 n_cltr_u = 10)
+    def set_algo(self):
+        self.algo = CoClustering(n_cltr_u = 10)
+
+    # def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+    #         algo=None): 
+    #     super().__init__(ml_type, metric, ml_p, algo)
+    #     # set n clusters for ML equal to # of ML methods
+    #     self.
+    def update_model(self,results_data):
+        """Stores new results and updates algo."""
+        self.algo.n_cltr_i = self.ml_p.algorithm.nunique()
+        super().update_model(results_data)
 
 class KNNWithMeansRecommender(SurpriseRecommender):
     """Generates recommendations via KNNWithMeans, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNWithMeans()
+    def set_algo(self):
+        self.algo = KNNWithMeans()
 
 class KNNDatasetRecommender(SurpriseRecommender):
     """Generates recommendations via KNN with clusters defined over datasets, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNBasic(sim_options={'user_based':True})
+    def set_algo(self):
+        self.algo = KNNBasic(sim_options={'user_based':True})
 
     @property
     def algo_name(self):
@@ -323,7 +346,8 @@ class KNNMLRecommender(SurpriseRecommender):
     """Generates recommendations via KNN with clusters defined over algorithms, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNBasic(sim_options={'user_based':False})
+    def set_algo(self):
+        self.algo = KNNBasic(sim_options={'user_based':False})
     @property
     def algo_name(self):
         return 'KNN-ML' 
@@ -332,7 +356,8 @@ class SlopeOneRecommender(SurpriseRecommender):
     """Generates recommendations via SlopeOne, see
     https://surprise.readthedocs.io/en/stable/slope_one.html
     """
-    algo = SlopeOne()
+    def set_algo(self):
+        self.algo = SlopeOne()
 
 
 class SVDRecommender(SurpriseRecommender):
@@ -347,10 +372,8 @@ class SVDRecommender(SurpriseRecommender):
     Note that we use a custom online version of SVD found here:
     https://github.com/lacava/surprise
     """
-    # TODO: add kwargs for setting mySVD parameters from SurpriseRecommender
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
-            filename=None, knowledgebase=None, random_state=None,
-            surprise_kwargs={}): 
+
+    def set_algo(self, surprise_kwargs={}):
         alg_kwargs = {'n_factors':20, 
                 'biased':True, 
                 'init_mean':0,
@@ -358,12 +381,14 @@ class SVDRecommender(SurpriseRecommender):
                 'lr_all':.01,
                 'reg_all':.02}
         alg_kwargs.update(surprise_kwargs)
-        self.algo = mySVD(verbose=True, 
-                     random_state=random_state,
-                     **alg_kwargs)
-        super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
-                filename=filename, knowledgebase=knowledgebase, 
-                random_state=random_state)
+        self.algo = mySVD(verbose=False, **alg_kwargs)
+
+    # def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+    #         filename=None, knowledgebase=None, random_state=None,
+    #         surprise_kwargs={}): 
+    #     super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
+    #             filename=filename, knowledgebase=knowledgebase, 
+    #             random_state=random_state)
     
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
@@ -374,14 +399,13 @@ class SVDRecommender(SurpriseRecommender):
             self.first_fit=False 
 
         self.update_training_data(results_data)
-        logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
-        # self.algo.n_epochs = min(len(results_data),self.max_epochs)
-        # self.algo.n_epochs = max(10,self.algo.n_epochs)
         logger.info('algo random_state: '+str(self.algo.random_state))
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
         self.algo.n_epochs = max(self.algo.n_epochs,self.min_epochs)
+
+        logger.debug('fitting self.algo...')
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
         logger.debug('model SVD updated') 

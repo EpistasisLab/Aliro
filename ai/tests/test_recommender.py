@@ -23,7 +23,7 @@ logger.setLevel(logging.INFO)
 # TODO: replace this dataset loading and metafeature loading with calls to 
 # knowledgebase loader
 KB_RESULTS_PATH = \
-        'data/knowledgebases/sklearn-benchmark5-data-knowledgebase.tsv.gz'
+    'data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz'
 KB_METAFEATURES_PATH = \
         'data/knowledgebases/pmlb_classification_metafeatures.csv.gz'
 
@@ -101,7 +101,6 @@ def check_rec(rec):
     ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
     # print('ml_p:',ml_p)
     rec_obj = rec(ml_p=ml_p)
-    logger.info('param_htable:'+str(len(rec_obj.param_htable))+'objects')
  
     n_recs = 1
     dataset_mf = pd.DataFrame()

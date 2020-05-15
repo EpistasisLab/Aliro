@@ -37,7 +37,7 @@ class KNNMetaRecommender(BaseRecommender):
         'parameters'
     """
     def __init__(self, ml_type='classifier', metric=None, ml_p = None,
-            filename='KNNMetaRecommender.pkl'):
+            filename='KNNMetaRecommender.pkl', knowledgebase=None):
         """Initialize recommendation system."""
         super().__init__(ml_type, metric, ml_p, filename=filename)
         # lookup table: dataset name to best ML+P
@@ -76,7 +76,7 @@ class KNNMetaRecommender(BaseRecommender):
 
     def update_model(self,results_data):
         """Stores best ML-P on each dataset."""
-        logger.debug('len(self.param_htable)): ' + str(len(self.param_htable)))
+        logger.debug('len(self.hash_2_param)): ' + str(len(self.hash_2_param)))
         for d,dfg in results_data.groupby('_id'):
             if (len(self.best_mlp) == 0 or
                 d not in self.best_mlp.index or
@@ -142,7 +142,7 @@ class KNNMetaRecommender(BaseRecommender):
                            if subset[i]]) 
                 logger.info(f'btw, there are {num_results} results for {dataset_id} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
-                    [self.param_htable[int(p)] for p in phash_rec[:n_recs]],
+                    [self.hash_2_param[p] for p in phash_rec[:n_recs]],
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
 

@@ -142,8 +142,7 @@ class AI():
 
         # dictionary of dataset threads, initialized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
-        #WGL: this should get moved to the request manager
-        # self.dataset_threads = {}
+        self.dataset_threads = {}
 
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
@@ -158,7 +157,6 @@ class AI():
         #initialize recommenders
         self.use_knowledgebase = use_knowledgebase
         self.initialize_recommenders(rec_class) # set self.rec_engines
-
 
         # set termination condition
         self.term_condition = term_condition
@@ -211,7 +209,8 @@ class AI():
             logger.debug("initializing engine")
             recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
-            recArgs['knowledgebase'] = kb['resultsData'][pred_type]
+            if kb is not None:
+                recArgs['knowledgebase'] = kb['resultsData'][pred_type]
 
             if (rec_class):
                 self.rec_engines[pred_type] = rec_class(**recArgs)
@@ -223,14 +222,15 @@ class AI():
             #         self.dataset_mf_cache, source='knowledgebase')
             ##########################################################
             # the next few commands are used to train the recommenders
-            # on the PMLB knowledgebases and save them
-            fn = self.rec_engines[pred_type].filename
-            logger.info('updating and saving '+fn)
-            self.rec_engines[pred_type].update_and_save(
-                    kb['resultsData'][pred_type], 
-                    self.dataset_mf_cache, 
-                    source='knowledgebase',
-                    filename=fn)
+            # on the PMLB knowledgebases and save them. 
+            # For normal operation, they can be skipped.
+            # fn = self.rec_engines[pred_type].filename
+            # logger.info('updating and saving '+fn)
+            # self.rec_engines[pred_type].update_and_save(
+            #         kb['resultsData'][pred_type], 
+            #         self.dataset_mf_cache, 
+            #         source='knowledgebase',
+            #         filename=fn)
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")
