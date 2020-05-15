@@ -31,9 +31,11 @@ class RandomRecommender(BaseRecommender):
     """
 
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
+            random_state=None, knowledgebase=None):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p)
+        super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
+                random_state=random_state)
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -93,7 +95,7 @@ class RandomRecommender(BaseRecommender):
                 # recommendation')
                 ml_rec.append(ml_tmp)
                 phash_rec.append(p_tmp)
-                p_rec.append(self.param_htable[int(p_tmp)])
+                p_rec.append(self.hash_2_param[p_tmp])
                 rec_score.append(0) 
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run

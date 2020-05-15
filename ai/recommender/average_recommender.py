@@ -29,7 +29,7 @@ class AverageRecommender(BaseRecommender):
     """
 
     def __init__(self, ml_type='classifier', metric=None, ml_p=None,
-            filename=None):
+            filename=None, knowledgebase=None):
         """Initialize recommendation system."""
 
         super().__init__(ml_type, metric, ml_p, filename=filename)
@@ -112,7 +112,7 @@ class AverageRecommender(BaseRecommender):
             raise AttributeError
 
         # get parameters from hash table
-        p_rec = [self.param_htable[int(p)] for p in phash_rec]
+        p_rec = [self.hash_2_param[p] for p in phash_rec]
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
