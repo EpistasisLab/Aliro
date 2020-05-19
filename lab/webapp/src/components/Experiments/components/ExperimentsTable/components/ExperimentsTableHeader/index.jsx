@@ -33,7 +33,7 @@ function ExperimentsTableHeader({
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell
-          rowSpan={shouldDisplayParams && 2}
+          rowSpan={shouldDisplayParams ? 0 : 2}
           sorted={getIsSorted('started')}
           onClick={() => onSort('started')}
         >
@@ -41,7 +41,7 @@ function ExperimentsTableHeader({
         </Table.HeaderCell>
         {shouldDisplayQuality ? (
           <Table.HeaderCell
-            rowSpan={shouldDisplayParams && 2}
+            rowSpan={shouldDisplayParams ? 0 : 2}
             sorted={getIsSorted('quality_metric')}
             onClick={() => onSort('quality_metric')}
           >
@@ -49,7 +49,7 @@ function ExperimentsTableHeader({
           </Table.HeaderCell>
         ) : (
           <Table.HeaderCell
-            rowSpan={shouldDisplayParams && 2}
+            rowSpan={shouldDisplayParams ? 0 : 2}
             sorted={getIsSorted('scores-exp_table_score')}
             onClick={() => onSort('scores-exp_table_score')}
           >
@@ -57,7 +57,7 @@ function ExperimentsTableHeader({
           </Table.HeaderCell>
         )}
         <Table.HeaderCell
-          rowSpan={shouldDisplayParams && 2}
+          rowSpan={shouldDisplayParams ? 0 : 2}
           sorted={getIsSorted('dataset_name')}
           onClick={() => onSort('dataset_name')}
         >
@@ -65,7 +65,7 @@ function ExperimentsTableHeader({
         </Table.HeaderCell>
         {shouldDisplayErrorMessage &&
           <Table.HeaderCell
-            rowSpan={shouldDisplayParams && 2}
+            rowSpan={shouldDisplayParams ? 0 : 2}
             sorted={getIsSorted('error_message')}
             onClick={() => onSort('error_message')}
           >
@@ -73,7 +73,7 @@ function ExperimentsTableHeader({
           </Table.HeaderCell>
         }
         <Table.HeaderCell
-          colSpan={shouldDisplayParams && orderedParamKeys.length}
+          colSpan={shouldDisplayParams ? 0 : orderedParamKeys.length}
           sorted={shouldDisplayParams ? null : getIsSorted('algorithm')}
           onClick={shouldDisplayParams ? null : () => onSort('algorithm')}
         >
@@ -82,7 +82,7 @@ function ExperimentsTableHeader({
             <span className="alg-name">{`(${formatAlgorithm(selectedAlgorithm)})`}</span>
           }
         </Table.HeaderCell>
-        <Table.HeaderCell rowSpan={shouldDisplayParams && 2}>
+        <Table.HeaderCell rowSpan={shouldDisplayParams ? 0 : 2}>
           {'Actions'}
         </Table.HeaderCell>
       </Table.Row>
