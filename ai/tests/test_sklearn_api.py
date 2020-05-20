@@ -85,6 +85,7 @@ def test_n_jobs():
     pennai.fit(X_train, y_train)
     assert pennai.score(X_train, y_train)
 
+
 def test_verbose_1():
     """Test PennAIClassifier fit() with verbose=1."""
 
