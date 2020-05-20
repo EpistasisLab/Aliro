@@ -206,7 +206,10 @@ class PennAI(BaseEstimator):
 
             hyperparams = x['schema'].keys()
             hyperparam_dict = {}
-
+            if 'static_parameters' in x:
+                self.static_parameters[x['name']] = x['static_parameters']
+            else:
+                self.static_parameters[x['name']] = {}
             # get a dictionary of hyperparameters and their values
             for h in hyperparams:
                 logger.debug('  Checking hyperparams: x[''schema''][h]' +
@@ -263,7 +266,9 @@ class PennAI(BaseEstimator):
         self.DEFAULT_REC_ARGS = {'metric': self.metric_}
         #if self.random_state:
             #self.DEFAULT_REC_ARGS['random_state'] = self.random_state
-        # this line also need refactor # todo !!!
+
+        # add static_parameters for each ML methods
+        self.static_parameters = {}
         # set the registered ml parameters in the recommenders
 
         ml_p = self.get_all_ml_p()
@@ -453,14 +458,16 @@ class PennAI(BaseEstimator):
                 logger.debug(r)
                 # evaluate each recomendation
                 est = eval(r['algorithm'])() # convert string to scikit-learn obj
+
+
                 # convert str to bool/none
                 params = r['parameters']
                 for k, v in params.items():
                     if isinstance(v, str):
                         new_v = bool_or_none(v)
                         params[k] = new_v
-
-
+                # add staticparameters
+                params.update(self.static_parameters[r['algorithm']])
 
                 if hasattr(est, 'random_state') and self.random_state:
                     params['random_state'] = self.random_state
