@@ -10,7 +10,7 @@ import ai.api_utils as api_utils
 from ai.api_utils import LabApi, AI_STATUS, RECOMMENDER_STATUS
 import ai.q_utils as q_utils
 import os
-import ai.knowledgebase_loader as knowledgebase_loader
+import ai.knowledgebase_utils as knowledgebase_utils
 import logging
 import sys
 from ai.recommender.average_recommender import AverageRecommender
@@ -213,7 +213,7 @@ class AI():
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
-        kb = knowledgebase_loader.load_default_knowledgebases()
+        kb = knowledgebase_utils.load_default_knowledgebases()
         
         all_df_mf = kb['metafeaturesData'].set_index('_id')
 
