@@ -1,17 +1,12 @@
 FROM python:3.7.4-stretch
 
-# copy src for lab
-COPY lab /appsrc/lab
-COPY ai /appsrc/ai
-
-
 #nodejs
 RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /opt/ && \
     rm ~/node.tar.xz
 ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
 
-ARG docker_filepath=dockers/lab/files
+ARG docker_filepath=docker/lab/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
     vim openssh-client openssh-server telnet apache2 \
@@ -76,21 +71,14 @@ RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 ## PennAI Lab server
 COPY ${docker_filepath}/entrypoint.sh /root/
+RUN ["chmod", "+x", "/root/entrypoint.sh"]
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
 	&& dos2unix /root/entrypoint.sh
 
-
-# copy knowledgebase
-COPY 'data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz' /appsrc/data/knowledgebases/
-COPY 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz' /appsrc/data/knowledgebases/
-COPY 'data/knowledgebases/pmlb_regression_results.pkl.gz' /appsrc/data/knowledgebases/
-COPY 'data/knowledgebases/pmlb_regression_metafeatures.csv.gz' /appsrc/data/knowledgebases/
-
-
 # set version and build environment; tag.sh is sourced in entrypoint.sh
-ENV BUILD_ENV='prod'
+ENV BUILD_ENV='dev'
 COPY .env /etc/profile.d/
 RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
 RUN dos2unix /etc/profile.d/tag.sh
@@ -99,7 +87,6 @@ RUN sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh
 
 # Start the webserver
 CMD ["/bin/bash", "/root/start.sh"]
-
 
 # EXPOSE 443
 EXPOSE 5080

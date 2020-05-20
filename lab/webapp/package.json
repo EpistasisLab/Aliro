@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "your friendly machine learning assistant",
   "scripts": {
-    "build": "webpack",
-    "build-dev": "webpack --watch",
+    "build": "webpack --mode=production",
+    "build-dev": "webpack --watch --mode=development",
     "test": "jest"
   },
   "repository": {
@@ -46,9 +46,12 @@
     "@babel/preset-react": "^7.9.4",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-15": "^1.4.1",
     "fetch-mock": "^7.7.3",
+    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-template": "^6.2.0",
     "jest": "^24.9.0",
     "jest-fetch-mock": "^2.1.2",
     "jest-html-reporter": "^2.8.2",
@@ -58,12 +61,10 @@
     "react-test-renderer": "^15.6.2",
     "redux-logger": "^3.0.6",
     "redux-mock-store": "^1.5.4",
+    "typescript": "^3.8.3",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "clean-webpack-plugin": "^3.0.0",
-    "html-webpack-plugin": "^3.2.0",
-    "html-webpack-template": "^6.2.0",
-    "typescript": "^3.8.3"
+    "webpack-merge": "^4.2.2"
   },
   "jest": {
     "transform": {
@@ -79,10 +80,10 @@
       [
         "./node_modules/jest-html-reporter",
         {
-          "pageTitle": "Jest Unit Test Suite",
+          "pageTitle": "Jest Webapp Unit Test Suite",
           "includeFailureMsg": true,
           "includeConsoleLog": true,
-          "outputPath": "/target/test-reports/html/unit_jest_test_report.html"
+          "outputPath": "../../target/test-reports/html/unit_webapp_jest_test_report.html"
         }
       ],
       [

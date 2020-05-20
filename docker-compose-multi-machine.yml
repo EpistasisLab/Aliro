@@ -4,7 +4,7 @@ services:
   lab:
     build:
       context: .
-      dockerfile: dockers/lab/Dockerfile
+      dockerfile: docker/lab/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -23,7 +23,7 @@ services:
   machine_1:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -42,7 +42,7 @@ services:
   machine_2:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -61,7 +61,7 @@ services:
   machine_3:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -80,7 +80,7 @@ services:
   machine_4:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -98,7 +98,7 @@ services:
   machine_5:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -117,7 +117,7 @@ services:
   machine_6:
     build:
       context: .
-      dockerfile: dockers/machine/Dockerfile
+      dockerfile: docker/machine/Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -136,7 +136,7 @@ services:
   dbmongo:
     build:
       context: .
-      dockerfile: dockers/dbmongo/Dockerfile
+      dockerfile: docker/dbmongo/Dockerfile
     tty: true
     stdin_open: true
     ports:

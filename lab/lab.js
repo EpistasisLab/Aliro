@@ -20,7 +20,6 @@ var socketServer = require("./socketServer").socketServer;
 var emitEvent = require("./socketServer").emitEvent;
 var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromFileIdAsync;
 var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
-var Q = require("q");
 const assert = require("assert");
 
 
@@ -1635,13 +1634,10 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
 
     var macP = db.machines.findByIdAsync(req.params.id);
 
-    //Q -> Promise.all
-    Q.allSettled([macP, projP]).then((result) => {
-
-        //console.log("/api/v1/machines/:id/projects")
-
-        var machines = result[0].value;
-        var project_records = result[1].value;
+   Promise.all([macP, projP])
+        .then((result) => {
+        var machines = result[0];
+        var project_records = result[1];
         var project_caps = req.body.projects
         var projects = {};
 
@@ -1689,7 +1685,7 @@ app.post("/api/v1/machines/:id/projects", jsonParser, (req, res, next) => {
             });
     })
     .catch((err) => {
-        console.log(Err);
+        console.log(err);
         next(err);
     });
 });
