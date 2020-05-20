@@ -7,7 +7,7 @@ import pdb
 import json
 import os
 import random
-from ai.knowledgebase_loader import load_knowledgebase
+from ai.knowledgebase_utils import load_knowledgebase
 from ai.metalearning.get_metafeatures import generate_metafeatures
 from ai.metalearning.dataset_describe import Dataset
 import logging
@@ -190,7 +190,7 @@ class PennAI(BaseEstimator):
         """
 
         if self.ml_p_file is None:
-            self.ml_p_file_ = "dockers/dbmongo/files/projects.json"
+            self.ml_p_file_ = "docker/dbmongo/files/projects.json"
         else:
             self.ml_p_file_ = self.ml_p_file
 

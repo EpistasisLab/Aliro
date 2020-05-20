@@ -10,7 +10,7 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
-from ai.knowledgebase_loader import load_knowledgebase
+from ai.knowledgebase_utils import load_knowledgebase
 
 TEST_OUTPUT_PATH = "target/test_output/test_sklearn_api"
 
