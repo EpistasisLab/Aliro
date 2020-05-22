@@ -8,7 +8,7 @@ Install Docker and docker-compose as per the main installation requirements (see
   - Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
 
 #### Optional dependencies for development/testing:
-  - Python and pyton test runners (needed only to run unit tests locally)
+  - Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)
     - [Python 3.* ](https://www.python.org/downloads/)
     - [nose](https://pypi.org/project/nose/)
   - [coverage](https://nose.readthedocs.io/en/latest/plugins/cover.html) via `pip install nose coverage`
@@ -22,7 +22,7 @@ Install Docker and docker-compose as per the main installation requirements (see
 2. Set up your local PennAI configuration file. From the pennai directory, copy `config\ai.env-template` to `config\ai.env`.
 
 
-3. Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this run.
+3. Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this is run.
 
 ### Starting and Stopping ###
 To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the process to exit.
@@ -32,7 +32,7 @@ PennAI can be run with multiple machine instances using the `docker-compose-mult
 To reset the docker volumes, restart using the `--force-recreate` flag or run `docker-compose down` after the server has been stopped.
 
 ## Development Notes
--  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+f5 instead of just f5 to clear any deprecated code out of the browser cache.
+-  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+F5 instead of just F5 to clear any deprecated code out of the browser cache.
 - Whenever there are updates to any of the npm libraries as configured with `package.json` files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting PennAI `docker-compose up --renew-anon-volumes` or `docker-compose up -V`.
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docker build docs,](https://docs.docker.com/compose/reference/build/)
 - To get the cpu and memory status of the running containers use `docker stats`
@@ -52,7 +52,7 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
 	- Note: `docker attach pennai_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 
 ### Web Development
-The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+5f for the changes to be seen in the browser.  
+The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured to run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+F5 for the changes to be seen in the browser.  
 
 There are two ways to enable watch mode:
 
@@ -85,12 +85,26 @@ PennAI is designed as a multi-component docker architecture that uses a variety 
 
 ![PennAI Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true "PennAI Architecture Diagram")
 
-The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  A MongoDb database is used for persistent storage.  The UI component is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
+##### Controller Engine (aka _The Server_)
+The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  
+##### Database
+A MongoDb database is used for persistent storage.  
+##### UI Component (aka _The Client_)
+The UI component (_Vizualization / UI Engine_ in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
 
 ##  Code Documentation
 - Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.  
 
 ## Tests
+
+### Local Test Instructions
+The unit and integration tests can be run locally using the followng commands:
+- Unit: `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit -V`
+- Integration: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`
+
+The test results in html format can be found in the directory `.\target\test-reports\html`
+
+Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with `docker-compose -f .\docker-compose-unit-test.yml build`
 
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)

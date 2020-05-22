@@ -6,7 +6,7 @@ RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz
     rm ~/node.tar.xz
 ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
 
-ARG docker_filepath=dockers/lab/files
+ARG docker_filepath=docker/lab/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
     vim openssh-client openssh-server telnet apache2 \
@@ -71,6 +71,7 @@ RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 ## PennAI Lab server
 COPY ${docker_filepath}/entrypoint.sh /root/
+RUN ["chmod", "+x", "/root/entrypoint.sh"]
 
 RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
