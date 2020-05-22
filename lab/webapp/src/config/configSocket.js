@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import { updateAI, updateDataset } from 'data/datasets/dataset/actions';
 import { addExperiment, updateExperiment } from 'data/experiments/actions';
+import { fetchRecommender} from 'data/recommender/actions';
 
 let socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
 /**
@@ -26,6 +27,10 @@ const configSocket = (store) => {
   socket.on('addExperiment', data => {
     const experiment = JSON.parse(data)[0];
     store.dispatch(addExperiment(experiment));
+  });
+
+  socket.on('updateRecommender', data => {
+    store.dispatch(fetchRecommender());
   });
 };
 

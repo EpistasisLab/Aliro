@@ -1,7 +1,7 @@
 FROM ubuntu:xenial
 WORKDIR /opt/
 
-ARG docker_filepath=dockers/dbmongo/files
+ARG docker_filepath=docker/dbmongo/files
 
 #add repo for mongodb
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list

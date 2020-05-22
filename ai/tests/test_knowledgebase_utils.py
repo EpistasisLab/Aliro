@@ -1,6 +1,6 @@
 
 
-import ai.knowledgebase_loader as kb_loader
+import ai.knowledgebase_utils as kb_utils
 import unittest
 from unittest import skip
 from unittest.mock import Mock, patch
@@ -11,7 +11,7 @@ import pandas as pd
 import pprint
 import math
 
-TEST_OUTPUT_PATH = "target/test_output/test_knowledgebase_loader"
+TEST_OUTPUT_PATH = "target/test_output/test_knowledgebase_utils"
 
 @nottest
 def isClose(a, b, rel_tol=1e-09, abs_tol=0.0):
@@ -191,7 +191,7 @@ class TestResultUtils(unittest.TestCase):
         jsonMetafeatureDirectory, metafeaturesFiles, targetField,
         expectedResultsCount, expectedMetafeaturesCount, expectedWarningCount):
 
-        result = kb_loader.load_knowledgebase(
+        result = kb_utils.load_knowledgebase(
             resultsFiles=resultsFiles,
             metafeaturesFiles=metafeaturesFiles,
             jsonMetafeatureDirectory=jsonMetafeatureDirectory,
@@ -229,7 +229,7 @@ class TestResultUtils(unittest.TestCase):
 
     @parameterized.expand(results_files)
     def test_load_results_from_file(self, name, testResultsFiles):
-        data = kb_loader._load_results_from_file(testResultsFiles)
+        data = kb_utils._load_results_from_file(testResultsFiles)
         assert isinstance(data, pd.DataFrame)
 
         self.assertGreater(len(data), 1)
@@ -240,7 +240,7 @@ class TestResultUtils(unittest.TestCase):
         targetField = "class"
         prediction_type = "classification"
 
-        data = kb_loader._generate_metadata_from_directory(
+        data = kb_utils._generate_metadata_from_directory(
                 testResultsDataDirectory,
                 prediction_type=prediction_type,
                 targetField=targetField)
@@ -254,7 +254,7 @@ class TestResultUtils(unittest.TestCase):
             userKbResultsPath, userKbMetafeaturesPath,
             expectedResultsCount, expectedMetafeaturesCount):
         """the PMLB knowledgebase is loaded correctly"""
-        result = kb_loader.load_default_knowledgebases(
+        result = kb_utils.load_default_knowledgebases(
             usePmlb=usePmlb,
             userKbResultsPath=userKbResultsPath,
             userKbMetafeaturesPath=userKbMetafeaturesPath
@@ -287,7 +287,7 @@ class TestResultUtils(unittest.TestCase):
         testDatasets = ["adult", "agaricus-lepiota", "allbp", "allhyper",
                 "allhypo"]
 
-        result = kb_loader._load_json_metafeatures_from_directory(
+        result = kb_utils._load_json_metafeatures_from_directory(
                 testDirectory, testDatasets)
         assert len(result) == len(testDatasets)
 
@@ -297,7 +297,7 @@ class TestResultUtils(unittest.TestCase):
     def test_load_metafeatures_from_file(self):
         pmlbMetafeaturesFile = \
                 "data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
-        result = kb_loader._load_metadata_from_file(pmlbMetafeaturesFile)
+        result = kb_utils._load_metadata_from_file(pmlbMetafeaturesFile)
         assert len(result) == 165
 
     def test_generate_metafeatures_file(self):
@@ -306,7 +306,7 @@ class TestResultUtils(unittest.TestCase):
         targetField = 'class'
         predictionType = "classification"
 
-        mfGen = kb_loader.generate_metafeatures_file(
+        mfGen = kb_utils.generate_metafeatures_file(
             outputFilename=outputFilename,
             outputPath=TEST_OUTPUT_PATH,
             datasetDirectory=datasetDirectory,
@@ -316,7 +316,7 @@ class TestResultUtils(unittest.TestCase):
 
         assert len(mfGen) > 10
 
-        mfLoad = kb_loader._load_metadata_from_file(
+        mfLoad = kb_utils._load_metadata_from_file(
                 f"{TEST_OUTPUT_PATH}/{outputFilename}")
 
         self.assertIsInstance(mfGen, dict)
@@ -330,7 +330,7 @@ class TestResultUtils(unittest.TestCase):
         df = pd.DataFrame(data, columns = columns)
 
         self.assertEquals(df.shape, originalShape)
-        kb_loader.dedupe_results_dataframe(df)
+        kb_utils.dedupe_results_dataframe(df)
         self.assertEquals(df.shape, dedupeShape)
 
 

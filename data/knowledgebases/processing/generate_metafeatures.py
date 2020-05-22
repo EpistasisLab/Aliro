@@ -8,7 +8,7 @@ import numpy as np
 import os
 import simplejson
 from glob import glob
-from ai.knowledgebase_loader import generate_metafeatures_file
+from ai.knowledgebase_utils import generate_metafeatures_file
 import argparse
 
 if __name__ == '__main__':

@@ -119,7 +119,7 @@ test_rfc = RandomForestClassifier()
 test_gbc = GradientBoostingClassifier()
 test_reg = DecisionTreeRegressor()
 # projects information
-projects_json = "dockers/dbmongo/files/projects.json"
+projects_json = "docker/dbmongo/files/projects.json"
 # json_file = open(projects_json, encoding="utf8")
 # projects_json_data = [obj for obj in decode_stacked(json_file.read())]
 
