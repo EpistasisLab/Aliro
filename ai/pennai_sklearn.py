@@ -23,6 +23,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from joblib import Parallel, delayed
 
@@ -48,6 +49,8 @@ class PennAI(BaseEstimator):
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
+    :param ensemble: if True, PennAI will use VotingClassifier/VotingRegressor to ensemble
+            top 5 best models into one model.
     :param max_time_mins: maximum time in minutes that PennAI can run # todo
     :param random_state: random state for recommenders
     :param n_jobs: int (default: 1) The number of cores to dedicate to computing the scores with joblib.
@@ -66,6 +69,7 @@ class PennAI(BaseEstimator):
                 knowledgebase=None,
                 kb_metafeatures=None,
                 ml_p_file=None,
+                ensemble=False,
                 max_time_mins=None,
                 random_state=None,
                 n_jobs=1):
@@ -80,6 +84,7 @@ class PennAI(BaseEstimator):
         self.knowledgebase = knowledgebase
         self.kb_metafeatures = kb_metafeatures
         self.ml_p_file=ml_p_file
+        self.ensemble = ensemble
         self.max_time_mins = max_time_mins
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -503,16 +508,39 @@ class PennAI(BaseEstimator):
             # get best score in new results in this iteration
              # todo for early stop termination
 
-
         # convert to pandas.DataFrame from finalize result
         self.recomms = pd.DataFrame(self.recomms)
-        self.best_result_score = self.recomms[self.metric_].max()
-        self.best_result = self.recomms[self.recomms[self.metric_] == self.best_result_score]
-        self.best_algorithm = self.best_result['algorithm'].values[0]
-        self.best_params = self.best_result['parameters'].values[0]
-        self.estimator = eval(self.best_algorithm)()
-        self.estimator.set_params(**self.best_params)
-        # fit best estimator with X, y
+        self.recomms.sort_values(
+                                    by=self.metric_,
+                                    ascending=False,
+                                    inplace=True
+                                    )
+        self.best_result_score = self.recomms[self.metric_].values[0]
+        self.best_result = self.recomms.iloc[0]
+        self.best_algorithm = self.best_result['algorithm']
+        self.best_params = self.best_result['parameters']
+
+        if not self.ensemble:
+            self.estimator = eval(self.best_algorithm)()
+            self.estimator.set_params(**self.best_params)
+        else:
+            ensemble_ests = self.recomms['algorithm'].values[:5]
+            ests_params = self.recomms['parameters'].values[:5]
+            estimators = []
+            for est, params in zip(ensemble_ests, ests_params):
+                estimator = eval(est)()
+                estimator.set_params(**params)
+                est_name = 'clf' + str(len(estimators))
+                estimators.append((est_name, estimator))
+            if self.mode == "classification":
+                self.estimator = VotingClassifier(estimators=estimators,
+                                                voting='hard',
+                                                n_jobs=self.n_jobs)
+            else:
+                self.estimator = VotingRegressor(estimators=estimators,
+                                                voting='hard',
+                                                n_jobs=self.n_jobs)
+
         self.estimator.fit(X, y)
         logger.info("Best model: {}".format(self.estimator))
 
