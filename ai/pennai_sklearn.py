@@ -6,6 +6,7 @@ import pickle
 import pdb
 import json
 import os
+import warnings
 import random
 from ai.knowledgebase_utils import load_knowledgebase
 from ai.metalearning.get_metafeatures import generate_metafeatures
@@ -24,9 +25,10 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.ensemble import VotingClassifier, VotingRegressor
-
+from sklearn.exceptions import ConvergenceWarning
 from joblib import Parallel, delayed
-
+# ignore ConvergenceWarning in SVR and SVC
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 logger = logging.getLogger(__name__)
 
@@ -473,9 +475,11 @@ class PennAI(BaseEstimator):
                         params[k] = new_v
                 # add staticparameters
                 params.update(self.static_parameters[r['algorithm']])
+                avail_params = est.get_params()
 
-                if hasattr(est, 'random_state') and self.random_state:
+                if 'random_state' in avail_params and self.random_state:
                     params['random_state'] = self.random_state
+
                 est.set_params(**params)
                 # initilize a result
                 res = {
