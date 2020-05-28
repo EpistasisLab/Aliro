@@ -11,6 +11,8 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 from ai.knowledgebase_utils import load_knowledgebase
+from sklearn.ensemble import VotingClassifier, VotingRegressor
+
 
 TEST_OUTPUT_PATH = "target/test_output/test_sklearn_api"
 
@@ -140,6 +142,7 @@ def test_init():
     assert pennai.warm_start == False
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
+    assert pennai.ensemble == False
     assert pennai.max_time_mins == None
     assert pennai.mode == "classification"
     assert pennai.n_jobs == 1
@@ -201,3 +204,23 @@ def test_max_time_mins():
                            )
     pennai.fit(X_train, y_train)
     assert pennai.score(X_train, y_train)
+
+
+def test_ensemble():
+    """Test PennAIClassifier fit() with ensemble=True."""
+
+    pennai = PennAIClassifier(
+                            rec_class=RandomRecommender,
+                            n_recs=5,
+                            n_iters=2,
+                            knowledgebase=classification_kb,
+                            kb_metafeatures=classification_metafeatures,
+                            ensemble=True,
+                            random_state=42,
+                            verbose=1
+                           )
+    pennai.fit(X_train, y_train)
+    
+    assert pennai.score(X_train, y_train)
+    assert pennai.ensemble
+    assert pennai.estimator.__class__ == VotingClassifier
