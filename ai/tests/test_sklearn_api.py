@@ -1,5 +1,5 @@
-from ai.pennai_sklearn import PennAIClassifier
-from sklearn.datasets import load_iris
+from ai.pennai_sklearn import PennAIClassifier, PennAIRegressor
+from sklearn.datasets import load_iris, load_boston
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
@@ -20,8 +20,15 @@ iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
+boston = load_boston()
+X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(boston.data.astype(np.float64),
+    boston.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
+
 classification_kb = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"
 classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+
+regression_kb = "data/knowledgebases/pmlb_regression_results-small.tsv.gz"
+regression_metafeatures="data/knowledgebases/pmlb_regression_metafeatures.csv.gz"
 
 def AllRecommenders():
     return [
@@ -119,6 +126,22 @@ def test_verbose_2():
                            )
     pennai.fit(X_train, y_train)
     assert pennai.score(X_train, y_train)
+
+
+def test_reg_verbose_0():
+    """Test PennAIRegressor fit() with verbose=0."""
+
+    pennai = PennAIRegressor(
+                            rec_class=RandomRecommender,
+                            n_recs=2,
+                            n_iters=2,
+                            knowledgebase=regression_kb,
+                            kb_metafeatures=regression_metafeatures,
+                            random_state=42,
+                            verbose=0
+                           )
+    pennai.fit(X_train_reg, y_train_reg)
+    assert pennai.score(X_test_reg, y_test_reg)
 
 
 def test_init():
@@ -220,7 +243,7 @@ def test_ensemble():
                             verbose=1
                            )
     pennai.fit(X_train, y_train)
-    
+
     assert pennai.score(X_train, y_train)
     assert pennai.ensemble
     assert pennai.estimator.__class__ == VotingClassifier
