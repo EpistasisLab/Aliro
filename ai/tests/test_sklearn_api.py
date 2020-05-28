@@ -44,9 +44,10 @@ def AllRecommenders():
             ]
 
 @parameterized.expand(AllRecommenders)
-def test_fit_RandomRecommender(recommender):
+def test_PennAIClassifier_fit(recommender):
     """Test PennAIClassifier fit() with all Recommenders."""
     print("\nStart fit test for ", recommender.__name__)
+
     pennai = PennAIClassifier(
                             rec_class=recommender,
                             n_recs=2,
@@ -58,8 +59,26 @@ def test_fit_RandomRecommender(recommender):
                            )
     pennai.fit(X_train, y_train)
 
-    assert pennai.score(X_train, y_train)
+    assert pennai.score(X_test, y_test)
 
+
+@parameterized.expand(AllRecommenders)
+def test_PennAIRegressor_fit(recommender):
+    """Test PennAIRegressor fit() with all Recommenders."""
+    print("\nStart fit test for ", recommender.__name__)
+    if recommender.__name__ not in ['CoClusteringRecommender', 'SlopeOneRecommender']:
+        pennai = PennAIRegressor(
+                                rec_class=recommender,
+                                n_recs=2,
+                                n_iters=2,
+                                knowledgebase=regression_kb,
+                                kb_metafeatures=regression_metafeatures,
+                                random_state=42,
+                                verbose=0
+                               )
+        pennai.fit(X_train_reg, y_train_reg)
+
+        assert pennai.score(X_test_reg, y_test_reg)
 
 
 def test_verbose_0():

@@ -411,7 +411,7 @@ class PennAI(BaseEstimator):
             return False
 
 
-    def fit(self, X,y):
+    def fit(self, X, y):
         """Trains PennAI on X,y.
 
         initialize: train recommender or load saved recommender state
@@ -432,13 +432,13 @@ class PennAI(BaseEstimator):
         # make pd.DataFrameBased on X, y
         if isinstance(X, np.ndarray):
             columns = ["Feature_{}".format(i) for i in range(X.shape[1])]
-            X = pd.DataFrame(X, columns=columns)
-        if "pennai_target" in X.columns:
+            features = pd.DataFrame(X, columns=columns)
+        if "pennai_target" in features.columns:
             raise ValueError('The column name "pennai_target" is not allowed in X, '
             'please check your dataset and remove/rename that column')
 
         # get meta_features based on X, y
-        self.meta_features = self.generate_metafeatures_from_X_y(X, y)
+        self.meta_features = self.generate_metafeatures_from_X_y(features, y)
         # save all results
         self.recomms = []
 
