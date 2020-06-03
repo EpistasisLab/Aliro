@@ -120,3 +120,36 @@ Finally to install AI engine itself, run the following command:
 # todo
 pip install pennai-ai-engine
 ```
+
+### Example of using PennAI AI engine ###
+
+The following code illustrates how TPOT can be employed for performing a simple _classification task_ over the Iris dataset.
+
+```Python
+from ai.pennai_sklearn import PennAIClassifier
+from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
+    iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
+
+classification_kb = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"
+classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+
+pennai = PennAIClassifier(
+              rec_class=KNNMetaRecommender,
+              n_recs=5,
+              n_iters=10,
+              knowledgebase=classification_kb,
+              kb_metafeatures=classification_metafeatures,
+              random_state=42,
+              verbose=2
+              )
+
+pennai.fit(X_train, y_train)
+print(pennai.score(X_test, y_test))
+
+```
