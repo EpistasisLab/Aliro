@@ -50,8 +50,8 @@ class PennAI(BaseEstimator):
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
-    :param ensemble: if True, PennAI will use VotingClassifier/VotingRegressor to ensemble
-            top 5 best models into one model.
+    :param ensemble: if it is a integer N, PennAI will use VotingClassifier/VotingRegressor to ensemble
+            top N best models into one model.
     :param max_time_mins: maximum time in minutes that PennAI can run # todo
     :param random_state: random state for recommenders
     :param n_jobs: int (default: 1) The number of cores to dedicate to computing the scores with joblib.
@@ -70,7 +70,7 @@ class PennAI(BaseEstimator):
                 knowledgebase=None,
                 kb_metafeatures=None,
                 ml_p_file=None,
-                ensemble=False,
+                ensemble=None,
                 max_time_mins=None,
                 random_state=None,
                 n_jobs=1):
@@ -527,8 +527,8 @@ class PennAI(BaseEstimator):
             self.estimator = eval(self.best_algorithm)()
             self.estimator.set_params(**self.best_params)
         else:
-            ensemble_ests = self.recomms['algorithm'].values[:5]
-            ests_params = self.recomms['parameters'].values[:5]
+            ensemble_ests = self.recomms['algorithm'].values[:self.ensemble]
+            ests_params = self.recomms['parameters'].values[:self.ensemble]
             estimators = []
             for est, params in zip(ensemble_ests, ests_params):
                 estimator = eval(est)()

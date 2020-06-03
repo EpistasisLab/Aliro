@@ -185,7 +185,7 @@ def test_init():
     assert pennai.warm_start == False
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
-    assert pennai.ensemble == False
+    assert pennai.ensemble == None
     assert pennai.max_time_mins == None
     assert pennai.mode == "classification"
     assert pennai.n_jobs == 1
@@ -250,7 +250,7 @@ def test_max_time_mins():
 
 
 def test_ensemble():
-    """Test PennAIClassifier fit() with ensemble=True."""
+    """Test PennAIClassifier fit() with ensemble=5."""
 
     pennai = PennAIClassifier(
                             rec_class=RandomRecommender,
@@ -258,7 +258,7 @@ def test_ensemble():
                             n_iters=2,
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,
-                            ensemble=True,
+                            ensemble=5,
                             random_state=42,
                             verbose=1
                            )
