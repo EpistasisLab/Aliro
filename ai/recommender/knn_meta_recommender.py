@@ -8,7 +8,6 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
-import pdb
 from sklearn.neighbors import NearestNeighbors
 import logging
 
@@ -63,9 +62,9 @@ class KNNMetaRecommender(BaseRecommender):
         """
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
-    
+
         # save a copy of the results_mf with NaNs filled with zero
-        drop_cols = [c for c in results_mf.columns 
+        drop_cols = [c for c in results_mf.columns
                 if c[0] == '_' and c !='_id']
         self.all_dataset_mf = \
         results_mf.drop(columns=drop_cols).fillna(0.0).set_index('_id')
@@ -111,7 +110,7 @@ class KNNMetaRecommender(BaseRecommender):
         super().recommend(dataset_id, n_recs, dataset_mf)
 
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
-        drop_cols = [c for c in dataset_mf.columns 
+        drop_cols = [c for c in dataset_mf.columns
                 if c[0] == '_' and c !='_id']
         dataset_mf = dataset_mf.drop(columns=drop_cols)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
@@ -138,7 +137,7 @@ class KNNMetaRecommender(BaseRecommender):
                       'returning',len(ml_rec))
                 subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
                 num_results = len([tdm for i,tdm in enumerate(self.trained_dataset_models)
-                           if subset[i]]) 
+                           if subset[i]])
                 logger.info(f'btw, there are {num_results} results for {dataset_id} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
                     [self.param_htable[int(p)] for p in phash_rec[:n_recs]],

@@ -66,6 +66,7 @@ def test_PennAIClassifier_fit(recommender):
 def test_PennAIRegressor_fit(recommender):
     """Test PennAIRegressor fit() with all Recommenders."""
     print("\nStart fit test for ", recommender.__name__)
+    # skip two recommenders with issues #272
     if recommender.__name__ not in ['CoClusteringRecommender', 'SlopeOneRecommender']:
         pennai = PennAIRegressor(
                                 rec_class=recommender,

@@ -37,7 +37,7 @@ One can add new datasets using a UI form within the website or manually add new 
 * Only the label column or categorical or ordinal features can contain string values.
 * Files must be smaller then 8mb
 
-Some example datasets can be found in the classification section of the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets/classification) github repository. 
+Some example datasets can be found in the classification section of the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets/classification) github repository.
 
 #### Uploading Using the Website ####
 To upload new datasets from the website, click the "Add new Datasets" button on the Datasets page to navigate to the upload form. Select a file using the form's file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example ```{"ord" : ["first", "second", "third"]}```, and a comma separated list of categorical column names without quotes, such as `cat1, cat2`. Once uploaded, the dataset should be available to use within the system.
@@ -47,7 +47,7 @@ To upload new datasets from the website, click the "Add new Datasets" button on 
 Labeled datasets can also be loaded when PennAI starts by adding them to the `data/datasets/user` directory.  PennAI must be restarted if new datasets are added while it is running.  If errors are encountered when validating a dataset, they will appear in a log file in `target/logs/loadInitialDatasets.log` and that dataset will not be uploaded.  Data can be placed in subfolders in this directory.
 
 
-  
+
 An optional json configuration file can be provided with each dataset to specify the column that contains the label, the prediction type (classification or regression), and any categorical or ordinal features.  By default, the label column is assumed to be 'class', the prediction type for the dataset is assumed to be classification, and all fields are numeric.
 
 
@@ -72,3 +72,51 @@ From the **Datasets** page, click 'completed experiments' to navigate to the **E
 A pickled version of the fitted model and an example script for using that model can be downloded for any completed experiment from the **Experiments** page.
 
 Please see the [jupiter notebook script demo](https://github.com/EpistasisLab/pennai/blob/production/docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb) for instructions on using the scripts and model exported from PennAI to reproduce the findings on the results page and classify new datasets.
+
+### Installation of AI engine as a standalone python package ###
+PennAI AI engine is built on top of several existing Python libraries, including:
+
+* [NumPy](http://www.numpy.org/)
+
+* [SciPy](https://www.scipy.org/)
+
+* [scikit-learn](http://www.scikit-learn.org/)
+
+* [update_checker](https://github.com/bboe/update_checker)
+
+* [pandas](http://pandas.pydata.org)
+
+* [joblib](https://joblib.readthedocs.io/en/latest/)
+
+* [surprise](http://surpriselib.com/)
+
+
+Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.continuum.io/downloads), which we strongly recommend that you use.
+
+You can install PennAI AI engine using `pip`. # todo
+## pip
+
+NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:
+
+```Shell
+conda install numpy scipy scikit-learn pandas joblib
+```
+
+update_checker can be installed with `pip` via the command:
+
+```Shell
+pip install update_checker
+```
+
+Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command:
+
+```Shell
+pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+```
+
+Finally to install AI engine itself, run the following command:
+
+```Shell
+# todo
+pip install pennai-ai-engine
+```
