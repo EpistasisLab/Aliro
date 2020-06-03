@@ -3,7 +3,6 @@ Recommender system for Penn AI.
 """
 import pandas as pd
 from .base import BaseRecommender
-import pdb
 import logging
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
@@ -15,7 +14,7 @@ logger.addHandler(ch)
 class AverageRecommender(BaseRecommender):
     """Penn AI average recommender.
 
-    Recommends machine learning algorithms and parameters based on their average 
+    Recommends machine learning algorithms and parameters based on their average
     performance across all evaluated datasets.
 
     Parameters
@@ -40,7 +39,7 @@ class AverageRecommender(BaseRecommender):
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
-        """Update ML / Parameter recommendations based on overall performance in 
+        """Update ML / Parameter recommendations based on overall performance in
         results_data.
 
         Updates self.scores
@@ -76,10 +75,10 @@ class AverageRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating 
+            ID of the dataset for which the recommender is generating
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters 
+            Return a list of length n_recs in order of estimators and parameters
             expected to do best.
         """
 
@@ -112,7 +111,7 @@ class AverageRecommender(BaseRecommender):
         # get parameters from hash table
         p_rec = [self.param_htable[int(p)] for p in phash_rec]
 
-        # update the recommender's memory with the new algorithm-parameter combos 
+        # update the recommender's memory with the new algorithm-parameter combos
         # that it recommended
         self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
@@ -128,7 +127,7 @@ class AverageRecommender(BaseRecommender):
             for n in new_ind:
                 if n in self.scores.index.values:
                     step = new_weights[n] / float(self.w[n] + new_weights[n])
-                    self.scores.loc[n] = (self.scores[n] + 
+                    self.scores.loc[n] = (self.scores[n] +
                             step * (new_scores[n] - self.scores[n]))
                 else:
                     self.scores.loc[n] = new_scores[n]
