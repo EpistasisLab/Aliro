@@ -251,7 +251,7 @@ class SurpriseRecommender(BaseRecommender):
             raise e 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        self.update_trained_dataset_models_from_rec(dataset_id, 
+        self._update_trained_dataset_models_from_rec(dataset_id, 
                                                     ml_rec, phash_rec)
 
         p_rec = [self.hash_2_param[ph] for ph in phash_rec]

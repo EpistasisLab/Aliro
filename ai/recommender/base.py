@@ -43,13 +43,12 @@ class BaseRecommender:
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
-        if random_state is not None:
-            self.random_state = random_state
+        self.random_state = random_state
+        if self.random_state is not None:
             random.seed(self.random_state)
             np.random.seed(self.random_state)
-        else:
-            self.random_state = 0
-        print('self.random_state:',self.random_state)
+
+        logger.info('self.random_state:',self.random_state)
 
         self.ml_type = ml_type
         
@@ -88,6 +87,9 @@ class BaseRecommender:
         results_mf: DataFrame, optional 
             columns corresponding to metafeatures of each dataset in 
             results_data.
+
+        source: string
+            if 'pennai', will update tally of trained dataset models 
         """
         if results_data.isna().values.any():
             logger.warning('There are NaNs in results_data.')
@@ -99,7 +101,7 @@ class BaseRecommender:
         # update parameter hash table
         logger.info('updating hash_2_param...')
         self.hash_2_param.update(
-                {self.param_hash_(x):x 
+                {self._param_hash(x):x 
                 for x in results_data['parameters'].values})
         param_2_hash = {frozenset(v.items()):k 
                 for k,v in self.hash_2_param.items()} 
@@ -112,7 +114,7 @@ class BaseRecommender:
         if source == 'pennai':
             self.update_trained_dataset_models_from_df(results_data)
 
-    def param_hash_(self, x):
+    def _param_hash(self, x):
         """Provides sha256 hash for parameter dictionary."""
         hasher = hashlib.sha256()
         hasher.update(repr(tuple(sorted(x.items()))).encode())
@@ -137,7 +139,17 @@ class BaseRecommender:
         #         {dataset_id:dataset_mf['_id'].values[0]})
 
     def load(self, filename=None, knowledgebase=None):
-        """Load a saved recommender state."""
+        """Load a saved recommender state.
+
+        :param filename: string or None
+            Name of file to load
+        :param knowledgebase: string or None
+            DataFrame with columns corresponding to:
+                'dataset'
+                'algorithm'
+                'parameters'
+                self.metric
+        """
         if filename is None:
             fn = self.filename
         else:
@@ -180,7 +192,11 @@ class BaseRecommender:
 
 
     def save(self, filename=None):
-        """Save the current recommender."""
+        """Save the current recommender.
+        
+        :param filename: string or None
+            Name of file to load
+        """
         if filename is None:
             fn = self.filename
         else:
@@ -202,7 +218,23 @@ class BaseRecommender:
 
     def update_and_save(self, results_data, results_mf=None, source='pennai',
             filename=None):
-        """runs self.update() and self.save."""
+        """runs self.update() and self.save.
+
+        Parameters
+        ----------
+        results_data: DataFrame 
+            columns corresponding to:
+            'algorithm'
+            'parameters'
+            self.metric
+
+        results_mf: DataFrame, optional 
+            columns corresponding to metafeatures of each dataset in 
+            results_data.
+
+        source: string
+            if 'pennai', will update tally of trained dataset models 
+        """
         self.update(results_data, results_mf, source)
         self.save(filename)
 
@@ -220,7 +252,7 @@ class BaseRecommender:
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
             self.hash_2_param = {
-                    self.param_hash_(x):x
+                    self._param_hash(x):x
                     for x in self._ml_p['parameters'].values}
             param_2_hash = {frozenset(v.items()):k 
                     for k,v in self.hash_2_param.items()}
@@ -240,7 +272,7 @@ class BaseRecommender:
             logger.warning('value of ml_p is None')
         logger.debug('param_2_hash:{} objects'.format(len(param_2_hash)))
 
-    def update_trained_dataset_models_from_df(self, results_data):
+    def _update_trained_dataset_models_from_df(self, results_data):
         '''stores the trained_dataset_models to aid in filtering repeats.'''
         results_data.loc[:, 'dataset-algorithm-parameters'] = (
                                        results_data['_id'].values + '|' +
@@ -256,7 +288,7 @@ class BaseRecommender:
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
         
-    def update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, 
+    def _update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, 
             phash_rec):
         '''update the recommender's memory with the new algorithm-parameter 
         combos that it recommended'''
