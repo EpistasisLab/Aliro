@@ -35,6 +35,11 @@ class BaseRecommender:
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
 
+    filename: string or None
+        Name of file to load
+
+    knowledgebase: Pandas DataFrame or None
+        Used in some recommenders to load from saved state
     """
 
     def __init__(self, ml_type='classifier', metric=None, ml_p=None,
@@ -48,7 +53,7 @@ class BaseRecommender:
             random.seed(self.random_state)
             np.random.seed(self.random_state)
 
-        logger.info('self.random_state:',self.random_state)
+        logger.info('self.random_state: ' + str(self.random_state))
 
         self.ml_type = ml_type
         
@@ -112,7 +117,7 @@ class BaseRecommender:
        
         # update results list 
         if source == 'pennai':
-            self.update_trained_dataset_models_from_df(results_data)
+            self._update_trained_dataset_models_from_df(results_data)
 
     def _param_hash(self, x):
         """Provides sha256 hash for parameter dictionary."""
