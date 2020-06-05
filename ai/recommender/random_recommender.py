@@ -113,6 +113,6 @@ class RandomRecommender(BaseRecommender):
             logger.error('self.w:', self.w)
             raise AttributeError
 
-        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
         return ml_rec, p_rec, rec_score

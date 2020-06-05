@@ -116,7 +116,8 @@ class AverageRecommender(BaseRecommender):
 
         # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, 
+                phash_rec)
 
         return ml_rec, p_rec, rec_score
 
