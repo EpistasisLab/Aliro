@@ -73,7 +73,8 @@ function ExperimentsTableHeader({
           </Table.HeaderCell>
         }
         <Table.HeaderCell
-          colSpan={shouldDisplayParams ? 0 : orderedParamKeys.length}
+          colSpan={shouldDisplayParams ? orderedParamKeys.length : null}
+          rowSpan={shouldDisplayParams ? null : 2}
           sorted={shouldDisplayParams ? null : getIsSorted('algorithm')}
           onClick={shouldDisplayParams ? null : () => onSort('algorithm')}
         >
