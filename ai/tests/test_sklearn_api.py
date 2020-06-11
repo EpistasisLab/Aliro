@@ -119,7 +119,7 @@ def test_verbose_1():
     """Test PennAIClassifier fit() with verbose=1."""
 
     pennai = PennAIClassifier(
-                            rec_class=RandomRecommender,
+                            rec_class=KNNMetaRecommender,
                             n_recs=2,
                             n_iters=2,
                             knowledgebase=classification_kb,
@@ -136,8 +136,8 @@ def test_verbose_2():
     """Test PennAIClassifier fit() with verbose=2."""
 
     pennai = PennAIClassifier(
-                            rec_class=RandomRecommender,
-                            n_recs=4,
+                            rec_class=KNNMetaRecommender,
+                            n_recs=2,
                             n_iters=2,
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,
