@@ -194,7 +194,8 @@ class TestResultUtils(unittest.TestCase):
         result = kb_utils.load_knowledgebase(
             resultsFiles=resultsFiles,
             metafeaturesFiles=metafeaturesFiles,
-            jsonMetafeatureDirectory=jsonMetafeatureDirectory)
+            jsonMetafeatureDirectory=jsonMetafeatureDirectory,
+            dedupe=False)
 
         print('expectedResultsCount',expectedResultsCount)
         print('expectedWarningCount',expectedWarningCount)

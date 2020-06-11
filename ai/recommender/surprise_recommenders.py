@@ -1,15 +1,21 @@
 # Recommender system for Penn AI.
 import pandas as pd
-# import json
+from pandas.util import hash_pandas_object
+import hashlib
+import os
+import gzip
+import pickle
+# import json 
 # import urllib.request, urllib.parse
 from .base import BaseRecommender
 #from ..metalearning import get_metafeatures
-from sklearn.preprocessing import RobustScaler
-from sklearn.pipeline import Pipeline
+# from sklearn.preprocessing import RobustScaler 
+# from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
+import pdb
 from surprise import (Reader, Dataset, CoClustering, SlopeOne, KNNWithMeans,
-                      KNNBasic, mySVD)
+                      KNNBasic, mySVD) 
 # import pyximport
 # pyximport.install()
 # from .svdedit import mySVD
@@ -27,43 +33,130 @@ logger.addHandler(ch)
 
 class SurpriseRecommender(BaseRecommender):
     """Class to support generic recommenders from the Surprise library.
-    Not intended to be used as a standalone class.
+    Not intended to be used as a standalone class. 
 
     Parameters
     ----------
     ml_type: str, 'classifier' or 'regressor'
         Recommending classifiers or regressors. Used to determine ML options.
-
+    
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+            filename=None, knowledgebase=None, random_state=None): 
         """Initialize recommendation system."""
         if self.__class__.__name__ == 'SurpriseRecommender':
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
             'directly; use one of the method-specific classes instead.')
-        super().__init__(ml_type, metric, ml_p)
-
+        self.set_algo()
+        self.random_state = random_state
+        if hasattr(self.algo, 'random_state'):
+            self.algo.random_state = self.random_state
         # store results
         self.results_df = pd.DataFrame()
+        self.first_fit = True 
+
         # reader for translating btw PennAI results and Suprise training set
         self.reader = Reader()
-        # algo is the online Surprise-based rec system
-        # if algo is None:
-        #     self.algo = KNNBasic()
-        # else:
-        #     self.algo = algo
 
-        self.first_fit = True
+        self.ml_type = ml_type
+
+        if metric is None:
+            logger.debug('metric is None, setting...')
+            self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
+        else:
+            self.metric = metric
+        assert(self.metric is not None)
+
+        logger.debug('self.algo_name: '+self.algo_name)
+        logger.debug('ml_type: '+self.ml_type)
+        logger.debug('metric: '+self.metric)
+
+        if filename is None:
+            filename = (
+                    'ai/recommender/saved/'
+                    + self.algo_name
+                    + '_' + self.ml_type 
+                    + '_' + self.metric 
+                    + '_pmlb_20200505'
+                    +'.pkl.gz')
+
+        super().__init__(ml_type, metric, ml_p, filename=filename,
+                knowledgebase=knowledgebase, random_state=random_state)
+
+        # note: anything set after super().__init() will change the field 
+        # of any recommender from a file
+
+        
         self.min_epochs = 10
         self.max_epochs = 100
-
+    
     @property
     def algo_name(self):
+        if type(self.algo).__name__ is None:
+            return type(self).__name__
         return type(self.algo).__name__
 
+    def set_training_data(self, results_data, results_mf=None, source='pennai'):
+        """Used for loading pickled recomenders to set results_df 
+        without training.
+        :param results_data: DataFrame with columns corresponding to:
+                'dataset'
+                'algorithm'
+                'parameters'
+                self.metric
+        :param results_mf: metafeatures for the datasets in results_data 
+        """
+        # update trained dataset models and hash table
+        super().update(results_data, results_mf, source)
+        self.update_training_data(results_data, shuffle=True)
+        rowHashes = hash_pandas_object(self.results_df).values 
+        newHash = hashlib.sha256(rowHashes).hexdigest()
+        if hasattr(self, 'results_df_hash'):
+            if newHash == self.results_df_hash:
+                logger.info('results_df hashes match')
+            else:
+                logger.warn('the results_df hash from the pickle is different')
+
+    def load(self, filename=None, knowledgebase = None):
+        """Load a saved recommender state."""
+        if knowledgebase is None:
+            logger.warning('A knowledgebase needs to be provided to load '
+            'Surprise Recommenders from file. Not loading.')
+            return 
+        loaded = super().load(filename=filename)
+        if loaded:
+            logger.info('setting training data...')
+            self.set_training_data(knowledgebase, source='knowledgebase')
+
+    def save(self, filename=None):
+        """Save the current recommender."""
+
+        if filename is None:
+            fn = self.filename
+        else:
+            fn = filename
+        if os.path.isfile(fn):
+            logger.warning('overwriting ' + fn)
+
+        logger.info('saving recommender as ' + fn)
+        f = gzip.open(fn, 'wb')
+        save_dict = self.__dict__
+        # remove results_df to save space. this gets loaded by load() fn.
+        rowHashes = hash_pandas_object(save_dict['results_df']).values 
+        save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
+        del save_dict['results_df']
+        rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
+        save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
+        del save_dict['_ml_p']
+        del save_dict['mlp_combos']
+
+        pickle.dump(save_dict, f, 2)
+        f.close()
+
     def update(self, results_data, results_mf=None, source='pennai'):
-        """Update ML / Parameter recommendations based on overall performance in
+        """Update ML / Parameter recommendations based on overall performance in 
         results_data.
 
         :param results_data: DataFrame with columns corresponding to:
@@ -71,7 +164,7 @@ class SurpriseRecommender(BaseRecommender):
                 'algorithm'
                 'parameters'
                 self.metric
-        :param results_mf: metafeatures for the datasets in results_data
+        :param results_mf: metafeatures for the datasets in results_data 
         """
 
         # update trained dataset models and hash table
@@ -80,42 +173,46 @@ class SurpriseRecommender(BaseRecommender):
         # update internal model
         self.update_model(results_data)
 
-    def update_training_data(self,results_data):
+    def update_training_data(self, results_data, shuffle=False):
         """Fill in new data from the results and set trainset for svd"""
+
+        if shuffle:
+            # shuffle the results data 
+            results_data = results_data.sample(frac=1)
+
         results_data.loc[:, 'algorithm-parameters'] =  (
                 results_data['algorithm'].values + '|' +
                 results_data['parameter_hash'].values)
         results_data.rename(columns={self.metric:'score'},inplace=True)
+        logger.info('append and drop dupes')
         self.results_df = self.results_df.append(
                 results_data[['algorithm-parameters','_id','score']]
                                                 ).drop_duplicates()
-        data = Dataset.load_from_df(self.results_df[['_id',
-                                                     'algorithm-parameters',
-                                                     'score']],
+        logger.info('load_from_df')
+        data = Dataset.load_from_df(self.results_df[['_id', 
+                                                     'algorithm-parameters', 
+                                                     'score']], 
                                     self.reader, rating_scale=(0,1))
         # build training set from the data
         self.trainset = data.build_full_trainset()
-        logger.debug('self.trainset # of ML-P combos: ' +
+        logger.debug('self.trainset # of ML-P combos: ' + 
                 str(self.trainset.n_items))
-        logger.debug('self.trainset # of datasets: ' + str(self.trainset.n_users))
+        logger.debug('self.trainset # of datasets: ' 
+                + str(self.trainset.n_users))
 
     def update_model(self,results_data):
         """Stores new results and updates algo."""
         logger.debug('updating '+self.algo_name+' model')
-        # shuffle the results data the first time
-        if self.first_fit:
-            results_data = results_data.sample(frac=1)
 
-        self.update_training_data(results_data)
+        self.update_training_data(results_data, self.first_fit)
+        self.first_fit=False
+
         logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
         self.algo.fit(self.trainset)
         logger.debug('done.')
-        if self.first_fit:
-            self.init_results_data = results_data
-            self.first_fit=False
-        logger.debug('model '+self.algo_name+' updated')
+        logger.debug('model '+self.algo_name+' updated') 
 
     def recommend(self, dataset_id, n_recs=1, dataset_mf = None):
         """Return a model and parameter values expected to do best on dataset.
@@ -123,11 +220,11 @@ class SurpriseRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating
+            ID of the dataset for which the recommender is generating 
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and
-            parameters expected to do
+            Return a list of length n_recs in order of estimators and 
+            parameters expected to do 
             best.
         """
         # dataset hash table
@@ -137,37 +234,32 @@ class SurpriseRecommender(BaseRecommender):
             predictions = []
             filtered =0
             for alg_params in self.mlp_combos:
-                if (dataset_id+'|'+alg_params not in
-                    self.trained_dataset_models):
+                if (dataset_id+'|'+alg_params not in 
+                    self.trained_dataset_models):  
                     predictions.append(self.algo.predict(dataset_id, alg_params,
                                                          clip=False))
                 else:
                     filtered +=1
-                    # logger.debug('skipping ' + str(dataset_id) +'|'+
-                    #         alg_params.split('|')[0] +
-                    #       str(self.param_htable[int(alg_params.split('|')[1])]) +
-                    #       ' which has already been recommended')
             logger.debug('filtered '+ str(filtered) + ' recommendations')
-            logger.debug('getting top n predictions')
+            logger.debug('getting top n predictions') 
             ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
-            logger.debug('returning ml recs')
-            # for (m,p,r) in zip(ml_rec, p_rec, score_rec):
-            #     print('ml_rec:', m, 'p_rec', p, 'score_rec',r)
-
+            logger.debug('returning ml recs') 
+            
         except Exception as e:
             logger.error( 'error running self.best_model_prediction for'+
                     str(dataset_id))
-            raise e
-        # update the recommender's memory with the new algorithm-parameter combos
+            raise e 
+        # update the recommender's memory with the new algorithm-parameter combos 
         # that it recommended
-        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
+        self._update_trained_dataset_models_from_rec(dataset_id, 
+                                                    ml_rec, phash_rec)
 
-        p_rec = [self.param_htable[int(ph)] for ph in phash_rec]
+        p_rec = [self.hash_2_param[ph] for ph in phash_rec]
         return ml_rec, p_rec, score_rec
 
     def get_top_n(self,predictions, n=10):
         '''Return the top-N recommendation for each user from a set of predictions.
-
+        
         Args:
             predictions(list of Prediction objects): The list of predictions, as
                 returned by the test method of an algorithm.
@@ -178,8 +270,8 @@ class SurpriseRecommender(BaseRecommender):
             ml recs, parameter recs, and their scores in three lists
         '''
 
-        # grabs the ml ids and their estimated scores for this dataset
-        top_n = []
+        # grabs the ml ids and their estimated scores for this dataset 
+        top_n = [] 
         ml_dist = {}
         for uid, iid, true_r, est, _ in predictions:
             top_n.append((iid, est))
@@ -197,103 +289,123 @@ class SurpriseRecommender(BaseRecommender):
         # the probability for each ML method is 1/total_methods/(# instances of that
         # method)
         inv_ml_dist = {k:1/n_ml/v for k,v in ml_dist.items()}
-        top_n_dist = np.array([inv_ml_dist[tn[0].split('|')[0]]
+        top_n_dist = np.array([inv_ml_dist[tn[0].split('|')[0]] 
             for tn in top_n])
         top_n_idx = np.arange(len(top_n))
-        top_n_idx_s = np.random.choice(top_n_idx, len(top_n), replace=False,
+        top_n_idx_s = np.random.choice(top_n_idx, len(top_n), replace=False, 
                                        p=top_n_dist)
         top_n = [top_n[i] for i in top_n_idx_s]
         #####
-
+        
         # sort top_n
         top_n = sorted(top_n, key=lambda x: x[1], reverse=True)
         top_n = top_n[:n]
 
-        logger.debug('filtered top_n:'+str(top_n))
+        logger.debug('filtered top_n:'+str(top_n)) 
         ml_rec = [n[0].split('|')[0] for n in top_n]
         p_rec = [n[0].split('|')[1] for n in top_n]
         score_rec = [n[1] for n in top_n]
-        return ml_rec, p_rec, score_rec
+        return ml_rec, p_rec, score_rec 
 
 class CoClusteringRecommender(SurpriseRecommender):
     """Generates recommendations via CoClustering, see
     https://surprise.readthedocs.io/en/stable/co_clustering.html
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, algo=None):
-        super().__init__(ml_type, metric, ml_p, algo)
-        # set n clusters for ML equal to # of ML methods
-        self.algo = CoClustering(n_cltr_i = self.ml_p.algorithm.nunique(),
-                                 n_cltr_u = 10)
+    def set_algo(self):
+        self.algo = CoClustering(n_cltr_u = 10)
+
+    # def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+    #         algo=None): 
+    #     super().__init__(ml_type, metric, ml_p, algo)
+    #     # set n clusters for ML equal to # of ML methods
+    #     self.
+    def update_model(self,results_data):
+        """Stores new results and updates algo."""
+        self.algo.n_cltr_i = self.ml_p.algorithm.nunique()
+        super().update_model(results_data)
 
 class KNNWithMeansRecommender(SurpriseRecommender):
     """Generates recommendations via KNNWithMeans, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNWithMeans()
+    def set_algo(self):
+        self.algo = KNNWithMeans()
 
 class KNNDatasetRecommender(SurpriseRecommender):
     """Generates recommendations via KNN with clusters defined over datasets, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNBasic(sim_options={'user_based':True})
+    def set_algo(self):
+        self.algo = KNNBasic(sim_options={'user_based':True})
 
     @property
     def algo_name(self):
-        return 'KNN-Dataset'
+        return 'KNN-Dataset' 
 
 class KNNMLRecommender(SurpriseRecommender):
     """Generates recommendations via KNN with clusters defined over algorithms, see
     https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
-    algo = KNNBasic(sim_options={'user_based':False})
+    def set_algo(self):
+        self.algo = KNNBasic(sim_options={'user_based':False})
     @property
     def algo_name(self):
-        return 'KNN-ML'
+        return 'KNN-ML' 
 
 class SlopeOneRecommender(SurpriseRecommender):
     """Generates recommendations via SlopeOne, see
     https://surprise.readthedocs.io/en/stable/slope_one.html
     """
-    algo = SlopeOne()
+    def set_algo(self):
+        self.algo = SlopeOne()
 
 
 class SVDRecommender(SurpriseRecommender):
     """SVD recommender.
-    see https://surprise.readthedocs.io/en/stable/matrix_factorization.html
+    see https://surprise.readthedocs.io/en/stable/matrix_factorization.html 
     Recommends machine learning algorithms and parameters using the SVD algorithm.
         - stores ML + P and every dataset.
         - learns a matrix factorization on the non-missing data.
-        - given a dataset, estimates the rankings of all ML+P and returns the top
-        n_recs.
+        - given a dataset, estimates the rankings of all ML+P and returns the top 
+        n_recs. 
 
     Note that we use a custom online version of SVD found here:
     https://github.com/lacava/surprise
     """
-    algo = mySVD(n_factors=20, biased=True, init_mean=0,
-                          init_std_dev=.2, lr_all=.01,
-                          reg_all=.02, lr_bu=None, lr_bi=None, lr_pu=None,
-                          lr_qi=None, reg_bu=None, reg_bi=None, reg_pu=None,
-                          reg_qi=None, random_state=None, verbose=False)
 
+    def set_algo(self, surprise_kwargs={}):
+        alg_kwargs = {'n_factors':20, 
+                'biased':True, 
+                'init_mean':0,
+                'init_std_dev':.2, 
+                'lr_all':.01,
+                'reg_all':.02}
+        alg_kwargs.update(surprise_kwargs)
+        self.algo = mySVD(verbose=False, **alg_kwargs)
 
+    # def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
+    #         filename=None, knowledgebase=None, random_state=None,
+    #         surprise_kwargs={}): 
+    #     super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
+    #             filename=filename, knowledgebase=knowledgebase, 
+    #             random_state=random_state)
+    
     def update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.info('updating SVD model')
         # shuffle the results data the first time
         if self.first_fit:
             results_data = results_data.sample(frac=1)
+            self.first_fit=False 
 
         self.update_training_data(results_data)
-        logger.debug('fitting self.algo...')
         # set the number of training iterations proportionally to the amount of
         # results_data
-        # self.algo.n_epochs = min(len(results_data),self.max_epochs)
-        # self.algo.n_epochs = max(10,self.algo.n_epochs)
+        logger.info('algo random_state: '+str(self.algo.random_state))
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
         self.algo.n_epochs = max(self.algo.n_epochs,self.min_epochs)
+
+        logger.debug('fitting self.algo...')
         self.algo.partial_fit(self.trainset)
         logger.debug('done.')
-        if self.first_fit:
-            self.init_results_data = results_data
-            self.first_fit=False
-        logger.debug('model SVD updated')
+        logger.debug('model SVD updated') 
