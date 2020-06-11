@@ -1,6 +1,7 @@
 import pandas as pd
 from .base import BaseRecommender
 import numpy as np
+import pdb
 
 import logging
 logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ logger.addHandler(ch)
 class RandomRecommender(BaseRecommender):
     """Penn AI random recommender.
 
-    Recommends random machine learning algorithms and parameters from the possible
+    Recommends random machine learning algorithms and parameters from the possible 
     algorithms fetched from the server.
 
     Parameters
@@ -23,30 +24,32 @@ class RandomRecommender(BaseRecommender):
 
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
-
+    
     ml_p: Dataframe
-        Contains all the machine learning / algorithm combinations available for
+        Contains all the machine learning / algorithm combinations available for 
         recommendation.
     """
 
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
+    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
+            random_state=None, knowledgebase=None):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p)
+        super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
+                random_state=random_state)
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
 
         Parameters
         ----------
-        results_data: DataFrame
+        results_data: DataFrame 
                 columns corresponding to:
                 'algorithm'
                 'parameters'
                 self.metric
 
-        results_mf: DataFrame, optional
-               columns corresponding to metafeatures of each dataset in
+        results_mf: DataFrame, optional 
+               columns corresponding to metafeatures of each dataset in 
                results_data.
         """
         # update trained dataset models and hash table
@@ -58,10 +61,10 @@ class RandomRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating
+            ID of the dataset for which the recommender is generating 
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of len n_recs in order of estimators and parameters
+            Return a list of len n_recs in order of estimators and parameters 
             expected to do best.
         """
         # dataset hash table
@@ -88,15 +91,15 @@ class RandomRecommender(BaseRecommender):
                 # else:
                 #     rec_not_new = False
                 # if n==999:
-                #     print('warning: tried 10 times (and failed) to find a novel
+                #     print('warning: tried 10 times (and failed) to find a novel 
                 # recommendation')
                 ml_rec.append(ml_tmp)
                 phash_rec.append(p_tmp)
-                p_rec.append(self.param_htable[int(p_tmp)])
-                rec_score.append(0)
+                p_rec.append(self.hash_2_param[p_tmp])
+                rec_score.append(0) 
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
-
+            
             #if dataset_id is not None:
             #    rec = [r for r in rec if dataset_id + '|' + r not in
             #           self.trained_dataset_models]
@@ -110,6 +113,6 @@ class RandomRecommender(BaseRecommender):
             logger.error('self.w:', self.w)
             raise AttributeError
 
-        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
         return ml_rec, p_rec, rec_score
