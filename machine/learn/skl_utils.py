@@ -634,23 +634,29 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
     if model_name in [ 'DecisionTreeClassifier', 'RandomForestClassifier' ]:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
+        num_samples = -1
 
     elif model_name ==  'GradientBoostingClassifier' and len(class_names) == 2:
         #Gradient Boosting Tree Explainer is only supported for Binary Classification
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
+        num_samples= -1
+
+    elif 'SVC' in model_name:
+        #Handle special case for SVC (probability=False)
+        return
 
     else:
-        #Handle special case for SVC (probability=False)
-        if 'SVC' in model_name:
-            return
+        # KernelExplainer
         #Sample 50 examples for computational speedup
-        num_samples = min(50, len(features))
+        max_num_samples = 50
+        num_samples = min(max_num_samples, len(features))
         sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
         features = features[sampled_row_indices]
         explainer = shap.KernelExplainer(model.predict_proba, features)
         #l1_reg not set to 'auto' to subside warnings
         shap_values = explainer.shap_values(features, l1_reg= 'num_features(10)')
+
 
     # Handle the case of multi-class SHAP outputs
     if isinstance(shap_values, list):
@@ -667,6 +673,15 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
         plt.savefig(save_path)
         plt.close()
 
+    # Summary stats
+    shap_summary_dict = {
+        'shap_explainer': explainer.__class__.__name__,
+        'shap_num_samples': num_samples,
+        #'shap_values': shap_values
+    }
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="shap_summary.json", content=shap_summary_dict)
 
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
