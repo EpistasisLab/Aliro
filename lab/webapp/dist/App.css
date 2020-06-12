@@ -436,6 +436,16 @@ pre.schema {
     font-style: italic;
 }
 
+/* For file drag-n-drop functionality */
+.pennai .dropzone {
+    text-align: center;
+    padding: 20px;
+    border: 3px dashed #474747;
+    background-color:#2185D0;
+    color:#ffffff;
+    font-size: 1.5rem;
+}
+
 @media (max-width: 321px) {
 
 }

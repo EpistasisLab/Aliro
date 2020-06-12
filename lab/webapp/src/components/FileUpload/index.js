@@ -23,8 +23,10 @@ import {
   Accordion,
   Icon,
   Label,
-  Divider
+  Divider,
+  Modal
 } from 'semantic-ui-react';
+import Dropzone from 'react-dropzone'
 
 class FileUpload extends Component {
   /**
@@ -40,7 +42,8 @@ class FileUpload extends Component {
       catFeatures: '',
       ordinalFeatures: {},
       ordinalIndex: 0,
-      activeAccordionIndexes: []
+      activeAccordionIndexes: [],
+      openFileTypePop: false
     };
 
     // enter info in text fields
@@ -52,6 +55,7 @@ class FileUpload extends Component {
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
     this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
+    this.handleClose = this.handleClose.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -234,14 +238,29 @@ class FileUpload extends Component {
   }
 
   /**
+   * Event handler for showing message when unsupported filetype is selected for upload by user.
+   * @param {Array} fileObj - array of rejected files (we only expect one, and use just the first)
+   * @returns {void} - no return value
+   */
+  handleRejectedFile = files => {
+    console.log('Filetype not csv or tsv:', files[0]);
+    this.setState({
+      selectedFile: null,
+      datasetPreview: null,
+      errorResp: undefined,
+      openFileTypePopup: true
+    });
+  }
+
+  /**
    * Event handler for selecting files, takes user file from html file input, stores
    * selected file in component react state, generates file preview and stores that
    * in the state as well. If file is valid does the abovementioned, else error
    * is generated
-   * @param {Event} event - DOM Event from user interacting with UI text field
+   * @param {Array} fileObj - array of selected files (we only expect one, and use just the first)
    * @returns {void} - no return value
    */
-  handleSelectedFile = event => {
+  handleSelectedFile = files => {
 
     const fileExtList = ['csv', 'tsv'];
     let papaConfig = {
@@ -254,15 +273,14 @@ class FileUpload extends Component {
     };
 
     // check for selected file
-    if(event.target.files && event.target.files[0]) {
+    if(files && files[0]) {
       // immediately try to get dataset preview on file input html element change
       // need to be mindful of garbage data/files
       //console.log(typeof event.target.files[0]);
       //console.log(event.target.files[0]);
-      let uploadFile = event.target.files[0]
+      let uploadFile = files[0]
       let fileExt = uploadFile.name.split('.').pop();
 
-      //Papa.parse(event.target.files[0], papaConfig);
       // check file extensions
       if (fileExtList.includes(fileExt)) {
         // use try/catch block to deal with potential bad file input when trying to
@@ -281,14 +299,14 @@ class FileUpload extends Component {
         }
 
         this.setState({
-          selectedFile: event.target.files[0],
+          selectedFile: files[0],
           errorResp: undefined,
           datasetPreview: null,
           openFileTypePopup: false
         });
 
       } else {
-        console.warn('Filetype not csv or tsv:', uploadFile);
+        console.log('Filetype not csv or tsv:', uploadFile);
         this.setState({
           selectedFile: null,
           datasetPreview: null,
@@ -581,11 +599,17 @@ class FileUpload extends Component {
    /**
    *  Simple timeout function, resets error message
    */
-   errorPopupTimeout() {
-     this.setState({
-       errorResp: undefined
-     });
-   }
+  errorPopupTimeout() {
+    this.setState({
+      errorResp: undefined
+    });
+  }
+
+  handleClose(){
+    this.setState({
+      openFileTypePopup: false
+    });
+  }  
 
   render() {
 
@@ -609,34 +633,60 @@ class FileUpload extends Component {
     // display file extension Popup
     let openFileTypePop;
     this.state.openFileTypePopup ? openFileTypePop = this.state.openFileTypePopup : openFileTypePop = false;
+
+    /* ORIG 
+      let fileInputElem = (
+        <Input
+          style={{width: '65%', backgroundColor: '#2185d0'}}
+          type="file"
+          label={
+            <div style={{color: 'white', paddingRight: '10px', paddingLeft: '5px'}}>
+              <p>Please select new dataset
+              <br/>
+              Supported file types: (<i>csv, tsv</i>)</p>
+            </div>
+          }
+          id="upload_dataset_file_browser_button"
+          onChange={this.handleSelectedFile}
+        />
+      );
+    */
+
     // file input
+    // https://react-dropzone.js.org/
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept*
     let fileInputElem = (
-      <Input
-        style={{width: '65%', backgroundColor: '#2185d0'}}
-        type="file"
-        label={
-          <div style={{color: 'white', paddingRight: '10px', paddingLeft: '5px'}}>
-            <p>Please select new dataset
-            <br/>
-            Supported file types: (<i>csv, tsv</i>)</p>
-          </div>
-        }
-        id="upload_dataset_file_browser_button"
-        onChange={this.handleSelectedFile}
-      />
+      <Dropzone 
+          onDropAccepted={this.handleSelectedFile}
+          onDropRejected={this.handleRejectedFile}
+          accept=".csv,.tsv,text/csv,test/tsv"
+          multiple={false}
+      >
+        {({getRootProps, getInputProps}) => (
+          <section>
+            <div {...getRootProps({ className: "dropzone" })}>
+              <input {...getInputProps()} />
+              <p>Upload a csv or tsv file</p>
+              <p>Drag 'n' drop it here, or click to select</p>
+            </div>
+          </section>
+        )}
+      </Dropzone>
     );
+
 
     return (
       <div>
         <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
-            <Popup
-              open={openFileTypePop}
-              header="Please check file type"
-              content="Unsupported file extension detected"
-              trigger={fileInputElem}
-            />
+            {fileInputElem}
+            <Modal basic style={{ marginTop:'0' }} open={openFileTypePop} onClose={this.handleClose} closeIcon>
+              <Modal.Header>Invalid file type chosen</Modal.Header>
+              <Modal.Content>
+                {"Please choose .cvs or .tsv files"}
+              </Modal.Content>
+            </Modal>
             <br/>
             <div
               id="file-upload-form-input-area"
