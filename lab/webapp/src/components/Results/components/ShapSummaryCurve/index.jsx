@@ -5,7 +5,7 @@ import InvertedCardWithDropdown from '../../../InvertedCardWithDropdown';
 import InvertedCard from '../../../InvertedCard';
 import { Popup, Icon, Image, Loader } from 'semantic-ui-react';
 
-class SummaryCurve extends Component {
+class ShapSummaryCurve extends Component {
   constructor(props) {
     super(props);
     this.handle_class_change = this.handle_class_change.bind(this);
@@ -13,7 +13,7 @@ class SummaryCurve extends Component {
   }
 
   componentDidMount() {
-    const { fileDict } = this.props;
+    const { fileDict, shap_explainer, shap_num_samples } = this.props;
 
     if(!(Object.keys(fileDict).length === 0)) {
       const class_name = Object.keys(fileDict)[0];
@@ -41,7 +41,7 @@ class SummaryCurve extends Component {
   }
 
   handle_class_change(e, { value }) {
-    const { fileDict } = this.props;
+    const { fileDict, shap_explainer, shap_num_samples } = this.props;
     const file = fileDict[value];
 
     fetch(`/api/v1/files/${file._id}`)
@@ -58,13 +58,30 @@ class SummaryCurve extends Component {
   }
 
   render() {
-    const { fileDict } = this.props;
+    const { fileDict, shap_explainer, shap_num_samples } = this.props;
     const { image_url, class_name, class_options } = this.state;
-    const desc = "Summary plot sorts features by their impact. It uses SHAP values to explain the output of ML models.";
+    const desc = "SHAP feature importance plot that shows the positive and negative relationships between samples and features with this ML model.  The plot sorts features by the sum of SHAP value magnitudes.";
+    const shap_url = "https://github.com/slundberg/shap"
     let headericon = (
       <Popup
+        on="click"
         position="top center"
-        content={desc}
+        content={
+          <div className="content">
+            <p>{desc}</p>
+            { (shap_explainer && shap_num_samples>=0) &&
+              <p>The plot below uses the SHAP <strong>{shap_explainer}</strong> with <strong>{shap_num_samples}</strong> randomly selected samples.</p>
+            }
+
+            { (shap_explainer && shap_num_samples<0) &&
+              <p>The plot below uses the <strong>{shap_explainer}</strong>.</p>
+            }
+
+            {shap_url &&
+              <a href={shap_url} target="_blank"><strong>Read more here <Icon name="angle double right" /></strong></a>
+            }
+          </div>
+        }
         trigger={
           <Icon
             name="info circle"
@@ -114,4 +131,4 @@ class SummaryCurve extends Component {
   }
 }
 
-export default SummaryCurve;
+export default ShapSummaryCurve;
