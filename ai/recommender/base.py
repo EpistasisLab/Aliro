@@ -15,6 +15,7 @@ import pickle
 import gzip
 import random
 import hashlib
+import copy
 from pandas.util import hash_pandas_object
 
 class BaseRecommender:
@@ -178,18 +179,22 @@ class BaseRecommender:
                     logger.warn('adding ' + k+'=' + str(tmp_dict[k])[:20]
                             + '...')
             logger.info('updating internal state')
-            self.__dict__.update(tmp_dict)
+            
             # check ml_p hashes
             rowHashes = hash_pandas_object(self.ml_p.apply(str)).values 
             newHash = hashlib.sha256(rowHashes).hexdigest()
-            if hasattr(self,'ml_p_hash'):
-                if newHash == self.ml_p_hash:
+            if 'ml_p_hash' in tmp_dict.keys():
+                if newHash == tmp_dict['ml_p_hash']:
                     logger.info('ml_p hashes match')
                 else:
                     logger.warn('the ml_p hash from the pickle is different.'
                         'This likely means the algorithm configurations have '
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')
+                del tmp_dict['ml_p_hash']
+
+            # update self with loaded pickle
+            self.__dict__.update(tmp_dict)
             return True
         else:
             logger.warning('Could not load filename '+self.filename)
@@ -210,7 +215,7 @@ class BaseRecommender:
             logger.warning('overwriting ' + fn)
 
         # remove ml_p to save space 
-        save_dict = self.__dict__
+        save_dict = copy.deepcopy(self.__dict__)
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
         del save_dict['_ml_p']
