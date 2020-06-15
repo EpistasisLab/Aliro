@@ -11,7 +11,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 
 import pdb
 import logging
-
+import os
 import json
 
 logger = logging.getLogger(__name__)
@@ -116,6 +116,71 @@ def check_rec(rec):
             logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
                 rec.__name__,n,d,ml,p,scores))
 
+def save_and_load(rec):
+    """Rec can be saved and loaded"""
+    logger.info("check_n_recs({})".format(rec))
+    print("check_n_recs({})".format(rec))
+
+    ml_p = data.loc[:,['algorithm','parameters']]
+    ml_p['parameters'] = ml_p['parameters'].apply(str)
+    ml_p = ml_p.drop_duplicates()
+    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
+   
+    logger.info('setting rec')
+    rec_obj = rec(ml_p=ml_p)
+    logger.info('set rec')
+   
+    dataset_mf = pd.DataFrame()
+    new_data = data.sample(n=100)
+    dataset_mf = update_dataset_mf(dataset_mf, new_data)
+    rec_obj.update(new_data, dataset_mf)
+
+    #save the recommender
+    filename = type(rec_obj).__name__ + '_test.pkl.gz'
+    rec_obj.save(filename=filename)
+
+    # now, load saved test file
+    rec_obj2 = rec(ml_p=ml_p, filename=filename, knowledgebase=new_data)
+
+    # clean up pickle file generated if it exists
+    if os.path.exists(filename):
+        os.remove(filename)
+    value = { k : rec_obj2.__dict__[k] 
+            for k in set(rec_obj2.__dict__) - set(rec_obj.__dict__) }
+    
+    print('recommender differences (in 2, not in 1):',value)
+
+    value = { k : rec_obj.__dict__[k] 
+            for k in set(rec_obj.__dict__) - set(rec_obj2.__dict__) }
+    print('recommender differences (in 1, not in 2):',value)
+
+    # for k,v in rec_obj.__dict__.items():
+    #     for k2,v2 in rec_obj2.__dict__.items():
+    #         if type(v) == pd.DataFrame:
+    #             pd.testing.assert_frame_equal(v,v2)
+
+    #         try:
+    #             if v != v2:
+    #                 print(k,'1:',v,'; ', k2, '2: ', v2)
+    #         except Exception as e:
+    #             print(e)
+    #             try:
+    #                 if (v != v2).all():
+    #                     print(k,'1:',v,'; ', k2, '2: ', v2)
+    #             except Exception as f:
+    #                 print(f)
+
+
+    assert(rec_obj.__dict__ == rec_obj2.__dict__)
+    # # test updating scores
+    # for n_recs in np.arange(5):
+    #     for d in list(data['_id'].unique())[:10]:
+    #         ml, p, scores = rec_obj.recommend(d,n_recs=n_recs,
+    #                                      dataset_mf=get_metafeatures_by_id(d))
+    #         assert(len(ml)==n_recs)
+    #         assert(len(p)==n_recs)
+    #         assert(len(scores)==n_recs)
+
 def test_recs_work():
     """Each recommender updates and recommends without error"""
     logger.info("test_recs_work")
@@ -156,3 +221,9 @@ def test_n_recs():
     print("test_n_recs")
     for recommender in test_recommenders:
         yield (check_n_recs, recommender)
+
+def test_save_and_load():
+    """Load function works"""
+    for recommender in test_recommenders:
+        yield (save_and_load, recommender)
+

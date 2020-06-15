@@ -5,6 +5,7 @@ import hashlib
 import os
 import gzip
 import pickle
+import copy
 # import json 
 # import urllib.request, urllib.parse
 from .base import BaseRecommender
@@ -75,7 +76,7 @@ class SurpriseRecommender(BaseRecommender):
 
         if filename is None:
             filename = (
-                    'ai/recommender/saved/'
+                    'data/recommenders/'
                     + self.algo_name
                     + '_' + self.ml_type 
                     + '_' + self.metric 
@@ -118,6 +119,7 @@ class SurpriseRecommender(BaseRecommender):
                 logger.info('results_df hashes match')
             else:
                 logger.warn('the results_df hash from the pickle is different')
+            del self.results_df_hash
 
     def load(self, filename=None, knowledgebase = None):
         """Load a saved recommender state."""
@@ -142,7 +144,7 @@ class SurpriseRecommender(BaseRecommender):
 
         logger.info('saving recommender as ' + fn)
         f = gzip.open(fn, 'wb')
-        save_dict = self.__dict__
+        save_dict = copy.deepcopy(self.__dict__)
         # remove results_df to save space. this gets loaded by load() fn.
         rowHashes = hash_pandas_object(save_dict['results_df']).values 
         save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
