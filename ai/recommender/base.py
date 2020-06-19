@@ -77,6 +77,15 @@ class BaseRecommender:
         if self.filename is not None:
             self.load(self.filename, knowledgebase)
 
+    def _default_saved_recommender_filename(self):
+        ### Generate the default name of the serialaized instance of this recommender
+        return (
+            self.__class__.__name__
+            + '_' + self.ml_type
+            + '_' + self.metric
+            + '_pmlb_20200505'
+            +'.pkl.gz')
+
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
