@@ -155,11 +155,9 @@ class PennAI(BaseEstimator):
             raise ValueError("please provide knowledgebase and kb_metafeatures")
 
         # if there is a pickle file, load it as the recommender scores
-        if self.warm_start: # todo
-            # disable this warm_start for now
-
-            print("warm_start is not working yet!")
-            #self.rec_engines[self.mode].load(self.warm_start, resultsData)
+        if self.warm_start:
+            logger.info("Loading pickled recommender")
+            self.rec_engines[self.mode].load(self.warm_start, resultsData)
 
 
 
@@ -593,6 +591,19 @@ class PennAI(BaseEstimator):
             y
         )
         return score
+
+    def save(self, filename):
+        """save pickled recommender.
+        Parameters
+        ----------
+        filename: string
+            Filename for saving pickled recommender.
+
+        Returns
+        -------
+        None
+        """
+        self.rec_engines[self.mode].save(filename)
 
 
 def bool_or_none(val):
