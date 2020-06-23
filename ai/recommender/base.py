@@ -10,7 +10,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 import numpy as np
 import os
-import pdb 
+import pdb
 import pickle
 import gzip
 import random
@@ -56,18 +56,18 @@ class BaseRecommender:
         logger.info('self.random_state: ' + str(self.random_state))
 
         self.ml_type = ml_type
-        
+
         if metric is None:
             self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
         else:
             self.metric = metric
 
-        # maintain a set of dataset-algorithm-parameter combinations that have 
+        # maintain a set of dataset-algorithm-parameter combinations that have
         # already been evaluated
         self.trained_dataset_models = set()
         # hash table for parameter options
         self.hash_2_param = {}
-        
+
         # get ml+p combos (note: this triggers a property in base recommender)
         self.ml_htable = {}
         self.ml_p = ml_p
@@ -83,39 +83,39 @@ class BaseRecommender:
 
         Parameters
         ----------
-        results_data: DataFrame 
+        results_data: DataFrame
             columns corresponding to:
             'algorithm'
             'parameters'
             self.metric
 
-        results_mf: DataFrame, optional 
-            columns corresponding to metafeatures of each dataset in 
+        results_mf: DataFrame, optional
+            columns corresponding to metafeatures of each dataset in
             results_data.
 
         source: string
-            if 'pennai', will update tally of trained dataset models 
+            if 'pennai', will update tally of trained dataset models
         """
         if results_data.isna().values.any():
             logger.warning('There are NaNs in results_data.')
             #logger.warning(str(results_data))
             logger.warning(results_data.head())
             logger.error('Dropping NaN results.')
-            results_data.dropna(inplace=True) 
+            results_data.dropna(inplace=True)
 
         # update parameter hash table
         logger.info('updating hash_2_param...')
         self.hash_2_param.update(
-                {self._param_hash(x):x 
+                {self._param_hash(x):x
                 for x in results_data['parameters'].values})
-        param_2_hash = {frozenset(v.items()):k 
-                for k,v in self.hash_2_param.items()} 
-        # store parameter_hash variable in results_data 
+        param_2_hash = {frozenset(v.items()):k
+                for k,v in self.hash_2_param.items()}
+        # store parameter_hash variable in results_data
         logger.info('storing parameter hash...')
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: param_2_hash[frozenset(x.items())])
-       
-        # update results list 
+
+        # update results list
         if source == 'pennai':
             self._update_trained_dataset_models_from_df(results_data)
 
@@ -132,12 +132,12 @@ class BaseRecommender:
         ----------
 
         dataset_id: string
-            ID of the dataset for which the recommender is generating 
+            ID of the dataset for which the recommender is generating
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters 
+            Return a list of length n_recs in order of estimators and parameters
             expected to do best.
-        dataset_mf: DataFrame 
+        dataset_mf: DataFrame
             metafeatures of the dataset represented by dataset_id
         """
         # self.dataset_id_to_hash.update(
@@ -180,7 +180,7 @@ class BaseRecommender:
             logger.info('updating internal state')
             self.__dict__.update(tmp_dict)
             # check ml_p hashes
-            rowHashes = hash_pandas_object(self.ml_p.apply(str)).values 
+            rowHashes = hash_pandas_object(self.ml_p.apply(str)).values
             newHash = hashlib.sha256(rowHashes).hexdigest()
             if hasattr(self,'ml_p_hash'):
                 if newHash == self.ml_p_hash:
@@ -198,7 +198,7 @@ class BaseRecommender:
 
     def save(self, filename=None):
         """Save the current recommender.
-        
+
         :param filename: string or None
             Name of file to load
         """
@@ -209,10 +209,10 @@ class BaseRecommender:
         if os.path.isfile(fn):
             logger.warning('overwriting ' + fn)
 
-        # remove ml_p to save space 
+        # remove ml_p to save space
         save_dict = self.__dict__
-        rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
-        save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
+        rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values
+        save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest()
         del save_dict['_ml_p']
         del save_dict['mlp_combos']
 
@@ -227,18 +227,18 @@ class BaseRecommender:
 
         Parameters
         ----------
-        results_data: DataFrame 
+        results_data: DataFrame
             columns corresponding to:
             'algorithm'
             'parameters'
             self.metric
 
-        results_mf: DataFrame, optional 
-            columns corresponding to metafeatures of each dataset in 
+        results_mf: DataFrame, optional
+            columns corresponding to metafeatures of each dataset in
             results_data.
 
         source: string
-            if 'pennai', will update tally of trained dataset models 
+            if 'pennai', will update tally of trained dataset models
         """
         self.update(results_data, results_mf, source)
         self.save(filename)
@@ -259,7 +259,7 @@ class BaseRecommender:
             self.hash_2_param = {
                     self._param_hash(x):x
                     for x in self._ml_p['parameters'].values}
-            param_2_hash = {frozenset(v.items()):k 
+            param_2_hash = {frozenset(v.items()):k
                     for k,v in self.hash_2_param.items()}
             # machine learning - parameter combinations
             self.mlp_combos = (self._ml_p['algorithm']+'|'+
@@ -292,10 +292,10 @@ class BaseRecommender:
         # get unique dataset / parameter / classifier combos in results_data
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
-        
-    def _update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, 
+
+    def _update_trained_dataset_models_from_rec(self, dataset_id, ml_rec,
             phash_rec):
-        '''update the recommender's memory with the new algorithm-parameter 
+        '''update the recommender's memory with the new algorithm-parameter
         combos that it recommended'''
         if dataset_id is not None:
             # datahash = self.dataset_id_to_hash[dataset_id]

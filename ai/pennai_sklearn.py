@@ -43,19 +43,22 @@ class PennAI(BaseEstimator):
 
     :param rec_class: ai.BaseRecommender - recommender to use
     :param verbose: int, 0 quite, 1 info, 2 debug
-    :param warm_start: Boolean - if true, attempt to load the ai state from the plk file
+    :param warm_start: if it is a path of plk file, attempt to
+            load the ai state from the plk file;
     :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
     :param n_iters: int = total number of iteration
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param ml_p_file: inputfile for hyperparams space for all ML algorithms
-    :param ensemble: if it is a integer N, PennAI will use VotingClassifier/VotingRegressor to ensemble
+    :param ensemble: if it is a integer N, PennAI will use
+            VotingClassifier/VotingRegressor to ensemble
             top N best models into one model.
     :param max_time_mins: maximum time in minutes that PennAI can run # todo
     :param random_state: random state for recommenders
-    :param n_jobs: int (default: 1) The number of cores to dedicate to computing the scores with joblib.
-            Assigning this parameter to -1 will dedicate as many cores as are available on your system.
+    :param n_jobs: int (default: 1) The number of cores to dedicate to
+            computing the scores with joblib. Assigning this parameter to -1
+            will dedicate as many cores as are available on your system.
 
     """
     mode="classification"
@@ -63,7 +66,7 @@ class PennAI(BaseEstimator):
     def __init__(self,
                 rec_class=None,
                 verbose=0,
-                warm_start=False,# todo
+                warm_start=None,
                 scoring=None,
                 n_recs=10,
                 n_iters=10,
@@ -139,17 +142,27 @@ class PennAI(BaseEstimator):
 
         self.initilize_recommenders(self.rec_class) # set self.rec_engines
 
+
         # build dictionary of ml ids to names conversion
         # print('ml_id_to_name:',self.ml_id_to_name)
 
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
 
-        if self.knowledgebase:
-            self.load_kb()
+        if self.knowledgebase and self.kb_metafeatures:
+            resultsData = self.load_kb()
+        else:
+            raise ValueError("please provide knowledgebase and kb_metafeatures")
 
         # if there is a pickle file, load it as the recommender scores
-        assert not (self.warm_start), "The `warm_start` option is not yet supported"
+        if self.warm_start: # todo
+            # disable this warm_start for now
+
+            print("warm_start is not working yet!")
+            #self.rec_engines[self.mode].load(self.warm_start, resultsData)
+
+
+
 
     def generate_metafeatures_from_X_y(self, X, y):
         """
@@ -329,6 +342,7 @@ class PennAI(BaseEstimator):
         self.rec_engines[self.mode].update(kb['resultsData'][self.mode],
                 self.dataset_mf_cache, source='knowledgebase')
         logger.info('Knowledgebase loaded')
+        return kb['resultsData'][self.mode]
 
 
     ##-----------------

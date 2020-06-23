@@ -182,7 +182,7 @@ def test_init():
     assert pennai.kb_metafeatures == classification_metafeatures
     assert pennai.random_state == 42
     assert pennai.verbose == 0
-    assert pennai.warm_start == False
+    assert pennai.warm_start == None
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
     assert pennai.ensemble == None
@@ -267,3 +267,22 @@ def test_ensemble():
     assert pennai.score(X_train, y_train)
     assert pennai.ensemble
     assert pennai.estimator.__class__ == VotingClassifier
+
+
+def test_warm_start():
+    """Test PennAIClassifier fit() with warm_start."""
+    warm_start_path = "ai/recommender/saved/mySVD_classifier_accuracy_pmlb_20200505.pkl.gz"
+    classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+    pennai = PennAIClassifier(
+                            rec_class=SVDRecommender,
+                            n_recs=2,
+                            n_iters=2,
+                            warm_start=warm_start_path,
+                            knowledgebase=classification_kb_full,
+                            kb_metafeatures=classification_metafeatures,
+                            random_state=42,
+                            verbose=1
+                           )
+    pennai.fit(X_train, y_train)
+
+    assert pennai.score(X_train, y_train)
