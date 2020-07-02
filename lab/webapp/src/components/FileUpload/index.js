@@ -24,31 +24,43 @@ import {
   Icon,
   Label,
   Divider,
-  Modal
+  Modal,
+  Message
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone'
 
 class FileUpload extends Component {
+  
+  //Some pseudo-constants to avoid typos
+  get featureTypeNumeric() { return 'numeric'; }
+  get featureTypeCategorical() { return 'categorical'; }
+  get featureTypeOrdinal() { return 'ordinal'; }
+  
   /**
- * FileUpload reac component - UI form for uploading datasets
- * @constructor
- */
+  * FileUpload reac component - UI form for uploading datasets
+  * @constructor
+  */
   constructor(props) {
     super(props);
 
     this.state = {
       selectedFile: null,
       dependentCol: '',
-      catFeatures: '',
-      ordinalFeatures: {},
+      catFeaturesText: '',
+      /** {boolean} True when user has specified the categorical features via the text box */
+      catFeaturesStringInUse: false,
+      ordinalFeaturesText: '',
+      ordinalFeaturesValues: {},
       ordinalIndex: 0,
       activeAccordionIndexes: [],
-      openFileTypePop: false
+      openFileTypePop: false,
+      /** {array} String-array holding the type for each feature, in same index order */
+      featureTypeFromDropdown: []
     };
 
     // enter info in text fields
     this.handleDepColField = this.handleDepColField.bind(this);
-    this.handleCatFeatures = this.handleCatFeatures.bind(this);
+    this.handlecatFeaturesText = this.handlecatFeaturesText.bind(this);
     this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
     this.handlePredictionType = this.handlePredictionType.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
@@ -56,6 +68,10 @@ class FileUpload extends Component {
     this.generateFileData = this.generateFileData.bind(this);
     this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleFeatureTypeDropdown = this.handleFeatureTypeDropdown.bind(this);
+    this.initDatasetPreview = this.initDatasetPreview.bind(this);
+    this.getCatFeaturesFromDropdowns = this.getCatFeaturesFromDropdowns.bind(this);
+    this.handleOrderButton = this.handleOrderButton.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -65,7 +81,7 @@ class FileUpload extends Component {
     For example, if analyzing a dataset of patients with different types of diabetes,
     this column may have the values "type1", "type2", or "none".`;
 
-    this.predictionTypeHelp = (<p><i>Classification</i> algorithms to are used to model discrete categorical outputs.
+    this.predictionTypeHelp = (<p><i>Classification</i> algorithms are used to model discrete categorical outputs.
       Examples include modeling the color car someone might buy ("red", "green", "blue"...) or a disease state ("type1Diabetes", "type2Diabetes", "none"...)
    <br/><br/><i>Regression</i> algorithms are used to model a continuous valued output.  Examples include modeling the amount of money a house is predicted to sell for.</p>);
 
@@ -82,6 +98,9 @@ class FileUpload extends Component {
     Describe these features using a json map. The map key is the name of the field,
      and the map value is an ordered list of the values the field can take.  Example:<br/>
     <i>{"{\"rank\":[\"first\", \"second\", \"third\"], \"size\":[\"small\", \"medium\", \"large\"]}"}</i></p>);
+
+    //A counter to use in loops
+    this.indexCounter = 0;
   }
 
   /**
@@ -91,12 +110,25 @@ class FileUpload extends Component {
     this.setState({
       selectedFile: null,
       dependentCol: '',
-      catFeatures: '',
-      ordinalFeatures: '',
+      catFeaturesText: '',
+      catFeaturesStringInUse: false,
+      ordinalFeaturesText: '',
+      /** {object} Object used as dictionary to track features designated as ordinal by user via dataset preview UI.
+       * 
+       *  key: feature name from dataPreview
+       * 
+       *  value: string-array holding possibly-ordered values for the feature.
+       * 
+       *  Will be empty object if none defined.
+       *  Gets updated with new order as user orders them using the UI in dataset preview.
+       *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
+       */
+      ordinalFeaturesValues: {},
       ordinalIndex: 0,
       predictionType: this.defaultPredictionType,
       activeAccordionIndexes: [],
-      errorResp: undefined
+      errorResp: undefined,
+      featureTypeFromDropdown: []
     });
   }
 
@@ -135,11 +167,12 @@ class FileUpload extends Component {
    * @param {Event} e - DOM Event from user interacting with UI text field
    * @returns {void} - no return value
    */
-  handleCatFeatures(e) {
+  handlecatFeaturesText(e) {
     //let safeInput = this.purgeUserInput(e.target.value);
     //window.console.log('safe input cat: ', safeInput);
     this.setState({
-      catFeatures: e.target.value,
+      catFeaturesText: e.target.value,
+      catFeaturesStringInUse: e.target.value != "",
       errorResp: undefined
     });
   }
@@ -156,7 +189,7 @@ class FileUpload extends Component {
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input ord: ', safeInput);
     this.setState({
-      ordinalFeatures: e.target.value,
+      ordinalFeaturesText: e.target.value,
       errorResp: undefined
     });
   }
@@ -178,8 +211,8 @@ class FileUpload extends Component {
     const data = new FormData();
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
-    let ordFeatures = this.state.ordinalFeatures;
-    let catFeatures = this.state.catFeatures;
+    let ordFeatures = this.state.ordinalFeaturesText;
+    let catFeaturesText = this.state.catFeaturesText;
     let predictionType = this.state.predictionType;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
@@ -192,25 +225,31 @@ class FileUpload extends Component {
       // try to parse ord features input as JSON if not empty
       if(ordFeatures !== '') {
         try {
-          ordFeatures = JSON.parse(this.state.ordinalFeatures);
+          ordFeatures = JSON.parse(this.state.ordinalFeaturesText);
         } catch(e) {
           // if expecting oridinal stuff, return error to stop upload process
           return { errorResp: e.toString() };
         }
       }
 
-      if(catFeatures !== "") {
+      // Categorical feature assignments
+      // Start with getting assignments from the dropdowns available in the dataset preview.
+      // If user has specified categorical features in the text box, we use that instead.
+      //
+      let catFeaturesAssigned = this.getCatFeaturesFromDropdowns();
+      if(catFeaturesText !== "") {
         // remove all whitespace
-        catFeatures = catFeatures.replace(/ /g, '');
+        catFeaturesText = catFeaturesText.replace(/ /g, '');
         // parse on comma
-        catFeatures = catFeatures.split(',');
+        catFeaturesText = catFeaturesText.split(',');
         // if input contains empty items - ex: 'one,,two,three'
         // filter out resulting empty item
-        catFeatures = catFeatures.filter(item => {
+        catFeaturesAssigned = catFeaturesText.filter(item => {
           return item !== ""
         })
       }
 
+      console.log('catFeaturesAssigned: ' + catFeaturesAssigned);
       // keys specified for server to upload repsective fields,
       // filter
       let metadata =  JSON.stringify({
@@ -219,7 +258,7 @@ class FileUpload extends Component {
                 'timestamp': Date.now(),
                 'dependent_col' : depCol,
                 'prediction_type' : predictionType,
-                'categorical_features': catFeatures,
+                'categorical_features': catFeaturesAssigned,
                 'ordinal_features': ordFeatures
               });
 
@@ -253,6 +292,20 @@ class FileUpload extends Component {
   }
 
   /**
+   * Called when a new dataset has been loaded for preview.
+   * Do whatever needs to be done.
+   * @returns {void} - no return value
+   */
+  initDatasetPreview = () => {
+    let dataPrev = this.state.datasetPreview;
+    //Init the state-tracking of feature-type dropdowns
+    let featureTypes = Array(dataPrev.meta.fields.length).fill(this.featureTypeNumeric);
+    this.setState({featureTypeFromDropdown: featureTypes})
+    //Init oridinal values
+    this.setState({ordinalFeaturesValues: {}})
+  }
+
+  /**
    * Event handler for selecting files, takes user file from html file input, stores
    * selected file in component react state, generates file preview and stores that
    * in the state as well. If file is valid does the abovementioned, else error
@@ -263,12 +316,13 @@ class FileUpload extends Component {
   handleSelectedFile = files => {
 
     const fileExtList = ['csv', 'tsv'];
+    //Config for csv reader. We load the whole file so we can let user sort the ordinal features
     let papaConfig = {
       header: true,
-      preview: 5,
       complete: (result) => {
         //window.console.log('preview of uploaded data: ', result);
         this.setState({datasetPreview: result});
+        this.initDatasetPreview();
       }
     };
 
@@ -296,8 +350,12 @@ class FileUpload extends Component {
             datasetPreview: null,
             openFileTypePopup: false
           });
+          //Added this return, otherwise it will fall through to state below
+          return;
         }
 
+        //NOTE - this code is reached before the papaConfig.complete callback is called,
+        // so if file is parsed successfully, the datasetPreview property will be set
         this.setState({
           selectedFile: files[0],
           errorResp: undefined,
@@ -408,6 +466,42 @@ class FileUpload extends Component {
 
    }
 
+  handleFeatureTypeDropdown = (e, data) => {
+    //console.log(data);
+    // Store the dropdown value
+    let featureTypes = this.state.featureTypeFromDropdown;
+    featureTypes[data.customindexid] = data.value;
+    this.setState({featureTypeFromDropdown: featureTypes})
+    //console.log(this.state.featureTypeFromDropdown);
+
+    //Type ordinal
+    //
+    let dataPrev = this.state.datasetPreview;
+    let field = dataPrev.meta.fields[data.customindexid];
+    let ords = this.state.ordinalFeaturesValues;
+    if(data.value == this.featureTypeOrdinal) {
+      //it's been set as type ordinal, setup its list of values
+      let column = [];
+      dataPrev.data.map( (row) => {
+        column.push( row[field] );
+      })
+      column = [...new Set(column)];
+      ords[field] = column;
+    }
+    else {
+      //Clear the ordinal list in case we had one from before
+      delete ords[field];
+    }
+    this.setState({ordinalFeaturesValues: ords});
+
+    console.log('ords: '); for(var f in ords) { console.log(f + ': ' + ords[f]) }
+  }
+
+  /** Handle clicks from button for user to define order of values in an ordinal feature */
+  handleOrderButton = (e, data) => {
+    console.log('ordnung must sein!');
+  }
+
   /**
    * Small helper method to create table for dataset preview upon selecting csv file.
    * Copied from Dataset component - relies upon javascript library papaparse to
@@ -421,7 +515,8 @@ class FileUpload extends Component {
     let innerContent;
 
     if(dataPrev && dataPrev.data) {
-      innerContent = dataPrev.data.slice(0, 100).map((row, i) =>
+      //Show at most 50 rows
+      innerContent = dataPrev.data.slice(0, 50).map((row, i) =>
         <Table.Row key={i}>
           {dataPrev.meta.fields.map(field => {
               let tempKey = i + field;
@@ -435,6 +530,13 @@ class FileUpload extends Component {
         </Table.Row>
       );
 
+      //Options for the per-feature dropdown in dataset preview
+      const featureTypeOptions = [
+        { key: 1, text: 'Numeric', value: this.featureTypeNumeric},
+        { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
+        { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
+      ]
+
       dataPrevTable = (
         <div>
           <br/>
@@ -445,12 +547,54 @@ class FileUpload extends Component {
             <Table inverted celled compact unstackable singleLine>
               <Table.Header>
                 <Table.Row>
+                  {/*'key' is a React property to id elements in a list*/}
                   {dataPrev.meta.fields.map(field =>
                     <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
                   )}
                 </Table.Row>
               </Table.Header>
               <Table.Body>
+                {/* row of dropdowns for specifying feature type*/}
+                <Table.Row>
+                  { dataPrev.meta.fields.map((field, i) => {
+                    return (
+                      <Table.Cell key={'featureType_'+field}>
+                        <Dropdown
+                          defaultValue={this.featureTypeNumeric}
+                          fluid
+                          selection
+                          options={featureTypeOptions}
+                          onChange={this.handleFeatureTypeDropdown}
+                          customindexid={i}
+                          disabled={this.state.catFeaturesStringInUse}
+                        />
+                      </Table.Cell>
+                      )
+                    }
+                  )}
+                </Table.Row>
+                {/* row of buttons for ordering ordinal features */}
+                <Table.Row>
+                  { dataPrev.meta.fields.map((field, i) => {
+                    if(Object.keys(this.state.ordinalFeaturesValues).length == 0)
+                      return undefined;
+                    return (
+                      <Table.Cell key={'orderButton_'+field}>
+                        <Button
+                        content={this.state.ordinalFeaturesValues[field] === undefined ? "" : "Order"}
+                        inverted
+                        color="blue"
+                        // I'd rather hide than disable buttons for non-ordinal features, but I can't figure that out!
+                        disabled={this.state.ordinalFeaturesValues[field] === undefined}
+                        compact
+                        size="small"
+                        onClick={this.handleOrderButton}
+                        />
+                      </Table.Cell> 
+                      )
+                    }
+                  )}
+                </Table.Row>
                 {innerContent}
               </Table.Body>
             </Table>
@@ -491,6 +635,21 @@ class FileUpload extends Component {
     )
 
     return predictionSelector;
+  }
+
+  /**
+   * Small helper to get an array of features that have been assigned
+   * to type 'categorical' using the dropdowns in the Dataset Preview
+   * @returns {array} - array of strings
+   */
+  getCatFeaturesFromDropdowns(){
+    let dataPrev = this.state.datasetPreview;
+    let featureTypes = this.state.featureTypeFromDropdown;
+    if(!dataPrev)
+      return [];
+    return dataPrev.meta.fields.filter( (field,i) => {
+      return featureTypes[i] == this.featureTypeCategorical;
+    })
   }
 
   /**
@@ -548,8 +707,13 @@ class FileUpload extends Component {
              className="file-upload-categorical-text-area"
              id="categorical_features_text_area_input"
              label="Categorical Features"
-             placeholder={"cat_feat_1, cat_feat_2"}
-             onChange={this.handleCatFeatures}
+             placeholder= {
+               ("Enter a comma-separated list here to override selections in the Dataset Preview.\n"+
+                "For example:\n\n \theight,age,toe_length\n\n" +
+               "Current selections from Dataset Preview: \n" + 
+               (this.getCatFeaturesFromDropdowns().length > 0 ? this.getCatFeaturesFromDropdowns().join() : "(none)"))
+              }
+             onChange={this.handlecatFeaturesText}
            />
          </Accordion.Content>
          <Accordion.Title
@@ -633,24 +797,6 @@ class FileUpload extends Component {
     // display file extension Popup
     let openFileTypePop;
     this.state.openFileTypePopup ? openFileTypePop = this.state.openFileTypePopup : openFileTypePop = false;
-
-    /* ORIG 
-      let fileInputElem = (
-        <Input
-          style={{width: '65%', backgroundColor: '#2185d0'}}
-          type="file"
-          label={
-            <div style={{color: 'white', paddingRight: '10px', paddingLeft: '5px'}}>
-              <p>Please select new dataset
-              <br/>
-              Supported file types: (<i>csv, tsv</i>)</p>
-            </div>
-          }
-          id="upload_dataset_file_browser_button"
-          onChange={this.handleSelectedFile}
-        />
-      );
-    */
 
     // file input
     // https://react-dropzone.js.org/
@@ -755,6 +901,13 @@ class FileUpload extends Component {
                 }
               />
               
+              <Message info>
+                  <p>
+                    You can specify what type of data each feature/column holds. 
+                    Each feature is assumed to be Numerical unless it is designated as Ordinal or Categorical.
+                    Designate a feature type using either of the text input boxes below or by using the dropdown choices available for each column in the Dataset Preview.
+                  </p>
+                </Message>
               <Form.Input
                 className="file-upload-accordion-title"
                 label="Categorical & Ordinal Features"
