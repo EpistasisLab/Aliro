@@ -576,22 +576,41 @@ class FileUpload extends Component {
                 {/* row of buttons for ordering ordinal features */}
                 <Table.Row>
                   { dataPrev.meta.fields.map((field, i) => {
-                    if(Object.keys(this.state.ordinalFeaturesValues).length == 0)
-                      return undefined;
+                    //If the feature is not type ordinal, just add an empty cell
+                    if(this.state.ordinalFeaturesValues[field] === undefined)
+                      return <Table.Cell key={'orderButton_'+field} />;
                     return (
                       <Table.Cell key={'orderButton_'+field}>
-                        <Button
-                        content={this.state.ordinalFeaturesValues[field] === undefined ? "" : "Order"}
-                        inverted
-                        color="blue"
-                        // I'd rather hide than disable buttons for non-ordinal features, but I can't figure that out!
-                        disabled={this.state.ordinalFeaturesValues[field] === undefined}
-                        compact
-                        size="small"
-                        onClick={this.handleOrderButton}
-                        />
+                        <Popup 
+                          key={'orderPopup_'+field}
+                          on="click"
+                          position="right center"
+                          header="Order the Feature Values"
+                          content={
+                            <div className="content">
+                            {"Drag and drop to reorder"}
+                            <Button
+                              content={"Order Order!"}
+                              inverted
+                              color="blue"
+                              compact
+                              size="small"
+                              onClick={this.handleOrderButton}
+                            />                        
+                            </div>
+                        }
+                        trigger={
+                          <Button
+                            content={"Order"}
+                            inverted
+                            color="blue"
+                            compact
+                            size="small"
+                          />
+                          } 
+                      />
                       </Table.Cell> 
-                      )
+                              )
                     }
                   )}
                 </Table.Row>
