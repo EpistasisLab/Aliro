@@ -12,7 +12,7 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         SlopeOneRecommender, SVDRecommender)
 from ai.knowledgebase_utils import load_knowledgebase
 from sklearn.ensemble import VotingClassifier, VotingRegressor
-from os import path
+from os import path, remove
 
 
 TEST_OUTPUT_PATH = "target/test_output/test_sklearn_api"
@@ -272,7 +272,7 @@ def test_ensemble():
 
 def test_save():
     """Test PennAIClassifier save() function."""
-    test_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb_20200505.pkl.gz"
+    test_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
     classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
     pennai = PennAIClassifier(
                             rec_class=SVDRecommender,
@@ -291,7 +291,7 @@ def test_save():
 
 def test_warm_start():
     """Test PennAIClassifier fit() with warm_start."""
-    warm_start_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb_20200505.pkl.gz"
+    warm_start_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
     classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
     pennai = PennAIClassifier(
                             rec_class=SVDRecommender,
@@ -306,3 +306,4 @@ def test_warm_start():
     pennai.fit(X_train, y_train)
 
     assert pennai.score(X_train, y_train)
+    remove(warm_start_path)
