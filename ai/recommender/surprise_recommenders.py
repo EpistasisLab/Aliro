@@ -25,7 +25,7 @@ import itertools as it
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -118,7 +118,9 @@ class SurpriseRecommender(BaseRecommender):
             if newHash == self.results_df_hash:
                 logger.info('results_df hashes match')
             else:
-                logger.warn('the results_df hash from the pickle is different')
+                error_msg = 'the results_df hash from the pickle is different'
+                logger.error(error_msg)
+                raise ValueError(error_msg)
             del self.results_df_hash
 
     def load(self, filename=None, knowledgebase = None):
@@ -148,6 +150,7 @@ class SurpriseRecommender(BaseRecommender):
         # remove results_df to save space. this gets loaded by load() fn.
         rowHashes = hash_pandas_object(save_dict['results_df']).values 
         save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
+        print('save_dict[results_df]:',save_dict['results_df'].head())
         del save_dict['results_df']
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
@@ -180,7 +183,9 @@ class SurpriseRecommender(BaseRecommender):
 
         if shuffle:
             # shuffle the results data 
-            results_data = results_data.sample(frac=1)
+            logger.debug('shuffling results_data')
+            results_data = results_data.sample(frac=1, 
+                    random_state=self.random_state)
 
         results_data.loc[:, 'algorithm-parameters'] =  (
                 results_data['algorithm'].values + '|' +
@@ -397,7 +402,9 @@ class SVDRecommender(SurpriseRecommender):
         logger.info('updating SVD model')
         # shuffle the results data the first time
         if self.first_fit:
-            results_data = results_data.sample(frac=1)
+            logger.debug('shuffling results_data')
+            results_data = results_data.sample(frac=1, 
+                    random_state=self.random_state)
             self.first_fit=False 
 
         self.update_training_data(results_data)
