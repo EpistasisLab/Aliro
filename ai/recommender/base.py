@@ -187,10 +187,12 @@ class BaseRecommender:
                 if newHash == tmp_dict['ml_p_hash']:
                     logger.info('ml_p hashes match')
                 else:
-                    logger.warn('the ml_p hash from the pickle is different.'
+                    error_msg = ('the ml_p hash from the pickle is different.'
                         'This likely means the algorithm configurations have '
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')
+                    logger.error(error_msg)
+                    raise ValueError(error_msg)
                 del tmp_dict['ml_p_hash']
 
             # update self with loaded pickle
