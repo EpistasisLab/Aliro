@@ -12,6 +12,8 @@ from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
 import pdb
 import logging
 import os
+from nose.tools import (nottest, raises, assert_equals, assert_in, 
+        assert_not_in, assert_is_none)
 import json
 
 logger = logging.getLogger(__name__)
@@ -42,6 +44,7 @@ def get_metafeatures_by_id(d):
     # print('getting metafeatures for',d)
     df = metafeatures.loc[metafeatures._id == d]
     return df
+
 pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
@@ -49,6 +52,11 @@ mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data['alg_name'] = data['algorithm']
+ml_p = data.loc[:,['algorithm','parameters']]
+ml_p['parameters'] = ml_p['parameters'].apply(str)
+ml_p = ml_p.drop_duplicates()
+ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
+
 # data['_id'] = data['dataset'].apply(
 #         lambda x: get_metafeatures(x)['_id'])
 # data.set_index('_id')
@@ -95,11 +103,6 @@ def check_rec(rec):
 
     epochs = 5
     datlen = int(data.shape[0] / float(epochs))
-    ml_p = data.loc[:,['algorithm','parameters']]
-    ml_p['parameters'] = ml_p['parameters'].apply(str)
-    ml_p = ml_p.drop_duplicates()
-    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
-    # print('ml_p:',ml_p)
     rec_obj = rec(ml_p=ml_p)
  
     n_recs = 1
@@ -167,10 +170,7 @@ def check_n_recs(rec):
     logger.info("check_n_recs({})".format(rec))
     print("check_n_recs({})".format(rec))
 
-    ml_p = data.loc[:,['algorithm','parameters']]
-    ml_p['parameters'] = ml_p['parameters'].apply(str)
-    ml_p = ml_p.drop_duplicates()
-    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
+    
    
     logger.info('setting rec')
     rec_obj = rec(ml_p=ml_p)
@@ -201,3 +201,43 @@ def test_save_and_load():
     for recommender in test_recommenders:
         yield (save_and_load, recommender)
 
+def test_default_saved_recommender_filename():
+    """Test that the expected default filename is generated"""
+
+    test_data = [
+        [RandomRecommender, "classifier", None, 
+            "RandomRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+        [RandomRecommender, "regressor", None, 
+            "RandomRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+        [KNNMetaRecommender, "classifier", None, 
+            "KNNMetaRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+        [KNNMetaRecommender, "regressor", None, 
+            "KNNMetaRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+        [SVDRecommender, "classifier", None, 
+            "SVDRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+        [SVDRecommender, "regressor", None, 
+            "SVDRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+    ]
+
+    for (rec_class, ml_type, metric, expected_filename) in test_data:
+        yield (check_default_saved_recommender_filename,
+            rec_class,
+            ml_type, 
+            metric, 
+            expected_filename)
+
+
+def check_default_saved_recommender_filename(
+    rec_class,
+    ml_type, 
+    metric, 
+    expected_filename):
+
+    rec = rec_class(
+        ml_p=ml_p,
+        ml_type=ml_type,
+        metric = metric) 
+
+    assert_equals(
+        rec._default_saved_recommender_filename(),
+        expected_filename)
