@@ -585,7 +585,7 @@
     "categorical_encoding_strategy": "OrdinalEncoder",
     "description": "Kernel-based classifier that maps the data into a high-dimesional space then constructs a hyperplane that maximally separates the classes in that high-dimesional space.",
     "url": "http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html",
-    "static_parameters" : {"cache_size": 700, "max_iter": 100000, "probability": true},
+    "static_parameters" : {"cache_size": 700, "max_iter": 10000, "probability": true},
     "schema": {
         "kernel": {
             "description": "Specifies the kernel type to be used in the algorithm",
