@@ -297,7 +297,7 @@ def test_warm_start():
                             rec_class=SVDRecommender,
                             n_recs=2,
                             n_iters=2,
-                            warm_start=warm_start_path,
+                            #warm_start=warm_start_path,
                             knowledgebase=classification_kb_full,
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
