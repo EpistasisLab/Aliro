@@ -36,9 +36,11 @@ class KNNMetaRecommender(BaseRecommender):
         'parameters'
     """
     def __init__(self, ml_type='classifier', metric=None, ml_p = None,
-            filename='KNNMetaRecommender.pkl', knowledgebase=None):
+            filename='KNNMetaRecommender.pkl', knowledgebase=None,
+            random_state=None):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p, filename=filename)
+        super().__init__(ml_type, metric, ml_p, filename=filename,
+                random_state=random_state)
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['_id','algorithm',
             'parameters', 'score'])

@@ -32,10 +32,10 @@ class RandomRecommender(BaseRecommender):
 
 
     def __init__(self, ml_type='classifier', metric=None, ml_p=None,
-            random_state=None, knowledgebase=None):
+            random_state=None, knowledgebase=None, filename=None):
         """Initialize recommendation system."""
         super().__init__(ml_type=ml_type, metric=metric, ml_p=ml_p, 
-                random_state=random_state)
+                random_state=random_state, filename=filename)
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
