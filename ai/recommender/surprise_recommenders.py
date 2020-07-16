@@ -74,15 +74,6 @@ class SurpriseRecommender(BaseRecommender):
         logger.debug('ml_type: '+self.ml_type)
         logger.debug('metric: '+self.metric)
 
-        if filename is None:
-            filename = (
-                    'data/recommenders/'
-                    + self.algo_name
-                    + '_' + self.ml_type 
-                    + '_' + self.metric 
-                    + '_pmlb_20200505'
-                    +'.pkl.gz')
-
         super().__init__(ml_type, metric, ml_p, filename=filename,
                 knowledgebase=knowledgebase, random_state=random_state)
 
