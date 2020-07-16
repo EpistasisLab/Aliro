@@ -241,3 +241,69 @@ def check_default_saved_recommender_filename(
     assert_equals(
         rec._default_saved_recommender_filename(),
         expected_filename)
+
+
+
+def test_generate_recommender_path():
+    test_data = [
+        [RandomRecommender, "classifier", None, 
+            None, "my/custom/path",
+            "my/custom/path/RandomRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+        [RandomRecommender, "regressor", None, 
+            None, "my/custom/path",
+            "my/custom/path/RandomRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+        [SVDRecommender, "classifier", None, 
+            "myCustomFilename.tmp", None,
+            "./myCustomFilename.tmp"], 
+        [SVDRecommender, "regressor", None, 
+            "myCustomFilename.tmp", None,
+            "./myCustomFilename.tmp"],
+        [SVDRecommender, "regressor", None, 
+            "myCustomFilename.tmp", "my/custom/path",
+            "my/custom/path/myCustomFilename.tmp"],
+    ]
+
+    for (
+        rec_class, 
+        ml_type, 
+        metric,
+        saved_recommender_filename,
+        saved_recommmender_directory,
+        expected_path) in test_data:
+        yield (check_generate_recommender_path,
+            rec_class,
+            ml_type, 
+            metric,
+            saved_recommender_filename,
+            saved_recommmender_directory, 
+            expected_path)
+
+def check_generate_recommender_path(
+    rec_class,
+    ml_type, 
+    metric, 
+    saved_recommender_filename,
+    saved_recommmender_directory,
+    expected_path):
+
+    rec = rec_class(
+        ml_p=ml_p,
+        ml_type=ml_type,
+        metric = metric) 
+
+    assert_equals(
+        rec._generate_saved_recommender_path(
+            saved_recommender_filename,
+            saved_recommmender_directory),
+        expected_path)
+
+
+@raises(Exception)
+def test_generate_recommender_path_exception():
+
+    rec = SVDRecommender(
+        ml_p=ml_p,
+        ml_type=ml_type,
+        metric = metric) 
+
+    rec._generate_saved_recommender_path(None, None)
