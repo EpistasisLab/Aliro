@@ -80,12 +80,34 @@ class BaseRecommender:
 
     def _default_saved_recommender_filename(self):
         ### Generate the default name of the serialaized instance of this recommender
+
+        # Hardcoading the informal kb descriptor for now, this should be changed.
         return (
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
             + '_pmlb_20200505'
             +'.pkl.gz')
+
+
+    def _generate_saved_recommender_path(self, 
+        saved_recommender_filename=None,
+        saved_recommmender_directory=None):
+        """ Generate the path for the saved recommender
+
+        Parameters
+        ----------
+        saved_recommender_filename
+        saved_recommmender_directory
+        """
+        assert not(
+            saved_recommender_filename == None and saved_recommmender_directory == None)
+
+        # dynamic default values
+        saved_recommmender_directory = saved_recommmender_directory or "."
+        saved_recommender_filename = saved_recommender_filename or self._default_saved_recommender_filename()
+
+        return os.path.join(saved_recommmender_directory, saved_recommender_filename)
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
