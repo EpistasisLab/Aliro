@@ -18,7 +18,14 @@ import hashlib
 import copy
 from pandas.util import hash_pandas_object
 
-class BaseRecommender:
+
+# implementing metaclass __repr__ for more human readable
+# names for generated tests in test_recommender.py
+class MC(type):
+    def __repr__(self):
+        return self.__qualname__
+
+class BaseRecommender(object, metaclass=MC):
     """Base recommender for PennAI
 
     The BaseRecommender is not intended to be used directly; it is a skeleton class
@@ -102,16 +109,22 @@ class BaseRecommender:
             )
 
         # Optionally load serialized rec
+        logger.info(f"load_serialized_rec='{load_serialized_rec}'")
+
         if load_serialized_rec == "always":
+            if not os.path.exists(self.serialized_rec_path):
+                raise ValueError(f"load_serialized_rec='{load_serialized_rec}' but cannot load serialized recommender: '{self.serialized_rec_path}'")
             self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
 
         elif load_serialized_rec == "if_exists":
             if os.path.exists(self.serialized_rec_path):
+                logger.info(f"Loading serialized recommender: {self.serialized_rec_path}")
                 self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
             else:
                 logger.info(f"Not loading serialaized recommender, file does not exist: {self.serialized_rec_path}")
 
-
+        else:
+            logger.info(f"Not loading serialaized recommender.")
 
     def _default_serialized_rec_filename(self):
         ### Generate the default name of the serialaized instance of this recommender
