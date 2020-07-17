@@ -108,6 +108,7 @@ class BaseRecommender(object, metaclass=MC):
             serialized_rec_directory
             )
 
+
         # Optionally load serialized rec
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
@@ -124,7 +125,7 @@ class BaseRecommender(object, metaclass=MC):
                 logger.info(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
 
         else:
-            logger.info(f"Not loading serialaized recommender.")
+            logger.info(f"Not loading serialized recommender.")
 
     def _default_serialized_rec_filename(self):
         ### Generate the default name of the serialized instance of this recommender
