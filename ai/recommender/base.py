@@ -109,12 +109,12 @@ class BaseRecommender:
             if os.path.exists(self.serialized_rec_path):
                 self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
             else:
-                logger.info(f"Not loading serialaized recommender, file does not exist: {self.serialized_rec_path}")
+                logger.info(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
 
 
 
     def _default_serialized_rec_filename(self):
-        ### Generate the default name of the serialaized instance of this recommender
+        ### Generate the default name of the serialized instance of this recommender
 
         # Hardcoading the informal kb descriptor for now, this should be changed.
         return (
