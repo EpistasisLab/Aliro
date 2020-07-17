@@ -13,7 +13,7 @@ import numpy as np
 from collections import defaultdict, OrderedDict
 import pdb
 
-@deprecated("replaced by suprise recommenders")
+@deprecated("replaced by knn_meta_recommender")
 class MetaRecommender(BaseRecommender):
     """Penn AI meta recommender.
     Recommends machine learning algorithms and parameters as follows:
