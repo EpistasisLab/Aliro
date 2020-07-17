@@ -209,8 +209,11 @@ class AI():
             logger.debug("initializing engine")
             recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
+            recArgs['serialized_rec_directory'] = 'data/recommenders/'
+            recArgs['load_serialized_rec'] = "if_exists" 
+
             if kb is not None:
-                recArgs['knowledgebase'] = kb['resultsData'][pred_type]
+                recArgs['serialized_recomender_knowledgebase'] = kb['resultsData'][pred_type]
 
             if (rec_class):
                 self.rec_engines[pred_type] = rec_class(**recArgs)
