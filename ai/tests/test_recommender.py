@@ -143,8 +143,10 @@ def save_and_load(rec):
 
     # now, load saved test file
     logger.info('setting rec 2 ==================')
-    rec_obj2 = rec(ml_p=ml_p, filename=filename, knowledgebase=new_data, 
-            random_state=12)
+    rec_obj2 = rec(ml_p=ml_p, 
+        serialized_rec_filename=filename, 
+        serialized_rec_knowledgebase=new_data, 
+        random_state=12)
 
     # clean up pickle file generated if it exists
     if os.path.exists(filename):
@@ -201,7 +203,7 @@ def test_save_and_load():
     for recommender in test_recommenders:
         yield (save_and_load, recommender)
 
-def test_default_saved_recommender_filename():
+def test_default_serialized_rec_filename():
     """Test that the expected default filename is generated"""
 
     test_data = [
@@ -220,14 +222,14 @@ def test_default_saved_recommender_filename():
     ]
 
     for (rec_class, ml_type, metric, expected_filename) in test_data:
-        yield (check_default_saved_recommender_filename,
+        yield (check_default_serialized_rec_filename,
             rec_class,
             ml_type, 
             metric, 
             expected_filename)
 
 
-def check_default_saved_recommender_filename(
+def check_default_serialized_rec_filename(
     rec_class,
     ml_type, 
     metric, 
@@ -239,12 +241,12 @@ def check_default_saved_recommender_filename(
         metric = metric) 
 
     assert_equals(
-        rec._default_saved_recommender_filename(),
+        rec._default_serialized_rec_filename(),
         expected_filename)
 
 
 
-def test_generate_recommender_path():
+def test_generate_serialized_rec_path():
     test_data = [
         [RandomRecommender, "classifier", None, 
             None, "my/custom/path",
@@ -261,29 +263,32 @@ def test_generate_recommender_path():
         [SVDRecommender, "regressor", None, 
             "myCustomFilename.tmp", "my/custom/path",
             "my/custom/path/myCustomFilename.tmp"],
+        [SVDRecommender, "regressor", None, 
+            None, None,
+            "./SVDRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
     ]
 
     for (
         rec_class, 
         ml_type, 
         metric,
-        saved_recommender_filename,
-        saved_recommmender_directory,
+        serialized_rec_filename,
+        serialized_rec_directory,
         expected_path) in test_data:
-        yield (check_generate_recommender_path,
+        yield (check_generate_serialized_rec_path,
             rec_class,
             ml_type, 
             metric,
-            saved_recommender_filename,
-            saved_recommmender_directory, 
+            serialized_rec_filename,
+            serialized_rec_directory, 
             expected_path)
 
-def check_generate_recommender_path(
+def check_generate_serialized_rec_path(
     rec_class,
     ml_type, 
     metric, 
-    saved_recommender_filename,
-    saved_recommmender_directory,
+    serialized_rec_filename,
+    serialized_rec_directory,
     expected_path):
 
     rec = rec_class(
@@ -292,9 +297,9 @@ def check_generate_recommender_path(
         metric = metric) 
 
     assert_equals(
-        rec._generate_saved_recommender_path(
-            saved_recommender_filename,
-            saved_recommmender_directory),
+        rec._generate_serialized_rec_path(
+            serialized_rec_filename,
+            serialized_rec_directory),
         expected_path)
 
 
@@ -306,4 +311,4 @@ def test_generate_recommender_path_exception():
         ml_type=ml_type,
         metric = metric) 
 
-    rec._generate_saved_recommender_path(None, None)
+    rec._generate_serialized_rec_path(None, None)

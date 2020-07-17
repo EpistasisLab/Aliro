@@ -44,8 +44,15 @@ class SurpriseRecommender(BaseRecommender):
     metric: str (default: accuracy for classifiers, mse for regressors)
         The metric by which to assess performance on the datasets.
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
-            filename=None, knowledgebase=None, random_state=None): 
+    def __init__(self, 
+            ml_type='classifier', 
+            metric=None, 
+            ml_p=None, 
+            serialized_rec_directory=None,
+            serialized_rec_filename=None, 
+            load_serialized_rec="if_exists",
+            serialized_rec_knowledgebase=None, 
+            random_state=None): 
         """Initialize recommendation system."""
         if self.__class__.__name__ == 'SurpriseRecommender':
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
@@ -74,8 +81,15 @@ class SurpriseRecommender(BaseRecommender):
         logger.debug('ml_type: '+self.ml_type)
         logger.debug('metric: '+self.metric)
 
-        super().__init__(ml_type, metric, ml_p, filename=filename,
-                knowledgebase=knowledgebase, random_state=random_state)
+        super().__init__(
+            ml_type, 
+            metric, 
+            ml_p, 
+            serialized_rec_directory=serialized_rec_directory,
+            serialized_rec_filename=serialized_rec_filename,
+            load_serialized_rec=load_serialized_rec,
+            serialized_rec_knowledgebase=serialized_rec_knowledgebase, 
+            random_state=random_state)
 
         # note: anything set after super().__init() will change the field 
         # of any recommender from a file
@@ -129,7 +143,7 @@ class SurpriseRecommender(BaseRecommender):
         """Save the current recommender."""
 
         if filename is None:
-            fn = self.filename
+            fn = self.serialized_rec_path
         else:
             fn = filename
         if os.path.isfile(fn):
