@@ -35,12 +35,27 @@ class KNNMetaRecommender(BaseRecommender):
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
     """
-    def __init__(self, ml_type='classifier', metric=None, ml_p = None,
-            filename='KNNMetaRecommender.pkl', knowledgebase=None,
-            random_state=None):
+    def __init__(self, 
+        ml_type='classifier', 
+        metric=None, 
+        ml_p=None,
+        random_state=None, 
+        serialized_rec_directory=None,
+        serialized_rec_filename=None,
+        load_serialized_rec="if_exists",
+        serialized_rec_knowledgebase=None):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p, filename=filename,
-                random_state=random_state)
+
+        super().__init__(
+            ml_type, 
+            metric, 
+            ml_p, 
+            random_state=random_state,
+            serialized_rec_directory=serialized_rec_directory,
+            serialized_rec_filename=serialized_rec_filename,
+            load_serialized_rec=load_serialized_rec,
+            serialized_rec_knowledgebase=serialized_rec_knowledgebase)
+
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['_id','algorithm',
             'parameters', 'score'])
@@ -48,6 +63,7 @@ class KNNMetaRecommender(BaseRecommender):
 
         # local dataframe of datasets and their metafeatures
         self.all_dataset_mf = pd.DataFrame()
+
 
     def update(self, results_data, results_mf, source='pennai'):
         """Update ML / Parameter recommendations.

@@ -49,9 +49,11 @@ pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
+
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data['alg_name'] = data['algorithm']
+
 ml_p = data.loc[:,['algorithm','parameters']]
 ml_p['parameters'] = ml_p['parameters'].apply(str)
 ml_p = ml_p.drop_duplicates()
@@ -119,15 +121,10 @@ def check_rec(rec):
             logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
                 rec.__name__,n,d,ml,p,scores))
 
-def save_and_load(rec):
+def save_and_load(rec, load_serialized_rec):
     """Rec can be saved and loaded without error"""
     logger.info("check_n_recs({})".format(rec))
     print("check_n_recs({})".format(rec))
-
-    ml_p = data.loc[:,['algorithm','parameters']]
-    ml_p['parameters'] = ml_p['parameters'].apply(str)
-    ml_p = ml_p.drop_duplicates()
-    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
    
     logger.info('setting rec 1 ==================')
     rec_obj = rec(ml_p=ml_p, random_state=12)
@@ -143,8 +140,11 @@ def save_and_load(rec):
 
     # now, load saved test file
     logger.info('setting rec 2 ==================')
-    rec_obj2 = rec(ml_p=ml_p, filename=filename, knowledgebase=new_data, 
-            random_state=12)
+    rec_obj2 = rec(ml_p=ml_p, 
+        serialized_rec_filename=filename, 
+        serialized_rec_knowledgebase=new_data, 
+        load_serialized_rec=load_serialized_rec,
+        random_state=12)
 
     # clean up pickle file generated if it exists
     if os.path.exists(filename):
@@ -170,8 +170,6 @@ def check_n_recs(rec):
     logger.info("check_n_recs({})".format(rec))
     print("check_n_recs({})".format(rec))
 
-    
-   
     logger.info('setting rec')
     rec_obj = rec(ml_p=ml_p)
     logger.info('set rec')
@@ -196,12 +194,31 @@ def test_n_recs():
     for recommender in test_recommenders:
         yield (check_n_recs, recommender)
 
-def test_save_and_load():
+def test_save_and_load_if_exists():
     """Load function works"""
     for recommender in test_recommenders:
-        yield (save_and_load, recommender)
+        yield (save_and_load, recommender, "if_exists")
 
-def test_default_saved_recommender_filename():
+def test_save_and_load_always():
+    """Load function works"""
+    for recommender in test_recommenders:
+        yield (save_and_load, recommender, "always")
+
+
+def test_save_and_load_always_exception():
+    for recommender in test_recommenders:
+        yield (rec_load_always_exception, recommender)
+
+@raises(Exception)
+def rec_load_always_exception(rec):
+    """ expect an exception to be thrown because the serialized rec does not exist"""
+    rec_obj = rec(
+        ml_p=ml_p, 
+        serialized_rec_filename="i_dont_exist.txt", 
+        load_serialized_rec="always",
+        random_state=12)
+
+def test_default_serialized_rec_filename():
     """Test that the expected default filename is generated"""
 
     test_data = [
@@ -220,14 +237,14 @@ def test_default_saved_recommender_filename():
     ]
 
     for (rec_class, ml_type, metric, expected_filename) in test_data:
-        yield (check_default_saved_recommender_filename,
+        yield (check_default_serialized_rec_filename,
             rec_class,
             ml_type, 
             metric, 
             expected_filename)
 
 
-def check_default_saved_recommender_filename(
+def check_default_serialized_rec_filename(
     rec_class,
     ml_type, 
     metric, 
@@ -239,5 +256,74 @@ def check_default_saved_recommender_filename(
         metric = metric) 
 
     assert_equals(
-        rec._default_saved_recommender_filename(),
+        rec._default_serialized_rec_filename(),
         expected_filename)
+
+
+
+def test_generate_serialized_rec_path():
+    test_data = [
+        [RandomRecommender, "classifier", None, 
+            None, "my/custom/path",
+            "my/custom/path/RandomRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+        [RandomRecommender, "regressor", None, 
+            None, "my/custom/path",
+            "my/custom/path/RandomRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+        [SVDRecommender, "classifier", None, 
+            "myCustomFilename.tmp", None,
+            "./myCustomFilename.tmp"], 
+        [SVDRecommender, "regressor", None, 
+            "myCustomFilename.tmp", None,
+            "./myCustomFilename.tmp"],
+        [SVDRecommender, "regressor", None, 
+            "myCustomFilename.tmp", "my/custom/path",
+            "my/custom/path/myCustomFilename.tmp"],
+        [SVDRecommender, "regressor", None, 
+            None, None,
+            "./SVDRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+    ]
+
+    for (
+        rec_class, 
+        ml_type, 
+        metric,
+        serialized_rec_filename,
+        serialized_rec_directory,
+        expected_path) in test_data:
+        yield (check_generate_serialized_rec_path,
+            rec_class,
+            ml_type, 
+            metric,
+            serialized_rec_filename,
+            serialized_rec_directory, 
+            expected_path)
+
+def check_generate_serialized_rec_path(
+    rec_class,
+    ml_type, 
+    metric, 
+    serialized_rec_filename,
+    serialized_rec_directory,
+    expected_path):
+
+    rec = rec_class(
+        ml_p=ml_p,
+        ml_type=ml_type,
+        metric = metric) 
+
+    assert_equals(
+        rec._generate_serialized_rec_path(
+            serialized_rec_filename,
+            serialized_rec_directory),
+        expected_path)
+
+
+@raises(Exception)
+def test_generate_recommender_path_exception():
+
+    rec = SVDRecommender(
+        ml_p=ml_p,
+        ml_type=ml_type,
+        metric = metric) 
+
+    rec._generate_serialized_rec_path(None, None)

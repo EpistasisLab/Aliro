@@ -18,7 +18,14 @@ import hashlib
 import copy
 from pandas.util import hash_pandas_object
 
-class BaseRecommender:
+
+# implementing metaclass __repr__ for more human readable
+# names for generated tests in test_recommender.py
+class MC(type):
+    def __repr__(self):
+        return self.__qualname__
+
+class BaseRecommender(object, metaclass=MC):
     """Base recommender for PennAI
 
     The BaseRecommender is not intended to be used directly; it is a skeleton class
@@ -36,18 +43,40 @@ class BaseRecommender:
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
 
-    filename: string or None
-        Name of file to load
+    serialized_rec_directory: string or None
+        Name of the directory to save/load a serialized recommender.
+        Default directory is "."
 
-    knowledgebase: Pandas DataFrame or None
-        Used in some recommenders to load from saved state
+    serialized_rec_filename: string or None
+        Name of the file to save/load a serialized recommender.
+        If the filename is not provided, the default filename based on the recommender
+        type, and metric, and knowledgebase used.
+
+    load_serialized_rec: str, "always", "never", "if_exists"
+        Whether to attempt to load a serialized recommender:
+            "if_exists" - If a serialized recomender exsists at the specified path, load it. 
+            "always" - Always load a serialized recommender.  Throw an exception if no serialized recommender exists.
+            "never" - Never load a serialized recommender.
+
+    serialized_rec_knowledgebase: Pandas DataFrame or None
+        If loading a serialized recommender, this object is the knowlegebase that accompanies it.
     """
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None,
-            random_state=None, filename=None, knowledgebase=None):
+    def __init__(self, 
+        ml_type='classifier', 
+        metric=None, 
+        ml_p=None,
+        random_state=None, 
+        serialized_rec_directory=None,
+        serialized_rec_filename=None,
+        load_serialized_rec="if_exists",
+        serialized_rec_knowledgebase=None):
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
+
+        if load_serialized_rec not in ["always", "never", "if_exists"]:
+            raise ValueError('load_serialized_rec must be "always", "never" or "if_exists"')
 
         self.random_state = random_state
         if self.random_state is not None:
@@ -73,19 +102,59 @@ class BaseRecommender:
         self.ml_htable = {}
         self.ml_p = ml_p
 
-        # set a filename for loading and saving the recommender state
-        self.filename = filename
-        if self.filename is not None:
-            self.load(self.filename, knowledgebase)
+        # generate the serialized recommender path
+        self.serialized_rec_path = self._generate_serialized_rec_path(
+            serialized_rec_filename,
+            serialized_rec_directory
+            )
 
-    def _default_saved_recommender_filename(self):
-        ### Generate the default name of the serialaized instance of this recommender
+
+        # Optionally load serialized rec
+        logger.info(f"load_serialized_rec='{load_serialized_rec}'")
+
+        if load_serialized_rec == "always":
+            if not os.path.exists(self.serialized_rec_path):
+                raise ValueError(f"load_serialized_rec='{load_serialized_rec}' but cannot load serialized recommender: '{self.serialized_rec_path}'")
+            self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
+
+        elif load_serialized_rec == "if_exists":
+            if os.path.exists(self.serialized_rec_path):
+                logger.info(f"Loading serialized recommender: {self.serialized_rec_path}")
+                self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
+            else:
+                logger.info(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
+
+        else:
+            logger.info(f"Not loading serialized recommender.")
+
+    def _default_serialized_rec_filename(self):
+        ### Generate the default name of the serialized instance of this recommender
+
+        # Hardcoading the informal kb descriptor for now, this should be changed.
         return (
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
             + '_pmlb_20200505'
             +'.pkl.gz')
+
+
+    def _generate_serialized_rec_path(self, 
+        serialized_rec_filename=None,
+        serialized_rec_directory=None):
+        """ Generate the path to save/load serialized recommender
+
+        Parameters
+        ----------
+        serialized_rec_filename
+        serialized_rec_directory
+        """
+
+        # dynamic default values
+        serialized_rec_directory = serialized_rec_directory or "."
+        serialized_rec_filename = serialized_rec_filename or self._default_serialized_rec_filename()
+
+        return os.path.join(serialized_rec_directory, serialized_rec_filename)
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
@@ -166,7 +235,7 @@ class BaseRecommender:
                 self.metric
         """
         if filename is None:
-            fn = self.filename
+            fn = self.serialized_rec_path
         else:
             fn = filename
 
@@ -208,7 +277,7 @@ class BaseRecommender:
             self.__dict__.update(tmp_dict)
             return True
         else:
-            logger.warning('Could not load filename '+self.filename)
+            logger.warning('Could not load filename '+ fn)
             return False
 
 
@@ -219,7 +288,7 @@ class BaseRecommender:
             Name of file to load
         """
         if filename is None:
-            fn = self.filename
+            fn = self.serialized_rec_path
         else:
             fn = filename
         if os.path.isfile(fn):
