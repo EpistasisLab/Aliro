@@ -58,7 +58,11 @@ class PennAI(BaseEstimator):
     :param ensemble: if it is a integer N, PennAI will use
             VotingClassifier/VotingRegressor to ensemble
             top N best models into one model.
-    :param max_time_mins: maximum time in minutes that PennAI can run # todo
+    :param max_time_mins: maximum time in minutes that PennAI can run
+    :param stopping_criteria: int, optional
+            A number of iterations without improvments in best metric.
+            Stop recommendations early if the best metric
+            does not improve in the number of iterations iterations.
     :param random_state: random state for recommenders
     :param n_jobs: int (default: 1) The number of cores to dedicate to
             computing the scores with joblib. Assigning this parameter to -1
@@ -79,6 +83,7 @@ class PennAI(BaseEstimator):
                  ml_p_file=None,
                  ensemble=None,
                  max_time_mins=None,
+                 stopping_criteria=None,
                  random_state=None,
                  n_jobs=1):
         """Initializes AI managing agent."""
@@ -94,6 +99,7 @@ class PennAI(BaseEstimator):
         self.ml_p_file = ml_p_file
         self.ensemble = ensemble
         self.max_time_mins = max_time_mins
+        self.stopping_criteria = stopping_criteria
         self.random_state = random_state
         self.n_jobs = n_jobs
 
@@ -150,6 +156,17 @@ class PennAI(BaseEstimator):
         else:
             raise ValueError(
                 "please provide knowledgebase and kb_metafeatures")
+
+        if self.stopping_criteria is not None:
+            if self.stopping_criteria < 0:
+                raise ValueError(
+                        "stopping_criteria should be a positive number.")
+            self.best_score_init = -float("inf")
+            self.bad_iteration = 0
+
+        if self.max_time_mins is not None:
+            if self.max_time_mins < 0:
+                raise ValueError("max_time_mins should be a positive number.")
 
         # if there is a pickle file, load it as the recommender scores
         if self.warm_start:
@@ -365,7 +382,7 @@ class PennAI(BaseEstimator):
         if len(new_results_df) >= 1:
             new_mf = self.get_results_metafeatures()
             self.rec_engines[self.mode].update(new_results_df, new_mf)
-            logger.info(time.strftime("%Y %I:%M:%S %p %Z", time.localtime()) +
+            logger.debug(time.strftime("%Y %I:%M:%S %p %Z", time.localtime()) +
                         ': recommender updated')
 
     # -----------------
@@ -376,26 +393,18 @@ class PennAI(BaseEstimator):
 
         :returns list of maps that represent request payload objects
         """
-        logger.info(
+        logger.debug(
             "generate_recommendations({},{})".format(
                 self.datasetId, self.n_recs_))
 
         recommendations = []
 
-        #  metafeature need to generate from independent codes # todo
-
-        #metafeatures = self.labApi.get_metafeatures(datasetId)
-
-        # key code for generate recomendation need call this line or this
-        # function into fit
         ml, p, ai_scores = self.rec_engines[self.mode].recommend(
             dataset_id=self.datasetId,
             n_recs=self.n_recs_,
             dataset_mf=self.meta_features)
 
         for alg, params, score in zip(ml, p, ai_scores):
-            # TODO: just return dictionaries of parameters from rec
-            # modified_params = eval(params) # turn params into a dictionary
 
             recommendations.append({'dataset_id': self.datasetId,
                                     'algorithm': alg,
@@ -411,6 +420,26 @@ class PennAI(BaseEstimator):
             total_mins_elapsed = (
                 datetime.now() - self._start_datetime).total_seconds() / 60.
             return total_mins_elapsed >= self.max_time_mins
+        else:
+            return False
+
+    def _stop_by_stopping_criteria(self):
+        """Stop optimization process once stopping_criteria have reached."""
+        
+        if self.stopping_criteria is not None:
+            if self.best_score_iter > self.best_score_init:
+                # a new loop
+                self.best_score_init = self.best_score_iter
+                # iteration without improvments
+                self.bad_iteration = 0
+            else:
+                self.bad_iteration += 1
+
+            if self.bad_iteration >= self.stopping_criteria:
+                return True
+            else:
+                return False
+
         else:
             return False
 
@@ -452,15 +481,16 @@ class PennAI(BaseEstimator):
             # import scikit obj from string
             exec('from {} import {}'.format(x['path'], x['name']))
         self._start_datetime = datetime.now()
+
         for i in range(self.n_iters):
             # stop by max_time if step
-            if_stop = self._stop_by_max_time_mins()
-            if if_stop:
+            if self._stop_by_max_time_mins():
                 logger.info(
-                    "Stop optimization process once"
+                    "Stop optimization process since"
                     " {} minutes have elapsed.".format(
                         self.max_time_mins))
                 break
+
 
             logger.info("Start iteration #{}".format(i + 1))
             recommendations = self.generate_recommendations()
@@ -512,12 +542,19 @@ class PennAI(BaseEstimator):
             self.recomms += new_results
 
             new_results_df = pd.DataFrame(new_results)
-            # get best score
-            best_score_iter = new_results_df[self.metric_].max()
+            # get best score in each iteration
+            self.best_score_iter = new_results_df[self.metric_].max()
             # update recommender each iteration
             self.update_recommender(new_results_df)
             # get best score in new results in this iteration
-            # todo for early stop termination
+
+            # stop by stopping_criteria
+            if self._stop_by_stopping_criteria():
+                logger.info(
+                    "Stop optimization process since recommendations"
+                    " did not imporve over {} iterations.".format(
+                        self.stopping_criteria))
+                break
 
         # convert to pandas.DataFrame from finalize result
         self.recomms = pd.DataFrame(self.recomms)
