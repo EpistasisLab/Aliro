@@ -188,6 +188,7 @@ def test_init():
     assert pennai.ml_p_file == None
     assert pennai.ensemble == None
     assert pennai.max_time_mins == None
+    assert pennai.stopping_criteria == None
     assert pennai.mode == "classification"
     assert pennai.n_jobs == 1
 
@@ -245,6 +246,23 @@ def test_max_time_mins():
                             random_state=42,
                             verbose=2,
                             max_time_mins=0.1
+                           )
+    pennai.fit(X_train, y_train)
+    assert pennai.score(X_train, y_train)
+
+
+def test_stopping_criteria():
+    """Test PennAIClassifier fit() with stopping_criteria=0.01."""
+
+    pennai = PennAIClassifier(
+                            rec_class=RandomRecommender,
+                            n_recs=2,
+                            n_iters=10,
+                            knowledgebase=classification_kb,
+                            kb_metafeatures=classification_metafeatures,
+                            random_state=42,
+                            verbose=1,
+                            stopping_criteria=3
                            )
     pennai.fit(X_train, y_train)
     assert pennai.score(X_train, y_train)
