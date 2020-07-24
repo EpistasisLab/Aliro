@@ -155,7 +155,8 @@ class SurpriseRecommender(BaseRecommender):
         # remove results_df to save space. this gets loaded by load() fn.
         rowHashes = hash_pandas_object(save_dict['results_df']).values 
         save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
-        print('save_dict[results_df]:',save_dict['results_df'].head())
+        logger.degug('save_dict[results_df]:'
+                +str(save_dict['results_df'].head()))
         del save_dict['results_df']
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
