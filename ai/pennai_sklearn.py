@@ -425,7 +425,7 @@ class PennAI(BaseEstimator):
 
     def _stop_by_stopping_criteria(self):
         """Stop optimization process once stopping_criteria have reached."""
-        
+
         if self.stopping_criteria is not None:
             if self.best_score_iter > self.best_score_init:
                 # a new loop
@@ -630,18 +630,18 @@ class PennAI(BaseEstimator):
         )
         return score
 
-    def save(self, filename):
-        """save pickled recommender.
-        Parameters
-        ----------
-        filename: string
-            Filename for saving pickled recommender.
+    #def save(self, filename):
+        #"""save pickled recommender.
+        #Parameters
+        #----------
+        #filename: string
+            #Filename for saving pickled recommender.
 
-        Returns
-        -------
-        None
-        """
-        self.rec_engines[self.mode].save(filename)
+        #Returns
+        #-------
+        #None
+        #"""
+        #self.rec_engines[self.mode].save(filename)
 
 
 def bool_or_none(val):
