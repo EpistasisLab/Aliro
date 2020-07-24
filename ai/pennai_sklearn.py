@@ -297,7 +297,8 @@ class PennAI(BaseEstimator):
         # default supervised learning recommender settings
 
         self.REC_ARGS = {'metric': self.metric_,
-                                    'ml_type': self.ml_type}
+                            'ml_type': self.ml_type,
+                            'random_state': self.random_state}
         # if self.random_state:
         #self.REC_ARGS['random_state'] = self.random_state
 
@@ -321,6 +322,7 @@ class PennAI(BaseEstimator):
             self.REC_ARGS['serialized_rec_directory'] = self.serialized_rec_directory
             self.REC_ARGS['load_serialized_rec'] = "always"
             self.REC_ARGS['serialized_rec_knowledgebase'] = resultsData
+
         elif self.serialized_rec_filename or self.serialized_rec_directory:
             raise ValueError(
                 "please provide both knowledgebase and kb_metafeatures")
@@ -334,7 +336,7 @@ class PennAI(BaseEstimator):
 
         if not self.serialized_rec_filename:
             self.rec_engines[self.mode].update(
-                resultsData, self.dataset_mf_cache, source='knowledgebase')
+                resultsData, self.dataset_mf_cache, source='pennai')
 
 
         logger.debug("recomendation engines initilized: ")
@@ -356,8 +358,6 @@ class PennAI(BaseEstimator):
         # keep only metafeatures with results
         df = all_df_mf.loc[kb['resultsData'][self.mode]['_id'].unique()]
         self.dataset_mf_cache = self.dataset_mf_cache.append(df)
-
-
 
         return kb['resultsData'][self.mode]
 
@@ -468,9 +468,7 @@ class PennAI(BaseEstimator):
         """
 
         self.fit_init_()
-        if self.random_state is not None:
-            random.seed(self.random_state)
-            np.random.seed(self.random_state)
+
 
         # generate datasetId based on import X, y
         # make pd.DataFrameBased on X, y
