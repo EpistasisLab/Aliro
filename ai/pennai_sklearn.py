@@ -47,8 +47,13 @@ class PennAI(BaseEstimator):
 
     :param rec_class: ai.BaseRecommender - recommender to use
     :param verbose: int, 0 quite, 1 info, 2 debug
-    :param warm_start: if it is a path of plk file, attempt to
-            load the ai state from the plk file;
+    :param serialized_rec_filename: string or None
+        Name of the file to save/load a serialized recommender.
+        If the filename is not provided, the default filename based on the recommender
+        type, and metric, and knowledgebase used.
+    :param serialized_rec_directory: string or None
+        Name of the directory to save/load a serialized recommender.
+        Default directory is "."
     :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
     :param n_iters: int = total number of iteration
@@ -74,7 +79,8 @@ class PennAI(BaseEstimator):
     def __init__(self,
                  rec_class=None,
                  verbose=0,
-                 warm_start=None,
+                 serialized_rec_filename=None,
+                 serialized_rec_directory=None,
                  scoring=None,
                  n_recs=10,
                  n_iters=10,
@@ -90,7 +96,8 @@ class PennAI(BaseEstimator):
 
         self.rec_class = rec_class
         self.verbose = verbose
-        self.warm_start = warm_start
+        self.serialized_rec_filename = serialized_rec_filename
+        self.serialized_rec_directory = serialized_rec_directory
         self.scoring = scoring
         self.n_recs = n_recs
         self.n_iters = n_iters
@@ -146,16 +153,14 @@ class PennAI(BaseEstimator):
         # Request manager settings
         self.n_recs_ = self.n_recs if self.n_recs > 0 else 1
 
-        self.initilize_recommenders(self.rec_class)  # set self.rec_engines
-
         # local dataframe of datasets and their metafeatures
         self.dataset_mf_cache = pd.DataFrame()
 
-        if self.knowledgebase and self.kb_metafeatures:
-            resultsData = self.load_kb()
-        else:
-            raise ValueError(
-                "please provide knowledgebase and kb_metafeatures")
+
+        self.initilize_recommenders(self.rec_class)  # set self.rec_engines
+
+
+
 
         if self.stopping_criteria is not None:
             if self.stopping_criteria < 0:
@@ -168,10 +173,6 @@ class PennAI(BaseEstimator):
             if self.max_time_mins < 0:
                 raise ValueError("max_time_mins should be a positive number.")
 
-        # if there is a pickle file, load it as the recommender scores
-        if self.warm_start:
-            logger.info("Loading pickled recommender")
-            self.rec_engines[self.mode].load(self.warm_start, resultsData)
 
     def generate_metafeatures_from_X_y(self, X, y):
         """
@@ -295,9 +296,10 @@ class PennAI(BaseEstimator):
         """
         # default supervised learning recommender settings
 
-        self.DEFAULT_REC_ARGS = {'metric': self.metric_}
+        self.REC_ARGS = {'metric': self.metric_,
+                                    'ml_type': self.ml_type}
         # if self.random_state:
-        #self.DEFAULT_REC_ARGS['random_state'] = self.random_state
+        #self.REC_ARGS['random_state'] = self.random_state
 
         # add static_parameters for each ML methods
         self.static_parameters = {}
@@ -305,18 +307,35 @@ class PennAI(BaseEstimator):
 
         ml_p = self.get_all_ml_p()
 
-        self.DEFAULT_REC_ARGS['ml_p'] = ml_p
+        self.REC_ARGS['ml_p'] = ml_p
 
+        if self.knowledgebase and self.kb_metafeatures:
+            resultsData = self.load_kb()
+            logger.info('Knowledgebase loaded')
+        else:
+            raise ValueError(
+                "please provide both knowledgebase and kb_metafeatures")
+
+        if self.serialized_rec_filename and self.serialized_rec_directory:
+            self.REC_ARGS['serialized_rec_filename'] = self.serialized_rec_filename
+            self.REC_ARGS['serialized_rec_directory'] = self.serialized_rec_directory
+            self.REC_ARGS['load_serialized_rec'] = "always"
+            self.REC_ARGS['serialized_rec_knowledgebase'] = resultsData
+        elif self.serialized_rec_filename or self.serialized_rec_directory:
+            raise ValueError(
+                "please provide both knowledgebase and kb_metafeatures")
         # Create supervised learning recommenders
         if self.rec_class is not None:
             self.rec_engines[self.mode] = self.rec_class(
-                **self.DEFAULT_REC_ARGS)
+                **self.REC_ARGS)
         else:
             self.rec_engines[self.mode] = RandomRecommender(
-                **self.DEFAULT_REC_ARGS)
+                **self.REC_ARGS)
 
-        assert ml_p is not None
-        assert len(ml_p) > 0
+        if not self.serialized_rec_filename:
+            self.rec_engines[self.mode].update(
+                resultsData, self.dataset_mf_cache, source='knowledgebase')
+
 
         logger.debug("recomendation engines initilized: ")
         for prob_type, rec in self.rec_engines.items():
@@ -332,22 +351,14 @@ class PennAI(BaseEstimator):
             metafeaturesFiles=[self.kb_metafeatures]
         )
 
-        # replace algorithm names with their ids
-        #self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
-        # kb['resultsData']['algorithm'] = kb['resultsData']['algorithm'].apply(
-        #                                  lambda x: self.ml_name_to_id[x])
-
         all_df_mf = kb['metafeaturesData'].set_index('_id', drop=False)
 
-        # all_df_mf = pd.DataFrame.from_records(metafeatures).transpose()
         # keep only metafeatures with results
         df = all_df_mf.loc[kb['resultsData'][self.mode]['_id'].unique()]
         self.dataset_mf_cache = self.dataset_mf_cache.append(df)
-        # self.update_dataset_mf(kb['resultsData'])
 
-        self.rec_engines[self.mode].update(
-            kb['resultsData'][self.mode], self.dataset_mf_cache, source='knowledgebase')
-        logger.info('Knowledgebase loaded')
+
+
         return kb['resultsData'][self.mode]
 
     # -----------------
@@ -669,8 +680,10 @@ def bool_or_none(val):
 class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
+    ml_type = "classifier"
 
 
 class PennAIRegressor(PennAI, RegressorMixin):
     mode = "regression"
     scoring_ = "neg_mean_squared_error"
+    ml_type = "regressor"
