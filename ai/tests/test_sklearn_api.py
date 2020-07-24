@@ -183,7 +183,8 @@ def test_init():
     assert pennai.kb_metafeatures == classification_metafeatures
     assert pennai.random_state == 42
     assert pennai.verbose == 0
-    assert pennai.warm_start == None
+    assert pennai.serialized_rec_directory == None
+    assert pennai.serialized_rec_filename == None
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
     assert pennai.ensemble == None
@@ -219,11 +220,8 @@ def test_load_kb():
                             kb_metafeatures=classification_metafeatures,
                             random_state=42
                            )
-    pennai.metric_ = "accuracy"
     pennai.dataset_mf_cache = pd.DataFrame()
-    pennai.rec_engines = {"classification": None}
-    pennai.initilize_recommenders(RandomRecommender)
-    pennai.load_kb()
+    resultsData = pennai.load_kb()
     kb = load_knowledgebase(
                         resultsFiles=[classification_kb],
                         metafeaturesFiles=[classification_metafeatures]
@@ -231,7 +229,7 @@ def test_load_kb():
     all_df_mf = kb['metafeaturesData'].set_index('_id', drop=False)
     df = all_df_mf.loc[kb['resultsData']["classification"]['_id'].unique()]
     assert pennai.dataset_mf_cache.equals(df)
-    # self.update_dataset_mf(kb['resultsData'])
+    assert kb['resultsData'][pennai.mode].equals(resultsData)
 
 
 def test_max_time_mins():
@@ -309,8 +307,7 @@ def test_ensemble():
 
 def test_warm_start_1():
     """Test PennAIClassifier fit() with warm_start."""
-    # todo disable for now and will fix warm_start later
-    serialized_rec_directory = "ai/recommender/saved"
+    serialized_rec_directory = "data/recommenders"
     serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
     classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
     pennai = PennAIClassifier(
@@ -327,27 +324,3 @@ def test_warm_start_1():
     pennai.fit(X_train, y_train)
 
     assert pennai.score(X_train, y_train)
-    remove(warm_start_path)
-
-
-def test_warm_start_2():
-    """Test PennAIRegressor fit() with warm_start."""
-    # todo disable for now and will fix warm_start later
-    serialized_rec_directory = "ai/recommender/saved"
-    serialized_rec_filename = "SVDRecommender_regressor_neg_mean_squared_error_pmlb.pkl.gz"
-    regression_kb_full = "data/knowledgebases/pmlb_regression_results.tsv.gz"
-    pennai = PennAIRegressor(
-                            rec_class=SVDRecommender,
-                            n_recs=2,
-                            n_iters=2,
-                            serialized_rec_directory=serialized_rec_directory,
-                            serialized_rec_filename=serialized_rec_filename,
-                            knowledgebase=regression_kb_full,
-                            kb_metafeatures=regression_metafeatures,
-                            random_state=42,
-                            verbose=1
-                           )
-    pennai.fit(X_train, y_train)
-
-    assert pennai.score(X_train, y_train)
-    remove(warm_start_path)
