@@ -49,9 +49,11 @@ pennai_classifiers = ['LogisticRegression', 'RandomForestClassifier', 'SVC',
                           'KNeighborsClassifier', 'DecisionTreeClassifier',
                           'GradientBoostingClassifier']
 mask = np.array([c in pennai_classifiers for c in data['algorithm'].values])
+
 data = data.loc[mask, :]
 data['parameters'] = data['parameters'].apply(lambda x: eval(x))
 data['alg_name'] = data['algorithm']
+
 ml_p = data.loc[:,['algorithm','parameters']]
 ml_p['parameters'] = ml_p['parameters'].apply(str)
 ml_p = ml_p.drop_duplicates()
@@ -119,15 +121,10 @@ def check_rec(rec):
             logger.debug("{0},{1},{2} :ml:{3}, p:{4}, scores={5}".format(
                 rec.__name__,n,d,ml,p,scores))
 
-def save_and_load(rec):
+def save_and_load(rec, load_serialized_rec):
     """Rec can be saved and loaded without error"""
     logger.info("check_n_recs({})".format(rec))
     print("check_n_recs({})".format(rec))
-
-    ml_p = data.loc[:,['algorithm','parameters']]
-    ml_p['parameters'] = ml_p['parameters'].apply(str)
-    ml_p = ml_p.drop_duplicates()
-    ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
    
     logger.info('setting rec 1 ==================')
     rec_obj = rec(ml_p=ml_p, random_state=12)
@@ -146,6 +143,7 @@ def save_and_load(rec):
     rec_obj2 = rec(ml_p=ml_p, 
         serialized_rec_filename=filename, 
         serialized_rec_knowledgebase=new_data, 
+        load_serialized_rec=load_serialized_rec,
         random_state=12)
 
     # clean up pickle file generated if it exists
@@ -172,8 +170,6 @@ def check_n_recs(rec):
     logger.info("check_n_recs({})".format(rec))
     print("check_n_recs({})".format(rec))
 
-    
-   
     logger.info('setting rec')
     rec_obj = rec(ml_p=ml_p)
     logger.info('set rec')
@@ -198,10 +194,29 @@ def test_n_recs():
     for recommender in test_recommenders:
         yield (check_n_recs, recommender)
 
-def test_save_and_load():
+def test_save_and_load_if_exists():
     """Load function works"""
     for recommender in test_recommenders:
-        yield (save_and_load, recommender)
+        yield (save_and_load, recommender, "if_exists")
+
+def test_save_and_load_always():
+    """Load function works"""
+    for recommender in test_recommenders:
+        yield (save_and_load, recommender, "always")
+
+
+def test_save_and_load_always_exception():
+    for recommender in test_recommenders:
+        yield (rec_load_always_exception, recommender)
+
+@raises(Exception)
+def rec_load_always_exception(rec):
+    """ expect an exception to be thrown because the serialized rec does not exist"""
+    rec_obj = rec(
+        ml_p=ml_p, 
+        serialized_rec_filename="i_dont_exist.txt", 
+        load_serialized_rec="always",
+        random_state=12)
 
 def test_default_serialized_rec_filename():
     """Test that the expected default filename is generated"""
