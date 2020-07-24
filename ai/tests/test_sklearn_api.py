@@ -288,36 +288,62 @@ def test_ensemble():
     assert pennai.estimator.__class__ == VotingClassifier
 
 
-def test_save():
-    """Test PennAIClassifier save() function."""
-    test_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
+#def test_save():
+    #"""Test PennAIClassifier save() function."""
+    #test_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
+    #classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+    #pennai = PennAIClassifier(
+    #                        rec_class=SVDRecommender,
+    #                        n_recs=2,
+    #                        n_iters=2,
+    #                        knowledgebase=classification_kb_full,
+    #                        kb_metafeatures=classification_metafeatures,
+    #                        random_state=42,
+    #                        verbose=1
+    #                       )
+    #pennai.fit(X_train, y_train)
+    #pennai.save(test_path)
+
+    #assert path.isfile(test_path)
+
+
+def test_warm_start_1():
+    """Test PennAIClassifier fit() with warm_start."""
+    # todo disable for now and will fix warm_start later
+    serialized_rec_directory = "ai/recommender/saved"
+    serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
     classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
     pennai = PennAIClassifier(
                             rec_class=SVDRecommender,
                             n_recs=2,
                             n_iters=2,
+                            serialized_rec_directory=serialized_rec_directory,
+                            serialized_rec_filename=serialized_rec_filename,
                             knowledgebase=classification_kb_full,
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
                             verbose=1
                            )
     pennai.fit(X_train, y_train)
-    pennai.save(test_path)
 
-    assert path.isfile(test_path)
+    assert pennai.score(X_train, y_train)
+    remove(warm_start_path)
 
 
-def test_warm_start():
-    """Test PennAIClassifier fit() with warm_start."""
-    warm_start_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
-    classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
-    pennai = PennAIClassifier(
+def test_warm_start_2():
+    """Test PennAIRegressor fit() with warm_start."""
+    # todo disable for now and will fix warm_start later
+    serialized_rec_directory = "ai/recommender/saved"
+    serialized_rec_filename = "SVDRecommender_regressor_neg_mean_squared_error_pmlb.pkl.gz"
+    regression_kb_full = "data/knowledgebases/pmlb_regression_results.tsv.gz"
+    pennai = PennAIRegressor(
                             rec_class=SVDRecommender,
                             n_recs=2,
                             n_iters=2,
-                            #warm_start=warm_start_path,
-                            knowledgebase=classification_kb_full,
-                            kb_metafeatures=classification_metafeatures,
+                            serialized_rec_directory=serialized_rec_directory,
+                            serialized_rec_filename=serialized_rec_filename,
+                            knowledgebase=regression_kb_full,
+                            kb_metafeatures=regression_metafeatures,
                             random_state=42,
                             verbose=1
                            )
