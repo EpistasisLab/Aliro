@@ -104,7 +104,8 @@ class SurpriseRecommender(BaseRecommender):
             return type(self).__name__
         return type(self.algo).__name__
 
-    def set_training_data(self, results_data, results_mf=None, source='pennai'):
+    def _reconstruct_training_data(self, results_data, results_mf=None, 
+            source='pennai'):
         """Used for loading pickled recomenders to set results_df 
         without training.
         :param results_data: DataFrame with columns corresponding to:
@@ -113,10 +114,15 @@ class SurpriseRecommender(BaseRecommender):
                 'parameters'
                 self.metric
         :param results_mf: metafeatures for the datasets in results_data 
+        :param source: str, optional (default: 'pennai')
+            if 'pennai', will update tally of trained dataset models 
         """
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
+        # updates self.results_df and self.trainset
         self.update_training_data(results_data, shuffle=True)
+        # check whether the set train data matches the pickled recommender's 
+        # training data.
         rowHashes = hash_pandas_object(self.results_df).values 
         newHash = hashlib.sha256(rowHashes).hexdigest()
         if hasattr(self, 'results_df_hash'):
@@ -137,7 +143,8 @@ class SurpriseRecommender(BaseRecommender):
         loaded = super().load(filename=filename)
         if loaded:
             logger.info('setting training data...')
-            self.set_training_data(knowledgebase, source='knowledgebase')
+            self._reconstruct_training_data(knowledgebase, 
+                    source='knowledgebase')
 
     def save(self, filename=None):
         """Save the current recommender."""
@@ -155,7 +162,7 @@ class SurpriseRecommender(BaseRecommender):
         # remove results_df to save space. this gets loaded by load() fn.
         rowHashes = hash_pandas_object(save_dict['results_df']).values 
         save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
-        logger.degug('save_dict[results_df]:'
+        logger.debug('save_dict[results_df]:'
                 +str(save_dict['results_df'].head()))
         del save_dict['results_df']
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
@@ -185,7 +192,18 @@ class SurpriseRecommender(BaseRecommender):
         self.update_model(results_data)
 
     def update_training_data(self, results_data, shuffle=False):
-        """Fill in new data from the results and set trainset for svd"""
+        """Appends results_data to self.results_df. Sets the trainset for 
+        the surprise recommender.
+        
+        :param results_data: DataFrame with columns corresponding to:
+                'dataset'
+                'algorithm'
+                'parameters'
+                self.metric
+        :param shuffle: boolean, optional (default: False)
+            If true, results_data is shuffled before it is added to 
+            self.results_df or self.trainset.
+        """
 
         if shuffle:
             # shuffle the results data 
