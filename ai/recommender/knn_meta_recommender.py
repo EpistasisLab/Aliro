@@ -22,7 +22,8 @@ class KNNMetaRecommender(BaseRecommender):
     """Penn AI KNN meta recommender.
     Recommends machine learning algorithms and parameters as follows:
         - store the best ML + P on every dataset.
-        - given a new dataset, measure its distance to all results in metafeature space.
+        - given a new dataset, measure its distance to all results in
+        metafeature space.
         - recommend ML + P with best performance on closest dataset.
 
     Parameters
@@ -35,11 +36,11 @@ class KNNMetaRecommender(BaseRecommender):
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
     """
-    def __init__(self, 
-        ml_type='classifier', 
-        metric=None, 
+    def __init__(self,
+        ml_type='classifier',
+        metric=None,
         ml_p=None,
-        random_state=None, 
+        random_state=None,
         serialized_rec_directory=None,
         serialized_rec_filename=None,
         load_serialized_rec="if_exists",
@@ -47,9 +48,9 @@ class KNNMetaRecommender(BaseRecommender):
         """Initialize recommendation system."""
 
         super().__init__(
-            ml_type, 
-            metric, 
-            ml_p, 
+            ml_type,
+            metric,
+            ml_p,
             random_state=random_state,
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename,
@@ -77,7 +78,8 @@ class KNNMetaRecommender(BaseRecommender):
                 self.metric
 
         results_mf: DataFrame
-               columns corresponding to metafeatures of each dataset in results_data.
+               columns corresponding to metafeatures of each dataset in
+               results_data.
         """
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
@@ -105,7 +107,8 @@ class KNNMetaRecommender(BaseRecommender):
                 logger.debug('new best for '+d+': '+
                         dfg.loc[idx,'algorithm']+', idx:'+str(idx))
                 self.best_mlp.loc[d,'algorithm'] = dfg.loc[idx,'algorithm']
-                self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,'parameter_hash']
+                self.best_mlp.loc[d,'parameters'] = dfg.loc[idx,
+                        'parameter_hash']
             else:
                 logger.debug('skipping'+d)
         # print('model updated')
@@ -123,7 +126,8 @@ class KNNMetaRecommender(BaseRecommender):
             expected to do best.
         """
         if dataset_mf is None:
-            raise ValueError('dataset_mf is None for',dataset_id,"can't recommend")
+            raise ValueError('dataset_mf is None for',dataset_id,
+                    "can't recommend")
 
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
@@ -134,8 +138,8 @@ class KNNMetaRecommender(BaseRecommender):
         dataset_mf = dataset_mf.drop(columns=drop_cols)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
         try:
-            ml_rec, phash_rec, rec_score = self.best_model_prediction(dataset_id,
-                                                                  dataset_mf)
+            ml_rec, phash_rec, rec_score = self.best_model_prediction(
+                    dataset_id, dataset_mf)
             if len(ml_rec) < n_recs:
                 logger.info(f'len(ml_rec)={len(ml_rec)}, recommending random')
             iters = 0
@@ -154,24 +158,28 @@ class KNNMetaRecommender(BaseRecommender):
             if iters == 1000:
                 logger.info(f'couldn''t find {n_recs} unique recommendations! '
                       'returning',len(ml_rec))
-                subset = [dataset_id in tdm for tdm in self.trained_dataset_models]
-                num_results = len([tdm for i,tdm in enumerate(self.trained_dataset_models)
+                subset = \
+                    [dataset_id in tdm for tdm in self.trained_dataset_models]
+                num_results = len(
+                    [tdm for i,tdm in enumerate(self.trained_dataset_models)
                            if subset[i]])
-                logger.info(f'btw, there are {num_results} results for {dataset_id} already')
+                logger.info(f'btw, there are {num_results} results for '
+                        '{dataset_id} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
                     [self.hash_2_param[p] for p in phash_rec[:n_recs]],
                                        rec_score[:n_recs])
             assert(len(ml_rec) == n_recs)
 
         except Exception as e:
-            logger.error('error running self.best_model_prediction for'+dataset_id)
+            logger.error('error running self.best_model_prediction for'
+                    +dataset_id)
             raise e
             # logger.error('ml_rec:'+ ml_rec)
             # logger.error('p_rec'+ p_rec)
             # logger.error('rec_score'+rec_score)
 
-        # update the recommender's memory with the new algorithm-parameter combos
-        # that it recommended
+        # update the recommender's memory with the new algorithm-parameter
+        # combos that it recommended
         self._update_trained_dataset_models_from_rec(
                                                     dataset_id,
                                                     ml_rec,
@@ -209,11 +217,13 @@ class KNNMetaRecommender(BaseRecommender):
                 continue
             if i < 10:
                 logger.debug('closest dataset:'+d+'; distance:'+ str(dist))
-            if round(dist,6) > 0.0:    # don't recommend based on the same dataset
+            # don't recommend based on the same dataset
+            if round(dist,6) > 0.0:
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
                 # only recommend if not already recommended
-                if dataset_id+'|'+alg_params not in self.trained_dataset_models:
+                if (dataset_id+'|'+alg_params
+                        not in self.trained_dataset_models):
                     ml_recs.append(self.best_mlp.loc[d,'algorithm'])
                     p_recs.append(self.best_mlp.loc[d,'parameters'])
                     scores.append(dist)
