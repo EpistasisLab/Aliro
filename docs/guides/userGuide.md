@@ -123,7 +123,7 @@ pip install pennai-ai-engine
 
 ### Example of using PennAI AI engine ###
 
-The following code illustrates how TPOT can be employed for performing a simple _classification task_ over the Iris dataset.
+The following code illustrates how PennAI can be employed for performing a simple _classification task_ over the Iris dataset.
 
 ```Python
 from ai.pennai_sklearn import PennAIClassifier
@@ -144,6 +144,46 @@ pennai = PennAIClassifier(
               n_recs=5,
               n_iters=10,
               knowledgebase=classification_kb,
+              kb_metafeatures=classification_metafeatures,
+              random_state=42,
+              verbose=2
+              )
+
+pennai.fit(X_train, y_train)
+print(pennai.score(X_test, y_test))
+
+```
+
+### Example of using PennAI AI engine with pre-trained SVG recommender###
+
+The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:
+
+```Python
+from ai.pennai_sklearn import PennAIClassifier
+from ai.recommender.surprise_recommenders import SVDRecommender
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
+    iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
+
+
+classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+serialized_rec_directory = "data/recommenders"
+serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
+classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+
+pennai = PennAIClassifier(
+              rec_class=SVDRecommender,
+              n_recs=5,
+              n_iters=10,
+              serialized_rec_directory=serialized_rec_directory,
+              serialized_rec_filename=serialized_rec_filename,
+              knowledgebase=classification_kb_full,
               kb_metafeatures=classification_metafeatures,
               random_state=42,
               verbose=2

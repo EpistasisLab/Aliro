@@ -54,19 +54,19 @@ class BaseRecommender(object, metaclass=MC):
 
     load_serialized_rec: str, "always", "never", "if_exists"
         Whether to attempt to load a serialized recommender:
-            "if_exists" - If a serialized recomender exsists at the specified path, load it. 
+            "if_exists" - If a serialized recomender exsists at the specified path, load it.
             "always" - Always load a serialized recommender.  Throw an exception if no serialized recommender exists.
             "never" - Never load a serialized recommender.
 
     serialized_rec_knowledgebase: Pandas DataFrame or None
-        If loading a serialized recommender, this object is the knowlegebase that accompanies it.
+        If loading a serialized recommender, this object is the knowledgebase that accompanies it.
     """
 
-    def __init__(self, 
-        ml_type='classifier', 
-        metric=None, 
+    def __init__(self,
+        ml_type='classifier',
+        metric=None,
         ml_p=None,
-        random_state=None, 
+        random_state=None,
         serialized_rec_directory=None,
         serialized_rec_filename=None,
         load_serialized_rec="if_exists",
@@ -139,7 +139,7 @@ class BaseRecommender(object, metaclass=MC):
             +'.pkl.gz')
 
 
-    def _generate_serialized_rec_path(self, 
+    def _generate_serialized_rec_path(self,
         serialized_rec_filename=None,
         serialized_rec_directory=None):
         """ Generate the path to save/load serialized recommender
