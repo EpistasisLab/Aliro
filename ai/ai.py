@@ -214,7 +214,7 @@ class AI():
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
-                recArgs['serialized_rec_knowledgebase'] = kb['resultsData'][pred_type]
+                recArgs['knowledgebase_results'] = kb['resultsData'][pred_type]
 
             if (rec_class):
                 self.rec_engines[pred_type] = rec_class(**recArgs)

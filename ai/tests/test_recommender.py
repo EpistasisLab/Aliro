@@ -8,12 +8,13 @@ from ai.recommender.knn_meta_recommender import KNNMetaRecommender
 from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
+import ai.knowledgebase_utils as knowledgebase_utils
 
 import pdb
 import logging
 import os
 from nose.tools import (nottest, raises, assert_equals, assert_in, 
-        assert_not_in, assert_is_none)
+        assert_not_in, assert_is_none, assert_false)
 import json
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,8 @@ KB_METAFEATURES_PATH = \
 data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
 metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, 
         float_precision='round_trip')
+
+
 
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
@@ -64,9 +67,14 @@ ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
 # data.set_index('_id')
 #ml - param combos
 
-test_recommenders = [RandomRecommender, AverageRecommender, KNNMetaRecommender,
-        CoClusteringRecommender, KNNWithMeansRecommender, 
-        KNNDatasetRecommender, KNNMLRecommender, SlopeOneRecommender, 
+test_recommenders = [RandomRecommender, 
+        AverageRecommender, 
+        KNNMetaRecommender,
+        CoClusteringRecommender, 
+        KNNWithMeansRecommender, 
+        KNNDatasetRecommender, 
+        KNNMLRecommender, 
+        SlopeOneRecommender, 
         SVDRecommender ]
 
 
@@ -122,19 +130,25 @@ def check_rec(rec):
                 rec.__name__,n,d,ml,p,scores))
 
 def save_and_load(rec, load_serialized_rec):
-    """Rec can be saved and loaded without error"""
-    logger.info("check_n_recs({})".format(rec))
-    print("check_n_recs({})".format(rec))
+    """Rec can be saved and loaded without error"""    
+    logger.info("save_and_load({})".format(rec))
+    print("save_and_load({})".format(rec))
+
+    RANDOM_STATE=12
    
+    # initilize a recommender
     logger.info('setting rec 1 ==================')
-    rec_obj = rec(ml_p=ml_p, random_state=12)
+    rec_obj = rec(ml_p=ml_p,
+        load_serialized_rec="never", 
+        random_state=RANDOM_STATE)
    
+    # add some data
     dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
 
-    #save the recommender
+    # save the recommender
     filename = type(rec_obj).__name__ + '_test.pkl.gz'
     rec_obj.save(filename=filename)
 
@@ -142,21 +156,41 @@ def save_and_load(rec, load_serialized_rec):
     logger.info('setting rec 2 ==================')
     rec_obj2 = rec(ml_p=ml_p, 
         serialized_rec_filename=filename, 
-        serialized_rec_knowledgebase=new_data, 
+        knowledgebase_results=new_data, 
         load_serialized_rec=load_serialized_rec,
-        random_state=12)
+        random_state=RANDOM_STATE)
 
     # clean up pickle file generated if it exists
     if os.path.exists(filename):
         os.remove(filename)
-    value = { k : rec_obj2.__dict__[k] 
-            for k in set(rec_obj2.__dict__) - set(rec_obj.__dict__) }
-    
-    print('recommender differences (in 2, not in 1):',value)
 
-    value = { k : rec_obj.__dict__[k] 
+    logger.info("checking for differences ==================")
+    differences_2not1 = { k : rec_obj2.__dict__[k] 
+            for k in set(rec_obj2.__dict__) - set(rec_obj.__dict__) }
+    logger.info(f"recommender differences (in 2, not in 1): {differences_2not1}")
+
+
+    differences_1not2 = { k : rec_obj.__dict__[k] 
             for k in set(rec_obj.__dict__) - set(rec_obj2.__dict__) }
-    print('recommender differences (in 1, not in 2):',value)
+    logger.info(f"recommender differences (in 1, not in 2): {differences_1not2}")
+
+    assert_equals(set(rec_obj.__dict__),  set(rec_obj2.__dict__))
+    #logger.debug(f"rec1: {rec_obj.__dict__}")
+    #logger.debug(f"rec2: {rec_obj2.__dict__}")
+
+    # make sure recommender works- get a recommendation
+    logger.info('checking rec2.recommend() ==================')
+    d = list(data['_id'].unique())[5]
+    ml, p, scores = rec_obj2.recommend(d,n_recs=2,
+                                         dataset_mf=get_metafeatures_by_id(d))
+
+    # make sure recommender works- update
+    logger.info('checking rec2.update() ==================')
+    new_data = data.sample(n=101)
+    rec_obj.update(new_data, dataset_mf)
+
+    assert_equals(set(rec_obj.__dict__),  set(rec_obj2.__dict__))
+
 
 def test_recs_work():
     """Each recommender updates and recommends without error"""
@@ -178,6 +212,7 @@ def check_n_recs(rec):
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
     rec_obj.update(new_data, dataset_mf)
+
     # test updating scores
     for n_recs in np.arange(5):
         for d in list(data['_id'].unique())[:10]:
@@ -208,6 +243,7 @@ def test_save_and_load_always():
 def test_save_and_load_always_exception():
     for recommender in test_recommenders:
         yield (rec_load_always_exception, recommender)
+
 
 @raises(Exception)
 def rec_load_always_exception(rec):
