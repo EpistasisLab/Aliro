@@ -45,12 +45,15 @@ class BaseRecommender(object, metaclass=MC):
 
     knowledgebase_results: Pandas DataFrame or None
         Initial knowledgebase results data.  
-        If not None and not loading a serialized recommender, the recommender will initilize and train on this data.
-        If loading a serialized recommender, this is the knowlegebase that accompanies it.
+        If not None and not loading a serialized recommender, the recommender 
+        will initilize and train on this data.
+        If loading a serialized recommender, this is the knowlegebase that 
+        accompanies it.
 
     knowledgebase_metafeatures: Pandas DataFrame or None
         Initial knowledgebase metafeatures data.
-        If loading a serialized recommender, this is the knowlegebase that accompanies it.
+        If loading a serialized recommender, this is the knowlegebase that 
+        accompanies it.
 
     serialized_rec_directory: string or None
         Name of the directory to save/load a serialized recommender.
@@ -58,13 +61,15 @@ class BaseRecommender(object, metaclass=MC):
 
     serialized_rec_filename: string or None
         Name of the file to save/load a serialized recommender.
-        If the filename is not provided, the default filename based on the recommender
-        type, and metric, and knowledgebase used.
+        If the filename is not provided, the default filename based on the 
+        recommender type, and metric, and knowledgebase used.
 
     load_serialized_rec: str, "always", "never", "if_exists"
         Whether to attempt to load a serialized recommender:
-            "if_exists" - If a serialized recomender exsists at the specified path, load it. 
-            "always" - Always load a serialized recommender.  Throw an exception if no serialized recommender exists.
+            "if_exists" - If a serialized recomender exsists at the specified 
+            path, load it. 
+            "always" - Always load a serialized recommender.  Throw an 
+            exception if no serialized recommender exists.
             "never" - Never load a serialized recommender.
 
     """
@@ -85,7 +90,8 @@ class BaseRecommender(object, metaclass=MC):
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
         if load_serialized_rec not in ["always", "never", "if_exists"]:
-            raise ValueError('load_serialized_rec must be "always", "never" or "if_exists"')
+            raise ValueError('load_serialized_rec must be "always", "never" or'
+                    ' "if_exists"')
 
         self.random_state = random_state
         if self.random_state is not None:
@@ -118,17 +124,21 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # Optionally load serialized rec, or initilize from the given knowledgebase
+        # Optionally load serialized rec, or initilize from the given 
+        # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
         if load_serialized_rec == "always":
             if not os.path.exists(self.serialized_rec_path):
-                raise ValueError(f"load_serialized_rec='{load_serialized_rec}' but cannot load serialized recommender: '{self.serialized_rec_path}'")
+                raise ValueError(f"load_serialized_rec='{load_serialized_rec}'"
+                        " but cannot load serialized recommender:"
+                        " '{self.serialized_rec_path}'")
             self.load(self.serialized_rec_path, knowledgebase_results)
 
         elif load_serialized_rec == "if_exists":
             if os.path.exists(self.serialized_rec_path):
-                logger.info(f"Loading serialized recommender: {self.serialized_rec_path}")
+                logger.info(f"Loading serialized recommender:"
+                        " {self.serialized_rec_path}")
                 self.load(self.serialized_rec_path, knowledgebase_results)
             else:
                 logger.warn(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
@@ -150,7 +160,7 @@ class BaseRecommender(object, metaclass=MC):
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
-            + '_pmlb_20200505'
+            + '_pmlb_20200731'
             +'.pkl.gz')
 
 

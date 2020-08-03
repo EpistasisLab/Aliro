@@ -228,13 +228,11 @@ class AI():
             # the next few commands are used to train the recommenders
             # on the PMLB knowledgebases and save them. 
             # For normal operation, they can be skipped.
-            # fn = self.rec_engines[pred_type].filename
-            # logger.info('updating and saving '+fn)
+            # logger.info('updating and saving recommender')
             # self.rec_engines[pred_type].update_and_save(
             #         kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, 
-            #         source='knowledgebase',
-            #         filename=fn)
+            #         source='knowledgebase')
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")

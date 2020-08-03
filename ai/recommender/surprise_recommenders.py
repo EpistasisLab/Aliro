@@ -410,9 +410,10 @@ class SVDRecommender(SurpriseRecommender):
                 'init_mean':0,
                 'init_std_dev':.2, 
                 'lr_all':.01,
-                'reg_all':.02}
+                'reg_all':.02,
+                'verbose':'False'}
         alg_kwargs.update(surprise_kwargs)
-        self.algo = mySVD(verbose=False, **alg_kwargs)
+        self.algo = mySVD(**alg_kwargs)
 
     # def __init__(self, ml_type='classifier', metric=None, ml_p=None, 
     #         filename=None, knowledgebase=None, random_state=None,
