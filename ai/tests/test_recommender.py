@@ -259,17 +259,17 @@ def test_default_serialized_rec_filename():
 
     test_data = [
         [RandomRecommender, "classifier", None, 
-            "RandomRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+            "RandomRecommender_classifier_bal_accuracy_pmlb_20200731.pkl.gz"], 
         [RandomRecommender, "regressor", None, 
-            "RandomRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+            "RandomRecommender_regressor_mse_pmlb_20200731.pkl.gz"],
         [KNNMetaRecommender, "classifier", None, 
-            "KNNMetaRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+            "KNNMetaRecommender_classifier_bal_accuracy_pmlb_20200731.pkl.gz"], 
         [KNNMetaRecommender, "regressor", None, 
-            "KNNMetaRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+            "KNNMetaRecommender_regressor_mse_pmlb_20200731.pkl.gz"],
         [SVDRecommender, "classifier", None, 
-            "SVDRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+            "SVDRecommender_classifier_bal_accuracy_pmlb_20200731.pkl.gz"], 
         [SVDRecommender, "regressor", None, 
-            "SVDRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+            "SVDRecommender_regressor_mse_pmlb_20200731.pkl.gz"],
     ]
 
     for (rec_class, ml_type, metric, expected_filename) in test_data:
@@ -301,10 +301,12 @@ def test_generate_serialized_rec_path():
     test_data = [
         [RandomRecommender, "classifier", None, 
             None, "my/custom/path",
-            "my/custom/path/RandomRecommender_classifier_bal_accuracy_pmlb_20200505.pkl.gz"], 
+            "my/custom/path/"
+            "RandomRecommender_classifier_bal_accuracy_pmlb_20200731.pkl.gz"], 
         [RandomRecommender, "regressor", None, 
             None, "my/custom/path",
-            "my/custom/path/RandomRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+            "my/custom/path/"
+            "RandomRecommender_regressor_mse_pmlb_20200731.pkl.gz"],
         [SVDRecommender, "classifier", None, 
             "myCustomFilename.tmp", None,
             "./myCustomFilename.tmp"], 
@@ -316,7 +318,7 @@ def test_generate_serialized_rec_path():
             "my/custom/path/myCustomFilename.tmp"],
         [SVDRecommender, "regressor", None, 
             None, None,
-            "./SVDRecommender_regressor_mse_pmlb_20200505.pkl.gz"],
+            "./SVDRecommender_regressor_mse_pmlb_20200731.pkl.gz"],
     ]
 
     for (
