@@ -28,6 +28,8 @@ import {
   Message
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone'
+import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 
 class FileUpload extends Component {
   
@@ -35,6 +37,7 @@ class FileUpload extends Component {
   get featureTypeNumeric() { return 'numeric'; }
   get featureTypeCategorical() { return 'categorical'; }
   get featureTypeOrdinal() { return 'ordinal'; }
+  get featureTypeDefault() { return this.featureTypeNumeric; }
   
   /**
   * FileUpload reac component - UI form for uploading datasets
@@ -43,25 +46,31 @@ class FileUpload extends Component {
   constructor(props) {
     super(props);
 
+    //NOTE - see ComponentDidMount for comments on these state members
+    //TODO - make a method to init state and use it here and in ComponentDidMount
     this.state = {
       selectedFile: null,
       dependentCol: '',
-      catFeaturesText: '',
-      /** {boolean} True when user has specified the categorical features via the text box */
-      catFeaturesStringInUse: false,
-      ordinalFeaturesText: '',
-      ordinalFeaturesValues: {},
-      ordinalIndex: 0,
+      catFeaturesUserText: '',
+      catFeaturesUserTextInUse: false,
+      ordinalFeaturesUserText: '',
+      ordinalFeaturesUserTextInUse: false,
+      ordinalFeaturesUserTextInError: false,
+      ordinalFeaturesObject: {},
+      ordinalFeatureToRank: undefined,
+      ordinalFeatureToRankValues: [],
       activeAccordionIndexes: [],
       openFileTypePop: false,
       /** {array} String-array holding the type for each feature, in same index order */
-      featureTypeFromDropdown: []
+      featureTypeFromDropdown: [],
+      
     };
 
     // enter info in text fields
     this.handleDepColField = this.handleDepColField.bind(this);
-    this.handlecatFeaturesText = this.handlecatFeaturesText.bind(this);
-    this.handleOrdinalFeatures = this.handleOrdinalFeatures.bind(this);
+    this.handleCatFeaturesUserText = this.handleCatFeaturesUserText.bind(this);
+    this.handleOrdinalFeaturesUserTextOnChange = this.handleOrdinalFeaturesUserTextOnChange.bind(this);
+    this.handleOrdinalFeaturesUserTextFocusLost = this.handleOrdinalFeaturesUserTextFocusLost.bind(this);
     this.handlePredictionType = this.handlePredictionType.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getAccordionInputs = this.getAccordionInputs.bind(this);
@@ -71,7 +80,15 @@ class FileUpload extends Component {
     this.handleFeatureTypeDropdown = this.handleFeatureTypeDropdown.bind(this);
     this.initDatasetPreview = this.initDatasetPreview.bind(this);
     this.getCatFeaturesFromDropdowns = this.getCatFeaturesFromDropdowns.bind(this);
-    this.handleOrderButton = this.handleOrderButton.bind(this);
+    this.onOrdinalSortDragRelease = this.onOrdinalSortDragRelease.bind(this);
+    this.handleOrdinalRankClick = this.handleOrdinalRankClick.bind(this);
+    this.handleOrdinalSortAccept = this.handleOrdinalSortAccept.bind(this);
+    this.handleOrdinalSortCancel = this.handleOrdinalSortCancel.bind(this);
+    this.getUniqueValuesForFeature = this.getUniqueValuesForFeature.bind(this);
+    this.specifyFeatureAsOrdinal = this.specifyFeatureAsOrdinal.bind(this);
+    this.clearOrdinalFeatures = this.clearOrdinalFeatures.bind(this);
+    this.ordinalFeaturesObjectToUserText = this.ordinalFeaturesObjectToUserText.bind(this);
+
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -85,7 +102,7 @@ class FileUpload extends Component {
       Examples include modeling the color car someone might buy ("red", "green", "blue"...) or a disease state ("type1Diabetes", "type2Diabetes", "none"...)
    <br/><br/><i>Regression</i> algorithms are used to model a continuous valued output.  Examples include modeling the amount of money a house is predicted to sell for.</p>);
 
-    this.catFeatHelpText = (<p>Categorical features have a discrete number of categories that do not have an intrinsic order.
+    this.catFeatHelpText = (<p>This site is using 'Categorical' to mean a Nominal feature, per custom in the ML community. Categorical features have a discrete number of categories that do not have an intrinsic order.
     Some examples include sex ("male", "female") or eye color ("brown", "green", "blue"...).
     <br/><br/>
     Describe these features using a comma separated list of the field names.  Example: <br/>
@@ -95,9 +112,9 @@ class FileUpload extends Component {
     and the categories have a logical order. Some examples include size ("small",
     "medium", "large"), or rank results ("first", "second", "third").
     <br/><br/>
-    Describe these features using a json map. The map key is the name of the field,
-     and the map value is an ordered list of the values the field can take.  Example:<br/>
-    <i>{"{\"rank\":[\"first\", \"second\", \"third\"], \"size\":[\"small\", \"medium\", \"large\"]}"}</i></p>);
+    You can either specify these features in this text box using the format described in the box,
+    or, in the Dataset Preview, use the dropdown boxes to specify ordinal features, then rank them
+    using a drag-and-drop list of unique categories.</p>);
 
     //A counter to use in loops
     this.indexCounter = 0;
@@ -110,21 +127,28 @@ class FileUpload extends Component {
     this.setState({
       selectedFile: null,
       dependentCol: '',
-      catFeaturesText: '',
-      catFeaturesStringInUse: false,
-      ordinalFeaturesText: '',
-      /** {object} Object used as dictionary to track features designated as ordinal by user via dataset preview UI.
-       * 
+      catFeaturesUserText: '',
+      /** {boolean} True when user has specified the categorical features via the text box */
+      catFeaturesUserTextInUse: false,
+      /** {string} Text from the text box for user to optionally enter ordinal feature specifications */
+      ordinalFeaturesUserText: '',
+      /** {boolean} True when user has specified the ordinal features via the text box */
+      ordinalFeaturesUserTextInUse: false,
+      /** True if the text currently in the user text box for ordinal features is invalid */
+      ordinalFeaturesUserTextInError: false,
+      /** {object} Object used as dictionary to track the features designated as ordinal by user via dataset preview UI.
        *  key: feature name from dataPreview
-       * 
        *  value: string-array holding possibly-ordered values for the feature.
-       * 
        *  Will be empty object if none defined.
        *  Gets updated with new order as user orders them using the UI in dataset preview.
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
        */
-      ordinalFeaturesValues: {},
-      ordinalIndex: 0,
+      ordinalFeaturesObject: {},
+      /** {string} The ordinal feature that is currently being ranked by sortable list, when sortable list is active. */
+      ordinalFeatureToRank: undefined,
+      /** {array} Array of unique (and possibly sorted) values for the ordinal feature currently being ranked. This gets
+       *  modified while user is ranking the values, and then stored to state if user finalizes changes. */
+      ordinalFeatureToRankValues: [],
       predictionType: this.defaultPredictionType,
       activeAccordionIndexes: [],
       errorResp: undefined,
@@ -167,12 +191,12 @@ class FileUpload extends Component {
    * @param {Event} e - DOM Event from user interacting with UI text field
    * @returns {void} - no return value
    */
-  handlecatFeaturesText(e) {
+  handleCatFeaturesUserText(e) {
     //let safeInput = this.purgeUserInput(e.target.value);
     //window.console.log('safe input cat: ', safeInput);
     this.setState({
-      catFeaturesText: e.target.value,
-      catFeaturesStringInUse: e.target.value != "",
+      catFeaturesUserText: e.target.value,
+      catFeaturesUserTextInUse: e.target.value != "",
       errorResp: undefined
     });
   }
@@ -184,14 +208,54 @@ class FileUpload extends Component {
    * @param {Object} props - react props object
    * @returns {void} - no return value
    */
-  handleOrdinalFeatures(e) {
+  handleOrdinalFeaturesUserTextOnChange(e) {
     //window.console.log('ord props: ', props);
     //let safeInput = this.purgeUserInput(props.value);
     //window.console.log('safe input ord: ', safeInput);
+    if(e.target.value === "") {
+      this.clearOrdinalFeatures();
+    }
     this.setState({
-      ordinalFeaturesText: e.target.value,
+      ordinalFeaturesUserText: e.target.value,
+      ordinalFeaturesUserTextInUse: e.target.value != "",
       errorResp: undefined
     });
+  }
+
+  /** Handler for when the oridinal feature user text element loses focus.
+   *  Examine and validate the contents. Will clear existing specifications for
+   *  oridinal features and repopulate from text contents if valid.
+   *  If invalid, show an error message.
+  */
+  handleOrdinalFeaturesUserTextFocusLost(e) {
+    //Clear any existing ordinal feature specifications. This also handles letting
+    // the user text input override anything already input by the tools in the
+    // Dataset Preview for specifying ordinal features
+    this.clearOrdinalFeatures();  
+
+    //If the text is now empty, just ignore it
+    if(!this.state.ordinalFeaturesUserTextInUse) {
+      return;
+    }
+
+    //Validate the whole text
+    let result = this.ordinalFeaturesUserTextValidate();
+    if( result.success ) {
+      this.setState({
+        ordinalFeaturesUserTextInError: false
+      })
+      this.ordinalFeaturesUserTextIngest();
+    }
+    else {
+      //On error, no features will be type ordinal since we cleared them on entry to this method
+      this.setState({
+          openErrorModal: true,
+          errorModalHeader: "Error in Ordinal Feature text entry",
+          errorModalContent: result.message,
+          ordinalFeaturesUserTextInError: true
+      })
+      console.log("Error validating ordinal feature user text: " + result.message);
+    }
   }
 
   handlePredictionType(e, data) {
@@ -211,8 +275,8 @@ class FileUpload extends Component {
     const data = new FormData();
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
-    let ordFeatures = this.state.ordinalFeaturesText;
-    let catFeaturesText = this.state.catFeaturesText;
+    let ordFeaturesAsJson = ""
+    let catFeaturesUserText = this.state.catFeaturesUserText;
     let predictionType = this.state.predictionType;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
@@ -222,10 +286,11 @@ class FileUpload extends Component {
         return { errorResp: `Invalid prediction type: ${predictionType}`};
       }
 
-      // try to parse ord features input as JSON if not empty
-      if(ordFeatures !== '') {
+      // Ordinal features. 
+      // If any are specified, create json text from the object.
+      if(Object.keys(this.state.ordinalFeaturesObject).length !== 0 ) {
         try {
-          ordFeatures = JSON.parse(this.state.ordinalFeaturesText);
+          ordFeaturesAsJson = JSON.stringify(this.state.ordinalFeaturesObject);
         } catch(e) {
           // if expecting oridinal stuff, return error to stop upload process
           return { errorResp: e.toString() };
@@ -237,19 +302,19 @@ class FileUpload extends Component {
       // If user has specified categorical features in the text box, we use that instead.
       //
       let catFeaturesAssigned = this.getCatFeaturesFromDropdowns();
-      if(catFeaturesText !== "") {
+      if(catFeaturesUserText !== "") {
         // remove all whitespace
-        catFeaturesText = catFeaturesText.replace(/ /g, '');
+        catFeaturesUserText = catFeaturesUserText.replace(/ /g, '');
         // parse on comma
-        catFeaturesText = catFeaturesText.split(',');
+        catFeaturesUserText = catFeaturesUserText.split(',');
         // if input contains empty items - ex: 'one,,two,three'
         // filter out resulting empty item
-        catFeaturesAssigned = catFeaturesText.filter(item => {
+        catFeaturesAssigned = catFeaturesUserText.filter(item => {
           return item !== ""
         })
       }
+      //console.log('catFeaturesAssigned: ' + catFeaturesAssigned);
 
-      console.log('catFeaturesAssigned: ' + catFeaturesAssigned);
       // keys specified for server to upload repsective fields,
       // filter
       let metadata =  JSON.stringify({
@@ -259,7 +324,7 @@ class FileUpload extends Component {
                 'dependent_col' : depCol,
                 'prediction_type' : predictionType,
                 'categorical_features': catFeaturesAssigned,
-                'ordinal_features': ordFeatures
+                'ordinal_features': ordFeaturesAsJson
               });
 
       data.append('_metadata', metadata);
@@ -287,7 +352,9 @@ class FileUpload extends Component {
       selectedFile: null,
       datasetPreview: null,
       errorResp: undefined,
-      openFileTypePopup: true
+      openErrorModal: true,
+      errorModalHeader: "Invalid file type chosen",
+      errorModalContent: "Please choose .cvs or .tsv files"
     });
   }
 
@@ -299,10 +366,18 @@ class FileUpload extends Component {
   initDatasetPreview = () => {
     let dataPrev = this.state.datasetPreview;
     //Init the state-tracking of feature-type dropdowns
-    let featureTypes = Array(dataPrev.meta.fields.length).fill(this.featureTypeNumeric);
+    let featureTypes = Array(dataPrev.meta.fields.length).fill(this.featureTypeDefault);
     this.setState({featureTypeFromDropdown: featureTypes})
     //Init oridinal values
-    this.setState({ordinalFeaturesValues: {}})
+    this.clearOrdinalFeatures();  
+  }
+
+  /** Clear any features that have been specified as type ordinal, along with any related data. */
+  clearOrdinalFeatures() {
+    for(var feature in this.state.ordinalFeaturesObject) {
+      this.specifyFeatureAsOrdinal(false, feature);
+    }
+    this.setState({ordinalFeaturesObject: {}})
   }
 
   /**
@@ -348,7 +423,7 @@ class FileUpload extends Component {
             selectedFile: undefined,
             errorResp: JSON.stringify(error),
             datasetPreview: null,
-            openFileTypePopup: false
+            openErrorModal: false
           });
           //Added this return, otherwise it will fall through to state below
           return;
@@ -360,7 +435,7 @@ class FileUpload extends Component {
           selectedFile: files[0],
           errorResp: undefined,
           datasetPreview: null,
-          openFileTypePopup: false
+          openErrorModal: false
         });
 
       } else {
@@ -369,7 +444,7 @@ class FileUpload extends Component {
           selectedFile: null,
           datasetPreview: null,
           errorResp: undefined,
-          openFileTypePopup: true
+          openErrorModal: true
         });
       }
     } else {
@@ -378,7 +453,7 @@ class FileUpload extends Component {
         selectedFile: null,
         datasetPreview: null,
         errorResp: undefined,
-        openFileTypePopup: false
+        openErrorModal: false
       });
     }
   }
@@ -465,45 +540,214 @@ class FileUpload extends Component {
      })
 
    }
+ 
+  /** For the currently-loaded data, get the unique values for the given feature name.
+   * @param {string} feature - feature name
+   * @returns {array} - array of unique values for the feature. Order is taken from row order in data.
+   */
+  getUniqueValuesForFeature(feature) {
+    let dataPrev = this.state.datasetPreview;
+    //Read the column of data for the feature and make a unique set
+    let values = [];
+    dataPrev.data.map( (row) => {
+      //NOTE - empircally, at the end we get an extra row with a single member set to "".
+      //So skip if row[field] is undefined or ""
+      if(row[feature] !== "" && row[feature] !== undefined) 
+        values.push( row[feature] );
+    })
+    return [...new Set(values)];
+  } 
+
+  /** Specify that a feature should either be type ordinal or not. Optionally supply list of unique values.
+   * @param {boolean} isOrdinal - true to add the feature and its values to the list of ordinals, false to remove it.
+   *                            It's safe to pass false even if feature is not already in the list.
+   * @param {string} feature - name of feature to operate on
+   * @param {array} uniqueValues - OPTIONAL array of strings, holding unique values for the feature. May be ranked or not.
+   *                               If undefined, unique values are pulled from the data, without any particular ranking.
+   * @returns {null}
+   */
+  specifyFeatureAsOrdinal( isOrdinal, feature, uniqueValues ) {
+    let ords = this.state.ordinalFeaturesObject;
+    if( isOrdinal ) {
+      ords[feature] = uniqueValues === undefined ? this.getUniqueValuesForFeature(feature) : uniqueValues;
+    }
+    else {
+      //Reset the feature type to default
+      let i = this.state.datasetPreview.meta.fields.indexOf(feature);
+      let ft = this.state.featureTypeFromDropdown;
+      ft[i] = this.featureTypeDefault;
+      this.setState({featureTypeFromDropdown: ft})
+      //Clear the ordinal list in case we had one from before
+      delete ords[feature];
+    }
+    this.setState({ordinalFeaturesObject: ords});
+    //console.log('ords: '); for(var f in ords) { console.log(f + ': ' + ords[f]) }
+  }
 
   handleFeatureTypeDropdown = (e, data) => {
     //console.log(data);
-    // Store the dropdown value
+
+    // Store the new feature type
     let featureTypes = this.state.featureTypeFromDropdown;
-    featureTypes[data.customindexid] = data.value;
+    featureTypes[data.customindexid] = data.value; //NOTE would be better to have this just be an object and use feature name
     this.setState({featureTypeFromDropdown: featureTypes})
     //console.log(this.state.featureTypeFromDropdown);
 
-    //Type ordinal
+    //Type ordinal - special handling
     //
     let dataPrev = this.state.datasetPreview;
-    let field = dataPrev.meta.fields[data.customindexid];
-    let ords = this.state.ordinalFeaturesValues;
-    if(data.value == this.featureTypeOrdinal) {
-      //it's been set as type ordinal, setup its list of values
-      let column = [];
-      dataPrev.data.map( (row) => {
-        column.push( row[field] );
-      })
-      column = [...new Set(column)];
-      ords[field] = column;
-    }
-    else {
-      //Clear the ordinal list in case we had one from before
-      delete ords[field];
-    }
-    this.setState({ordinalFeaturesValues: ords});
-
-    console.log('ords: '); for(var f in ords) { console.log(f + ': ' + ords[f]) }
-  }
-
-  /** Handle clicks from button for user to define order of values in an ordinal feature */
-  handleOrderButton = (e, data) => {
-    console.log('ordnung must sein!');
+    let feature = dataPrev.meta.fields[data.customindexid];
+    //If type ordinal, will pull unique values and assign to ordinal-tracking state var. Otherwise it will be cleared for the feature.
+    this.specifyFeatureAsOrdinal( data.value === this.featureTypeOrdinal, feature );
   }
 
   /**
-   * Small helper method to create table for dataset preview upon selecting csv file.
+   * Handles button click to initiate ranking of an ordinal feature
+   */
+  handleOrdinalRankClick = (e, data) => {
+    //console.log('Rank click')
+    //Set this state var to track which field we're currently ranking.
+    //Workaround for fact that I can't figure out how to get custom data into
+    // the onOrdinalSortDragRelease handler for sortable list
+    this.setState( {
+      ordinalFeatureToRank: data.customfeaturetorank,
+      ordinalFeatureToRankValues: this.state.ordinalFeaturesObject[data.customfeaturetorank]
+    })
+  }
+
+  /**
+   * Handle event from sortable list, when user releaes an item after dragging it.
+   * @param {Object} d 
+   */
+  onOrdinalSortDragRelease (d) {
+    if (this.state.ordinalFeatureToRank === undefined){
+      console.log('Error: ordinal feature to rank is undefined')
+      return;
+    }
+    let values = arrayMove(this.state.ordinalFeatureToRankValues, d.oldIndex, d.newIndex);
+    this.setState({ordinalFeatureToRankValues: values});
+  }
+
+  /** Update state with the newly-ranked ordinal feature */
+  handleOrdinalSortAccept() {
+    let ordsAll = this.state.ordinalFeaturesObject;
+    //For the feature the user has ranked, update the state to hold the newly ranked values
+    ordsAll[this.state.ordinalFeatureToRank] = this.state.ordinalFeatureToRankValues;
+    //Store newly ordered values in state, and clear vars used to show values for ranking.
+    this.setState({
+      ordinalFeaturesObject: ordsAll,
+      ordinalFeatureToRank: undefined,
+      ordinalFeatureToRankValues: []
+    });
+  }
+
+  handleOrdinalSortCancel() {
+    this.setState({
+      ordinalFeatureToRank: undefined,
+      ordinalFeatureToRankValues: []
+    })
+  }
+
+  /** From state, convert the lists of unique values for ordinal features into a string with
+   * the ordinal feature name and its values, one per line.
+   * @returns {string} - multi-line string with one ordinal feature and its unique values, comma-separated, per line
+  */
+  ordinalFeaturesObjectToUserText() {
+    let result = "";
+    for(var feature in this.state.ordinalFeaturesObject) {
+      let values = this.state.ordinalFeaturesObject[feature];
+      result += feature + ',' + values.join() + '\n';
+    }
+    return result;
+  }
+
+  /** Parse a single line of user text for specifying ordinal features. 
+   *  Expects a comma-separated string of 2 or more field, with format 
+   *    <feature name string>,<unique value 1>,<unique value 2>,...
+   *  Leading and trailing whitespace is removed on the whole line and for each comma-separated item
+   * Does not do any validation
+   * @param {string} line - single line of user text for ordinal feature specification
+   * @returns {object} - {feature: <feature name string>, values: <string array of unique values>}
+  */
+  ordinalFeaturesUserTextParse(line) {
+    let feature = line.split(",")[0].trim();
+    let values = line.split(",").slice(1);
+    //Remove leading and trailing white space from each element
+    values = values.map(function (el) {
+      return el.trim();
+    });
+    return {feature: feature, values: values}
+  }
+
+  /** Take a SINGLE-line string for a SINGLE feature, of the format used in the UI box for a user to specify an ordinal feature and  
+   *  the order of its unique values, and check whether it's valid. The contained feature name must exist and the specifed
+   *  unqiue values must all exactly match (regardless of order) the unqiue values for the feature in the data.
+   * @param {string} string - the string holding the user's specification 
+   * @returns {object} - {success:[true|false], message: <relevant error message on failure>
+   */
+  ordinalFeatureUserTextLineValidate(string) {
+    if( string.length === 0 ) {
+      return {success: false, message: "Empty string"}
+    }
+    //Parse the line
+    let ordObj = this.ordinalFeaturesUserTextParse(string);
+    //Make sure feature name is valid
+    let allFeatures = this.state.datasetPreview.meta.fields;
+    if( allFeatures.indexOf(ordObj.feature) < 0 ) {
+      return {success: false, message: "Feature '" + ordObj.feature + "' was not found in the data."}
+    }
+    //The remaining items in the string are the unique values
+    if( ordObj.values === undefined || ordObj.values.length === 0) {
+      return {success: false, message: "Feature '" + ordObj.feature + "' - no values specified"}
+    }
+    //Make sure the passed list of unique values matches the unique values from data,
+    // ignoring order
+    let dataValues = this.getUniqueValuesForFeature(ordObj.feature);
+    if( dataValues.sort().join() !== ordObj.values.sort().join()) {
+      return {success: false, message: "Feature '" + ordObj.feature + "' - values do not match (regardless of order) the unique values in the data: " + dataValues + "."}
+    }
+    //Otherwise we're good!
+    return {success: true, message: ""}
+  }
+
+  /** Validate the whole text input for specify ordinal features 
+   * Uses the current state var holding the ordinal features user text.
+   * @returns {object} - {success: [true|false], message: <error message>}
+  */
+  ordinalFeaturesUserTextValidate() {
+    //Return true if empty
+    if(this.state.ordinalFeaturesUserText === ""){
+      return {success: true, message: ""}
+    }
+    let success = true;
+    let message = "";
+    //Check each line individually
+    this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
+      let result = this.ordinalFeatureUserTextLineValidate(line);
+      if(result.success === false){
+        success = false;
+        message += result.message + "\n";
+      }
+    })
+    return {success: success, message: message}
+  }
+
+  /** Process the current ordinal feature user text state variable to create
+   *  relevant state data variables.
+   *  Operates only on state variables.
+   *  Does NOT perform any validation on the user text
+   * @returns {null} 
+   */
+  ordinalFeaturesUserTextIngest() {
+    //Process each line individually
+    this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
+      let ordObj = this.ordinalFeaturesUserTextParse(line);
+      this.specifyFeatureAsOrdinal(true, ordObj.feature, ordObj.values);
+    })    
+  }
+
+  /**
+   * Helper method to create table for dataset preview upon selecting csv file.
    * Copied from Dataset component - relies upon javascript library papaparse to
    * partially read selected file and semantic ui to generate preview content,
    * if no preview available return hidden paragraph, otherwise return table
@@ -560,57 +804,130 @@ class FileUpload extends Component {
                     return (
                       <Table.Cell key={'featureType_'+field}>
                         <Dropdown
-                          defaultValue={this.featureTypeNumeric}
+                          value={this.state.featureTypeFromDropdown[i]}
                           fluid
                           selection
                           options={featureTypeOptions}
                           onChange={this.handleFeatureTypeDropdown}
                           customindexid={i}
-                          disabled={this.state.catFeaturesStringInUse}
+                          disabled={this.state.catFeaturesUserTextInUse || this.state.ordinalFeaturesUserTextInUse}
                         />
                       </Table.Cell>
                       )
                     }
                   )}
                 </Table.Row>
-                {/* row of buttons for ordering ordinal features */}
+
+                {/* Row of buttons with Sortable List popups for ordering ordinal features 
+                  * https://github.com/clauderic/react-sortable-hoc
+                  * https://clauderic.github.io/react-sortable-hoc/#/basic-configuration/multiple-lists?_k=7ghtqv
+                  */}
                 <Table.Row>
+                  
+                  {/*TODO - put all this in a separate func and call it here to populate*/}
+
                   { dataPrev.meta.fields.map((field, i) => {
-                    //If the feature is not type ordinal, just add an empty cell
-                    if(this.state.ordinalFeaturesValues[field] === undefined)
+                    //Helper method for sortable list component
+                    const SortableItem = SortableElement(({value}) => <li className={"file-upload-sortable-list-item"}>{value}</li>);
+                    //Helper method for sortable list component
+                    const SortableList = SortableContainer(({items}) => {
+                      return (
+                        <ul className={"file-upload-sortable-list"}>
+                          {items.map((value, index) => (
+                            <SortableItem key={`item-${value}`} index={index} value={value} />
+                          ))}
+                        </ul>
+                      );
+                    });
+
+                    //For each field in the data...
+                    //
+                    //If user has entered field information into either of the user text boxes
+                    if(this.state.catFeaturesUserTextInUse || this.state.ordinalFeaturesUserTextInUse) {
                       return <Table.Cell key={'orderButton_'+field} />;
-                    return (
-                      <Table.Cell key={'orderButton_'+field}>
-                        <Popup 
-                          key={'orderPopup_'+field}
-                          on="click"
-                          position="right center"
-                          header="Order the Feature Values"
-                          content={
-                            <div className="content">
-                            {"Drag and drop to reorder"}
-                            <Button
-                              content={"Order Order!"}
-                              inverted
-                              color="blue"
-                              compact
-                              size="small"
-                              onClick={this.handleOrderButton}
-                            />                        
-                            </div>
-                        }
-                        trigger={
+                    }
+                    //If we're currently ranking this ordinal feature, show the sortable list
+                    if(this.state.ordinalFeatureToRank === field)
+                      return (
+                        //This puts the sortable list right in the cell. Awkward but it works.
+                        <Table.Cell key={'rankButton_'+field}>
+                          <SortableList items={this.state.ordinalFeatureToRankValues} onSortEnd={this.onOrdinalSortDragRelease} />
                           <Button
-                            content={"Order"}
+                            content={"Accept"}
                             inverted
                             color="blue"
                             compact
                             size="small"
+                            onClick={this.handleOrdinalSortAccept}
                           />
-                          } 
-                      />
-                      </Table.Cell> 
-                              )
+                          <Button
+                            content={"Cancel"}
+                            inverted
+                            color="blue"
+                            compact
+                            size="small"
+                            onClick={this.handleOrdinalSortCancel}
+                          />
+                          </Table.Cell>
+                        /* NOTE
+                           This shows the modal pop-up like expected, and can properly drag the values around in the list,
+                           But I get a warning that all children in list should have a unique 'key' prop, even though code
+                           looks like they do. Can't figure out.
+                           ALSO the styles set in SortableList aren't coming through here.
+                        <Modal basic style={{ marginTop:'0' }} open={true} onClose={this.handleClose} closeIcon>
+                          <Modal.Header>Rank the feature's ordinal values</Modal.Header>
+                          <Modal.Content>
+                            <SortableList items={this.state.ordinalFeaturesObject[field]} onSortEnd={this.onOrdinalSortDragRelease} />
+                          </Modal.Content>
+                        </Modal>
+                        */
+                      )
+
+                    //If it's ordinal add a button for user to define rank of values within the feature,
+                    // but only if we're not ranking another ordinal feature
+                    if(this.state.ordinalFeaturesObject[field] !== undefined && 
+                       this.state.ordinalFeatureToRank === undefined) {
+                          return (
+                            <Table.Cell key={'rankButton_'+field}>
+                              <Button
+                                content={"Rank"}
+                                inverted
+                                color="blue"
+                                compact
+                                size="small"
+                                customfeaturetorank={field}
+                                onClick={this.handleOrdinalRankClick}
+                              />
+                              
+                              {/*<Popup 
+                                key={'orderPopup_'+field}
+                                on="click"
+                                position="right center"
+                                header="Rank the Feature Values"
+                                content={
+                                  <div className="content">
+                                  {"Drag-n-drop to change rank"}
+                                  <SortableList items={this.state.ordinalFeaturesObject[field]} onSortEnd={this.onOrdinalSortDragRelease} />
+                                  </div>
+                                }
+                                trigger={
+                                  <Button
+                                    content={"Rank"}
+                                    inverted
+                                    color="blue"
+                                    compact
+                                    size="small"
+                                    customfeaturetorank={field}
+                                    onClick={this.handleOrdinalRankClick}
+                                  />
+                                  } 
+                              />*/}
+                            </Table.Cell> 
+                          )
+                       }
+
+                      //Otherwise just add an empty cell
+                      return <Table.Cell key={'orderButton_'+field} />;
                     }
                   )}
                 </Table.Row>
@@ -698,7 +1015,7 @@ class FileUpload extends Component {
            onClick={this.handleAccordionClick}
           >
            <Icon name='dropdown' />
-           Enter Categorical Features
+           Manually Enter Categorical Features
          </Accordion.Title>
            <Popup
              on="click"
@@ -727,12 +1044,12 @@ class FileUpload extends Component {
              id="categorical_features_text_area_input"
              label="Categorical Features"
              placeholder= {
-               ("Enter a comma-separated list here to override selections in the Dataset Preview.\n"+
-                "For example:\n\n \theight,age,toe_length\n\n" +
+               ("Enter a comma-separated list here to specify which features are Categorical and override selections in the Dataset Preview.\n"+
+                "For example:\n\n \tsex,eye_color,disease_state\n\n" +
                "Current selections from Dataset Preview: \n" + 
                (this.getCatFeaturesFromDropdowns().length > 0 ? this.getCatFeaturesFromDropdowns().join() : "(none)"))
               }
-             onChange={this.handlecatFeaturesText}
+             onChange={this.handleCatFeaturesUserText}
            />
          </Accordion.Content>
          <Accordion.Title
@@ -742,7 +1059,7 @@ class FileUpload extends Component {
            onClick={this.handleAccordionClick}
           >
            <Icon name='dropdown' />
-           Enter Ordinal Features
+           Manually Enter Ordinal Features
          </Accordion.Title>
            <Popup
              on="click"
@@ -770,8 +1087,16 @@ class FileUpload extends Component {
              className="file-upload-ordinal-text-area"
              id="ordinal_features_text_area_input"
              label="Ordinal Features"
-             placeholder={"{\"ord_feat_1\": [\"SHORT\", \"TALL\"], \"ord_feat_2\": [\"FIRST\", \"SECOND\", \"THIRD\"]}"}
-             onChange={this.handleOrdinalFeatures}
+             placeholder= {
+              ("For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview):\n"+
+              "\t<feature name>,<1st unique value>,<2nd unique value>,...\n" +
+              "For example:\n\tmonth,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec\n" +
+              "\tday,mon,tue,wed,thu,fri,sat,sun\n" +
+              "\nCurrent selections from Dataset Preview: \n" + 
+              (this.ordinalFeaturesObjectToUserText().length > 0 ? this.ordinalFeaturesObjectToUserText() : "(none)"))
+             }
+             onChange={this.handleOrdinalFeaturesUserTextOnChange}
+             onBlur={this.handleOrdinalFeaturesUserTextFocusLost}
            />
          </Accordion.Content>
        </Accordion>
@@ -790,7 +1115,9 @@ class FileUpload extends Component {
 
   handleClose(){
     this.setState({
-      openFileTypePopup: false
+      openErrorModal: false,
+      errorModalHeader: "",
+      errorModalContent: ""
     });
   }  
 
@@ -808,14 +1135,11 @@ class FileUpload extends Component {
     // if error message present, display for 4.5 seconds
     if (errorMsg) {
       errorContent = ( <p style={{display: 'block'}}> {errorMsg} </p> );
-      window.setTimeout(this.errorPopupTimeout, 4555);
+      window.setTimeout(this.errorPopupTimeout, 10555);
     }
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
-    // display file extension Popup
-    let openFileTypePop;
-    this.state.openFileTypePopup ? openFileTypePop = this.state.openFileTypePopup : openFileTypePop = false;
 
     // file input
     // https://react-dropzone.js.org/
@@ -832,7 +1156,7 @@ class FileUpload extends Component {
             <div {...getRootProps({ className: "dropzone" })}>
               <input {...getInputProps()} />
               <p>Upload a csv or tsv file</p>
-              <p>Drag 'n' drop it here, or click to select</p>
+              <p>Drag 'n' drop, or click here</p>
             </div>
           </section>
         )}
@@ -846,11 +1170,9 @@ class FileUpload extends Component {
         <Form inverted>
           <Segment className="file-upload-segment">
             {fileInputElem}
-            <Modal basic style={{ marginTop:'0' }} open={openFileTypePop} onClose={this.handleClose} closeIcon>
-              <Modal.Header>Invalid file type chosen</Modal.Header>
-              <Modal.Content>
-                {"Please choose .cvs or .tsv files"}
-              </Modal.Content>
+            <Modal basic style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleClose} closeIcon>
+              <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
+              <Modal.Content>{this.state.errorModalContent}</Modal.Content>
             </Modal>
             <br/>
             <div
@@ -923,7 +1245,7 @@ class FileUpload extends Component {
               <Message info>
                   <p>
                     You can specify what type of data each feature/column holds. 
-                    Each feature is assumed to be Numerical unless it is designated as Ordinal or Categorical.
+                    Each feature is assumed to be Numerical unless it is designated as Categorical (aka Nominal), or Ordinal.
                     Designate a feature type using either of the text input boxes below or by using the dropdown choices available for each column in the Dataset Preview.
                   </p>
                 </Message>
