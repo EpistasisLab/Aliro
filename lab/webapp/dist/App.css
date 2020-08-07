@@ -110,6 +110,20 @@ body {
 .pennai .file-upload-categorical-accord-title {
   color: rgba(255,255,255,.9) !important;
 }
+.pennai .file-upload-sortable-list {
+    list-style-type: none;
+    margin: auto;
+    width: 80%;
+    padding: 10px 5px;
+}
+
+.pennai .file-upload-sortable-list-item {
+    /*border-style: solid;*/
+    border: 1px solid;
+    text-align: center;
+    padding: 1px;
+}
+
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
     border: 1px solid #555;
