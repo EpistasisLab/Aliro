@@ -222,17 +222,15 @@ class AI():
                 self.rec_engines[pred_type]  = \
                         self.DEFAULT_REC_CLASS[pred_type](**recArgs)
 
+
             # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, source='knowledgebase')
             ##########################################################
             # the next few commands are used to train the recommenders
             # on the PMLB knowledgebases and save them. 
             # For normal operation, they can be skipped.
-            # logger.info('updating and saving recommender')
-            # self.rec_engines[pred_type].update_and_save(
-            #         kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, 
-            #         source='knowledgebase')
+            #logger.info('saving recommender')
+            #self.rec_engines[pred_type].save()
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")
