@@ -181,8 +181,7 @@ def test_init():
     assert pennai.kb_metafeatures == classification_metafeatures
     assert pennai.random_state == 42
     assert pennai.verbose == 0
-    assert pennai.serialized_rec_directory == None
-    assert pennai.serialized_rec_filename == None
+    assert pennai.serialized_rec == None
     assert pennai.scoring == None
     assert pennai.ml_p_file == None
     assert pennai.ensemble == None
@@ -308,12 +307,12 @@ def test_warm_start_1():
     serialized_rec_directory = "data/recommenders"
     serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
     classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+    serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
     pennai = PennAIClassifier(
                             rec_class=SVDRecommender,
                             n_recs=2,
                             n_iters=2,
-                            serialized_rec_directory=serialized_rec_directory,
-                            serialized_rec_filename=serialized_rec_filename,
+                            serialized_rec=serialized_rec,
                             knowledgebase=classification_kb_full,
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
