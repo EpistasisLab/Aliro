@@ -173,16 +173,14 @@ X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64)
 
 
 classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
-serialized_rec_directory = "data/recommenders"
-serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
+serialized_rec = "data/recommenders/SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
 classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
 
 pennai = PennAIClassifier(
               rec_class=SVDRecommender,
               n_recs=5,
               n_iters=10,
-              serialized_rec_directory=serialized_rec_directory,
-              serialized_rec_filename=serialized_rec_filename,
+              serialized_rec=serialized_rec,
               knowledgebase=classification_kb_full,
               kb_metafeatures=classification_metafeatures,
               random_state=42,

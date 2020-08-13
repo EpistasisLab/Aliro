@@ -47,13 +47,10 @@ class PennAI(BaseEstimator):
 
     :param rec_class: ai.BaseRecommender - recommender to use
     :param verbose: int, 0 quite, 1 info, 2 debug
-    :param serialized_rec_filename: string or None
-        Name of the file to save/load a serialized recommender.
+    :param serialized_rec: string or None
+        Path of the file to save/load a serialized recommender.
         If the filename is not provided, the default filename based on the recommender
         type, and metric, and knowledgebase used.
-    :param serialized_rec_directory: string or None
-        Name of the directory to save/load a serialized recommender.
-        Default directory is "."
     :param scoring: str - scoring for evaluating recommendations
     :param n_recs: int - number of recommendations to make for each iteration
     :param n_iters: int = total number of iteration
@@ -79,8 +76,7 @@ class PennAI(BaseEstimator):
     def __init__(self,
                  rec_class=None,
                  verbose=0,
-                 serialized_rec_filename=None,
-                 serialized_rec_directory=None,
+                 serialized_rec=None,
                  scoring=None,
                  n_recs=10,
                  n_iters=10,
@@ -96,8 +92,7 @@ class PennAI(BaseEstimator):
 
         self.rec_class = rec_class
         self.verbose = verbose
-        self.serialized_rec_filename = serialized_rec_filename
-        self.serialized_rec_directory = serialized_rec_directory
+        self.serialized_rec = serialized_rec
         self.scoring = scoring
         self.n_recs = n_recs
         self.n_iters = n_iters
@@ -317,15 +312,13 @@ class PennAI(BaseEstimator):
             raise ValueError(
                 "please provide both knowledgebase and kb_metafeatures")
 
-        if self.serialized_rec_filename and self.serialized_rec_directory:
-            self.REC_ARGS['serialized_rec_filename'] = self.serialized_rec_filename
-            self.REC_ARGS['serialized_rec_directory'] = self.serialized_rec_directory
+        if self.serialized_rec:
+            head_tail = os.path.split(self.serialized_rec)
+            self.REC_ARGS['serialized_rec_filename'] = head_tail[1]
+            self.REC_ARGS['serialized_rec_directory'] = head_tail[0]
             self.REC_ARGS['load_serialized_rec'] = "always"
             self.REC_ARGS['knowledgebase_results'] = resultsData
 
-        elif self.serialized_rec_filename or self.serialized_rec_directory:
-            raise ValueError(
-                "please provide both knowledgebase and kb_metafeatures")
         # Create supervised learning recommenders
         if self.rec_class is not None:
             self.rec_engines[self.mode] = self.rec_class(
@@ -334,7 +327,7 @@ class PennAI(BaseEstimator):
             self.rec_engines[self.mode] = RandomRecommender(
                 **self.REC_ARGS)
 
-        if not self.serialized_rec_filename:
+        if not self.serialized_rec:
             self.rec_engines[self.mode].update(
                 resultsData, self.dataset_mf_cache, source='pennai')
 
