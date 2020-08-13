@@ -16,7 +16,7 @@ COPY /tests/unit/files/requirements.txt /root/
 RUN pip install --no-cache-dir -r /root/requirements.txt
 
 ### Bill's surprise fork
-RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.2
 
 RUN npm install -g mocha
 
