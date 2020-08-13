@@ -321,7 +321,7 @@ class PennAI(BaseEstimator):
             self.REC_ARGS['serialized_rec_filename'] = self.serialized_rec_filename
             self.REC_ARGS['serialized_rec_directory'] = self.serialized_rec_directory
             self.REC_ARGS['load_serialized_rec'] = "always"
-            self.REC_ARGS['serialized_rec_knowledgebase'] = resultsData
+            self.REC_ARGS['knowledgebase_results'] = resultsData
 
         elif self.serialized_rec_filename or self.serialized_rec_directory:
             raise ValueError(
