@@ -214,7 +214,7 @@ class AI():
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
-                recArgs['serialized_rec_knowledgebase'] = kb['resultsData'][pred_type]
+                recArgs['knowledgebase_results'] = kb['resultsData'][pred_type]
 
             if (rec_class):
                 self.rec_engines[pred_type] = rec_class(**recArgs)
@@ -222,19 +222,15 @@ class AI():
                 self.rec_engines[pred_type]  = \
                         self.DEFAULT_REC_CLASS[pred_type](**recArgs)
 
+
             # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, source='knowledgebase')
             ##########################################################
             # the next few commands are used to train the recommenders
             # on the PMLB knowledgebases and save them. 
             # For normal operation, they can be skipped.
-            # fn = self.rec_engines[pred_type].filename
-            # logger.info('updating and saving '+fn)
-            # self.rec_engines[pred_type].update_and_save(
-            #         kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, 
-            #         source='knowledgebase',
-            #         filename=fn)
+            #logger.info('saving recommender')
+            #self.rec_engines[pred_type].save()
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")

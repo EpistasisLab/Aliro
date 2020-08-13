@@ -48,12 +48,14 @@ class SurpriseRecommender(BaseRecommender):
             ml_type='classifier',
             metric=None,
             ml_p=None,
-            serialized_rec_directory=None,
-            serialized_rec_filename=None,
+            random_state=None,
+            knowledgebase_results=None,
+            knowledgebase_metafeatures=None,
             load_serialized_rec="if_exists",
-            serialized_rec_knowledgebase=None,
-            random_state=None):
-        """Initialize recommendation system."""
+            serialized_rec_directory=None,
+            serialized_rec_filename=None):
+
+        """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
         if self.__class__.__name__ == 'SurpriseRecommender':
             raise RuntimeError('Do not instantiate the SurpriseRecommender class '
             'directly; use one of the method-specific classes instead.')
@@ -81,6 +83,10 @@ class SurpriseRecommender(BaseRecommender):
         logger.debug('ml_type: '+self.ml_type)
         logger.debug('metric: '+self.metric)
 
+        self.min_epochs = 10
+        self.max_epochs = 100
+
+        """Initialize recommendation system."""
         super().__init__(
             ml_type,
             metric,
@@ -88,15 +94,9 @@ class SurpriseRecommender(BaseRecommender):
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename,
             load_serialized_rec=load_serialized_rec,
-            serialized_rec_knowledgebase=serialized_rec_knowledgebase,
+            knowledgebase_results=knowledgebase_results,
             random_state=random_state)
 
-        # note: anything set after super().__init() will change the field
-        # of any recommender from a file
-
-
-        self.min_epochs = 10
-        self.max_epochs = 100
 
     @property
     def algo_name(self):
@@ -120,7 +120,7 @@ class SurpriseRecommender(BaseRecommender):
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
         # updates self.results_df and self.trainset
-        self.update_training_data(results_data, shuffle=True)
+        self._update_training_data(results_data, shuffle=True)
         # check whether the set train data matches the pickled recommender's
         # training data.
         rowHashes = hash_pandas_object(self.results_df).values
@@ -189,9 +189,9 @@ class SurpriseRecommender(BaseRecommender):
         super().update(results_data, results_mf, source)
 
         # update internal model
-        self.update_model(results_data)
+        self._update_model(results_data)
 
-    def update_training_data(self, results_data, shuffle=False):
+    def _update_training_data(self, results_data, shuffle=False):
         """Appends results_data to self.results_df. Sets the trainset for
         the surprise recommender.
 
@@ -231,11 +231,11 @@ class SurpriseRecommender(BaseRecommender):
         logger.debug('self.trainset # of datasets: '
                 + str(self.trainset.n_users))
 
-    def update_model(self,results_data):
+    def _update_model(self,results_data):
         """Stores new results and updates algo."""
         logger.debug('updating '+self.algo_name+' model')
 
-        self.update_training_data(results_data, self.first_fit)
+        self._update_training_data(results_data, self.first_fit)
         self.first_fit=False
 
         logger.debug('fitting self.algo...')
@@ -273,7 +273,7 @@ class SurpriseRecommender(BaseRecommender):
                     filtered +=1
             logger.debug('filtered '+ str(filtered) + ' recommendations')
             logger.debug('getting top n predictions')
-            ml_rec, phash_rec, score_rec = self.get_top_n(predictions, n_recs)
+            ml_rec, phash_rec, score_rec = self._get_top_n(predictions, n_recs)
             logger.debug('returning ml recs')
 
         except Exception as e:
@@ -288,7 +288,7 @@ class SurpriseRecommender(BaseRecommender):
         p_rec = [self.hash_2_param[ph] for ph in phash_rec]
         return ml_rec, p_rec, score_rec
 
-    def get_top_n(self,predictions, n=10):
+    def _get_top_n(self,predictions, n=10):
         '''Return the top-N recommendation for each user from a set of predictions.
 
         Args:
@@ -350,10 +350,10 @@ class CoClusteringRecommender(SurpriseRecommender):
     #     super().__init__(ml_type, metric, ml_p, algo)
     #     # set n clusters for ML equal to # of ML methods
     #     self.
-    def update_model(self,results_data):
+    def _update_model(self,results_data):
         """Stores new results and updates algo."""
         self.algo.n_cltr_i = self.ml_p.algorithm.nunique()
-        super().update_model(results_data)
+        super()._update_model(results_data)
 
 class KNNWithMeansRecommender(SurpriseRecommender):
     """Generates recommendations via KNNWithMeans, see
@@ -410,9 +410,10 @@ class SVDRecommender(SurpriseRecommender):
                 'init_mean':0,
                 'init_std_dev':.2,
                 'lr_all':.01,
-                'reg_all':.02}
+                'reg_all':.02,
+                'verbose':'False'}
         alg_kwargs.update(surprise_kwargs)
-        self.algo = mySVD(verbose=False, **alg_kwargs)
+        self.algo = mySVD(**alg_kwargs)
 
     # def __init__(self, ml_type='classifier', metric=None, ml_p=None,
     #         filename=None, knowledgebase=None, random_state=None,
@@ -421,7 +422,7 @@ class SVDRecommender(SurpriseRecommender):
     #             filename=filename, knowledgebase=knowledgebase,
     #             random_state=random_state)
 
-    def update_model(self,results_data):
+    def _update_model(self,results_data):
         """Stores new results and updates SVD."""
         logger.info('updating SVD model')
         # shuffle the results data the first time
@@ -431,7 +432,7 @@ class SVDRecommender(SurpriseRecommender):
                     random_state=self.random_state)
             self.first_fit=False
 
-        self.update_training_data(results_data)
+        self._update_training_data(results_data)
         # set the number of training iterations proportionally to the amount of
         # results_data
         logger.info('algo random_state: '+str(self.algo.random_state))
