@@ -43,40 +43,55 @@ class BaseRecommender(object, metaclass=MC):
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
 
+    knowledgebase_results: Pandas DataFrame or None
+        Initial knowledgebase results data.
+        If not None and not loading a serialized recommender, the recommender
+        will initilize and train on this data.
+        If loading a serialized recommender, this is the knowlegebase that
+        accompanies it.
+
+    knowledgebase_metafeatures: Pandas DataFrame or None
+        Initial knowledgebase metafeatures data.
+        If loading a serialized recommender, this is the knowlegebase that
+        accompanies it.
+
     serialized_rec_directory: string or None
         Name of the directory to save/load a serialized recommender.
         Default directory is "."
 
     serialized_rec_filename: string or None
         Name of the file to save/load a serialized recommender.
-        If the filename is not provided, the default filename based on the recommender
-        type, and metric, and knowledgebase used.
+        If the filename is not provided, the default filename based on the
+        recommender type, and metric, and knowledgebase used.
 
     load_serialized_rec: str, "always", "never", "if_exists"
         Whether to attempt to load a serialized recommender:
-            "if_exists" - If a serialized recomender exsists at the specified path, load it.
-            "always" - Always load a serialized recommender.  Throw an exception if no serialized recommender exists.
+            "if_exists" - If a serialized recomender exsists at the specified
+            path, load it.
+            "always" - Always load a serialized recommender.  Throw an
+            exception if no serialized recommender exists.
             "never" - Never load a serialized recommender.
 
-    serialized_rec_knowledgebase: Pandas DataFrame or None
-        If loading a serialized recommender, this object is the knowledgebase that accompanies it.
     """
 
     def __init__(self,
-        ml_type='classifier',
-        metric=None,
-        ml_p=None,
-        random_state=None,
-        serialized_rec_directory=None,
-        serialized_rec_filename=None,
-        load_serialized_rec="if_exists",
-        serialized_rec_knowledgebase=None):
+            ml_type='classifier',
+            metric=None,
+            ml_p=None,
+            random_state=None,
+            knowledgebase_results=None,
+            knowledgebase_metafeatures=None,
+            load_serialized_rec="if_exists",
+            serialized_rec_directory=None,
+            serialized_rec_filename=None):
+
         """Initialize recommendation system."""
         if ml_type not in ['classifier', 'regressor']:
             raise ValueError('ml_type must be "classifier" or "regressor"')
 
         if load_serialized_rec not in ["always", "never", "if_exists"]:
-            raise ValueError('load_serialized_rec must be "always", "never" or "if_exists"')
+            raise ValueError('load_serialized_rec must be "always", "never" or'
+                    ' "if_exists"')
 
         self.random_state = random_state
         if self.random_state is not None:
@@ -109,23 +124,33 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # Optionally load serialized rec
+        # Optionally load serialized rec, or initilize from the given
+        # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
         if load_serialized_rec == "always":
             if not os.path.exists(self.serialized_rec_path):
-                raise ValueError(f"load_serialized_rec='{load_serialized_rec}' but cannot load serialized recommender: '{self.serialized_rec_path}'")
-            self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
+                raise ValueError(f"load_serialized_rec='{load_serialized_rec}'"
+                        " but cannot load serialized recommender:"
+                        " '{self.serialized_rec_path}'")
+            self.load(self.serialized_rec_path, knowledgebase_results)
 
         elif load_serialized_rec == "if_exists":
             if os.path.exists(self.serialized_rec_path):
-                logger.info(f"Loading serialized recommender: {self.serialized_rec_path}")
-                self.load(self.serialized_rec_path, serialized_rec_knowledgebase)
+                logger.info(f"Loading serialized recommender:"
+                        " {self.serialized_rec_path}")
+                self.load(self.serialized_rec_path, knowledgebase_results)
             else:
-                logger.info(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
+                logger.warn(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
+                if knowledgebase_results is not None:
+                    logger.info(f"Initilizing new recommender from provided knowledgebase")
+                    self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
 
         else:
             logger.info(f"Not loading serialized recommender.")
+            if knowledgebase_results is not None:
+                logger.info(f"Initilizing new recommender from provided knowledgebase")
+                self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
 
     def _default_serialized_rec_filename(self):
         ### Generate the default name of the serialized instance of this recommender
@@ -135,7 +160,7 @@ class BaseRecommender(object, metaclass=MC):
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
-            + '_pmlb_20200505'
+            + '_pmlb_20200731'
             +'.pkl.gz')
 
 
@@ -175,6 +200,8 @@ class BaseRecommender(object, metaclass=MC):
         source: string
             if 'pennai', will update tally of trained dataset models
         """
+        assert(results_data is not None), "results_data cannot be None"
+
         if results_data.isna().values.any():
             logger.warning('There are NaNs in results_data.')
             #logger.warning(str(results_data))
@@ -265,7 +292,7 @@ class BaseRecommender(object, metaclass=MC):
                 if newHash == tmp_dict['ml_p_hash']:
                     logger.info('ml_p hashes match')
                 else:
-                    error_msg = ('the ml_p hash from the pickle is different.'
+                    error_msg = ('the ml_p hash from the pickle is different. '
                         'This likely means the algorithm configurations have '
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')

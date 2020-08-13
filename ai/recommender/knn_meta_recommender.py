@@ -37,25 +37,17 @@ class KNNMetaRecommender(BaseRecommender):
         'parameters'
     """
     def __init__(self,
-        ml_type='classifier',
-        metric=None,
-        ml_p=None,
-        random_state=None,
-        serialized_rec_directory=None,
-        serialized_rec_filename=None,
-        load_serialized_rec="if_exists",
-        serialized_rec_knowledgebase=None):
-        """Initialize recommendation system."""
+            ml_type='classifier',
+            metric=None,
+            ml_p=None,
+            random_state=None,
+            knowledgebase_results=None,
+            knowledgebase_metafeatures=None,
+            load_serialized_rec="if_exists",
+            serialized_rec_directory=None,
+            serialized_rec_filename=None):
 
-        super().__init__(
-            ml_type,
-            metric,
-            ml_p,
-            random_state=random_state,
-            serialized_rec_directory=serialized_rec_directory,
-            serialized_rec_filename=serialized_rec_filename,
-            load_serialized_rec=load_serialized_rec,
-            serialized_rec_knowledgebase=serialized_rec_knowledgebase)
+        """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
 
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['_id','algorithm',
@@ -64,6 +56,19 @@ class KNNMetaRecommender(BaseRecommender):
 
         # local dataframe of datasets and their metafeatures
         self.all_dataset_mf = pd.DataFrame()
+
+
+        """Initialize recommendation system."""
+        super().__init__(
+            ml_type,
+            metric,
+            ml_p,
+            random_state=random_state,
+            knowledgebase_results=knowledgebase_results,
+            knowledgebase_metafeatures=knowledgebase_metafeatures,
+            load_serialized_rec=load_serialized_rec,
+            serialized_rec_directory=serialized_rec_directory,
+            serialized_rec_filename=serialized_rec_filename)
 
 
     def update(self, results_data, results_mf, source='pennai'):
