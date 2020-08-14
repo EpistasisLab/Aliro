@@ -294,13 +294,11 @@ class PennAI(BaseEstimator):
         self.REC_ARGS = {'metric': self.metric_,
                             'ml_type': self.ml_type,
                             'random_state': self.random_state}
-        # if self.random_state:
-        #self.REC_ARGS['random_state'] = self.random_state
 
         # add static_parameters for each ML methods
         self.static_parameters = {}
-        # set the registered ml parameters in the recommenders
 
+        # set the registered ml parameters in the recommenders
         ml_p = self.get_all_ml_p()
 
         self.REC_ARGS['ml_p'] = ml_p
