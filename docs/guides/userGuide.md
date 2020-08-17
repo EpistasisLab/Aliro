@@ -154,7 +154,7 @@ print(pennai.score(X_test, y_test))
 
 ```
 
-### Example of using PennAI AI engine with pre-trained SVG recommender###
+### Example of using PennAI AI engine with pre-trained SVG recommender ###
 
 The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:
 
