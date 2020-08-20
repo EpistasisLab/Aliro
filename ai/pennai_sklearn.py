@@ -128,10 +128,6 @@ class PennAI(BaseEstimator):
         }
         self.metric_ = metric_match[self.scoring_]
 
-        self.rec_engines = {
-            self.mode: None
-        }
-
         if self.verbose == 2:
             logger_level = logging.DEBUG
         elif self.verbose == 1:
@@ -152,9 +148,7 @@ class PennAI(BaseEstimator):
         self.dataset_mf_cache = pd.DataFrame()
 
 
-        self.initilize_recommenders(self.rec_class)  # set self.rec_engines
-
-
+        self.initilize_recommenders(self.rec_class)  # set self.rec_engine
 
 
         if self.stopping_criteria is not None:
@@ -319,21 +313,19 @@ class PennAI(BaseEstimator):
 
         # Create supervised learning recommenders
         if self.rec_class is not None:
-            self.rec_engines[self.mode] = self.rec_class(
+            self.rec_engine = self.rec_class(
                 **self.REC_ARGS)
         else:
-            self.rec_engines[self.mode] = RandomRecommender(
+            self.rec_engine = RandomRecommender(
                 **self.REC_ARGS)
 
         if not self.serialized_rec:
-            self.rec_engines[self.mode].update(
+            self.rec_engine.update(
                 resultsData, self.dataset_mf_cache, source='pennai')
 
 
-        logger.debug("recomendation engines initilized: ")
-        for prob_type, rec in self.rec_engines.items():
-            logger.debug(f'\tproblemType: {prob_type} - {rec}')
-            logger.debug('\trec.ml_p:\n' + str(rec.ml_p.head()))
+        logger.debug("recomendation engines initilized。 ")
+
 
     def load_kb(self):
         """Bootstrap the recommenders with the knowledgebase."""
@@ -383,7 +375,7 @@ class PennAI(BaseEstimator):
         """
         if len(new_results_df) >= 1:
             new_mf = self.get_results_metafeatures()
-            self.rec_engines[self.mode].update(new_results_df, new_mf)
+            self.rec_engine.update(new_results_df, new_mf)
             logger.debug(time.strftime("%Y %I:%M:%S %p %Z", time.localtime()) +
                         ': recommender updated')
 
@@ -401,7 +393,7 @@ class PennAI(BaseEstimator):
 
         recommendations = []
 
-        ml, p, ai_scores = self.rec_engines[self.mode].recommend(
+        ml, p, ai_scores = self.rec_engine.recommend(
             dataset_id=self.datasetId,
             n_recs=self.n_recs_,
             dataset_mf=self.meta_features)
@@ -641,7 +633,7 @@ class PennAI(BaseEstimator):
         #-------
         #None
         #"""
-        #self.rec_engines[self.mode].save(filename)
+        #self.rec_engine.save(filename)
 
 
 def bool_or_none(val):
