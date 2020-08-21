@@ -124,7 +124,32 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # Optionally load serialized rec, or initilize from the given 
+        # train an empty recommender, either using the provided kb or 
+        # loading a serialized rec from file
+        self._train_empty_rec( 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename)
+
+
+    def _train_empty_rec(self, 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename):
+
+        # load serialized rec, or initilize from the given 
         # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
@@ -151,6 +176,7 @@ class BaseRecommender(object, metaclass=MC):
             if knowledgebase_results is not None: 
                 logger.info(f"Initilizing new recommender from provided knowledgebase")
                 self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
+
 
     def _default_serialized_rec_filename(self):
         ### Generate the default name of the serialized instance of this recommender
