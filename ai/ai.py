@@ -138,6 +138,7 @@ class AI():
         
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
+        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         # print('ml_id_to_name:',self.ml_id_to_name)
 
         # dictionary of dataset threads, initialized and used by q_utils.
@@ -211,6 +212,9 @@ class AI():
             recArgs['ml_p'] = ml_p
 
             recArgs['serialized_rec_directory'] = 'data/recommenders/'
+            # if pred_type == 'classification':
+            #     recArgs['serialized_rec_filename'] = ('SVDRecommender_'
+            #         'classifier_accuracy_pmlb_20200731.pkl.gz')
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
@@ -225,11 +229,11 @@ class AI():
             # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, source='knowledgebase')
             ##########################################################
-            # the next few commands are used to train the recommenders
-            # on the PMLB knowledgebases and save them. 
+            # this section is used to save trained recommenders
+            # on the PMLB knowledgebases.            
             # For normal operation, they can be skipped.
             # logger.info('updating and saving recommender')
-            # self.rec_engines[pred_type].update_and_save(
+            # self.rec_engines[pred_type].save(
             #         kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, 
             #         source='knowledgebase')
@@ -250,12 +254,11 @@ class AI():
         all_df_mf = kb['metafeaturesData'].set_index('_id')
 
         # replace algorithm names with their ids
-        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         
         for pred_type in ['classification','regression']:
             kb['resultsData'][pred_type]['algorithm'] = \
                     kb['resultsData'][pred_type]['algorithm'].apply(
-                      lambda x: self.ml_name_to_id[x] 
+                      lambda x: x
                       if x in self.ml_name_to_id.keys() 
                       else 'REMOVE! ' + x)
             # filter any kb results that we don't have an algorithm for
@@ -343,6 +346,8 @@ class AI():
                                         last_update=self.last_update)
 
         if len(newResults) > 0:
+            newResults['algorithm'] = newResults['algorithm_id'].apply(
+                lambda x: self.ml_id_to_name[x])
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                   ': ' + str(len(newResults)) + ' new results!')
             self.last_update = int(time.time())*1000 # update timestamp
@@ -368,8 +373,9 @@ class AI():
                 self.rec_engines[predictionType].update(filterRes, filterMf)
                 logger.info(
                         time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                    f': {predictionType} recommender updated with '
-                    '{len(filterRes.index)} result(s)')
+                    ': {} recommender updated with '
+                    '{} result(s)'.format(predictionType, 
+                        len(filterRes.index)))
 
             # reset new data
             self.new_data = pd.DataFrame()
@@ -454,7 +460,7 @@ class AI():
             # modified_params = eval(params) # turn params into a dictionary
 
             recommendations.append({'dataset_id':datasetId,
-                    'algorithm_id':alg,
+                    'algorithm_id':self.ml_name_to_id[alg],
                     'username':self.user,
                     'parameters':params,
                     'ai_score':score,
