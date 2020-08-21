@@ -114,7 +114,7 @@ class BaseRecommender(object, metaclass=MC):
         self.hash_2_param = {}
         
         # get ml+p combos (note: this triggers a property in base recommender)
-        self.ml_htable = {}
+        # self.ml_htable = {}
         self.ml_p = ml_p
 
         # generate the serialized recommender path
@@ -141,19 +141,26 @@ class BaseRecommender(object, metaclass=MC):
                         " {self.serialized_rec_path}")
                 self.load(self.serialized_rec_path, knowledgebase_results)
             else:
-                logger.warn(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
+                logger.warn(f"Not loading serialized recommender, file does "
+                        "not exist: {self.serialized_rec_path}")
                 if knowledgebase_results is not None: 
-                    logger.info(f"Initilizing new recommender from provided knowledgebase")
-                    self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
+                    logger.info(f"Initilizing new recommender from provided "
+                            "knowledgebase")
+                    self.update(knowledgebase_results, 
+                            knowledgebase_metafeatures, source='knowledgebase')
 
         else:
             logger.info(f"Not loading serialized recommender.")
             if knowledgebase_results is not None: 
-                logger.info(f"Initilizing new recommender from provided knowledgebase")
-                self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
+                logger.info(f"Initilizing new recommender from provided "
+                        "knowledgebase")
+                self.update(knowledgebase_results, knowledgebase_metafeatures, 
+                        source='knowledgebase')
 
     def _default_serialized_rec_filename(self):
-        ### Generate the default name of the serialized instance of this recommender
+        """Generate the default name of the serialized instance of this 
+        recommender
+        """
 
         # Hardcoading the informal kb descriptor for now, this should be changed.
         return (
@@ -212,7 +219,7 @@ class BaseRecommender(object, metaclass=MC):
         # update parameter hash table
         logger.info('updating hash_2_param...')
         self.hash_2_param.update(
-                {self._param_hash(x):x 
+                {self._hash_simple_dict(x):x 
                 for x in results_data['parameters'].values})
         param_2_hash = {frozenset(v.items()):k 
                 for k,v in self.hash_2_param.items()} 
@@ -225,8 +232,8 @@ class BaseRecommender(object, metaclass=MC):
         if source == 'pennai':
             self._update_trained_dataset_models_from_df(results_data)
 
-    def _param_hash(self, x):
-        """Provides sha256 hash for parameter dictionary."""
+    def _hash_simple_dict(self, x):
+        """Provides sha256 hash for a dictionary with hashable items."""
         hasher = hashlib.sha256()
         hasher.update(repr(tuple(sorted(x.items()))).encode())
         return hasher.hexdigest()
@@ -325,7 +332,7 @@ class BaseRecommender(object, metaclass=MC):
         save_dict = copy.deepcopy(self.__dict__)
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
-        del save_dict['_ml_p']
+        # del save_dict['_ml_p']
         del save_dict['mlp_combos']
 
         logger.info('saving recommender as ' + fn)
@@ -368,8 +375,11 @@ class BaseRecommender(object, metaclass=MC):
             self._ml_p = value
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
+            # if 'alg_name' not in value.columns:
+            #     self._ml_p['alg_name'] = self._ml_p['algorithm']
+
             self.hash_2_param = {
-                    self._param_hash(x):x
+                    self._hash_simple_dict(x):x
                     for x in self._ml_p['parameters'].values}
             param_2_hash = {frozenset(v.items()):k 
                     for k,v in self.hash_2_param.items()}
@@ -379,12 +389,12 @@ class BaseRecommender(object, metaclass=MC):
                                    param_2_hash[frozenset(x.items())]))
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
-            # set ml_htable
-            if 'alg_name' in value.columns:
-                self.ml_htable = {
-                        k:v for v,k in zip(value['alg_name'].unique(),
-                        value['algorithm'].unique())
-                        }
+            # # set ml_htable
+            # if 'alg_name' in value.columns:
+            #     self.ml_htable = {
+            #             k:v for v,k in zip(value['alg_name'].unique(),
+            #             value['algorithm'].unique())
+            #             }
         else:
             logger.warning('value of ml_p is None')
         logger.debug('param_2_hash:{} objects'.format(len(param_2_hash)))

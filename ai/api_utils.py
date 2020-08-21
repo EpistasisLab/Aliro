@@ -211,7 +211,7 @@ class LabApi:
                 and '_dataset_id' in d.keys()):
                 frame={
                     'dataset_id':d['_dataset_id'],
-                    'algorithm':d['_project_id'],
+                    'algorithm_id':d['_project_id'],
                     'parameters':d['_options'],
                     'prediction_type':d['_prediction_type'],
                 }
@@ -340,7 +340,7 @@ class LabApi:
         from the server.
 
         :returns: pd.DataFrame - unique ml algorithm and parameter combinations
-            with columns 'alg_name', 'category', 'alg_name', 'parameters'
+            with columns 'algorithm', 'category', 'parameters'
             'parameters' is a dictionary of parameters
         """
         logger.info("get_all_ml_p()")
@@ -402,10 +402,10 @@ class LabApi:
                         if not self.valid_combo(ahc,
                                 x['invalidParameterCombinations']):
                             continue
-                    result.append({'algorithm':x['_id'],
+                    result.append({'algorithm':x['name'],
                                    'category':x['category'],
                                    'parameters':ahc,
-                                   'alg_name':x['name']})
+                                   'algorithm_id':x['_id']})
             else:
                 logger.error('warning: ' + str(x['name']) + 'was skipped')
             good_def = True
