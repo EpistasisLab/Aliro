@@ -210,7 +210,7 @@ class AI():
             recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
 
-            recArgs['serialized_rec_directory'] = 'data/recommenders/'
+            recArgs['serialized_rec_directory'] = 'data/recommenders/pennaiweb'
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
@@ -229,8 +229,8 @@ class AI():
             # the next few commands are used to train the recommenders
             # on the PMLB knowledgebases and save them. 
             # For normal operation, they can be skipped.
-            #logger.info('saving recommender')
-            #self.rec_engines[pred_type].save()
+            # logger.info('saving recommender')
+            # self.rec_engines[pred_type].save()
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")
