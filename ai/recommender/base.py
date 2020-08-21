@@ -124,7 +124,32 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # Optionally load serialized rec, or initilize from the given 
+        # train an empty recommender, either using the provided kb or 
+        # loading a serialized rec from file
+        self._train_empty_rec( 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename)
+
+
+    def _train_empty_rec(self, 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename):
+
+        # load serialized rec, or initilize from the given 
         # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
@@ -157,6 +182,7 @@ class BaseRecommender(object, metaclass=MC):
                 self.update(knowledgebase_results, knowledgebase_metafeatures, 
                         source='knowledgebase')
 
+
     def _default_serialized_rec_filename(self):
         """Generate the default name of the serialized instance of this 
         recommender
@@ -167,7 +193,7 @@ class BaseRecommender(object, metaclass=MC):
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
-            + '_pmlb_20200731'
+            + '_pmlb_20200821'
             +'.pkl.gz')
 
 
@@ -184,7 +210,8 @@ class BaseRecommender(object, metaclass=MC):
 
         # dynamic default values
         serialized_rec_directory = serialized_rec_directory or "."
-        serialized_rec_filename = serialized_rec_filename or self._default_serialized_rec_filename()
+        serialized_rec_filename = serialized_rec_filename or \
+                self._default_serialized_rec_filename()
 
         return os.path.join(serialized_rec_directory, serialized_rec_filename)
 

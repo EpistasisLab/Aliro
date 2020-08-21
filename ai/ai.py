@@ -211,10 +211,7 @@ class AI():
             recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
 
-            recArgs['serialized_rec_directory'] = 'data/recommenders/'
-            # if pred_type == 'classification':
-            #     recArgs['serialized_rec_filename'] = ('SVDRecommender_'
-            #         'classifier_accuracy_pmlb_20200731.pkl.gz')
+            recArgs['serialized_rec_directory'] = 'data/recommenders/pennaiweb'
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
@@ -226,17 +223,15 @@ class AI():
                 self.rec_engines[pred_type]  = \
                         self.DEFAULT_REC_CLASS[pred_type](**recArgs)
 
+
             # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
             #         self.dataset_mf_cache, source='knowledgebase')
             ##########################################################
             # this section is used to save trained recommenders
             # on the PMLB knowledgebases.            
             # For normal operation, they can be skipped.
-            # logger.info('updating and saving recommender')
-            # self.rec_engines[pred_type].save(
-            #         kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, 
-            #         source='knowledgebase')
+            # logger.info('saving recommender')
+            # self.rec_engines[pred_type].save()
             ##########################################################
 
         logger.debug("recomendation engines initialized: ")
