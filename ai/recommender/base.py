@@ -17,6 +17,8 @@ import random
 import hashlib
 import copy
 from pandas.util import hash_pandas_object
+import pandas as pd
+
 
 
 # implementing metaclass __repr__ for more human readable
@@ -306,6 +308,8 @@ class BaseRecommender(object, metaclass=MC):
             tmp_dict = pickle.load(f)
             f.close()
 
+            #logger.debug(f"rec keys: {tmp_dict.keys()}")
+
             # check if parameters match, if not throw warning/error
             for k,v in tmp_dict.items():
                 if k in self.__dict__.keys():
@@ -331,6 +335,14 @@ class BaseRecommender(object, metaclass=MC):
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')
                     logger.error(error_msg)
+
+                    # debugging
+                    if ('_ml_p' in tmp_dict):
+                        pd.testing.assert_frame_equal(self.ml_p, tmp_dict['_ml_p'])
+                    else:
+                        logger.error(f"Pickle does not contain _ml_p for debugging.")
+                        logger.error(f"Keys: {tmp_dict.keys()}")
+
                     raise ValueError(error_msg)
                 del tmp_dict['ml_p_hash']
 
