@@ -159,6 +159,7 @@ class SurpriseRecommender(BaseRecommender):
         logger.info('saving recommender as ' + fn)
         f = gzip.open(fn, 'wb')
         save_dict = copy.deepcopy(self.__dict__)
+        
         # remove results_df to save space. this gets loaded by load() fn.
         rowHashes = hash_pandas_object(save_dict['results_df']).values 
         save_dict['results_df_hash'] = hashlib.sha256(rowHashes).hexdigest() 
@@ -167,7 +168,7 @@ class SurpriseRecommender(BaseRecommender):
         del save_dict['results_df']
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
-        del save_dict['_ml_p']
+        #del save_dict['_ml_p']
         del save_dict['mlp_combos']
 
         pickle.dump(save_dict, f, 2)
