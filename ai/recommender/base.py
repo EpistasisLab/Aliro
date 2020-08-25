@@ -399,7 +399,7 @@ class BaseRecommender(object, metaclass=MC):
         logger.debug('setting ml_p')
         if value is not None:
             #filter out SVC (temporary)
-            self._ml_p = value
+            self._ml_p = value[['algorithm','parameters']]
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
             # if 'alg_name' not in value.columns:
