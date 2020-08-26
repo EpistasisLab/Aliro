@@ -384,7 +384,7 @@ class SVDRecommender(SurpriseRecommender):
                 'init_std_dev':.2, 
                 'lr_all':.01,
                 'reg_all':.02,
-                'verbose':'False'}
+                'verbose':False}
         alg_kwargs.update(surprise_kwargs)
         self.algo = mySVD(**alg_kwargs)
 
