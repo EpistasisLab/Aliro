@@ -17,6 +17,8 @@ import random
 import hashlib
 import copy
 from pandas.util import hash_pandas_object
+import pandas as pd
+
 
 
 # implementing metaclass __repr__ for more human readable
@@ -306,6 +308,8 @@ class BaseRecommender(object, metaclass=MC):
             tmp_dict = pickle.load(f)
             f.close()
 
+            #logger.debug(f"rec keys: {tmp_dict.keys()}")
+
             # check if parameters match, if not throw warning/error
             for k,v in tmp_dict.items():
                 if k in self.__dict__.keys():
@@ -331,6 +335,14 @@ class BaseRecommender(object, metaclass=MC):
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')
                     logger.error(error_msg)
+
+                    # debugging
+                    if ('_ml_p' in tmp_dict):
+                        pd.testing.assert_frame_equal(self.ml_p, tmp_dict['_ml_p'])
+                    else:
+                        logger.error(f"Pickle does not contain _ml_p for debugging.")
+                        logger.error(f"Keys: {tmp_dict.keys()}")
+
                     raise ValueError(error_msg)
                 del tmp_dict['ml_p_hash']
 
@@ -355,11 +367,21 @@ class BaseRecommender(object, metaclass=MC):
         if os.path.isfile(fn):
             logger.warning('overwriting ' + fn)
 
-        # remove ml_p to save space 
         save_dict = copy.deepcopy(self.__dict__)
+
+        # remove results_df to save space. this gets loaded by load() fn.
+        if 'results_df' in save_dict.keys():
+            logger.debug('deleting save_dict[results_df]:'
+                    +str(save_dict['results_df'].head()))
+            rowHashes = hash_pandas_object(save_dict['results_df']).values 
+            save_dict['results_df_hash'] = hashlib.sha256(
+                    rowHashes).hexdigest() 
+            del save_dict['results_df']
+
+        # remove ml_p to save space 
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
-        # del save_dict['_ml_p']
+        del save_dict['_ml_p']
         del save_dict['mlp_combos']
 
         logger.info('saving recommender as ' + fn)
