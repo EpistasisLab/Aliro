@@ -52,7 +52,7 @@ for f in python_files:
         modified.write(python_header + data)
 
 for f in json_files:
-    if any([jf in str(f) for jf in ['node_modules','dist','src']]):
+    if any([jf in str(f) for jf in ['node_modules','dist']]):
         print('skipping',f)
         continue
     with open(f, 'r') as original: 
