@@ -15,7 +15,7 @@ jobs:
         - docker-compose  -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
         - docker-compose -f ./docker-compose-int-test.yml down
     - # stage name not required, will continue to use 'Test'
-      name: "Unit Tests"
+      name: "Unit Tests for Webapp"
       install:
         # Building Docker images
         - docker-compose -f ./docker-compose-unit-test.yml build -m 8g
@@ -26,7 +26,6 @@ jobs:
         - docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v machine/test/learn_tests.py lab/pyutils/tests/*.py
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_a*.py ai/tests/lab_*.py ai/tests/test_re*.py ai/tests/test_k*utils.py
-        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
         # Tell GitHub not to use jekyll to compile the docs
@@ -38,3 +37,11 @@ jobs:
           on:
               branch: master
           local_dir: target/ai_docs/html/
+    - # stage name not required, will continue to use 'Test'
+      name: "Unit Tests for scikit-learn API"
+      install:
+        # Building Docker images
+        - docker-compose -f ./docker-compose-unit-test.yml build -m 8g
+      script:
+        # Unit tests
+        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
