@@ -1,6 +1,7 @@
 [![Logo](./docs/source/_static/logo_blank_small.png)]()
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE) [![Master Build Status - Mac/Linux](https://travis-ci.org/EpistasisLab/pennai.svg?branch=master)](https://travis-ci.org/EpistasisLab/pennai)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE) [![Master Build Status - Mac/Linux](https://travis-ci.org/EpistasisLab/pennai.svg?branch=master)](https://travis-ci.org/EpistasisLab/pennai) <a href='https://coveralls.io/github/pmbb-ibi/carnival?branch=master'><img src='https://coveralls.io/repos/github/pmbb-ibi/carnival/badge.svg?branch=master' alt='Coverage Status' /></a>
+
 
 PennAI: AI-Driven Data Science
 ==================================
