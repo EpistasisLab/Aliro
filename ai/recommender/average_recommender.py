@@ -27,11 +27,11 @@ class AverageRecommender(BaseRecommender):
 
     """
 
-    def __init__(self, 
-            ml_type='classifier', 
-            metric=None, 
+    def __init__(self,
+            ml_type='classifier',
+            metric=None,
             ml_p=None,
-            random_state=None, 
+            random_state=None,
             knowledgebase_results=None,
             knowledgebase_metafeatures=None,
             load_serialized_rec="if_exists",
@@ -42,9 +42,9 @@ class AverageRecommender(BaseRecommender):
 
         """Initialize recommendation system."""
         super().__init__(
-            ml_type, 
-            metric, 
-            ml_p, 
+            ml_type,
+            metric,
+            ml_p,
             random_state=random_state,
             knowledgebase_results=knowledgebase_results,
             knowledgebase_metafeatures=knowledgebase_metafeatures,
@@ -53,22 +53,22 @@ class AverageRecommender(BaseRecommender):
             serialized_rec_filename=serialized_rec_filename)
 
 
-    def _train_empty_rec(self, 
-            ml_type, 
-            metric, 
+    def _train_empty_rec(self,
+            ml_type,
+            metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
             serialized_rec_directory,
             serialized_rec_filename):
 
-        super()._train_empty_rec( 
-            ml_type, 
-            metric, 
+        super()._train_empty_rec(
+            ml_type,
+            metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
@@ -80,7 +80,7 @@ class AverageRecommender(BaseRecommender):
 
         # empty scores pandas series
         self.scores = pd.Series()
- 
+
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
@@ -158,7 +158,7 @@ class AverageRecommender(BaseRecommender):
 
         # update the recommender's memory with the new algorithm-parameter combos
         # that it recommended
-        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, 
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec,
                 phash_rec)
 
         return ml_rec, p_rec, rec_score

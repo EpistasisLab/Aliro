@@ -15,7 +15,6 @@ from sklearn.ensemble import VotingClassifier, VotingRegressor
 from os import path, remove
 
 
-TEST_OUTPUT_PATH = "target/test_output/test_sklearn_api"
 
 iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
@@ -282,42 +281,44 @@ def test_ensemble():
     assert pennai.ensemble
     assert pennai.estimator.__class__ == VotingClassifier
 
+# @parameterized.expand(AllRecommenders)
+# def test_save(recommender):
+#     """Test PennAIClassifier save() function."""
+#     print("\nSave recommender for ", recommender.__name__)
+#     if recommender.__name__ not in ["AverageRecommender", "RandomRecommender"]:
+#         save_path = "data/recommenders/scikitlearn/{}_classifier_accuracy_pmlb.pkl.gz".format(recommender.__name__)
+#         classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+#         pennai = PennAIClassifier(
+#                                 rec_class=recommender,
+#                                 n_recs=2,
+#                                 n_iters=2,
+#                                 knowledgebase=classification_kb_full,
+#                                 kb_metafeatures=classification_metafeatures,
+#                                 random_state=42,
+#                                 verbose=1
+#                               )
+#         pennai.fit_init_()
+#         pennai.rec_engine.save(save_path)
+#         assert path.isfile(save_path)
 
-#def test_save():
-    #"""Test PennAIClassifier save() function."""
-    #test_path = "ai/tests/test_mySVD_classifier_accuracy_pmlb.pkl.gz"
-    #classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
-    #pennai = PennAIClassifier(
-    #                        rec_class=SVDRecommender,
-    #                        n_recs=2,
-    #                        n_iters=2,
-    #                        knowledgebase=classification_kb_full,
-    #                        kb_metafeatures=classification_metafeatures,
-    #                        random_state=42,
-    #                        verbose=1
-    #                       )
-    #pennai.fit(X_train, y_train)
-    #pennai.save(test_path)
-
-    #assert path.isfile(test_path)
-
-
-def test_warm_start_1():
+@parameterized.expand(AllRecommenders)
+def test_warm_start_1(recommender):
     """Test PennAIClassifier fit() with warm_start."""
-    serialized_rec_directory = "data/recommenders"
-    serialized_rec_filename = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
-    classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
-    serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
-    pennai = PennAIClassifier(
-                            rec_class=SVDRecommender,
-                            n_recs=2,
-                            n_iters=2,
-                            serialized_rec=serialized_rec,
-                            knowledgebase=classification_kb_full,
-                            kb_metafeatures=classification_metafeatures,
-                            random_state=42,
-                            verbose=1
-                           )
-    pennai.fit(X_train, y_train)
+    if recommender.__name__ not in ["AverageRecommender", "RandomRecommender"]:
+        serialized_rec_directory = "data/recommenders/scikitlearn"
+        serialized_rec_filename = "{}_classifier_accuracy_pmlb.pkl.gz".format(recommender.__name__)
+        classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+        serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
+        pennai = PennAIClassifier(
+                                rec_class=recommender,
+                                n_recs=2,
+                                n_iters=2,
+                                serialized_rec=serialized_rec,
+                                knowledgebase=classification_kb_full,
+                                kb_metafeatures=classification_metafeatures,
+                                random_state=42,
+                                verbose=1
+                               )
+        pennai.fit(X_train, y_train)
 
-    assert pennai.score(X_train, y_train)
+        assert pennai.score(X_train, y_train)
