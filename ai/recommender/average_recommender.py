@@ -52,11 +52,35 @@ class AverageRecommender(BaseRecommender):
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename)
 
+
+    def _train_empty_rec(self, 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename):
+
+        super()._train_empty_rec( 
+            ml_type, 
+            metric, 
+            ml_p,
+            random_state, 
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename)
+
         # number of datasets trained on so far
         self.w = 0
 
         # empty scores pandas series
         self.scores = pd.Series()
+ 
 
 
     def update(self, results_data, results_mf=None, source='pennai'):

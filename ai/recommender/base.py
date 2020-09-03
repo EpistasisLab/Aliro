@@ -17,6 +17,8 @@ import random
 import hashlib
 import copy
 from pandas.util import hash_pandas_object
+import pandas as pd
+
 
 
 # implementing metaclass __repr__ for more human readable
@@ -114,7 +116,7 @@ class BaseRecommender(object, metaclass=MC):
         self.hash_2_param = {}
 
         # get ml+p combos (note: this triggers a property in base recommender)
-        self.ml_htable = {}
+        # self.ml_htable = {}
         self.ml_p = ml_p
 
         # generate the serialized recommender path
@@ -124,7 +126,32 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # Optionally load serialized rec, or initilize from the given
+        # train an empty recommender, either using the provided kb or
+        # loading a serialized rec from file
+        self._train_empty_rec(
+            ml_type,
+            metric,
+            ml_p,
+            random_state,
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename)
+
+
+    def _train_empty_rec(self,
+            ml_type,
+            metric,
+            ml_p,
+            random_state,
+            knowledgebase_results,
+            knowledgebase_metafeatures,
+            load_serialized_rec,
+            serialized_rec_directory,
+            serialized_rec_filename):
+
+        # load serialized rec, or initilize from the given
         # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
@@ -141,26 +168,34 @@ class BaseRecommender(object, metaclass=MC):
                         " {self.serialized_rec_path}")
                 self.load(self.serialized_rec_path, knowledgebase_results)
             else:
-                logger.warn(f"Not loading serialized recommender, file does not exist: {self.serialized_rec_path}")
+                logger.warn(f"Not loading serialized recommender, file does "
+                        "not exist: {self.serialized_rec_path}")
                 if knowledgebase_results is not None:
-                    logger.info(f"Initilizing new recommender from provided knowledgebase")
-                    self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
+                    logger.info(f"Initilizing new recommender from provided "
+                            "knowledgebase")
+                    self.update(knowledgebase_results,
+                            knowledgebase_metafeatures, source='knowledgebase')
 
         else:
             logger.info(f"Not loading serialized recommender.")
             if knowledgebase_results is not None:
-                logger.info(f"Initilizing new recommender from provided knowledgebase")
-                self.update(knowledgebase_results, knowledgebase_metafeatures, source='knowledgebase')
+                logger.info(f"Initilizing new recommender from provided "
+                        "knowledgebase")
+                self.update(knowledgebase_results, knowledgebase_metafeatures,
+                        source='knowledgebase')
+
 
     def _default_serialized_rec_filename(self):
-        ### Generate the default name of the serialized instance of this recommender
+        """Generate the default name of the serialized instance of this
+        recommender
+        """
 
         # Hardcoading the informal kb descriptor for now, this should be changed.
         return (
             self.__class__.__name__
             + '_' + self.ml_type
             + '_' + self.metric
-            + '_pmlb_20200731'
+            + '_pmlb_20200821'
             +'.pkl.gz')
 
 
@@ -177,7 +212,8 @@ class BaseRecommender(object, metaclass=MC):
 
         # dynamic default values
         serialized_rec_directory = serialized_rec_directory or "."
-        serialized_rec_filename = serialized_rec_filename or self._default_serialized_rec_filename()
+        serialized_rec_filename = serialized_rec_filename or \
+                self._default_serialized_rec_filename()
 
         return os.path.join(serialized_rec_directory, serialized_rec_filename)
 
@@ -212,7 +248,7 @@ class BaseRecommender(object, metaclass=MC):
         # update parameter hash table
         logger.info('updating hash_2_param...')
         self.hash_2_param.update(
-                {self._param_hash(x):x
+                {self._hash_simple_dict(x):x
                 for x in results_data['parameters'].values})
         param_2_hash = {frozenset(v.items()):k
                 for k,v in self.hash_2_param.items()}
@@ -225,8 +261,8 @@ class BaseRecommender(object, metaclass=MC):
         if source == 'pennai':
             self._update_trained_dataset_models_from_df(results_data)
 
-    def _param_hash(self, x):
-        """Provides sha256 hash for parameter dictionary."""
+    def _hash_simple_dict(self, x):
+        """Provides sha256 hash for a dictionary with hashable items."""
         hasher = hashlib.sha256()
         hasher.update(repr(tuple(sorted(x.items()))).encode())
         return hasher.hexdigest()
@@ -272,6 +308,8 @@ class BaseRecommender(object, metaclass=MC):
             tmp_dict = pickle.load(f)
             f.close()
 
+            #logger.debug(f"rec keys: {tmp_dict.keys()}")
+
             # check if parameters match, if not throw warning/error
             for k,v in tmp_dict.items():
                 if k in self.__dict__.keys():
@@ -297,6 +335,14 @@ class BaseRecommender(object, metaclass=MC):
                         'changed since this recommender was saved. You should '
                         'update and save a new one.')
                     logger.error(error_msg)
+
+                    # debugging
+                    if ('_ml_p' in tmp_dict):
+                        pd.testing.assert_frame_equal(self.ml_p, tmp_dict['_ml_p'])
+                    else:
+                        logger.error(f"Pickle does not contain _ml_p for debugging.")
+                        logger.error(f"Keys: {tmp_dict.keys()}")
+
                     raise ValueError(error_msg)
                 del tmp_dict['ml_p_hash']
 
@@ -321,8 +367,18 @@ class BaseRecommender(object, metaclass=MC):
         if os.path.isfile(fn):
             logger.warning('overwriting ' + fn)
 
-        # remove ml_p to save space
         save_dict = copy.deepcopy(self.__dict__)
+
+        # remove results_df to save space. this gets loaded by load() fn.
+        if 'results_df' in save_dict.keys():
+            logger.debug('deleting save_dict[results_df]:'
+                    +str(save_dict['results_df'].head()))
+            rowHashes = hash_pandas_object(save_dict['results_df']).values
+            save_dict['results_df_hash'] = hashlib.sha256(
+                    rowHashes).hexdigest()
+            del save_dict['results_df']
+
+        # remove ml_p to save space
         rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values
         save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest()
         del save_dict['_ml_p']
@@ -365,11 +421,14 @@ class BaseRecommender(object, metaclass=MC):
         logger.debug('setting ml_p')
         if value is not None:
             #filter out SVC (temporary)
-            self._ml_p = value
+            self._ml_p = value[['algorithm','parameters']]
             logger.debug('setting hash table')
             # maintain a parameter hash table for parameter settings
+            # if 'alg_name' not in value.columns:
+            #     self._ml_p['alg_name'] = self._ml_p['algorithm']
+
             self.hash_2_param = {
-                    self._param_hash(x):x
+                    self._hash_simple_dict(x):x
                     for x in self._ml_p['parameters'].values}
             param_2_hash = {frozenset(v.items()):k
                     for k,v in self.hash_2_param.items()}
@@ -379,12 +438,12 @@ class BaseRecommender(object, metaclass=MC):
                                    param_2_hash[frozenset(x.items())]))
             # filter out duplicates
             self.mlp_combos = self.mlp_combos.drop_duplicates()
-            # set ml_htable
-            if 'alg_name' in value.columns:
-                self.ml_htable = {
-                        k:v for v,k in zip(value['alg_name'].unique(),
-                        value['algorithm'].unique())
-                        }
+            # # set ml_htable
+            # if 'alg_name' in value.columns:
+            #     self.ml_htable = {
+            #             k:v for v,k in zip(value['alg_name'].unique(),
+            #             value['algorithm'].unique())
+            #             }
         else:
             logger.warning('value of ml_p is None')
         logger.debug('param_2_hash:{} objects'.format(len(param_2_hash)))
