@@ -107,7 +107,7 @@ def test_n_jobs():
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
-                            verbose=1,
+                            verbose=0,
                             n_jobs=2,
                            )
     pennai.fit(X_train, y_train)
@@ -256,7 +256,7 @@ def test_stopping_criteria():
                             knowledgebase=classification_kb,
                             kb_metafeatures=classification_metafeatures,
                             random_state=42,
-                            verbose=1,
+                            verbose=0,
                             stopping_criteria=3
                            )
     pennai.fit(X_train, y_train)
@@ -274,7 +274,7 @@ def test_ensemble():
                             kb_metafeatures=classification_metafeatures,
                             ensemble=5,
                             random_state=42,
-                            verbose=1
+                            verbose=0
                            )
     pennai.fit(X_train, y_train)
 
@@ -303,9 +303,9 @@ def test_ensemble():
 #         assert path.isfile(save_path)
 
 @parameterized.expand(AllRecommenders)
-def test_warm_start_1(recommender):
+def test_warm_start(recommender):
     """Test PennAIClassifier fit() with warm_start."""
-    if recommender.__name__ not in ["AverageRecommender", "RandomRecommender"]:
+    if recommender.__name__ not in ["AverageRecommender", "RandomRecommender", "CoClusteringRecommender"]:
         serialized_rec_directory = "data/recommenders/scikitlearn"
         serialized_rec_filename = "{}_classifier_accuracy_pmlb.pkl.gz".format(recommender.__name__)
         classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
@@ -318,7 +318,7 @@ def test_warm_start_1(recommender):
                                 knowledgebase=classification_kb_full,
                                 kb_metafeatures=classification_metafeatures,
                                 random_state=42,
-                                verbose=1
+                                verbose=0
                                )
         pennai.fit(X_train, y_train)
 
