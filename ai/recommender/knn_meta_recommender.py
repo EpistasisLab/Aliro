@@ -152,7 +152,7 @@ class KNNMetaRecommender(BaseRecommender):
             while len(ml_rec) < n_recs and iters < 1000:
                 # add random ml_p recommendations until n_recs is met
                 new_ml_rec = np.random.choice(self.ml_p['algorithm'].unique())
-                new_phash_rec = self._param_hash(np.random.choice(
+                new_phash_rec = self._hash_simple_dict(np.random.choice(
                         self.ml_p.loc[self.ml_p['algorithm']==new_ml_rec]
                                               ['parameters'].values))
                 if (dataset_id + '|' + new_ml_rec + '|' + new_phash_rec
