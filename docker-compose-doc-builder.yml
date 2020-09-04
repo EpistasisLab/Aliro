@@ -4,7 +4,7 @@ services:
   unit_tester:
     build:
       context: .
-      dockerfile: tests/unit/Dockerfile
+      dockerfile: docs/Dockerfile
     working_dir: /appsrc
     command: bash -c "cd docs && make html"
     tty: true

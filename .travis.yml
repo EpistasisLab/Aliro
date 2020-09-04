@@ -29,10 +29,15 @@ jobs:
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
         ##- docker run -v $(pwd):/appsrc -v /appsrc/lab/node_modules -w /appsrc/lab/ pennai_unit_tester npm run test
         - docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
-        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v machine/test/learn_tests.py lab/pyutils/tests/*.py
-        - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s --with-coverage --cover-inclusive --cover-package=. --cover-xml -v ai/tests/test_a*.py ai/tests/lab_*.py ai/tests/test_re*.py ai/tests/test_k*utils.py
+        - "docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester 
+            nosetests -s 
+            --with-coverage --cover-inclusive --cover-package=. --cover-xml 
+            -v machine/test/learn_tests.py lab/pyutils/tests/*.py 
+            ai/tests/test_a*.py ai/tests/lab_*.py 
+            ai/tests/test_re*.py 
+            ai/tests/test_k*utils.py"
         #- coverage combine
-        #- coveralls
+        - coveralls
 
     - stage: "Docs"
       name: "Doc Builder" 
@@ -43,7 +48,7 @@ jobs:
         - sudo touch target/ai_docs/html/.nojekyll
       deploy:
           provider: pages
-          skip_cleanup: true
+          cleanup: false
           github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
           on:
               branch: master
