@@ -27,7 +27,7 @@ from pathlib import Path
 
 with open('utils/source_file_header.txt','r') as f:
     header = f.read()
-identifier = "This file is part of the PennAI library" 
+identifier = "~This file is part of the PennAI library~" 
 
 exts = ['.py','.jsx','.js']
 newline = '\n'
@@ -42,8 +42,8 @@ python_header = py_comment + header + newline + py_comment
 js_comment = '/*' 
 json_header = js_comment + ' ' + header + newline + js_comment[::-1] 
 
-print('python_header',python_header)
-print('json_header',json_header)
+# print('python_header',python_header)
+# print('json_header',json_header)
 
 def cut_data(data,comment,identifier):
     id_idx = data.find(identifier)
