@@ -1,4 +1,4 @@
-"""This file is part of the PennAI library.
+"""~This file is part of the PennAI library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
@@ -27,39 +27,49 @@ from pathlib import Path
 
 with open('utils/source_file_header.txt','r') as f:
     header = f.read()
+identifier = "This file is part of the PennAI library" 
 
 exts = ['.py','.jsx','.js']
+newline = '\n'
 
 # get file paths recursively
 python_files = Path('./').rglob('*.py') 
 json_files = list(Path('./').rglob('*.js'))
 json_files += list(Path('./').rglob('*.jsx')) 
 
-python_header = '"""'+header+'\n"""\n'
-json_header = '/* '+header+'\n*/\n'
+py_comment = '"""'
+python_header = py_comment + header + newline + py_comment
+js_comment = '/*' 
+json_header = js_comment + ' ' + header + newline + js_comment[::-1] 
+
 print('python_header',python_header)
 print('json_header',json_header)
+
+def cut_data(data,comment,identifier):
+    id_idx = data.find(identifier)
+    start = data.rfind(comment,0,id_idx)
+    end = data.find(comment[::-1], id_idx) + len(comment)+len(newline)
+    print('header found for',f,' rewriting')
+    data = data[:start] + data[end:]
+    return data
 
 # recurse thru files and add header w/ appropriate block comments
 for f in python_files:
     with open(f, 'r') as original: 
         data = original.read()
-    if "This file is part of the PennAI library" in data:
-        print('skipping',f,', already has header')
-        continue
+    if identifier in data:
+        data = cut_data(data, py_comment, identifier)
     print('updating',f)
     with open(f, 'w') as modified: 
-        modified.write(python_header + data)
+        modified.write(python_header + newline+ data)
 
 for f in json_files:
     if any([jf in str(f) for jf in ['node_modules','dist']]):
-        print('skipping',f)
         continue
     with open(f, 'r') as original: 
         data = original.read()
-    if "This file is part of the PennAI library" in data:
-        print('skipping',f,', already has header')
-        continue
+    if identifier in data:
+        data = cut_data(data, js_comment, identifier)
     print('updating',f)
     with open(f, 'w') as modified: 
-        modified.write(json_header + data)
+        modified.write(json_header + newline+ data)
