@@ -38,7 +38,7 @@ nosetests -s \
 #--verbosity=4
 #--verbosity=4 > $NOSE_LOG_PATH 2>&1
 
-rm .coverage
+# rm .coverage
 
 echo "starting mocha tests"
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
