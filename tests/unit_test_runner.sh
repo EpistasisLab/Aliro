@@ -15,7 +15,7 @@ NOSE_TESTS="${NOSE_TESTS} ai/metalearning/tests/test_get_metafeatures.py"
 NOSE_TESTS="${NOSE_TESTS} machine/test/learn_tests.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_loadInitialDatasets.py"
 NOSE_TESTS="${NOSE_TESTS} lab/pyutils/tests/test_validateDataset.py"
-#NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_utils_profile.py"
+##NOSE_TESTS="${NOSE_TESTS} ai/tests/test_knowledgebase_utils_profile.py"
 
 MOCHA_TESTS="machine/test/test.js"
 
@@ -28,15 +28,16 @@ mkdir -p target/test-reports/html
 
 echo "starting nosetest"
 echo $NOSE_TESTS
-nosetests -s \
+
+coverage run -m nose -s \
 --with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
 --with-html --html-file="${REPORT_PATH}/html/nose.html" \
---with-coverage --cover-inclusive \
---cover-package=. --cover-xml \
---cover-xml-file="${COVERAGE_PATH}/nose_cover.xml" \
---cover-html --cover-html-dir="${COVERAGE_PATH}/html" $NOSE_TESTS \
+-v $NOSE_TESTS \
 #--verbosity=4
 #--verbosity=4 > $NOSE_LOG_PATH 2>&1
+
+coverage html -d "${COVERAGE_PATH}/html"
+coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
 
 # rm .coverage
 

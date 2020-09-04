@@ -25,15 +25,18 @@ jobs:
         # Building Docker images
         - docker-compose -f ./docker-compose-unit-test.yml build -m 8g
       script:
-        # Unit tests
+        # Node/js Unit Tests
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
-        ##- docker run -v $(pwd):/appsrc -v /appsrc/lab/node_modules -w /appsrc/lab/ pennai_unit_tester npm run test
         - docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
+        ##- docker run -v $(pwd):/appsrc -v /appsrc/lab/node_modules -w /appsrc/lab/ pennai_unit_tester npm run test
+        
+        # Python Unit Tests
         - "docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester 
-            nosetests -s 
-            --with-coverage --cover-inclusive --cover-package=. --cover-xml 
-            -v machine/test/learn_tests.py lab/pyutils/tests/*.py 
-            ai/tests/test_a*.py ai/tests/lab_*.py 
+            coverage run -m nose -s -v 
+            machine/test/learn_tests.py 
+            lab/pyutils/tests/*.py 
+            ai/tests/test_a*.py 
+            ai/tests/lab_*.py 
             ai/tests/test_re*.py 
             ai/tests/test_k*utils.py"
         #- coverage combine
