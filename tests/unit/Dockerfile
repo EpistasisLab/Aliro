@@ -12,13 +12,13 @@ RUN apt-get update --fix-missing \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g mocha
+
 COPY /tests/unit/files/requirements.txt /root/
 RUN pip install --no-cache-dir -r /root/requirements.txt
 
 ### Bill's surprise fork
 RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
-
-RUN npm install -g mocha
 
 
 # install lab/node_modules to an anon volume
