@@ -1,4 +1,4 @@
-"""This file is part of the PennAI library.
+"""~This file is part of the PennAI library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
