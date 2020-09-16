@@ -27,7 +27,8 @@ import {
   Modal,
   Message,
   TextArea,
-  Container
+  Container,
+  Menu
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
@@ -39,7 +40,6 @@ class FileUpload extends Component {
   get featureTypeNumeric() { return 'numeric'; }
   get featureTypeCategorical() { return 'categorical'; }
   get featureTypeOrdinal() { return 'ordinal'; }
-  get featureTypeDefault() { return this.featureTypeNumeric; }
   
   /**
   * FileUpload reac component - UI form for uploading datasets
@@ -53,6 +53,7 @@ class FileUpload extends Component {
     // enter info in text fields
     this.handleDepColDropdown = this.handleDepColDropdown.bind(this);
     this.handleCatFeaturesUserTextOnChange = this.handleCatFeaturesUserTextOnChange.bind(this);
+    this.handleCatFeaturesUserTextBlur = this.handleCatFeaturesUserTextBlur.bind(this);
     this.handleCatFeaturesUserTextAccept = this.handleCatFeaturesUserTextAccept.bind(this);
     this.handleCatFeaturesUserTextCancel = this.handleCatFeaturesUserTextCancel.bind(this);
     this.handleOrdinalFeaturesUserTextAccept = this.handleOrdinalFeaturesUserTextAccept.bind(this);
@@ -71,14 +72,18 @@ class FileUpload extends Component {
     this.handleOrdinalSortAccept = this.handleOrdinalSortAccept.bind(this);
     this.handleOrdinalSortCancel = this.handleOrdinalSortCancel.bind(this);
     this.getUniqueValuesForFeature = this.getUniqueValuesForFeature.bind(this);
-    this.clearOrdinalFeatures = this.clearOrdinalFeatures.bind(this);
+    this.getFeatureDefaultType = this.getFeatureDefaultType.bind(this);
+    this.ordinalFeaturesClearToDefault = this.ordinalFeaturesClearToDefault.bind(this);
     this.ordinalFeaturesObjectToUserText = this.ordinalFeaturesObjectToUserText.bind(this);
     this.validateFeatureName = this.validateFeatureName.bind(this);
     this.getUserTextFeatureInputs = this.getUserTextFeatureInputs.bind(this);
     this.getFeatureType = this.getFeatureType.bind(this);
-    this.catFeaturesUserTextValidate = this.catFeaturesUserTextValidate.bind(this);
-    this.catFeaturesClear = this.catFeaturesClear.bind(this);
+    this.getFeatureIndex = this.getFeatureIndex.bind(this);
+    this.catFeaturesUserTextValidateAndExpand = this.catFeaturesUserTextValidateAndExpand.bind(this);
+    this.catFeaturesClearToNumeric = this.catFeaturesClearToNumeric.bind(this);
     this.getCatFeatures = this.getCatFeatures.bind(this);
+    this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
+    this.parseFeatureToken = this.parseFeatureToken.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -114,12 +119,14 @@ class FileUpload extends Component {
       selectedFile: null,
       dependentCol: '',
       /** {array} String-array holding the type for each feature, in same index order as features within the data. 
-       * For assignment, use the gettors   featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal, featureTypeDefault; }
+       * For assignment, use the gettors   featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal; }
       */
       featureType: [],
       /** {string} Text the the text box for user to optionally enter categorical feature specifications. 
        *  Must be kept in sync with the settings featureType state array. */
       catFeaturesUserText: '',
+      /** Raw user text input that may contain feature ranges. Save this to show when appropriate. */
+      catFeaturesUserTextRaw: '',
       /** Flag to control modal dialog for categorical user text input */
       catFeaturesUserTextModalOpen: false,
       /** {string} Text from the text box for user to optionally enter ordinal feature specifications.
@@ -134,13 +141,17 @@ class FileUpload extends Component {
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
        */
       ordinalFeaturesObject: {},
+      /** Holds previous versions of ordinal feature value orderings, so that they can be restored if 
+       *  user has defined them, then changed feature type, then goes back to type ordinal.
+       */
+      ordinalFeaturesObjectPrev: {},
       /** {string} The ordinal feature that is currently being ranked by sortable list, when sortable list is active. */
       ordinalFeatureToRank: undefined,
       /** {array} Array of unique (and possibly sorted) values for the ordinal feature currently being ranked. This gets
        *  modified while user is ranking the values, and then stored to state if user finalizes changes. */
       ordinalFeatureToRankValues: [],
+      allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
-      activeAccordionIndexes: [],
       errorResp: undefined
     }
   }
@@ -182,26 +193,34 @@ class FileUpload extends Component {
     });
   }
 
-  /** Clear any features that have been specified as type categorical */
-  catFeaturesClear() {
+  handleCatFeaturesUserTextBlur(e) {
+    //Save this show we can show it in user text box when it evaluates to the same
+    // settings as current categorical feature set. 
+    //Handling here in blur also handles case where user doesn't edit text but just hits accept.
+    this.setState({catFeaturesUserTextRaw: e.target.value});
+  }
+
+  /** 
+   * Clear any features that have been specified as type categorical
+   *  by setting them to type Numeric - ie does NOT set to automatic default type
+   *  because when user specifies via user text, we have to not do automatic type assignment.
+   */
+  catFeaturesClearToNumeric() {
     this.state.datasetPreview.meta.fields.map( (field) => {
       if( this.getFeatureType(field) === this.featureTypeCategorical ) {
-        this.setFeatureType(field, this.featureTypeDefault);
+        this.setFeatureType(field, this.featureTypeNumeric);
       }
     })
   }
   
-  /** Process the state.catFeaturesUserText variable and update
-   *  Categorical feature settings.
-   *  Assumes state.catFeaturesUserText has been validated.
+  /** Process the passed string and update Categorical feature settings.
+   *  Assumes the input string has been validated.
    *  Will override any settings made via feature-type dropdowns selectors.
    */ 
-  catFeaturesUserTextIngest() {
-    // Prep this first since catFeaturesClear() clears catFeaturesUserText
-    let cats = this.state.catFeaturesUserText.split(",");
-    //Clear after we've prepare cats array
-    this.catFeaturesClear();
-    cats.map( (feature) => {
+  catFeaturesUserTextIngest(input) {
+    let cats = input.split(',');
+    this.catFeaturesClearToNumeric();
+    cats.forEach( (feature) => {
       this.setFeatureType(feature.trim(), this.featureTypeCategorical);
     })
   }
@@ -214,15 +233,11 @@ class FileUpload extends Component {
    * @returns {void} - no return value
   */
   handleCatFeaturesUserTextAccept(e) {
-    //If the text is now empty, just ignore it
-    if(this.state.catFeaturesUserText === "") {
-      return;
-    }
-
     //Validate the whole text
-    let result = this.catFeaturesUserTextValidate();
+    let result = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserText);
     if( result.success ) {
-      this.catFeaturesUserTextIngest();
+      this.catFeaturesUserTextIngest(result.expanded);
+      //Close the user text dialog
       this.setState({catFeaturesUserTextModalOpen: false})
     }
     else {
@@ -255,11 +270,6 @@ handleCatFeaturesUserTextCancel() {
    * @returns {void} - no return value
   */
   handleOrdinalFeaturesUserTextAccept(e) {
-    //If the text is now empty, just ignore it
-    if(this.state.ordinalFeaturesUserText === "") {
-      return;
-    }
-
     //Validate the whole text
     let result = this.ordinalFeaturesUserTextValidate();
     if( result.success ) {
@@ -296,35 +306,6 @@ handleCatFeaturesUserTextCancel() {
     });
   }
 
-  /** Handler for accept button for oridinal feature user text element loses focus.
-   *  Examine and validate the contents. Does not touch current settings for ordinal
-   *  features, eg if user used the other UI features to specify them before coming here.
-   *  If invalid, show an error message.
-  */
-  handleOrdinalFeaturesUserTextAccept(e) {
-    //If the text is now empty, just ignore it
-    if(this.state.ordinalFeaturesUserText === "") {
-      return;
-    }
-
-    //Validate the whole text
-    let result = this.ordinalFeaturesUserTextValidate();
-    if( result.success ) {
-      this.ordinalFeaturesUserTextIngest();
-      this.setState({ordinalFeaturesUserTextModalOpen: false})
-    }
-    else {
-      //On error, the modal window showing the text input will stay open, so user
-      // must either cancel or correct the error
-      this.setState({
-          openErrorModal: true,
-          errorModalHeader: "Error in Ordinal Feature text entry",
-          errorModalContent: result.message,
-      })
-      console.log("Error validating ordinal feature user text: " + result.message);
-    }
-  }
-
   handlePredictionType(e, data) {
     this.setState({
       predictionType: data.value,
@@ -344,7 +325,6 @@ handleCatFeaturesUserTextCancel() {
     this.setState({errorResp: undefined});
     let depCol = this.state.dependentCol;
     let ordFeatures = "";
-    let catFeaturesUserText = this.state.catFeaturesUserText;
     let predictionType = this.state.predictionType;
 
     if(this.state.selectedFile && this.state.selectedFile.name) {
@@ -427,19 +407,10 @@ handleCatFeaturesUserTextCancel() {
    */
   initDatasetPreview = () => {
     let dataPrev = this.state.datasetPreview;
-    //Init the state-tracking of feature-type dropdowns
-    let featureTypes = Array(dataPrev.meta.fields.length).fill(this.featureTypeDefault);
-    this.setState({featureType: featureTypes})
     //Init oridinal values
-    this.clearOrdinalFeatures();  
-  }
-
-  /** Clear any features that have been specified as type ordinal, along with any related data. */
-  clearOrdinalFeatures() {
-    for(var feature in this.state.ordinalFeaturesObject) {
-      this.setFeatureType(feature, this.featureTypeDefault);
-    }
-    this.setState({ordinalFeaturesObject: {}})
+    this.ordinalFeaturesClearToDefault();  
+    //Init the feature types
+    this.setAllFeatureTypes('autoDefault');
   }
 
   /**
@@ -602,8 +573,7 @@ handleCatFeaturesUserTextCancel() {
    * @returns {boolean} - true if yes, false otherwise
    */
   validateFeatureName(feature) {
-    let allFeatures = this.state.datasetPreview.meta.fields;
-    return allFeatures.indexOf(feature) >= 0;
+    return this.getFeatureIndex(feature) >= 0;
   }
 
   /**
@@ -612,12 +582,56 @@ handleCatFeaturesUserTextCancel() {
    * @returns {string} feature type (ordinal, categorical, numeric)
    */
   getFeatureType(feature) {
-    let i = this.state.datasetPreview.meta.fields.indexOf(feature);
+    let i = this.getFeatureIndex(feature);
     if( i === -1 ) {
       console.log("ERROR: unrecognized feature: " + feature);
-      return this.featureTypeDefault;
+      return this.featureTypeNumeric;
     }
     return this.state.featureType[i];
+  }
+
+  /** For the passed feature name, return the index of the feature within the data (ie its column number).
+   *  0-based
+   *  Returns -1 for not found
+   */
+  getFeatureIndex(feature) {
+    return this.state.datasetPreview.meta.fields.indexOf(feature.trim());
+  }
+
+  /**
+   * For the passed feature, get the default type for it based on automatic
+   * feature-type assignment algorithm.
+   * Simple algorithm: if any value in the feature is type string, consider it 
+   *  Categorical. Otherwise its Numeric
+   * @param {string} feature 
+   * @returns {string} If feature does not exist in data, return Numeric and print error to console
+   */
+  getFeatureDefaultType(feature) {
+    if( !this.validateFeatureName(feature)) {
+      console.log("Cannot get default type for unrecognized feature: " + feature);
+      return this.featureTypeNumeric;
+    }
+    let isCategorical = false;
+    this.state.datasetPreview.data.forEach( (row) => {
+      //NOTE - empircally, at the end we get an extra row with a single member set to "".
+      //So skip if row[field] is undefined or ""
+      if(row[feature] !== "" && row[feature] !== undefined && isNaN(row[feature])) {
+        isCategorical = true;
+      }
+    })
+    return isCategorical ? this.featureTypeCategorical : this.featureTypeNumeric;
+  }
+
+  /**
+   * Set the feature type for all features in the data
+   * @param {string} type - one of [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
+   *  where 'autoDefault' will set each feature type based on analysis of each feature's values
+   */
+  setAllFeatureTypes(type) {
+    this.state.datasetPreview.meta.fields.forEach( (feature) => {
+      let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
+      this.setFeatureType(feature, newType);
+    })
   }
 
   /** 
@@ -634,6 +648,11 @@ handleCatFeaturesUserTextCancel() {
       console.log("ERROR: unrecognized feature type: " + type);
       return;
     }
+    if(!this.validateFeatureName(feature)) {
+      console.log("ERROR: setFeatureType: invalid feature type " + feature);
+      return;
+    }
+
     //If type hasn't changed, just exit
     let prevType = this.getFeatureType(feature);
     if(prevType === type)
@@ -641,23 +660,30 @@ handleCatFeaturesUserTextCancel() {
       
     // Handle ordinal type
     let ords = this.state.ordinalFeaturesObject;
+    let ordsPrev = this.state.ordinalFeaturesObjectPrev;
     if( type === this.featureTypeOrdinal ) {
-      ords[feature] = ordinalValues === undefined ? this.getUniqueValuesForFeature(feature) : ordinalValues;
+      //If we've passed in a list of values, use that. Otherwise if there's a stored list, use that,
+      // otherwise pull list from the data.
+      let values = ordinalValues !== undefined ? ordinalValues :
+                  (ordsPrev[feature] !== undefined ? ordsPrev[feature] : this.getUniqueValuesForFeature(feature));
+      ords[feature] = values;
+      ordsPrev[feature] = values;
     }
     else {
-      //Clear the ordinal list in case we had one from before
+      //Clear the ordinal list in case we had one from before.
+      //But not the 'Prev' copy, in case user wants to restore.
       delete ords[feature];
     }
 
     // Store the type in the indexed-array
-    let i = this.state.datasetPreview.meta.fields.indexOf(feature);
     let ftd = this.state.featureType;
-    ftd[i] = type;
+    ftd[this.getFeatureIndex(feature)] = type;
 
     //Update state, including user text vars
     this.setState({
       featureType: ftd,
       ordinalFeaturesObject: ords,
+      ordinalFeaturesObjectPrev: ordsPrev,
       ordinalFeaturesUserText: this.ordinalFeaturesObjectToUserText(),
       catFeaturesUserText: this.getCatFeatures().join()
     });
@@ -700,11 +726,14 @@ handleCatFeaturesUserTextCancel() {
   /** Update state with the newly-ranked ordinal feature */
   handleOrdinalSortAccept() {
     let ordsAll = this.state.ordinalFeaturesObject;
+    let ordsPrevAll = this.state.ordinalFeaturesObjectPrev;
     //For the feature the user has ranked, update the state to hold the newly ranked values
     ordsAll[this.state.ordinalFeatureToRank] = this.state.ordinalFeatureToRankValues;
+    ordsPrevAll[this.state.ordinalFeatureToRank] = this.state.ordinalFeatureToRankValues;
     //Store newly ordered values in state, and clear vars used to show values for ranking.
     this.setState({
       ordinalFeaturesObject: ordsAll,
+      ordinalFeaturesObjectPrev: ordsPrevAll,
       ordinalFeatureToRank: undefined,
       ordinalFeatureToRankValues: [],
       ordinalFeaturesUserText: this.ordinalFeaturesObjectToUserText()
@@ -716,6 +745,20 @@ handleCatFeaturesUserTextCancel() {
     this.setState({
       ordinalFeatureToRank: undefined,
       ordinalFeatureToRankValues: []
+    })
+  }
+
+  /** Clear any features that have been specified as type ordinal, along with any related data,
+   * and set them to type auto-determined default type.
+   * Does NOT clear the storage of previous ordinal features, so you can still recover previous
+   * settings even when changing from user text input.
+  */
+  ordinalFeaturesClearToDefault() {
+    for(var feature in this.state.ordinalFeaturesObject) {
+      this.setFeatureType(feature, this.getFeatureDefaultType(feature));
+    }
+    this.setState({
+      ordinalFeaturesObject: {},
     })
   }
 
@@ -812,7 +855,7 @@ handleCatFeaturesUserTextCancel() {
    * @returns {null} 
    */
   ordinalFeaturesUserTextIngest() {
-    this.clearOrdinalFeatures();
+    this.ordinalFeaturesClearToDefault();
     //Process each line individually
     this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
       if(line === "")
@@ -1063,39 +1106,101 @@ handleCatFeaturesUserTextCancel() {
     })
   }
 
-  /** Validate the current value of the state variable holding text input from user for 
-   *  specifying categorical-type feature.
-   *  Validates that each field in the string exists in the data.
-   * @returns {object} - {success:<boolean>, message:<string>} - True if valid, False otherwise with message
+  /**
+   * or a two hyphen-separated features denoting a range such as 'weight-height'.
+   * The range is constructed using the indicies of the two feature names within the data fields.
+   * @param {string} featureToken - either a solitary feature name, or a hyphen-separated two-feature range.
+   * @returns {object} {success:[true|false], rangeExpanded:<array>} - on success, rangeExpanded is an array of all features names
+   * within the range specified by input token. Fails if there are not two valid features in the token, or if they're out of index order.
    */
-  catFeaturesUserTextValidate() {
-    if(this.catFeaturesUserText === "") {
-      return {success: true, message: ""}
+  parseFeatureToken(featureToken) {
+    let features = featureToken.trim().split("-");
+    //Make sure
+    // the range has two features
+    // features names are valid
+    // the 2nd feature comes after the first in the data
+    if( features.length != 2 ||
+        !this.validateFeatureName(features[0]) ||
+        !this.validateFeatureName(features[1]) ||
+        this.getFeatureIndex(features[1]) < this.getFeatureIndex(features[0])
+      ){
+      return {success: false, rangeExpanded: ""};
+    }
+    let rangeExpanded = this.state.datasetPreview.meta.fields.slice(this.getFeatureIndex(features[0]), this.getFeatureIndex(features[1])+1 );    
+    return {success: true, rangeExpanded: rangeExpanded}
+  }
+
+  /** 
+   * Validate, and possibly expand, the passed string holding text input from user for specifying categorical-type feature.
+   *  Validates that each token in the string is a valid feature name in the data,
+   *  or is a valid feature-name range from the data.
+   *  Expands any feature-name ranges in the string into a comman-separated string of single feature names
+   *  and inserts them into the complete result.
+   *  
+   * @returns {object} - {success:<boolean>, // True if valid, False otherwise 
+   *                      message:<string>   // error message on failure
+   *                      expanded:<string>  // String holding fully-expanded list of categorical features
+   */
+  catFeaturesUserTextValidateAndExpand(userText) {
+    if(userText === "") {
+      return {success: true, message: "", expanded: ""}
     }
     let success = true;
-    let message = "One or more field names not recognized from the data";
-    let allFeatures = this.state.datasetPreview.meta.fields;
-    let userFields = this.state.catFeaturesUserText.split(",").map( (feature) => {
-      if( allFeatures.indexOf(feature.trim()) === -1 ) {
-        success = false;
-        message += " - " + feature;
+    let message = "Invalid features or feature ranges ";
+    let expanded= [];
+    userText.split(",").forEach( (feature) => {
+      if( !this.validateFeatureName(feature.trim())) {
+        //Check if it's specifying a range
+        let range = this.parseFeatureToken(feature);
+        if( !range.success ) {
+          success = false;
+          message += ", " + feature;  
+        } else {
+          expanded.push(range.rangeExpanded);
+        }
+      } else {
+        expanded.push(feature);
       }
     })
-    return {success: success, message: message}
+    return {success: success, message: message, expanded: expanded.join()}
   }
 
   /** Create the UI for users to enter feature types manually */
   getUserTextFeatureInputs() {
+    //First determine whether there's a user-supplied string of cat features to show that
+    // may contain feature ranges.
+    let catFeaturesUserTextToDisplay = this.state.catFeaturesUserText;
+    if( this.state.datasetPreview ) {
+      let res = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserTextRaw);
+      if( res.success ) {
+        // If the current fully expanded string equals the expanded verison of the raw string,
+        // show the raw string since it may contain feature ranges.
+        if( this.state.catFeaturesUserText.split(",").sort().join() === res.expanded.split(",").sort().join() ){
+          catFeaturesUserTextToDisplay = this.state.catFeaturesUserTextRaw;
+        }
+      }  
+    }
+
     let content = (
       //---- Ordinal Feature Text Input ----
       <div>
       <Form.Input>
       <Modal
-        trigger={<Button color='blue' size='small' inverted>Specify Ordinal Features</Button>}
+        trigger=
+          {<Button 
+            color='blue'
+            size='small'
+            inverted
+            disabled={this.state.ordinalFeatureToRank !== undefined}
+          >
+            Specify Ordinal Features
+          </Button>}
         open={this.state.ordinalFeaturesUserTextModalOpen}
         onOpen={() => this.setState({ordinalFeaturesUserTextModalOpen: true})}
+        onClose={() => this.handleOrdinalFeaturesUserTextCancel()}
         closeOnDimmerClick={false}
-        closeOnEscape={false}
+        closeOnEscape={true}
+        disabled={this.state.ordinalFeatureToRank !== undefined}
       >
         <Modal.Header>Ordinal Feature Input</Modal.Header>
           <Modal.Description width={'95%'}>
@@ -1104,6 +1209,7 @@ handleCatFeaturesUserTextCancel() {
             <p>For example:<br/>
               &emsp;month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec<br/>
               &emsp;day,mon,tue,wed,thu,fri,sat,sun</p>
+            <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p>
             <br/>
           </Modal.Description>
           <Form>
@@ -1159,18 +1265,32 @@ handleCatFeaturesUserTextCancel() {
       {/*---- Categorical Feature Text Input ----*/}
       <Form.Input>
       <Modal
-        trigger={<Button color='blue' size='small' inverted>Specify Categorical Features</Button>}
+        trigger={<Button 
+          color='blue'
+          size='small'
+          inverted
+          disabled={this.state.ordinalFeatureToRank !== undefined}
+        >
+          Specify Categorical Features
+        </Button>}
         open={this.state.catFeaturesUserTextModalOpen}
         onOpen={() => this.setState({catFeaturesUserTextModalOpen: true})}
+        onClose={() => this.handleCatFeaturesUserTextCancel()}
         closeOnDimmerClick={false}
-        closeOnEscape={false}
+        closeOnEscape={true}
       >
         <Modal.Header>Categorical Feature Input</Modal.Header>
           <Modal.Description width={'95%'}>
             <p>Enter a comma-separated list to specify which features are Categorical.<br/>
                 This will override selections in the Dataset Preview. </p>
             <p>For example:<br/>
-                &emsp;sex,eye_color,disease_state
+                &emsp;<i>sex,eye_color,hair_color,disease_state</i>
+            </p>
+            <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
+              and the range is expanded using the column numbers. For example, working from the example above, entering <br/>
+              &emsp;<i>sex-disease_state</i><br/>
+              would expand to<br/>
+              &emsp;<i>sex,eye_color,hair_color,disease_state</i>
             </p>
             <br/>
           </Modal.Description>
@@ -1180,8 +1300,9 @@ handleCatFeaturesUserTextCancel() {
               id="categorical_features_text_area_input"
               label="Categorical Features"
               onChange={this.handleCatFeaturesUserTextOnChange}
+              onBlur={this.handleCatFeaturesUserTextBlur}
               placeholder={this.getCatFeatures().length === 0 ? "(No Categorical features have been specified)" : "" }
-              value={this.state.catFeaturesUserText}
+              value={catFeaturesUserTextToDisplay}
           >
           </textarea>
           </Form>
@@ -1388,17 +1509,44 @@ handleCatFeaturesUserTextCancel() {
               }
             />
             
-            <Form.Input
+            <Form.Field
               className="file-upload-accordion-title"
-              label="Categorical & Ordinal Features"
+              label="Features Types"
             >
               <Container text>
                 <p> You can specify what type of data each feature/column holds. </p>
                 <p> Each feature is assumed to be Numerical unless it is designated as either Ordinal or Categorical (aka Nominal).</p>
                 <p> Designate feature types with either the text input boxes below, or by using the dropdown choices in the Dataset Preview.</p>
               </Container>
-            </Form.Input>
+            </Form.Field>
             {userTextFeatureInputs}
+            <Form.Input>
+              <Button
+                color='blue'
+                size='small'
+                inverted
+                content="Set All Features To Type..."
+                onClick={() => this.setState({allFeaturesMenuOpen: !this.state.allFeaturesMenuOpen})}
+              />
+            </Form.Input>
+            <Form.Input>
+              <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
+                <Menu vertical open={this.state.allFeaturesMenuOpen}>
+                  <Menu.Item content={'Numeric'}
+                    onClick={() => {this.setAllFeatureTypes(this.featureTypeNumeric); this.setState({allFeaturesMenuOpen: false}) }}
+                  />
+                  <Menu.Item content={'Categorical'}
+                    onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
+                  />
+                  <Menu.Item content={'Ordinal'}
+                    onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
+                  />
+                  <Menu.Item content={'Default (auto-detect)'}
+                    onClick={() => {this.setAllFeatureTypes('autoDefault'); this.setState({allFeaturesMenuOpen: false}) }}
+                  />
+                </Menu>
+              </div>
+            </Form.Input>
             <Form.Input label="Upload" >
               <Popup
                 header="Error Submitting Dataset"
