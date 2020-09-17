@@ -80,10 +80,10 @@ class FileUpload extends Component {
     this.getFeatureType = this.getFeatureType.bind(this);
     this.getFeatureIndex = this.getFeatureIndex.bind(this);
     this.catFeaturesUserTextValidateAndExpand = this.catFeaturesUserTextValidateAndExpand.bind(this);
-    this.catFeaturesClearToNumeric = this.catFeaturesClearToNumeric.bind(this);
     this.getCatFeatures = this.getCatFeatures.bind(this);
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
+    this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -122,6 +122,8 @@ class FileUpload extends Component {
        * For assignment, use the gettors   featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal; }
       */
       featureType: [],
+      /** {object} Object with proerty for each feature, holding the auto-determined default feature type for each feature. */
+      featureTypeDefaults: {},
       /** {string} Text the the text box for user to optionally enter categorical feature specifications. 
        *  Must be kept in sync with the settings featureType state array. */
       catFeaturesUserText: '',
@@ -200,26 +202,14 @@ class FileUpload extends Component {
     this.setState({catFeaturesUserTextRaw: e.target.value});
   }
 
-  /** 
-   * Clear any features that have been specified as type categorical
-   *  by setting them to type Numeric - ie does NOT set to automatic default type
-   *  because when user specifies via user text, we have to not do automatic type assignment.
-   */
-  catFeaturesClearToNumeric() {
-    this.state.datasetPreview.meta.fields.map( (field) => {
-      if( this.getFeatureType(field) === this.featureTypeCategorical ) {
-        this.setFeatureType(field, this.featureTypeNumeric);
-      }
-    })
-  }
-  
   /** Process the passed string and update Categorical feature settings.
    *  Assumes the input string has been validated.
-   *  Will override any settings made via feature-type dropdowns selectors.
+   *  Will override any settings made via feature-type dropdowns selectors,
+   *  EXCEPT that any fields that are auto-detected as type Categorical will
+   *  stay as type Categorical even if not listed in the user string.
    */ 
   catFeaturesUserTextIngest(input) {
     let cats = input.split(',');
-    this.catFeaturesClearToNumeric();
     cats.forEach( (feature) => {
       this.setFeatureType(feature.trim(), this.featureTypeCategorical);
     })
@@ -233,6 +223,14 @@ class FileUpload extends Component {
    * @returns {void} - no return value
   */
   handleCatFeaturesUserTextAccept(e) {
+    //If empty string, just populate with current categorical features
+    if(this.state.catFeaturesUserText.trim() === "") {
+      this.setState({
+        catFeaturesUserText: this.getCatFeatures().join(),
+        catFeaturesUserTextModalOpen: false,
+      })
+      return;
+    }
     //Validate the whole text
     let result = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserText);
     if( result.success ) {
@@ -409,6 +407,8 @@ handleCatFeaturesUserTextCancel() {
     let dataPrev = this.state.datasetPreview;
     //Init oridinal values
     this.ordinalFeaturesClearToDefault();  
+    //Init the store default feature types
+    this.initFeatureTypeDefaults();
     //Init the feature types
     this.setAllFeatureTypes('autoDefault');
   }
@@ -599,10 +599,36 @@ handleCatFeaturesUserTextCancel() {
   }
 
   /**
+   * Populate the state variable holding each feature's auto-determined default type.
+   * Simple algorithm: if any value in the feature is type string, consider it 
+   *  Categorical. Otherwise it's Numeric
+   * We populate the state variable only once for each dataset so that in the case
+   *  of very large datasets, we don't get bogged down each time a default type is
+   *  needed.
+   * @returns {null} 
+   */
+  initFeatureTypeDefaults() {
+    let newDefaults = {};
+    //First init all to type Numeric
+    this.state.datasetPreview.meta.fields.forEach( (feature) => {
+      newDefaults[feature] = this.featureTypeNumeric;
+    })
+    //Go through all values, if any are non-numeric, mark the field as type categorical
+    this.state.datasetPreview.data.forEach( (row) => {
+      this.state.datasetPreview.meta.fields.forEach( (feature) => {
+        //NOTE - empircally, at the end we get an extra row with a single member set to "".
+        //So skip if row[field] is undefined or ""
+        if(row[feature] !== "" && row[feature] !== undefined && isNaN(row[feature])) {
+          newDefaults[feature] = this.featureTypeCategorical;
+        }
+      })
+    })
+    this.setState({ featureTypeDefaults: newDefaults });
+  }
+
+  /**
    * For the passed feature, get the default type for it based on automatic
    * feature-type assignment algorithm.
-   * Simple algorithm: if any value in the feature is type string, consider it 
-   *  Categorical. Otherwise its Numeric
    * @param {string} feature 
    * @returns {string} If feature does not exist in data, return Numeric and print error to console
    */
@@ -611,15 +637,7 @@ handleCatFeaturesUserTextCancel() {
       console.log("Cannot get default type for unrecognized feature: " + feature);
       return this.featureTypeNumeric;
     }
-    let isCategorical = false;
-    this.state.datasetPreview.data.forEach( (row) => {
-      //NOTE - empircally, at the end we get an extra row with a single member set to "".
-      //So skip if row[field] is undefined or ""
-      if(row[feature] !== "" && row[feature] !== undefined && isNaN(row[feature])) {
-        isCategorical = true;
-      }
-    })
-    return isCategorical ? this.featureTypeCategorical : this.featureTypeNumeric;
+    return this.state.featureTypeDefaults[feature];
   }
 
   /**
@@ -636,6 +654,8 @@ handleCatFeaturesUserTextCancel() {
 
   /** 
    * Set the feature-type for the specified feature. Implicitly updates feature-type dropdowns.
+   * Does NOT allow setting feature to type Numeric for features that have default type Categorical.
+   *   For these, it will ignore feature type Numeric.
    * Updates state vars that hold textural value of feature specifications for categorical and ordinal. 
    * @param {string} feature - feature name to update
    * @param {string} type - the new feature type for the feature (use of of the predefined featureType* accessors)
@@ -653,11 +673,15 @@ handleCatFeaturesUserTextCancel() {
       return;
     }
 
-    //If type hasn't changed, just exit
-    let prevType = this.getFeatureType(feature);
-    if(prevType === type)
+    // Do not set to type Numeric if default type is non-numeric
+    if( type === this.featureTypeNumeric && this.getFeatureDefaultType(feature) !== this.featureTypeNumeric) {
+      //debug output in dev build
+      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+        console.log("setFeatureType: tried to set feature " + feature + " to type Numeric but it is not type Numeric by default.");
+      }
       return;
-      
+    }
+    
     // Handle ordinal type
     let ords = this.state.ordinalFeaturesObject;
     let ordsPrev = this.state.ordinalFeaturesObjectPrev;
@@ -685,6 +709,9 @@ handleCatFeaturesUserTextCancel() {
       ordinalFeaturesObject: ords,
       ordinalFeaturesObjectPrev: ordsPrev,
       ordinalFeaturesUserText: this.ordinalFeaturesObjectToUserText(),
+      //NOTE - this also makes sure the string is updated properly for times when
+      // user supplies a text string to specify categorical features, but has left
+      // out one or more features that auto-default to type categorical.
       catFeaturesUserText: this.getCatFeatures().join()
     });
   }
@@ -1006,8 +1033,12 @@ handleCatFeaturesUserTextCancel() {
       );
 
       //Options for the per-feature dropdown in dataset preview
-      const featureTypeOptions = [
+      const featureTypeOptionsAll = [
         { key: 1, text: 'Numeric', value: this.featureTypeNumeric},
+        { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
+        { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
+      ]
+      const featureTypeOptionsNonNumeric = [
         { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
         { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
       ]
@@ -1038,7 +1069,7 @@ handleCatFeaturesUserTextCancel() {
                           value={this.state.featureType[i]}
                           fluid
                           selection
-                          options={featureTypeOptions}
+                          options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
                           onChange={this.handleFeatureTypeDropdown}
                           customindexid={i}                       
                         />
@@ -1287,8 +1318,9 @@ handleCatFeaturesUserTextCancel() {
                 &emsp;<i>sex,eye_color,hair_color,disease_state</i>
             </p>
             <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
-              and the range is expanded using the column numbers. For example, working from the example above, entering <br/>
-              &emsp;<i>sex-disease_state</i><br/>
+              and the range is expanded using the column numbers. For example, working from the example above in which
+              we assume the features are present in the data in the same order as listed, entering <br/>
+              &emsp;<i>sex-disease_state</i><br/><br/>
               would expand to<br/>
               &emsp;<i>sex,eye_color,hair_color,disease_state</i>
             </p>
