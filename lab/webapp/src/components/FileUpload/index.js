@@ -40,7 +40,10 @@ class FileUpload extends Component {
   get featureTypeNumeric() { return 'numeric'; }
   get featureTypeCategorical() { return 'categorical'; }
   get featureTypeOrdinal() { return 'ordinal'; }
-  
+  /** Special type to mark the dependent column. 
+   *  It's not properly a feature, but use same terminology for consistency. */
+  get featureTypeDependent() { return 'dependent'; }
+
   /**
   * FileUpload reac component - UI form for uploading datasets
   * @constructor
@@ -84,7 +87,8 @@ class FileUpload extends Component {
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
-
+    this.getDependentColumn = this.getDependentColumn.bind(this);
+    
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -117,9 +121,11 @@ class FileUpload extends Component {
   get initState() {
     return {
       selectedFile: null,
-      dependentCol: '',
+      /** The name of the column with the data that is treated as the dependent column */
+//      dependentCol: '',
       /** {array} String-array holding the type for each feature, in same index order as features within the data. 
-       * For assignment, use the gettors   featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal; }
+       * For assignment, use the gettors:
+       *  featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal, featureTypeDependent }
       */
       featureType: [],
       /** {object} Object with proerty for each feature, holding the auto-determined default feature type for each feature. */
@@ -175,10 +181,9 @@ class FileUpload extends Component {
   handleDepColDropdown(e, data) {
     //window.console.log('safe input: ', safeInput);
     //console.log("dep col value: " + data.value);
-    this.setState({
-      dependentCol: data.value,
-      errorResp: undefined
-    });
+
+    // This will reset feature type for a dependent column that's already set
+    this.setFeatureType(data.value, this.featureTypeDependent);
   }
 
   /**
@@ -321,7 +326,7 @@ handleCatFeaturesUserTextCancel() {
 
     const data = new FormData();
     this.setState({errorResp: undefined});
-    let depCol = this.state.dependentCol;
+    let depCol = this.getDependentColumn();
     let ordFeatures = "";
     let predictionType = this.state.predictionType;
 
@@ -334,7 +339,7 @@ handleCatFeaturesUserTextCancel() {
       }
 
       //Check that dependent column is valid
-      if (!this.validateFeatureName(this.state.dependentCol)) {
+      if (!this.validateFeatureName(depCol)) {
         return { errorResp: "Dependent Column must be defined and valid." };
       }
 
@@ -641,14 +646,17 @@ handleCatFeaturesUserTextCancel() {
   }
 
   /**
-   * Set the feature type for all features in the data
+   * Set the feature type for all features in the data.
+   * Does NOT change type of column/feature that is assigned as dependent column.
    * @param {string} type - one of [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
    *  where 'autoDefault' will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
     this.state.datasetPreview.meta.fields.forEach( (feature) => {
-      let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
-      this.setFeatureType(feature, newType);
+      if( this.getFeatureType(feature) !== this.featureTypeDependent ) {
+        let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
+        this.setFeatureType(feature, newType);  
+      }
     })
   }
 
@@ -656,6 +664,7 @@ handleCatFeaturesUserTextCancel() {
    * Set the feature-type for the specified feature. Implicitly updates feature-type dropdowns.
    * Does NOT allow setting feature to type Numeric for features that have default type Categorical.
    *   For these, it will ignore feature type Numeric.
+   * Allows only one feature at a time to be type 'dependent'. 
    * Updates state vars that hold textural value of feature specifications for categorical and ordinal. 
    * @param {string} feature - feature name to update
    * @param {string} type - the new feature type for the feature (use of of the predefined featureType* accessors)
@@ -664,7 +673,10 @@ handleCatFeaturesUserTextCancel() {
    * @returns {null}
   */
   setFeatureType(feature, type, ordinalValues) {
-    if( type !== this.featureTypeNumeric && type !== this.featureTypeCategorical && type !== this.featureTypeOrdinal) {
+    if( type !== this.featureTypeNumeric &&
+        type !== this.featureTypeCategorical &&
+        type !== this.featureTypeOrdinal &&
+        type !== this.featureTypeDependent) {
       console.log("ERROR: unrecognized feature type: " + type);
       return;
     }
@@ -680,6 +692,13 @@ handleCatFeaturesUserTextCancel() {
         console.log("setFeatureType: tried to set feature " + feature + " to type Numeric but it is not type Numeric by default.");
       }
       return;
+    }
+  
+    // Handle dependent column type
+    if( type == this.featureTypeDependent) {
+        //Clear the currently-assigned dependent column if there is one
+        let currentDep = this.getDependentColumn();
+        currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
     }
     
     // Handle ordinal type
@@ -835,6 +854,10 @@ handleCatFeaturesUserTextCancel() {
     //Make sure feature name is valid
     if( !this.validateFeatureName(ordObj.feature) ) {
       return {success: false, message: "Feature '" + ordObj.feature + "' was not found in the data."}
+    }
+    //Make sure the feature name is not assigned as the dependent column
+    if( this.getDependentColumn() === ordObj.feature ) {
+      return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Dependent Column."};
     }
     //The remaining items in the string are the unique values
     if( ordObj.values === undefined || ordObj.values.length === 0) {
@@ -1063,18 +1086,23 @@ handleCatFeaturesUserTextCancel() {
                 {/* row of dropdowns for specifying feature type*/}
                 <Table.Row>
                   { dataPrev.meta.fields.map((field, i) => {
-                    return (
-                      <Table.Cell key={'featureType_'+field}>
-                        <Dropdown
-                          value={this.state.featureType[i]}
-                          fluid
-                          selection
-                          options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
-                          onChange={this.handleFeatureTypeDropdown}
-                          customindexid={i}                       
-                        />
-                      </Table.Cell>
-                      )
+                    if( field === this.getDependentColumn() ) {
+                      return <Table.Cell key={'featureType_'+field}>{"Dependent"}</Table.Cell>
+                    }
+                    else {
+                      return (
+                        <Table.Cell key={'featureType_'+field}>
+                          <Dropdown
+                            value={this.state.featureType[i]}
+                            fluid
+                            selection
+                            options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
+                            onChange={this.handleFeatureTypeDropdown}
+                            customindexid={i}
+                          />
+                        </Table.Cell>
+                        )
+                      }
                     }
                   )}
                 </Table.Row>
@@ -1121,6 +1149,20 @@ handleCatFeaturesUserTextCancel() {
     )
 
     return predictionSelector;
+  }
+
+  /** Return the string name of the user-specified dependent column.
+   *  It's stored as a 'feature type' of 'dependent' for interoperability
+   *  with the rest of the code.
+   *  @returns {string} - Column/feature name. undefined if not set.
+   */
+  getDependentColumn() {
+    let result = undefined;
+    this.state.datasetPreview.meta.fields.forEach( (feature) => {
+      if(this.getFeatureType(feature) === this.featureTypeDependent)
+        result = feature;
+    })
+    return result;
   }
 
   /**
@@ -1187,12 +1229,23 @@ handleCatFeaturesUserTextCancel() {
           success = false;
           message += ", " + feature;  
         } else {
-          expanded.push(range.rangeExpanded);
+          //Returns an array, so concatenate to create a single array instead of array of array
+          expanded = expanded.concat(range.rangeExpanded);
         }
       } else {
+        //It's a single feature, so just add it to the list
         expanded.push(feature);
       }
     })
+    //Check that user isn't including the currently-defined dependent column
+    if( success ) {
+      let depCol = this.getDependentColumn();
+      if( depCol !== undefined && expanded.indexOf(depCol) > -1 ) {
+        success = false;
+        message = "The feature " + depCol + " cannot be used because it is assigned as the Dependent Column.";
+      }
+    }
+
     return {success: success, message: message, expanded: expanded.join()}
   }
 
