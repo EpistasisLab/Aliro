@@ -3,7 +3,6 @@ import pandas as pd
 import time
 from datetime import datetime
 import pickle
-import json
 import os
 import warnings
 import random
@@ -23,6 +22,7 @@ from ai.recommender.surprise_recommenders import (
     KNNMLRecommender,
     SlopeOneRecommender,
     SVDRecommender)
+from ai.config import classifier_config_dict, regressor_config_dict
 
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
@@ -56,7 +56,7 @@ class PennAI(BaseEstimator):
     :param n_iters: int = total number of iteration
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
-    :param ml_p_file: inputfile for hyperparams space for all ML algorithms
+    :param config_dict: python dictionary - inputfile for hyperparams space for all ML algorithms
     :param ensemble: if it is a integer N, PennAI will use
             VotingClassifier/VotingRegressor to ensemble
             top N best models into one model.
@@ -82,7 +82,7 @@ class PennAI(BaseEstimator):
                  n_iters=10,
                  knowledgebase=None,
                  kb_metafeatures=None,
-                 ml_p_file=None,
+                 config_dict=None,
                  ensemble=None,
                  max_time_mins=None,
                  stopping_criteria=None,
@@ -98,7 +98,7 @@ class PennAI(BaseEstimator):
         self.n_iters = n_iters
         self.knowledgebase = knowledgebase
         self.kb_metafeatures = kb_metafeatures
-        self.ml_p_file = ml_p_file
+        self.config_dict = config_dict
         self.ensemble = ensemble
         self.max_time_mins = max_time_mins
         self.stopping_criteria = stopping_criteria
@@ -200,66 +200,53 @@ class PennAI(BaseEstimator):
 
     def get_all_ml_p(self, categoryFilter=None):
         """
-        Returns a list of ml and parameter options based on projects.json
+        Returns a list of ml and parameter options based on config dictionary
 
         :returns: pd.DataFrame - unique ml algorithm and parameter combinations
             with columns 'alg_name', 'category', 'alg_name', 'parameters'
             'parameters' is a dictionary of parameters
         """
 
-        if self.ml_p_file is None:
-            self.ml_p_file_ = "docker/dbmongo/files/projects.json"
-        else:
-            self.ml_p_file_ = self.ml_p_file
-
-        self.algorithms = json.load(open(self.ml_p_file_, encoding="utf8"))
-        # exclude algorithm in different mode
-        self.algorithms = [
-            a for a in self.algorithms if a['category'] == self.mode]
+        if self.config_dict is not None:
+            self.config_dict_ = self.config_dict
 
         result = []  # returned value
-        good_def = True  # checks that json for ML is in good form
+        self.algorithms = []
 
-        for i, x in enumerate(self.algorithms):
-            logger.debug('Checking ML: ' + str(x['name']))
-
-            hyperparams = x['schema'].keys()
-            hyperparam_dict = {}
-            if 'static_parameters' in x:
-                self.static_parameters[x['name']] = x['static_parameters']
-            else:
-                self.static_parameters[x['name']] = {}
+        for k, v in self.config_dict_.items():
+            k_split = k.split('.')
+            model_name = k_split[-1]
+            algo = {}
+            algo['name'] = model_name
+            algo['path'] = ".".join(k_split[:-1])
+            logger.debug('Checking ML: ' + model_name)
             # get a dictionary of hyperparameters and their values
-            for h in hyperparams:
-                logger.debug('  Checking hyperparams: x[''schema''][h]' +
-                             str(x['schema'][h]))
-                if 'ui' in x['schema'][h]:
-                    if 'values' in x['schema'][h]['ui']:
-                        hyperparam_dict[h] = x['schema'][h]['ui']['values']
-                    else:
-                        hyperparam_dict[h] = x['schema'][h]['ui']['choices']
-                else:
-                    good_def = False
-            if good_def:
-                all_hyperparam_combos = list(ParameterGrid(hyperparam_dict))
-                #print('\thyperparams: ',hyperparam_dict)
-                logger.debug(
-                    '{} hyperparameter combinations for {}'.format(
-                        len(all_hyperparam_combos), x['name']))
-                # print(all_hyperparam_combos)
-
-                for ahc in all_hyperparam_combos:
-                    if 'invalidParameterCombinations' in x.keys():
-                        if not self.valid_combo(
-                                ahc, x['invalidParameterCombinations']):
-                            continue
-                    result.append({'algorithm': x['name'],
-                                   'category': x['category'],
-                                   'parameters': ahc,
-                                   'alg_name': x['name']})
+            hyperparam_dict = v['params']
+            if "static_parameters" in v.keys():
+                self.static_parameters[model_name] = v["static_parameters"]
             else:
-                logger.error('warning: ' + str(x['name']) + 'was skipped')
-            good_def = True
+                self.static_parameters[model_name] = {}
+
+            all_hyperparam_combos = list(ParameterGrid(hyperparam_dict))
+            #print('\thyperparams: ',hyperparam_dict)
+            logger.debug(
+                '{} hyperparameter combinations for {}'.format(
+                    len(all_hyperparam_combos), model_name)
+                    )
+            # print(all_hyperparam_combos)
+
+            for ahc in all_hyperparam_combos:
+                if 'invalid_params_comb' in v.keys():
+                    if not self.valid_combo(
+                            ahc, v['invalid_params_comb']):
+                        continue
+                result.append({'algorithm': model_name,
+                               'category': self.mode,
+                               'parameters': ahc,
+                               'alg_name': model_name})
+
+            self.algorithms.append(algo)
+
 
         # convert to dataframe, making sure there are no duplicates
         all_ml_p = pd.DataFrame(result)
@@ -662,9 +649,11 @@ class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
     ml_type = "classifier"
+    config_dict_ = classifier_config_dict
 
 
 class PennAIRegressor(PennAI, RegressorMixin):
     mode = "regression"
     scoring_ = "neg_mean_squared_error"
     ml_type = "regressor"
+    config_dict_ = regressor_config_dict
