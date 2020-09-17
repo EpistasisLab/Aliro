@@ -323,9 +323,7 @@ def test_ensemble():
 #     assert path.isfile(save_path)
 
 
-
-@parameterized.expand(AllRecommenders)
-def test_warm_start(recommender):
+def test_warm_start(recommender=SVDRecommender):
     """Test PennAIClassifier fit() with warm_start."""
     if recommender.__name__ not in ["AverageRecommender", "RandomRecommender", "CoClusteringRecommender"]:
         serialized_rec_directory = "data/recommenders/scikitlearn"
