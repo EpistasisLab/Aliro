@@ -183,7 +183,7 @@ def test_init():
     assert pennai.verbose == 0
     assert pennai.serialized_rec == None
     assert pennai.scoring == None
-    assert pennai.ml_p_file == None
+    assert pennai.config_dict == None
     assert pennai.ensemble == None
     assert pennai.max_time_mins == None
     assert pennai.stopping_criteria == None
@@ -286,7 +286,7 @@ def test_ensemble():
 # def test_save(recommender):
 #     """Test PennAIClassifier save() function."""
 #     print("\nSave recommender for ", recommender.__name__)
-#     if recommender.__name__ not in ["AverageRecommender", "RandomRecommender"]:
+#     if recommender.__name__ not in ["AverageRecommender", "RandomRecommender", "CoClusteringRecommender"]:
 #         save_path = "data/recommenders/scikitlearn/{}_classifier_accuracy_pmlb.pkl.gz".format(recommender.__name__)
 #         classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
 #         pennai = PennAIClassifier(
@@ -301,6 +301,28 @@ def test_ensemble():
 #         pennai.fit_init_()
 #         pennai.rec_engine.save(save_path)
 #         assert path.isfile(save_path)
+#
+#
+# def test_save_reg(recommender=SVDRecommender):
+#     """Test PennAIClassifier save() function."""
+#     print("\nSave recommender for ", recommender.__name__)
+#     save_path = "data/recommenders/scikitlearn/{}_regressor_nmse_pmlb.pkl.gz".format(recommender.__name__)
+#     regression_kb_full = "data/knowledgebases/pmlb_regression_results.tsv.gz"
+#     regression_metafeatures="data/knowledgebases/pmlb_regression_metafeatures.csv.gz"
+#     pennai = PennAIRegressor(
+#                             rec_class=recommender,
+#                             n_recs=2,
+#                             n_iters=2,
+#                             knowledgebase=regression_kb_full,
+#                             kb_metafeatures=regression_metafeatures,
+#                             random_state=42,
+#                             verbose=1
+#                           )
+#     pennai.fit_init_()
+#     pennai.rec_engine.save(save_path)
+#     assert path.isfile(save_path)
+
+
 
 @parameterized.expand(AllRecommenders)
 def test_warm_start(recommender):
@@ -323,3 +345,24 @@ def test_warm_start(recommender):
         pennai.fit(X_train, y_train)
 
         assert pennai.score(X_train, y_train)
+
+
+def test_warm_start_reg(recommender=SVDRecommender):
+    """Test PennAIClassifier fit() with warm_start."""
+    serialized_rec_directory = "data/recommenders/scikitlearn"
+    serialized_rec_filename = "{}_regressor_nmse_pmlb.pkl.gz".format(recommender.__name__)
+    regression_kb_full = "data/knowledgebases/pmlb_regression_results.tsv.gz"
+    serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
+    pennai = PennAIRegressor(
+                            rec_class=recommender,
+                            n_recs=2,
+                            n_iters=2,
+                            serialized_rec=serialized_rec,
+                            knowledgebase=regression_kb_full,
+                            kb_metafeatures=regression_metafeatures,
+                            random_state=42,
+                            verbose=0
+                           )
+    pennai.fit(X_train, y_train)
+
+    assert pennai.score(X_train, y_train)
