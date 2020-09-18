@@ -35,7 +35,6 @@ metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0,
         float_precision='round_trip')
 
 
-
 def get_metafeatures(d):
     """Fetch dataset metafeatures from file"""
     # print('getting metafeatures for',d)
@@ -67,7 +66,8 @@ ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
 # data.set_index('_id')
 #ml - param combos
 
-test_recommenders = [RandomRecommender, 
+test_recommenders = [
+        RandomRecommender, 
         AverageRecommender, 
         KNNMetaRecommender,
         CoClusteringRecommender, 
@@ -75,7 +75,8 @@ test_recommenders = [RandomRecommender,
         KNNDatasetRecommender, 
         KNNMLRecommender, 
         SlopeOneRecommender, 
-        SVDRecommender ]
+        SVDRecommender 
+        ]
 
 
 def update_dataset_mf(dataset_mf,results_data):
