@@ -126,8 +126,8 @@ pip install pennai-ai-engine
 The following code illustrates how PennAI can be employed for performing a simple _classification task_ over the Iris dataset.
 
 ```Python
-from ai.pennai_sklearn import PennAIClassifier
-from ai.recommender.knn_meta_recommender import KNNMetaRecommender
+from ai.sklearn import PennAIClassifier
+from ai.recommender import KNNMetaRecommender
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -159,8 +159,8 @@ print(pennai.score(X_test, y_test))
 The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:
 
 ```Python
-from ai.pennai_sklearn import PennAIClassifier
-from ai.recommender.surprise_recommenders import SVDRecommender
+from ai.sklearn import PennAIClassifier
+from ai.recommender import SVDRecommender
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 import numpy as np

@@ -1,15 +1,19 @@
-from ai.pennai_sklearn import PennAIClassifier, PennAIRegressor
+from ai.sklearn import PennAIClassifier, PennAIRegressor
 from sklearn.datasets import load_iris, load_boston
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
 from parameterized import parameterized
-from ai.recommender.average_recommender import AverageRecommender
-from ai.recommender.random_recommender import RandomRecommender
-from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
-        KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
-        SlopeOneRecommender, SVDRecommender)
+from ai.recommender import (
+    AverageRecommender,
+    RandomRecommender,
+    KNNMetaRecommender,
+    CoClusteringRecommender,
+    KNNWithMeansRecommender,
+    KNNDatasetRecommender,
+    KNNMLRecommender,
+    SlopeOneRecommender,
+    SVDRecommender)
 from ai.knowledgebase_utils import load_knowledgebase
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 from os import path, remove
