@@ -5,24 +5,23 @@ from datetime import datetime
 import pickle
 import os
 import warnings
-import random
-from ai.knowledgebase_utils import load_knowledgebase
-from ai.metalearning.get_metafeatures import generate_metafeatures
-from ai.metalearning.dataset_describe import Dataset
 import logging
 import sys
-from ai.recommender.average_recommender import AverageRecommender
-from ai.recommender.random_recommender import RandomRecommender
-from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.metrics import SCORERS
-from ai.recommender.surprise_recommenders import (
+from ..knowledgebase_utils import load_knowledgebase
+from ..metalearning import generate_metafeatures
+from ..metalearning import Dataset
+from ..recommender import AverageRecommender
+from ..recommender import RandomRecommender
+from ..recommender import KNNMetaRecommender
+from ..metrics import SCORERS
+from ..recommender import (
     CoClusteringRecommender,
     KNNWithMeansRecommender,
     KNNDatasetRecommender,
     KNNMLRecommender,
     SlopeOneRecommender,
     SVDRecommender)
-from ai.config import classifier_config_dict, regressor_config_dict
+from .config import classifier_config_dict, regressor_config_dict
 
 from sklearn.model_selection import cross_val_score, ParameterGrid
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
