@@ -16,3 +16,5 @@ parameterized==0.7.0
 m2r==0.2.1
 sphinx-rtd-theme==0.4.3
 requests==2.22.0
+shap==0.34.0
+environs==8.0.0

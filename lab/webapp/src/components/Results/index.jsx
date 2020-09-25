@@ -8,6 +8,7 @@ import RunDetails from './components/RunDetails'
 import MSEMAEDetails from './components/MSEMAEDetails';;
 import ConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
+import ShapSummaryCurve from './components/ShapSummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
@@ -83,7 +84,8 @@ class Results extends Component {
     console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
-      let confusionMatrix, rocCurve, importanceScore;
+      let confusionMatrix, rocCurve, importanceScore, shap_explainer, shap_num_samples;
+      let shapSummaryCurveDict = {};
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('confusion_matrix')) {
@@ -92,6 +94,11 @@ class Results extends Component {
           rocCurve = file;
         } else if(filename.includes('imp_score')) {
           importanceScore = file;
+        } else if(filename.includes('shap_summary_curve')) {
+          let class_name = filename.split('_').slice(-2,-1);
+          shapSummaryCurveDict[class_name] = file;
+          shap_explainer=experiment.data.shap_explainer;
+          shap_num_samples=experiment.data.shap_num_samples;
         }
       });
       // balanced accuracy
@@ -133,6 +140,10 @@ class Results extends Component {
               <Grid.Column>
                 <ConfusionMatrix file={confusionMatrix} />
                 <ROCCurve file={rocCurve} />
+                <ShapSummaryCurve 
+                  fileDict={shapSummaryCurveDict} 
+                  shap_explainer={shap_explainer}
+                  shap_num_samples={shap_num_samples} />
               </Grid.Column>
               <Grid.Column>
                 <Score
