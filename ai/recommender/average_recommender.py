@@ -131,6 +131,7 @@ class AverageRecommender(BaseRecommender):
         super().recommend(dataset_id, n_recs, dataset_mf)
         dataset_hash = dataset_id
 
+
         # return ML+P for best average y
         try:
             rec = self.scores.sort_values(ascending=False).index.values
