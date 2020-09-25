@@ -19,8 +19,6 @@ import copy
 from pandas.util import hash_pandas_object
 import pandas as pd
 
-
-
 # implementing metaclass __repr__ for more human readable
 # names for generated tests in test_recommender.py
 class MC(type):
@@ -46,10 +44,10 @@ class BaseRecommender(object, metaclass=MC):
         'parameters'
 
     knowledgebase_results: Pandas DataFrame or None
-        Initial knowledgebase results data.  
-        If not None and not loading a serialized recommender, the recommender 
-        will initilize and train on this data.
-        If loading a serialized recommender, this is the knowlegebase that 
+        Initial knowledgebase results data.
+        If not None and not loading a serialized recommender, the recommender
+        will initialize and train on this data.
+        If loading a serialized recommender, this is the knowlegebase that
         accompanies it.
 
     knowledgebase_metafeatures: Pandas DataFrame or None
@@ -151,7 +149,7 @@ class BaseRecommender(object, metaclass=MC):
             serialized_rec_directory,
             serialized_rec_filename):
 
-        # load serialized rec, or initilize from the given 
+        # load serialized rec, or initialize from the given
         # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
 
@@ -170,16 +168,16 @@ class BaseRecommender(object, metaclass=MC):
             else:
                 logger.warn(f"Not loading serialized recommender, file does "
                         "not exist: {self.serialized_rec_path}")
-                if knowledgebase_results is not None: 
-                    logger.info(f"Initilizing new recommender from provided "
+                if knowledgebase_results is not None:
+                    logger.info(f"Initializing new recommender from provided "
                             "knowledgebase")
                     self.update(knowledgebase_results, 
                             knowledgebase_metafeatures, source='knowledgebase')
 
         else:
             logger.info(f"Not loading serialized recommender.")
-            if knowledgebase_results is not None: 
-                logger.info(f"Initilizing new recommender from provided "
+            if knowledgebase_results is not None:
+                logger.info(f"Initializing new recommender from provided "
                         "knowledgebase")
                 self.update(knowledgebase_results, knowledgebase_metafeatures, 
                         source='knowledgebase')

@@ -39,7 +39,8 @@ class AverageRecommender(BaseRecommender):
             serialized_rec_directory=None,
             serialized_rec_filename=None):
 
-        """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
+        """ set default recommender specific parameters; might be overwritten 
+        by loading serialized recommender"""
 
         """Initialize recommendation system."""
         super().__init__(
@@ -131,6 +132,7 @@ class AverageRecommender(BaseRecommender):
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
         dataset_hash = dataset_id
+
 
         # return ML+P for best average y
         try:
