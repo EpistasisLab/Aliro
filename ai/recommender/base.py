@@ -311,11 +311,13 @@ class BaseRecommender(object, metaclass=MC):
             # check if parameters match, if not throw warning/error
             for k,v in tmp_dict.items():
                 if k in self.__dict__.keys():
-                    if type(self.__dict__[k]) in [str, int, bool, float]:
+                    try:
                         if self.__dict__[k] != tmp_dict[k]:
                             logger.warn(k+' changing from '
                                     + str(self.__dict__[k])[:20] + '... to '
                                         + str(tmp_dict[k])[:20] + '...')
+                    except:
+                        pass
                 else:
                     logger.warn('adding ' + k+'=' + str(tmp_dict[k])[:20]
                             + '...')
