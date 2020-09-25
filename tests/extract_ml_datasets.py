@@ -6,7 +6,7 @@ PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
     - William La Cava (lacava@upenn.edu)
-    - Michael Stauffer (mgstauff@gmail.com)
+    - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
 
 This program is free software: you can redistribute it and/or modify
