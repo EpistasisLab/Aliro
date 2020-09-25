@@ -1,6 +1,7 @@
 """
 Recommender system for Penn AI.
 """
+import pdb
 import pandas as pd
 from .base import BaseRecommender
 import logging
@@ -41,6 +42,13 @@ class AverageRecommender(BaseRecommender):
         """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
 
         """Initialize recommendation system."""
+        
+        # number of datasets trained on so far
+        self.w = 0
+
+        # empty scores pandas series
+        self.scores = pd.Series()
+
         super().__init__(
             ml_type,
             metric,
@@ -51,8 +59,7 @@ class AverageRecommender(BaseRecommender):
             load_serialized_rec=load_serialized_rec,
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename)
-
-
+        
     def _train_empty_rec(self,
             ml_type,
             metric,
@@ -75,11 +82,6 @@ class AverageRecommender(BaseRecommender):
             serialized_rec_directory,
             serialized_rec_filename)
 
-        # number of datasets trained on so far
-        self.w = 0
-
-        # empty scores pandas series
-        self.scores = pd.Series()
 
 
 
@@ -130,7 +132,6 @@ class AverageRecommender(BaseRecommender):
         # dataset hash table
         super().recommend(dataset_id, n_recs, dataset_mf)
         dataset_hash = dataset_id
-
 
         # return ML+P for best average y
         try:
