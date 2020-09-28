@@ -66,8 +66,8 @@ class FileUpload extends Component {
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
     this.getDataTableOrdinalRankButtons = this.getDataTableOrdinalRankButtons.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
-    this.errorPopupTimeout = this.errorPopupTimeout.bind(this);
-    this.handleClose = this.handleClose.bind(this);
+    this.handleErrorModalClose = this.handleErrorModalClose.bind(this);
+    this.showErrorModal = this.showErrorModal.bind(this);
     this.handleFeatureTypeDropdown = this.handleFeatureTypeDropdown.bind(this);
     this.initDatasetPreview = this.initDatasetPreview.bind(this);
     this.handleOrdinalSortDragRelease = this.handleOrdinalSortDragRelease.bind(this);
@@ -88,7 +88,7 @@ class FileUpload extends Component {
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
-    
+
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -160,7 +160,6 @@ class FileUpload extends Component {
       ordinalFeatureToRankValues: [],
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
-      errorResp: undefined
     }
   }
 
@@ -196,7 +195,6 @@ class FileUpload extends Component {
     //window.console.log('safe input cat: ', safeInput);
     this.setState({
       catFeaturesUserText: e.target.value,
-      errorResp: undefined
     });
   }
 
@@ -246,11 +244,7 @@ class FileUpload extends Component {
     else {
       //On error, the modal window showing the text input will stay open, so user
       // must either cancel or correct the error
-      this.setState({
-          openErrorModal: true,
-          errorModalHeader: "Error in Categorical Feature text entry",
-          errorModalContent: result.message,
-      })
+      this.showErrorModal("Error in Categorical Feature text entry", result.message);
       console.log("Error validating categorical feature user text: " + result.message);
     }
   }
@@ -282,11 +276,7 @@ handleCatFeaturesUserTextCancel() {
     else {
       //On error, the modal window showing the text input will stay open, so user
       // must either cancel or correct the error
-      this.setState({
-          openErrorModal: true,
-          errorModalHeader: "Error in Ordinal Feature text entry",
-          errorModalContent: result.message,
-      })
+      this.showErrorModal("Error in Ordinal Feature text entry", result.message);
       console.log("Error validating ordinal feature user text: " + result.message);
     }
   }
@@ -305,14 +295,12 @@ handleCatFeaturesUserTextCancel() {
   handleOrdinalFeaturesUserTextOnChange(e) {
     this.setState({
       ordinalFeaturesUserText: e.target.value,
-      errorResp: undefined
     });
   }
 
   handlePredictionType(e, data) {
     this.setState({
       predictionType: data.value,
-      errorResp: undefined
     });
   }
 
@@ -325,7 +313,6 @@ handleCatFeaturesUserTextCancel() {
     const allowedPredictionTypes = ["classification", "regression"]
 
     const data = new FormData();
-    this.setState({errorResp: undefined});
     let depCol = this.getDependentColumn();
     let ordFeatures = "";
     let predictionType = this.state.predictionType;
@@ -340,7 +327,7 @@ handleCatFeaturesUserTextCancel() {
 
       //Check that dependent column is valid
       if (!this.validateFeatureName(depCol)) {
-        return { errorResp: "Dependent Column must be defined and valid." };
+        return { errorResp: "Please assign a Dependent Feature Column." };
       }
 
       // Ordinal features. 
@@ -396,11 +383,8 @@ handleCatFeaturesUserTextCancel() {
     this.setState({
       selectedFile: null,
       datasetPreview: null,
-      errorResp: undefined,
-      openErrorModal: true,
-      errorModalHeader: "Invalid file type chosen",
-      errorModalContent: "Please choose .cvs or .tsv files"
     });
+    this.showErrorModal("Invalid file type chosen", "Please choose .cvs or .tsv files");
   }
 
   /**
@@ -459,10 +443,10 @@ handleCatFeaturesUserTextCancel() {
           console.error('Error generating preview for selected file:', error);
           this.setState({
             selectedFile: undefined,
-            errorResp: JSON.stringify(error),
             datasetPreview: null,
             openErrorModal: false
           });
+          this.showErrorModal("Error With File", JSON.stringify(error));
           //Added this return, otherwise it will fall through to state below
           return;
         }
@@ -471,7 +455,6 @@ handleCatFeaturesUserTextCancel() {
         // so if file is parsed successfully, the datasetPreview property will be set
         this.setState({
           selectedFile: files[0],
-          errorResp: undefined,
           datasetPreview: null,
           openErrorModal: false
         });
@@ -481,7 +464,6 @@ handleCatFeaturesUserTextCancel() {
         this.setState({
           selectedFile: null,
           datasetPreview: null,
-          errorResp: undefined,
           openErrorModal: true
         });
       }
@@ -490,7 +472,6 @@ handleCatFeaturesUserTextCancel() {
       this.setState({
         selectedFile: null,
         datasetPreview: null,
-        errorResp: undefined,
         openErrorModal: false
       });
     }
@@ -504,10 +485,10 @@ handleCatFeaturesUserTextCancel() {
    * @returns {void} - no return value
    */
   handleUpload = (event) => {
-    if (this.state.disabled) {
+    if (this.state.uploadButtonDisabled) {
       return;
     }
-    this.setState({disabled:true});
+    this.setState({uploadButtonDisabled:true});
 
     const { uploadDataset } = this.props;
 
@@ -516,9 +497,9 @@ handleCatFeaturesUserTextCancel() {
       let data = this.generateFileData(); // should be FormData
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
-        this.setState({
-          errorResp: data.errorResp, 
-          disabled:false});
+        this.showErrorModal("Error with file metadata", data.errorResp);
+        //Reenable upload button since this error messge is blocking
+        this.setState({uploadButtonDisabled:false});
       } else {
         // after uploading a dataset request new list of datasets to update the page
         uploadDataset(data).then(stuff => {
@@ -534,12 +515,10 @@ handleCatFeaturesUserTextCancel() {
           if (!errorRespObj && resp.dataset_id) {
             this.props.fetchDatasets();
             window.location = '#/datasets';
-            this.setState({disabled:false});
+            this.setState({uploadButtonDisabled:false});
           } else {
-            this.setState({
-               errorResp: errorRespObj.errorResp.error || "Something went wrong",
-               disabled:false
-              })
+            this.showErrorModal("Error Uploading Data", errorRespObj.errorResp.error || "Something went wrong");
+            this.setState({uploadButtonDisabled:false});
           }
         });
       }
@@ -547,9 +526,9 @@ handleCatFeaturesUserTextCancel() {
 
     } else {
       window.console.log('no file available');
+      this.showErrorModal("File Update Error",'No file available');
       this.setState({
-        errorResp: 'No file available',
-        disabled:false
+        uploadButtonDisabled:false
       });
     }
 
@@ -578,7 +557,7 @@ handleCatFeaturesUserTextCancel() {
    * @returns {boolean} - true if yes, false otherwise
    */
   validateFeatureName(feature) {
-    return this.getFeatureIndex(feature) >= 0;
+    return feature !== undefined && this.getFeatureIndex(feature) >= 0;
   }
 
   /**
@@ -967,7 +946,7 @@ handleCatFeaturesUserTextCancel() {
                But I get a warning that all children in list should have a unique 'key' prop, even though code
                looks like they do. Can't figure out.
                ALSO the styles set in SortableList aren't coming through here.
-            <Modal basic style={{ marginTop:'0' }} open={true} onClose={this.handleClose} closeIcon>
+            <Modal basic style={{ marginTop:'0' }} open={true} onClose={this.handleErrorModalClose} closeIcon>
               <Modal.Header>Rank the feature's ordinal values</Modal.Header>
               <Modal.Content>
                 <SortableList items={this.state.ordinalFeaturesObject[field]} onSortEnd={this.handleOrdinalSortDragRelease} />
@@ -1435,16 +1414,7 @@ handleCatFeaturesUserTextCancel() {
     return content;
   }
 
-   /**
-   *  Simple timeout function, resets error message
-   */
-  errorPopupTimeout() {
-    this.setState({
-      errorResp: undefined
-    });
-  }
-
-  handleClose(){
+  handleErrorModalClose(){
     this.setState({
       openErrorModal: false,
       errorModalHeader: "",
@@ -1452,11 +1422,25 @@ handleCatFeaturesUserTextCancel() {
     });
   }  
 
+  /**
+   * Show the blocking error message modal dialog.
+   * If it's already showing, this will overwrite the contents.
+   * @param {} header 
+   * @param {*} content
+   * @return {void} 
+   */
+  showErrorModal(header, content) {
+    this.setState({
+      openErrorModal: true,
+      errorModalHeader: header,
+      errorModalContent: content
+    });
+  }
+
   render() {
 
     //const { dataset } = this.props;
 
-    let errorMsg = this.state.errorResp;
     let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let predictionSelector = this.getPredictionSelector();
@@ -1464,11 +1448,7 @@ handleCatFeaturesUserTextCancel() {
 
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
-    // if error message present, display for 4.5 seconds
-    if (errorMsg) {
-      errorContent = ( <p style={{display: 'block'}}> {errorMsg} </p> );
-      window.setTimeout(this.errorPopupTimeout, 10555);
-    }
+
     // check if file with filename has been selected, if so then use css to show form
     this.state.selectedFile && this.state.selectedFile.name ?
       formInputClass = "file-upload-form-show-inputs" : null;
@@ -1511,10 +1491,11 @@ handleCatFeaturesUserTextCancel() {
         <Form inverted>
           <Segment className="file-upload-segment">
             
+            {/* Handle file input */}
             {fileInputElem}
 
             {/*Modal for error messages*/}
-            <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleClose} closeIcon>
+            <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon>
               <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
               <Modal.Content>{this.state.errorModalContent}</Modal.Content>
             </Modal>
@@ -1633,28 +1614,17 @@ handleCatFeaturesUserTextCancel() {
               </div>
             </Form.Input>
             <Form.Input label="Upload" >
-              <Popup
-                header="Error Submitting Dataset"
-                content={errorContent}
-                open={errorMsg ? true : false}
-                id="file_upload_popup_and_button"
-                position='bottom left'
-                on='click'
-                flowing
-                trigger={
-                  <Button
-                    inverted
-                    color="blue"
-                    disabled={this.state.disabled}
-                    loading={this.state.disabled}
-                    compact
-                    size="small"
-                    icon="upload"
-                    content="Upload Dataset"
-                    onClick={this.handleUpload}
-                  />
-                }
-              />
+              <Button
+                inverted
+                color="blue"
+                disabled={this.state.uploadButtonDisabled}
+                loading={this.state.uploadButtonDisabled}
+                compact
+                size="small"
+                icon="upload"
+                content="Upload Dataset"
+                onClick={this.handleUpload}
+                />
             </Form.Input>
             </div>
           </Segment>
