@@ -1468,7 +1468,7 @@ handleCatFeaturesUserTextCancel() {
             <div {...getRootProps({ className: "dropzone" })}>
               <input {...getInputProps()} />
               <p>Upload a csv or tsv file</p>
-              <p>Drag 'n' drop, or click here</p>
+              <p>Drag 'n drop, or click here</p>
             </div>
           </section>
         )}
