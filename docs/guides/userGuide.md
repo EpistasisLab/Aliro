@@ -111,14 +111,13 @@ pip install update_checker
 Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command:
 
 ```Shell
-pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 ```
 
 Finally to install AI engine itself, run the following command:
 
 ```Shell
-# todo
-pip install pennaipy==0.17a
+pip install pennaipy==0.17a0
 ```
 
 ### Example of using PennAI AI engine ###
