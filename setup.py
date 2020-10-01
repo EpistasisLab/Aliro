@@ -23,11 +23,7 @@ setup(
     long_description='''
 A system that intelligently manages machine learning workflows for data science
 
-Contact:
-===
-- Heather Williams (hwilli@upenn.edu)
-- Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
-- William La Cava (lacava@upenn.edu)
+Contact: Heather Williams (hwilli@upenn.edu), Weixuan Fu (weixuanf@upenn.edu), William La Cava (lacava@upenn.edu)
 
 This project is hosted at https://github.com/epistasislab/pennai
 ''',
