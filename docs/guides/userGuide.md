@@ -118,7 +118,7 @@ Finally to install AI engine itself, run the following command:
 
 ```Shell
 # todo
-pip install pennai-ai-engine
+pip install pennaipy==0.17a
 ```
 
 ### Example of using PennAI AI engine ###
