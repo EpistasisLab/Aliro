@@ -10,14 +10,13 @@ def calculate_version():
 package_version = calculate_version()
 
 setup(
-    name='pennai',
+    name='pennaipy',
     version=package_version,
     author='Heather Williams, Weixuan Fu, William La Cava',
     author_email='hwilli@pennmedicine.upenn.edu, weixuanf@pennmedicine.upenn.edu, lacava@upenn.edu',
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests",)),
     url='https://github.com/epistasislab/pennai',
     license='GNU/GPLv3',
-    entry_points={'console_scripts': ['pennai=pennai:main', ]},
     test_suite='nose.collector',
     tests_require=['nose'],
     description=('Penn Artificial Intelligence Data Assistant'),
@@ -26,9 +25,9 @@ A system that intelligently manages machine learning workflows for data science
 
 Contact:
 ===
-- Heather Williams (hwilli@upenn.edu)                                           
-- Weixuan Fu (weixuanf@pennmedicine.upenn.edu)                                  
-- William La Cava (lacava@upenn.edu) 
+- Heather Williams (hwilli@upenn.edu)
+- Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+- William La Cava (lacava@upenn.edu)
 
 This project is hosted at https://github.com/epistasislab/pennai
 ''',
@@ -38,8 +37,7 @@ This project is hosted at https://github.com/epistasislab/pennai
                     'scikit-learn>=0.22.0',
                     'update_checker>=0.16',
                     'pandas>=0.24.2',
-                    'joblib>=0.13.2',
-                    'surprise>=1.0.8'
+                    'joblib>=0.13.2'
                     ],
     classifiers=[
         'Intended Audience :: Science/Research',
