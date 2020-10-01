@@ -14,6 +14,7 @@
 #
 import os
 import sys
+from environs import Env
 sys.path.insert(0, os.path.abspath('../../'))
 print(sys.path)
 
@@ -23,10 +24,15 @@ project = 'PennAI'
 copyright = '2018, Penn'
 author = 'University of Pennsylvania'
 
+# read version from .env
+env = Env()
+env.read_env("../../.env", recurse=False)
+
 # The short X.Y version
-version = '0.15'
+# version = env("TAG").split('-', 1)[0]
+version = env("TAG")
 # The full version, including alpha/beta/rc tags
-release = '0.15'
+release = env("TAG")
 
 
 # -- General configuration ---------------------------------------------------

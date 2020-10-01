@@ -39,10 +39,11 @@ class AverageRecommender(BaseRecommender):
             serialized_rec_directory=None,
             serialized_rec_filename=None):
 
-        """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
+        """ set default recommender specific parameters; might be overwritten
+        by loading serialized recommender"""
 
         """Initialize recommendation system."""
-        
+
         # number of datasets trained on so far
         self.w = 0
 
@@ -59,7 +60,7 @@ class AverageRecommender(BaseRecommender):
             load_serialized_rec=load_serialized_rec,
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename)
-        
+
     def _train_empty_rec(self,
             ml_type,
             metric,
@@ -81,8 +82,6 @@ class AverageRecommender(BaseRecommender):
             load_serialized_rec,
             serialized_rec_directory,
             serialized_rec_filename)
-
-
 
 
     def update(self, results_data, results_mf=None, source='pennai'):
