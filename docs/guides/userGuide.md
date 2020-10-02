@@ -135,8 +135,8 @@ iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
-classification_kb = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz"
-classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+classification_kb = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"
+classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
 
 pennai = PennAIClassifier(
               rec_class=KNNMetaRecommender,
@@ -162,6 +162,7 @@ from ai.sklearn import PennAIClassifier
 from ai.recommender import SVDRecommender
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+import urllib
 import numpy as np
 
 
@@ -171,9 +172,11 @@ X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64)
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
 
-classification_metafeatures="data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
-serialized_rec = "data/recommenders/SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
-classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+# download pkl.gz
+urllib.request.urlretrieve("https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz", "SVDRecommender_classifier_accuracy_pmlb.pkl.gz")
+serialized_rec = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
+classification_kb_full = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
 
 pennai = PennAIClassifier(
               rec_class=SVDRecommender,
