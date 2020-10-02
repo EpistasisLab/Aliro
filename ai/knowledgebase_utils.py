@@ -72,7 +72,7 @@ USER_KB_RESULTS_PATH = 'data/knowledgebases/user/results'
 USER_KB_METAFEATURES_PATH = 'data/knowledgebases/user/metafeatures'
 
 def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
-        jsonMetafeatureDirectory=''):
+        jsonMetafeatureDirectory='', dedupe=True):
     """Load experiment results from from file and generate metadata for the
     experiment datasets.
 
@@ -117,8 +117,9 @@ def load_knowledgebase(resultsFiles={}, metafeaturesFiles=[],
     logger.info("concatenating results....")
     all_resultsData = pd.concat(frames, sort=False)
 
-    logger.info("deduplicating results....")
-    dedupe_results_dataframe(all_resultsData)
+    if dedupe:
+        logger.info("deduplicating results....")
+        dedupe_results_dataframe(all_resultsData)
     dataset_names = all_resultsData['dataset'].unique()
 
     # load dataset metafeatures
@@ -204,7 +205,8 @@ def dedupe_results_dataframe(resultsData):
 
 def load_default_knowledgebases(usePmlb=True,
         userKbResultsPath=USER_KB_RESULTS_PATH,
-        userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH):
+        userKbMetafeaturesPath=USER_KB_METAFEATURES_PATH,
+        dedupe=True):
     """
     Convienence method to load the pmlb knowledgebase and any user-added
     knowledgebases
@@ -248,7 +250,8 @@ def load_default_knowledgebases(usePmlb=True,
 
     return load_knowledgebase(
             resultsFiles = resultsFiles,
-            metafeaturesFiles = metafeaturesFiles
+            metafeaturesFiles = metafeaturesFiles,
+            dedupe=dedupe
             )
 
 def generate_metafeatures_file(

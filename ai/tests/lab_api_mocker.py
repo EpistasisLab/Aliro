@@ -686,7 +686,7 @@ api_projects_data = [{
         "category": "classification"
     },
     {
-            "_id": '9837641',
+            "_id": '5b58f99db7941fabb1921e76',
         "name": "RandomForestClassifier",
         "path": "sklearn.ensemble",
         "description": "An ensemble of decision trees that are trained on random sub-samples of the dataset.",

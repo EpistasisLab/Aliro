@@ -57,10 +57,28 @@ class RandomRecommender(BaseRecommender):
         recommendation.
     """
 
+    def __init__(self, 
+            ml_type='classifier', 
+            metric=None, 
+            ml_p=None,
+            random_state=None, 
+            knowledgebase_results=None,
+            knowledgebase_metafeatures=None,
+            load_serialized_rec="if_exists",
+            serialized_rec_directory=None,
+            serialized_rec_filename=None):
 
-    def __init__(self, ml_type='classifier', metric=None, ml_p=None):
         """Initialize recommendation system."""
-        super().__init__(ml_type, metric, ml_p)
+        super().__init__(
+            ml_type, 
+            metric, 
+            ml_p, 
+            random_state=random_state,
+            knowledgebase_results=knowledgebase_results,
+            knowledgebase_metafeatures=knowledgebase_metafeatures,
+            load_serialized_rec=load_serialized_rec,
+            serialized_rec_directory=serialized_rec_directory,
+            serialized_rec_filename=serialized_rec_filename)
 
     def update(self, results_data, results_mf=None, source='pennai'):
         """Update ML / Parameter recommendations.
@@ -120,7 +138,7 @@ class RandomRecommender(BaseRecommender):
                 # recommendation')
                 ml_rec.append(ml_tmp)
                 phash_rec.append(p_tmp)
-                p_rec.append(self.param_htable[int(p_tmp)])
+                p_rec.append(self.hash_2_param[p_tmp])
                 rec_score.append(0) 
             # if a dataset is specified, do not make recommendations for
             # algorithm-parameter combos that have already been run
@@ -138,6 +156,6 @@ class RandomRecommender(BaseRecommender):
             logger.error('self.w:', self.w)
             raise AttributeError
 
-        self.update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, phash_rec)
 
         return ml_rec, p_rec, rec_score
