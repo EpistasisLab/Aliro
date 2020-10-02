@@ -48,20 +48,87 @@ class TestLabApi:
 
 
 		self.partial_expected_classification_ml_p = [
-			{"alg_name":"SVC", "category":"classification", "algorithm":"5ba41716dfe741699222871b", "parameters":{'C': 0.0001, 'kernel': 'poly', 'tol': 1e-05}},
-			{"alg_name":"SVC", "category":"classification", "algorithm":"5ba41716dfe741699222871b", "parameters":{'C': 0.0001, 'kernel': 'poly', 'tol': 0.0001}},
-			{"alg_name":"SVC", "category":"classification", "algorithm":"5ba41716dfe741699222871b", "parameters":{'C': 0.0001, 'kernel': 'poly', 'tol': 0.001}},
-			{"alg_name":"SVC", "category":"classification", "algorithm":"5ba41716dfe741699222871b", "parameters":{'C': 25, 'kernel': 'rbf', 'tol': 0.1}},
-			{"alg_name":"SVC", "category":"classification", "algorithm":"5ba41716dfe741699222871b", "parameters":{'C': 1, 'kernel': 'poly', 'tol': 1e-05}},
+			{
+                         "algorithm":"SVC", 
+                         "algorithm_id":"5ba41716dfe741699222871b",
+                         "category":"classification", 
+                         "parameters":{'C': 0.0001, 
+                                       'kernel': 'poly', 
+                                       'tol': 1e-05}
+                        },
+			{
+                         "algorithm":"SVC", 
+                         "algorithm_id":"5ba41716dfe741699222871b",
+                         "category":"classification",  
+                         "parameters":{'C': 0.0001, 
+                             'kernel': 'poly', 
+                             'tol': 0.0001}},
+			{
+                         "algorithm":"SVC", 
+                         "algorithm_id":"5ba41716dfe741699222871b",
+                         "category":"classification",  
+                         "parameters":{'C': 0.0001, 
+                             'kernel': 'poly', 
+                             'tol': 0.001}},
+			{
+                         "algorithm":"SVC", 
+                         "algorithm_id":"5ba41716dfe741699222871b",
+                         "category":"classification",  
+                         "parameters":{'C': 25, 
+                             'kernel': 'rbf', 
+                             'tol': 0.1}},
+			{
+                         "algorithm":"SVC", 
+                         "algorithm_id":"5ba41716dfe741699222871b",
+                         "category":"classification",  
+                         "parameters":{'C': 1, 
+                             'kernel': 'poly', 
+                             'tol': 1e-05}},
 		]
 
 		self.expected_total_classification_ml_p = 80
 
 		self.partial_expected_regression_ml_p = [
-			{"alg_name":"DecisionTreeRegressor", "category":"regression", "algorithm":"5da8d68c4590b0868cbf574e", "parameters":{'criterion': 'mse', 'max_depth': 10, 'min_samples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0}},
-			{"alg_name":"DecisionTreeRegressor", "category":"regression", "algorithm":"5da8d68c4590b0868cbf574e", "parameters":{'criterion': 'mse', 'max_depth': 10, 'min_samples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':.45}},
-			{"alg_name":"DecisionTreeRegressor", "category":"regression", "algorithm":"5da8d68c4590b0868cbf574e", "parameters":{'criterion': 'mse', 'max_depth': 10, 'min_samples_split':2, 'min_samples_leaf':5, 'min_weight_fraction_leaf':0}},
-			{"alg_name":"DecisionTreeRegressor", "category":"regression", "algorithm":"5da8d68c4590b0868cbf574e", "parameters":{'criterion': 'mae', 'max_depth': 10, 'min_samples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0}},
+			{
+                         "algorithm":"DecisionTreeRegressor", 
+                         "algorithm_id":"5da8d68c4590b0868cbf574e", 
+                         "category":"regression", 
+                         "parameters":{'criterion': 'mse', 
+                                       'max_depth': 10,
+                                       'min_samples_split':2, 
+                                       'min_samples_leaf':1, 
+                                       'min_weight_fraction_leaf':0}
+                        },
+			{
+                         "algorithm":"DecisionTreeRegressor", 
+                         "algorithm_id":"5da8d68c4590b0868cbf574e", 
+                         "category":"regression", 
+                         "parameters":{'criterion': 'mse', 
+                                       'max_depth': 10, 
+                                       'min_samples_split':2, 
+                                       'min_samples_leaf':1, 
+                                       'min_weight_fraction_leaf':.45}
+                        },
+			{
+                         "algorithm":"DecisionTreeRegressor", 
+                         "algorithm_id":"5da8d68c4590b0868cbf574e", 
+                         "category":"regression", 
+                         "parameters":{'criterion': 'mse', 
+                                       'max_depth': 10, 
+                                       'min_samples_split':2, 
+                                       'min_samples_leaf':5, 
+                                       'min_weight_fraction_leaf':0}
+                        },
+			{
+                         "algorithm":"DecisionTreeRegressor", 
+                         "algorithm_id":"5da8d68c4590b0868cbf574e", 
+                         "category":"regression", 
+                         "parameters":{'criterion': 'mae', 
+                                       'max_depth': 10, 
+                                       'min_samples_split':2, 
+                                       'min_samples_leaf':1, 
+                                       'min_weight_fraction_leaf':0}
+                         },
 		]
 
 		self.expected_total_regression_ml_p = 48

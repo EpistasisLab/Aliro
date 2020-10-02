@@ -61,6 +61,7 @@ logger.addHandler(ch)
 
 
 
+
 class AI():
     """AI managing agent for Penn AI.
 
@@ -102,15 +103,24 @@ class AI():
                 term_condition='n_recs',
                 max_time=5):
         """Initializes AI managing agent."""
-
+        if 'RANDOM_SEED' in os.environ:
+            self.random_state = int(os.environ['RANDOM_SEED'])
+        else:
+            self.random_state = 0
         # default supervised learning recommender settings
         self.DEFAULT_REC_CLASS = {'classification':RandomRecommender,
                                   'regression':RandomRecommender
                                   }
         self.DEFAULT_REC_ARGS = {
-                'classification': {'metric':'accuracy'},
+                'classification': {
+                    'ml_type':'classifier',
+                    'metric':'accuracy',
+                    'random_state':self.random_state
+                    },
                 'regression': {
-                    'metric':'r2_cv_mean'
+                    'ml_type':'regressor',
+                    'metric':'r2_cv_mean',
+                    'random_state':self.random_state
                     }
                 }
 
@@ -152,18 +162,14 @@ class AI():
             extra_payload=extra_payload,
             verbose=self.verbose)
 
-        # set recommender status
-        self.labApi.set_recommender_status(RECOMMENDER_STATUS.INITIALIZING.value)
-
-        self.initialize_recommenders(rec_class) # set self.rec_engines
         
         # build dictionary of ml ids to names conversion
         self.ml_id_to_name = self.labApi.get_ml_id_dict()
+        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         # print('ml_id_to_name:',self.ml_id_to_name)
 
         # dictionary of dataset threads, initialized and used by q_utils.
         # Keys are datasetIds, values are q_utils.DatasetThread instances.
-        #WGL: this should get moved to the request manager
         self.dataset_threads = {}
 
         # local dataframe of datasets and their metafeatures
@@ -172,9 +178,13 @@ class AI():
         # store dataset_id to hash dictionary
         self.dataset_mf_cache_id_hash_lookup = {}
 
-        if use_knowledgebase:
-            self.load_knowledgebase()
+        # set recommender status
+        self.labApi.set_recommender_status(
+                RECOMMENDER_STATUS.INITIALIZING.value)
 
+        #initialize recommenders
+        self.use_knowledgebase = use_knowledgebase
+        self.initialize_recommenders(rec_class) # set self.rec_engines
 
         # set termination condition
         self.term_condition = term_condition
@@ -209,27 +219,47 @@ class AI():
         Initilize classification and regression recommenders
         """
 
-        for prediction_type in self.rec_engines.keys():
+        kb = None
+        if self.use_knowledgebase:
+            kb = self.load_knowledgebase()
+
+        for pred_type in self.rec_engines.keys():
             logger.info('initialiazing rec engine for problem type "'
-                    +prediction_type+'"')
+                    +pred_type+'"')
 
             # get the ml parameters for the given recommender type
             logger.debug("getting ml_p")
-            ml_p = self.labApi.get_all_ml_p(prediction_type)
+            ml_p = self.labApi.get_all_ml_p(pred_type)
             assert ml_p is not None
             assert len(ml_p) > 0
 
             # Create supervised learning recommenders
             logger.debug("initializing engine")
-            recArgs = self.DEFAULT_REC_ARGS[prediction_type]
+            recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
 
-            if (rec_class):
-                self.rec_engines[prediction_type] = rec_class(**recArgs)
-            else:
-                self.rec_engines[prediction_type]  = \
-                        self.DEFAULT_REC_CLASS[prediction_type](**recArgs)
+            recArgs['serialized_rec_directory'] = 'data/recommenders/pennaiweb'
+            recArgs['load_serialized_rec'] = "if_exists" 
 
+            if kb is not None:
+                recArgs['knowledgebase_results'] = kb['resultsData'][pred_type]
+
+            if (rec_class):
+                self.rec_engines[pred_type] = rec_class(**recArgs)
+            else:
+                self.rec_engines[pred_type]  = \
+                        self.DEFAULT_REC_CLASS[pred_type](**recArgs)
+
+
+            # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+            #         self.dataset_mf_cache, source='knowledgebase')
+            ##########################################################
+            # this section is used to save trained recommenders
+            # on the PMLB knowledgebases.            
+            # For normal operation, they can be skipped.
+            # logger.info('saving recommender')
+            # self.rec_engines[pred_type].save()
+            ##########################################################
 
         logger.debug("recomendation engines initialized: ")
         for prob_type, rec in self.rec_engines.items():
@@ -240,17 +270,17 @@ class AI():
     def load_knowledgebase(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
-        kb = knowledgebase_utils.load_default_knowledgebases()
+
+        kb = knowledgebase_utils.load_default_knowledgebases(dedupe=False)
         
         all_df_mf = kb['metafeaturesData'].set_index('_id')
 
         # replace algorithm names with their ids
-        self.ml_name_to_id = {v:k for k,v in self.ml_id_to_name.items()}
         
         for pred_type in ['classification','regression']:
             kb['resultsData'][pred_type]['algorithm'] = \
                     kb['resultsData'][pred_type]['algorithm'].apply(
-                      lambda x: self.ml_name_to_id[x] 
+                      lambda x: x
                       if x in self.ml_name_to_id.keys() 
                       else 'REMOVE! ' + x)
             # filter any kb results that we don't have an algorithm for
@@ -272,11 +302,11 @@ class AI():
 
             logger.info(f"updating AI with {pred_type} knowledgebase ("
                 f"{len(kb['resultsData'][pred_type])} results)")
-            # self.update_dataset_mf(kb['resultsData'])
-            self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
-                    self.dataset_mf_cache, source='knowledgebase')
 
             logger.info('pmlb '+pred_type+' knowledgebase loaded')
+
+        return kb
+
 
     ##-----------------
     ## Utility methods
@@ -338,6 +368,8 @@ class AI():
                                         last_update=self.last_update)
 
         if len(newResults) > 0:
+            newResults['algorithm'] = newResults['algorithm_id'].apply(
+                lambda x: self.ml_id_to_name[x])
             logger.info(time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
                   ': ' + str(len(newResults)) + ' new results!')
             self.last_update = int(time.time())*1000 # update timestamp
@@ -363,8 +395,9 @@ class AI():
                 self.rec_engines[predictionType].update(filterRes, filterMf)
                 logger.info(
                         time.strftime("%Y %I:%M:%S %p %Z",time.localtime())+
-                    f': {predictionType} recommender updated with '
-                    '{len(filterRes.index)} result(s)')
+                    ': {} recommender updated with '
+                    '{} result(s)'.format(predictionType, 
+                        len(filterRes.index)))
 
             # reset new data
             self.new_data = pd.DataFrame()
@@ -449,7 +482,7 @@ class AI():
             # modified_params = eval(params) # turn params into a dictionary
 
             recommendations.append({'dataset_id':datasetId,
-                    'algorithm_id':alg,
+                    'algorithm_id':self.ml_name_to_id[alg],
                     'username':self.user,
                     'parameters':params,
                     'ai_score':score,
@@ -564,7 +597,7 @@ def main():
     parser.add_argument('-sleep',action='store',dest='SLEEP_TIME',default=4,
             type=float, help='Time between pinging the server for updates')
     parser.add_argument('--knowledgebase','-k', action='store_true',
-            dest='USE_KNOWLEDGEBASE', default=True,
+            dest='USE_KNOWLEDGEBASE', default=False,
             help='Load a knowledgebase for the recommender')
 
     args = parser.parse_args()
