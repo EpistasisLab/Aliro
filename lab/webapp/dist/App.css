@@ -1,3 +1,4 @@
+
 body {
     margin: 0;
     padding: 2rem;
@@ -123,6 +124,7 @@ body {
     text-align: center;
     padding: 1px;
 }
+
 
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
@@ -260,6 +262,22 @@ body {
 
 .pennai .experiments-scene .ui.bottom.segment {
     margin-bottom: 2rem;
+}
+
+/* Use for a table with a sticky header row (ie frozen in place)
+   Note that we have to override background-color because we give
+   tables the 'inverted' property, which uses style ui.inverted.table
+   defines background-color with low alpha so it's see-through as
+   table scrolls below it.
+   Note if we also freeze another row 'n' by using tr:nth-child(n),
+   then lower rolls scroll up over each other and the header row,
+   so not useful.
+*/
+.pennai .table-sticky-header .ui.table thead tr:first-child th {
+    position: sticky !important;
+    top: 0;
+    z-index: 2;
+    background-color: #313131;
 }
 
 .pennai .table-container {
