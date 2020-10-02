@@ -1051,8 +1051,8 @@ handleCatFeaturesUserTextCancel() {
           <Header as='h2' inverted color='grey'>
             Dataset preview
           </Header>
-          <div style={{ overflowY: 'auto', maxHeight: '350px' }}>
-            <Table inverted celled compact unstackable singleLine>
+          <div style={{ overflowY: 'auto', maxHeight: '350px' }} className='table-sticky-header'>
+            <Table inverted celled compact unstackable singleLine >
               <Table.Header>
                 <Table.Row>
                   {/*'key' is a React property to id elements in a list*/}
