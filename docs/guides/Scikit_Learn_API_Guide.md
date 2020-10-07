@@ -1,0 +1,122 @@
+#  User Guide for AI engine as a standalone python package
+
+### Installation of AI engine as a standalone python package ###
+PennAI AI engine is built on top of several existing Python libraries, including:
+
+* [NumPy](http://www.numpy.org/)
+
+* [SciPy](https://www.scipy.org/)
+
+* [scikit-learn](http://www.scikit-learn.org/)
+
+* [update_checker](https://github.com/bboe/update_checker)
+
+* [pandas](http://pandas.pydata.org)
+
+* [joblib](https://joblib.readthedocs.io/en/latest/)
+
+* [surprise](http://surpriselib.com/)
+
+
+Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.continuum.io/downloads), which we strongly recommend that you use.
+
+You can install PennAI AI engine using `pip`. # todo
+## pip
+
+NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:
+
+```Shell
+conda install numpy scipy scikit-learn pandas joblib
+```
+
+update_checker can be installed with `pip` via the command:
+
+```Shell
+pip install update_checker
+```
+
+Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command:
+
+```Shell
+pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
+```
+
+Finally to install AI engine itself, run the following command:
+
+```Shell
+pip install pennaipy==0.17a1
+```
+
+### Example of using PennAI AI engine ###
+
+The following code illustrates how PennAI can be employed for performing a simple _classification task_ over the Iris dataset.
+
+```Python
+from pennai.sklearn import PennAIClassifier
+from pennai.recommender import KNNMetaRecommender
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
+    iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
+
+classification_kb = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"
+classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+
+pennai = PennAIClassifier(
+              rec_class=KNNMetaRecommender,
+              n_recs=5,
+              n_iters=10,
+              knowledgebase=classification_kb,
+              kb_metafeatures=classification_metafeatures,
+              random_state=42,
+              verbose=2
+              )
+
+pennai.fit(X_train, y_train)
+print(pennai.score(X_test, y_test))
+
+```
+
+### Example of using PennAI AI engine with pre-trained SVG recommender ###
+
+The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:
+
+```Python
+from pennai.sklearn import PennAIClassifier
+from pennai.recommender import SVDRecommender
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import urllib
+import numpy as np
+
+
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
+    iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
+
+
+classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+# download pkl.gz
+urllib.request.urlretrieve("https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz", "SVDRecommender_classifier_accuracy_pmlb.pkl.gz")
+serialized_rec = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
+classification_kb_full = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+
+pennai = PennAIClassifier(
+              rec_class=SVDRecommender,
+              n_recs=5,
+              n_iters=10,
+              serialized_rec=serialized_rec,
+              knowledgebase=classification_kb_full,
+              kb_metafeatures=classification_metafeatures,
+              random_state=42,
+              verbose=2
+              )
+
+pennai.fit(X_train, y_train)
+print(pennai.score(X_test, y_test))
+
+```
