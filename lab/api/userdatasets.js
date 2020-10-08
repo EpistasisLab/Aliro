@@ -41,7 +41,7 @@ exports.responder = function(req, res) {
     if (params['date_start']) {
         //        query['_finished'] = {"$gte": new Date(params['date_start'])}
     }
-
+    
     db.users.aggregate(
         [{
             $match: query
@@ -52,10 +52,27 @@ exports.responder = function(req, res) {
             }
         }, {
             $lookup: {
+                from: "projects",
+                localField: "algorithms",
+                foreignField: "name",
+                as: "algorithms"
+            }
+        }, {
+            $group: {
+                _id: "$_id",
+                username: {
+                    $first: "$username"
+                },
+                algorithms: {
+                    $addToSet: "$algorithms"
+                }
+            }
+        }, {
+            $lookup: {
                 from: "datasets",
                 localField: "username",
                 foreignField: "username",
-                as: "user_datasets"
+                as: "datasets"
             }
         }, {
             $lookup: {
@@ -64,69 +81,40 @@ exports.responder = function(req, res) {
                 foreignField: "username",
                 as: "experiments"
             }
-        }, {
-            $lookup: {
-                from: "projects",
-                localField: "algorithms",
-                foreignField: "name",
-                as: "algorithms"
-            }
-        }, {
-            "$unwind": {
-                path: "$algorithms",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            "$unwind": {
-                path: "$user_datasets",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            "$unwind": {
-                path: "$experiments",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            $group: {
-                _id: "$_id",
-                algorithms: {
-                    $addToSet: "$algorithms"
-                },
-                datasets: {
-                    $addToSet: "$user_datasets"
-                },
-                experiments: {
-                    $addToSet: "$experiments"
-                },
-            }
+        /*}, {
+            $project: {
+                username: 0,
+                experiments.prediction_values: 0
+            
+            }*/
         }],
         function(err, users) {
             retArray = []
-if (users) {
-            var user = users[0];
-            var algorithms = api.convert_to_dict(user['algorithms']);
-            var experiments = api.convert_to_dict(user['experiments']);
-            var keyed_experiments = api.group_on_key(experiments, '_dataset_id');
-            var datasets = api.convert_to_dict(user['datasets']);
-            if (params['id']) {
-                var dataset = datasets[params['id']];
-                datasets = {};
-                datasets[params['id']] = dataset;
-            }
-
-            for (_id in experiments) {
-                var experiment = experiments[_id];
-                var algorithm_id = experiment['_project_id']
-                var algorithm = algorithms[algorithm_id]
-                experiments[_id]['algorithm'] = algorithm;
-            }
-            for (_id in datasets) {
-                if (keyed_experiments[_id] !== undefined) {
-                    datasets[_id]['experiments'] = keyed_experiments[_id];
+            if (users) {
+                var user = users[0];
+                var algorithms = api.convert_to_dict(user['algorithms']);
+                var experiments = api.convert_to_dict(user['experiments']);
+                var keyed_experiments = api.group_on_key(experiments, '_dataset_id');
+                var datasets = api.convert_to_dict(user['datasets']);
+                if (params['id']) {
+                    var dataset = datasets[params['id']];
+                    datasets = {};
+                    datasets[params['id']] = dataset;
                 }
-                retArray.push(annotate_dataset(datasets[_id]));
+
+                for (_id in experiments) {
+                    var experiment = experiments[_id];
+                    var algorithm_id = experiment['_project_id']
+                    var algorithm = algorithms[algorithm_id]
+                    experiments[_id]['algorithm'] = algorithm;
+                }
+                for (_id in datasets) {
+                    if (keyed_experiments[_id] !== undefined) {
+                        datasets[_id]['experiments'] = keyed_experiments[_id];
+                    }
+                    retArray.push(annotate_dataset(datasets[_id]));
+                }
             }
-}
             res.send(retArray);
 
         }
