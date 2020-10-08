@@ -135,12 +135,9 @@ iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
-
-classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
 # download pre-trained SVG recommender for pennai's github
 urllib.request.urlretrieve("https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz", "SVDRecommender_classifier_accuracy_pmlb.pkl.gz")
 serialized_rec = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
-classification_kb_full = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
 
 pennai = PennAIClassifier(
               rec_class=SVDRecommender,

@@ -346,15 +346,12 @@ def test_warm_start(recommender=SVDRecommender):
     if recommender.__name__ not in ["AverageRecommender", "RandomRecommender", "CoClusteringRecommender"]:
         serialized_rec_directory = "data/recommenders/scikitlearn"
         serialized_rec_filename = "{}_classifier_accuracy_pmlb.pkl.gz".format(recommender.__name__)
-        classification_kb_full = "data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
         serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
         pennai = PennAIClassifier(
                                 rec_class=recommender,
                                 n_recs=2,
                                 n_iters=2,
                                 serialized_rec=serialized_rec,
-                                knowledgebase=classification_kb_full,
-                                kb_metafeatures=classification_metafeatures,
                                 random_state=42,
                                 verbose=0
                                )
@@ -367,15 +364,12 @@ def test_warm_start_reg(recommender=SVDRecommender):
     """Test PennAIClassifier fit() with warm_start."""
     serialized_rec_directory = "data/recommenders/scikitlearn"
     serialized_rec_filename = "{}_regressor_nmse_pmlb.pkl.gz".format(recommender.__name__)
-    regression_kb_full = "data/knowledgebases/pmlb_regression_results.tsv.gz"
     serialized_rec = path.join(serialized_rec_directory, serialized_rec_filename)
     pennai = PennAIRegressor(
                             rec_class=recommender,
                             n_recs=2,
                             n_iters=2,
                             serialized_rec=serialized_rec,
-                            knowledgebase=regression_kb_full,
-                            kb_metafeatures=regression_metafeatures,
                             random_state=42,
                             verbose=0
                            )
