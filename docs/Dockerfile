@@ -1,7 +1,7 @@
-FROM python:3.7-alpine
+FROM python:3.7.4-stretch
 
 COPY /docs/requirements.txt /
+COPY /tests/unit/files/requirements.txt src_requirements.txt
 
 RUN pip install -r /requirements.txt
-COPY src/ /app
-WORKDIR /app
+RUN pip install -r /src_requirements.txt

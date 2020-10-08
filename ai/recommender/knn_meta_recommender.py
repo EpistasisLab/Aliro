@@ -21,6 +21,7 @@ logger.addHandler(ch)
 
 class KNNMetaRecommender(BaseRecommender):
     """Penn AI KNN meta recommender.
+    
     Recommends machine learning algorithms and parameters as follows:
         - store the best ML + P on every dataset.
         - given a new dataset, measure its distance to all results in metafeature space.
