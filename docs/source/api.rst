@@ -75,9 +75,9 @@ These methods control data flow from the server to and from sklearn models.
 .. autofunction:: machine.learn.io_utils.get_type
 
 
-=============
+==================
 Scikit-learn Utils
-=============
+==================
 
 These methods generate sklearn models and evaluate them.
 

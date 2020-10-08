@@ -159,6 +159,7 @@ def parse_args():
 
 def get_input_data(_id, tmpdir):
     """ Get input dataset information from PennAI API.
+    
     Parameters
     ----------
     _id: string
@@ -171,16 +172,17 @@ def get_input_data(_id, tmpdir):
     input_data: pandas.Dataframe or list of two pandas.Dataframe
         pandas.DataFrame: PennAI will use train_test_split
         to make train/test splits
-        list of two pandas.DataFrame:
+        list of two pandas.DataFrame.
         The 1st pandas.DataFrame is training dataset,
         while the 2nd one is testing dataset
     data_info: dict
-        target_name: string, target column name
-        filename: list, filename(s)
-        categories: list, categorical feature name(s)
-        ordinals: dict
-            keys: categorical feature name(s)
-            values: categorical values
+        * target_name: string, target column name
+        * filename: list, filename(s)
+        * categories: list, categorical feature name(s)
+        * ordinals: dict
+
+           * keys: categorical feature name(s)
+           * values: categorical values
     """
     expdir = tmpdir + _id + '/'
     if not os.path.exists(expdir):
@@ -349,6 +351,7 @@ def none(val):
 
 def get_type(param_type):
     """Return convertion function for input type.
+
     Parameters
     ----------
     param_type: string or list

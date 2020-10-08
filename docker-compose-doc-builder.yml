@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  unit_tester:
+  doc_builder:
     build:
       context: .
       dockerfile: docs/Dockerfile
-    working_dir: /appsrc
-    command: bash -c "cd docs && make html"
+    working_dir: /appsrc/docs
+    command: bash -c "make html"
     tty: true
     stdin_open: true
     volumes:
