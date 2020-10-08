@@ -44,6 +44,8 @@ jobs:
 
     - stage: "Docs"
       name: "Doc Builder" 
+      install:
+        - docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
       script:
         # Building docs
         - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
