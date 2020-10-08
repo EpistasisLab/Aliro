@@ -131,7 +131,7 @@ def test_verbose_1():
                             verbose=1
                            )
     pennai.fit(X_train, y_train)
-    assert pennai.score(X_train, y_train)
+    assert pennai.score(X_test, y_test)
 
 
 
@@ -148,7 +148,7 @@ def test_verbose_2():
                             verbose=2
                            )
     pennai.fit(X_train, y_train)
-    assert pennai.score(X_train, y_train)
+    assert pennai.score(X_test, y_test)
 
 
 def test_reg_verbose_0():
@@ -165,6 +165,20 @@ def test_reg_verbose_0():
                            )
     pennai.fit(X_train_reg, y_train_reg)
     assert pennai.score(X_test_reg, y_test_reg)
+
+
+def test_fit_1():
+    """Test PennAIClassifier fit() without setting knowledgebase/kb_metafeatures."""
+
+    pennai = PennAIClassifier(
+                            rec_class=RandomRecommender,
+                            n_recs=2,
+                            n_iters=2,
+                            random_state=42,
+                            verbose=0
+                           )
+    pennai.fit(X_train, y_train)
+    assert pennai.score(X_test, y_test)
 
 
 def test_init():
@@ -217,11 +231,11 @@ def test_load_kb():
                             rec_class=RandomRecommender,
                             n_recs=2,
                             n_iters=2,
-                            knowledgebase=classification_kb,
-                            kb_metafeatures=classification_metafeatures,
                             random_state=42
                            )
     pennai.dataset_mf_cache = pd.DataFrame()
+    pennai.kb_ = classification_kb
+    pennai.mf_ = classification_metafeatures
     resultsData = pennai.load_kb()
     kb = load_knowledgebase(
                         resultsFiles=[classification_kb],

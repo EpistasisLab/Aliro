@@ -10,11 +10,11 @@ import sys
 from ..knowledgebase_utils import load_knowledgebase
 from ..metalearning import generate_metafeatures
 from ..metalearning import Dataset
-from ..recommender import AverageRecommender
-from ..recommender import RandomRecommender
-from ..recommender import KNNMetaRecommender
 from ..metrics import SCORERS
 from ..recommender import (
+    AverageRecommender,
+    RandomRecommender,
+    KNNMetaRecommender,
     CoClusteringRecommender,
     KNNWithMeansRecommender,
     KNNDatasetRecommender,
@@ -32,7 +32,8 @@ from joblib import Parallel, delayed
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 logger = logging.getLogger(__name__)
-
+GitHub_URL = ("https://github.com/EpistasisLab/pennai/raw/"
+            "ai_sklearn_api/data/knowledgebases/")
 
 class PennAI(BaseEstimator):
     """Penn AI standalone sklearn wrapper.
@@ -283,12 +284,15 @@ class PennAI(BaseEstimator):
 
         self.REC_ARGS['ml_p'] = ml_p
 
-        if self.knowledgebase and self.kb_metafeatures:
-            resultsData = self.load_kb()
-            logger.info('Knowledgebase loaded')
-        else:
+        if self.knowledgebase and self.kb_metafeatures: #both are not None
+            self.kb_ = self.knowledgebase
+            self.mf_ = self.kb_metafeatures
+        elif self.knowledgebase or self.kb_metafeatures: # one of them are missing
             raise ValueError(
                 "please provide both knowledgebase and kb_metafeatures")
+
+        resultsData = self.load_kb()
+        logger.info('Knowledgebase loaded')
 
         if self.serialized_rec:
             head_tail = os.path.split(self.serialized_rec)
@@ -318,8 +322,8 @@ class PennAI(BaseEstimator):
         logger.info('loading pmlb knowledgebase')
 
         kb = load_knowledgebase(
-            resultsFiles=[self.knowledgebase],
-            metafeaturesFiles=[self.kb_metafeatures]
+            resultsFiles=[self.kb_],
+            metafeaturesFiles=[self.mf_]
         )
 
         all_df_mf = kb['metafeaturesData'].set_index('_id', drop=False)
@@ -644,11 +648,14 @@ def bool_or_none(val):
         return val
 
 
+
 class PennAIClassifier(PennAI, ClassifierMixin):
     mode = "classification"
     scoring_ = "accuracy"
     ml_type = "classifier"
     config_dict_ = classifier_config_dict
+    kb_ = GitHub_URL + "sklearn-benchmark-data-knowledgebase-r6.tsv.gz"
+    mf_ = GitHub_URL + "pmlb_classification_metafeatures.csv.gz"
 
 
 class PennAIRegressor(PennAI, RegressorMixin):
@@ -656,3 +663,5 @@ class PennAIRegressor(PennAI, RegressorMixin):
     scoring_ = "neg_mean_squared_error"
     ml_type = "regressor"
     config_dict_ = regressor_config_dict
+    kb_ = GitHub_URL + "pmlb_regression_results.tsv.gz"
+    mf_ = GitHub_URL + "pmlb_regression_metafeatures.csv.gz"

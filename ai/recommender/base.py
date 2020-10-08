@@ -74,12 +74,12 @@ class BaseRecommender(object, metaclass=MC):
         Initial knowledgebase results data.
         If not None and not loading a serialized recommender, the recommender
         will initialize and train on this data.
-        If loading a serialized recommender, this is the knowlegebase that
+        If loading a serialized recommender, this is the knowledgebase that
         accompanies it.
 
     knowledgebase_metafeatures: Pandas DataFrame or None
         Initial knowledgebase metafeatures data.
-        If loading a serialized recommender, this is the knowlegebase that
+        If loading a serialized recommender, this is the knowledgebase that
         accompanies it.
 
     serialized_rec_directory: string or None
