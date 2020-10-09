@@ -144,8 +144,6 @@ pennai = PennAIClassifier(
               n_recs=5,
               n_iters=10,
               serialized_rec=serialized_rec,
-              knowledgebase=classification_kb_full,
-              kb_metafeatures=classification_metafeatures,
               random_state=42,
               verbose=2
               )
