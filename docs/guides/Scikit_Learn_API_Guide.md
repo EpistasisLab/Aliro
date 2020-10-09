@@ -44,7 +44,7 @@ pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 Finally to install AI engine itself, run the following command:
 
 ```Shell
-pip install pennaipy==0.17a1
+pip install pennaipy==0.17a2
 ```
 
 ### Example of using PennAI AI engine ###
