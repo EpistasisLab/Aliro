@@ -58,6 +58,11 @@ exports.responder = function(req, res) {
                 as: "algorithms"
             }
         }, {
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
+        }, {
             $group: {
                 _id: "$_id",
                 username: {
