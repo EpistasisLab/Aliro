@@ -63,8 +63,9 @@ class FileUpload extends Component {
     this.handleOrdinalFeaturesUserTextCancel = this.handleOrdinalFeaturesUserTextCancel.bind(this);
     this.handleOrdinalFeaturesUserTextOnChange = this.handleOrdinalFeaturesUserTextOnChange.bind(this);
     this.handlePredictionType = this.handlePredictionType.bind(this);
+    this.getHeaderRowCells = this.getHeaderRowCells.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
-    this.getDataTableOrdinalRankButtons = this.getDataTableOrdinalRankButtons.bind(this);
+    this.getDataTableOrdinalRankButton = this.getDataTableOrdinalRankButton.bind(this);
     this.generateFileData = this.generateFileData.bind(this);
     this.handleErrorModalClose = this.handleErrorModalClose.bind(this);
     this.showErrorModal = this.showErrorModal.bind(this);
@@ -896,11 +897,12 @@ handleCatFeaturesUserTextCancel() {
     //console.log(this.state.ordinalFeaturesObject);
   }
 
-  /** Helper method to generate a row of buttons with Sortable List popups for ordering ordinal features */
-  getDataTableOrdinalRankButtons() {
-    const result = (
-      this.state.datasetPreview.meta.fields.map((field, i) => {
-       
+  /** Helper method to generate a segment with a button that opens
+   *  Sortable List popups for ordering an ordinal feature.
+   *  @param {string} feature the feature to generate a button for.
+   *  @retuns {JSX} Return JSX with button for field type Ordinal, otherwise null for no button.
+   */
+  getDataTableOrdinalRankButton(feature) {
         //Helper method for sortable list component
         // https://github.com/clauderic/react-sortable-hoc
         // https://clauderic.github.io/react-sortable-hoc/#/basic-configuration/multiple-lists?_k=7ghtqv
@@ -916,13 +918,12 @@ handleCatFeaturesUserTextCancel() {
           );
         });
 
-        //For each field in the data...
-        //
         //If we're currently ranking this ordinal feature, show the sortable list
-        if(this.state.ordinalFeatureToRank === field)
+        //
+        if(this.state.ordinalFeatureToRank === feature)
           return (
             //This puts the sortable list right in the cell. Awkward but it works.
-            <Table.Cell key={'rankButton_'+field}>
+            <Segment>
               <SortableList items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
               <Button
                 content={"Accept"}
@@ -940,7 +941,7 @@ handleCatFeaturesUserTextCancel() {
                 size="small"
                 onClick={this.handleOrdinalSortCancel}
               />
-              </Table.Cell>
+              </Segment>              
             /* NOTE
                This shows the modal pop-up like expected, and can properly drag the values around in the list,
                But I get a warning that all children in list should have a unique 'key' prop, even though code
@@ -949,7 +950,7 @@ handleCatFeaturesUserTextCancel() {
             <Modal basic style={{ marginTop:'0' }} open={true} onClose={this.handleErrorModalClose} closeIcon>
               <Modal.Header>Rank the feature's ordinal values</Modal.Header>
               <Modal.Content>
-                <SortableList items={this.state.ordinalFeaturesObject[field]} onSortEnd={this.handleOrdinalSortDragRelease} />
+                <SortableList items={this.state.ordinalFeaturesObject[feature]} onSortEnd={this.handleOrdinalSortDragRelease} />
               </Modal.Content>
             </Modal>
             */
@@ -957,29 +958,29 @@ handleCatFeaturesUserTextCancel() {
 
         //If it's ordinal add a button for user to define rank of values within the feature,
         // but only if we're not ranking another ordinal feature
-        if(this.state.ordinalFeaturesObject[field] !== undefined && 
+        if(this.state.ordinalFeaturesObject[feature] !== undefined && 
            this.state.ordinalFeatureToRank === undefined) {
               return (
-                <Table.Cell key={'rankButton_'+field}>
+                <Segment>
                   <Button
                     content={"Rank"}
                     inverted
                     color="blue"
                     compact
                     size="small"
-                    customfeaturetorank={field}
+                    customfeaturetorank={feature}
                     onClick={this.handleOrdinalRankClick}
                   />
                   
                   {/*<Popup 
-                    key={'orderPopup_'+field}
+                    key={'orderPopup_'+feature}
                     on="click"
                     position="right center"
                     header="Rank the Feature Values"
                     content={
                       <div className="content">
                       {"Drag-n-drop to change rank"}
-                      <SortableList items={this.state.ordinalFeaturesObject[field]} onSortEnd={this.handleOrdinalSortDragRelease} />
+                      <SortableList items={this.state.ordinalFeaturesObject[feature]} onSortEnd={this.handleOrdinalSortDragRelease} />
                       </div>
                     }
                     trigger={
@@ -989,21 +990,67 @@ handleCatFeaturesUserTextCancel() {
                         color="blue"
                         compact
                         size="small"
-                        customfeaturetorank={field}
+                        customfeaturetorank={feature}
                         onClick={this.handleOrdinalRankClick}
                       />
                       } 
-                  />*/}
-                </Table.Cell> 
+                    />*/}
+                </Segment>                  
               )
            }
 
-          //Otherwise just add an empty cell
-          return <Table.Cell key={'orderButton_'+field} />;
+          //Otherwise just return null for no segment
+          return null;
         }
-      )
-    )
-    return result;
+
+  /**
+   * Helper method to get all cells for the data table preview header row.
+   * We put multiple items stacked into each header cell because we want
+   * the header row to stay fixed as it scrolls, but we've been unable
+   * to get multiple table rows to stay fixed.
+   * @returns a JSX Table.HeaderCell 
+   */
+  getHeaderRowCells() {
+
+    let dataPrev = this.state.datasetPreview;
+    //Options for the per-feature dropdown in dataset preview
+    const featureTypeOptionsAll = [
+      { key: 1, text: 'Numeric', value: this.featureTypeNumeric},
+      { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
+      { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
+    ]
+    const featureTypeOptionsNonNumeric = [
+      { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
+      { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
+    ]
+
+    return (
+      /*'key' is a React property to id elements in a list*/
+      dataPrev.meta.fields.map((field, i) => {
+          //Dropdown item for setting field type
+          let fieldTypeItem = ( field === this.getDependentColumn() ?
+            "Dependent" :
+            <Dropdown
+              value={this.state.featureType[i]}
+              fluid
+              selection
+              options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
+              onChange={this.handleFeatureTypeDropdown}
+              customindexid={i}
+            />
+          )
+          return (
+          <Table.HeaderCell key={field} verticalAlign='top'>
+            <Segment.Group compact>
+              <Segment> {field} </Segment>
+              <Segment inverted> {fieldTypeItem} </Segment>
+              {/*Return a segment with 'rank'button, or null, based on field type*/}
+              {this.getDataTableOrdinalRankButton(field)}
+            </Segment.Group>
+          </Table.HeaderCell>
+        )  
+      })
+    )    
   }
 
   /**
@@ -1034,17 +1081,6 @@ handleCatFeaturesUserTextCancel() {
         </Table.Row>
       );
 
-      //Options for the per-feature dropdown in dataset preview
-      const featureTypeOptionsAll = [
-        { key: 1, text: 'Numeric', value: this.featureTypeNumeric},
-        { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
-        { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
-      ]
-      const featureTypeOptionsNonNumeric = [
-        { key: 2, text: 'Categorical', value: this.featureTypeCategorical },
-        { key: 3, text: 'Ordinal', value: this.featureTypeOrdinal },
-      ]
-
       dataPrevTable = (
         <div>
           <br/>
@@ -1055,39 +1091,10 @@ handleCatFeaturesUserTextCancel() {
             <Table inverted celled compact unstackable singleLine >
               <Table.Header>
                 <Table.Row>
-                  {/*'key' is a React property to id elements in a list*/}
-                  {dataPrev.meta.fields.map(field =>
-                    <Table.HeaderCell key={field}>{field}</Table.HeaderCell>
-                  )}
+                  {this.getHeaderRowCells()}
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {/* row of dropdowns for specifying feature type*/}
-                <Table.Row>
-                  { dataPrev.meta.fields.map((field, i) => {
-                    if( field === this.getDependentColumn() ) {
-                      return <Table.Cell key={'featureType_'+field}>{"Dependent"}</Table.Cell>
-                    }
-                    else {
-                      return (
-                        <Table.Cell key={'featureType_'+field}>
-                          <Dropdown
-                            value={this.state.featureType[i]}
-                            fluid
-                            selection
-                            options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
-                            onChange={this.handleFeatureTypeDropdown}
-                            customindexid={i}
-                          />
-                        </Table.Cell>
-                        )
-                      }
-                    }
-                  )}
-                </Table.Row>
-                <Table.Row>
-                  {this.getDataTableOrdinalRankButtons()}
-                </Table.Row>
                 {innerContent}
               </Table.Body>
             </Table>
