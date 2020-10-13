@@ -442,6 +442,13 @@ body {
     width: 75%;
 }
 
+/* Manual fix for color of search text in inverted searchable Dropdown */
+/*
+.ui.search.dropdown>input.search {
+    color: white;
+}
+*/
+
 .gauge {
     fill: #fff;
 }
