@@ -1029,7 +1029,7 @@ handleCatFeaturesUserTextCancel() {
       dataPrev.meta.fields.map((field, i) => {
           //Dropdown item for setting field type
           let fieldTypeItem = ( field === this.getDependentColumn() ?
-            "Dependent" :
+            <i>Dependent</i> :
             <Dropdown
               value={this.state.featureType[i]}
               options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
@@ -1522,13 +1522,14 @@ handleCatFeaturesUserTextCancel() {
               className="file-upload-prediction-title"
               label="Dependent Feature"
             >
-              <Form.Dropdown
-                selection
-                search
-                placeholder="Select a feature"
-                options={depColOptions}
-                onChange={this.handleDepColDropdown}
-              />
+              <Segment inverted>
+                <Form.Dropdown
+                  search
+                  placeholder="Select a feature"
+                  options={depColOptions}
+                  onChange={this.handleDepColDropdown}
+                />
+              </Segment>
             </Form.Input>
 
             <Popup
