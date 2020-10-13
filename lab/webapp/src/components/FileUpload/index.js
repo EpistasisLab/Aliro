@@ -1032,8 +1032,6 @@ handleCatFeaturesUserTextCancel() {
             "Dependent" :
             <Dropdown
               value={this.state.featureType[i]}
-              fluid
-              selection
               options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
               onChange={this.handleFeatureTypeDropdown}
               customindexid={i}
