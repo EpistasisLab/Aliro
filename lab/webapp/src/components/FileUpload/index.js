@@ -1524,6 +1524,7 @@ handleCatFeaturesUserTextCancel() {
             >
               <Segment inverted>
                 <Form.Dropdown
+                  className='inverted-dropdown-search'
                   search
                   placeholder="Select a feature"
                   options={depColOptions}
