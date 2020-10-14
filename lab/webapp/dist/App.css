@@ -442,12 +442,15 @@ body {
     width: 75%;
 }
 
-/* Manual fix for color of search text in inverted searchable Dropdown */
-/*
-.ui.search.dropdown>input.search {
-    color: white;
+/* Manual fix for color of search text in inverted searchable Dropdown.
+ * There's a bug in semantic-ui-react that doesn't set the color properly
+ * for the text in the search element within a dropdown, so it's unreadable.
+ * The bug is in v1.3.1 and v2.0.0.
+ * Note that there's no way to reference a color value from the .ui class
+ * that defines the inverted color w/out adding a css preprocessor */
+.pennai .inverted-dropdown-search .ui.search.dropdown>input.search {
+    color: rgba(255,255,255,0.9);
 }
-*/
 
 .gauge {
     fill: #fff;
