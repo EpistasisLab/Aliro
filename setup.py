@@ -67,7 +67,6 @@ This project is hosted at https://github.com/epistasislab/pennai
     install_requires=['numpy>=1.16.3',
                     'scipy>=1.3.1',
                     'scikit-learn>=0.22.0',
-                    'update_checker>=0.16',
                     'pandas>=0.24.2',
                     'joblib>=0.13.2',
                     'simplejson>=3.17.0'
