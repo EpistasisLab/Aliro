@@ -9,8 +9,6 @@ PennAI AI engine is built on top of several existing Python libraries, including
 
 * [scikit-learn](http://www.scikit-learn.org/)
 
-* [update_checker](https://github.com/bboe/update_checker)
-
 * [pandas](http://pandas.pydata.org)
 
 * [joblib](https://joblib.readthedocs.io/en/latest/)
@@ -20,19 +18,13 @@ PennAI AI engine is built on top of several existing Python libraries, including
 
 Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.continuum.io/downloads), which we strongly recommend that you use.
 
-You can install PennAI AI engine using `pip`. # todo
+You can install PennAI AI engine using `pip`.
 ## pip
 
 NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:
 
 ```Shell
 conda install numpy scipy scikit-learn pandas joblib
-```
-
-update_checker can be installed with `pip` via the command:
-
-```Shell
-pip install update_checker
 ```
 
 Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command:
@@ -44,7 +36,7 @@ pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 Finally to install AI engine itself, run the following command:
 
 ```Shell
-pip install pennaipy==0.17a2
+pip install pennaipy==0.17a3
 ```
 
 ### Example of using PennAI AI engine ###
