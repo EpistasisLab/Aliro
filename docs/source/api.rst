@@ -63,7 +63,14 @@ We have a customized version of the Surprise library available `here. <https://g
 .. autoclass:: ai.recommender.surprise_recommenders.SVDRecommender
     :members:
 
-=====
+
+============
+Scikit-learn 
+============
+
+.. autoclass:: ai.sklearn_api.SklearnAPI
+    :members:
+
 Learn
 =====
 
@@ -125,3 +132,4 @@ These methods generate sklearn models and evaluate them.
 .. autofunction:: machine.learn.skl_utils.export_model
 
 .. autofunction:: machine.learn.skl_utils.generate_export_codes
+
