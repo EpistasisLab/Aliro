@@ -64,13 +64,6 @@ We have a customized version of the Surprise library available `here. <https://g
     :members:
 
 
-============
-Scikit-learn 
-============
-
-.. autoclass:: ai.sklearn_api.SklearnAPI
-    :members:
-
 Learn
 =====
 
