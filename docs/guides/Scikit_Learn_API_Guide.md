@@ -16,7 +16,7 @@ PennAI AI engine is built on top of several existing Python libraries, including
 * [surprise](http://surpriselib.com/)
 
 
-Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.continuum.io/downloads), which we strongly recommend that you use.
+Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.anaconda.com/products/individual), which we strongly recommend that you use.
 
 You can install PennAI AI engine using `pip`.
 ## pip
@@ -27,7 +27,7 @@ NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via t
 conda install numpy scipy scikit-learn pandas joblib
 ```
 
-Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command:
+Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command below. **Note: [Microsoft Visual C++ 14.0](https://visualstudio.microsoft.com/downloads/) is required for building the surprise package in Windows OS.**
 
 ```Shell
 pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
