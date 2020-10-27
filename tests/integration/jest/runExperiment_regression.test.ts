@@ -109,7 +109,7 @@ describe('run regression experiment', () => {
 
 		let algoName = 'XGBRegressor'
 		let algoParms = {
-			"n_estimators":12000
+			"n_estimators":120000
 		};
 
 		let datasetName = "192_vineyard.csv";
