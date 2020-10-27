@@ -63,7 +63,21 @@ We have a customized version of the Surprise library available `here. <https://g
 .. autoclass:: ai.recommender.surprise_recommenders.SVDRecommender
     :members:
 
+==================================
+Scikit-learn API for PennAI engine
+==================================
 
+This is the API for using PennAI engine as standalone python package. (see :ref:`userguide_sklearn_api`).
+
+It can be imported from `pennai.sklearn` after installing `pennaipy` package via pip.
+
+.. autoclass:: ai.sklearn.pennai_sklearn.PennAIClassifier
+    :members:
+
+.. autoclass:: ai.sklearn.pennai_sklearn.PennAIRegressor
+    :members:
+
+=====
 Learn
 =====
 
@@ -125,4 +139,3 @@ These methods generate sklearn models and evaluate them.
 .. autofunction:: machine.learn.skl_utils.export_model
 
 .. autofunction:: machine.learn.skl_utils.generate_export_codes
-

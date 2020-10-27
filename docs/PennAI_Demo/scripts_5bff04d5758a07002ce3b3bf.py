@@ -40,7 +40,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer
 

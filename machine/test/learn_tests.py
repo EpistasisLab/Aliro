@@ -35,7 +35,7 @@ from sklearn import __version__ as skl_version
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, cross_validate
-from sklearn.externals import joblib
+import joblib
 import json
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -1514,7 +1514,7 @@ def test_generate_export_codes():
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, StratifiedKFold
@@ -1613,7 +1613,7 @@ print("Confusion Matrix:", cnf_matrix)
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, StratifiedKFold
@@ -1705,7 +1705,7 @@ def test_generate_export_codes_regression():
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, KFold
@@ -1769,7 +1769,7 @@ print("Testing score: ", test_score)
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, KFold
