@@ -55,8 +55,9 @@ class MC(type):
 class BaseRecommender(object, metaclass=MC):
     """Base recommender for PennAI
 
-    The BaseRecommender is not intended to be used directly; it is a skeleton class
-    defining the interface for future recommenders within the PennAI project.
+    The BaseRecommender is not intended to be used directly; it is a skeleton 
+    class defining the interface for future recommenders within the PennAI 
+    project.
 
     Parameters
     ----------
@@ -98,7 +99,6 @@ class BaseRecommender(object, metaclass=MC):
             "always" - Always load a serialized recommender.  Throw an
             exception if no serialized recommender exists.
             "never" - Never load a serialized recommender.
-
     """
 
     def __init__(self,

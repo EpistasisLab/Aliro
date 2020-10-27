@@ -86,7 +86,6 @@ class AI():
     :param datasets: str or False - if not false, a comma seperated list of 
     datasets to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
-
     """
 
     def __init__(self,
