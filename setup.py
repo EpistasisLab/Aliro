@@ -30,8 +30,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from setuptools import setup, find_packages
 
 def calculate_version():
-    initpy = open('ai/_version.py').read().split('\n')
-    version = list(filter(lambda x: '__version__' in x, initpy))[0].split('\'')[1]
+    initpy = open('.env').read().split('\n')
+    version = list(filter(lambda x: 'TAG' in x, initpy))[0].split('=')[1]
     return version
 
 package_version = calculate_version()
