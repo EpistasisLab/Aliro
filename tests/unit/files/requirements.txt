@@ -8,12 +8,12 @@ xgboost==0.90
 simplejson==3.16.0
 mlxtend==0.16.0
 pydot==1.4.1
-sphinx==2.1.2
+sphinx==3.2.1
 coverage==4.5.3
 nose==1.3.7
 nose-htmloutput==0.6.0
 parameterized==0.7.0
-m2r==0.2.1
+m2r2==0.2.5
 sphinx-rtd-theme==0.4.3
 requests==2.22.0
 shap==0.34.0
