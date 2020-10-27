@@ -32,7 +32,7 @@ import pandas as pd
 import numpy as np
 import argparse
 import os
-from sklearn.externals.joblib import Parallel, delayed
+from joblib import Parallel, delayed
 
 if __name__ == '__main__':
     """run experiment"""
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
     parser.add_argument('-recs',action='store',dest='rec',
-                        default='random,average,knn,svd', 
-                        help='Comma-separated list of recommenders to run.') 
+                        default='random,average,knn,svd',
+                        help='Comma-separated list of recommenders to run.')
     parser.add_argument('-n_recs_range',action='store',dest='n_recs_range',type=str,
                         default='',
                         help='Comma-separated list of Number of initial datasets to'
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         iters_range = [int(r) for r in args.iters_range.split(',')]
     else:
         iters_range = [100]
-   
+
     # get datasets
     data_df = pd.read_csv(args.KNOWL, compression='gzip', sep='\t')
     # get datasets, removing promoters which is a copy of molecular-biology_promoters
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         for n_recs in n_recs_range:
             for iters in iters_range:
                 for rec in args.rec.split(','):        # for each recommender
-                    # write experiment command 
+                    # write experiment command
                     batch_cmds.append(
                             'python mock_experiment/leaveoneout_experiment.py '
                             '-rec {REC} -n_recs {NREC} '
@@ -117,9 +117,9 @@ if __name__ == '__main__':
         Parallel(n_jobs=5)(delayed(os.system)(run_cmd) for run_cmd in batch_cmds)
     else:
         for i,run_cmd in enumerate(batch_cmds):
-            job_name = '_'.join([k + '-' + str(v) for k,v in job_info[i].items()]) 
+            job_name = '_'.join([k + '-' + str(v) for k,v in job_info[i].items()])
             out_file = 'mock_experiment/' + args.RESDIR + '/' + job_name + '_%J.out'
-            
+
             bsub_cmd = ('bsub -o {OUT_FILE} -n {N_CORES} -J {JOB_NAME} -q {QUEUE} '
                        '-R "span[hosts=1] rusage[mem={M}]" -M {M} ').format(
                            OUT_FILE=out_file,
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                            QUEUE=args.QUEUE,
                            N_CORES=1,
                            M=args.M)
-            
+
             bsub_cmd +=  '"' + run_cmd + '"'
             print(bsub_cmd)
-            os.system(bsub_cmd)     # submit jobs 
+            os.system(bsub_cmd)     # submit jobs

@@ -29,7 +29,7 @@ import __main__
 from sys import version
 import warnings
 from sklearn import __version__ as skl_version
-from sklearn.externals import joblib
+import joblib
 from mlxtend.evaluate import feature_importance_permutation
 from sklearn.utils import safe_sqr, check_X_y
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -1072,7 +1072,7 @@ def generate_export_codes(
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, {fold}

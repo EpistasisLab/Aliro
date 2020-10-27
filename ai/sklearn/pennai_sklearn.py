@@ -71,7 +71,6 @@ class PennAI(BaseEstimator):
             will dedicate as many cores as are available on your system.
 
     """
-    mode = "classification"
 
     def __init__(self,
                  rec_class=None,
@@ -306,7 +305,7 @@ class PennAI(BaseEstimator):
             self.rec_engine = self.rec_class(
                 **self.REC_ARGS)
         else:
-            self.rec_engine = RandomRecommender(
+            self.rec_engine = SVDRecommender(
                 **self.REC_ARGS)
 
         if not self.serialized_rec:
@@ -650,6 +649,49 @@ def bool_or_none(val):
 
 
 class PennAIClassifier(PennAI, ClassifierMixin):
+    """PennAI engine for classification tasks.
+
+    Parameters
+    ----------
+    rec_class: ai.recommender.base.BaseRecommender or None
+        Recommender to use in the PennAI engine.
+        if it is None, PennAI will use SVDRecommender by default.
+    verbose: int
+        0 quite, 1 info, 2 debug
+    serialized_rec: string or None
+        Path of the file to save/load a serialized recommender.
+        If the filename is not provided, the default filename based
+        on the recommender type, and metric, and knowledgebase used.
+    scoring: str
+        scoring for evaluating recommendations. It could be "accuracy",
+        "balanced_accuracy", "f1", "f1_macro"
+    n_recs: int
+        number of recommendations to make for each iteration
+    n_iters: int
+        total number of iterations
+    knowledgebase: str
+        input file for knowledgebase
+    kb_metafeatures: str
+        input file for metafeature
+    config_dict: python dictionary
+        dictionary for hyperparameter search space for all ML algorithms
+    ensemble: int
+        if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+        to ensemble top N best models into one model.
+    max_time_mins:
+        maximum time in minutes that PennAI can run
+    stopping_criteria: int
+        A number of iterations without improvments in best metric.
+        Stop recommendations early if the best metric
+        does not improve in the number of iterations iterations.
+    random_state: int
+        random state for recommenders
+    :param n_jobs: int
+        The number of cores to dedicate to computing the scores with joblib.
+        Assigning this parameter to -1 will dedicate as many cores as
+        are available on your system.
+
+    """
     mode = "classification"
     scoring_ = "accuracy"
     ml_type = "classifier"
@@ -659,6 +701,49 @@ class PennAIClassifier(PennAI, ClassifierMixin):
 
 
 class PennAIRegressor(PennAI, RegressorMixin):
+    """PennAI engine for regression tasks.
+
+    Parameters
+    ----------
+    rec_class: ai.recommender.base.BaseRecommender or None
+        Recommender to use in the PennAI engine.
+        if it is None, PennAI will use SVDRecommender by default.
+    verbose: int
+        0 quite, 1 info, 2 debug
+    serialized_rec: string or None
+        Path of the file to save/load a serialized recommender.
+        If the filename is not provided, the default filename based
+        on the recommender type, and metric, and knowledgebase used.
+    scoring: str
+        scoring for evaluating recommendations. It could be "r2",
+        "explained_variance", "neg_mean_squared_error"
+    n_recs: int
+        number of recommendations to make for each iteration
+    n_iters: int
+        total number of iterations
+    knowledgebase: str
+        input file for knowledgebase
+    kb_metafeatures: str
+        input file for metafeature
+    config_dict: python dictionary
+        dictionary for hyperparameter search space for all ML algorithms
+    ensemble: int
+        if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+        to ensemble top N best models into one model.
+    max_time_mins:
+        maximum time in minutes that PennAI can run
+    stopping_criteria: int
+        A number of iterations without improvments in best metric.
+        Stop recommendations early if the best metric
+        does not improve in the number of iterations iterations.
+    random_state: int
+        random state for recommenders
+    :param n_jobs: int
+        The number of cores to dedicate to computing the scores with joblib.
+        Assigning this parameter to -1 will dedicate as many cores as
+        are available on your system.
+
+    """
     mode = "regression"
     scoring_ = "neg_mean_squared_error"
     ml_type = "regressor"
