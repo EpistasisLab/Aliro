@@ -37,7 +37,7 @@ body {
 }
 /* file upload form styling */
 .pennai .file-upload-segment {
-    max-width: 605px;
+    max-width: 630px;
 }
 .pennai .file-upload-form-dataset-input {
     width: 40%;
@@ -61,6 +61,15 @@ body {
 .pennai .file-upload-dependent-text-field {
   margin-top: 15px;
   max-width: 350px;
+}
+.pennai .file-upload-dropdown + i.icon {
+    position: absolute;
+    top: 1.1em;
+    right: .1em;
+    cursor: pointer;
+}
+.pennai .file-upload-help-icon {
+    padding-left: 0;
 }
 .pennai .file-upload-categorical-help-icon {
   position: absolute;
@@ -91,11 +100,6 @@ body {
   top: 17.5%;
   left: 94%;
 }
-.pennai .file-upload-dependent-help-icon {
-  position: relative;
-  top: -50px;
-  left: 94%;
-}
 .pennai .file-upload-file-input-field {
   width: 70%;
 }
@@ -117,15 +121,12 @@ body {
     width: 80%;
     padding: 10px 5px;
 }
-
 .pennai .file-upload-sortable-list-item {
     /*border-style: solid;*/
     border: 1px solid;
     text-align: center;
     padding: 1px;
 }
-
-
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
     border: 1px solid #555;
@@ -448,7 +449,16 @@ body {
  * The bug is in v1.3.1 and v2.0.0.
  * Note that there's no way to reference a color value from the .ui class
  * that defines the inverted color w/out adding a css preprocessor */
-.pennai .inverted-dropdown-search .ui.search.dropdown>input.search {
+ .pennai .inverted-dropdown-search .ui.search.dropdown {
+    color: rgba(255,255,255,0.9);
+}
+ .pennai .inverted-dropdown-search .ui.search.dropdown > input.search {
+    color: rgba(255,255,255,0.9);
+}
+/* Manual fix for color of dropdown text in an inline form.field dropdown control
+   within an inverted form.
+*/
+.pennai .inverted-dropdown-inline .ui.dropdown {
     color: rgba(255,255,255,0.9);
 }
 
