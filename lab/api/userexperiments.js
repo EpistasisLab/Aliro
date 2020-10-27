@@ -105,6 +105,28 @@ exports.responder = function(req, res) {
             }
         }, {
             $lookup: {
+                from: "projects",
+                localField: "algorithms",
+                foreignField: "name",
+                as: "algorithms"
+            }
+        }, {
+            "$unwind": {
+                path: "$algorithms",
+                preserveNullAndEmptyArrays: true
+            }
+        }, {
+            $group: {
+                _id: "$_id",
+                username: {
+                    $first: "$username"
+                },
+                algorithms: {
+                    $addToSet: "$algorithms"
+                }
+            }
+        }, {
+            $lookup: {
                 from: "datasets",
                 localField: "username",
                 foreignField: "username",
@@ -117,41 +139,12 @@ exports.responder = function(req, res) {
                 foreignField: "username",
                 as: "experiments"
             }
-        }, {
-            $lookup: {
-                from: "projects",
-                localField: "algorithms",
-                foreignField: "name",
-                as: "algorithms"
-            }
-        }, {
-            "$unwind": {
-                path: "$algorithms",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            "$unwind": {
-                path: "$datasets",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            "$unwind": {
-                path: "$experiments",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
-            $group: {
-                _id: "$_id",
-                algorithms: {
-                    $addToSet: "$algorithms"
-                },
-                datasets: {
-                    $addToSet: "$datasets"
-                },
-                experiments: {
-                    $addToSet: "$experiments"
-                },
-            }
+        /*}, {
+            $project: {
+                username: 0,
+                experiments.prediction_values: 0
+            
+            }*/
         }],
         function(err, users) {
         if (users) {
