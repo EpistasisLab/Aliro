@@ -1086,8 +1086,8 @@ handleCatFeaturesUserTextCancel() {
           <Header as='h2' inverted color='grey'>
             Dataset preview
           </Header>
-          <div style={{ overflowY: 'auto', maxHeight: '350px' }} className='table-sticky-header'>
-            <Table inverted celled compact unstackable singleLine >
+          <div style={{ overflowY: 'auto', maxHeight: '350px' }} className='table-sticky-header file-upload-table'>
+            <Table inverted celled compact unstackable singleLine>
               <Table.Header>
                 <Table.Row>
                   {this.getHeaderRowCells()}
@@ -1224,168 +1224,208 @@ handleCatFeaturesUserTextCancel() {
     let content = (
       //---- Ordinal Feature Text Input ----
       <div>
-      <Form.Input>
-        <Modal
-          trigger=
-            {<Button 
-              color='blue'
-              size='small'
-              inverted
+      <Grid columns={3}>
+        <Grid.Row>
+        <Grid.Column>
+          <Form.Input>
+            <Modal
+              trigger=
+                {<Button 
+                  color='blue'
+                  size='small'
+                  fluid
+                  inverted
+                  disabled={this.state.ordinalFeatureToRank !== undefined}
+                  className="file-upload-button"
+                >
+                  Ordinal
+                </Button>}
+              open={this.state.ordinalFeaturesUserTextModalOpen}
+              onOpen={() => this.setState({ordinalFeaturesUserTextModalOpen: true})}
+              onClose={() => this.handleOrdinalFeaturesUserTextCancel()}
+              closeOnDimmerClick={false}
+              closeOnEscape={true}
               disabled={this.state.ordinalFeatureToRank !== undefined}
             >
-              Ordinal
-            </Button>}
-          open={this.state.ordinalFeaturesUserTextModalOpen}
-          onOpen={() => this.setState({ordinalFeaturesUserTextModalOpen: true})}
-          onClose={() => this.handleOrdinalFeaturesUserTextCancel()}
-          closeOnDimmerClick={false}
-          closeOnEscape={true}
-          disabled={this.state.ordinalFeatureToRank !== undefined}
-        >
-          <Modal.Header>Ordinal Feature Input</Modal.Header>
-            <Modal.Description width={'95%'}>
-              <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
-                &emsp;[feature name],[1st unique value],[2nd unique value],...</p>
-              <p>For example:<br/>
-                &emsp;month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec<br/>
-                &emsp;day,mon,tue,wed,thu,fri,sat,sun</p>
-              <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p>
-              <br/>
-            </Modal.Description>
-            <Form>
-            <textarea
-              className="file-upload-ordinal-text-area"
-              id="ordinal_features_text_area_input"
-              label="Ordinal Features"
-              onChange={this.handleOrdinalFeaturesUserTextOnChange}
-              placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
-              value={this.state.ordinalFeaturesUserText}
+              <Modal.Header>Ordinal Feature Input</Modal.Header>
+                <Modal.Description width={'95%'}>
+                  <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
+                    &emsp;[feature name],[1st unique value],[2nd unique value],...</p>
+                  <p>For example:<br/>
+                    &emsp;month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec<br/>
+                    &emsp;day,mon,tue,wed,thu,fri,sat,sun</p>
+                  <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p>
+                  <br/>
+                </Modal.Description>
+                <Form>
+                <textarea
+                  className="file-upload-ordinal-text-area"
+                  id="ordinal_features_text_area_input"
+                  label="Ordinal Features"
+                  onChange={this.handleOrdinalFeaturesUserTextOnChange}
+                  placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
+                  value={this.state.ordinalFeaturesUserText}
+                >
+                </textarea>
+                </Form>
+              <Modal.Actions>
+                <Button 
+                  color='red' 
+                  onClick={this.handleOrdinalFeaturesUserTextCancel}
+                  size="small"
+                  inverted
+                  content="Cancel"
+                />
+                <Button
+                  content="Accept"
+                  icon='checkmark'
+                  onClick={this.handleOrdinalFeaturesUserTextAccept}
+                  positive
+                  inverted
+                  color="blue"
+                  size="small"
+                />
+              </Modal.Actions>
+            </Modal>
+            <Popup
+              on="click"
+              position="right center"
+              header="Ordinal Features Help"
+              content={
+                <div className="content">
+                {this.ordFeatHelpText}
+                </div>
+              }
+              trigger={
+                <Icon
+                  inverted
+                  size="large"
+                  color="blue"
+                  name="info circle"
+                />
+              }
+            />
+          </Form.Input>
+        </Grid.Column>
+        {/*---- Categorical Feature Text Input ----*/}
+        <Grid.Column>
+          <Form.Input>
+            <Modal
+              trigger={<Button 
+                color='blue'
+                size='small'
+                fluid
+                inverted
+                disabled={this.state.ordinalFeatureToRank !== undefined}
+                className="file-upload-button"
+              >
+                Categorical
+              </Button>}
+              open={this.state.catFeaturesUserTextModalOpen}
+              onOpen={() => this.setState({catFeaturesUserTextModalOpen: true})}
+              onClose={() => this.handleCatFeaturesUserTextCancel()}
+              closeOnDimmerClick={false}
+              closeOnEscape={true}
             >
-            </textarea>
-            </Form>
-          <Modal.Actions>
-            <Button 
-              color='red' 
-              onClick={this.handleOrdinalFeaturesUserTextCancel}
-              size="small"
-              inverted
-              content="Cancel"
+              <Modal.Header>Categorical Feature Input</Modal.Header>
+                <Modal.Description width={'95%'}>
+                  <p>Enter a comma-separated list to specify which features are Categorical.<br/>
+                      This will override selections in the Dataset Preview. </p>
+                  <p>For example:<br/>
+                      &emsp;<i>sex,eye_color,hair_color,disease_state</i>
+                  </p>
+                  <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
+                    and the range is expanded using the column numbers. For example, working from the example above in which
+                    we assume the features are present in the data in the same order as listed, entering <br/>
+                    &emsp;<i>sex-disease_state</i><br/><br/>
+                    would expand to<br/>
+                    &emsp;<i>sex,eye_color,hair_color,disease_state</i>
+                  </p>
+                  <br/>
+                </Modal.Description>
+                <Form>
+                <textarea
+                    className="file-upload-categorical-text-area"
+                    id="categorical_features_text_area_input"
+                    label="Categorical Features"
+                    onChange={this.handleCatFeaturesUserTextOnChange}
+                    onBlur={this.handleCatFeaturesUserTextBlur}
+                    placeholder={this.getCatFeatures().length === 0 ? "(No Categorical features have been specified)" : "" }
+                    value={catFeaturesUserTextToDisplay}
+                >
+                </textarea>
+                </Form>
+              <Modal.Actions>
+                <Button 
+                  color='red' 
+                  onClick={this.handleCatFeaturesUserTextCancel}
+                  size="small"
+                  inverted
+                  content="Cancel"
+                />
+                <Button
+                  content="Accept"
+                  icon='checkmark'
+                  onClick={this.handleCatFeaturesUserTextAccept}
+                  positive
+                  inverted
+                  color="blue"
+                  size="small"
+                />
+              </Modal.Actions>
+            </Modal>
+            <Popup
+              on="click"
+              position="right center"
+              header="Categorical Features Help"
+              content={
+                <div className="content">
+                {this.catFeatHelpText}
+                </div>
+              }
+              trigger={
+                <Icon
+                  inverted
+                  size="large"
+                  color="blue"
+                  name="info circle"
+                />
+              }
             />
+          </Form.Input>
+        </Grid.Column>
+        <Grid.Column>
+          <Form.Input>
             <Button
-              content="Accept"
-              icon='checkmark'
-              onClick={this.handleOrdinalFeaturesUserTextAccept}
-              positive
+              color='blue'
+              size='small'
+              fluid
               inverted
-              color="blue"
-              size="small"
+              content="Set All To..."
+              className="file-upload-button"
+              onClick={() => this.setState({allFeaturesMenuOpen: !this.state.allFeaturesMenuOpen})}
             />
-          </Modal.Actions>
-        </Modal>
-        <Popup
-          on="click"
-          position="right center"
-          header="Ordinal Features Help"
-          content={
-            <div className="content">
-            {this.ordFeatHelpText}
+            {/*dropdown menu*/}
+            <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
+              <Menu vertical open={this.state.allFeaturesMenuOpen}>
+                <Menu.Item content={'Numeric'}
+                  onClick={() => {this.setAllFeatureTypes(this.featureTypeNumeric); this.setState({allFeaturesMenuOpen: false}) }}
+                />
+                <Menu.Item content={'Categorical'}
+                  onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
+                />
+                <Menu.Item content={'Ordinal'}
+                  onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
+                />
+                <Menu.Item content={'Default (auto-detect)'}
+                  onClick={() => {this.setAllFeatureTypes('autoDefault'); this.setState({allFeaturesMenuOpen: false}) }}
+                />
+              </Menu>
             </div>
-          }
-          trigger={
-            <Icon
-              className="file-upload-just-ordinal-help-icon"
-              inverted
-              size="large"
-              color="orange"
-              name="info circle"
-            />
-          }
-        />
-      </Form.Input>
-      {/*---- Categorical Feature Text Input ----*/}
-        <Form.Input>
-        <Modal
-          trigger={<Button 
-            color='blue'
-            size='small'
-            inverted
-            disabled={this.state.ordinalFeatureToRank !== undefined}
-          >
-            Specify Categorical Features
-          </Button>}
-          open={this.state.catFeaturesUserTextModalOpen}
-          onOpen={() => this.setState({catFeaturesUserTextModalOpen: true})}
-          onClose={() => this.handleCatFeaturesUserTextCancel()}
-          closeOnDimmerClick={false}
-          closeOnEscape={true}
-        >
-          <Modal.Header>Categorical Feature Input</Modal.Header>
-            <Modal.Description width={'95%'}>
-              <p>Enter a comma-separated list to specify which features are Categorical.<br/>
-                  This will override selections in the Dataset Preview. </p>
-              <p>For example:<br/>
-                  &emsp;<i>sex,eye_color,hair_color,disease_state</i>
-              </p>
-              <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
-                and the range is expanded using the column numbers. For example, working from the example above in which
-                we assume the features are present in the data in the same order as listed, entering <br/>
-                &emsp;<i>sex-disease_state</i><br/><br/>
-                would expand to<br/>
-                &emsp;<i>sex,eye_color,hair_color,disease_state</i>
-              </p>
-              <br/>
-            </Modal.Description>
-            <Form>
-            <textarea
-                className="file-upload-categorical-text-area"
-                id="categorical_features_text_area_input"
-                label="Categorical Features"
-                onChange={this.handleCatFeaturesUserTextOnChange}
-                onBlur={this.handleCatFeaturesUserTextBlur}
-                placeholder={this.getCatFeatures().length === 0 ? "(No Categorical features have been specified)" : "" }
-                value={catFeaturesUserTextToDisplay}
-            >
-            </textarea>
-            </Form>
-          <Modal.Actions>
-            <Button 
-              color='red' 
-              onClick={this.handleCatFeaturesUserTextCancel}
-              size="small"
-              inverted
-              content="Cancel"
-            />
-            <Button
-              content="Accept"
-              icon='checkmark'
-              onClick={this.handleCatFeaturesUserTextAccept}
-              positive
-              inverted
-              color="blue"
-              size="small"
-            />
-          </Modal.Actions>
-        </Modal>
-        <Popup
-          on="click"
-          position="right center"
-          header="Categorical Features Help"
-          content={
-            <div className="content">
-            {this.catFeatHelpText}
-            </div>
-          }
-          trigger={
-            <Icon
-              className="file-upload-just-categorical-help-icon"
-              inverted
-              size="large"
-              color="orange"
-              name="info circle"
-            />
-          }
-        />
-      </Form.Input>
+          </Form.Input>
+        </Grid.Column>
+        </Grid.Row>
+      </Grid>
       </div>
     )
     return content;
@@ -1504,6 +1544,7 @@ handleCatFeaturesUserTextCancel() {
               </Header>
             </Divider>
           
+            {/*dropdowns for selecting dep. feature and prediction type*/}
             <Grid columns={4} >
               <Grid.Row>
                 <Grid.Column width={7}>
@@ -1574,49 +1615,29 @@ handleCatFeaturesUserTextCancel() {
               </Grid.Row>
             </Grid>
 
+            {/*buttons for specifying feature types*/}
             <Form.Field
-              className="file-upload-accordion-title"
-              label="Features Types"
-            >
-            </Form.Field>
+                label="Features Types"
+                style={{marginTop: '1em'}}
+            />
             {userFeatureControls}
+
+            {/*upload button*/}
+            <Divider inverted horizontal>
+              <Header inverted as='h4'>
+                Upload
+              </Header>
+            </Divider>
+
             <Form.Input>
-              <Button
-                color='blue'
-                size='small'
-                inverted
-                content="Set All Features To Type..."
-                onClick={() => this.setState({allFeaturesMenuOpen: !this.state.allFeaturesMenuOpen})}
-              />
-            </Form.Input>
-            <Form.Input>
-              <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
-                <Menu vertical open={this.state.allFeaturesMenuOpen}>
-                  <Menu.Item content={'Numeric'}
-                    onClick={() => {this.setAllFeatureTypes(this.featureTypeNumeric); this.setState({allFeaturesMenuOpen: false}) }}
-                  />
-                  <Menu.Item content={'Categorical'}
-                    onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
-                  />
-                  <Menu.Item content={'Ordinal'}
-                    onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
-                  />
-                  <Menu.Item content={'Default (auto-detect)'}
-                    onClick={() => {this.setAllFeatureTypes('autoDefault'); this.setState({allFeaturesMenuOpen: false}) }}
-                  />
-                </Menu>
-              </div>
-            </Form.Input>
-            <Form.Input label="Upload" >
               <Button
                 inverted
                 color="blue"
                 disabled={this.state.uploadButtonDisabled}
                 loading={this.state.uploadButtonDisabled}
-                compact
-                size="small"
                 icon="upload"
                 content="Upload Dataset"
+                className="file-upload-button"
                 onClick={this.handleUpload}
                 />
             </Form.Input>
