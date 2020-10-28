@@ -52,68 +52,19 @@ body {
 .pennai .file-upload-form-show-inputs {
   display: block;
 }
-.pennai .file-upload-accordion-style {
-  color: rgba(255,255,255,.9) !important;
+.pennai .file-upload-button {
+    padding: 1.25em 1.25em 1.25em 1.25em;
 }
-.pennai .file-upload-accordion-title {
-  position: relative;
-}
-.pennai .file-upload-dependent-text-field {
-  margin-top: 15px;
-  max-width: 350px;
-}
-.pennai .file-upload-dropdown + i.icon {
+.pennai .file-upload-button + i.icon {
     position: absolute;
-    top: 1.1em;
-    right: .1em;
-    cursor: pointer;
+    top: 0.6em;
+    right: 0.7em;
 }
 .pennai .file-upload-help-icon {
     padding-left: 0;
 }
-.pennai .file-upload-categorical-help-icon {
-  position: absolute;
-  top: 7px;
-  left: 94%;
-}
-/* just category text area expanded */
-.pennai .file-upload-ord-with-cat-help-icon {
-  position: absolute;
-  top: 89%;
-  left: 94%;
-}
-/* category & ordinal text areas both expanded */
-.pennai .file-upload-ord-and-cat-help-icon {
-  position: absolute;
-  top: 53%;
-  left: 94%;
-}
-/* no text area/accordion expanded */
-.pennai .file-upload-ordinal-help-icon {
-  position: absolute;
-  top: 61%;
-  left: 94%;
-}
-/* only ordinal text area/accordion expanded */
-.pennai .file-upload-just-ordinal-help-icon {
-  position: absolute;
-  top: 17.5%;
-  left: 94%;
-}
-.pennai .file-upload-file-input-field {
-  width: 70%;
-}
-.pennai .file-upload-ordinal-accord-title {
-  color: rgba(255,255,255,.9) !important;
-}
-.pennai .file-upload-categorical-text-area {
-
-}
 .pennai .file-upload-ordinal-text-area {
     width: 90%
-}
-.pennai .file-upload-categorical-accord-title {
-  color: rgba(255,255,255,.9) !important;
 }
 .pennai .file-upload-sortable-list {
     list-style-type: none;
@@ -126,6 +77,9 @@ body {
     border: 1px solid;
     text-align: center;
     padding: 1px;
+}
+.pennai .file-upload-table {
+    line-height: 1;
 }
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
