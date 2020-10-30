@@ -45,3 +45,9 @@ jobs:
       script:
         # Unit tests
         - docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
+      deploy:
+        provider: pypi
+        username: "__token__"
+        password: $PYPI_TOKEN
+        on:
+          tags: true
