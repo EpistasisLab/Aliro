@@ -40,6 +40,7 @@ jobs:
             ai/tests/test_re*.py 
             ai/tests/test_k*utils.py"
         #- coverage combine
+        - docker cp pennai_unit_tester:/.coverage ./
         - coveralls
 
     - stage: "Docs"
