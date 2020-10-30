@@ -81,7 +81,8 @@ class FileUpload extends Component {
     this.ordinalFeaturesClearToDefault = this.ordinalFeaturesClearToDefault.bind(this);
     this.ordinalFeaturesObjectToUserText = this.ordinalFeaturesObjectToUserText.bind(this);
     this.validateFeatureName = this.validateFeatureName.bind(this);
-    this.getuserFeatureControls = this.getuserFeatureControls.bind(this);
+    this.getUserFeatureTypeControls = this.getUserFeatureTypeControls.bind(this);
+    this.getUserDatasetOptions = this.getUserDatasetOptions.bind(this);
     this.getFeatureType = this.getFeatureType.bind(this);
     this.getFeatureIndex = this.getFeatureIndex.bind(this);
     this.catFeaturesUserTextValidateAndExpand = this.catFeaturesUserTextValidateAndExpand.bind(this);
@@ -1205,8 +1206,106 @@ handleCatFeaturesUserTextCancel() {
     return {success: success, message: message, expanded: expanded.join()}
   }
 
+  /** Create UI for some data set options */
+  getUserDatasetOptions() {
+    //Options for the dependent column selection dropdown
+    const depColOptions = [];
+    if( this.state.datasetPreview) {
+      let features = this.state.datasetPreview.meta.fields;
+      features.map( (value, index) => {
+        depColOptions.push( { key: index, text: value, value: value })
+      })  
+    }
+
+    //Options for the prediction-type dropdown
+    const predictionOptions = [
+      {
+        key: "classification",
+        text: "classification",
+        value: "classification"
+      },
+      {
+        key: "regression",
+        text: "regression",
+        value: "regression"
+      },
+    ]
+
+    return (
+        <Grid columns={4} >
+        <Grid.Row>
+          <Grid.Column width={7}>
+            <Form.Field 
+              inline
+              label="Dependent Feature"
+              control={Dropdown}
+              search
+              placeholder="Select a feature"
+              options={depColOptions}
+              onChange={this.handleDepColDropdown}
+              className="inverted-dropdown-search"
+            />
+          </Grid.Column>
+          <Grid.Column width={1}>
+            <Popup
+              on="click"
+              header="Dependent Column Help"
+              position="right center"
+              content={
+                <div className="content">
+                  <p> {this.depColHelpText} </p>
+                </div>
+              }
+              trigger={
+                <Icon
+                  inverted
+                  size="large"
+                  color="blue"
+                  name="info circle"
+                  className="file-upload-help-icon"
+                  />
+              }
+            />
+          </Grid.Column>
+          <Grid.Column width={6}>
+            <Form.Field 
+              inline
+              label="Prediction Type"
+              control={Dropdown} 
+              defaultValue={this.defaultPredictionType}
+              options={predictionOptions}
+              onChange = {this.handlePredictionType}
+              className="inverted-dropdown-inline"
+            />
+          </Grid.Column>
+          <Grid.Column width={2}>
+            <Popup
+              on="click"
+              position="left center"
+              header="Prediction Type Help"
+              content={
+                <div className="content">
+                    {this.predictionTypeHelp}
+                </div>
+              }
+              trigger={
+                <Icon
+                  inverted
+                  size="large"
+                  color="blue"
+                  name="info circle"
+                  className="file-upload-help-icon"
+                />
+              }
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    )
+  }
+
   /** Create the UI for users to enter feature types manually */
-  getuserFeatureControls() {
+  getUserFeatureTypeControls() {
     //First determine whether there's a user-supplied string of cat features to show that
     // may contain feature ranges.
     let catFeaturesUserTextToDisplay = this.state.catFeaturesUserText;
@@ -1220,6 +1319,13 @@ handleCatFeaturesUserTextCancel() {
         }
       }  
     }
+
+    let itemContent=(
+      <React.Fragment>
+        {'Numeric / Categorical'}
+        <div>(auto-detect)</div>
+      </React.Fragment>
+    )
 
     let content = (
       //---- Ordinal Feature Text Input ----
@@ -1408,16 +1514,18 @@ handleCatFeaturesUserTextCancel() {
             {/*dropdown menu*/}
             <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
               <Menu vertical open={this.state.allFeaturesMenuOpen}>
-                <Menu.Item content={'Numeric'}
-                  onClick={() => {this.setAllFeatureTypes(this.featureTypeNumeric); this.setState({allFeaturesMenuOpen: false}) }}
-                />
                 <Menu.Item content={'Categorical'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
                 />
                 <Menu.Item content={'Ordinal'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
                 />
-                <Menu.Item content={'Default (auto-detect)'}
+                <Menu.Item content={
+                    <React.Fragment>
+                      {'Numeric / Categorical'}
+                      <div>(auto-detect)</div>
+                    </React.Fragment>
+                  }
                   onClick={() => {this.setAllFeatureTypes('autoDefault'); this.setState({allFeaturesMenuOpen: false}) }}
                 />
               </Menu>
@@ -1460,8 +1568,8 @@ handleCatFeaturesUserTextCancel() {
 
     let errorContent;
     let dataPrevTable = this.getDataTablePreview();
-//    let predictionSelector = this.getPredictionSelector();
-    let userFeatureControls = this.getuserFeatureControls();
+    let userFeatureTypeControls = this.getUserFeatureTypeControls();
+    let userDatasetOptions = this.getUserDatasetOptions();
 
     // default to hidden until a file is selected, then display input areas
     let formInputClass = "file-upload-form-hide-inputs";
@@ -1492,33 +1600,9 @@ handleCatFeaturesUserTextCancel() {
       </Dropzone>
     );
 
-
-    //Options for the dependent column selection dropdown
-    const depColOptions = [];
-    if( this.state.datasetPreview) {
-      let features = this.state.datasetPreview.meta.fields;
-      features.map( (value, index) => {
-        depColOptions.push( { key: index, text: value, value: value })
-      })  
-    }
-
-    //Options for the prediction-type dropdown
-    const predictionOptions = [
-      {
-        key: "classification",
-        text: "classification",
-        value: "classification"
-      },
-      {
-        key: "regression",
-        text: "regression",
-        value: "regression"
-      },
-    ]
-
     return (
       <div>
-        <SceneHeader header="Upload Datasets"/>
+        <SceneHeader header="Submit Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             
@@ -1545,87 +1629,18 @@ handleCatFeaturesUserTextCancel() {
             </Divider>
           
             {/*dropdowns for selecting dep. feature and prediction type*/}
-            <Grid columns={4} >
-              <Grid.Row>
-                <Grid.Column width={7}>
-                  <Form.Field 
-                    inline
-                    label="Dependent Feature"
-                    control={Dropdown}
-                    search
-                    placeholder="Select a feature"
-                    options={depColOptions}
-                    onChange={this.handleDepColDropdown}
-                    className="inverted-dropdown-search"
-                  />
-                </Grid.Column>
-                <Grid.Column width={1}>
-                  <Popup
-                    on="click"
-                    header="Dependent Column Help"
-                    position="right center"
-                    content={
-                      <div className="content">
-                        <p> {this.depColHelpText} </p>
-                      </div>
-                    }
-                    trigger={
-                      <Icon
-                        inverted
-                        size="large"
-                        color="blue"
-                        name="info circle"
-                        className="file-upload-help-icon"
-                        />
-                    }
-                  />
-                </Grid.Column>
-                <Grid.Column width={6}>
-                  <Form.Field 
-                    inline
-                    label="Prediction Type"
-                    control={Dropdown} 
-                    defaultValue={this.defaultPredictionType}
-                    options={predictionOptions}
-                    onChange = {this.handlePredictionType}
-                    className="inverted-dropdown-inline"
-                  />
-                </Grid.Column>
-                <Grid.Column width={2}>
-                  <Popup
-                    on="click"
-                    position="left center"
-                    header="Prediction Type Help"
-                    content={
-                      <div className="content">
-                          {this.predictionTypeHelp}
-                      </div>
-                    }
-                    trigger={
-                      <Icon
-                        inverted
-                        size="large"
-                        color="blue"
-                        name="info circle"
-                        className="file-upload-help-icon"
-                      />
-                    }
-                  />
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-
+            {userDatasetOptions}
             {/*buttons for specifying feature types*/}
             <Form.Field
                 label="Features Types"
                 style={{marginTop: '1em'}}
             />
-            {userFeatureControls}
+            {userFeatureTypeControls}
 
             {/*upload button*/}
             <Divider inverted horizontal>
               <Header inverted as='h4'>
-                Upload
+                Submit
               </Header>
             </Divider>
 
@@ -1636,7 +1651,7 @@ handleCatFeaturesUserTextCancel() {
                 disabled={this.state.uploadButtonDisabled}
                 loading={this.state.uploadButtonDisabled}
                 icon="upload"
-                content="Upload Dataset"
+                content="Submit Dataset"
                 className="file-upload-button"
                 onClick={this.handleUpload}
                 />
