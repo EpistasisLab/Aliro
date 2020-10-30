@@ -686,7 +686,7 @@ class PennAIClassifier(PennAI, ClassifierMixin):
         does not improve in the number of iterations iterations.
     random_state: int
         random state for recommenders
-    :param n_jobs: int
+    n_jobs: int
         The number of cores to dedicate to computing the scores with joblib.
         Assigning this parameter to -1 will dedicate as many cores as
         are available on your system.
@@ -738,7 +738,7 @@ class PennAIRegressor(PennAI, RegressorMixin):
         does not improve in the number of iterations iterations.
     random_state: int
         random state for recommenders
-    :param n_jobs: int
+    n_jobs: int
         The number of cores to dedicate to computing the scores with joblib.
         Assigning this parameter to -1 will dedicate as many cores as
         are available on your system.
