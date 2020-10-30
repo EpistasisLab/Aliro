@@ -1,0 +1,16 @@
+; [run]
+; source = 
+; 	ai
+; 	machine
+; 	lab/pyutils
+
+; Run in parallel mode so that coverage can canonicalize the source paths
+; regardless of whether it runs locally or within a Docker container.
+parallel = True
+
+[paths]
+; the first path is the path on the local (travis) filesystem
+; the second path is the path as it appears within the Docker container
+source =
+  /home/travis/
+  /appsrc/
