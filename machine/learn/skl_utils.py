@@ -652,10 +652,12 @@ def get_example_subset(y_predictions, y_true, select_class):
     y_neg = y_true[y_true != select_class]
     num_positive = min(10, len(y_pos))
     num_negative = min(10, len(y_neg))
-    assert num_positive != 0, "Number of positive examples for class {} is 0".format(select_class)
-    assert num_negative != 0, "Number of negative examples for class {} is 0".format(select_class)
 
-    examples = y_pos.sample(n=num_positive).append(y_neg.sample(n=num_negative))
+    examples = pd.Series([], dtype='int')
+    if num_positive != 0:
+        examples = examples.append(y_pos.sample(n=num_positive))
+    if num_negative != 0:
+        examples = examples.append(y_neg.sample(n=num_negative))
     y_predictions_subset = y_predictions[examples.index]
     y_true_subset = y_true[examples.index]
     misclassified = y_predictions_subset != y_true_subset
@@ -751,6 +753,7 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
                 link = 'identity'
             plt.gcf().set_size_inches(figsize)
             plt.sca(ax2)
+            feature_order = np.argsort(np.sum(np.abs(shap_values[i]), axis=0))
             shap.decision_plot(expected_value[i],
                                shap_values[i][examples_subset_index],
                                features[examples_subset_index, :],
@@ -760,7 +763,7 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
                                highlight=misclassified,
                                show=False,
                                plot_color='viridis',
-                               feature_order="importance",
+                               feature_order=feature_order,
                                link=link)
             plt.plot([0.5, 0.5], [0, n_features], ':k', alpha=0.3)
             ax2.set_yticklabels([])
