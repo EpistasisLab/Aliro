@@ -425,14 +425,16 @@ def generate_results(model, input_data,
                                     classifier_model,
                                     modified_features,
                                     modified_feature_names,
-                                    classifier_model.classes_)
+                                    classifier_model.classes_,
+                                    target)
         else:
             plot_shap_summary_curve(tmpdir,
                                     _id,
                                     model,
                                     features.copy(), # Send a copy of features as it may get modified
                                     feature_names,
-                                    model.classes_)
+                                    model.classes_,
+                                    target)
         
         if num_classes == 2:
             plot_roc_curve(
@@ -633,7 +635,34 @@ def plot_confusion_matrix(
         plt.close()
 
 
-def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_names):
+def get_example_subset(y_predictions, y_true, select_class):
+    """
+    Returns a subset of positive and negative example indices for a given class
+    along with misclassified labels.
+    Parameters
+    ----------
+    y_pred: Pandas Series
+        Denotes model predictions for the test set
+    y_true: Pandas Series
+        Denotes true labels for the test set
+    select_class: Integer
+        The class ID of the positive class
+    """
+    y_pos = y_true[y_true == select_class]
+    y_neg = y_true[y_true != select_class]
+    num_positive = min(10, len(y_pos))
+    num_negative = min(10, len(y_neg))
+    assert num_positive != 0, "Number of positive examples for class {} is 0".format(select_class)
+    assert num_negative != 0, "Number of negative examples for class {} is 0".format(select_class)
+
+    examples = y_pos.sample(n=num_positive).append(y_neg.sample(n=num_negative))
+    y_predictions_subset = y_predictions[examples.index]
+    y_true_subset = y_true[examples.index]
+    misclassified = y_predictions_subset != y_true_subset
+    return list(examples.index), misclassified
+
+
+def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_names, target, n_features = 20):
     """
     Plot Summary Curve for Classification models
     Parameters
@@ -650,6 +679,8 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
         List of feature names
     class_names: list
         List of class names
+    target: np.darray/pd.Series
+        Target in test dataset
     """
 
     #Ensure that images are saved properly
@@ -659,39 +690,80 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
     #Determine model name for sklearn-based models
     model_name = type(model).__name__
 
-    #Select explainer and set shap values
-    if model_name in [ 'DecisionTreeClassifier', 'RandomForestClassifier' ]:
+    #convert target to Pandas Series type if not already
+    if isinstance(target, pd.Series):
+        y_test = target.reset_index(drop=True)
+    else:
+        y_test = pd.Series(target)
+
+    # Select explainer and set shap values
+    if model_name in ['DecisionTreeClassifier', 'RandomForestClassifier']:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
+        expected_value = explainer.expected_value
         num_samples = -1
 
-    elif model_name ==  'GradientBoostingClassifier' and len(class_names) == 2:
-        #Gradient Boosting Tree Explainer is only supported for Binary Classification
+    elif model_name == 'GradientBoostingClassifier' and len(class_names) == 2:
+        # Gradient Boosting Tree Explainer is only supported for Binary Classification
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
+        expected_value = explainer.expected_value
         num_samples= -1
 
     elif 'SVC' in model_name:
-        #Handle special case for SVC (probability=False)
+        # Handle special case for SVC (probability=False)
         return
 
     else:
         # KernelExplainer
-        #Sample 20 examples for computational speedup
-        max_num_samples = 20
+        # Sample 50 examples for computational speedup
+        max_num_samples = 50
         num_samples = min(max_num_samples, len(features))
         sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
         features = features[sampled_row_indices]
+        y_test = y_test[sampled_row_indices].reset_index(drop=True)
         explainer = shap.KernelExplainer(model.predict_proba, features)
-        #l1_reg not set to 'auto' to subside warnings
-        shap_values = explainer.shap_values(features, l1_reg= 'num_features(10)')
+        # l1_reg not set to 'auto' to subside warnings
+        shap_values = explainer.shap_values(features, l1_reg='num_features(10)')
+        expected_value = explainer.expected_value
 
+    # Generate predictions for the final features
+    y_predictions = pd.Series(model.predict(features))
 
     # Handle the case of multi-class SHAP outputs
     if isinstance(shap_values, list):
-        for i,class_name in enumerate(class_names):
-            plt.figure()
-            shap.summary_plot(shap_values[i], features, feature_names=feature_names, show=False)
+        for i, class_name in enumerate(class_names):
+            figsize = (12, 6)
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+            # Generate Summary plot
+            plt.sca(ax1)
+            shap.summary_plot(shap_values[i],
+                              features=features,
+                              feature_names=feature_names,
+                              sort=True,
+                              show=False,
+                              max_display=n_features)
+            # Generate Decision plot
+            examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, i)
+            if 'linear' in model_name or 'logistic' in model_name:
+                link = 'logit'
+            else:
+                link = 'identity'
+            plt.gcf().set_size_inches(figsize)
+            plt.sca(ax2)
+            shap.decision_plot(expected_value[i],
+                               shap_values[i][examples_subset_index],
+                               features[examples_subset_index, :],
+                               feature_names=list(feature_names),
+                               feature_display_range=slice(None, -(n_features + 1), -1),
+                               ignore_warnings=True,
+                               highlight=misclassified,
+                               show=False,
+                               plot_color='viridis',
+                               feature_order="importance",
+                               link=link)
+            plt.plot([0.5, 0.5], [0, n_features], ':k', alpha=0.3)
+            ax2.set_yticklabels([])
             save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_' + str(class_name) + '_.png'
             plt.savefig(save_path)
             plt.close()
