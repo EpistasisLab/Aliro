@@ -16,7 +16,7 @@ PennAI is a multi-container docker project that uses ([Docker-Compose](https://d
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
 ### Installation
-1. Download the production zip `pennai-0_13.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/pennai/releases/latest) (note that this is different from the source code zip file).
+1. Download the production zip `pennai-*.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/pennai/releases/latest) (note that this is different from the source code zip file).
 2. Unzip the archive
 
 ## Using PennAI
