@@ -14,8 +14,12 @@ RUN apt-get update --fix-missing \
 
 RUN npm install -g mocha
 
-COPY /tests/unit/files/requirements.txt /root/
-RUN pip install --no-cache-dir -r /root/requirements.txt
+## machine and lab container
+COPY /docker/lab/files/requirements.txt /root/lab_requirements.txt
+RUN pip install --no-cache-dir -r /root/lab_requirements.txt
+
+COPY /docker/machine/files/requirements.txt /root/mach_requirements.txt
+RUN pip install --no-cache-dir -r /root/mach_requirements.txt
 
 ### Bill's surprise fork
 RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
