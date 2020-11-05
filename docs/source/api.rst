@@ -5,7 +5,7 @@ API
 AI
 ====
 
-.. automodule:: ai.ai
+.. autoclass:: ai.ai.AI
     :members:
 
 ============
@@ -15,34 +15,55 @@ Recommenders
 ##################
 Base Recommender
 ##################
-.. automodule:: ai.recommender.base
+.. autoclass:: ai.recommender.base.BaseRecommender
     :members:
 
 ##################
 Random Recommender
 ##################
-.. automodule:: ai.recommender.random_recommender
+.. autoclass:: ai.recommender.random_recommender.RandomRecommender
     :members:
 
 ###################
 Average Recommender
 ###################
-.. automodule:: ai.recommender.average_recommender
+.. autoclass:: ai.recommender.average_recommender.AverageRecommender
     :members:
 
 ###############
 KNN Recommender
 ###############
-.. automodule:: ai.recommender.knn_meta_recommender
+.. autoclass:: ai.recommender.knn_meta_recommender.KNNMetaRecommender
     :members:
 
 #####################
 Surprise Recommenders
 #####################
-.. automodule:: ai.recommender.surprise_recommenders
+
+We have a customized version of the Surprise library available `here. <https://github.com/lacava/surprise>`_
+
+.. autoclass:: ai.recommender.surprise_recommenders.SurpriseRecommender
     :members:
 
-=====
+.. autoclass:: ai.recommender.surprise_recommenders.CoClusteringRecommender
+    :members:
+
+.. autoclass:: ai.recommender.surprise_recommenders.KNNWithMeansRecommender
+    :members:
+
+.. autoclass:: ai.recommender.surprise_recommenders.KNNDatasetRecommender
+    :members:
+
+.. autoclass:: ai.recommender.surprise_recommenders.KNNMLRecommender
+    :members:
+
+.. autoclass:: ai.recommender.surprise_recommenders.SlopeOneRecommender
+    :members:
+
+.. autoclass:: ai.recommender.surprise_recommenders.SVDRecommender
+    :members:
+
+
 Learn
 =====
 
@@ -104,3 +125,4 @@ These methods generate sklearn models and evaluate them.
 .. autofunction:: machine.learn.skl_utils.export_model
 
 .. autofunction:: machine.learn.skl_utils.generate_export_codes
+
