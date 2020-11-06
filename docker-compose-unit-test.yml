@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: tests/unit/Dockerfile
     working_dir: /appsrc
-    command: bash -c "dos2unix tests/unit_test_runner.sh && sh tests/unit_test_runner.sh"
+    command: bash -c "dos2unix tests/unit/unit_test_runner.sh && sh tests/unit/unit_test_runner.sh"
     tty: true
     stdin_open: true
     volumes:
