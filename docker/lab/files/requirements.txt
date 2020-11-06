@@ -6,3 +6,4 @@ cython==0.29.2
 xgboost==0.82
 simplejson==3.16.0
 requests==2.22.0
+shap==0.34.0

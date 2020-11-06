@@ -2,6 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE) [![Master Build Status - Mac/Linux](https://travis-ci.org/EpistasisLab/pennai.svg?branch=master)](https://travis-ci.org/EpistasisLab/pennai)
 
+
 PennAI: AI-Driven Data Science
 ==================================
 
@@ -28,17 +29,17 @@ Steve Vitale, Sharon Tartarone, Randal Olson, Patryk Orzechowski, and Jason Moor
 Cite
 ====
 
-An up-to-date paper describing AI methodology is available on [arxiv](http://arxiv.org/abs/1905.09205).
+An up-to-date paper describing AI methodology is available in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btaa698) and [arxiv](http://arxiv.org/abs/1905.09205).
 Here's the biblatex:
 
 ```
-@article{pennai_2019,
-	title = {Evaluating recommender systems for {AI}-driven data science},
-	url = {http://arxiv.org/abs/1905.09205},
-	journaltitle = {{arXiv}:1905.09205 [cs]},
-	author = {La Cava, William and Williams, Heather and Fu, Weixuan and Moore, Jason H.},
-	urldate = {2019-05-30},
-	date = {2019-05-22},
+@article{pennai_2020,
+	title = {Evaluating recommender systems for {AI}-driven biomedical informatics},
+	url = {https://doi.org/10.1093/bioinformatics/btaa698},
+	journaltitle = {Bioinformatics},
+	doi = {10.1093/bioinformatics/btaa698},
+	year = {2020},
+	author = {La Cava, William and Williams, Heather and Fu, Weixuan and Vitale, Steve and Srivatsan, Durga and Moore, Jason H.},
 	eprinttype = {arxiv},
 	eprint = {1905.09205},
 	keywords = {Computer Science - Machine Learning, Computer Science - Information Retrieval},
