@@ -14,6 +14,10 @@ RUN apt-get update --fix-missing \
 
 RUN npm install -g mocha
 
+## tests
+COPY /tests/unit/requirements.txt /root/test_requirements.txt
+RUN pip install --no-cache-dir -r /root/test_requirements.txt
+
 ## machine and lab container
 COPY /docker/lab/files/requirements.txt /root/lab_requirements.txt
 RUN pip install --no-cache-dir -r /root/lab_requirements.txt

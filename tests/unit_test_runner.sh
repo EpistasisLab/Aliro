@@ -39,7 +39,7 @@ coverage run -m nose -s \
 coverage html -d "${COVERAGE_PATH}/html"
 coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
 
-# rm .coverage
+coverage erase
 
 echo "starting mocha tests"
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
