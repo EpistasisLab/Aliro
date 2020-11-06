@@ -36,9 +36,11 @@ coverage run -m nose -s \
 #--verbosity=4
 #--verbosity=4 > $NOSE_LOG_PATH 2>&1
 
+coverage combine
 coverage html -d "${COVERAGE_PATH}/html"
 coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
 
+echo "coverage erase"
 coverage erase
 
 echo "starting mocha tests"
