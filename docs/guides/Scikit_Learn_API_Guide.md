@@ -29,7 +29,7 @@ NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via t
 conda install numpy scipy scikit-learn pandas joblib simplejson
 ```
 
-Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command below. **Note: [Microsoft Visual C++ 14.0](https://visualstudio.microsoft.com/downloads/) is required for building the surprise package in Windows OS.**
+Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with `pip` via the command below. **Note: [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is required for building the surprise package in Windows OS. Please download and run the installer with selecting "C++ Build tools". Additionally, the latest version of [`cython`](https://cython.org) is required and it can be installed/updated via `pip install --upgrade cython`.**
 
 ```Shell
 pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
