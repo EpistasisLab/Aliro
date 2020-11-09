@@ -71,6 +71,7 @@ def balanced_accuracy(y_true, y_pred):
     """Default scoring function of classification: balanced accuracy.
     Balanced accuracy computes each class' accuracy on a per-class basis using a
     one-vs-rest encoding, then computes an unweighted average of the class accuracies.
+
     Parameters
     ----------
     y_true: numpy.ndarray {n_samples}
@@ -496,6 +497,7 @@ def setup_model_params(model, parameter_name, value):
 
 def compute_imp_score(model, metric, features, target, random_state):
     """Compute permuation importance scores for features.
+
     Parameters
     ----------
     tmpdir: string
@@ -852,6 +854,7 @@ def plot_dot_plot(tmpdir, _id, features,
                   random_state,
                   mode):
     """Make dot plot for based on decision tree.
+
     Parameters
     ----------
     tmpdir: string
@@ -989,6 +992,7 @@ def export_model(tmpdir,
                  mode="classification",
                  random_state=42):
     """export model as a pickle file and generate a scripts for using the pickled model.
+
     Parameters
     ----------
     tmpdir: string
@@ -1038,6 +1042,7 @@ def generate_export_codes(
         mode="classification",
         random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
+    
     Parameters
     ----------
     pickle_file_name: string

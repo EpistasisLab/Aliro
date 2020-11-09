@@ -26,7 +26,7 @@ pipeline {
         stage('Build Docs') {
             agent {
                 dockerfile {
-                    filename 'tests/unit/Dockerfile'
+                    filename 'docs/Dockerfile'
                     dir '.'
                     args '-u root'
                 }
