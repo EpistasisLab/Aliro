@@ -132,7 +132,7 @@ class Results extends Component {
           window.location = `/api/v1/files/${json._id}`;
         });
     };
-    
+
     console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
@@ -183,7 +183,7 @@ class Results extends Component {
                 />
               </Grid.Column>
               <Grid.Column>
-                <Menu compact inverted floated="right">
+                <Menu compact inverted floated='right' color='grey'>
                   <Dropdown
                     text='Download'
                     simple item
@@ -312,7 +312,7 @@ class Results extends Component {
                 />
               </Grid.Column>
               <Grid.Column>
-                <Menu compact inverted floated="right">
+                <Menu compact inverted floated='right' color='grey'>
                   <Dropdown
                     text='Download'
                     simple item
