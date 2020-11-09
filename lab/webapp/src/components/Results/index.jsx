@@ -39,7 +39,7 @@ import ShapSummaryCurve from './components/ShapSummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
-import { Header, Grid, Loader } from 'semantic-ui-react';
+import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 
 class Results extends Component {
@@ -107,7 +107,32 @@ class Results extends Component {
       );
     }
 
+    const downloadModel = (id) => {
+      fetch(`/api/v1/experiments/${id}/model`)
+        .then(response => {
+          if(response.status >= 400) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(json => {
+          window.location = `/api/v1/files/${json._id}`;
+        });
+    };
 
+    const downloadScript = (id) => {
+      fetch(`/api/v1/experiments/${id}/script`)
+        .then(response => {
+          if(response.status >= 400) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(json => {
+          window.location = `/api/v1/files/${json._id}`;
+        });
+    };
+    
     console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
@@ -144,12 +169,48 @@ class Results extends Component {
       let aucList = this.getGaugeArray(aucKeys);
       let recallList = this.getGaugeArray(recallKeys);
       let f1List = this.getGaugeArray(f1Keys);
+
+
+
       return (
         <div>
-          <SceneHeader
-            header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-            subheader={`Experiment: #${experiment.data._id}`}
-          />
+          <Grid columns={2} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <SceneHeader
+                  header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+                  subheader={`Experiment: #${experiment.data._id}`}
+                />
+              </Grid.Column>
+              <Grid.Column>
+                <Menu compact inverted floated="right">
+                  <Dropdown
+                    text='Download'
+                    simple item
+                    disabled={['cancelled', 'fail'].includes(experiment.data.status)}
+                  >
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                          key="model"
+                          icon="download"
+                          text="Model"
+                          onClick={() => downloadModel(experiment.data._id)}
+                        />,
+                        <Dropdown.Item
+                          key="script"
+                          icon="download"
+                          text="Script"
+                          onClick={() => downloadScript(experiment.data._id)}
+                        />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Menu>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+
+
+
           <Grid columns={3} stackable>
             <Grid.Row>
               <Grid.Column>
@@ -167,8 +228,8 @@ class Results extends Component {
               <Grid.Column>
                 <ConfusionMatrix file={confusionMatrix} />
                 <ROCCurve file={rocCurve} />
-                <ShapSummaryCurve 
-                  fileDict={shapSummaryCurveDict} 
+                <ShapSummaryCurve
+                  fileDict={shapSummaryCurveDict}
                   shap_explainer={shap_explainer}
                   shap_num_samples={shap_num_samples} />
               </Grid.Column>
@@ -242,13 +303,45 @@ class Results extends Component {
 
       return (
         <div>
-          <SceneHeader
-            header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-            subheader={`Experiment: #${experiment.data._id}`}
-          />
+          <Grid columns={2} stackable>
+            <Grid.Row>
+              <Grid.Column>
+                <SceneHeader
+                  header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
+                  subheader={`Experiment: #${experiment.data._id}`}
+                />
+              </Grid.Column>
+              <Grid.Column>
+                <Menu compact inverted floated="right">
+                  <Dropdown
+                    text='Download'
+                    simple item
+                    disabled={['cancelled', 'fail'].includes(experiment.data.status)}
+                  >
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                          key="model"
+                          icon="download"
+                          text="Model"
+                          onClick={() => downloadModel(experiment.data._id)}
+                        />,
+                        <Dropdown.Item
+                          key="script"
+                          icon="download"
+                          text="Script"
+                          onClick={() => downloadScript(experiment.data._id)}
+                        />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Menu>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
           <Grid columns={3} stackable>
             <Grid.Row>
               <Grid.Column>
+
+
                 <AlgorithmDetails
                   algorithm={experiment.data.algorithm}
                   params={experiment.data.params}
@@ -259,6 +352,7 @@ class Results extends Component {
                   launchedBy={experiment.data.launched_by}
                 />
                 <ImportanceScore file={importanceScore} />
+
               </Grid.Column>
               <Grid.Column>
                 <RegFigure file={reg_cv_pred} />
@@ -290,6 +384,7 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="pearsonr"
                 />
+
               </Grid.Column>
             </Grid.Row>
           </Grid>
