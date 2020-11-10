@@ -104,7 +104,7 @@ class PennAI(BaseEstimator):
         self.random_state = random_state
         self.n_jobs = n_jobs
 
-    def fit_init_(self):
+    def _fit_init(self):
         """
         fit initilization
         """
@@ -147,7 +147,7 @@ class PennAI(BaseEstimator):
         self.dataset_mf_cache = pd.DataFrame()
 
 
-        self.initilize_recommenders(self.rec_class)  # set self.rec_engine
+        self._initilize_recommenders(self.rec_class)  # set self.rec_engine
 
 
         if self.stopping_criteria is not None:
@@ -162,7 +162,7 @@ class PennAI(BaseEstimator):
                 raise ValueError("max_time_mins should be a positive number.")
 
 
-    def generate_metafeatures_from_X_y(self, X, y):
+    def _generate_metafeatures_from_X_y(self, X, y):
         """
         Return meta_features based on input X and y in fit().
         :param X: pd.DataFrame
@@ -185,7 +185,7 @@ class PennAI(BaseEstimator):
         df.sort_index(axis=1, inplace=True)
         return df
 
-    def valid_combo(self, combo, bad_combos):
+    def _valid_combo(self, combo, bad_combos):
         """Checks if parameter combination is valid."""
         for bad_combo in bad_combos:
             bc = {}
@@ -197,7 +197,7 @@ class PennAI(BaseEstimator):
                     bad = False
         return not bad
 
-    def get_all_ml_p(self, categoryFilter=None):
+    def _get_all_ml_p(self, categoryFilter=None):
         """
         Returns a list of ml and parameter options based on config dictionary
 
@@ -236,7 +236,7 @@ class PennAI(BaseEstimator):
 
             for ahc in all_hyperparam_combos:
                 if 'invalid_params_comb' in v.keys():
-                    if not self.valid_combo(
+                    if not self._valid_combo(
                             ahc, v['invalid_params_comb']):
                         continue
                 result.append({'algorithm': model_name,
@@ -255,17 +255,17 @@ class PennAI(BaseEstimator):
 
         if (len(all_ml_p) > 0):
             logger.info(str(len(all_ml_p)) + ' ml-parameter options loaded')
-            logger.info('get_all_ml_p() algorithms:' +
+            logger.info('_get_all_ml_p() algorithms:' +
                         str(all_ml_p.algorithm.unique()))
         else:
-            logger.error('get_all_ml_p() parsed no results')
+            logger.error('_get_all_ml_p() parsed no results')
 
         return all_ml_p
     # -----------------
     # Init methods
     # -----------------
 
-    def initilize_recommenders(self, rec_class):
+    def _initilize_recommenders(self, rec_class):
         """
         Initilize recommender
         """
@@ -279,7 +279,7 @@ class PennAI(BaseEstimator):
         self.static_parameters = {}
 
         # set the registered ml parameters in the recommenders
-        ml_p = self.get_all_ml_p()
+        ml_p = self._get_all_ml_p()
 
         self.REC_ARGS['ml_p'] = ml_p
 
@@ -290,7 +290,7 @@ class PennAI(BaseEstimator):
             raise ValueError(
                 "please provide both knowledgebase and kb_metafeatures")
 
-        resultsData = self.load_kb()
+        resultsData = self._load_kb()
         logger.info('Knowledgebase loaded')
 
         if self.serialized_rec:
@@ -316,7 +316,7 @@ class PennAI(BaseEstimator):
         logger.debug("recomendation engines initilized。 ")
 
 
-    def load_kb(self):
+    def _load_kb(self):
         """Bootstrap the recommenders with the knowledgebase."""
         logger.info('loading pmlb knowledgebase')
 
@@ -339,7 +339,7 @@ class PennAI(BaseEstimator):
 
     # todo ! to working yet
 
-    def get_results_metafeatures(self):
+    def _get_results_metafeatures(self):
         """
         Return a pandas dataframe of metafeatures
 
@@ -358,12 +358,12 @@ class PennAI(BaseEstimator):
 
         return df
 
-    def update_recommender(self, new_results_df):
+    def _update_recommender(self, new_results_df):
         """Update recommender models based on new experiment results in
         new_results_df.
         """
         if len(new_results_df) >= 1:
-            new_mf = self.get_results_metafeatures()
+            new_mf = self._get_results_metafeatures()
             self.rec_engine.update(new_results_df, new_mf)
             logger.debug(time.strftime("%Y %I:%M:%S %p %Z", time.localtime()) +
                         ': recommender updated')
@@ -371,13 +371,13 @@ class PennAI(BaseEstimator):
     # -----------------
     # Syncronous actions an AI request can take
     # -----------------
-    def generate_recommendations(self):
+    def _generate_recommendations(self):
         """
 
         :returns list of maps that represent request payload objects
         """
         logger.debug(
-            "generate_recommendations({},{})".format(
+            "_generate_recommendations({},{})".format(
                 self.datasetId, self.n_recs_))
 
         recommendations = []
@@ -429,17 +429,20 @@ class PennAI(BaseEstimator):
     def fit(self, X, y):
         """Trains PennAI on X,y.
 
-        initialize: train recommender or load saved recommender state
-        until stop criterion is met:
-            get recommendations for X,y
-            fit and cross validate recommended ML configs
-            update recommender based on CV scores
-        finalize: store best model, or make ensemble of trained models
-            that meet some performance threshold
+        Parameters
+        ----------
+        X: array-like {n_samples, n_features}
+            Feature matrix of the training set
+        y : ndarray of shape (n_samples,)
+            Target of the training set
+
+        Returns
+        -------
+        self : object
 
         """
 
-        self.fit_init_()
+        self._fit_init()
 
 
         # generate datasetId based on import X, y
@@ -453,7 +456,7 @@ class PennAI(BaseEstimator):
                 'please check your dataset and remove/rename that column')
 
         # get meta_features based on X, y
-        self.meta_features = self.generate_metafeatures_from_X_y(features, y)
+        self.meta_features = self._generate_metafeatures_from_X_y(features, y)
         # save all results
         self.recomms = []
 
@@ -474,7 +477,7 @@ class PennAI(BaseEstimator):
 
 
             logger.info("Start iteration #{}".format(i + 1))
-            recommendations = self.generate_recommendations()
+            recommendations = self._generate_recommendations()
             new_results = []
             ests = []
             ress = []
@@ -489,7 +492,7 @@ class PennAI(BaseEstimator):
                 params = r['parameters']
                 for k, v in params.items():
                     if isinstance(v, str):
-                        new_v = bool_or_none(v)
+                        new_v = _bool_or_none(v)
                         params[k] = new_v
                 # add staticparameters
                 params.update(self.static_parameters[r['algorithm']])
@@ -526,7 +529,7 @@ class PennAI(BaseEstimator):
             # get best score in each iteration
             self.best_score_iter = new_results_df[self.metric_].max()
             # update recommender each iteration
-            self.update_recommender(new_results_df)
+            self._update_recommender(new_results_df)
             # get best score in new results in this iteration
 
             # stop by stopping_criteria
@@ -576,7 +579,18 @@ class PennAI(BaseEstimator):
         return self
 
     def predict(self, X):
-        """Predict using trained model."""
+        """
+        Predictions for X.
+
+        Parameters
+        ----------
+        X: array-like {n_samples, n_features}
+            Feature matrix of the testing set
+        Returns
+        -------
+        y : ndarray of shape (n_samples,)
+            The predicted target.
+        """
         if not hasattr(self, 'estimator'):
             raise RuntimeError(
                 'A estimator has not yet been optimized.'
@@ -591,8 +605,8 @@ class PennAI(BaseEstimator):
         ----------
         X: array-like {n_samples, n_features}
             Feature matrix of the testing set
-        y: array-like {n_samples}
-            List of class labels for prediction in the testing set
+        y : ndarray of shape (n_samples,)
+            Target of the testing set
         Returns
         -------
         accuracy_score: float
@@ -625,7 +639,7 @@ class PennAI(BaseEstimator):
         #self.rec_engine.save(filename)
 
 
-def bool_or_none(val):
+def _bool_or_none(val):
     """Convert string to boolean type/None.
     Parameters
     ----------
@@ -650,6 +664,8 @@ def bool_or_none(val):
 
 class PennAIClassifier(PennAI, ClassifierMixin):
     """PennAI engine for classification tasks.
+
+    Read more in the :ref:`userguide_sklearn_api`.
 
     Parameters
     ----------
@@ -702,6 +718,8 @@ class PennAIClassifier(PennAI, ClassifierMixin):
 
 class PennAIRegressor(PennAI, RegressorMixin):
     """PennAI engine for regression tasks.
+
+    Read more in the :ref:`userguide_sklearn_api`.
 
     Parameters
     ----------

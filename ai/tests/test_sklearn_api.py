@@ -219,7 +219,7 @@ def test_fit_init():
                             kb_metafeatures=classification_metafeatures,
                             random_state=42
                            )
-    pennai.fit_init_()
+    pennai._fit_init()
     assert pennai.scoring_ == "accuracy"
     assert pennai.metric_ == "accuracy"
     assert pennai.n_recs_ == 2
@@ -236,7 +236,7 @@ def test_load_kb():
     pennai.dataset_mf_cache = pd.DataFrame()
     pennai.kb_ = classification_kb
     pennai.mf_ = classification_metafeatures
-    resultsData = pennai.load_kb()
+    resultsData = pennai._load_kb()
     kb = load_knowledgebase(
                         resultsFiles=[classification_kb],
                         metafeaturesFiles=[classification_metafeatures]
@@ -316,7 +316,7 @@ def test_ensemble():
 #                                 random_state=42,
 #                                 verbose=1
 #                               )
-#         pennai.fit_init_()
+#         pennai._fit_init()
 #         pennai.rec_engine.save(save_path)
 #         assert path.isfile(save_path)
 #
@@ -336,7 +336,7 @@ def test_ensemble():
 #                             random_state=42,
 #                             verbose=1
 #                           )
-#     pennai.fit_init_()
+#     pennai._fit_init()
 #     pennai.rec_engine.save(save_path)
 #     assert path.isfile(save_path)
 

@@ -67,9 +67,12 @@ We have a customized version of the Surprise library available `here. <https://g
 Scikit-learn API for PennAI engine
 ==================================
 
-This is the API for using PennAI engine as standalone python package. (see :ref:`userguide_sklearn_api`).
+This is the API for using PennAI engine as a standalone python package.
 
-It can be imported from `pennai.sklearn` after installing `pennaipy` package via pip.
+.. autoclass:: ai.sklearn.pennai_sklearn.PennAI
+    :members:
+
+Two classes below can be imported from `pennai.sklearn` after installing `pennaipy` package via pip. (see :ref:`userguide_sklearn_api`)
 
 .. autoclass:: ai.sklearn.pennai_sklearn.PennAIClassifier
     :members:
