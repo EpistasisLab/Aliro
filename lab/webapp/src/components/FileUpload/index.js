@@ -90,7 +90,10 @@ class FileUpload extends Component {
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
+    this.featureTypeDefaultsProcessRow = this.featureTypeDefaultsProcessRow.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
+    this.getElapsedTime = this.getElapsedTime.bind(this);
+    this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -119,6 +122,22 @@ class FileUpload extends Component {
     1) In the text input box opened by the button to the left, using the format described in the box <br/>
     2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
     using the drag-and-drop list of unique categories.</p>);
+
+    /**
+     * Array of auto-detected default feature types, used while
+     * stream-processing data file.
+     */
+    this.featureTypeDefaultsInProcess = undefined;
+
+    /**
+     * Flag used to track when the setAllFeatureTypes method is running,
+     * so we can skip unwanted re-renders. See comments in setAllFeatureTypes method.
+     */
+    this.setAllFeatureTypesInProgress = false;
+
+    //Debug
+    this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
+    this.timingPrevTimeMsec = new Date().getTime();
   }
 
   get initState() {
@@ -171,6 +190,24 @@ class FileUpload extends Component {
   */
   componentDidMount() {
     this.setState(this.initState); //Not sure why this is called here
+  }
+
+  /**
+   * React lifecycle method. Allows us to conditionally skip updating/re-rendering
+   * the component.
+   */
+  shouldComponentUpdate() {
+    //Only update if this flag is false. See comments in setAllFeatureTypes()
+    return !this.setAllFeatureTypesInProgress;
+  }
+
+  /** Helper routine for debugging. Get elapsed time in sec from 
+   * either init or from the previous call to this method.
+   */
+  getElapsedTime() {
+    let res = ((new Date().getTime()) - this.timingPrevTimeMsec)/1000;
+    this.timingPrevTimeMsec = new Date().getTime();
+    return res;
   }
 
   /**
@@ -362,7 +399,7 @@ handleCatFeaturesUserTextCancel() {
       // before upload get a preview of what is in dataset file
 
       //debug output in dev build
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      if (this.isDevBuild) {
         console.log("Dev build debug out. metadata: ");
         console.log(metadata);
       }
@@ -399,9 +436,9 @@ handleCatFeaturesUserTextCancel() {
     let dataPrev = this.state.datasetPreview;
     //Init oridinal values
     this.ordinalFeaturesClearToDefault();  
-    //Init the store default feature types
+    //Init the store of default feature types
     this.initFeatureTypeDefaults();
-    //Init the feature types
+    //Init the feature type assignments
     this.setAllFeatureTypes('autoDefault');
   }
 
@@ -421,10 +458,50 @@ handleCatFeaturesUserTextCancel() {
       header: true,
       complete: (result) => {
         //window.console.log('preview of uploaded data: ', result);
+        if(this.isDevBuild) {
+          console.log( this.getElapsedTime() + " - papaConfig complete. Calling setState... ");
+        }
+        //Store the result
         this.setState({datasetPreview: result});
+
+        if(this.isDevBuild) {
+          console.log( this.getElapsedTime() + " - setState complete. ");
+        }
+        if(this.isDevBuild){
+          console.log("Calling initDatasetPreview... ");
+          this.getElapsedTime();
+        }
+  
         this.initDatasetPreview();
+  
+        if(this.isDevBuild)
+          console.log( this.getElapsedTime() + " - done with initDatasetPreview.");
+          
+        //Test streaming
+        // if(this.isDevBuild) {
+        //   this.getElapsedTime(); //resets the timer
+        //   console.log("=== Calling Papa.parse TEST... ");
+        //   this.featureTypeDefaultsInProcess = undefined;
+        //   Papa.parse(files[0], papaConfigTest);
+        // }
       }
     };
+
+    //Note - tried using 'before' function that's listed in PapaParse docs,
+    // but it's not getting called
+    let papaConfigTest = {
+      header: true,
+      step: (row) => {
+        // console.log("Row:", row.data);
+        this.featureTypeDefaultsProcessRow(row.data);
+      },
+      complete: () => {
+        this.setState({featureTypeDefaults: this.featureTypeDefaultsInProcess});
+        this.initDatasetPreview();
+        console.log( this.getElapsedTime() + " - papaConfigTest complete.");
+      }
+    }
+
 
     // check for selected file
     if(files && files[0]) {
@@ -440,6 +517,10 @@ handleCatFeaturesUserTextCancel() {
         // use try/catch block to deal with potential bad file input when trying to
         // generate file/csv preview, use filename to check file extension
         try {
+          if(this.isDevBuild) {
+            this.getElapsedTime(); //resets the timer
+            console.log("=== Calling Papa.parse... ");
+          }
           Papa.parse(uploadFile, papaConfig);
         }
         catch(error) {
@@ -605,12 +686,35 @@ handleCatFeaturesUserTextCancel() {
       this.state.datasetPreview.meta.fields.forEach( (feature) => {
         //NOTE - empircally, at the end we get an extra row with a single member set to "".
         //So skip if row[field] is undefined or ""
-        if(row[feature] !== "" && row[feature] !== undefined && isNaN(row[feature])) {
+        if(isNaN(row[feature]) && row[feature] !== "" && row[feature] !== undefined) {
           newDefaults[feature] = this.featureTypeCategorical;
         }
       })
     })
     this.setState({ featureTypeDefaults: newDefaults });
+  }
+
+  /**
+   * For stream-processing file. Callback used by Papa Parse.
+   * @param {*} rowData - single row of data from Papa Parse.
+   */
+  featureTypeDefaultsProcessRow(rowData) {
+    //If undefined, this is th first time in for a newly-loaded file.
+    if( this.featureTypeDefaultsInProcess === undefined ) {
+      //Setup object and default to type numeric
+      this.featureTypeDefaultsInProcess = {};
+      Object.keys(rowData[0]).forEach( (feature) => {
+        this.featureTypeDefaultsInProcess[feature] = this.featureTypeNumeric;
+      })
+    }
+    //Go through each feature, if non-numeric, mark the field as type categorical
+    Object.entries(rowData[0]).forEach( ([feature,value]) => {
+      //NOTE - empircally, at the end we get an extra row with a single member set to "".
+      //So skip if row[field] is undefined or ""
+      if(isNaN(value) && value !== "" && value !== undefined) {
+        this.featureTypeDefaultsInProcess[feature] = this.featureTypeOrdinal;
+      }
+    })
   }
 
   /**
@@ -634,7 +738,22 @@ handleCatFeaturesUserTextCancel() {
    *  where 'autoDefault' will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
-    this.state.datasetPreview.meta.fields.forEach( (feature) => {
+    //Set this flag to skip updating the component while we repeatedly call setFeatureType.
+    //setFeatureType calls setState() each time it's called, and this triggers a re-render
+    // of the component under some conditions. For larger files, this can end up taking a
+    // long time.
+    //The re-render after each setState() call happens when this is called from the PapaParse
+    // complete method, or from a setInterval callback (this was tried while testing), but
+    // does NOT happen when called from the onClick event handlers used for setting all
+    // feature types at once. I don't know why this is yet, but in the meantime this flag
+    // will be check in shouldComponentUpdate and will prevent re-renders until the last
+    // feature is updated below.
+    this.setAllFeatureTypesInProgress = true;
+    this.state.datasetPreview.meta.fields.forEach( (feature, index) => {
+      //Clear the flag for the last feature, and then the call to setFeatureType
+      // will trigger a re-render.
+      if( index === (this.state.datasetPreview.meta.fields.length - 1) )
+        this.setAllFeatureTypesInProgress=false;
       if( this.getFeatureType(feature) !== this.featureTypeDependent ) {
         let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
         this.setFeatureType(feature, newType);  
@@ -670,7 +789,7 @@ handleCatFeaturesUserTextCancel() {
     // Do not set to type Numeric if default type is non-numeric
     if( type === this.featureTypeNumeric && this.getFeatureDefaultType(feature) !== this.featureTypeNumeric) {
       //debug output in dev build
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      if (this.isDevBuild) {
         console.log("setFeatureType: tried to set feature " + feature + " to type Numeric but it is not type Numeric by default.");
       }
       return;
