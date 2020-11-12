@@ -1,13 +1,11 @@
 //require('es6-promise').polyfill();
 //import fs = require('fs');
-import fetch from 'isomorphic-fetch';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import { getSortedDatasets } from '../../data/datasets';
+import ReactDOM from "react-dom";
 import { fetchDatasets } from '../../data/datasets/actions';
 import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
-import { put } from '../../utils/apiHelper';
 import Papa from 'papaparse';
 import {
   Button,
@@ -93,7 +91,6 @@ class FileUpload extends Component {
     this.featureTypeDefaultsProcessRow = this.featureTypeDefaultsProcessRow.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
-    this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -128,12 +125,6 @@ class FileUpload extends Component {
      * stream-processing data file.
      */
     this.featureTypeDefaultsInProcess = undefined;
-
-    /**
-     * Flag used to track when the setAllFeatureTypes method is running,
-     * so we can skip unwanted re-renders. See comments in setAllFeatureTypes method.
-     */
-    this.setAllFeatureTypesInProgress = false;
 
     //Debug
     this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
@@ -190,15 +181,6 @@ class FileUpload extends Component {
   */
   componentDidMount() {
     this.setState(this.initState); //Not sure why this is called here
-  }
-
-  /**
-   * React lifecycle method. Allows us to conditionally skip updating/re-rendering
-   * the component.
-   */
-  shouldComponentUpdate() {
-    //Only update if this flag is false. See comments in setAllFeatureTypes()
-    return !this.setAllFeatureTypesInProgress;
   }
 
   /** Helper routine for debugging. Get elapsed time in sec from 
@@ -738,27 +720,19 @@ handleCatFeaturesUserTextCancel() {
    *  where 'autoDefault' will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
-    //Set this flag to skip updating the component while we repeatedly call setFeatureType.
+    //Batch the setState calls that happen in setFeatureType so they don't re-render each time.
+    //Some discussion here: https://medium.com/swlh/react-state-batch-update-b1b61bd28cd2
     //setFeatureType calls setState() each time it's called, and this triggers a re-render
-    // of the component under some conditions. For larger files, this can end up taking a
-    // long time.
-    //The re-render after each setState() call happens when this is called from the PapaParse
-    // complete method, or from a setInterval callback (this was tried while testing), but
-    // does NOT happen when called from the onClick event handlers used for setting all
-    // feature types at once. I don't know why this is yet, but in the meantime this flag
-    // will be check in shouldComponentUpdate and will prevent re-renders until the last
-    // feature is updated below.
-    this.setAllFeatureTypesInProgress = true;
-    this.state.datasetPreview.meta.fields.forEach( (feature, index) => {
-      //Clear the flag for the last feature, and then the call to setFeatureType
-      // will trigger a re-render.
-      if( index === (this.state.datasetPreview.meta.fields.length - 1) )
-        this.setAllFeatureTypesInProgress=false;
-      if( this.getFeatureType(feature) !== this.featureTypeDependent ) {
-        let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
-        this.setFeatureType(feature, newType);  
-      }
-    })
+    // of the component when not called from a react event handler or lifecycle method.
+    // For larger files, this can end up taking a long time.
+    ReactDOM.unstable_batchedUpdates(() => {
+      this.state.datasetPreview.meta.fields.forEach( (feature, index) => {
+        if( this.getFeatureType(feature) !== this.featureTypeDependent ) {
+          let newType = type === 'autoDefault' ? this.getFeatureDefaultType(feature) : type;
+          this.setFeatureType(feature, newType);  
+        }
+      })
+    });
   }
 
   /** 
