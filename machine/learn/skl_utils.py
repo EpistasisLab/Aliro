@@ -420,7 +420,7 @@ def generate_results(model, input_data,
             classifier_model = model[step_names[1]]
             modified_feature_names = get_column_names_from_ColumnTransformer(column_transformer, feature_names)
             modified_features = column_transformer.transform(features.copy())
-            plot_shap_summary_curve(tmpdir,
+            plot_shap_analysis_curve(tmpdir,
                                     _id,
                                     classifier_model,
                                     modified_features,
@@ -428,7 +428,7 @@ def generate_results(model, input_data,
                                     classifier_model.classes_,
                                     target)
         else:
-            plot_shap_summary_curve(tmpdir,
+            plot_shap_analysis_curve(tmpdir,
                                     _id,
                                     model,
                                     features.copy(), # Send a copy of features as it may get modified
@@ -641,7 +641,7 @@ def get_example_subset(y_predictions, y_true, select_class):
     along with misclassified labels.
     Parameters
     ----------
-    y_pred: Pandas Series
+    y_predictions: Pandas Series
         Denotes model predictions for the test set
     y_true: Pandas Series
         Denotes true labels for the test set
@@ -664,9 +664,18 @@ def get_example_subset(y_predictions, y_true, select_class):
     return list(examples.index), misclassified
 
 
-def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_names, target, n_features = 20):
+def plot_shap_analysis_curve(
+        tmpdir,
+        _id,
+        model,
+        features,
+        feature_names,
+        class_names,
+        target,
+        n_features=20
+):
     """
-    Plot Summary Curve for Classification models
+    Generate SHAP Analysis for Classification models
     Parameters
     ----------
     tmpdir: string
@@ -683,36 +692,45 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
         List of class names
     target: np.darray/pd.Series
         Target in test dataset
+    n_features: int
+        Maximum count of features to use for the plots
     """
 
-    #Ensure that images are saved properly
+    # Ensure that images are saved properly
     rcParams.update({'figure.autolayout': True})
-    #SHAP value calculation raises error if dtype is non-numeric
+    # SHAP value calculation raises error if dtype is non-numeric
     features = np.array(features).astype('float64')
-    #Determine model name for sklearn-based models
-    model_name = type(model).__name__
+    # Determine model name for sklearn-based models
+    model_name = type(model).__name__.lower()
 
-    #convert target to Pandas Series type if not already
+    # convert target to Pandas Series type if not already
     if isinstance(target, pd.Series):
         y_test = target.reset_index(drop=True)
     else:
         y_test = pd.Series(target)
 
     # Select explainer and set shap values
-    if model_name in ['DecisionTreeClassifier', 'RandomForestClassifier']:
+    if model_name in ['decisiontreeclassifier', 'randomforestclassifier']:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
-        expected_value = explainer.expected_value
+        expected_values = explainer.expected_value
         num_samples = -1
 
-    elif model_name == 'GradientBoostingClassifier' and len(class_names) == 2:
+    elif model_name == 'gradientboostingclassifier' and len(class_names) == 2:
         # Gradient Boosting Tree Explainer is only supported for Binary Classification
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
-        expected_value = explainer.expected_value
-        num_samples= -1
+        expected_values = explainer.expected_value
+        num_samples = -1
 
-    elif 'SVC' in model_name:
+    elif 'linear' in model_name or 'logistic' in model_name:
+        # Supports Logistic Regression, LinearSVC
+        explainer = shap.LinearExplainer(model, features)
+        shap_values = explainer.shap_values(features)
+        expected_values = explainer.expected_value
+        num_samples = -1
+
+    elif 'svc' in model_name:
         # Handle special case for SVC (probability=False)
         return
 
@@ -727,55 +745,32 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
         explainer = shap.KernelExplainer(model.predict_proba, features)
         # l1_reg not set to 'auto' to subside warnings
         shap_values = explainer.shap_values(features, l1_reg='num_features(10)')
-        expected_value = explainer.expected_value
+        expected_values = explainer.expected_value
 
     # Generate predictions for the final features
     y_predictions = pd.Series(model.predict(features))
+    # Determine link for decision plot
+    if 'linear' in model_name or 'logistic' in model_name:
+        link = 'logit'
+    else:
+        link = 'identity'
 
     # Handle the case of multi-class SHAP outputs
     if isinstance(shap_values, list):
         for i, class_name in enumerate(class_names):
-            figsize = (12, 6)
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
-            # Generate Summary plot
-            plt.sca(ax1)
-            shap.summary_plot(shap_values[i],
-                              features=features,
-                              feature_names=feature_names,
-                              sort=True,
-                              show=False,
-                              max_display=n_features)
-            # Generate Decision plot
-            examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, i)
-            if 'linear' in model_name or 'logistic' in model_name:
-                link = 'logit'
-            else:
-                link = 'identity'
-            plt.gcf().set_size_inches(figsize)
-            plt.sca(ax2)
-            feature_order = np.argsort(np.sum(np.abs(shap_values[i]), axis=0))
-            shap.decision_plot(expected_value[i],
-                               shap_values[i][examples_subset_index],
-                               features[examples_subset_index, :],
-                               feature_names=list(feature_names),
-                               feature_display_range=slice(None, -(n_features + 1), -1),
-                               ignore_warnings=True,
-                               highlight=misclassified,
-                               show=False,
-                               plot_color='viridis',
-                               feature_order=feature_order,
-                               link=link)
-            plt.plot([0.5, 0.5], [0, n_features], ':k', alpha=0.3)
-            ax2.set_yticklabels([])
             save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_' + str(class_name) + '_.png'
-            plt.savefig(save_path)
-            plt.close()
+            examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, i)
+            combine_summary_decision_curve(
+                shap_values[i], expected_values[i], features, feature_names,
+                n_features, examples_subset_index, misclassified, link, save_path
+            )
     else:
-        plt.figure()
-        shap.summary_plot(shap_values, features, feature_names=feature_names, show=False)
         save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_0_.png'
-        plt.savefig(save_path)
-        plt.close()
+        examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, class_names[1])
+        combine_summary_decision_curve(
+            shap_values, expected_values, features, feature_names,
+            n_features, examples_subset_index, misclassified, link, save_path
+        )
 
     # Summary stats
     shap_summary_dict = {
@@ -786,6 +781,73 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="shap_summary.json", content=shap_summary_dict)
+
+
+def combine_summary_decision_curve(
+        shap_value,
+        expected_value,
+        features,
+        feature_names,
+        n_features,
+        examples_subset_index,
+        misclassified,
+        link,
+        save_path
+):
+    """
+    Generate a combined SHAP Summary and Decision Plot
+    Parameters
+    ----------
+    shap_value: np.ndarray
+        SHAP value for a particular output class
+    expected_value: float
+        Average of the classifier/model output over training dataset
+    features: np.ndarray
+        Features in testing dataset
+    feature_names: np.array
+        List of feature names
+    n_features: int
+        Maximum count of features to use for the plots
+    examples_subset_index: list of indices
+        Samples to select for the decision plot
+    misclassified: list of Boolean values
+        Denotes which selected samples are misclassified (set to true)
+    link: string
+       Link type to be used for the decision plot
+    save_path: string
+        File path where the plot will be saved
+    """
+
+    figsize = (12, 6)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+    # Generate Summary plot
+    plt.sca(ax1)
+    shap.summary_plot(shap_value,
+                      features=features,
+                      feature_names=feature_names,
+                      sort=True,
+                      show=False,
+                      max_display=n_features)
+    # Generate Decision plot
+    plt.gcf().set_size_inches(figsize)
+    plt.sca(ax2)
+    feature_order = np.argsort(np.sum(np.abs(shap_value), axis=0))
+    shap.decision_plot(expected_value,
+                       shap_value[examples_subset_index],
+                       features[examples_subset_index, :],
+                       feature_names=list(feature_names),
+                       feature_display_range=slice(None, -(n_features + 1), -1),
+                       ignore_warnings=True,
+                       highlight=misclassified,
+                       show=False,
+                       plot_color='viridis',
+                       feature_order=feature_order,
+                       link=link)
+    plt.plot([0.5, 0.5], [0, n_features], ':k', alpha=0.3)
+    ax2.set_yticklabels([])
+    plt.savefig(save_path)
+    plt.close()
+
 
 # After switching to dynamic charts, possibly disable outputting graphs
 # from this function
