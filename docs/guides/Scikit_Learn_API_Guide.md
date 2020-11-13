@@ -21,7 +21,6 @@ PennAI AI engine is built on top of several existing Python libraries, including
 Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.anaconda.com/products/individual), which we strongly recommend that you use.
 
 You can install PennAI AI engine using `pip`.
-## pip
 
 NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:
 
@@ -38,7 +37,7 @@ pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 Finally to install AI engine itself, run the following command:
 
 ```Shell
-pip install pennaipy==0.17a3
+pip install pennaipy
 ```
 
 ### Example of using PennAI AI engine ###
