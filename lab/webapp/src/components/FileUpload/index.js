@@ -9,25 +9,18 @@ import SceneHeader from '../SceneHeader';
 import Papa from 'papaparse';
 import {
   Button,
-  Radio,
   Dropdown,
-  Input,
   Form,
   Segment,
   Table,
   Popup,
-  Checkbox,
   Header,
-  Accordion,
   Icon,
-  Label,
   Divider,
   Modal,
-  Message,
-  TextArea,
-  Container,
   Menu,
-  Grid
+  Grid,
+  Loader
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
@@ -127,8 +120,8 @@ class FileUpload extends Component {
   get initState() {
     return {
       selectedFile: null,
-      /** The name of the column with the data that is treated as the dependent column */
-//      dependentCol: '',
+      /** Flag tells us when a file is being loaded and processed for preview. */
+      processingFileForPreview: false,
       /** {array} String-array holding the type for each feature, in same index order as features within the data. 
        * For assignment, use the gettors:
        *  featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal, featureTypeDependent }
@@ -415,6 +408,8 @@ handleCatFeaturesUserTextCancel() {
     this.initFeatureTypeDefaults();
     //Init the feature type assignments
     this.setAllFeatureTypes('autoDefault');
+    //Clear 
+    this.setState({processingFileForPreview: false});
   }
 
   /**
@@ -480,7 +475,8 @@ handleCatFeaturesUserTextCancel() {
           this.setState({
             selectedFile: undefined,
             datasetPreview: null,
-            openErrorModal: false
+            openErrorModal: false,
+            processingFileForPreview: false
           });
           this.showErrorModal("Error With File", JSON.stringify(error));
           //Added this return, otherwise it will fall through to state below
@@ -492,7 +488,8 @@ handleCatFeaturesUserTextCancel() {
         this.setState({
           selectedFile: files[0],
           datasetPreview: null,
-          openErrorModal: false
+          openErrorModal: false,
+          processingFileForPreview: true
         });
 
       } else {
@@ -1640,6 +1637,12 @@ handleCatFeaturesUserTextCancel() {
       </Dropzone>
     );
 
+    //Progress spinner if we're loading and processing a file
+    if( this.state.processingFileForPreview){
+      return <Loader active inverted size="large" content="Processing your file..." />;      
+    }
+
+    //Main UI elements
     return (
       <div>
         <SceneHeader header="Submit Datasets"/>
