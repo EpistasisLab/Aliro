@@ -88,7 +88,6 @@ class FileUpload extends Component {
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
-    this.featureTypeDefaultsProcessRow = this.featureTypeDefaultsProcessRow.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
 
@@ -119,12 +118,6 @@ class FileUpload extends Component {
     1) In the text input box opened by the button to the left, using the format described in the box <br/>
     2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
     using the drag-and-drop list of unique categories.</p>);
-
-    /**
-     * Array of auto-detected default feature types, used while
-     * stream-processing data file.
-     */
-    this.featureTypeDefaultsInProcess = undefined;
 
     //Debug
     this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
@@ -453,37 +446,14 @@ handleCatFeaturesUserTextCancel() {
           console.log("Calling initDatasetPreview... ");
           this.getElapsedTime();
         }
-  
+        
+        //Init things for the new dataset
         this.initDatasetPreview();
   
         if(this.isDevBuild)
           console.log( this.getElapsedTime() + " - done with initDatasetPreview.");
-          
-        //Test streaming
-        // if(this.isDevBuild) {
-        //   this.getElapsedTime(); //resets the timer
-        //   console.log("=== Calling Papa.parse TEST... ");
-        //   this.featureTypeDefaultsInProcess = undefined;
-        //   Papa.parse(files[0], papaConfigTest);
-        // }
       }
     };
-
-    //Note - tried using 'before' function that's listed in PapaParse docs,
-    // but it's not getting called
-    let papaConfigTest = {
-      header: true,
-      step: (row) => {
-        // console.log("Row:", row.data);
-        this.featureTypeDefaultsProcessRow(row.data);
-      },
-      complete: () => {
-        this.setState({featureTypeDefaults: this.featureTypeDefaultsInProcess});
-        this.initDatasetPreview();
-        console.log( this.getElapsedTime() + " - papaConfigTest complete.");
-      }
-    }
-
 
     // check for selected file
     if(files && files[0]) {
@@ -674,29 +644,6 @@ handleCatFeaturesUserTextCancel() {
       })
     })
     this.setState({ featureTypeDefaults: newDefaults });
-  }
-
-  /**
-   * For stream-processing file. Callback used by Papa Parse.
-   * @param {*} rowData - single row of data from Papa Parse.
-   */
-  featureTypeDefaultsProcessRow(rowData) {
-    //If undefined, this is th first time in for a newly-loaded file.
-    if( this.featureTypeDefaultsInProcess === undefined ) {
-      //Setup object and default to type numeric
-      this.featureTypeDefaultsInProcess = {};
-      Object.keys(rowData[0]).forEach( (feature) => {
-        this.featureTypeDefaultsInProcess[feature] = this.featureTypeNumeric;
-      })
-    }
-    //Go through each feature, if non-numeric, mark the field as type categorical
-    Object.entries(rowData[0]).forEach( ([feature,value]) => {
-      //NOTE - empircally, at the end we get an extra row with a single member set to "".
-      //So skip if row[field] is undefined or ""
-      if(isNaN(value) && value !== "" && value !== undefined) {
-        this.featureTypeDefaultsInProcess[feature] = this.featureTypeOrdinal;
-      }
-    })
   }
 
   /**
