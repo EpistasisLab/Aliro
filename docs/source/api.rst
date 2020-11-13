@@ -1,9 +1,11 @@
+.. _api:
+
 API
 ===
 
-====
+==
 AI
-====
+==
 
 .. autoclass:: ai.ai.AI
     :members:
@@ -62,6 +64,7 @@ We have a customized version of the Surprise library available `here. <https://g
 
 .. autoclass:: ai.recommender.surprise_recommenders.SVDRecommender
     :members:
+
 
 ==================================
 Scikit-learn API for PennAI engine
