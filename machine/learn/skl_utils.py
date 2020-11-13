@@ -641,13 +641,15 @@ def get_example_subset(y_predictions, y_true, select_class):
     along with misclassified labels.
     Parameters
     ----------
-    y_predictions: Pandas Series
+    y_predictions: List
         Denotes model predictions for the test set
-    y_true: Pandas Series
+    y_true: List
         Denotes true labels for the test set
     select_class: Integer
         The class ID of the positive class
     """
+    y_predictions = pd.Series(y_predictions)
+    y_true = pd.Series(y_true)
     y_pos = y_true[y_true == select_class]
     y_neg = y_true[y_true != select_class]
     num_positive = min(10, len(y_pos))
@@ -690,7 +692,7 @@ def plot_shap_analysis_curve(
         List of feature names
     class_names: list
         List of class names
-    target: np.darray/pd.Series
+    target: np.darray
         Target in test dataset
     n_features: int
         Maximum count of features to use for the plots
@@ -704,31 +706,38 @@ def plot_shap_analysis_curve(
     model_name = type(model).__name__.lower()
 
     # convert target to Pandas Series type if not already
-    if isinstance(target, pd.Series):
-        y_test = target.reset_index(drop=True)
+    y_test = pd.Series(target)
+
+    # Sample 100 examples for Tree Explainer / Linear Explainer
+    if model_name in ['decisiontreeclassifier','randomforestclassifier','logisticregression','linearsvc']:
+        max_num_samples = 100
+    elif model_name == 'gradientboostingclassifier' and len(class_names) == 2:
+        max_num_samples = 100
+    # Sample 50 examples for Kernel Explainer
     else:
-        y_test = pd.Series(target)
+        max_num_samples = 50
+    num_samples = min(max_num_samples, len(features))
+    sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
+    features = features[sampled_row_indices]
+    y_test = y_test[sampled_row_indices].reset_index(drop=True)
 
     # Select explainer and set shap values
     if model_name in ['decisiontreeclassifier', 'randomforestclassifier']:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
         expected_values = explainer.expected_value
-        num_samples = -1
 
     elif model_name == 'gradientboostingclassifier' and len(class_names) == 2:
         # Gradient Boosting Tree Explainer is only supported for Binary Classification
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
         expected_values = explainer.expected_value
-        num_samples = -1
 
     elif 'linear' in model_name or 'logistic' in model_name:
         # Supports Logistic Regression, LinearSVC
         explainer = shap.LinearExplainer(model, features)
         shap_values = explainer.shap_values(features)
         expected_values = explainer.expected_value
-        num_samples = -1
 
     elif 'svc' in model_name:
         # Handle special case for SVC (probability=False)
@@ -736,12 +745,6 @@ def plot_shap_analysis_curve(
 
     else:
         # KernelExplainer
-        # Sample 50 examples for computational speedup
-        max_num_samples = 50
-        num_samples = min(max_num_samples, len(features))
-        sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
-        features = features[sampled_row_indices]
-        y_test = y_test[sampled_row_indices].reset_index(drop=True)
         explainer = shap.KernelExplainer(model.predict_proba, features)
         # l1_reg not set to 'auto' to subside warnings
         shap_values = explainer.shap_values(features, l1_reg='num_features(10)')
