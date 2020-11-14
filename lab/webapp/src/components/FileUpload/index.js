@@ -963,7 +963,7 @@ handleCatFeaturesUserTextCancel() {
           return (
             //This puts the sortable list right in the cell. Awkward but it works.
             <Segment>
-              <SortableList items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
+              <SortableList helperClass='file-upload-sortable-list-item-helper' items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
               <Button
                 content={"Accept"}
                 inverted

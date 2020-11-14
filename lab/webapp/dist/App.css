@@ -76,8 +76,33 @@ body {
     /*border-style: solid;*/
     border: 1px solid;
     text-align: center;
-    padding: 1px;
+    padding: 2px;
+    border-color: rgb(84,200,255);
+    border-radius: 4px;
 }
+/* This class is for the list item that moves
+around when using the SortableList. Because
+of how it's instantiated on-demand, it can't be
+a child of .pennai.
+The most important part is the z-index. Without it
+the element isn't visible at all.
+See https://github.com/clauderic/react-sortable-hoc/issues/87
+*/
+.file-upload-sortable-list-item-helper {
+    border: 1px solid;
+    text-align: center;
+    /* something happens to the padding compared to the regular item defined above,
+       and the text is aligned at bottom of border instead of middle.
+       But these settings aren't effecting things. Huh. 
+    */
+    padding-top: 0 !important;
+    padding-bottom: 5px !important;
+    border-color: white; /* rgb(84,200,255);*/
+    border-radius: 4px;
+    z-index: 10; /*important*/
+    color: rgba(255,255,255,.9);
+    list-style-type: none; /*remove the bullet*/
+ }
 .pennai .file-upload-table {
     line-height: 1;
 }
