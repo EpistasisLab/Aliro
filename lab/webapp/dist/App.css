@@ -89,7 +89,7 @@ the element isn't visible at all.
 See https://github.com/clauderic/react-sortable-hoc/issues/87
 */
 .file-upload-sortable-list-item-helper {
-    border: 1px solid;
+    border: 2px solid;
     text-align: center;
     /* something happens to the padding compared to the regular item defined above,
        and the text is aligned at bottom of border instead of middle.
@@ -97,7 +97,7 @@ See https://github.com/clauderic/react-sortable-hoc/issues/87
     */
     padding-top: 0 !important;
     padding-bottom: 5px !important;
-    border-color: white; /* rgb(84,200,255);*/
+    border-color: yellow; /* rgb(84,200,255);*/
     border-radius: 4px;
     z-index: 10; /*important*/
     color: rgba(255,255,255,.9);
