@@ -23,7 +23,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
 COPY ${docker_filepath}/requirements.txt /root/
 RUN pip install --no-cache-dir -r /root/requirements.txt
 ### bill's surprise fork
-RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 
 ## Webserver
 
