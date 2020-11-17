@@ -127,8 +127,9 @@ class FileUpload extends Component {
     this.catFeatHelpText = (<p>This site is using 'Categorical' to mean a Nominal feature, per custom in the ML community. Categorical features have a discrete number of categories that do not have an intrinsic order.
     Some examples include sex ("male", "female") or eye color ("brown", "green", "blue"...).
     <br/><br/>
-    Describe these features using a comma separated list of the field names.  Example: <br/>
-    <i>sex, eye_color</i></p>);
+    You can specify these features in two ways:<br/>
+    1) In the text input box opened by the button to the left, using the format described in the box <br/>
+    2) or, in the Dataset Preview table below: use the dropdown boxes to specify categorical features.</p>);
 
     this.ordFeatHelpText = (<p>Ordinal features have a discrete number of categories,
     and the categories have a logical order (rank). Some examples include size ("small",
@@ -905,7 +906,7 @@ handleCatFeaturesUserTextCancel() {
     if( this.getDependentColumn() === ordObj.feature ) {
       return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Dependent Column."};
     }
-    //The remaining items in the string are the unique values
+    //The remaining items are the unique values
     if( ordObj.values === undefined || ordObj.values.length === 0) {
       return {success: false, message: "Feature '" + ordObj.feature + "' - no values specified"}
     }
@@ -1091,7 +1092,6 @@ handleCatFeaturesUserTextCancel() {
     ]
 
     return (
-      /*'key' is a React property to id elements in a list*/
       dataPrev.meta.fields.map((field, i) => {
           //Dropdown item for setting field type
           let fieldTypeItem = ( field === this.getDependentColumn() ?
@@ -1104,17 +1104,17 @@ handleCatFeaturesUserTextCancel() {
             />
           )
           return (
-          <Table.HeaderCell key={field} verticalAlign='top'>
-            <Segment.Group compact>
-              <Segment> {field} </Segment>
-              <Segment inverted> {fieldTypeItem} </Segment>
-              {/*Return a segment with 'rank'button, or null, based on field type*/}
-              {this.getDataTableOrdinalRankButton(field)}
-            </Segment.Group>
-          </Table.HeaderCell>
-        )  
-      })
-    )    
+            <Table.HeaderCell key={field} verticalAlign='top'>
+              <Segment.Group compact>
+                <Segment> {field} </Segment>
+                <Segment inverted> {fieldTypeItem} </Segment>
+                {/*Return a segment with 'rank'button, or null, based on field type*/}
+                {this.getDataTableOrdinalRankButton(field)}
+              </Segment.Group>
+            </Table.HeaderCell>
+          )  
+      })  
+    )
   }
 
   /**
@@ -1131,31 +1131,37 @@ handleCatFeaturesUserTextCancel() {
 
     if(dataPrev && dataPrev.data) {
       //Show at most 50 rows
-      innerContent = dataPrev.data.slice(0, 50).map((row, i) =>
-        <Table.Row key={i}>
-          {dataPrev.meta.fields.map(field => {
-              let tempKey = i + field;
-              return (
-                <Table.Cell key={'dataTablePrev_' + tempKey.toString()}>
-                  {row[field]}
-                </Table.Cell>
-              )
-            }
-          )}
-        </Table.Row>
-      );
+      innerContent = dataPrev.data.slice(0, 50).map((row, i) => {
+        //Empirically, there's an extra row with a single empty field. Don't know why.
+        if(Object.keys(row).length === 1 && Object.values(row)[0] === "")
+          return;
+        return (
+          <Table.Row key={i}>
+            <Table.Cell key={'dataTablePrevRow_'+i}>{i+1}</Table.Cell>
+            {dataPrev.meta.fields.map(field => {
+                let tempKey = i + field;
+                return (
+                  <Table.Cell key={'dataTablePrev_' + tempKey.toString()}>
+                    {row[field]}
+                  </Table.Cell>
+                )
+              }
+            )}
+          </Table.Row>
+        )
+      });
 
       dataPrevTable = (
         <div>
           <br/>
-          <Header as='h2' inverted color='grey'>
-            Dataset preview
-          </Header>
+          <Header as='h2' inverted color='grey' style={{ display: 'inline', marginRight: '0.1em' }}> Dataset preview </Header>
+          <span className="muted">{`First 50 rows max`}</span>
           <div style={{ overflowY: 'auto', maxHeight: '350px' }} className='table-sticky-header file-upload-table'>
             <Table inverted celled compact unstackable singleLine>
               <Table.Header>
                 <Table.Row>
-                  {this.getHeaderRowCells()}
+                  <Table.HeaderCell>{'Row'}</Table.HeaderCell>
+                  {this.getHeaderRowCells()} 
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -1693,7 +1699,6 @@ handleCatFeaturesUserTextCancel() {
 
             <Divider inverted horizontal>
               <Header inverted as='h4'>
-                <Icon name='bar chart' />
                 Feature Specification
               </Header>
             </Divider>
