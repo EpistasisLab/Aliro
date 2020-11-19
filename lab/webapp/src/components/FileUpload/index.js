@@ -1414,7 +1414,7 @@ handleCatFeaturesUserTextCancel() {
                   disabled={this.state.ordinalFeatureToRank !== undefined}
                   className="file-upload-button"
                 >
-                  Ordinal
+                  Set Ordinal
                 </Button>}
               open={this.state.ordinalFeaturesUserTextModalOpen}
               onOpen={() => this.setState({ordinalFeaturesUserTextModalOpen: true})}
@@ -1424,7 +1424,7 @@ handleCatFeaturesUserTextCancel() {
               disabled={this.state.ordinalFeatureToRank !== undefined}
             >
               <Modal.Header>Ordinal Feature Input</Modal.Header>
-                <Modal.Description width={'95%'}>
+                <Modal.Description style={{width: '65%', margin: '1em'}}>
                   <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
                     &emsp;[feature name],[1st unique value],[2nd unique value],...</p>
                   <p>For example:<br/>
@@ -1495,7 +1495,7 @@ handleCatFeaturesUserTextCancel() {
                 disabled={this.state.ordinalFeatureToRank !== undefined}
                 className="file-upload-button"
               >
-                Categorical
+                Set Categorical
               </Button>}
               open={this.state.catFeaturesUserTextModalOpen}
               onOpen={() => this.setState({catFeaturesUserTextModalOpen: true})}
