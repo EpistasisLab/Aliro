@@ -1504,7 +1504,7 @@ handleCatFeaturesUserTextCancel() {
               closeOnEscape={true}
             >
               <Modal.Header>Categorical Feature Input</Modal.Header>
-                <Modal.Description width={'95%'}>
+                <Modal.Description style={{width: '65%', margin: '1em'}}>
                   <p>Enter a comma-separated list to specify which features are Categorical.<br/>
                       This will override selections in the Dataset Preview. </p>
                   <p>For example:<br/>
@@ -1655,7 +1655,7 @@ handleCatFeaturesUserTextCancel() {
       <Dropzone 
           onDropAccepted={this.handleSelectedFile}
           onDropRejected={this.handleRejectedFile}
-          accept=".csv,.tsv,text/csv,test/tsv"
+          accept=".csv,.tsv,text/csv,text/tsv"
           multiple={false}
       >
         {({getRootProps, getInputProps}) => (
