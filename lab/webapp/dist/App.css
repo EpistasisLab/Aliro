@@ -263,8 +263,6 @@ See https://github.com/clauderic/react-sortable-hoc/issues/87
 .pennai .table-container {
     width: 100%;
     margin: 0;
-    //overflow-x: scroll;
-    //overflow-y: visible;
 }
 
 .pennai .table-container .table {
