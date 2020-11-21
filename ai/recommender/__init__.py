@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -27,3 +27,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 # import base
+from .average_recommender import AverageRecommender
+from .random_recommender import RandomRecommender
+from .knn_meta_recommender import KNNMetaRecommender
+from .surprise_recommenders import (
+    CoClusteringRecommender,
+    KNNWithMeansRecommender,
+    KNNDatasetRecommender,
+    KNNMLRecommender,
+    SlopeOneRecommender,
+    SVDRecommender)
