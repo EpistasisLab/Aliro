@@ -26,7 +26,7 @@ COPY /docker/machine/files/requirements.txt /root/mach_requirements.txt
 RUN pip install --no-cache-dir -r /root/mach_requirements.txt
 
 ### Bill's surprise fork
-RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@master
+RUN pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
 
 
 # install lab/node_modules to an anon volume

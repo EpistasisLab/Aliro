@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -31,7 +31,6 @@ Recommender system for Penn AI.
 import pdb
 import pandas as pd
 from .base import BaseRecommender
-import pdb
 import logging
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
@@ -43,7 +42,7 @@ logger.addHandler(ch)
 class AverageRecommender(BaseRecommender):
     """Penn AI average recommender.
 
-    Recommends machine learning algorithms and parameters based on their average 
+    Recommends machine learning algorithms and parameters based on their average
     performance across all evaluated datasets.
 
     Parameters
@@ -56,22 +55,22 @@ class AverageRecommender(BaseRecommender):
 
     """
 
-    def __init__(self, 
-            ml_type='classifier', 
-            metric=None, 
+    def __init__(self,
+            ml_type='classifier',
+            metric=None,
             ml_p=None,
-            random_state=None, 
+            random_state=None,
             knowledgebase_results=None,
             knowledgebase_metafeatures=None,
             load_serialized_rec="if_exists",
             serialized_rec_directory=None,
             serialized_rec_filename=None):
 
-        """ set default recommender specific parameters; might be overwritten 
+        """ set default recommender specific parameters; might be overwritten
         by loading serialized recommender"""
 
         """Initialize recommendation system."""
-        
+
         # number of datasets trained on so far
         self.w = 0
 
@@ -79,40 +78,41 @@ class AverageRecommender(BaseRecommender):
         self.scores = pd.Series()
 
         super().__init__(
-            ml_type, 
-            metric, 
-            ml_p, 
+            ml_type,
+            metric,
+            ml_p,
             random_state=random_state,
             knowledgebase_results=knowledgebase_results,
             knowledgebase_metafeatures=knowledgebase_metafeatures,
             load_serialized_rec=load_serialized_rec,
             serialized_rec_directory=serialized_rec_directory,
             serialized_rec_filename=serialized_rec_filename)
-        
+
     def _train_empty_rec(self,
             ml_type,
             metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
             serialized_rec_directory,
             serialized_rec_filename):
 
-        super()._train_empty_rec( 
-            ml_type, 
-            metric, 
+        super()._train_empty_rec(
+            ml_type,
+            metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
             serialized_rec_directory,
             serialized_rec_filename)
 
+
     def update(self, results_data, results_mf=None, source='pennai'):
-        """Update ML / Parameter recommendations based on overall performance in 
+        """Update ML / Parameter recommendations based on overall performance in
         results_data.
 
         Updates self.scores
@@ -148,10 +148,10 @@ class AverageRecommender(BaseRecommender):
         Parameters
         ----------
         dataset_id: string
-            ID of the dataset for which the recommender is generating 
+            ID of the dataset for which the recommender is generating
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters 
+            Return a list of length n_recs in order of estimators and parameters
             expected to do best.
         """
 
@@ -184,9 +184,9 @@ class AverageRecommender(BaseRecommender):
         # get parameters from hash table
         p_rec = [self.hash_2_param[p] for p in phash_rec]
 
-        # update the recommender's memory with the new algorithm-parameter combos 
+        # update the recommender's memory with the new algorithm-parameter combos
         # that it recommended
-        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec, 
+        self._update_trained_dataset_models_from_rec(dataset_id, ml_rec,
                 phash_rec)
 
         return ml_rec, p_rec, rec_score
@@ -201,7 +201,7 @@ class AverageRecommender(BaseRecommender):
             for n in new_ind:
                 if n in self.scores.index.values:
                     step = new_weights[n] / float(self.w[n] + new_weights[n])
-                    self.scores.loc[n] = (self.scores[n] + 
+                    self.scores.loc[n] = (self.scores[n] +
                             step * (new_scores[n] - self.scores[n]))
                 else:
                     self.scores.loc[n] = new_scores[n]

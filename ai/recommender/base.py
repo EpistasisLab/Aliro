@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -37,7 +37,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 import numpy as np
 import os
-import pdb 
+import pdb
 import pickle
 import gzip
 import random
@@ -75,12 +75,12 @@ class BaseRecommender(object, metaclass=MC):
         Initial knowledgebase results data.
         If not None and not loading a serialized recommender, the recommender
         will initialize and train on this data.
-        If loading a serialized recommender, this is the knowlegebase that
+        If loading a serialized recommender, this is the knowledgebase that
         accompanies it.
 
     knowledgebase_metafeatures: Pandas DataFrame or None
         Initial knowledgebase metafeatures data.
-        If loading a serialized recommender, this is the knowlegebase that 
+        If loading a serialized recommender, this is the knowledgebase that
         accompanies it.
 
     serialized_rec_directory: string or None
@@ -89,23 +89,23 @@ class BaseRecommender(object, metaclass=MC):
 
     serialized_rec_filename: string or None
         Name of the file to save/load a serialized recommender.
-        If the filename is not provided, the default filename based on the 
+        If the filename is not provided, the default filename based on the
         recommender type, and metric, and knowledgebase used.
 
     load_serialized_rec: str, "always", "never", "if_exists"
         Whether to attempt to load a serialized recommender:
-            "if_exists" - If a serialized recomender exsists at the specified 
-            path, load it. 
-            "always" - Always load a serialized recommender.  Throw an 
+            "if_exists" - If a serialized recomender exsists at the specified
+            path, load it.
+            "always" - Always load a serialized recommender.  Throw an
             exception if no serialized recommender exists.
             "never" - Never load a serialized recommender.
     """
 
-    def __init__(self, 
-            ml_type='classifier', 
-            metric=None, 
+    def __init__(self,
+            ml_type='classifier',
+            metric=None,
             ml_p=None,
-            random_state=None, 
+            random_state=None,
             knowledgebase_results=None,
             knowledgebase_metafeatures=None,
             load_serialized_rec="if_exists",
@@ -128,18 +128,18 @@ class BaseRecommender(object, metaclass=MC):
         logger.info('self.random_state: ' + str(self.random_state))
 
         self.ml_type = ml_type
-        
+
         if metric is None:
             self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
         else:
             self.metric = metric
 
-        # maintain a set of dataset-algorithm-parameter combinations that have 
+        # maintain a set of dataset-algorithm-parameter combinations that have
         # already been evaluated
         self.trained_dataset_models = set()
         # hash table for parameter options
         self.hash_2_param = {}
-        
+
         # get ml+p combos (note: this triggers a property in base recommender)
         # self.ml_htable = {}
         self.ml_p = ml_p
@@ -151,13 +151,13 @@ class BaseRecommender(object, metaclass=MC):
             )
 
 
-        # train an empty recommender, either using the provided kb or 
+        # train an empty recommender, either using the provided kb or
         # loading a serialized rec from file
-        self._train_empty_rec( 
-            ml_type, 
-            metric, 
+        self._train_empty_rec(
+            ml_type,
+            metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
@@ -165,11 +165,11 @@ class BaseRecommender(object, metaclass=MC):
             serialized_rec_filename)
 
 
-    def _train_empty_rec(self, 
-            ml_type, 
-            metric, 
+    def _train_empty_rec(self,
+            ml_type,
+            metric,
             ml_p,
-            random_state, 
+            random_state,
             knowledgebase_results,
             knowledgebase_metafeatures,
             load_serialized_rec,
@@ -198,7 +198,7 @@ class BaseRecommender(object, metaclass=MC):
                 if knowledgebase_results is not None:
                     logger.info(f"Initializing new recommender from provided "
                             "knowledgebase")
-                    self.update(knowledgebase_results, 
+                    self.update(knowledgebase_results,
                             knowledgebase_metafeatures, source='knowledgebase')
 
         else:
@@ -206,12 +206,12 @@ class BaseRecommender(object, metaclass=MC):
             if knowledgebase_results is not None:
                 logger.info(f"Initializing new recommender from provided "
                         "knowledgebase")
-                self.update(knowledgebase_results, knowledgebase_metafeatures, 
+                self.update(knowledgebase_results, knowledgebase_metafeatures,
                         source='knowledgebase')
 
 
     def _default_serialized_rec_filename(self):
-        """Generate the default name of the serialized instance of this 
+        """Generate the default name of the serialized instance of this
         recommender
         """
 
@@ -224,7 +224,7 @@ class BaseRecommender(object, metaclass=MC):
             +'.pkl.gz')
 
 
-    def _generate_serialized_rec_path(self, 
+    def _generate_serialized_rec_path(self,
         serialized_rec_filename=None,
         serialized_rec_directory=None):
         """ Generate the path to save/load serialized recommender
@@ -248,18 +248,18 @@ class BaseRecommender(object, metaclass=MC):
 
         Parameters
         ----------
-        results_data: DataFrame 
+        results_data: DataFrame
             columns corresponding to:
             'algorithm'
             'parameters'
             self.metric
 
-        results_mf: DataFrame, optional 
-            columns corresponding to metafeatures of each dataset in 
+        results_mf: DataFrame, optional
+            columns corresponding to metafeatures of each dataset in
             results_data.
 
         source: string
-            if 'pennai', will update tally of trained dataset models 
+            if 'pennai', will update tally of trained dataset models
         """
         assert(results_data is not None), "results_data cannot be None"
 
@@ -268,21 +268,21 @@ class BaseRecommender(object, metaclass=MC):
             #logger.warning(str(results_data))
             logger.warning(results_data.head())
             logger.error('Dropping NaN results.')
-            results_data.dropna(inplace=True) 
+            results_data.dropna(inplace=True)
 
         # update parameter hash table
         logger.info('updating hash_2_param...')
         self.hash_2_param.update(
-                {self._hash_simple_dict(x):x 
+                {self._hash_simple_dict(x):x
                 for x in results_data['parameters'].values})
-        param_2_hash = {frozenset(v.items()):k 
-                for k,v in self.hash_2_param.items()} 
-        # store parameter_hash variable in results_data 
+        param_2_hash = {frozenset(v.items()):k
+                for k,v in self.hash_2_param.items()}
+        # store parameter_hash variable in results_data
         logger.info('storing parameter hash...')
         results_data['parameter_hash'] = results_data['parameters'].apply(
                 lambda x: param_2_hash[frozenset(x.items())])
-       
-        # update results list 
+
+        # update results list
         if source == 'pennai':
             self._update_trained_dataset_models_from_df(results_data)
 
@@ -299,12 +299,12 @@ class BaseRecommender(object, metaclass=MC):
         ----------
 
         dataset_id: string
-            ID of the dataset for which the recommender is generating 
+            ID of the dataset for which the recommender is generating
             recommendations.
         n_recs: int (default: 1), optional
-            Return a list of length n_recs in order of estimators and parameters 
+            Return a list of length n_recs in order of estimators and parameters
             expected to do best.
-        dataset_mf: DataFrame 
+        dataset_mf: DataFrame
             metafeatures of the dataset represented by dataset_id
         """
         # self.dataset_id_to_hash.update(
@@ -349,9 +349,9 @@ class BaseRecommender(object, metaclass=MC):
                     logger.warn('adding ' + k+'=' + str(tmp_dict[k])[:20]
                             + '...')
             logger.info('updating internal state')
-            
+
             # check ml_p hashes
-            rowHashes = hash_pandas_object(self.ml_p.apply(str)).values 
+            rowHashes = hash_pandas_object(self.ml_p.apply(str)).values
             newHash = hashlib.sha256(rowHashes).hexdigest()
             if 'ml_p_hash' in tmp_dict.keys():
                 if newHash == tmp_dict['ml_p_hash']:
@@ -383,7 +383,7 @@ class BaseRecommender(object, metaclass=MC):
 
     def save(self, filename=None):
         """Save the current recommender.
-        
+
         :param filename: string or None
             Name of file to load
         """
@@ -400,14 +400,14 @@ class BaseRecommender(object, metaclass=MC):
         if 'results_df' in save_dict.keys():
             logger.debug('deleting save_dict[results_df]:'
                     +str(save_dict['results_df'].head()))
-            rowHashes = hash_pandas_object(save_dict['results_df']).values 
+            rowHashes = hash_pandas_object(save_dict['results_df']).values
             save_dict['results_df_hash'] = hashlib.sha256(
-                    rowHashes).hexdigest() 
+                    rowHashes).hexdigest()
             del save_dict['results_df']
 
-        # remove ml_p to save space 
-        rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values 
-        save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest() 
+        # remove ml_p to save space
+        rowHashes = hash_pandas_object(save_dict['_ml_p'].apply(str)).values
+        save_dict['ml_p_hash'] = hashlib.sha256(rowHashes).hexdigest()
         del save_dict['_ml_p']
         del save_dict['mlp_combos']
 
@@ -422,18 +422,18 @@ class BaseRecommender(object, metaclass=MC):
 
         Parameters
         ----------
-        results_data: DataFrame 
+        results_data: DataFrame
             columns corresponding to:
             'algorithm'
             'parameters'
             self.metric
 
-        results_mf: DataFrame, optional 
-            columns corresponding to metafeatures of each dataset in 
+        results_mf: DataFrame, optional
+            columns corresponding to metafeatures of each dataset in
             results_data.
 
         source: string
-            if 'pennai', will update tally of trained dataset models 
+            if 'pennai', will update tally of trained dataset models
         """
         self.update(results_data, results_mf, source)
         self.save(filename)
@@ -457,7 +457,7 @@ class BaseRecommender(object, metaclass=MC):
             self.hash_2_param = {
                     self._hash_simple_dict(x):x
                     for x in self._ml_p['parameters'].values}
-            param_2_hash = {frozenset(v.items()):k 
+            param_2_hash = {frozenset(v.items()):k
                     for k,v in self.hash_2_param.items()}
             # machine learning - parameter combinations
             self.mlp_combos = (self._ml_p['algorithm']+'|'+
@@ -490,10 +490,10 @@ class BaseRecommender(object, metaclass=MC):
         # get unique dataset / parameter / classifier combos in results_data
         d_ml_p = results_data['dataset-algorithm-parameters'].unique()
         self.trained_dataset_models.update(d_ml_p)
-        
-    def _update_trained_dataset_models_from_rec(self, dataset_id, ml_rec, 
+
+    def _update_trained_dataset_models_from_rec(self, dataset_id, ml_rec,
             phash_rec):
-        '''update the recommender's memory with the new algorithm-parameter 
+        '''update the recommender's memory with the new algorithm-parameter
         combos that it recommended'''
         if dataset_id is not None:
             # datahash = self.dataset_id_to_hash[dataset_id]

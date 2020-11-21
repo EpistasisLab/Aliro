@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -32,7 +32,7 @@ import numpy as np
 from ai.recommender.random_recommender import RandomRecommender
 from ai.recommender.average_recommender import AverageRecommender
 from ai.recommender.knn_meta_recommender import KNNMetaRecommender
-from ai.recommender.surprise_recommenders import (CoClusteringRecommender, 
+from ai.recommender.surprise_recommenders import (CoClusteringRecommender,
         KNNWithMeansRecommender, KNNDatasetRecommender, KNNMLRecommender,
         SlopeOneRecommender, SVDRecommender)
 import ai.knowledgebase_utils as knowledgebase_utils
@@ -40,7 +40,7 @@ import ai.knowledgebase_utils as knowledgebase_utils
 import pdb
 import logging
 import os
-from nose.tools import (nottest, raises, assert_equals, assert_in, 
+from nose.tools import (nottest, raises, assert_equals, assert_in,
         assert_not_in, assert_is_none, assert_false)
 import json
 
@@ -50,7 +50,7 @@ logger.setLevel(logging.INFO)
 
 # set up data for tests.
 # print('loading pmlb results data...')
-# TODO: replace this dataset loading and metafeature loading with calls to 
+# TODO: replace this dataset loading and metafeature loading with calls to
 # knowledgebase loader
 KB_RESULTS_PATH = \
     'data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6-small.tsv.gz'
@@ -58,7 +58,7 @@ KB_METAFEATURES_PATH = \
         'data/knowledgebases/pmlb_classification_metafeatures.csv.gz'
 
 data = pd.read_csv(KB_RESULTS_PATH, compression='gzip', sep='\t')
-metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0, 
+metafeatures = pd.read_csv(KB_METAFEATURES_PATH, index_col=0,
         float_precision='round_trip')
 
 
@@ -94,15 +94,15 @@ ml_p['parameters'] = ml_p['parameters'].apply(lambda x: eval(x))
 #ml - param combos
 
 test_recommenders = [
-        RandomRecommender, 
-        AverageRecommender, 
+        RandomRecommender,
+        AverageRecommender,
         KNNMetaRecommender,
-        CoClusteringRecommender, 
-        KNNWithMeansRecommender, 
-        KNNDatasetRecommender, 
-        KNNMLRecommender, 
-        SlopeOneRecommender, 
-        SVDRecommender 
+        CoClusteringRecommender,
+        KNNWithMeansRecommender,
+        KNNDatasetRecommender,
+        KNNMLRecommender,
+        SlopeOneRecommender,
+        SVDRecommender
         ]
 
 
@@ -142,7 +142,7 @@ def check_rec(rec):
     epochs = 5
     datlen = int(data.shape[0] / float(epochs))
     rec_obj = rec(ml_p=ml_p)
- 
+
     n_recs = 1
     dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
@@ -158,18 +158,18 @@ def check_rec(rec):
                 rec.__name__,n,d,ml,p,scores))
 
 def save_and_load(rec, load_serialized_rec):
-    """Rec can be saved and loaded without error"""    
+    """Rec can be saved and loaded without error"""
     logger.info("save_and_load({})".format(rec))
     print("save_and_load({})".format(rec))
 
     RANDOM_STATE=12
-   
+
     # initilize a recommender
     logger.info('setting rec 1 ==================')
     rec_obj = rec(ml_p=ml_p,
-        load_serialized_rec="never", 
+        load_serialized_rec="never",
         random_state=RANDOM_STATE)
-   
+
     # add some data
     dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
@@ -182,9 +182,9 @@ def save_and_load(rec, load_serialized_rec):
 
     # now, load saved test file
     logger.info('setting rec 2 ==================')
-    rec_obj2 = rec(ml_p=ml_p, 
-        serialized_rec_filename=filename, 
-        knowledgebase_results=new_data, 
+    rec_obj2 = rec(ml_p=ml_p,
+        serialized_rec_filename=filename,
+        knowledgebase_results=new_data,
         load_serialized_rec=load_serialized_rec,
         random_state=RANDOM_STATE)
 
@@ -193,12 +193,12 @@ def save_and_load(rec, load_serialized_rec):
         os.remove(filename)
 
     logger.info("checking for differences ==================")
-    differences_2not1 = { k : rec_obj2.__dict__[k] 
+    differences_2not1 = { k : rec_obj2.__dict__[k]
             for k in set(rec_obj2.__dict__) - set(rec_obj.__dict__) }
     logger.info(f"recommender differences (in 2, not in 1): {differences_2not1}")
 
 
-    differences_1not2 = { k : rec_obj.__dict__[k] 
+    differences_1not2 = { k : rec_obj.__dict__[k]
             for k in set(rec_obj.__dict__) - set(rec_obj2.__dict__) }
     logger.info(f"recommender differences (in 1, not in 2): {differences_1not2}")
 
@@ -235,7 +235,7 @@ def check_n_recs(rec):
     logger.info('setting rec')
     rec_obj = rec(ml_p=ml_p)
     logger.info('set rec')
-   
+
     dataset_mf = pd.DataFrame()
     new_data = data.sample(n=100)
     dataset_mf = update_dataset_mf(dataset_mf, new_data)
@@ -277,8 +277,8 @@ def test_save_and_load_always_exception():
 def rec_load_always_exception(rec):
     """ expect an exception to be thrown because the serialized rec does not exist"""
     rec_obj = rec(
-        ml_p=ml_p, 
-        serialized_rec_filename="i_dont_exist.txt", 
+        ml_p=ml_p,
+        serialized_rec_filename="i_dont_exist.txt",
         load_serialized_rec="always",
         random_state=12)
 
@@ -286,38 +286,38 @@ def test_default_serialized_rec_filename():
     """Test that the expected default filename is generated"""
 
     test_data = [
-        [RandomRecommender, "classifier", None, 
-            "RandomRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"], 
-        [RandomRecommender, "regressor", None, 
+        [RandomRecommender, "classifier", None,
+            "RandomRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"],
+        [RandomRecommender, "regressor", None,
             "RandomRecommender_regressor_mse_pmlb_20200821.pkl.gz"],
-        [KNNMetaRecommender, "classifier", None, 
-            "KNNMetaRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"], 
-        [KNNMetaRecommender, "regressor", None, 
+        [KNNMetaRecommender, "classifier", None,
+            "KNNMetaRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"],
+        [KNNMetaRecommender, "regressor", None,
             "KNNMetaRecommender_regressor_mse_pmlb_20200821.pkl.gz"],
-        [SVDRecommender, "classifier", None, 
-            "SVDRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"], 
-        [SVDRecommender, "regressor", None, 
+        [SVDRecommender, "classifier", None,
+            "SVDRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"],
+        [SVDRecommender, "regressor", None,
             "SVDRecommender_regressor_mse_pmlb_20200821.pkl.gz"],
     ]
 
     for (rec_class, ml_type, metric, expected_filename) in test_data:
         yield (check_default_serialized_rec_filename,
             rec_class,
-            ml_type, 
-            metric, 
+            ml_type,
+            metric,
             expected_filename)
 
 
 def check_default_serialized_rec_filename(
     rec_class,
-    ml_type, 
-    metric, 
+    ml_type,
+    metric,
     expected_filename):
 
     rec = rec_class(
         ml_p=ml_p,
         ml_type=ml_type,
-        metric = metric) 
+        metric = metric)
 
     assert_equals(
         rec._default_serialized_rec_filename(),
@@ -327,47 +327,47 @@ def check_default_serialized_rec_filename(
 
 def test_generate_serialized_rec_path():
     test_data = [
-        [RandomRecommender, "classifier", None, 
+        [RandomRecommender, "classifier", None,
             None, "my/custom/path",
             "my/custom/path/"
-            "RandomRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"], 
-        [RandomRecommender, "regressor", None, 
+            "RandomRecommender_classifier_bal_accuracy_pmlb_20200821.pkl.gz"],
+        [RandomRecommender, "regressor", None,
             None, "my/custom/path",
             "my/custom/path/"
             "RandomRecommender_regressor_mse_pmlb_20200821.pkl.gz"],
-        [SVDRecommender, "classifier", None, 
-            "myCustomFilename.tmp", None,
-            "./myCustomFilename.tmp"], 
-        [SVDRecommender, "regressor", None, 
+        [SVDRecommender, "classifier", None,
             "myCustomFilename.tmp", None,
             "./myCustomFilename.tmp"],
-        [SVDRecommender, "regressor", None, 
+        [SVDRecommender, "regressor", None,
+            "myCustomFilename.tmp", None,
+            "./myCustomFilename.tmp"],
+        [SVDRecommender, "regressor", None,
             "myCustomFilename.tmp", "my/custom/path",
             "my/custom/path/myCustomFilename.tmp"],
-        [SVDRecommender, "regressor", None, 
+        [SVDRecommender, "regressor", None,
             None, None,
             "./SVDRecommender_regressor_mse_pmlb_20200821.pkl.gz"],
     ]
 
     for (
-        rec_class, 
-        ml_type, 
+        rec_class,
+        ml_type,
         metric,
         serialized_rec_filename,
         serialized_rec_directory,
         expected_path) in test_data:
         yield (check_generate_serialized_rec_path,
             rec_class,
-            ml_type, 
+            ml_type,
             metric,
             serialized_rec_filename,
-            serialized_rec_directory, 
+            serialized_rec_directory,
             expected_path)
 
 def check_generate_serialized_rec_path(
     rec_class,
-    ml_type, 
-    metric, 
+    ml_type,
+    metric,
     serialized_rec_filename,
     serialized_rec_directory,
     expected_path):
@@ -375,7 +375,7 @@ def check_generate_serialized_rec_path(
     rec = rec_class(
         ml_p=ml_p,
         ml_type=ml_type,
-        metric = metric) 
+        metric = metric)
 
     assert_equals(
         rec._generate_serialized_rec_path(
@@ -390,6 +390,6 @@ def test_generate_recommender_path_exception():
     rec = SVDRecommender(
         ml_p=ml_p,
         ml_type=ml_type,
-        metric = metric) 
+        metric = metric)
 
     rec._generate_serialized_rec_path(None, None)
