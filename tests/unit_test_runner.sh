@@ -1,9 +1,35 @@
 #!/bin/bash
 
+# Options for which test(s) to run.
+# Set environment variables to any value to run a subset of tests.
+# If none are set, all tests will be run.
+# You can pass env vars to your doccker container using -e option.
+# So, for example
+#    docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit
+# Make sure to export your defines if running manually from a shell.
+#
+#   export PENNAI_UNIT_TEST_NOSE=1
+#   export PENNAI_UNIT_TEST_MOCHA=1
+#   export PENNAI_UNIT_TEST_JEST=1 - run both Jest tests
+#   export PENNAI_UNIT_TEST_JEST_LAB - run just the Jest tests for Lab
+#   export PENNAI_UNIT_TEST_JEST_WEBAPP - run just the Jest tests for webapp
+
+RUN_ALL=0
+if  [ ! $PENNAI_UNIT_TEST_NOSE ] && \
+    [ ! $PENNAI_UNIT_TEST_MOCHA ] && \
+    [ ! $PENNAI_UNIT_TEST_JEST ] && \
+    [ ! $PENNAI_UNIT_TEST_JEST_LAB ] && \
+    [ ! $PENNAI_UNIT_TEST_JEST_WEBAPP]; then RUN_ALL=1; fi
+
+if [ $RUN_ALL -eq 1 ]; then 
+    echo "Running all unit tests."; 
+else 
+    echo "Running sub-set of unit tests."
+fi
+
 REPORT_PATH="/appsrc/target/test-reports"
 COVERAGE_PATH="/appsrc/target/test-reports/cobertura"
 NOSE_LOG_PATH="/appsrc/target/test-reports/nose.log"
-
 
 NOSE_TESTS="ai/tests/test_recommender.py"
 NOSE_TESTS="${NOSE_TESTS} ai/tests/test_ai.py"
@@ -26,38 +52,44 @@ rm -drf "${COVERAGE_PATH}"
 mkdir -p target/test-reports/cobertura/html
 mkdir -p target/test-reports/html
 
-echo "starting nosetest"
-echo $NOSE_TESTS
+if [ $RUN_ALL -eq 1 ] || [ $PENNAI_UNIT_TEST_NOSE ]; then
+    echo "starting nosetest"
+    echo $NOSE_TESTS
 
-coverage run -m nose -s \
---with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
---with-html --html-file="${REPORT_PATH}/html/nose.html" \
--v $NOSE_TESTS \
-#--verbosity=4
-#--verbosity=4 > $NOSE_LOG_PATH 2>&1
+    coverage run -m nose -s \
+    --with-xunit --xunit-file="${REPORT_PATH}/nose_xunit.xml" \
+    --with-html --html-file="${REPORT_PATH}/html/nose.html" \
+    -v $NOSE_TESTS \
+    #--verbosity=4
+    #--verbosity=4 > $NOSE_LOG_PATH 2>&1
 
-coverage combine
-coverage html -d "${COVERAGE_PATH}/html"
-coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
+    coverage combine
+    coverage html -d "${COVERAGE_PATH}/html"
+    coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
 
-echo "coverage erase"
-coverage erase
+    echo "coverage erase"
+    coverage erase
+fi
 
-echo "starting mocha tests"
-mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
-
+if [ $RUN_ALL -eq 1 ] || [ $PENNAI_UNIT_TEST_MOCHA ]; then
+    echo "starting mocha tests"
+    mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
+fi
 
 # jest tests
 export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
 
-echo "starting lab jest reports"
-cd "/appsrc/lab/"
-npm run test
+if [ $RUN_ALL -eq 1 ] || [ $PENNAI_UNIT_TEST_JEST ] || [ $PENNAI_UNIT_TEST_JEST_LAB ]; then
+    echo "starting lab jest reports"
+    cd "/appsrc/lab/"
+    npm run test
+fi
 
-
-echo "starting webapp jest reports"
-cd "/appsrc/lab/webapp/"
-npm run test
+if [ $RUN_ALL -eq 1 ] || [ $PENNAI_UNIT_TEST_JEST ] || [ $PENNAI_UNIT_TEST_JEST_WEBAPP ]; then
+    echo "starting webapp jest reports"
+    cd "/appsrc/lab/webapp/"
+    npm run test
+fi
 
 # todo: check for generated files and potentially remove
 #       jest - snapshots, potentially use or disable
