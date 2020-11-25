@@ -52,7 +52,7 @@ describe('basic testing of fileupload react component', () => {
   let store = mockStore(initialState);
   let testFileUpload;
   let tree;
-  let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
+  let fakeFile = {target: {files: [{name: '/appsrc/lab/webapp/src/components/FileUpload/iris.csv'}]}};
   let fakeFileTsv = {target: {files: [{name: 'iris.tsv'}]}};
   let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
@@ -84,7 +84,7 @@ describe('basic testing of fileupload react component', () => {
     expect(testFileUpload.state('dependentCol')).toEqual('class');
   })
 
-  it('TODO - simulate user entering data with file upload form inputs', () => {
+  it('simulate user entering data with file upload form inputs', () => {
     // asked about how to simulate user actions here, using enzyme simulate doesn't quite
     // work, using 'onChange' prop to fake user action:
     // https://stackoverflow.com/questions/55638365/how-to-access-internal-pieces-of-react-component-and-mock-api-call-with-jest-e/55641884#55641884
@@ -93,8 +93,8 @@ describe('basic testing of fileupload react component', () => {
     // tested (which they do) & update component react state (which doesn't appear to happen)
     // this might be a limitation of enzyme
 
-//    expect(testFileUpload.find(FileUpload)).to.have.lengthOf(1);
-/*
+    let dropzone = testFileUpload.find(Dropzone);
+    expect(dropzone).toHaveLength(1);
 
     // this should create a browser console error - using javascript library to
     // create a file preview which attempts to parse given input, if input not a
@@ -102,16 +102,21 @@ describe('basic testing of fileupload react component', () => {
     // create the file preview and set the selected file obj and file name in
     // the component's react state
 
-    testFileUpload.find('input').at(0).prop('onChange')(fakeFile);
+    // test loading a file
+    // orig
+    // testFileUpload.find('input').at(0).prop('onChange')(fakeFile);
+    dropzone.prop('onDropAccepted')(fakeFile.target.files)
 
     // update() is supposed to forceUpdate/re-render the component
     testFileUpload.update();
     // manually updating, component react state does not contain anything, in any
     // case need to call update() to access elements by html dom ID
 
+    // test that file loaded
+//    expect(testFileUpload
 
-    // the following is a standin for user input entering metadata
-
+    // test setting of dependent column
+/*    
     let depColTextField = testFileUpload.find('#dependent_column_text_field_input').at(0);
     // still need to access with 'at', using find('#dependent_column_text_field_input')
     // returns 4 nodes somehow
@@ -119,6 +124,7 @@ describe('basic testing of fileupload react component', () => {
       {target:{value: 'test_class'}},
       {value:'test dep input'}
     );
+/*
     let ordTextArea = testFileUpload.find('#ordinal_features_text_area_input');
     ordTextArea.prop('onChange')(
       {target:{value: {testOrdKey: 'testHello'}}},
@@ -143,7 +149,7 @@ describe('basic testing of fileupload react component', () => {
     expect(testFileUpload.state('ordinalFeatures')).toEqual({testOrdKey: 'testHello'});
     expect(testFileUpload.state('catFeatures')).toEqual('testCatHello1, testCatHello2');
     expect(testFileUpload.state('dependentCol')).toEqual('test_class');
-  */
+*/  
   })
 
   it('TODO - try uploading non csv/tsv file type', () => {

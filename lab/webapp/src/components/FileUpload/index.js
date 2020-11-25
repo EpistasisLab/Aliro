@@ -449,7 +449,9 @@ handleCatFeaturesUserTextCancel() {
    * @returns {void} - no return value
    */
   handleSelectedFile = files => {
-
+console.log('in handleSelectedFile --- files[0]: ');
+console.log(files[0]);
+console.log(process.cwd());
     const fileExtList = ['csv', 'tsv'];
     //Config for csv reader. We load the whole file so we can let user sort the ordinal features
     let papaConfig = {
