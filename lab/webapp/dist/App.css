@@ -1,3 +1,4 @@
+
 body {
     margin: 0;
     padding: 2rem;
@@ -36,7 +37,7 @@ body {
 }
 /* file upload form styling */
 .pennai .file-upload-segment {
-    max-width: 605px;
+    max-width: 630px;
 }
 .pennai .file-upload-form-dataset-input {
     width: 40%;
@@ -51,64 +52,59 @@ body {
 .pennai .file-upload-form-show-inputs {
   display: block;
 }
-.pennai .file-upload-accordion-style {
-  color: rgba(255,255,255,.9) !important;
+.pennai .file-upload-button {
+    padding: 1.25em 1.25em 1.25em 1.25em;
 }
-.pennai .file-upload-accordion-title {
-  position: relative;
+.pennai .file-upload-button + i.icon {
+    position: absolute;
+    top: 0.6em;
+    right: 0.7em;
 }
-.pennai .file-upload-dependent-text-field {
-  margin-top: 15px;
-  max-width: 350px;
-}
-.pennai .file-upload-categorical-help-icon {
-  position: absolute;
-  top: 7px;
-  left: 94%;
-}
-/* just category text area expanded */
-.pennai .file-upload-ord-with-cat-help-icon {
-  position: absolute;
-  top: 89%;
-  left: 94%;
-}
-/* category & ordinal text areas both expanded */
-.pennai .file-upload-ord-and-cat-help-icon {
-  position: absolute;
-  top: 53%;
-  left: 94%;
-}
-/* no text area/accordion expanded */
-.pennai .file-upload-ordinal-help-icon {
-  position: absolute;
-  top: 61%;
-  left: 94%;
-}
-/* only ordinal text area/accordion expanded */
-.pennai .file-upload-just-ordinal-help-icon {
-  position: absolute;
-  top: 17.5%;
-  left: 94%;
-}
-.pennai .file-upload-dependent-help-icon {
-  position: relative;
-  top: -50px;
-  left: 94%;
-}
-.pennai .file-upload-file-input-field {
-  width: 70%;
-}
-.pennai .file-upload-ordinal-accord-title {
-  color: rgba(255,255,255,.9) !important;
-}
-.pennai .file-upload-categorical-text-area {
-
+.pennai .file-upload-help-icon {
+    padding-left: 0;
 }
 .pennai .file-upload-ordinal-text-area {
-
+    width: 90%
 }
-.pennai .file-upload-categorical-accord-title {
-  color: rgba(255,255,255,.9) !important;
+.pennai .file-upload-sortable-list {
+    list-style-type: none;
+    margin: auto;
+    width: 80%;
+    padding: 10px 5px;
+}
+.pennai .file-upload-sortable-list-item {
+    /*border-style: solid;*/
+    border: 1px solid;
+    text-align: center;
+    padding: 2px;
+    border-color: rgb(84,200,255);
+    border-radius: 4px;
+}
+/* This class is for the list item that moves
+around when using the SortableList. Because
+of how it's instantiated on-demand, it can't be
+a child of .pennai.
+The most important part is the z-index. Without it
+the element isn't visible at all.
+See https://github.com/clauderic/react-sortable-hoc/issues/87
+*/
+.file-upload-sortable-list-item-helper {
+    border: 2px solid;
+    text-align: center;
+    /* something happens to the padding compared to the regular item defined above,
+       and the text is aligned at bottom of border instead of middle.
+       But these settings aren't effecting things. Huh. 
+    */
+    padding-top: 0 !important;
+    padding-bottom: 5px !important;
+    border-color: yellow; /* rgb(84,200,255);*/
+    border-radius: 4px;
+    z-index: 10; /*important*/
+    color: rgba(255,255,255,.9);
+    list-style-type: none; /*remove the bullet*/
+ }
+.pennai .file-upload-table {
+    line-height: 1;
 }
 .pennai .dataset-card .ui.error.message {
     background-color: rgba(255,255,255,.08);
@@ -248,11 +244,25 @@ body {
     margin-bottom: 2rem;
 }
 
+/* Use for a table with a sticky header row (ie frozen in place)
+   Note that we have to override background-color because we give
+   tables the 'inverted' property, which uses style ui.inverted.table
+   defines background-color with low alpha so it's see-through as
+   table scrolls below it.
+   Note if we also freeze another row 'n' by using tr:nth-child(n),
+   then lower rolls scroll up over each other and the header row,
+   so not useful.
+*/
+.pennai .table-sticky-header .ui.table thead tr:first-child th {
+    position: sticky !important;
+    top: 0;
+    z-index: 2;
+    background-color: #313131;
+}
+
 .pennai .table-container {
     width: 100%;
     margin: 0;
-    //overflow-x: scroll;
-    //overflow-y: visible;
 }
 
 .pennai .table-container .table {
@@ -410,6 +420,25 @@ body {
     width: 75%;
 }
 
+/* Manual fix for color of search text in inverted searchable Dropdown.
+ * There's a bug in semantic-ui-react that doesn't set the color properly
+ * for the text in the search element within a dropdown, so it's unreadable.
+ * The bug is in v1.3.1 and v2.0.0.
+ * Note that there's no way to reference a color value from the .ui class
+ * that defines the inverted color w/out adding a css preprocessor */
+ .pennai .inverted-dropdown-search .ui.search.dropdown {
+    color: rgba(255,255,255,0.9);
+}
+ .pennai .inverted-dropdown-search .ui.search.dropdown > input.search {
+    color: rgba(255,255,255,0.9);
+}
+/* Manual fix for color of dropdown text in an inline form.field dropdown control
+   within an inverted form.
+*/
+.pennai .inverted-dropdown-inline .ui.dropdown {
+    color: rgba(255,255,255,0.9);
+}
+
 .gauge {
     fill: #fff;
 }
@@ -434,6 +463,16 @@ pre.schema {
 .pennai .muted {
     color: rgba(255,255,255,.7);
     font-style: italic;
+}
+
+/* For file drag-n-drop functionality */
+.pennai .dropzone {
+    text-align: center;
+    padding: 20px;
+    border: 3px dashed #474747;
+    background-color:#2185D0;
+    color:#ffffff;
+    font-size: 1.5rem;
 }
 
 @media (max-width: 321px) {
