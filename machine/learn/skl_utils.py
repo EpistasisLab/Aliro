@@ -66,6 +66,14 @@ DT_MAX_DEPTH = 6
 if 'DT_MAX_DEPTH' in os.environ:
     DT_MAX_DEPTH = int(os.environ['DT_MAX_DEPTH'])
 
+# Number of samples used for SHAP Explainers
+max_samples_kernel_explainer = 50
+if 'MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER' in os.environ:
+    max_samples_kernel_explainer = int(os.environ['MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER'])
+max_samples_other_explainer = 100
+if 'MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER' in os.environ:
+    max_samples_other_explainer = int(os.environ['MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER'])
+
 
 def balanced_accuracy(y_true, y_pred):
     """Default scoring function of classification: balanced accuracy.
@@ -708,14 +716,15 @@ def plot_shap_analysis_curve(
     # convert target to Pandas Series type if not already
     y_test = pd.Series(target)
 
+    
     # Sample 100 examples for Tree Explainer / Linear Explainer
     if model_name in ['decisiontreeclassifier','randomforestclassifier','logisticregression','linearsvc']:
-        max_num_samples = 100
+        max_num_samples = max_samples_other_explainer
     elif model_name == 'gradientboostingclassifier' and len(class_names) == 2:
-        max_num_samples = 100
+        max_num_samples = max_samples_other_explainer
     # Sample 50 examples for Kernel Explainer
     else:
-        max_num_samples = 50
+        max_num_samples = max_samples_kernel_explainer
     num_samples = min(max_num_samples, len(features))
     sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
     features = features[sampled_row_indices]
