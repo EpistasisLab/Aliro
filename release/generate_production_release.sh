@@ -17,12 +17,15 @@ rm $PROD_BUILD_DIR -fr
 rm $PROD_ZIP_FILENAME
 
 mkdir -p "${PROD_BUILD_DIR}/data/datasets/user"
+mkdir -p "${PROD_BUILD_DIR}/data/recommenders"
 mkdir -p "${PROD_BUILD_DIR}/config"
 
 cp release/userReadme.txt "${PROD_BUILD_DIR}/readme.txt"
 
 cp data/datasets/user/myDataset_metadata.json.example "${PROD_BUILD_DIR}/data/datasets/user"
 cp data/datasets/user/readme.md "${PROD_BUILD_DIR}/data/datasets/user"
+
+cp data/recommenders/pennaiweb/SVDRecommender_*.pkl.gz "${PROD_BUILD_DIR}/data/recommenders"
 
 cp config/common.env "${PROD_BUILD_DIR}/config"
 cp config/machine_config.json "${PROD_BUILD_DIR}/config"

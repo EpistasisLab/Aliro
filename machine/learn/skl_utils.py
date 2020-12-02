@@ -677,8 +677,8 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
 
     else:
         # KernelExplainer
-        #Sample 50 examples for computational speedup
-        max_num_samples = 50
+        #Sample 20 examples for computational speedup
+        max_num_samples = 20
         num_samples = min(max_num_samples, len(features))
         sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
         features = features[sampled_row_indices]
