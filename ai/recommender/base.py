@@ -179,22 +179,23 @@ class BaseRecommender(object, metaclass=MC):
         # load serialized rec, or initialize from the given
         # knowledgebase
         logger.info(f"load_serialized_rec='{load_serialized_rec}'")
+        logger.info(f"self.serialized_rec_path='{self.serialized_rec_path}'")
 
         if load_serialized_rec == "always":
             if not os.path.exists(self.serialized_rec_path):
                 raise ValueError(f"load_serialized_rec='{load_serialized_rec}'"
                         " but cannot load serialized recommender:"
-                        " '{self.serialized_rec_path}'")
+                        f" '{self.serialized_rec_path}'")
             self.load(self.serialized_rec_path, knowledgebase_results)
 
         elif load_serialized_rec == "if_exists":
             if os.path.exists(self.serialized_rec_path):
                 logger.info(f"Loading serialized recommender:"
-                        " {self.serialized_rec_path}")
+                        f" '{self.serialized_rec_path}'")
                 self.load(self.serialized_rec_path, knowledgebase_results)
             else:
                 logger.warn(f"Not loading serialized recommender, file does "
-                        "not exist: {self.serialized_rec_path}")
+                        f"not exist: '{self.serialized_rec_path}'")
                 if knowledgebase_results is not None:
                     logger.info(f"Initializing new recommender from provided "
                             "knowledgebase")

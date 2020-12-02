@@ -52,7 +52,7 @@ import itertools as it
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(module)s: %(levelname)s: %(message)s')
 ch.setFormatter(formatter)
@@ -100,15 +100,16 @@ class SurpriseRecommender(BaseRecommender):
         self.ml_type = ml_type
 
         if metric is None:
-            logger.debug('metric is None, setting...')
+            logger.warning('metric is None, setting...')
             self.metric='bal_accuracy' if self.ml_type=='classifier' else 'mse'
         else:
             self.metric = metric
         assert(self.metric is not None)
 
-        logger.debug('self.algo_name: '+self.algo_name)
-        logger.debug('ml_type: '+self.ml_type)
-        logger.debug('metric: '+self.metric)
+        logger.info('initlizing SurpriseRecommender')
+        logger.info('self.algo_name: '+self.algo_name)
+        logger.info('ml_type: '+self.ml_type)
+        logger.info('metric: '+self.metric)
 
         self.min_epochs = 10
         self.max_epochs = 100
@@ -439,7 +440,7 @@ class SVDRecommender(SurpriseRecommender):
         self.algo.n_epochs = min(len(results_data),self.max_epochs)
         self.algo.n_epochs = max(self.algo.n_epochs,self.min_epochs)
 
-        logger.debug('fitting self.algo...')
+        logger.info('fitting self.algo...')
         self.algo.partial_fit(self.trainset)
-        logger.debug('done.')
-        logger.debug('model SVD updated')
+        logger.info('done.')
+        logger.info('model SVD updated')
