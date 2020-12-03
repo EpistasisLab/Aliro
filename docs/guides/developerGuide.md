@@ -194,9 +194,9 @@ To create a production release:
 
 Release procedure:
 
-0. **Test production build.** In the master branch with all changes applied, run `docker-compose -f ./docker-compose-production.yml build` followed by `docker-compose -f ./docker-compose-production.yml up`.  This should start an instance of PennAI using the production build environment.  Test that it works as expected.
+0. **Test production build.** In the master branch with all changes applied, run `docker-compose -f ./docker-compose-production.yml build` followed by `docker-compose -f ./docker-compose-production.yml up -V`.  This should start an instance of PennAI using the production build environment.  Test that it works as expected.
 
-1. **Update the `.env` file with a new version number.** In the master branch, update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/).  Development images should have the suffix `-SNAPSHOT`.
+1. **Update the `.env` file with a new version number.** In the master branch, update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/) and the python package version specification [PEP440](https://www.python.org/dev/peps/pep-0440).  Development images should have a tag indicating it is a [pre-release](https://www.python.org/dev/peps/pep-0440/#pre-releases) (for example, `a0`).
 
 2. **Push changes to github.**  Merge the master branch into the `production` branch and push the changes to github.
 
@@ -220,7 +220,7 @@ bash release/deploy_production_release.sh
 
 6. **Create Github Release.**  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file `target/production/pennai-${VERSION}.zip` as an archive asset.
 
-7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `-SNAPSHOT` suffix and push the changes to git.  For example, `0.14` was just released, the new dev tag should be `0.15-SNAPSHOT`.
+7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `a0` suffix (see [Pre-release versioning conventions](https://www.python.org/dev/peps/pep-0440/#pre-releases) and push the changes to git.  For example, `0.14` was just released, the new dev tag should be `0.15a0`. 
 
 ### Installing a production build
 1. Download a production build from github
