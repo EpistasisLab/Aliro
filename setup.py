@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -30,44 +30,53 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from setuptools import setup, find_packages
 
 def calculate_version():
-    initpy = open('ai/_version.py').read().split('\n')
-    version = list(filter(lambda x: '__version__' in x, initpy))[0].split('\'')[1]
+    initpy = open('.env').read().split('\n')
+    version = list(filter(lambda x: 'TAG' in x, initpy))[0].split('=')[1]
     return version
 
 package_version = calculate_version()
 
 setup(
-    name='pennai',
+    name='pennaipy',
     version=package_version,
-    author='William La Cava',
-    author_email='lacava@upenn.edu',
-    packages=find_packages(),
+    author='Heather Williams, Weixuan Fu, William La Cava',
+    author_email='hwilli@pennmedicine.upenn.edu, weixuanf@upenn.edu, lacava@upenn.edu',
+    packages=['pennai',
+                'pennai.metalearning',
+                'pennai.sklearn',
+                'pennai.recommender',
+                'pennai.sklearn.config'],
+    package_dir={'pennai': 'ai',
+                'pennai.metalearning': 'ai/metalearning',
+                'pennai.sklearn': 'ai/sklearn',
+                'pennai.recommender': 'ai/recommender',
+                'pennai.sklearn.config': 'ai/sklearn/config'},
     url='https://github.com/epistasislab/pennai',
-    # download_url='https://github.com/lacava/few/releases/tag/'+package_version,
     license='GNU/GPLv3',
-    entry_points={'console_scripts': ['few=few:main', ]},
     test_suite='nose.collector',
     tests_require=['nose'],
     description=('Penn Artificial Intelligence Data Assistant'),
     long_description='''
-A system that intelligenetly manages machine learning workflows for data science
+A system that intelligently manages machine learning workflows for data science
 
-Contact:
-===
-e-mail: lacava@upenn.edu
+Contact: Heather Williams (hwilli@upenn.edu), Weixuan Fu (weixuanf@upenn.edu), William La Cava (lacava@upenn.edu)
 
-This project is hosted at https://github.com/epistasislab/penn-ai
+This project is hosted at https://github.com/epistasislab/pennai
 ''',
     zip_safe=True,
-    install_requires=['numpy', 'pandas', 'scikit-learn',
-                      'update_checker'],
+    install_requires=['numpy>=1.16.3',
+                    'scipy>=1.3.1',
+                    'scikit-learn>=0.22.0',
+                    'pandas>=0.24.2',
+                    'joblib>=0.13.2',
+                    'simplejson>=3.17.0'
+                    ],
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        # 'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Artificial Intelligence'
     ],
     keywords=['data science', 'machine learning','metalearning'],

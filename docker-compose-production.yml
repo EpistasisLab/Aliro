@@ -12,6 +12,7 @@ services:
     volumes:
       - "/appsrc"
       - "./data/datasets/user:/appsrc/data/datasets/user"
+      - "./data/recommenders/pennaiweb:/appsrc/data/recommenders/pennaiweb"
       - "./target:/appsrc/target"
     ports:
       - "5080:5080"

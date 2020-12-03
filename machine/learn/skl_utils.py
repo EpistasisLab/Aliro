@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -29,7 +29,7 @@ import __main__
 from sys import version
 import warnings
 from sklearn import __version__ as skl_version
-from sklearn.externals import joblib
+import joblib
 from mlxtend.evaluate import feature_importance_permutation
 from sklearn.utils import safe_sqr, check_X_y
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -677,8 +677,8 @@ def plot_shap_summary_curve(tmpdir, _id, model, features, feature_names, class_n
 
     else:
         # KernelExplainer
-        #Sample 50 examples for computational speedup
-        max_num_samples = 50
+        #Sample 20 examples for computational speedup
+        max_num_samples = 20
         num_samples = min(max_num_samples, len(features))
         sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
         features = features[sampled_row_indices]
@@ -1077,7 +1077,7 @@ def generate_export_codes(
 # Model in the pickle file: {model}
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 from sklearn.utils import check_X_y
 from sklearn.metrics import make_scorer, confusion_matrix
 from sklearn.model_selection import cross_validate, {fold}

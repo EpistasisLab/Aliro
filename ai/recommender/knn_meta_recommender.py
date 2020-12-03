@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -35,7 +35,6 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.pipeline import Pipeline
 import numpy as np
 from collections import defaultdict, OrderedDict
-import pdb
 from sklearn.neighbors import NearestNeighbors
 import logging
 
@@ -51,7 +50,7 @@ class KNNMetaRecommender(BaseRecommender):
     
     Recommends machine learning algorithms and parameters as follows:
         - store the best ML + P on every dataset.
-        - given a new dataset, measure its distance to all results in 
+        - given a new dataset, measure its distance to all results in
         metafeature space.
         - recommend ML + P with best performance on closest dataset.
 
@@ -65,11 +64,11 @@ class KNNMetaRecommender(BaseRecommender):
         Contains all valid ML parameter combos, with columns 'algorithm' and
         'parameters'
     """
-    def __init__(self, 
-            ml_type='classifier', 
-            metric=None, 
+    def __init__(self,
+            ml_type='classifier',
+            metric=None,
             ml_p=None,
-            random_state=None, 
+            random_state=None,
             knowledgebase_results=None,
             knowledgebase_metafeatures=None,
             load_serialized_rec="if_exists",
@@ -77,7 +76,7 @@ class KNNMetaRecommender(BaseRecommender):
             serialized_rec_filename=None):
 
         """ set default recommender specific parameters; might be overwritten by loading serialized recommender"""
-        
+
         # lookup table: dataset name to best ML+P
         self.best_mlp = pd.DataFrame(columns=['_id','algorithm',
             'parameters', 'score'])
@@ -89,9 +88,9 @@ class KNNMetaRecommender(BaseRecommender):
 
         """Initialize recommendation system."""
         super().__init__(
-            ml_type, 
-            metric, 
-            ml_p, 
+            ml_type,
+            metric,
+            ml_p,
             random_state=random_state,
             knowledgebase_results=knowledgebase_results,
             knowledgebase_metafeatures=knowledgebase_metafeatures,
@@ -112,14 +111,14 @@ class KNNMetaRecommender(BaseRecommender):
                 self.metric
 
         results_mf: DataFrame
-               columns corresponding to metafeatures of each dataset in 
+               columns corresponding to metafeatures of each dataset in
                results_data.
         """
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
-    
+
         # save a copy of the results_mf with NaNs filled with zero
-        drop_cols = [c for c in results_mf.columns 
+        drop_cols = [c for c in results_mf.columns
                 if c[0] == '_' and c !='_id']
         self.all_dataset_mf = \
         results_mf.drop(columns=drop_cols).fillna(0.0).set_index('_id')
@@ -167,7 +166,7 @@ class KNNMetaRecommender(BaseRecommender):
         super().recommend(dataset_id, n_recs, dataset_mf)
 
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
-        drop_cols = [c for c in dataset_mf.columns 
+        drop_cols = [c for c in dataset_mf.columns
                 if c[0] == '_' and c !='_id']
         dataset_mf = dataset_mf.drop(columns=drop_cols)
         logger.debug('dataset_mf columns:{}'.format(dataset_mf.columns))
@@ -196,7 +195,7 @@ class KNNMetaRecommender(BaseRecommender):
                     [dataset_id in tdm for tdm in self.trained_dataset_models]
                 num_results = len(
                     [tdm for i,tdm in enumerate(self.trained_dataset_models)
-                           if subset[i]]) 
+                           if subset[i]])
                 logger.info(f'btw, there are {num_results} results for '
                         '{dataset_id} already')
             ml_rec, p_rec, rec_score = (ml_rec[:n_recs],
@@ -212,7 +211,7 @@ class KNNMetaRecommender(BaseRecommender):
             # logger.error('p_rec'+ p_rec)
             # logger.error('rec_score'+rec_score)
 
-        # update the recommender's memory with the new algorithm-parameter 
+        # update the recommender's memory with the new algorithm-parameter
         # combos that it recommended
         self._update_trained_dataset_models_from_rec(
                                                     dataset_id,
@@ -252,11 +251,11 @@ class KNNMetaRecommender(BaseRecommender):
             if i < 10:
                 logger.debug('closest dataset:'+d+'; distance:'+ str(dist))
             # don't recommend based on the same dataset
-            if round(dist,6) > 0.0:    
+            if round(dist,6) > 0.0:
                 alg_params = (self.best_mlp.loc[d,'algorithm'] + '|' +
                               self.best_mlp.loc[d,'parameters'])
                 # only recommend if not already recommended
-                if (dataset_id+'|'+alg_params 
+                if (dataset_id+'|'+alg_params
                         not in self.trained_dataset_models):
                     ml_recs.append(self.best_mlp.loc[d,'algorithm'])
                     p_recs.append(self.best_mlp.loc[d,'parameters'])

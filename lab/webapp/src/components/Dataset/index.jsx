@@ -4,7 +4,7 @@ Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 PennAI is maintained by:
     - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@pennmedicine.upenn.edu)
+    - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
     - Michael Stauffer (stauffer@upenn.edu)
     - and many other generous open source contributors
@@ -121,7 +121,7 @@ class Dataset extends Component {
                 <span className="muted">{`${Object.keys(cat_feats).length} total`}</span>
               </Segment>
               <Segment inverted attached="bottom">
-                <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+                <div style={{ overflow: 'scroll', maxHeight: '594px' }} className='table-sticky-header'>
                   <Table inverted celled compact unstackable>
                     <Table.Header>
                       <Table.Row>
@@ -152,7 +152,7 @@ class Dataset extends Component {
                   <span className="muted">{`${Object.keys(ord_feats).length} total`}</span>
                 </Segment>
                 <Segment inverted attached="bottom">
-                  <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+                  <div style={{ overflow: 'scroll', maxHeight: '594px' }} className='table-sticky-header'>
                     <Table inverted celled compact unstackable>
                       <Table.Header>
                         <Table.Row>
@@ -253,7 +253,7 @@ class Dataset extends Component {
                     <span className="muted">(first 100 rows)</span>
                     <Segment style={{ height: '500px' }}>
                       {dataPreview ? (
-                        <div style={{ overflow: 'scroll', maxHeight: '470px' }}>
+                        <div style={{ overflow: 'scroll', maxHeight: '470px' }} className='table-sticky-header'>
                           <Table inverted celled compact unstackable singleLine>
                             <Table.Header>
                               <Table.Row>
@@ -288,7 +288,7 @@ class Dataset extends Component {
               <span className="muted">{`${Object.keys(dataset.metafeatures).length} total`}</span>
             </Segment>
             <Segment inverted attached="bottom">
-              <div style={{ overflow: 'scroll', maxHeight: '594px' }}>
+              <div style={{ overflow: 'scroll', maxHeight: '594px' }} className='table-sticky-header'>
                 <Table inverted celled compact unstackable>
                   <Table.Header>
                     <Table.Row>
