@@ -14,6 +14,8 @@ RUN apt-get update --fix-missing \
 
 RUN npm install -g mocha
 
+RUN pip install --upgrade pip
+
 ## tests
 COPY /tests/unit/requirements.txt /root/test_requirements.txt
 RUN pip install --no-cache-dir -r /root/test_requirements.txt
