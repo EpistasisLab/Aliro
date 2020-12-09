@@ -47,7 +47,8 @@ jobs:
               ai/tests/lab_*.py \
               ai/tests/test_re*.py \
               ai/tests/test_k*utils.py
+
       - name: Coverage Report
-        run:|
+        run: |
           coverage combine
           coveralls
