@@ -34,4 +34,5 @@ jobs:
       - name: Run Unit Tests
         run: |
           git lfs fetch --all
+          git lfs pull
           docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
