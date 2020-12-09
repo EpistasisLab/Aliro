@@ -48,8 +48,4 @@ jobs:
               ai/tests/test_re*.py \
               ai/tests/test_k*utils.py
           coverage combine
-
-      - name: Coverage Report
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          coveralls
