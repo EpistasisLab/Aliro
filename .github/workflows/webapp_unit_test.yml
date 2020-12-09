@@ -49,6 +49,8 @@ jobs:
               ai/tests/test_k*utils.py
 
       - name: Coverage Report
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           coverage combine
           coveralls
