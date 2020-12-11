@@ -87,11 +87,10 @@ class ShapSummaryCurve extends Component {
   render() {
     const { fileDict, shap_explainer, shap_num_samples } = this.props;
     const { image_url, class_name, class_options } = this.state;
-    const desc = "SHAP feature importance plot (left) shows the positive and negative relationships \
-     between samples and features with this ML model.  The plot sorts features by the sum of SHAP value \
-     magnitudes.";
-    const desc2 = "SHAP decision plot (right) shows how the model arrives at its predictions for each \
-    sample. We plot 10 positive and 10 negative samples (approximately) and highlight misclassified samples \
+    const desc = "SHAP summary feature importance plot (left) shows the effect (i.e., Shap value) of each sample and feature on the outputs of the ML model.  \
+    The features are sorted by the sum of absolute SHAP values.";
+    const desc2 = "SHAP decision plot (right) shows how the model arrives at its predictions for specific \
+    samples. We plot a subset of positive and negative samples and highlight misclassified samples \
     via dotted-dashed lines.";
 
     const shap_url = "https://github.com/slundberg/shap"
