@@ -29,7 +29,7 @@ experiment*pdf
 ai/tests/metafeatures/
 .ipynb_checkpoints/
 .DS_Store
-
+.idea/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
