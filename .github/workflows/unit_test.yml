@@ -76,7 +76,7 @@ jobs:
           docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
       # Run deployment steps if pervious steps are success
       - name: Install dependencies
-        if if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel twine
