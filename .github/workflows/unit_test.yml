@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Unit Tests for webapp
+name: Unit Tests
 
 # Controls when the action will run.
 on:
@@ -16,6 +16,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    name: Unit Tests for Webapp
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -50,3 +51,26 @@ jobs:
               ai/tests/lab_*.py \
               ai/tests/test_re*.py \
               ai/tests/test_k*utils.py
+
+  build:
+    name: Unit Tests for scikit-learn API
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Build Docker Images
+        run: |
+          docker-compose -f ./docker-compose-unit-test.yml build -m 8g
+
+      # Runs a set of commands using the runners shell
+      - name: Run Unit Tests
+        run: |
+          git lfs fetch --all
+          git lfs pull
+          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
