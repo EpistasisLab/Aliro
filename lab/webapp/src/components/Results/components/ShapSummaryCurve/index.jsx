@@ -87,7 +87,12 @@ class ShapSummaryCurve extends Component {
   render() {
     const { fileDict, shap_explainer, shap_num_samples } = this.props;
     const { image_url, class_name, class_options } = this.state;
-    const desc = "SHAP feature importance plot that shows the positive and negative relationships between samples and features with this ML model.  The plot sorts features by the sum of SHAP value magnitudes.";
+    const desc = "SHAP summary feature importance plot (left) shows the effect (i.e., Shap value) of each sample and feature on the outputs of the ML model.  \
+    The features are sorted by the sum of absolute SHAP values.";
+    const desc2 = "SHAP decision plot (right) shows how the model arrives at its predictions for specific \
+    samples. We plot a subset of positive and negative samples and highlight misclassified samples \
+    via dotted-dashed lines.";
+
     const shap_url = "https://github.com/slundberg/shap"
     let headericon = (
       <Popup
@@ -96,6 +101,7 @@ class ShapSummaryCurve extends Component {
         content={
           <div className="content">
             <p>{desc}</p>
+            <p>{desc2}</p>
             { (shap_explainer && shap_num_samples>=0) &&
               <p>The plot below uses the SHAP <strong>{shap_explainer}</strong> with <strong>{shap_num_samples}</strong> randomly selected samples.</p>
             }
@@ -121,7 +127,7 @@ class ShapSummaryCurve extends Component {
     if(Object.keys(fileDict).length === 0) {
       return (
         <InvertedCard
-          header="SHAP Summary Plot"
+          header="SHAP Analysis"
           content="Summary curve not generated for this model."
           headericon={headericon}
         />
@@ -137,7 +143,7 @@ class ShapSummaryCurve extends Component {
     if (Object.keys(fileDict).length === 1) {
       return (
         <InvertedCard
-          header="SHAP Summary Plot"
+          header="SHAP Analysis"
           content={<Image src={image_url} />}
           headericon={headericon}
         />
@@ -146,7 +152,7 @@ class ShapSummaryCurve extends Component {
 
     return (
         <InvertedCardWithDropdown
-          header="SHAP Summary Plot"
+          header="SHAP Analysis"
           placeholder="Select Output Class"
           selectoption={class_name}
           dropdownoptions={class_options}

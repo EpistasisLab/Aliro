@@ -503,11 +503,12 @@ class APITESTCLASS(unittest.TestCase):
             # test pickle file
             pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
             assert os.path.isfile(pickle_file)
-            # test SHAP summary files are generated except for SVC, LinearSVC
-            if algorithm_name == 'SVC' or algorithm_name == 'LinearSVC':
+            # test SHAP summary files are generated except for SVC
+            if algorithm_name == 'SVC':
                 assert not os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
-            elif algorithm_name == 'GradientBoostingClassifier':
+            elif algorithm_name in ['GradientBoostingClassifier', 'LinearSVC', 'LogisticRegression']:
                 # GradientBoostingClassifier for Binary Classification using Tree Explainer
+                # LinearSVC, LogisticRegression using Linear Explainer
                 assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
                 assert not os.path.isfile('{}/shap_summary_curve{}_1_.png'.format(outdir, _id))
             else:
@@ -687,10 +688,9 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
-        # test SHAP summary files
-        for class_id in range(2):
-            summary_file = '{}/shap_summary_curve{}_{}_.png'.format(outdir, _id, class_id)
-            assert os.path.isfile(summary_file)
+        # test SHAP summary files - Linear Explainer, Generates only one matrix
+        assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
+        assert not os.path.isfile('{}/shap_summary_curve{}_1_.png'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -729,10 +729,9 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/confusion_matrix_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/imp_score_{}.png'.format(outdir, _id))
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
-        # test SHAP summary files
-        for class_id in range(2):
-            summary_file = '{}/shap_summary_curve{}_{}_.png'.format(outdir, _id, class_id)
-            assert os.path.isfile(summary_file)      
+        # test SHAP summary files - Linear Explainer, Generates only one matrix
+        assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
+        assert not os.path.isfile('{}/shap_summary_curve{}_1_.png'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
@@ -919,10 +918,9 @@ class APITESTCLASS(unittest.TestCase):
         assert os.path.isfile('{}/scripts_reproduce_{}.py'.format(outdir, _id))
         assert os.path.isfile(
             '{}/grid_search_results_{}.csv'.format(outdir, _id))
-        # test SHAP summary files
-        for class_id in range(2):
-            summary_file = '{}/shap_summary_curve{}_{}_.png'.format(outdir, _id, class_id)
-            assert os.path.isfile(summary_file)
+        # test SHAP summary files - Linear Explainer, Generates only one matrix
+        assert os.path.isfile('{}/shap_summary_curve{}_0_.png'.format(outdir, _id))
+        assert not os.path.isfile('{}/shap_summary_curve{}_1_.png'.format(outdir, _id))
         # test pickle file
         pickle_file = '{}/model_{}.pkl'.format(outdir, _id)
         assert os.path.isfile(pickle_file)
