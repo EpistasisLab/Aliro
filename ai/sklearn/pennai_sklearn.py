@@ -570,7 +570,6 @@ class PennAI(BaseEstimator):
                                                   n_jobs=self.n_jobs)
             else:
                 self.estimator = VotingRegressor(estimators=estimators,
-                                                 voting='hard',
                                                  n_jobs=self.n_jobs)
 
         self.estimator.fit(X, y)
