@@ -33,7 +33,7 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 logger = logging.getLogger(__name__)
 GitHub_URL = ("https://github.com/EpistasisLab/pennai/raw/"
-            "ai_sklearn_api/data/knowledgebases/")
+            "master/data/knowledgebases/")
 
 class PennAI(BaseEstimator):
     """Penn AI standalone sklearn wrapper.
