@@ -73,6 +73,7 @@ class FileUpload extends Component {
     this.state = this.initState;
 
     // enter info in text fields
+    this.resetState = this.resetState.bind(this);
     this.handleDepColDropdown = this.handleDepColDropdown.bind(this);
     this.handleCatFeaturesUserTextOnChange = this.handleCatFeaturesUserTextOnChange.bind(this);
     this.handleCatFeaturesUserTextBlur = this.handleCatFeaturesUserTextBlur.bind(this);
@@ -188,6 +189,15 @@ class FileUpload extends Component {
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
     }
+  }
+
+  resetState() {
+    this.setState({
+      selectedFile: null,
+      datasetPreview: null,
+      openErrorModal: false,
+      processingFileForPreview: false
+    });  
   }
 
   /**
@@ -363,7 +373,7 @@ handleCatFeaturesUserTextCancel() {
 
       //Check that dependent column is valid
       if (!this.validateFeatureName(depCol)) {
-        return { errorResp: "Please assign a Dependent Feature Column." };
+        return { errorResp: "Please assign a Target Column." };
       }
 
       // Ordinal features. 
@@ -462,10 +472,8 @@ handleCatFeaturesUserTextCancel() {
         //Store the result
         this.setState({datasetPreview: result});
 
-        if(this.isDevBuild) {
-          console.log( this.getElapsedTime() + " - setState complete. ");
-        }
         if(this.isDevBuild){
+          console.log( this.getElapsedTime() + " - setState complete. ");
           console.log("Calling initDatasetPreview... ");
           this.getElapsedTime();
         }
@@ -494,14 +502,14 @@ handleCatFeaturesUserTextCancel() {
         try {
           if(this.isDevBuild) {
             this.getElapsedTime(); //resets the timer
-            console.log("=== Calling Papa.parse... ");
+            console.log("=== DevBuild output - Calling Papa.parse... ");
           }
           Papa.parse(uploadFile, papaConfig);
         }
         catch(error) {
           console.error('Error generating preview for selected file:', error);
           this.setState({
-            selectedFile: undefined,
+            selectedFile: null,
             datasetPreview: null,
             openErrorModal: false,
             processingFileForPreview: false
@@ -525,16 +533,13 @@ handleCatFeaturesUserTextCancel() {
         this.setState({
           selectedFile: null,
           datasetPreview: null,
-          openErrorModal: true
+          openErrorModal: true,
+          processingFileForPreview: false
         });
       }
     } else {
       // reset state as fallback
-      this.setState({
-        selectedFile: null,
-        datasetPreview: null,
-        openErrorModal: false
-      });
+      this.resetState();
     }
   }
 
@@ -904,7 +909,7 @@ handleCatFeaturesUserTextCancel() {
     }
     //Make sure the feature name is not assigned as the dependent column
     if( this.getDependentColumn() === ordObj.feature ) {
-      return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Dependent Column."};
+      return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Target Column."};
     }
     //The remaining items are the unique values
     if( ordObj.values === undefined || ordObj.values.length === 0) {
@@ -1093,9 +1098,9 @@ handleCatFeaturesUserTextCancel() {
 
     return (
       dataPrev.meta.fields.map((field, i) => {
-          //Dropdown item for setting field type
+          //Assign dropdown items for setting field type, or just 'Target' label for columns that's designated as target
           let fieldTypeItem = ( field === this.getDependentColumn() ?
-            <i>Dependent</i> :
+            <i>Target</i> :
             <Dropdown
               value={this.state.featureType[i]}
               options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
@@ -1307,10 +1312,10 @@ handleCatFeaturesUserTextCancel() {
           <Grid.Column width={7}>
             <Form.Field 
               inline
-              label="Dependent Feature"
+              label="Target"
               control={Dropdown}
               search
-              placeholder="Select a feature"
+              placeholder="Select a column"
               options={depColOptions}
               onChange={this.handleDepColDropdown}
               className="inverted-dropdown-search"
@@ -1651,25 +1656,41 @@ handleCatFeaturesUserTextCancel() {
     // file input
     // https://react-dropzone.js.org/
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept*
-    let fileInputElem = (
-      <Dropzone 
-          onDropAccepted={this.handleSelectedFile}
-          onDropRejected={this.handleRejectedFile}
-          accept=".csv,.tsv,text/csv,text/tsv"
-          multiple={false}
-      >
-        {({getRootProps, getInputProps}) => (
-          <section>
-            <div {...getRootProps({ className: "dropzone" })}>
-              <input {...getInputProps()} />
-              <p>Upload a csv or tsv file</p>
-              <p>Drag 'n drop, or click here</p>
-            </div>
-          </section>
-        )}
-      </Dropzone>
-    );
-
+    let fileInputElem = undefined;
+    if( this.state.selectedFile == null ) {
+      fileInputElem = (
+        <Dropzone 
+            onDropAccepted={this.handleSelectedFile}
+            onDropRejected={this.handleRejectedFile}
+            accept=".csv,.tsv,text/csv,text/tsv"
+            multiple={false}
+        >
+          {({getRootProps, getInputProps}) => (
+            <section>
+              <div {...getRootProps({ className: "dropzone" })}>
+                <input {...getInputProps()} />
+                <p>Choose a csv or tsv file</p>
+                <p>Drag 'n drop, or click here</p>
+              </div>
+            </section>
+          )}
+        </Dropzone>
+      );
+    } else {
+      //Cancel button
+      fileInputElem = (
+        <React.Fragment>
+          <Divider inverted horizontal>
+            <Header inverted as='h4'>
+              File
+            </Header>
+           </Divider>
+          <Header inverted as='h5'>
+            {this.state.selectedFile.name}
+          </Header>
+        </React.Fragment>
+      )
+    }
     //Progress spinner if we're loading and processing a file
     if( this.state.processingFileForPreview){
       return <Loader active inverted size="large" content="Processing your file..." />;      
@@ -1677,8 +1698,8 @@ handleCatFeaturesUserTextCancel() {
 
     //Main UI elements
     return (
-      <div>
-        <SceneHeader header="Submit Datasets"/>
+      <div> 
+        <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             
@@ -1699,7 +1720,7 @@ handleCatFeaturesUserTextCancel() {
 
             <Divider inverted horizontal>
               <Header inverted as='h4'>
-                Feature Specification
+                Specification
               </Header>
             </Divider>
           
@@ -1714,23 +1735,28 @@ handleCatFeaturesUserTextCancel() {
 
             {/*upload button*/}
             <Divider inverted horizontal>
-              <Header inverted as='h4'>
-                Submit
-              </Header>
+              <Header inverted as='h4'> Upload </Header>
             </Divider>
 
-            <Form.Input>
+            <Form.Field>
               <Button
                 inverted
                 color="blue"
                 disabled={this.state.uploadButtonDisabled}
                 loading={this.state.uploadButtonDisabled}
                 icon="upload"
-                content="Submit Dataset"
+                content="Upload Dataset"
                 className="file-upload-button"
                 onClick={this.handleUpload}
-                />
-            </Form.Input>
+              />
+              <Button 
+                  onClick={() => this.resetState()}
+                  color='red' 
+                  inverted               
+                  style={{float: 'right'}}
+                  content="Cancel"
+              />
+            </Form.Field>
             </div>
           </Segment>
         </Form>
