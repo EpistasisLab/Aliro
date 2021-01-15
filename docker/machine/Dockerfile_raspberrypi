@@ -1,11 +1,5 @@
 FROM python:3.7-stretch
 
-#nodejs
-#RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
-#    tar -xvf ~/node.tar.xz -C /opt/ && \
-#    rm ~/node.tar.xz
-#ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
-
 ENV NODE_VERSION 12.20.0
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
@@ -60,12 +54,12 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && npm --version
 
 ARG docker_filepath=docker/machine/files
+ARG python_wheel_directory=docker/pennai-arm64-deps
 
 RUN apt-get update --fix-missing && apt-get install -y \
-    vim openssh-client openssh-server graphviz \
+    openssh-client openssh-server graphviz \
     net-tools iputils-ping xz-utils \
-    screen ngrep ca-cacert \
-    mercurial subversion \
+    ngrep ca-cacert \
     build-essential cmake lsb-core cpio mesa-common-dev \
     libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends && \
@@ -76,6 +70,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
 COPY ${docker_filepath}/requirements.txt /root/
 RUN mkdir /root/wheel
 COPY ${docker_filepath}/wheel /root/wheel
+COPY ${python_wheel_directory}/machine /root/wheel
 RUN python -m pip install --no-index --find-links=/root/wheel -r /root/requirements.txt
 
 # setup node environment

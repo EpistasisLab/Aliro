@@ -99,18 +99,14 @@ RUN set -ex \
   && yarn --version
 
 ARG docker_filepath=docker/lab/files
+ARG python_wheel_directory=docker/pennai-arm64-deps/lab
 
 RUN apt-get update --fix-missing && apt-get install -y \
-    vim openssh-client openssh-server telnet apache2 \
+    openssh-client openssh-server telnet apache2 \
     net-tools iputils-ping xz-utils \
-    screen ngrep ca-cacert \
-    mercurial subversion \
+    ngrep ca-cacert \
     build-essential cmake lsb-core cpio mesa-common-dev \
-    dos2unix \
-    curl \
-    git \
-    libatlas-base-dev \
-    gfortran \
+    dos2unix curl git libatlas-base-dev gfortran \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -158,9 +154,8 @@ RUN pip --version
 # setup python environment
 COPY ${docker_filepath}/requirements.txt /root/
 RUN mkdir /root/wheel
-COPY ${docker_filepath}/wheel /root/wheel
+COPY ${python_wheel_directory}/lab /root/wheel
 RUN pip3 install --no-cache-dir cython
-#RUN pip3 install --no-cache-dir -r /root/requirements.txt
 RUN pip3 install --no-index --find-links=/root/wheel -r /root/requirements.txt
 ### bill's surprise fork
 # NOTE: For some reason, this install doesn't seem to recognize the installed numpy
@@ -183,7 +178,7 @@ RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
 	&& cp /etc/apache2/mods-available/expires.load /etc/apache2/mods-enabled
 
 # setup node environment
-RUN npm install -g pm2 --silent --progress=false
+RUN npm install -g pm2 webpack --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
