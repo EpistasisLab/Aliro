@@ -1,5 +1,5 @@
 [run]
-; source = 
+; source =
 ; 	ai
 ; 	machine
 ; 	lab/pyutils
@@ -12,5 +12,5 @@ parallel = True
 ; the first path is the path on the local (travis) filesystem
 ; the second path is the path as it appears within the Docker container
 source =
-  $TRAVIS_BUILD_DIR
+  $GITHUB_WORKSPACE
   /appsrc/
