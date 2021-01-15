@@ -13,7 +13,7 @@ ARG docker_filepath=docker/dbmongo/files
 
 RUN apt-get update --fix-missing && \
   apt-get install -y --allow-unauthenticated \
-  vim npm openssh-client htop dos2unix \
+  npm openssh-client htop dos2unix \
   net-tools iputils-ping \
   --no-install-recommends && \
   apt-get clean && \
