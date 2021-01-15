@@ -30,9 +30,10 @@ import fetch from 'isomorphic-fetch';
 import React, { Component } from 'react';
 import SceneHeader from '../SceneHeader';
 import DatasetModal from './components/DatasetModal';
-import { Grid, Segment, Header, Table, Loader, Icon } from 'semantic-ui-react';
+import { Grid, Segment, Header, Table, Loader, Icon, GridColumn } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
+import BarChart from '../BarChart';
 
 class Dataset extends Component {
   constructor(props) {
@@ -307,6 +308,9 @@ class Dataset extends Component {
                 </Table>
               </div>
             </Segment>
+          </Grid.Column>
+          <Grid.Column>
+            <BarChart data={[5,10,1,3]} size={[500,500]} />
           </Grid.Column>
         </Grid>
       </div>
