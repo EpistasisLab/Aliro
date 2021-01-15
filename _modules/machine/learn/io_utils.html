@@ -1,0 +1,631 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>machine.learn.io_utils &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="../../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recommenders.html">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>machine.learn.io_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for machine.learn.io_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+
+<span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
+
+<span class="sd">PennAI is maintained by:</span>
+<span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
+<span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
+<span class="sd">    - William La Cava (lacava@upenn.edu)</span>
+<span class="sd">    - Michael Stauffer (stauffer@upenn.edu)</span>
+<span class="sd">    - and many other generous open source contributors</span>
+
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">(Autogenerated header, do not modify)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="c1"># get PennAI environment information</span>
+<span class="n">LAB_HOST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LAB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;lab&#39;</span><span class="p">)</span>
+<span class="n">LAB_PORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LAB_PORT&#39;</span><span class="p">,</span> <span class="s1">&#39;5080&#39;</span><span class="p">)</span>
+<span class="n">basedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PROJECT_ROOT&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">basedir</span><span class="o">=</span><span class="n">basedir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Experiment class for PennAI.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        args: dict</span>
+<span class="sd">            Arguments of a experiment from PennAI API</span>
+<span class="sd">        basedir: string</span>
+<span class="sd">            Base directory for this project</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basedir</span> <span class="o">=</span> <span class="n">basedir</span>
+        <span class="c1"># temporary directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/machine/learn/tmp/</span><span class="si">{}</span><span class="s1">/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basedir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Experiment.get_input"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_input">[docs]</a>    <span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get input data based on experiment ID (_id) from PennAI API.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
+<span class="sd">            pandas.DataFrame: PennAI will use train_test_split to</span>
+<span class="sd">            make train/test splits list of two pandas.DataFrame:</span>
+<span class="sd">            The 1st pandas.DataFrame is training dataset,</span>
+<span class="sd">            while the 2nd one is testing dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.get_model"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build scikit learn method based on arguments from PennAI API.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        model: scikit-learn Estimator</span>
+<span class="sd">            a machine learning model with scikit-learn API</span>
+<span class="sd">        method_type: string</span>
+<span class="sd">            &#39;classification&#39;: classification model</span>
+<span class="sd">            &#39;regression&#39;: regression model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="n">get_projects</span><span class="p">()</span>
+        <span class="n">pdict</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">projects</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">]</span>
+        <span class="n">import_path</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
+        <span class="n">method_type</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+        <span class="n">encoding_strategy</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;categorical_encoding_strategy&#39;</span><span class="p">]</span>
+        <span class="n">method_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="c1"># update static parameters</span>
+        <span class="k">if</span> <span class="s1">&#39;static_parameters&#39;</span> <span class="ow">in</span> <span class="n">pdict</span><span class="p">:</span>
+            <span class="n">method_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;static_parameters&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;method_args: </span><span class="si">{</span><span class="n">method_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">exec</span><span class="p">(</span><span class="s1">&#39;from </span><span class="si">{}</span><span class="s1"> import </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">import_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_name</span><span class="p">))</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method_name</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="o">**</span><span class="n">method_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">method_type</span><span class="p">,</span> <span class="n">encoding_strategy</span></div></div>
+
+
+<div class="viewcode-block" id="get_projects"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_projects">[docs]</a><span class="k">def</span> <span class="nf">get_projects</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get all machine learning algorithm&#39;s information from PennAI API This</span>
+<span class="sd">    information should be the same with projects.json.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    projects: dict</span>
+<span class="sd">        A dict of all machine learning algorithm&#39;s information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">LAB_HOST</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">LAB_PORT</span> <span class="o">+</span> <span class="s1">&#39;/api/v1/projects&#39;</span>
+    <span class="n">projects</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">projects</span></div>
+
+
+<div class="viewcode-block" id="parse_args"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.parse_args">[docs]</a><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Parse arguments for machine learning algorithm.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    args: dict</span>
+<span class="sd">        Arguments of a experiment from PennAI API</span>
+<span class="sd">    param_grid: dict</span>
+<span class="sd">        Dictionary with parameters names (string) as keys</span>
+<span class="sd">        and lists of parameter settings to try as values,</span>
+<span class="sd">        or a list of such dictionaries, in which case the</span>
+<span class="sd">        grids spanned by each dictionary in the list are</span>
+<span class="sd">        explored. This enables searching over any sequence</span>
+<span class="sd">        of parameter settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">projects</span> <span class="o">=</span> <span class="n">get_projects</span><span class="p">()</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Driver for all machine learning algorithms in PennAI&#39;</span><span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;ML Learning Algorithm&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">pdict</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">pdict</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">]</span>
+        <span class="n">subparser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--_id&#39;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Experiment id in database&quot;</span><span class="p">)</span>
+        <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--grid_search&#39;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;grid_search&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+                <span class="s1">&#39;If grid_search is True, then &#39;</span>
+                <span class="s1">&#39;the experiment will perform GridSearchCV&#39;</span><span class="p">))</span>
+        <span class="n">param_grid</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># parse args for each parameter</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="s1">&#39;--&#39;</span> <span class="o">+</span> <span class="n">key</span>
+            <span class="n">arg_dest</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">arg_default</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+            <span class="n">arg_type</span> <span class="o">=</span> <span class="n">get_type</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+            <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">arg_dest</span><span class="p">,</span>
+                                   <span class="n">default</span><span class="o">=</span><span class="n">arg_default</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">arg_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;grid_search&quot;</span> <span class="ow">in</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;ui&#39;</span><span class="p">]:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;ui&#39;</span><span class="p">][</span><span class="s2">&quot;grid_search&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">&quot;values&quot;</span> <span class="ow">in</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;ui&#39;</span><span class="p">]:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;ui&#39;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;ui&#39;</span><span class="p">][</span><span class="s2">&quot;choices&quot;</span><span class="p">]</span>
+            <span class="n">param_grid</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;parsed args:&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">param_grid</span></div>
+
+
+<div class="viewcode-block" id="get_input_data"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_input_data">[docs]</a><span class="k">def</span> <span class="nf">get_input_data</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Get input dataset information from PennAI API.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Path of temporary directory</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
+<span class="sd">        pandas.DataFrame: PennAI will use train_test_split</span>
+<span class="sd">        to make train/test splits</span>
+<span class="sd">        list of two pandas.DataFrame.</span>
+<span class="sd">        The 1st pandas.DataFrame is training dataset,</span>
+<span class="sd">        while the 2nd one is testing dataset</span>
+<span class="sd">    data_info: dict</span>
+<span class="sd">        * target_name: string, target column name</span>
+<span class="sd">        * filename: list, filename(s)</span>
+<span class="sd">        * categories: list, categorical feature name(s)</span>
+<span class="sd">        * ordinals: dict</span>
+
+<span class="sd">           * keys: categorical feature name(s)</span>
+<span class="sd">           * values: categorical values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">expdir</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">expdir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">expdir</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">LAB_HOST</span> <span class="o">+</span>
+                            <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">LAB_PORT</span> <span class="o">+</span> <span class="s1">&#39;/api/v1/experiments/&#39;</span> <span class="o">+</span> <span class="n">_id</span><span class="p">)</span>
+    <span class="n">jsondata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="n">_dataset_id</span> <span class="o">=</span> <span class="n">jsondata</span><span class="p">[</span><span class="s1">&#39;_dataset_id&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_dataset_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Error when running experiment &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span>
+                           <span class="s2">&quot;: Unable to get _dataset_id &quot;</span>
+                           <span class="s2">&quot; from lab.  &quot;</span>
+                           <span class="s2">&quot;Response: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">jsondata</span><span class="p">)))</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s1">&#39;http://&#39;</span> <span class="o">+</span>
+        <span class="n">LAB_HOST</span> <span class="o">+</span>
+        <span class="s1">&#39;:&#39;</span> <span class="o">+</span>
+        <span class="n">LAB_PORT</span> <span class="o">+</span>
+        <span class="s1">&#39;/api/v1/datasets/&#39;</span> <span class="o">+</span>
+        <span class="n">_dataset_id</span><span class="p">)</span>
+    <span class="n">jsondata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">jsondata</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+    <span class="n">target_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ordinals</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prediction_type</span> <span class="o">=</span> <span class="s2">&quot;classification&quot;</span>  <span class="c1"># by default</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;dependent_col&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Target column is missing in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">target_name</span> <span class="ow">and</span> <span class="n">target_name</span> <span class="o">!=</span> <span class="n">file</span><span class="p">[</span><span class="s1">&#39;dependent_col&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Files in one experiment should has the same&quot;</span>
+                <span class="s2">&quot; target column name. Related files: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target_name</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="s1">&#39;dependent_col&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;categorical_features&#39;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="s1">&#39;categorical_features&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;ordinal_features&#39;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">ordinals</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="s1">&#39;ordinal_features&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;prediction_type&#39;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">prediction_type</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="s1">&#39;prediction_type&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># only 1 file</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">StringIO</span><span class="p">(</span>
+                <span class="n">get_file_data</span><span class="p">(</span>
+                    <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;_id&#39;</span><span class="p">])),</span>
+            <span class="n">sep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+        <span class="n">check_column</span><span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># two files for cross-validation</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># need api support !!</span>
+        <span class="c1"># the 1st one is training dataset and 2nd one is testing datast</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">indata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="n">StringIO</span><span class="p">(</span>
+                    <span class="n">get_file_data</span><span class="p">(</span>
+                        <span class="n">file</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])),</span>
+                <span class="n">sep</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+            <span class="n">check_column</span><span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+            <span class="n">input_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
+    <span class="n">data_info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;target_name&#39;</span><span class="p">:</span> <span class="n">target_name</span><span class="p">,</span>
+        <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+        <span class="s1">&#39;categories&#39;</span><span class="p">:</span> <span class="n">categories</span><span class="p">,</span>
+        <span class="s1">&#39;ordinals&#39;</span><span class="p">:</span> <span class="n">ordinals</span><span class="p">,</span>
+        <span class="s1">&#39;prediction_type&#39;</span><span class="p">:</span> <span class="n">prediction_type</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">data_info</span></div>
+
+
+<div class="viewcode-block" id="get_file_data"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_file_data">[docs]</a><span class="k">def</span> <span class="nf">get_file_data</span><span class="p">(</span><span class="n">file_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attempt to retrieve dataset file. If the file is corrupt or an error</span>
+<span class="sd">    response is returned, it will rasie an ValueError.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_id: string</span>
+<span class="sd">        File ID from the PennAI database</span>
+
+<span class="sd">    Return: string</span>
+<span class="sd">        Dataset strings which will be read by pandas</span>
+<span class="sd">        and converted to pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">LAB_HOST</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">LAB_PORT</span> <span class="o">+</span> <span class="s1">&#39;/api/v1/files/&#39;</span> <span class="o">+</span> <span class="n">file_id</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Unable to retrieve file </span><span class="si">{file_id}</span><span class="s1">.  &#39;</span>
+               <span class="s1">&#39;Status code: </span><span class="si">{status_code}</span><span class="s1">. &#39;</span>
+               <span class="s1">&#39;Response text: </span><span class="si">{res_text}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="n">file_id</span><span class="p">,</span>
+                                                  <span class="n">status_code</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span>
+                                                  <span class="n">res_text</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="check_column"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.check_column">[docs]</a><span class="k">def</span> <span class="nf">check_column</span><span class="p">(</span><span class="n">column_name</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; check if a column exists in Pandas DataFrame.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    column_name: string</span>
+<span class="sd">        column name</span>
+<span class="sd">    dataframe: pandas.DataFrame</span>
+<span class="sd">        input dataset DataFrame</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">column_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The provided data file does &#39;</span>
+            <span class="s1">&#39;not seem to have target column </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bool_type"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.bool_type">[docs]</a><span class="k">def</span> <span class="nf">bool_type</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert argument to boolean type.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    val: string</span>
+<span class="sd">        Value of a parameter in string type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _: boolean</span>
+<span class="sd">        Converted value in boolean type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">elif</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">val</span> <span class="o">+</span> <span class="s1">&#39; is not a valid boolean value&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert nono argument to None.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    val: string</span>
+<span class="sd">        Value of a parameter in string type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    _: None</span>
+<span class="sd">        If input value if &quot;none&quot;, then the function will return None,</span>
+<span class="sd">        otherwise it will retune string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span> <span class="ow">or</span> <span class="s1">&#39;null&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">val</span> <span class="o">+</span> <span class="s1">&#39; is not a valid str value&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_type"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_type">[docs]</a><span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="n">param_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return convertion function for input type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    param_type: string or list</span>
+<span class="sd">        string, type of a parameter which is defined in projects.json</span>
+<span class="sd">        list, list of parameter types</span>
+<span class="sd">        (for parameter supportting multiple input types)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    known_types[type]: function</span>
+<span class="sd">        Function for converting argument from PennAI UI</span>
+<span class="sd">        for assigning to scikit-learn estimator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">known_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># change this later</span>
+        <span class="s1">&#39;float&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="s1">&#39;string&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;bool&#39;</span><span class="p">:</span> <span class="n">bool_type</span><span class="p">,</span>
+        <span class="s1">&#39;none&#39;</span><span class="p">:</span> <span class="n">none</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">convert_func</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">conv_val</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">param_type</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+                            <span class="n">conv_val</span> <span class="o">=</span> <span class="kc">None</span>
+                            <span class="k">break</span>
+                        <span class="k">elif</span> <span class="n">val</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+                            <span class="n">conv_val</span> <span class="o">=</span> <span class="n">bool_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                            <span class="k">break</span>
+                    <span class="n">conv_val</span> <span class="o">=</span> <span class="n">known_types</span><span class="p">[</span><span class="n">t</span><span class="p">](</span><span class="n">val</span><span class="p">)</span>
+                    <span class="c1"># for mixed type in tree-based model</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conv_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">conv_val</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">conv_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conv_val</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">conv_val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">conv_val</span><span class="p">)</span>
+                        <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">conv_val</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">val</span> <span class="o">+</span> <span class="s1">&#39; is not a valid value&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">conv_val</span>
+        <span class="k">return</span> <span class="n">convert_func</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">known_types</span><span class="p">[</span><span class="n">param_type</span><span class="p">]</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

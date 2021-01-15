@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ai.recommender.average_recommender &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="../../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recommenders.html">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>ai.recommender.average_recommender</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ai.recommender.average_recommender</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+
+<span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
+
+<span class="sd">PennAI is maintained by:</span>
+<span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
+<span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
+<span class="sd">    - William La Cava (lacava@upenn.edu)</span>
+<span class="sd">    - Michael Stauffer (stauffer@upenn.edu)</span>
+<span class="sd">    - and many other generous open source contributors</span>
+
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">(Autogenerated header, do not modify)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Recommender system for Penn AI.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseRecommender</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="c1">#logger.setLevel(logging.DEBUG)</span>
+<span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(module)s</span><span class="s1">: </span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AverageRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.average_recommender.AverageRecommender">[docs]</a><span class="k">class</span> <span class="nc">AverageRecommender</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Penn AI average recommender.</span>
+
+<span class="sd">    Recommends machine learning algorithms and parameters based on their average</span>
+<span class="sd">    performance across all evaluated datasets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ml_type: str, &#39;classifier&#39; or &#39;regressor&#39;</span>
+<span class="sd">        Recommending classifiers or regressors. Used to determine ML options.</span>
+
+<span class="sd">    metric: str (default: accuracy for classifiers, mse for regressors)</span>
+<span class="sd">        The metric by which to assess performance on the datasets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">ml_type</span><span class="o">=</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">ml_p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">knowledgebase_results</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">load_serialized_rec</span><span class="o">=</span><span class="s2">&quot;if_exists&quot;</span><span class="p">,</span>
+            <span class="n">serialized_rec_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">serialized_rec_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; set default recommender specific parameters; might be overwritten</span>
+<span class="sd">        by loading serialized recommender&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
+
+        <span class="c1"># number of datasets trained on so far</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># empty scores pandas series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ml_type</span><span class="p">,</span>
+            <span class="n">metric</span><span class="p">,</span>
+            <span class="n">ml_p</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">knowledgebase_results</span><span class="o">=</span><span class="n">knowledgebase_results</span><span class="p">,</span>
+            <span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="n">knowledgebase_metafeatures</span><span class="p">,</span>
+            <span class="n">load_serialized_rec</span><span class="o">=</span><span class="n">load_serialized_rec</span><span class="p">,</span>
+            <span class="n">serialized_rec_directory</span><span class="o">=</span><span class="n">serialized_rec_directory</span><span class="p">,</span>
+            <span class="n">serialized_rec_filename</span><span class="o">=</span><span class="n">serialized_rec_filename</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_train_empty_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">ml_type</span><span class="p">,</span>
+            <span class="n">metric</span><span class="p">,</span>
+            <span class="n">ml_p</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="p">,</span>
+            <span class="n">knowledgebase_results</span><span class="p">,</span>
+            <span class="n">knowledgebase_metafeatures</span><span class="p">,</span>
+            <span class="n">load_serialized_rec</span><span class="p">,</span>
+            <span class="n">serialized_rec_directory</span><span class="p">,</span>
+            <span class="n">serialized_rec_filename</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_train_empty_rec</span><span class="p">(</span>
+            <span class="n">ml_type</span><span class="p">,</span>
+            <span class="n">metric</span><span class="p">,</span>
+            <span class="n">ml_p</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="p">,</span>
+            <span class="n">knowledgebase_results</span><span class="p">,</span>
+            <span class="n">knowledgebase_metafeatures</span><span class="p">,</span>
+            <span class="n">load_serialized_rec</span><span class="p">,</span>
+            <span class="n">serialized_rec_directory</span><span class="p">,</span>
+            <span class="n">serialized_rec_filename</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AverageRecommender.update"><a class="viewcode-back" href="../../../api.html#ai.recommender.average_recommender.AverageRecommender.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;pennai&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations based on overall performance in</span>
+<span class="sd">        results_data.</span>
+
+<span class="sd">        Updates self.scores</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results_data: DataFrame with columns corresponding to:</span>
+<span class="sd">                &#39;dataset&#39;</span>
+<span class="sd">                &#39;algorithm&#39;</span>
+<span class="sd">                &#39;parameters&#39;</span>
+<span class="sd">                self.metric</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># update trained dataset models and hash table</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+        <span class="c1"># make combined data columns of classifiers and parameters</span>
+        <span class="n">results_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;algorithm-parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span>
+                <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;parameter_hash&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># ml_p = results_data[&#39;algorithm-parameters&#39;].unique()</span>
+        <span class="c1"># get average balanced accuracy by classifier-parameter combo</span>
+        <span class="n">new_scores</span> <span class="o">=</span> <span class="n">results_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                <span class="p">(</span><span class="s1">&#39;algorithm-parameters&#39;</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">new_weights</span> <span class="o">=</span> <span class="n">results_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;algorithm-parameters&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+        <span class="c1"># update scores</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_scores</span><span class="p">(</span><span class="n">new_scores</span><span class="p">,</span> <span class="n">new_weights</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AverageRecommender.recommend"><a class="viewcode-back" href="../../../api.html#ai.recommender.average_recommender.AverageRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id: string</span>
+<span class="sd">            ID of the dataset for which the recommender is generating</span>
+<span class="sd">            recommendations.</span>
+<span class="sd">        n_recs: int (default: 1), optional</span>
+<span class="sd">            Return a list of length n_recs in order of estimators and parameters</span>
+<span class="sd">            expected to do best.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># dataset hash table</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">n_recs</span><span class="p">,</span> <span class="n">dataset_mf</span><span class="p">)</span>
+        <span class="n">dataset_hash</span> <span class="o">=</span> <span class="n">dataset_id</span>
+
+        <span class="c1"># return ML+P for best average y</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
+            <span class="c1"># if a dataset is specified, do not make recommendations for</span>
+            <span class="c1"># algorithm-parameter combos that have already been run</span>
+            <span class="k">if</span> <span class="n">dataset_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rec_filt</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rec</span> <span class="k">if</span> <span class="n">dataset_hash</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">trained_dataset_models</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_filt</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">n_recs</span><span class="p">:</span>
+                    <span class="n">rec</span> <span class="o">=</span> <span class="n">rec_filt</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;can&#39;t filter recommendations, sending repeats&quot;</span><span class="p">)</span>
+
+            <span class="n">ml_rec</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">]]</span>
+            <span class="n">phash_rec</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">]]</span>
+            <span class="n">rec_score</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[:</span><span class="n">n_recs</span><span class="p">]]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;rec:&#39;</span><span class="p">,</span> <span class="n">rec</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;self.scores:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;self.w:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span>
+
+        <span class="c1"># get parameters from hash table</span>
+        <span class="n">p_rec</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_2_param</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">phash_rec</span><span class="p">]</span>
+
+        <span class="c1"># update the recommender&#39;s memory with the new algorithm-parameter combos</span>
+        <span class="c1"># that it recommended</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_trained_dataset_models_from_rec</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">,</span> <span class="n">ml_rec</span><span class="p">,</span>
+                <span class="n">phash_rec</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">rec_score</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_scores</span><span class="p">,</span> <span class="n">new_weights</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update scores based on new_scores.&quot;&quot;&quot;</span>
+        <span class="n">new_ind</span> <span class="o">=</span> <span class="n">new_scores</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="n">new_scores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">new_weights</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_ind</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="n">new_weights</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_weights</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span>
+                            <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">new_scores</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_scores</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="c1"># update weights</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_weights</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

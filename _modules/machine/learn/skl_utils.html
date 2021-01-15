@@ -1,0 +1,1574 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>machine.learn.skl_utils &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="../../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recommenders.html">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>machine.learn.skl_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for machine.learn.skl_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+
+<span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
+
+<span class="sd">PennAI is maintained by:</span>
+<span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
+<span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
+<span class="sd">    - William La Cava (lacava@upenn.edu)</span>
+<span class="sd">    - Michael Stauffer (stauffer@upenn.edu)</span>
+<span class="sd">    - and many other generous open source contributors</span>
+
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">(Autogenerated header, do not modify)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">__main__</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">version</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">skl_version</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">from</span> <span class="nn">mlxtend.evaluate</span> <span class="kn">import</span> <span class="n">feature_importance_permutation</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">safe_sqr</span><span class="p">,</span> <span class="n">check_X_y</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">make_pipeline</span><span class="p">,</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_validate</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">SCORERS</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span><span class="p">,</span> <span class="n">make_scorer</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
+<span class="kn">import</span> <span class="nn">shap</span> 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+
+<span class="c1"># if system environment allows to export figures</span>
+<span class="n">figure_export</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">if</span> <span class="s1">&#39;MAKEPLOTS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MAKEPLOTS&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+        <span class="n">figure_export</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># if system environment has a random seed</span>
+<span class="n">random_state</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="s1">&#39;RANDOM_SEED&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">random_state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RANDOM_SEED&#39;</span><span class="p">])</span>
+<span class="c1"># max numbers of bar in importance_score plot and decision tree plot</span>
+<span class="n">max_bar_num</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># The maximum depth of the decision tree for plot</span>
+<span class="n">DT_MAX_DEPTH</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="k">if</span> <span class="s1">&#39;DT_MAX_DEPTH&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">DT_MAX_DEPTH</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DT_MAX_DEPTH&#39;</span><span class="p">])</span>
+
+<span class="c1"># Number of samples used for SHAP Explainers</span>
+<span class="n">max_samples_kernel_explainer</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="k">if</span> <span class="s1">&#39;MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">max_samples_kernel_explainer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER&#39;</span><span class="p">])</span>
+<span class="n">max_samples_other_explainer</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="k">if</span> <span class="s1">&#39;MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="n">max_samples_other_explainer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="balanced_accuracy"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.balanced_accuracy">[docs]</a><span class="k">def</span> <span class="nf">balanced_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Default scoring function of classification: balanced accuracy.</span>
+<span class="sd">    Balanced accuracy computes each class&#39; accuracy on a per-class basis using a</span>
+<span class="sd">    one-vs-rest encoding, then computes an unweighted average of the class accuracies.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true: numpy.ndarray {n_samples}</span>
+<span class="sd">        True class labels</span>
+<span class="sd">    y_pred: numpy.ndarray {n_samples}</span>
+<span class="sd">        Predicted class labels by the estimator</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fitness: float</span>
+<span class="sd">        Returns a float value indicating balanced accuracy</span>
+<span class="sd">        0.5 is as good as chance, and 1.0 is perfect predictive accuracy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)))</span>
+    <span class="n">all_class_accuracies</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">this_class</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">:</span>
+        <span class="n">this_class_sensitivity</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">this_class_specificity</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_true</span> <span class="o">==</span> <span class="n">this_class</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">this_class_sensitivity</span> <span class="o">=</span> \
+                <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">y_pred</span> <span class="o">==</span> <span class="n">this_class</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y_true</span> <span class="o">==</span> <span class="n">this_class</span><span class="p">)))</span> <span class="o">/</span>\
+                <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">y_true</span> <span class="o">==</span> <span class="n">this_class</span><span class="p">)))</span>
+
+            <span class="n">this_class_specificity</span> <span class="o">=</span> \
+                <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">y_pred</span> <span class="o">!=</span> <span class="n">this_class</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y_true</span> <span class="o">!=</span> <span class="n">this_class</span><span class="p">)))</span> <span class="o">/</span>\
+                <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">y_true</span> <span class="o">!=</span> <span class="n">this_class</span><span class="p">)))</span>
+
+        <span class="n">this_class_accuracy</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_class_sensitivity</span> <span class="o">+</span>
+                               <span class="n">this_class_specificity</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="n">all_class_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_class_accuracy</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_class_accuracies</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">pearsonr</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Scoring function: Calculates a Pearson correlation coefficient.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true: numpy.ndarray {n_samples}</span>
+<span class="sd">        True class labels</span>
+<span class="sd">    y_pred: numpy.ndarray {n_samples}</span>
+<span class="sd">        Predicted class labels by the estimator</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fitness: float</span>
+<span class="sd">        Returns a float value indicating Pearson correlation coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">pearsonr</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<span class="c1"># make new SCORERS</span>
+<span class="n">SCORERS</span><span class="p">[</span><span class="s1">&#39;balanced_accuracy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">balanced_accuracy</span><span class="p">)</span>
+<span class="n">SCORERS</span><span class="p">[</span><span class="s1">&#39;pearsonr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">pearsonr</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_column_names_from_ColumnTransformer</span><span class="p">(</span><span class="n">column_transformer</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get column names after applying Column Transformations</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    column_transformer: sklearn.compose._column_transformer.ColumnTransformer</span>
+<span class="sd">        A list of categorical, ordinal and remaining transformations</span>
+<span class="sd">    feature_names: list of strings</span>
+<span class="sd">        Original list of column/feature names</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    new_feature_names: list of strings</span>
+<span class="sd">        Feature names generated after column transformations</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    <span class="n">new_feature_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">transformer_in_columns</span> <span class="ow">in</span> <span class="n">column_transformer</span><span class="o">.</span><span class="n">transformers_</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">col_indices</span>  <span class="o">=</span> <span class="n">transformer_in_columns</span>
+        <span class="n">feature_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">col_indices</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span> <span class="c1">## Only works for OneHotEncoder transforms</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">(</span><span class="n">feature_columns</span><span class="p">)</span>
+            <span class="n">new_feature_names</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">new_feature_names</span> <span class="o">+=</span> <span class="n">feature_columns</span>
+    <span class="k">return</span> <span class="n">new_feature_names</span>
+
+
+<div class="viewcode-block" id="generate_results"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.generate_results">[docs]</a><span class="k">def</span> <span class="nf">generate_results</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span>
+                     <span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">,</span>
+                     <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">figure_export</span><span class="o">=</span><span class="n">figure_export</span><span class="p">,</span>
+                     <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                     <span class="n">filename</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;test_dataset&#39;</span><span class="p">],</span>
+                     <span class="n">categories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">ordinals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">encoding_strategy</span><span class="o">=</span><span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">,</span>
+                     <span class="n">param_grid</span><span class="o">=</span><span class="p">{}</span>
+                     <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate reaults for applying a model on dataset in PennAI.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model: scikit-learn Estimator</span>
+<span class="sd">        A machine learning model following scikit-learn API</span>
+<span class="sd">    input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
+<span class="sd">        pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.</span>
+<span class="sd">        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,</span>
+<span class="sd">        while the 2nd one is testing dataset</span>
+<span class="sd">    target_name: string</span>
+<span class="sd">        Target name in input data</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment id</span>
+<span class="sd">    mode:  string</span>
+<span class="sd">        &#39;classification&#39;: Run classification analysis</span>
+<span class="sd">        &#39;regression&#39;: Run regression analysis</span>
+<span class="sd">    figure_export: boolean</span>
+<span class="sd">        If figure_export is True, the figures will be generated and exported.</span>
+<span class="sd">    random_state: int</span>
+<span class="sd">        Random seed</span>
+<span class="sd">    filename: list</span>
+<span class="sd">        Filename for input dataset</span>
+<span class="sd">    categories: list</span>
+<span class="sd">        List of column names for one-hot encoding</span>
+<span class="sd">    ordinals: dict</span>
+<span class="sd">        Dictionary of ordinal features:</span>
+<span class="sd">            Keys of dictionary: categorical feature name(s)</span>
+<span class="sd">            Values of dictionary: categorical values</span>
+<span class="sd">    encoding_strategy: string</span>
+<span class="sd">        Encoding strategy for categorical features defined in projects.json</span>
+<span class="sd">    param_grid: dict</span>
+<span class="sd">        If grid_search is non-empty dictionary, then the experiment will</span>
+<span class="sd">        do parameter tuning via GridSearchCV. It should report best result to UI</span>
+<span class="sd">        and save all results to knowlegde base.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading..&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">training_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">testing_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">training_data</span><span class="p">,</span> <span class="n">testing_data</span><span class="p">])</span>
+        <span class="n">train_rows</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">total_rows</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">train_rows</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span>
+                    <span class="n">train_rows</span><span class="p">,</span> <span class="n">total_rows</span><span class="p">))]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">feature_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">target_name</span><span class="p">])</span>
+    <span class="n">num_classes</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="n">features</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">check_X_y</span><span class="p">(</span>
+        <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">force_all_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># fix random_state</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">setup_model_params</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;random_state&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+    <span class="c1"># set class_weight</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">setup_model_params</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;class_weight&#39;</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">)</span>
+
+    <span class="c1"># use OneHotEncoder or OrdinalEncoder to convert categorical features</span>
+    <span class="k">if</span> <span class="n">categories</span> <span class="ow">or</span> <span class="n">ordinals</span><span class="p">:</span>
+        <span class="n">transform_cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">feature_names_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">categories</span><span class="p">:</span>
+            <span class="n">col_idx</span> <span class="o">=</span> <span class="n">get_col_idx</span><span class="p">(</span><span class="n">feature_names_list</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">encoding_strategy</span> <span class="o">==</span> <span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">:</span>
+                <span class="n">transform_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;categorical_encoder&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span>
+                        <span class="n">handle_unknown</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">),</span> <span class="n">col_idx</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">encoding_strategy</span> <span class="o">==</span> <span class="s2">&quot;OrdinalEncoder&quot;</span><span class="p">:</span>
+                <span class="n">ordinal_map</span> <span class="o">=</span> <span class="n">OrdinalEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                    <span class="n">features</span><span class="p">[:,</span> <span class="n">col_idx</span><span class="p">])</span><span class="o">.</span><span class="n">categories_</span>
+                <span class="n">transform_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;categorical_encoder&quot;</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">(</span>
+                        <span class="n">categories</span><span class="o">=</span><span class="n">ordinal_map</span><span class="p">),</span> <span class="n">col_idx</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ordinals</span><span class="p">:</span>
+            <span class="n">ordinal_features</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ordinals</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">col_idx</span> <span class="o">=</span> <span class="n">get_col_idx</span><span class="p">(</span><span class="n">feature_names_list</span><span class="p">,</span> <span class="n">ordinal_features</span><span class="p">)</span>
+            <span class="n">ordinal_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">ordinals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ordinal_features</span><span class="p">]</span>
+            <span class="n">transform_cols</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;ordinalencoder&quot;</span><span class="p">,</span>
+                                   <span class="n">OrdinalEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">ordinal_map</span><span class="p">),</span>
+                                   <span class="n">col_idx</span><span class="p">))</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span>
+            <span class="n">transformers</span><span class="o">=</span><span class="n">transform_cols</span><span class="p">,</span>
+            <span class="n">remainder</span><span class="o">=</span><span class="s1">&#39;passthrough&#39;</span><span class="p">,</span>
+            <span class="n">sparse_threshold</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#print(&#39;Args used in model:&#39;, model.get_params())</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">num_classes</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">scoring</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;precision_macro&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;recall_macro&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;f1_macro&quot;</span><span class="p">]</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;roc_auc_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;not supported for multiclass&#39;</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_roc_auc_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;not supported for multiclass&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scoring</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;recall&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;f1&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;roc_auc&quot;</span><span class="p">]</span>
+
+        <span class="n">metric</span> <span class="o">=</span> <span class="s2">&quot;accuracy&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">scoring</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;neg_mean_absolute_error&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;explained_variance&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;pearsonr&quot;</span><span class="p">]</span>
+        <span class="n">metric</span> <span class="o">=</span> <span class="s1">&#39;r2&#39;</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">param_grid</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">):</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">param_grid</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">step_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">pipe_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">__</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step_name</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="n">pipe_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="n">param_grid</span>
+            <span class="n">clf</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                               <span class="n">param_grid</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                               <span class="n">scoring</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                               <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                               <span class="n">refit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">error_score</span><span class="o">=-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span>
+                               <span class="n">return_train_score</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="n">cv_results</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">cv_results_</span>
+            <span class="c1"># rename params name from pipeline object</span>
+            <span class="n">fmt_result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">cv_results</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">],</span> <span class="n">cv_results</span><span class="p">[</span><span class="s1">&#39;mean_train_score&#39;</span><span class="p">]):</span>
+                <span class="n">row_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mean_train_score&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">row_dict</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="n">fmt_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_dict</span><span class="p">)</span>
+            <span class="n">fmt_result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fmt_result</span><span class="p">)</span>
+            <span class="n">fmt_result_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1">/grid_search_results_</span><span class="si">{1}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+            <span class="n">fmt_result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fmt_result_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">best_estimator_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="c1"># computing cross-validated metrics</span>
+        <span class="n">cv_scores</span> <span class="o">=</span> <span class="n">cross_validate</span><span class="p">(</span>
+            <span class="n">estimator</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+            <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span>
+            <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+            <span class="n">return_train_score</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_estimator</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scoring</span><span class="p">:</span>
+        <span class="n">train_scores</span> <span class="o">=</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;train_&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span>
+        <span class="n">test_scores</span> <span class="o">=</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;test_&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span>
+
+        <span class="c1"># remove _macro</span>
+        <span class="n">score_name</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_macro&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># make balanced_accuracy as default score</span>
+        <span class="k">if</span> <span class="n">score_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">]:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="c1"># for api will fix later</span>
+
+        <span class="k">if</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="c1"># for experiment tables</span>
+        <span class="k">if</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;balanced_accuracy&quot;</span> <span class="ow">or</span> <span class="n">score_name</span> <span class="o">==</span> <span class="s2">&quot;r2&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;exp_table_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">score_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">,</span> <span class="s2">&quot;neg_mean_absolute_error&quot;</span><span class="p">]:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span>
+                <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;train_</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_score&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># dump fitted module as pickle file</span>
+    <span class="n">export_model</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">target_name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+
+    <span class="c1"># get predicted classes</span>
+    <span class="n">predicted_classes</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+
+    <span class="c1"># exporting/computing importance score</span>
+    <span class="n">coefs</span><span class="p">,</span> <span class="n">imp_score_type</span> <span class="o">=</span> <span class="n">compute_imp_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span>
+                                              <span class="n">features</span><span class="p">,</span>
+                                              <span class="n">target</span><span class="p">,</span>
+                                              <span class="n">random_state</span><span class="p">)</span>
+
+    <span class="n">feature_importances</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;feature_names&#39;</span><span class="p">:</span> <span class="n">feature_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;feature_importances&#39;</span><span class="p">:</span> <span class="n">coefs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;feature_importance_type&#39;</span><span class="p">:</span> <span class="n">imp_score_type</span>
+    <span class="p">}</span>
+
+    <span class="n">save_json_fmt</span><span class="p">(</span>
+        <span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span>
+        <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+        <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;feature_importances.json&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">feature_importances</span><span class="p">)</span>
+    <span class="n">dtree_train_score</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
+        <span class="n">top_features_names</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">plot_imp_score</span><span class="p">(</span>
+            <span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">imp_score_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">categories</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ordinals</span><span class="p">:</span>
+            <span class="n">dtree_train_score</span> <span class="o">=</span> <span class="n">plot_dot_plot</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span>
+                                              <span class="n">target</span><span class="p">,</span>
+                                              <span class="n">top_features_names</span><span class="p">,</span>
+                                              <span class="n">indices</span><span class="p">,</span>
+                                              <span class="n">random_state</span><span class="p">,</span>
+                                              <span class="n">mode</span><span class="p">)</span>
+
+    <span class="c1"># save metrics</span>
+    <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;dtree_train_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtree_train_score</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;classification&#39;</span><span class="p">:</span>
+        <span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>
+                              <span class="n">_id</span><span class="p">,</span>
+                              <span class="n">features</span><span class="p">,</span>
+                              <span class="n">target</span><span class="p">,</span>
+                              <span class="n">model</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+                              <span class="n">cv_scores</span><span class="p">,</span>
+                              <span class="n">figure_export</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Pipeline&#39;</span><span class="p">:</span>
+            <span class="n">step_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">steps</span><span class="p">]</span>
+            <span class="n">column_transformer</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="n">step_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">classifier_model</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="n">step_names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">modified_feature_names</span> <span class="o">=</span> <span class="n">get_column_names_from_ColumnTransformer</span><span class="p">(</span><span class="n">column_transformer</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">)</span>
+            <span class="n">modified_features</span> <span class="o">=</span> <span class="n">column_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="n">plot_shap_analysis_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>
+                                    <span class="n">_id</span><span class="p">,</span>
+                                    <span class="n">classifier_model</span><span class="p">,</span>
+                                    <span class="n">modified_features</span><span class="p">,</span>
+                                    <span class="n">modified_feature_names</span><span class="p">,</span>
+                                    <span class="n">classifier_model</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+                                    <span class="n">target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plot_shap_analysis_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>
+                                    <span class="n">_id</span><span class="p">,</span>
+                                    <span class="n">model</span><span class="p">,</span>
+                                    <span class="n">features</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="c1"># Send a copy of features as it may get modified</span>
+                                    <span class="n">feature_names</span><span class="p">,</span>
+                                    <span class="n">model</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+                                    <span class="n">target</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">num_classes</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">plot_roc_curve</span><span class="p">(</span>
+                <span class="n">tmpdir</span><span class="p">,</span>
+                <span class="n">_id</span><span class="p">,</span>
+                <span class="n">features</span><span class="p">,</span>
+                <span class="n">target</span><span class="p">,</span>
+                <span class="n">cv_scores</span><span class="p">,</span>
+                <span class="n">figure_export</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># regression</span>
+        <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
+            <span class="n">plot_cv_pred</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">)</span>
+
+    <span class="n">metrics_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_scores&#39;</span><span class="p">:</span> <span class="n">scores</span><span class="p">}</span>
+
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;value.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">metrics_dict</span><span class="p">)</span>
+
+    <span class="n">prediction_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prediction_values&#39;</span><span class="p">:</span> <span class="n">predicted_classes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()}</span>
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;prediction_values.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">prediction_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_col_idx"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.get_col_idx">[docs]</a><span class="k">def</span> <span class="nf">get_col_idx</span><span class="p">(</span><span class="n">feature_names_list</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get unique indexes of columns based on list of column names.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    feature_names_list: list</span>
+<span class="sd">        List of column names on dataset</span>
+<span class="sd">    columns: list</span>
+<span class="sd">        List of selected column names</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    col_idx: list</span>
+<span class="sd">        list of selected column indexes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">feature_names_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="setup_model_params"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.setup_model_params">[docs]</a><span class="k">def</span> <span class="nf">setup_model_params</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assign value to a parameter in a model.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model: scikit-learn Estimator</span>
+<span class="sd">        Machine learning model following scikit-learn API</span>
+<span class="sd">    parameter_name: string</span>
+<span class="sd">        Parameter name in the scikit-learn model</span>
+<span class="sd">    value: object</span>
+<span class="sd">        Values for assigning to the parameter</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    model: scikit-learn Estimator</span>
+<span class="sd">        A new scikit-learn model with a updated parameter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># fix random_state</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="compute_imp_score"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.compute_imp_score">[docs]</a><span class="k">def</span> <span class="nf">compute_imp_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">random_state</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute permuation importance scores for features.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    model:  scikit-learn Estimator</span>
+<span class="sd">        A fitted scikit-learn model</span>
+<span class="sd">    metric: str, callable</span>
+<span class="sd">        The metric for evaluating the feature importance through</span>
+<span class="sd">        permutation. By default, the strings &#39;accuracy&#39; is</span>
+<span class="sd">        recommended for classifiers and the string &#39;r2&#39; is</span>
+<span class="sd">        recommended for regressors. Optionally, a custom</span>
+<span class="sd">        scoring function (e.g., `metric=scoring_func`) that</span>
+<span class="sd">        accepts two arguments, y_true and y_pred, which have</span>
+<span class="sd">        similar shape to the `y` array.</span>
+<span class="sd">    features: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    target: np.darray/pd.DataFrame</span>
+<span class="sd">        Target in training dataset</span>
+<span class="sd">    random_state: int</span>
+<span class="sd">        Random seed for permuation importances</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coefs: np.darray</span>
+<span class="sd">        Feature importance scores</span>
+<span class="sd">    imp_score_type: string</span>
+<span class="sd">        Importance score type</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">coefs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">feature_importance_permutation</span><span class="p">(</span>
+        <span class="n">predict_method</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">,</span>
+        <span class="n">X</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">num_rounds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">imp_score_type</span> <span class="o">=</span> <span class="s2">&quot;Permutation Feature Importance&quot;</span>
+
+    <span class="k">return</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">imp_score_type</span></div>
+
+
+<div class="viewcode-block" id="save_json_fmt"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.save_json_fmt">[docs]</a><span class="k">def</span> <span class="nf">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save results into json format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    outdir: string</span>
+<span class="sd">        Path of output directory</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    fname: string</span>
+<span class="sd">        File name</span>
+<span class="sd">    content: list or directory</span>
+<span class="sd">        Content for results</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">expdir</span> <span class="o">=</span> <span class="n">outdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expdir</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_confusion_matrix"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_confusion_matrix">[docs]</a><span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span>
+        <span class="n">tmpdir</span><span class="p">,</span>
+        <span class="n">_id</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">class_names</span><span class="p">,</span>
+        <span class="n">cv_scores</span><span class="p">,</span>
+        <span class="n">figure_export</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make plot for confusion matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    X: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    y: np.darray/pd.DataFrame</span>
+<span class="sd">        Target in training dataset</span>
+<span class="sd">    class_names: list</span>
+<span class="sd">        List of class names</span>
+<span class="sd">    cv_scores: dictionary</span>
+<span class="sd">        Return from sklearn.model_selection.cross_validate</span>
+<span class="sd">    figure_export: boolean</span>
+<span class="sd">        If true, then export roc curve plot</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pred_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cv_split</span><span class="p">,</span> <span class="n">est</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]):</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">cv_split</span>
+        <span class="n">pred_y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
+    <span class="n">cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">pred_y</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_names</span><span class="p">)</span>
+    <span class="n">cnf_matrix_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;cnf_matrix&#39;</span><span class="p">:</span> <span class="n">cnf_matrix</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;class_names&#39;</span><span class="p">:</span> <span class="n">class_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;cnf_matrix.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">cnf_matrix_dict</span><span class="p">)</span>
+
+    <span class="c1"># export plot</span>
+    <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">cnf_matrix</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">class_names</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Confusion Matrix&#39;</span><span class="p">)</span>
+        <span class="n">tick_marks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
+
+        <span class="n">thresh</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                     <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                     <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span> <span class="k">if</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span> <span class="k">else</span> <span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True label&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted label&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/confusion_matrix_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_example_subset</span><span class="p">(</span><span class="n">y_predictions</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">select_class</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a subset of positive and negative example indices for a given class</span>
+<span class="sd">    along with misclassified labels.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_predictions: List</span>
+<span class="sd">        Denotes model predictions for the test set</span>
+<span class="sd">    y_true: List</span>
+<span class="sd">        Denotes true labels for the test set</span>
+<span class="sd">    select_class: Integer</span>
+<span class="sd">        The class ID of the positive class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y_predictions</span><span class="p">)</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pos</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">y_true</span> <span class="o">==</span> <span class="n">select_class</span><span class="p">]</span>
+    <span class="n">y_neg</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">y_true</span> <span class="o">!=</span> <span class="n">select_class</span><span class="p">]</span>
+    <span class="n">num_positive</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_pos</span><span class="p">))</span>
+    <span class="n">num_negative</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_neg</span><span class="p">))</span>
+
+    <span class="n">examples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_positive</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_pos</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">num_positive</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">num_negative</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_neg</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">num_negative</span><span class="p">))</span>
+    <span class="n">y_predictions_subset</span> <span class="o">=</span> <span class="n">y_predictions</span><span class="p">[</span><span class="n">examples</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">y_true_subset</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">examples</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">misclassified</span> <span class="o">=</span> <span class="n">y_predictions_subset</span> <span class="o">!=</span> <span class="n">y_true_subset</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">examples</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="n">misclassified</span>
+
+
+<span class="k">def</span> <span class="nf">plot_shap_analysis_curve</span><span class="p">(</span>
+        <span class="n">tmpdir</span><span class="p">,</span>
+        <span class="n">_id</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">features</span><span class="p">,</span>
+        <span class="n">feature_names</span><span class="p">,</span>
+        <span class="n">class_names</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate SHAP Analysis for Classification models</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    model: scikit-learn estimator</span>
+<span class="sd">        A fitted scikit-learn model</span>
+<span class="sd">    features: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    feature_names: np.array</span>
+<span class="sd">        List of feature names</span>
+<span class="sd">    class_names: list</span>
+<span class="sd">        List of class names</span>
+<span class="sd">    target: np.darray</span>
+<span class="sd">        Target in test dataset</span>
+<span class="sd">    n_features: int</span>
+<span class="sd">        Maximum count of features to use for the plots</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure that images are saved properly</span>
+    <span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.autolayout&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="c1"># SHAP value calculation raises error if dtype is non-numeric</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="c1"># Determine model name for sklearn-based models</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># convert target to Pandas Series type if not already</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+    
+    <span class="c1"># Sample 100 examples for Tree Explainer / Linear Explainer</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;decisiontreeclassifier&#39;</span><span class="p">,</span><span class="s1">&#39;randomforestclassifier&#39;</span><span class="p">,</span><span class="s1">&#39;logisticregression&#39;</span><span class="p">,</span><span class="s1">&#39;linearsvc&#39;</span><span class="p">]:</span>
+        <span class="n">max_num_samples</span> <span class="o">=</span> <span class="n">max_samples_other_explainer</span>
+    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;gradientboostingclassifier&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">max_num_samples</span> <span class="o">=</span> <span class="n">max_samples_other_explainer</span>
+    <span class="c1"># Sample 50 examples for Kernel Explainer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">max_num_samples</span> <span class="o">=</span> <span class="n">max_samples_kernel_explainer</span>
+    <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_num_samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
+    <span class="n">sampled_row_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">sampled_row_indices</span><span class="p">]</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">y_test</span><span class="p">[</span><span class="n">sampled_row_indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Select explainer and set shap values</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;decisiontreeclassifier&#39;</span><span class="p">,</span> <span class="s1">&#39;randomforestclassifier&#39;</span><span class="p">]:</span>
+        <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
+
+    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;gradientboostingclassifier&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Gradient Boosting Tree Explainer is only supported for Binary Classification</span>
+        <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
+
+    <span class="k">elif</span> <span class="s1">&#39;linear&#39;</span> <span class="ow">in</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="s1">&#39;logistic&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="p">:</span>
+        <span class="c1"># Supports Logistic Regression, LinearSVC</span>
+        <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">LinearExplainer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
+
+    <span class="k">elif</span> <span class="s1">&#39;svc&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="p">:</span>
+        <span class="c1"># Handle special case for SVC (probability=False)</span>
+        <span class="k">return</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># KernelExplainer</span>
+        <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">KernelExplainer</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+        <span class="c1"># l1_reg not set to &#39;auto&#39; to subside warnings</span>
+        <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shap_values</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">l1_reg</span><span class="o">=</span><span class="s1">&#39;num_features(10)&#39;</span><span class="p">)</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">expected_value</span>
+
+    <span class="c1"># Generate predictions for the final features</span>
+    <span class="n">y_predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
+    <span class="c1"># Determine link for decision plot</span>
+    <span class="k">if</span> <span class="s1">&#39;linear&#39;</span> <span class="ow">in</span> <span class="n">model_name</span> <span class="ow">or</span> <span class="s1">&#39;logistic&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="p">:</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="s1">&#39;logit&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="s1">&#39;identity&#39;</span>
+
+    <span class="c1"># Handle the case of multi-class SHAP outputs</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">class_names</span><span class="p">):</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/shap_summary_curve&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_.png&#39;</span>
+            <span class="n">examples_subset_index</span><span class="p">,</span> <span class="n">misclassified</span> <span class="o">=</span> <span class="n">get_example_subset</span><span class="p">(</span><span class="n">y_predictions</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">combine_summary_decision_curve</span><span class="p">(</span>
+                <span class="n">shap_values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">expected_values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">features</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span>
+                <span class="n">n_features</span><span class="p">,</span> <span class="n">examples_subset_index</span><span class="p">,</span> <span class="n">misclassified</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">save_path</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">save_path</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/shap_summary_curve&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;_0_.png&#39;</span>
+        <span class="n">examples_subset_index</span><span class="p">,</span> <span class="n">misclassified</span> <span class="o">=</span> <span class="n">get_example_subset</span><span class="p">(</span><span class="n">y_predictions</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">class_names</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">combine_summary_decision_curve</span><span class="p">(</span>
+            <span class="n">shap_values</span><span class="p">,</span> <span class="n">expected_values</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span>
+            <span class="n">n_features</span><span class="p">,</span> <span class="n">examples_subset_index</span><span class="p">,</span> <span class="n">misclassified</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">save_path</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Summary stats</span>
+    <span class="n">shap_summary_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;shap_explainer&#39;</span><span class="p">:</span> <span class="n">explainer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="s1">&#39;shap_num_samples&#39;</span><span class="p">:</span> <span class="n">num_samples</span><span class="p">,</span>
+        <span class="c1">#&#39;shap_values&#39;: shap_values</span>
+    <span class="p">}</span>
+
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;shap_summary.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">shap_summary_dict</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">combine_summary_decision_curve</span><span class="p">(</span>
+        <span class="n">shap_value</span><span class="p">,</span>
+        <span class="n">expected_value</span><span class="p">,</span>
+        <span class="n">features</span><span class="p">,</span>
+        <span class="n">feature_names</span><span class="p">,</span>
+        <span class="n">n_features</span><span class="p">,</span>
+        <span class="n">examples_subset_index</span><span class="p">,</span>
+        <span class="n">misclassified</span><span class="p">,</span>
+        <span class="n">link</span><span class="p">,</span>
+        <span class="n">save_path</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a combined SHAP Summary and Decision Plot</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shap_value: np.ndarray</span>
+<span class="sd">        SHAP value for a particular output class</span>
+<span class="sd">    expected_value: float</span>
+<span class="sd">        Average of the classifier/model output over training dataset</span>
+<span class="sd">    features: np.ndarray</span>
+<span class="sd">        Features in testing dataset</span>
+<span class="sd">    feature_names: np.array</span>
+<span class="sd">        List of feature names</span>
+<span class="sd">    n_features: int</span>
+<span class="sd">        Maximum count of features to use for the plots</span>
+<span class="sd">    examples_subset_index: list of indices</span>
+<span class="sd">        Samples to select for the decision plot</span>
+<span class="sd">    misclassified: list of Boolean values</span>
+<span class="sd">        Denotes which selected samples are misclassified (set to true)</span>
+<span class="sd">    link: string</span>
+<span class="sd">       Link type to be used for the decision plot</span>
+<span class="sd">    save_path: string</span>
+<span class="sd">        File path where the plot will be saved</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="c1"># Generate Summary plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">ax1</span><span class="p">)</span>
+    <span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_value</span><span class="p">,</span>
+                      <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+                      <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,</span>
+                      <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">max_display</span><span class="o">=</span><span class="n">n_features</span><span class="p">)</span>
+    <span class="c1"># Generate Decision plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">ax2</span><span class="p">)</span>
+    <span class="n">feature_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">shap_value</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">shap</span><span class="o">.</span><span class="n">decision_plot</span><span class="p">(</span><span class="n">expected_value</span><span class="p">,</span>
+                       <span class="n">shap_value</span><span class="p">[</span><span class="n">examples_subset_index</span><span class="p">],</span>
+                       <span class="n">features</span><span class="p">[</span><span class="n">examples_subset_index</span><span class="p">,</span> <span class="p">:],</span>
+                       <span class="n">feature_names</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">feature_names</span><span class="p">),</span>
+                       <span class="n">feature_display_range</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">n_features</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                       <span class="n">ignore_warnings</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">highlight</span><span class="o">=</span><span class="n">misclassified</span><span class="p">,</span>
+                       <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">plot_color</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+                       <span class="n">feature_order</span><span class="o">=</span><span class="n">feature_order</span><span class="p">,</span>
+                       <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_features</span><span class="p">],</span> <span class="s1">&#39;:k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="c1"># After switching to dynamic charts, possibly disable outputting graphs</span>
+<span class="c1"># from this function</span>
+<div class="viewcode-block" id="plot_roc_curve"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_roc_curve">[docs]</a><span class="k">def</span> <span class="nf">plot_roc_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">,</span> <span class="n">figure_export</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot ROC Curve.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    X: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    y: np.darray/pd.DataFrame</span>
+<span class="sd">        Target in training dataset</span>
+<span class="sd">    cv_scores: dictionary</span>
+<span class="sd">        Return from sklearn.model_selection.cross_validate</span>
+<span class="sd">    figure_export: boolean</span>
+<span class="sd">        If true, then export roc curve plot</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interp</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">sem</span><span class="p">,</span> <span class="n">t</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">tprs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">aucs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mean_fpr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># print(cv_scores[&#39;train_roc_auc&#39;])</span>
+    <span class="k">for</span> <span class="n">cv_split</span><span class="p">,</span> <span class="n">est</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]):</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">cv_split</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">probas_</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">])[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">probas_</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">decision_function</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
+        <span class="c1">#print(SCORERS[&#39;roc_auc&#39;](est, X[train], y[train]))</span>
+        <span class="c1"># Compute ROC curve and area the curve</span>
+
+        <span class="n">classes_encoded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span>
+        <span class="p">)</span>
+        <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">classes_encoded</span><span class="p">,</span> <span class="n">probas_</span><span class="p">)</span>
+        <span class="n">tprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interp</span><span class="p">(</span><span class="n">mean_fpr</span><span class="p">,</span> <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">))</span>
+        <span class="n">tprs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">)</span>
+        <span class="n">aucs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">roc_auc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+    <span class="n">mean_tpr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">tprs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">mean_tpr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">mean_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">mean_fpr</span><span class="p">,</span> <span class="n">mean_tpr</span><span class="p">)</span>
+    <span class="n">std_auc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">aucs</span><span class="p">)</span>
+    <span class="n">std_err</span> <span class="o">=</span> <span class="n">sem</span><span class="p">(</span><span class="n">tprs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">std_err</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.95</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mean_tpr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">tprs_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">mean_tpr</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">tprs_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">mean_tpr</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Chance&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">mean_fpr</span><span class="p">,</span>
+            <span class="n">mean_tpr</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Mean ROC (AUC = </span><span class="si">%0.2f</span><span class="s1"> $\pm$ </span><span class="si">%0.2f</span><span class="s1">)&#39;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="n">mean_auc</span><span class="p">,</span>
+             <span class="n">std_auc</span><span class="p">),</span>
+            <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+            <span class="n">mean_fpr</span><span class="p">,</span>
+            <span class="n">tprs_lower</span><span class="p">,</span>
+            <span class="n">tprs_upper</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;95% Confidence Interval&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;False Positive Rate&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True Positive Rate&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;ROC curve&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/roc_curve_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">roc_curve_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;fpr&#39;</span><span class="p">:</span> <span class="n">mean_fpr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;tpr&#39;</span><span class="p">:</span> <span class="n">mean_tpr</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s1">&#39;roc_auc_score&#39;</span><span class="p">:</span> <span class="n">mean_auc</span>
+    <span class="p">}</span>
+    <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
+                  <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;roc_curve.json&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">roc_curve_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_imp_score"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_imp_score">[docs]</a><span class="k">def</span> <span class="nf">plot_imp_score</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">imp_score_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot importance scores for features.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    coefs: array</span>
+<span class="sd">        Feature importance scores</span>
+<span class="sd">    feature_names: np.array</span>
+<span class="sd">        List of feature names</span>
+<span class="sd">    imp_score_type: string</span>
+<span class="sd">        Importance score type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    top_features: list</span>
+<span class="sd">        Top features with high importance score</span>
+<span class="sd">    indices: ndarray</span>
+<span class="sd">        Array of indices of top important features</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># plot bar charts for top important features</span>
+    <span class="n">num_bar</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_bar_num</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">coefs</span><span class="p">))</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">coefs</span><span class="p">)[</span><span class="o">-</span><span class="n">num_bar</span><span class="p">:]</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">imp_score_type</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_bar</span><span class="p">),</span> <span class="n">coefs</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+    <span class="n">top_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">feature_names</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_bar</span><span class="p">),</span> <span class="n">feature_names</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bar</span><span class="p">])</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/imp_score_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">top_features</span><span class="p">,</span> <span class="n">indices</span></div>
+
+
+<div class="viewcode-block" id="plot_dot_plot"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_dot_plot">[docs]</a><span class="k">def</span> <span class="nf">plot_dot_plot</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span>
+                  <span class="n">target</span><span class="p">,</span>
+                  <span class="n">top_features_name</span><span class="p">,</span>
+                  <span class="n">indices</span><span class="p">,</span>
+                  <span class="n">random_state</span><span class="p">,</span>
+                  <span class="n">mode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make dot plot for based on decision tree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    features: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    target: np.darray/pd.DataFrame</span>
+<span class="sd">        Target in training dataset</span>
+<span class="sd">    top_features: list</span>
+<span class="sd">        Top feature_names</span>
+<span class="sd">    indices: ndarray</span>
+<span class="sd">        Array of indices of top important features</span>
+<span class="sd">    random_state: int</span>
+<span class="sd">        Random seed for permuation importances</span>
+<span class="sd">    mode:  string</span>
+<span class="sd">        &#39;classification&#39;: Run classification analysis</span>
+<span class="sd">        &#39;regression&#39;: Run regression analysis</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dtree_train_score, float</span>
+<span class="sd">        Test score from fitting decision tree on top important feat&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># plot bar charts for top important features</span>
+    <span class="kn">import</span> <span class="nn">pydot</span>
+    <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">export_graphviz</span>
+
+    <span class="n">top_features</span> <span class="o">=</span> <span class="n">features</span><span class="p">[:,</span> <span class="n">indices</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;classification&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+        <span class="n">dtree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                       <span class="n">max_depth</span><span class="o">=</span><span class="n">DT_MAX_DEPTH</span><span class="p">)</span>
+        <span class="n">scoring</span> <span class="o">=</span> <span class="n">SCORERS</span><span class="p">[</span><span class="s1">&#39;balanced_accuracy&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeRegressor</span>
+        <span class="n">dtree</span> <span class="o">=</span> <span class="n">DecisionTreeRegressor</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                      <span class="n">max_depth</span><span class="o">=</span><span class="n">DT_MAX_DEPTH</span><span class="p">)</span>
+        <span class="n">scoring</span> <span class="o">=</span> <span class="n">SCORERS</span><span class="p">[</span><span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">]</span>
+
+    <span class="n">dtree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">top_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="n">dtree_train_score</span> <span class="o">=</span> <span class="n">scoring</span><span class="p">(</span>
+        <span class="n">dtree</span><span class="p">,</span> <span class="n">top_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="n">dot_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1">/dtree_</span><span class="si">{1}</span><span class="s1">.dot&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+    <span class="n">png_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1">/dtree_</span><span class="si">{1}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+    <span class="n">class_names</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;classification&#39;</span><span class="p">:</span>
+        <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dtree</span><span class="o">.</span><span class="n">classes_</span><span class="p">]</span>
+    <span class="n">export_graphviz</span><span class="p">(</span><span class="n">dtree</span><span class="p">,</span> <span class="n">out_file</span><span class="o">=</span><span class="n">dot_file</span><span class="p">,</span>
+                    <span class="n">feature_names</span><span class="o">=</span><span class="n">top_features_name</span><span class="p">,</span>
+                    <span class="n">class_names</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span>
+                    <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">special_characters</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">graph</span><span class="p">,)</span> <span class="o">=</span> <span class="n">pydot</span><span class="o">.</span><span class="n">graph_from_dot_file</span><span class="p">(</span><span class="n">dot_file</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">write_png</span><span class="p">(</span><span class="n">png_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtree_train_score</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_cv_pred</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot Cross-Validated Predictions and Residuals.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    X: np.darray/pd.DataFrame</span>
+<span class="sd">        Features in training dataset</span>
+<span class="sd">    y: np.darray/pd.DataFrame</span>
+<span class="sd">        Target in training dataset</span>
+<span class="sd">    cv_scores: dictionary</span>
+<span class="sd">        Return from sklearn.model_selection.cross_validate</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pred_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">resi_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cv_split</span><span class="p">,</span> <span class="n">est</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">cv_scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]):</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">cv_split</span>
+        <span class="n">pred_y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
+        <span class="n">resi_y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred_y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;10-Fold Cross-Validated Predictions&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pred_y</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Observed Values&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Predicted Values&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_pred_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;10-Fold Cross-Validated Residuals&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pred_y</span><span class="p">,</span> <span class="n">resi_y</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted Values&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Residuals&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+                  <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_resi_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    <span class="c1"># add q-q plot for normalized CV residuals</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">probplot</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">resi_y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">resi_y</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">resi_y</span><span class="p">)</span>
+    <span class="n">series1</span> <span class="o">=</span> <span class="n">probplot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="s2">&quot;norm&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Q-Q Plot for Normalized Residuals&quot;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">())</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+               <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Theoretical Quantiles&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Ordered Normalized Residuals&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_qq_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="export_model"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.export_model">[docs]</a><span class="k">def</span> <span class="nf">export_model</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>
+                 <span class="n">_id</span><span class="p">,</span>
+                 <span class="n">model</span><span class="p">,</span>
+                 <span class="n">filename</span><span class="p">,</span>
+                 <span class="n">target_name</span><span class="p">,</span>
+                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;export model as a pickle file and generate a scripts for using the pickled model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tmpdir: string</span>
+<span class="sd">        Temporary directory for saving experiment results</span>
+<span class="sd">    _id: string</span>
+<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">    model: scikit-learn estimator</span>
+<span class="sd">        A fitted scikit-learn model</span>
+<span class="sd">    filename: string</span>
+<span class="sd">        File name of input dataset</span>
+<span class="sd">    target_name: string</span>
+<span class="sd">        Target name in input data</span>
+<span class="sd">    mode:  string</span>
+<span class="sd">        &#39;classification&#39;: Run classification analysis</span>
+<span class="sd">        &#39;regression&#39;: Run regression analysis</span>
+<span class="sd">    random_state: int</span>
+<span class="sd">        Random seed in model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pickle_file_name</span> <span class="o">=</span> <span class="s1">&#39;model_</span><span class="si">{}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+    <span class="n">pickle_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1">/model_</span><span class="si">{1}</span><span class="s1">.pkl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+
+    <span class="n">pickle_model</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pickle_model</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">pickle_model</span><span class="p">[</span><span class="s1">&#39;data_filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pickle_model</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">)</span>
+    <span class="n">pipeline_text1</span><span class="p">,</span> <span class="n">pipeline_text2</span> <span class="o">=</span> <span class="n">generate_export_codes</span><span class="p">(</span>
+        <span class="n">pickle_file_name</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">target_name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+    <span class="n">export_scripts</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">/scripts_reproduce_</span><span class="si">{1}</span><span class="s2">.py&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">export_scripts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pipeline_text1</span><span class="p">)</span>
+    <span class="n">export_scripts</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">export_scripts</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">/scripts_application_</span><span class="si">{1}</span><span class="s2">.py&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">export_scripts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pipeline_text2</span><span class="p">)</span>
+    <span class="n">export_scripts</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="generate_export_codes"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.generate_export_codes">[docs]</a><span class="k">def</span> <span class="nf">generate_export_codes</span><span class="p">(</span>
+        <span class="n">pickle_file_name</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate all library import calls for use in stand alone python scripts.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pickle_file_name: string</span>
+<span class="sd">        Pickle file name for a fitted scikit-learn estimator</span>
+<span class="sd">    model: scikit-learn estimator</span>
+<span class="sd">        A fitted scikit-learn model</span>
+<span class="sd">    filename: string</span>
+<span class="sd">        File name of input dataset</span>
+<span class="sd">    target_name: string</span>
+<span class="sd">        Target name in input data</span>
+<span class="sd">    mode:  string</span>
+<span class="sd">        &#39;classification&#39;: Run classification analysis</span>
+<span class="sd">        &#39;regression&#39;: Run regression analysis</span>
+<span class="sd">    random_state: int</span>
+<span class="sd">        Random seed in model</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pipeline_text: String</span>
+<span class="sd">       The Python scripts for applying the current</span>
+<span class="sd">       optimized pipeline in stand-alone python environment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;classification&#39;</span><span class="p">:</span>
+        <span class="n">fold</span> <span class="o">=</span> <span class="s2">&quot;StratifiedKFold&quot;</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;regression&#39;</span><span class="p">:</span>
+        <span class="n">fold</span> <span class="o">=</span> <span class="s2">&quot;KFold&quot;</span>
+    <span class="n">exported_codes_1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;# Python version: </span><span class="si">{python_version}</span><span class="s2"></span>
+<span class="s2"># Results were generated with numpy v</span><span class="si">{numpy_version}</span><span class="s2">,</span>
+<span class="s2"># pandas v</span><span class="si">{pandas_version}</span><span class="s2"> and scikit-learn v</span><span class="si">{skl_version}</span><span class="s2">.</span>
+<span class="s2"># random seed = </span><span class="si">{random_state}</span><span class="s2"></span>
+<span class="s2"># Training dataset filename = </span><span class="si">{dataset}</span><span class="s2"></span>
+<span class="s2"># Pickle filename = </span><span class="si">{pickle_file_name}</span><span class="s2"></span>
+<span class="s2"># Model in the pickle file: </span><span class="si">{model}</span><span class="s2"></span>
+<span class="s2">import numpy as np</span>
+<span class="s2">import pandas as pd</span>
+<span class="s2">import joblib</span>
+<span class="s2">from sklearn.utils import check_X_y</span>
+<span class="s2">from sklearn.metrics import make_scorer, confusion_matrix</span>
+<span class="s2">from sklearn.model_selection import cross_validate, </span><span class="si">{fold}</span><span class="s2"></span>
+
+<span class="s2"># NOTE: Edit variables below with appropriate values</span>
+<span class="s2"># path to your pickle file, below is the downloaded pickle file</span>
+<span class="s2">pickle_file = &#39;</span><span class="si">{pickle_file_name}</span><span class="s2">&#39;</span>
+<span class="s2"># file path to the dataset</span>
+<span class="s2">dataset = &#39;</span><span class="si">{dataset}</span><span class="s2">&#39;</span>
+<span class="s2"># target column name</span>
+<span class="s2">target_column = &#39;</span><span class="si">{target_name}</span><span class="s2">&#39;</span>
+<span class="s2">seed = </span><span class="si">{random_state}</span><span class="s2"></span>
+
+<span class="s2"># load fitted model</span>
+<span class="s2">pickle_model = joblib.load(pickle_file)</span>
+<span class="s2">model = pickle_model[&#39;model&#39;]</span>
+
+<span class="s2"># read input data</span>
+<span class="s2">input_data = pd.read_csv(dataset, sep=None, engine=&#39;python&#39;)</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">python_version</span><span class="o">=</span><span class="n">version</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="n">numpy_version</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="n">pandas_version</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="n">skl_version</span><span class="o">=</span><span class="n">skl_version</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
+        <span class="n">pickle_file_name</span><span class="o">=</span><span class="n">pickle_file_name</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">#&#39;</span><span class="p">),</span>
+        <span class="n">fold</span><span class="o">=</span><span class="n">fold</span>
+    <span class="p">)</span>
+    <span class="n">exported_codes_2</span> <span class="o">=</span> <span class="n">exported_codes_1</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+        <span class="n">exported_codes_1</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># Balanced accuracy below was described in [Urbanowicz2015]:</span>
+<span class="s2"># the average of sensitivity and specificity is computed for each class</span>
+<span class="s2"># and then averaged over total number of classes.</span>
+<span class="s2"># It is NOT the same as sklearn.metrics.balanced_accuracy_score,</span>
+<span class="s2"># which is defined as the average of recall obtained on each class.</span>
+<span class="s2">def balanced_accuracy(y_true, y_pred):</span>
+<span class="s2">    all_classes = list(set(np.append(y_true, y_pred)))</span>
+<span class="s2">    all_class_accuracies = []</span>
+<span class="s2">    for this_class in all_classes:</span>
+<span class="s2">        this_class_sensitivity = 0.</span>
+<span class="s2">        this_class_specificity = 0.</span>
+<span class="s2">        if sum(y_true == this_class) != 0:</span>
+<span class="s2">            this_class_sensitivity = </span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">                float(sum((y_pred == this_class) &amp; (y_true == this_class))) /</span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">                float(sum((y_true == this_class)))</span>
+<span class="s2">            this_class_specificity = </span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">                float(sum((y_pred != this_class) &amp; (y_true != this_class))) /</span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">                float(sum((y_true != this_class)))</span>
+<span class="s2">        this_class_accuracy = (this_class_sensitivity +</span>
+<span class="s2">                               this_class_specificity) / 2.</span>
+<span class="s2">        all_class_accuracies.append(this_class_accuracy)</span>
+<span class="s2">    return np.mean(all_class_accuracies)</span>
+
+<span class="s2"># reproducing training score and testing score from PennAI</span>
+<span class="s2">features = input_data.drop(target_column, axis=1).values</span>
+<span class="s2">target = input_data[target_column].values</span>
+<span class="s2"># Checking dataset</span>
+<span class="s2">features, target = check_X_y(features,</span>
+<span class="s2">                             target,</span>
+<span class="s2">                             dtype=None,</span>
+<span class="s2">                             order=&quot;C&quot;,</span>
+<span class="s2">                             force_all_finite=True)</span>
+
+<span class="s2">scorer = make_scorer(balanced_accuracy)</span>
+
+<span class="s2"># reproducing balanced accuracy scores</span>
+<span class="s2"># computing cross-validated metrics</span>
+<span class="s2">cv = StratifiedKFold(n_splits=10)</span>
+<span class="s2">cv_scores = cross_validate(</span>
+<span class="s2">    estimator=model,</span>
+<span class="s2">    X=features,</span>
+<span class="s2">    y=target,</span>
+<span class="s2">    scoring=scorer,</span>
+<span class="s2">    cv=cv,</span>
+<span class="s2">    return_train_score=True,</span>
+<span class="s2">    return_estimator=True</span>
+<span class="s2">)</span>
+<span class="s2">train_score = cv_scores[&#39;train_score&#39;].mean()</span>
+<span class="s2">test_score = cv_scores[&#39;test_score&#39;].mean()</span>
+
+<span class="s2">print(&quot;Training score: &quot;, train_score)</span>
+<span class="s2">print(&quot;Testing score: &quot;, test_score)</span>
+
+<span class="s2"># reproducing confusion matrix</span>
+<span class="s2">pred_cv_target = np.empty(target.shape)</span>
+<span class="s2">for cv_split, est in zip(cv.split(features, target), cv_scores[&#39;estimator&#39;]):</span>
+<span class="s2">    train, test = cv_split</span>
+<span class="s2">    pred_cv_target[test] = est.predict(features[test])</span>
+<span class="s2">cnf_matrix = confusion_matrix(</span>
+<span class="s2">    target, pred_cv_target, labels=model.classes_)</span>
+<span class="s2">print(&quot;Confusion Matrix:&quot;, cnf_matrix)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
+        <span class="n">exported_codes_1</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># reproducing training score and testing score from PennAI</span>
+<span class="s2">features = input_data.drop(target_column, axis=1).values</span>
+<span class="s2">target = input_data[target_column].values</span>
+<span class="s2"># Checking dataset</span>
+<span class="s2">features, target = check_X_y(features,</span>
+<span class="s2">                             target,</span>
+<span class="s2">                             dtype=None,</span>
+<span class="s2">                             order=&quot;C&quot;,</span>
+<span class="s2">                             force_all_finite=True)</span>
+
+<span class="s2"># reproducing r2 scores</span>
+<span class="s2"># computing cross-validated metrics</span>
+<span class="s2">cv_scores = cross_validate(</span>
+<span class="s2">    estimator=model,</span>
+<span class="s2">    X=features,</span>
+<span class="s2">    y=target,</span>
+<span class="s2">    scoring=&#39;r2&#39;,</span>
+<span class="s2">    cv=10,</span>
+<span class="s2">    return_train_score=True,</span>
+<span class="s2">    return_estimator=True</span>
+<span class="s2">)</span>
+<span class="s2">train_score = cv_scores[&#39;train_score&#39;].mean()</span>
+<span class="s2">test_score = cv_scores[&#39;test_score&#39;].mean()</span>
+
+<span class="s2">print(&quot;Training score: &quot;, train_score)</span>
+<span class="s2">print(&quot;Testing score: &quot;, test_score)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">exported_codes_2</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># Application 1: cross validation of fitted model on a new dataset</span>
+<span class="s2">testing_features = input_data.drop(target_column, axis=1).values</span>
+<span class="s2">testing_target = input_data[target_column].values</span>
+<span class="s2"># Get holdout score for fitted model</span>
+<span class="s2">print(&quot;Holdout score: &quot;, end=&quot;&quot;)</span>
+<span class="s2">print(model.score(testing_features, testing_target))</span>
+
+
+<span class="s2"># Application 2: predict outcome by fitted model</span>
+<span class="s2"># In this application, the input dataset may not include target column</span>
+<span class="s2"># Please comment this line below if there is no target column in input dataset</span>
+<span class="s2">input_data.drop(target_column, axis=1, inplace=True)</span>
+<span class="s2">predict_target = model.predict(input_data.values)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">exported_codes_1</span><span class="p">,</span> <span class="n">exported_codes_2</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

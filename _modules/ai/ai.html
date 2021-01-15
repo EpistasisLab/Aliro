@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ai.ai &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recommenders.html">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>ai.ai</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ai.ai</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+
+<span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
+
+<span class="sd">PennAI is maintained by:</span>
+<span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
+<span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
+<span class="sd">    - William La Cava (lacava@upenn.edu)</span>
+<span class="sd">    - Michael Stauffer (stauffer@upenn.edu)</span>
+<span class="sd">    - and many other generous open source contributors</span>
+
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU General Public License as published by</span>
+<span class="sd">the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">(at your option) any later version.</span>
+
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">GNU General Public License for more details.</span>
+
+<span class="sd">You should have received a copy of the GNU General Public License</span>
+<span class="sd">along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">(Autogenerated header, do not modify)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">ai.api_utils</span> <span class="k">as</span> <span class="nn">api_utils</span>
+<span class="kn">from</span> <span class="nn">ai.api_utils</span> <span class="kn">import</span> <span class="n">LabApi</span><span class="p">,</span> <span class="n">AI_STATUS</span><span class="p">,</span> <span class="n">RECOMMENDER_STATUS</span>
+<span class="kn">import</span> <span class="nn">ai.q_utils</span> <span class="k">as</span> <span class="nn">q_utils</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ai.knowledgebase_utils</span> <span class="k">as</span> <span class="nn">knowledgebase_utils</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">ai.recommender.average_recommender</span> <span class="kn">import</span> <span class="n">AverageRecommender</span>
+<span class="kn">from</span> <span class="nn">ai.recommender.random_recommender</span> <span class="kn">import</span> <span class="n">RandomRecommender</span>
+<span class="kn">from</span> <span class="nn">ai.recommender.knn_meta_recommender</span> <span class="kn">import</span> <span class="n">KNNMetaRecommender</span>
+<span class="c1"># from ai.recommender.svd_recommender import SVDRecommender</span>
+<span class="kn">from</span> <span class="nn">ai.recommender.surprise_recommenders</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CoClusteringRecommender</span><span class="p">,</span>
+        <span class="n">KNNWithMeansRecommender</span><span class="p">,</span> <span class="n">KNNDatasetRecommender</span><span class="p">,</span> <span class="n">KNNMLRecommender</span><span class="p">,</span>
+        <span class="n">SlopeOneRecommender</span><span class="p">,</span> <span class="n">SVDRecommender</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">ai.request_manager</span> <span class="kn">import</span> <span class="n">RequestManager</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(module)s</span><span class="s1">: </span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+
+
+
+<div class="viewcode-block" id="AI"><a class="viewcode-back" href="../../api.html#ai.ai.AI">[docs]</a><span class="k">class</span> <span class="nc">AI</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;AI managing agent for Penn AI.</span>
+
+<span class="sd">    Responsible for:</span>
+<span class="sd">    - checking for user requests for recommendations,</span>
+<span class="sd">    - checking for new results from experiments,</span>
+<span class="sd">    - calling the recommender system to generate experiment recommendations,</span>
+<span class="sd">    - posting the recommendations to the API.</span>
+<span class="sd">    - handling communication with the API.</span>
+
+<span class="sd">    :param rec_class: ai.BaseRecommender - recommender to use</span>
+<span class="sd">    :param api_path: string - path to the lab api server</span>
+<span class="sd">    :param extra_payload: dict - any additional payload that needs to be </span>
+<span class="sd">    specified</span>
+<span class="sd">    :param user: string - test user</span>
+<span class="sd">    :param rec_score_file: file - pickled score file to keep persistent scores</span>
+<span class="sd">    between sessions</span>
+<span class="sd">    :param verbose: Boolean</span>
+<span class="sd">    :param warm_start: Boolean - if true, attempt to load the ai state from the </span>
+<span class="sd">    file provided by rec_score_file</span>
+<span class="sd">    :param n_recs: int - number of recommendations to make for each request</span>
+<span class="sd">    :param datasets: str or False - if not false, a comma seperated list of </span>
+<span class="sd">    datasets to turn the ai on for at startup</span>
+<span class="sd">    :param use_pmlb_knowledgebase: Boolean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">rec_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">api_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">extra_payload</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+                <span class="n">user</span><span class="o">=</span><span class="s1">&#39;testuser&#39;</span><span class="p">,</span>
+                <span class="n">rec_score_file</span><span class="o">=</span><span class="s1">&#39;rec_state.obj&#39;</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">datasets</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">use_knowledgebase</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">term_condition</span><span class="o">=</span><span class="s1">&#39;n_recs&#39;</span><span class="p">,</span>
+                <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes AI managing agent.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;RANDOM_SEED&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RANDOM_SEED&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># default supervised learning recommender settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_REC_CLASS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;classification&#39;</span><span class="p">:</span><span class="n">RandomRecommender</span><span class="p">,</span>
+                                  <span class="s1">&#39;regression&#39;</span><span class="p">:</span><span class="n">RandomRecommender</span>
+                                  <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_REC_ARGS</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;classification&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;ml_type&#39;</span><span class="p">:</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;metric&#39;</span><span class="p">:</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;random_state&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span>
+                    <span class="p">},</span>
+                <span class="s1">&#39;regression&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;ml_type&#39;</span><span class="p">:</span><span class="s1">&#39;regressor&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;metric&#39;</span><span class="p">:</span><span class="s1">&#39;r2_cv_mean&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;random_state&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+
+        <span class="c1"># recommendation engines for different problem types</span>
+        <span class="c1"># will be expanded as more types of probles are supported</span>
+        <span class="c1"># (classification, regression, unsupervised, etc.)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;classification&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;regression&quot;</span><span class="p">:</span><span class="kc">None</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Request manager settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_recs</span><span class="o">=</span><span class="n">n_recs</span> <span class="k">if</span> <span class="n">n_recs</span><span class="o">&gt;</span><span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuous</span><span class="o">=</span> <span class="n">n_recs</span><span class="o">&lt;</span><span class="mi">1</span>
+
+        <span class="c1"># api parameters, will be removed from self once the recommenders no </span>
+        <span class="c1"># longer call the api directly.</span>
+        <span class="c1"># See #98 &lt;https://github.com/EpistasisLab/pennai/issues/98&gt;</span>
+        <span class="k">if</span> <span class="n">api_path</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">api_path</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_HOST&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_PORT&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">=</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_path</span><span class="o">=</span><span class="n">api_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;APIKEY&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span> <span class="c1">#False: no printouts, True: printouts on updates</span>
+
+        <span class="c1"># file name of stored scores for the recommender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rec_score_file</span> <span class="o">=</span> <span class="n">rec_score_file</span>
+
+        <span class="c1"># timestamp of the last time new experiments were processed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># api</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span> <span class="o">=</span> <span class="n">api_utils</span><span class="o">.</span><span class="n">LabApi</span><span class="p">(</span>
+            <span class="n">api_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_path</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">extra_payload</span><span class="o">=</span><span class="n">extra_payload</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        
+        <span class="c1"># build dictionary of ml ids to names conversion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_id_to_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_ml_id_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_name_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_id_to_name</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="c1"># print(&#39;ml_id_to_name:&#39;,self.ml_id_to_name)</span>
+
+        <span class="c1"># dictionary of dataset threads, initialized and used by q_utils.</span>
+        <span class="c1"># Keys are datasetIds, values are q_utils.DatasetThread instances.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_threads</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># local dataframe of datasets and their metafeatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="c1"># store dataset_id to hash dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache_id_hash_lookup</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># set recommender status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">set_recommender_status</span><span class="p">(</span>
+                <span class="n">RECOMMENDER_STATUS</span><span class="o">.</span><span class="n">INITIALIZING</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1">#initialize recommenders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_knowledgebase</span> <span class="o">=</span> <span class="n">use_knowledgebase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_recommenders</span><span class="p">(</span><span class="n">rec_class</span><span class="p">)</span> <span class="c1"># set self.rec_engines</span>
+
+        <span class="c1"># set termination condition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">term_condition</span> <span class="o">=</span> <span class="n">term_condition</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_condition</span> <span class="o">==</span> <span class="s1">&#39;n_recs&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_recs</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_condition</span> <span class="o">==</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_value</span> <span class="o">=</span> <span class="n">max_time</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># start the request manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestManager</span> <span class="o">=</span> <span class="n">RequestManager</span><span class="p">(</span>
+            <span class="n">ai</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">defaultTermConditionStr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">term_condition</span><span class="p">,</span>
+            <span class="n">defaultTermParam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">term_value</span><span class="p">)</span>
+
+        <span class="c1"># if there is a pickle file, load it as the recommender scores</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">warm_start</span><span class="p">),</span> <span class="s2">&quot;The `warm_start` option is not yet supported&quot;</span>
+
+        <span class="c1"># for comma-separated list of datasets in datasets, turn AI request on</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">datasets</span><span class="p">,</span> \
+                <span class="s2">&quot;The `datasets` option is not yet supported: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+
+        <span class="c1"># set recommender status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">set_recommender_status</span><span class="p">(</span><span class="n">RECOMMENDER_STATUS</span><span class="o">.</span><span class="n">RUNNING</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1">##-----------------</span>
+    <span class="c1">## Init methods</span>
+    <span class="c1">##-----------------</span>
+<div class="viewcode-block" id="AI.initialize_recommenders"><a class="viewcode-back" href="../../api.html#ai.ai.AI.initialize_recommenders">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_recommenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_class</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initilize classification and regression recommenders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">kb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_knowledgebase</span><span class="p">:</span>
+            <span class="n">kb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_knowledgebase</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">pred_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;initialiazing rec engine for problem type &quot;&#39;</span>
+                    <span class="o">+</span><span class="n">pred_type</span><span class="o">+</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+
+            <span class="c1"># get the ml parameters for the given recommender type</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;getting ml_p&quot;</span><span class="p">)</span>
+            <span class="n">ml_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_all_ml_p</span><span class="p">(</span><span class="n">pred_type</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">ml_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ml_p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+            <span class="c1"># Create supervised learning recommenders</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;initializing engine&quot;</span><span class="p">)</span>
+            <span class="n">recArgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_REC_ARGS</span><span class="p">[</span><span class="n">pred_type</span><span class="p">]</span>
+            <span class="n">recArgs</span><span class="p">[</span><span class="s1">&#39;ml_p&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_p</span>
+
+            <span class="n">recArgs</span><span class="p">[</span><span class="s1">&#39;serialized_rec_directory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;data/recommenders/pennaiweb&#39;</span>
+            <span class="n">recArgs</span><span class="p">[</span><span class="s1">&#39;load_serialized_rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;if_exists&quot;</span> 
+
+            <span class="k">if</span> <span class="n">kb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">recArgs</span><span class="p">[</span><span class="s1">&#39;knowledgebase_results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">rec_class</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="n">pred_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_class</span><span class="p">(</span><span class="o">**</span><span class="n">recArgs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="n">pred_type</span><span class="p">]</span>  <span class="o">=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_REC_CLASS</span><span class="p">[</span><span class="n">pred_type</span><span class="p">](</span><span class="o">**</span><span class="n">recArgs</span><span class="p">)</span>
+
+
+            <span class="c1"># self.rec_engines[pred_type].update(kb[&#39;resultsData&#39;][pred_type], </span>
+            <span class="c1">#         self.dataset_mf_cache, source=&#39;knowledgebase&#39;)</span>
+            <span class="c1">##########################################################</span>
+            <span class="c1"># this section is used to save trained recommenders</span>
+            <span class="c1"># on the PMLB knowledgebases.            </span>
+            <span class="c1"># For normal operation, they can be skipped.</span>
+            <span class="c1"># logger.info(&#39;saving recommender&#39;)</span>
+            <span class="c1"># self.rec_engines[pred_type].save()</span>
+            <span class="c1">##########################################################</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;recomendation engines initialized: &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">prob_type</span><span class="p">,</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">problemType: </span><span class="si">{</span><span class="n">prob_type</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="c1">#logger.debug(&#39;\trec.ml_p:\n&#39;+str(rec.ml_p.head()))</span>
+
+
+<div class="viewcode-block" id="AI.load_knowledgebase"><a class="viewcode-back" href="../../api.html#ai.ai.AI.load_knowledgebase">[docs]</a>    <span class="k">def</span> <span class="nf">load_knowledgebase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bootstrap the recommenders with the knowledgebase.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;loading pmlb knowledgebase&#39;</span><span class="p">)</span>
+
+        <span class="n">kb</span> <span class="o">=</span> <span class="n">knowledgebase_utils</span><span class="o">.</span><span class="n">load_default_knowledgebases</span><span class="p">(</span><span class="n">dedupe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        
+        <span class="n">all_df_mf</span> <span class="o">=</span> <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;metafeaturesData&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+
+        <span class="c1"># replace algorithm names with their ids</span>
+        
+        <span class="k">for</span> <span class="n">pred_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span><span class="s1">&#39;regression&#39;</span><span class="p">]:</span>
+            <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">][</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">][</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                      <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+                      <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_name_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> 
+                      <span class="k">else</span> <span class="s1">&#39;REMOVE! &#39;</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span>
+            <span class="c1"># filter any kb results that we don&#39;t have an algorithm for</span>
+            <span class="k">for</span> <span class="n">algs</span> <span class="ow">in</span> <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">][</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s1">&#39;REMOVE!&#39;</span> <span class="ow">in</span> <span class="n">algs</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Removing knowledgebase results for algorithm &#39;</span>
+                            <span class="o">+</span><span class="n">algs</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span>
+                            <span class="o">+</span><span class="s1">&#39; because that algorithm is not available&#39;</span><span class="p">)</span>
+            <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="o">~</span><span class="p">(</span><span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">][</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span>
+                        <span class="s1">&#39;REMOVE!&#39;</span><span class="p">))</span>
+                    <span class="p">]</span>
+
+            <span class="c1"># use _id to index the metafeatures, and</span>
+            <span class="c1"># keep only metafeatures with results</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">all_df_mf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">][</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+                    <span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;updating AI with </span><span class="si">{</span><span class="n">pred_type</span><span class="si">}</span><span class="s2"> knowledgebase (&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">kb</span><span class="p">[</span><span class="s1">&#39;resultsData&#39;</span><span class="p">][</span><span class="n">pred_type</span><span class="p">])</span><span class="si">}</span><span class="s2"> results)&quot;</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;pmlb &#39;</span><span class="o">+</span><span class="n">pred_type</span><span class="o">+</span><span class="s1">&#39; knowledgebase loaded&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">kb</span></div>
+
+
+    <span class="c1">##-----------------</span>
+    <span class="c1">## Utility methods</span>
+    <span class="c1">##-----------------</span>
+<div class="viewcode-block" id="AI.get_results_metafeatures"><a class="viewcode-back" href="../../api.html#ai.ai.AI.get_results_metafeatures">[docs]</a>    <span class="k">def</span> <span class="nf">get_results_metafeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a pandas dataframe of metafeatures associated with the datasets</span>
+<span class="sd">        in results_data.</span>
+
+<span class="sd">        Retireves metafeatures from self.dataset_mf_cache if they exist,</span>
+<span class="sd">        otherwise queries the api and updates the cache.</span>
+
+<span class="sd">        :param results_data: experiment results with associated datasets</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#logger.debug(&#39;results_data:&#39;+str(results_data.columns))</span>
+        <span class="c1">#logger.debug(&#39;results_data:&#39;+str(results_data.head()))</span>
+
+        <span class="n">dataset_metafeatures</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="n">dataset_indices</span> <span class="o">=</span> <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="c1"># add dataset metafeatures to the cache</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dataset_indices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span> 
+                <span class="ow">or</span> <span class="n">d</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache_id_hash_lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_metafeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>        
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                <span class="n">dataset_metafeatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache_id_hash_lookup</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">d</span><span class="p">:</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
+        <span class="k">if</span> <span class="n">dataset_metafeatures</span><span class="p">:</span>
+            <span class="n">df_mf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dataset_metafeatures</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;dataset&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_mf</span><span class="p">)</span>
+
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;mf count:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1">#logger.info(f&#39;mf:\n {list(self.dataset_mf_cache.index.values)}&#39;)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;indices: </span><span class="se">\n\n</span><span class="s1"> </span><span class="si">{</span><span class="n">dataset_indices</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">new_mf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataset_indices</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_mf</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_indices</span><span class="p">)</span>
+        <span class="c1">#logger.debug(f&quot;new_mf: {new_mf}&quot;)</span>
+
+        <span class="k">return</span> <span class="n">new_mf</span></div>
+
+    <span class="c1">##-----------------</span>
+    <span class="c1">## Loop methods</span>
+    <span class="c1">##-----------------</span>
+<div class="viewcode-block" id="AI.check_results"><a class="viewcode-back" href="../../api.html#ai.ai.AI.check_results">[docs]</a>    <span class="k">def</span> <span class="nf">check_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks to see if new experiment results have been posted since the</span>
+<span class="sd">        previous time step. If so, set them to self.new_data and return True.</span>
+
+<span class="sd">        :returns: Boolean - True if new results were found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+                  <span class="s1">&#39;: checking results...&#39;</span><span class="p">)</span>
+
+        <span class="n">newResults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_new_experiments_as_dataframe</span><span class="p">(</span>
+                                        <span class="n">last_update</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last_update</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newResults</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">newResults</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newResults</span><span class="p">[</span><span class="s1">&#39;algorithm_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_id_to_name</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+                  <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newResults</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; new results!&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># update timestamp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span> <span class="o">=</span> <span class="n">newResults</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="AI.update_recommender"><a class="viewcode-back" href="../../api.html#ai.ai.AI.update_recommender">[docs]</a>    <span class="k">def</span> <span class="nf">update_recommender</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update recommender models based on new experiment results in</span>
+<span class="sd">        self.new_data, and then clear self.new_data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;new_data&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">predictionType</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span><span class="o">.</span><span class="n">prediction_type</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+                <span class="n">filterRes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span><span class="p">[</span><span class="s1">&#39;prediction_type&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">predictionType</span><span class="p">]</span>
+                <span class="n">filterMf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_results_metafeatures</span><span class="p">(</span><span class="n">filterRes</span><span class="p">)</span>
+
+                <span class="n">filterRes</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filterRes</span><span class="p">[</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_mf_cache_id_hash_lookup</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="n">predictionType</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">filterRes</span><span class="p">,</span> <span class="n">filterMf</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+                    <span class="s1">&#39;: </span><span class="si">{}</span><span class="s1"> recommender updated with &#39;</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> result(s)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">predictionType</span><span class="p">,</span> 
+                        <span class="nb">len</span><span class="p">(</span><span class="n">filterRes</span><span class="o">.</span><span class="n">index</span><span class="p">)))</span>
+
+            <span class="c1"># reset new data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AI.check_requests"><a class="viewcode-back" href="../../api.html#ai.ai.AI.check_requests">[docs]</a>    <span class="k">def</span> <span class="nf">check_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check to see if any new AI requests have been submitted.</span>
+<span class="sd">        If so, add them to self.request_queue.</span>
+
+<span class="sd">        :returns: Boolean - True if new AI requests have been submitted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+              <span class="s1">&#39;: checking requests...&#39;</span><span class="p">)</span>
+
+
+        <span class="c1"># get all dtasets that have an ai &#39;requested&#39; status</span>
+        <span class="c1"># and initialize a new request</span>
+        <span class="n">dsFilter</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ai&#39;</span><span class="p">:[</span><span class="n">AI_STATUS</span><span class="o">.</span><span class="n">REQUESTED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;dummy&#39;</span><span class="p">]}</span>
+        <span class="n">aiOnRequests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_filtered_datasets</span><span class="p">(</span><span class="n">dsFilter</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">aiOnRequests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+                      <span class="s1">&#39;: new ai request for:&#39;</span><span class="o">+</span>
+                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">aiOnRequests</span><span class="p">]))</span>
+
+            <span class="c1"># set AI flag to &#39;on&#39; to acknowledge requests received</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">aiOnRequests</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">set_ai_status</span><span class="p">(</span><span class="n">datasetId</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span>
+                                            <span class="n">aiStatus</span> <span class="o">=</span> <span class="s1">&#39;on&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">requestManager</span><span class="o">.</span><span class="n">add_request</span><span class="p">(</span>
+                        <span class="n">datasetId</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> 
+                        <span class="n">datasetName</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span> 
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># get all datasets that have a manual &#39;off&#39; status</span>
+        <span class="c1"># and terminate their ai requests</span>
+        <span class="n">dsFilter</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ai&#39;</span><span class="p">:[</span><span class="n">AI_STATUS</span><span class="o">.</span><span class="n">OFF</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;dummy&#39;</span><span class="p">]}</span>
+        <span class="n">aiOffRequests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_filtered_datasets</span><span class="p">(</span><span class="n">dsFilter</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">aiOffRequests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y %I:%M:%S %p %Z&quot;</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span><span class="o">+</span>
+                      <span class="s1">&#39;: ai termination request for:&#39;</span><span class="o">+</span>
+                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">aiOffRequests</span><span class="p">]))</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">aiOffRequests</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">requestManager</span><span class="o">.</span><span class="n">terminate_request</span><span class="p">(</span><span class="n">datasetId</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">process_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestManager</span><span class="o">.</span><span class="n">process_requests</span><span class="p">()</span>
+
+    <span class="c1">##-----------------</span>
+    <span class="c1">## Syncronous actions an AI request can take</span>
+    <span class="c1">##-----------------</span>
+<div class="viewcode-block" id="AI.generate_recommendations"><a class="viewcode-back" href="../../api.html#ai.ai.AI.generate_recommendations">[docs]</a>    <span class="k">def</span> <span class="nf">generate_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasetId</span><span class="p">,</span> <span class="n">numOfRecs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate ml recommendation payloads for the given dataset.</span>
+
+<span class="sd">        :param datasetId</span>
+<span class="sd">        :param numOfRecs</span>
+
+<span class="sd">        :returns list of maps that represent request payload objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;generate_recommendations(</span><span class="si">{</span><span class="n">datasetId</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="n">numOfRecs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">recommendations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">metafeatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_metafeatures</span><span class="p">(</span><span class="n">datasetId</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;_prediction_type&#39;</span> <span class="ow">in</span> <span class="n">metafeatures</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">predictionType</span> <span class="o">=</span> <span class="n">metafeatures</span><span class="p">[</span><span class="s1">&#39;_prediction_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;prediction_type: &quot;</span> <span class="o">+</span> <span class="n">predictionType</span><span class="p">)</span>
+
+
+        <span class="n">ml</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">ai_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="n">predictionType</span><span class="p">]</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="n">metafeatures</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">n_recs</span><span class="o">=</span><span class="n">numOfRecs</span><span class="p">,</span>
+            <span class="n">dataset_mf</span><span class="o">=</span><span class="n">metafeatures</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">alg</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ml</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">ai_scores</span><span class="p">):</span>
+            <span class="c1"># TODO: just return dictionaries of parameters from rec</span>
+            <span class="c1"># modified_params = eval(params) # turn params into a dictionary</span>
+
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">:</span><span class="n">datasetId</span><span class="p">,</span>
+                    <span class="s1">&#39;algorithm_id&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_name_to_id</span><span class="p">[</span><span class="n">alg</span><span class="p">],</span>
+                    <span class="s1">&#39;username&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="s1">&#39;parameters&#39;</span><span class="p">:</span><span class="n">params</span><span class="p">,</span>
+                    <span class="s1">&#39;ai_score&#39;</span><span class="p">:</span><span class="n">score</span><span class="p">,</span>
+                    <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">recommendations</span></div>
+
+
+<div class="viewcode-block" id="AI.transfer_rec"><a class="viewcode-back" href="../../api.html#ai.ai.AI.transfer_rec">[docs]</a>    <span class="k">def</span> <span class="nf">transfer_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_payload</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attempt to send a recommendation to the lab server.</span>
+<span class="sd">        If any error other then a no capacity error occurs, throw an exception.</span>
+
+<span class="sd">        :param rec_payload: dictionary - the payload describing the experiment</span>
+
+<span class="sd">        :return bool - true if successfully sent, false if no machine capacity </span>
+<span class="sd">        available</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transfer_rec(</span><span class="si">{</span><span class="n">rec_payload</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="n">aiStatus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">get_dataset_ai_status</span><span class="p">(</span><span class="n">rec_payload</span><span class="p">[</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">aiStatus</span> <span class="o">==</span> <span class="n">AI_STATUS</span><span class="o">.</span><span class="n">ON</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AI status is not on; not submitting experiment&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">submitstatus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labApi</span><span class="o">.</span><span class="n">launch_experiment</span><span class="p">(</span>
+                            <span class="n">algorithmId</span><span class="o">=</span><span class="n">rec_payload</span><span class="p">[</span><span class="s1">&#39;algorithm_id&#39;</span><span class="p">],</span>
+                            <span class="n">payload</span><span class="o">=</span><span class="n">rec_payload</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transfer_rec() submitstatus: </span><span class="si">{</span><span class="n">submitstatus</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">submitstatus</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;No machine capacity available&#39;</span> <span class="ow">in</span> <span class="n">submitstatus</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for capacity: </span><span class="si">{</span><span class="n">submitstatus</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Unrecoverable error during transfer_rec : &#39;</span> 
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">submitstatus</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="c1">##-----------------</span>
+    <span class="c1">## Save/load ai state</span>
+    <span class="c1">##-----------------</span>
+<div class="viewcode-block" id="AI.save_state"><a class="viewcode-back" href="../../api.html#ai.ai.AI.save_state">[docs]</a>    <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save ML+P scores in pickle or to DB</span>
+
+<span class="sd">        TODO: test that this still works</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;save_state is not currently supported&quot;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_score_file</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">=</span><span class="p">{}</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="s2">&quot;classification&quot;</span><span class="p">],</span> <span class="s1">&#39;scores&#39;</span><span class="p">)):</span>
+            <span class="c1">#TODO: make this a more generic. Maybe just save the</span>
+            <span class="c1"># AI or rec object itself.</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="s2">&quot;classification&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">scores</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;last_update&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI.load_state"><a class="viewcode-back" href="../../api.html#ai.ai.AI.load_state">[docs]</a>    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads pickled score file and recommender model.</span>
+
+<span class="sd">        TODO: test that this still works</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;load_state is not currently supported&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_score_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">filehandler</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_score_file</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filehandler</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="s2">&quot;classification&quot;</span><span class="p">],</span> <span class="s1">&#39;scores&#39;</span><span class="p">)):</span>
+              <span class="bp">self</span><span class="o">.</span><span class="n">rec_engines</span><span class="p">[</span><span class="s2">&quot;classification&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span>
+              <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;last_update&#39;</span><span class="p">]</span>
+              <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;loaded previous state from &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">last_update</span><span class="p">)</span></div></div>
+
+
+
+<span class="c1">####################################################################### Manager</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Handles command line arguments and runs Penn-AI.&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;PennAI is a recommendation system for data science. &#39;</span><span class="p">,</span>
+            <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show this help message and exit.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rec&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;REC&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">,</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">,</span><span class="s1">&#39;average&#39;</span><span class="p">,</span><span class="s1">&#39;knnmeta&#39;</span><span class="p">,</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span><span class="s1">&#39;cocluster&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;knnmeans&#39;</span><span class="p">,</span> <span class="s1">&#39;knnml&#39;</span><span class="p">,</span><span class="s1">&#39;knndata&#39;</span><span class="p">,</span><span class="s1">&#39;slopeone&#39;</span><span class="p">],</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Recommender algorithm options.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-api_path&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;API_PATH&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_HOST&#39;</span><span class="p">]</span> <span class="o">+</span><span class="s1">&#39;:&#39;</span>
+                <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_PORT&#39;</span><span class="p">]),</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to the database.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-u&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;USER&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;testuser&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;user name&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-t&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;DATASETS&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;turn on ai for these datasets&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n_recs&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;N_RECS&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Number of recommendations to make at a time. &#39;</span>
+                <span class="s1">&#39;If zero, will send continuous recommendations.&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-max_time&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;MAX_TIME&#39;</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Amount of time to allow recs in seconds. &#39;</span>
+                <span class="s1">&#39;Only works when term_condition set to &quot;time&quot;.&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-term_condition&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;TERM_COND&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;n_recs&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n_recs&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">],</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Termination condition for the AI.&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span><span class="s1">&#39;-verbose&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;VERBOSE&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Print out more messages.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-warm&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;WARM_START&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Start from last saved session.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-sleep&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;SLEEP_TIME&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Time between pinging the server for updates&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--knowledgebase&#39;</span><span class="p">,</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;USE_KNOWLEDGEBASE&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Load a knowledgebase for the recommender&#39;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># set logging level</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="c1"># dictionary of default recommenders to choose from at the command line.</span>
+    <span class="n">name_to_rec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random&#39;</span><span class="p">:</span> <span class="n">RandomRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">AverageRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;knnmeta&#39;</span><span class="p">:</span> <span class="n">KNNMetaRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;svd&#39;</span><span class="p">:</span> <span class="n">SVDRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;cocluster&#39;</span><span class="p">:</span> <span class="n">CoClusteringRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;knnmeans&#39;</span><span class="p">:</span> <span class="n">KNNWithMeansRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;knndata&#39;</span><span class="p">:</span> <span class="n">KNNDatasetRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;knnml&#39;</span><span class="p">:</span> <span class="n">KNNMLRecommender</span><span class="p">,</span>
+            <span class="s1">&#39;slopeone&#39;</span><span class="p">:</span> <span class="n">SlopeOneRecommender</span>
+            <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=======&#39;</span><span class="p">,</span><span class="s1">&#39;Penn AI&#39;</span><span class="p">,</span><span class="s1">&#39;=======&#39;</span><span class="p">)</span><span class="c1">#,sep=&#39;\n&#39;)</span>
+
+    <span class="n">pennai</span> <span class="o">=</span> <span class="n">AI</span><span class="p">(</span><span class="n">rec_class</span><span class="o">=</span><span class="n">name_to_rec</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">REC</span><span class="p">],</span>
+            <span class="n">api_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">API_PATH</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">USER</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">N_RECS</span><span class="p">,</span> 
+            <span class="n">warm_start</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">WARM_START</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">,</span> 
+            <span class="n">use_knowledgebase</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">USE_KNOWLEDGEBASE</span><span class="p">,</span>
+            <span class="n">term_condition</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">TERM_COND</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">MAX_TIME</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># check for new experiment results</span>
+            <span class="k">if</span> <span class="n">pennai</span><span class="o">.</span><span class="n">check_results</span><span class="p">():</span>
+                <span class="n">pennai</span><span class="o">.</span><span class="n">update_recommender</span><span class="p">()</span>
+
+            <span class="c1"># check for user updates to request states</span>
+            <span class="n">pennai</span><span class="o">.</span><span class="n">check_requests</span><span class="p">()</span>
+
+            <span class="c1"># process any active requests</span>
+            <span class="n">pennai</span><span class="o">.</span><span class="n">process_rec</span><span class="p">()</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">SLEEP_TIME</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Exit command recieved&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unhanded exception caught: &quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">raise</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># shut down gracefully</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down AI engine...&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;...Shutting down Request Manager...&quot;</span><span class="p">)</span>
+        <span class="n">pennai</span><span class="o">.</span><span class="n">requestManager</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Goodbye&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

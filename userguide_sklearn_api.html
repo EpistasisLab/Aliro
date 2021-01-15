@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User Guide of PennAIpy &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide of PennAIpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-of-ai-engine-as-a-standalone-python-package">Installation of AI engine as a standalone python package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-using-pennai-ai-engine">Example of using PennAI AI engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#default-knowledgebase-metafeatures-of-pennai-ai-engine">Default knowledgebase/metafeatures of PennAI AI engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature">Example of using PennAI AI engine with non-default knowledgebase/metafeature.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender">Example of using PennAI AI engine with pre-trained SVG recommender</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>User Guide of PennAIpy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/userguide_sklearn_api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-guide-of-pennaipy">
+<span id="userguide-sklearn-api"></span><h1>User Guide of PennAIpy<a class="headerlink" href="#user-guide-of-pennaipy" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-of-ai-engine-as-a-standalone-python-package">
+<h2>Installation of AI engine as a standalone python package<a class="headerlink" href="#installation-of-ai-engine-as-a-standalone-python-package" title="Permalink to this headline">¶</a></h2>
+<p>PennAI AI engine is built on top of several existing Python libraries, including:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.numpy.org/">NumPy</a></p></li>
+<li><p><a class="reference external" href="https://www.scipy.org/">SciPy</a></p></li>
+<li><p><a class="reference external" href="http://www.scikit-learn.org/">scikit-learn</a></p></li>
+<li><p><a class="reference external" href="http://pandas.pydata.org">pandas</a></p></li>
+<li><p><a class="reference external" href="https://joblib.readthedocs.io/en/latest/">joblib</a></p></li>
+<li><p><a class="reference external" href="http://surpriselib.com/">surprise</a></p></li>
+<li><p><a class="reference external" href="https://simplejson.readthedocs.io/en/latest/">simplejson</a></p></li>
+</ul>
+<p>Most of the necessary Python packages can be installed via the <a class="reference external" href="https://www.anaconda.com/products/individual">Anaconda Python distribution</a>, which we strongly recommend that you use.</p>
+<p>You can install PennAI AI engine using <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<p>NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:</p>
+<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>conda install numpy scipy scikit-learn pandas joblib simplejson
+</pre></div>
+</div>
+<p>Surprise was tweaked by William La Cava for PennAI AI engine and it can be install with <code class="docutils literal notranslate"><span class="pre">pip</span></code> via the command below. <strong>Note: `Microsoft C++ Build Tools &lt;https://visualstudio.microsoft.com/visual-cpp-build-tools/&gt;`_ is required for building the surprise package in Windows OS. Please download and run the installer with selecting “C++ Build tools”. Additionally, the latest version of ```cython`` &lt;https://cython.org&gt;`_ is required and it can be installed/updated via ``pip install –upgrade cython``.</strong></p>
+<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.0.8.3
+</pre></div>
+</div>
+<p>Finally to install AI engine itself, run the following command:</p>
+<div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>pip install pennaipy
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-of-using-pennai-ai-engine">
+<h2>Example of using PennAI AI engine<a class="headerlink" href="#example-of-using-pennai-ai-engine" title="Permalink to this headline">¶</a></h2>
+<p>The following code illustrates how PennAI can be employed for performing a simple <em>classification task</em> over the Iris dataset.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
+<span class="kn">from</span> <span class="nn">pennai.recommender</span> <span class="kn">import</span> <span class="n">KNNMetaRecommender</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">pennai</span> <span class="o">=</span> <span class="n">PennAIClassifier</span><span class="p">(</span>
+              <span class="n">rec_class</span><span class="o">=</span><span class="n">KNNMetaRecommender</span><span class="p">,</span>
+              <span class="n">n_recs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+              <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+              <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span>
+              <span class="p">)</span>
+
+<span class="n">pennai</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pennai</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="default-knowledgebase-metafeatures-of-pennai-ai-engine">
+<h2>Default knowledgebase/metafeatures of PennAI AI engine<a class="headerlink" href="#default-knowledgebase-metafeatures-of-pennai-ai-engine" title="Permalink to this headline">¶</a></h2>
+<p>If you don’t specify <code class="docutils literal notranslate"><span class="pre">knowledgebase</span></code> and <code class="docutils literal notranslate"><span class="pre">kb_metafeatures</span></code> in <code class="docutils literal notranslate"><span class="pre">PennAIClassifier</span></code> or <code class="docutils literal notranslate"><span class="pre">PennAIRegressor</span></code>, PennAI AI engine will use default knowledgebase based on <a class="reference external" href="https://github.com/EpistasisLab/penn-ml-benchmarks">pmlb</a>(version0.3).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Default Knowledgebase</p></th>
+<th class="head"><p>Default Metafeatures</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Classification</p></td>
+<td><p><a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz">sklearn-benchmark-data-knowledgebase-r6.tsv.gz</a></p></td>
+<td><p><a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_classification_metafeatures.csv.gz">pmlb_classification_metafeatures.csv.gz</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Regression</p></td>
+<td><p><a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_regression_results.tsv.gz">pmlb_regression_results.tsv.gz</a></p></td>
+<td><p><a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_regression_metafeatures.csv.gz">pmlb_regression_metafeatures.csv.gz</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature">
+<h2>Example of using PennAI AI engine with non-default knowledgebase/metafeature.<a class="headerlink" href="#example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
+<span class="kn">from</span> <span class="nn">pennai.recommender</span> <span class="kn">import</span> <span class="n">KNNMetaRecommender</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">classification_kb</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz&quot;</span>
+<span class="n">classification_metafeatures</span><span class="o">=</span><span class="s2">&quot;https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz&quot;</span>
+
+<span class="n">pennai</span> <span class="o">=</span> <span class="n">PennAIClassifier</span><span class="p">(</span>
+              <span class="n">rec_class</span><span class="o">=</span><span class="n">KNNMetaRecommender</span><span class="p">,</span>
+              <span class="n">n_recs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+              <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+              <span class="n">knowledgebase</span><span class="o">=</span><span class="n">classification_kb</span><span class="p">,</span>
+              <span class="n">kb_metafeatures</span><span class="o">=</span><span class="n">classification_metafeatures</span><span class="p">,</span>
+              <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span>
+              <span class="p">)</span>
+
+<span class="n">pennai</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pennai</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender">
+<h2>Example of using PennAI AI engine with pre-trained SVG recommender<a class="headerlink" href="#example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender" title="Permalink to this headline">¶</a></h2>
+<p>The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
+<span class="kn">from</span> <span class="nn">pennai.recommender</span> <span class="kn">import</span> <span class="n">SVDRecommender</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># download pre-trained SVG recommender for pennai&#39;s github</span>
+<span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="s2">&quot;https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;SVDRecommender_classifier_accuracy_pmlb.pkl.gz&quot;</span><span class="p">)</span>
+<span class="n">serialized_rec</span> <span class="o">=</span> <span class="s2">&quot;SVDRecommender_classifier_accuracy_pmlb.pkl.gz&quot;</span>
+
+<span class="n">pennai</span> <span class="o">=</span> <span class="n">PennAIClassifier</span><span class="p">(</span>
+              <span class="n">rec_class</span><span class="o">=</span><span class="n">SVDRecommender</span><span class="p">,</span>
+              <span class="n">n_recs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+              <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+              <span class="n">serialized_rec</span><span class="o">=</span><span class="n">serialized_rec</span><span class="p">,</span>
+              <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span>
+              <span class="p">)</span>
+
+<span class="n">pennai</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pennai</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Please check the “Scikit-learn API for PennAI engine” section in <a class="reference internal" href="api.html#api"><span class="std std-ref">API</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

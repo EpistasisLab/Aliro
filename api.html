@@ -1,0 +1,1501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API &mdash; PennAI 0.18a0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide of PennAIpy" href="userguide_sklearn_api.html" />
+    <link rel="prev" title="Recommenders" href="recommenders.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PennAI
+          
+
+          
+            
+            <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.18a0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ai">AI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recommenders">Recommenders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-recommender">Base Recommender</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-recommender">Random Recommender</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#average-recommender">Average Recommender</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#knn-recommender">KNN Recommender</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surprise-recommenders">Surprise Recommenders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scikit-learn-api-for-pennai-engine">Scikit-learn API for PennAI engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#learn">Learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#io">IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scikit-learn-utils">Scikit-learn Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PennAI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api">
+<span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ai">
+<h2>AI<a class="headerlink" href="#ai" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="ai.ai.AI">
+<em class="property">class </em><code class="sig-prename descclassname">ai.ai.</code><code class="sig-name descname">AI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_class</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">api_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_payload</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">'testuser'</span></em>, <em class="sig-param"><span class="n">rec_score_file</span><span class="o">=</span><span class="default_value">'rec_state.obj'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">warm_start</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">datasets</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_knowledgebase</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">term_condition</span><span class="o">=</span><span class="default_value">'n_recs'</span></em>, <em class="sig-param"><span class="n">max_time</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI" title="Permalink to this definition">¶</a></dt>
+<dd><p>AI managing agent for Penn AI.</p>
+<p>Responsible for:
+- checking for user requests for recommendations,
+- checking for new results from experiments,
+- calling the recommender system to generate experiment recommendations,
+- posting the recommendations to the API.
+- handling communication with the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_class</strong> – ai.BaseRecommender - recommender to use</p></li>
+<li><p><strong>api_path</strong> – string - path to the lab api server</p></li>
+<li><p><strong>extra_payload</strong> – dict - any additional payload that needs to be</p></li>
+</ul>
+</dd>
+</dl>
+<p>specified
+:param user: string - test user
+:param rec_score_file: file - pickled score file to keep persistent scores
+between sessions
+:param verbose: Boolean
+:param warm_start: Boolean - if true, attempt to load the ai state from the
+file provided by rec_score_file
+:param n_recs: int - number of recommendations to make for each request
+:param datasets: str or False - if not false, a comma seperated list of
+datasets to turn the ai on for at startup
+:param use_pmlb_knowledgebase: Boolean</p>
+<dl class="py method">
+<dt id="ai.ai.AI.check_requests">
+<code class="sig-name descname">check_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.check_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.check_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if any new AI requests have been submitted.
+If so, add them to self.request_queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Boolean - True if new AI requests have been submitted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.check_results">
+<code class="sig-name descname">check_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.check_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.check_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if new experiment results have been posted since the
+previous time step. If so, set them to self.new_data and return True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Boolean - True if new results were found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.generate_recommendations">
+<code class="sig-name descname">generate_recommendations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datasetId</span></em>, <em class="sig-param"><span class="n">numOfRecs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.generate_recommendations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.generate_recommendations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate ml recommendation payloads for the given dataset.</p>
+<p>:param datasetId
+:param numOfRecs</p>
+<p>:returns list of maps that represent request payload objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.get_results_metafeatures">
+<code class="sig-name descname">get_results_metafeatures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.get_results_metafeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.get_results_metafeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pandas dataframe of metafeatures associated with the datasets
+in results_data.</p>
+<p>Retireves metafeatures from self.dataset_mf_cache if they exist,
+otherwise queries the api and updates the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results_data</strong> – experiment results with associated datasets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.initialize_recommenders">
+<code class="sig-name descname">initialize_recommenders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_class</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.initialize_recommenders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.initialize_recommenders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initilize classification and regression recommenders</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.load_knowledgebase">
+<code class="sig-name descname">load_knowledgebase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.load_knowledgebase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.load_knowledgebase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bootstrap the recommenders with the knowledgebase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.load_state">
+<code class="sig-name descname">load_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.load_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.load_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads pickled score file and recommender model.</p>
+<p>TODO: test that this still works</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.save_state">
+<code class="sig-name descname">save_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.save_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.save_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save ML+P scores in pickle or to DB</p>
+<p>TODO: test that this still works</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.transfer_rec">
+<code class="sig-name descname">transfer_rec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_payload</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.transfer_rec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.transfer_rec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to send a recommendation to the lab server.
+If any error other then a no capacity error occurs, throw an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rec_payload</strong> – dictionary - the payload describing the experiment</p>
+</dd>
+</dl>
+<p>:return bool - true if successfully sent, false if no machine capacity
+available</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.ai.AI.update_recommender">
+<code class="sig-name descname">update_recommender</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/ai.html#AI.update_recommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.ai.AI.update_recommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update recommender models based on new experiment results in
+self.new_data, and then clear self.new_data.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="recommenders">
+<h2>Recommenders<a class="headerlink" href="#recommenders" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="base-recommender">
+<h3>Base Recommender<a class="headerlink" href="#base-recommender" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="ai.recommender.base.BaseRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.base.</code><code class="sig-name descname">BaseRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base recommender for PennAI</p>
+<p>The BaseRecommender is not intended to be used directly; it is a skeleton
+class defining the interface for future recommenders within the PennAI
+project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_type</strong> (<em>str</em><em>, </em><em>'classifier'</em><em> or </em><em>'regressor'</em>) – Recommending classifiers or regressors. Used to determine ML options.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em> (</em><em>default: accuracy for classifiers</em><em>, </em><em>mse for regressors</em><em>)</em>) – The metric by which to assess performance on the datasets.</p></li>
+<li><p><strong>ml_p</strong> (<em>DataFrame</em><em> (</em><em>default: None</em><em>)</em>) – Contains all valid ML parameter combos, with columns ‘algorithm’ and
+‘parameters’</p></li>
+<li><p><strong>knowledgebase_results</strong> (<em>Pandas DataFrame</em><em> or </em><em>None</em>) – Initial knowledgebase results data.
+If not None and not loading a serialized recommender, the recommender
+will initialize and train on this data.
+If loading a serialized recommender, this is the knowledgebase that
+accompanies it.</p></li>
+<li><p><strong>knowledgebase_metafeatures</strong> (<em>Pandas DataFrame</em><em> or </em><em>None</em>) – Initial knowledgebase metafeatures data.
+If loading a serialized recommender, this is the knowledgebase that
+accompanies it.</p></li>
+<li><p><strong>serialized_rec_directory</strong> (<em>string</em><em> or </em><em>None</em>) – Name of the directory to save/load a serialized recommender.
+Default directory is “.”</p></li>
+<li><p><strong>serialized_rec_filename</strong> (<em>string</em><em> or </em><em>None</em>) – Name of the file to save/load a serialized recommender.
+If the filename is not provided, the default filename based on the
+recommender type, and metric, and knowledgebase used.</p></li>
+<li><p><strong>load_serialized_rec</strong> (<em>str</em><em>, </em><em>&quot;always&quot;</em><em>, </em><em>&quot;never&quot;</em><em>, </em><em>&quot;if_exists&quot;</em>) – <dl class="simple">
+<dt>Whether to attempt to load a serialized recommender:</dt><dd><p>”if_exists” - If a serialized recomender exsists at the specified
+path, load it.
+“always” - Always load a serialized recommender.  Throw an
+exception if no serialized recommender exists.
+“never” - Never load a serialized recommender.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ai.recommender.base.BaseRecommender.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a saved recommender state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – string or None
+Name of file to load</p></li>
+<li><p><strong>knowledgebase</strong> – <p>string or None
+DataFrame with columns corresponding to:</p>
+<blockquote>
+<div><p>’dataset’
+‘algorithm’
+‘parameters’
+self.metric</p>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.base.BaseRecommender.recommend">
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dataset_mf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a model and parameter values expected to do best on dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – ID of the dataset for which the recommender is generating
+recommendations.</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em><em> (</em><em>default: 1</em><em>)</em><em>, </em><em>optional</em>) – Return a list of length n_recs in order of estimators and parameters
+expected to do best.</p></li>
+<li><p><strong>dataset_mf</strong> (<em>DataFrame</em>) – metafeatures of the dataset represented by dataset_id</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.base.BaseRecommender.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the current recommender.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – string or None
+Name of file to load</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.base.BaseRecommender.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update ML / Parameter recommendations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> (<em>DataFrame</em>) – columns corresponding to:
+‘algorithm’
+‘parameters’
+self.metric</p></li>
+<li><p><strong>results_mf</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – columns corresponding to metafeatures of each dataset in
+results_data.</p></li>
+<li><p><strong>source</strong> (<em>string</em>) – if ‘pennai’, will update tally of trained dataset models</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.base.BaseRecommender.update_and_save">
+<code class="sig-name descname">update_and_save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender.update_and_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender.update_and_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>runs self.update() and self.save.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> (<em>DataFrame</em>) – columns corresponding to:
+‘algorithm’
+‘parameters’
+self.metric</p></li>
+<li><p><strong>results_mf</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – columns corresponding to metafeatures of each dataset in
+results_data.</p></li>
+<li><p><strong>source</strong> (<em>string</em>) – if ‘pennai’, will update tally of trained dataset models</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="random-recommender">
+<h3>Random Recommender<a class="headerlink" href="#random-recommender" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="ai.recommender.random_recommender.RandomRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.random_recommender.</code><code class="sig-name descname">RandomRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/random_recommender.html#RandomRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.random_recommender.RandomRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Penn AI random recommender.</p>
+<p>Recommends random machine learning algorithms and parameters from the possible
+algorithms fetched from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_type</strong> (<em>str</em><em>, </em><em>'classifier'</em><em> or </em><em>'regressor'</em>) – Recommending classifiers or regressors. Used to determine ML options.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em> (</em><em>default: accuracy for classifiers</em><em>, </em><em>mse for regressors</em><em>)</em>) – The metric by which to assess performance on the datasets.</p></li>
+<li><p><strong>ml_p</strong> (<em>Dataframe</em>) – Contains all the machine learning / algorithm combinations available for
+recommendation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ai.recommender.random_recommender.RandomRecommender.recommend">
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dataset_mf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/random_recommender.html#RandomRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.random_recommender.RandomRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a model and parameter values expected to do best on dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – ID of the dataset for which the recommender is generating
+recommendations.</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em><em> (</em><em>default: 1</em><em>)</em><em>, </em><em>optional</em>) – Return a list of len n_recs in order of estimators and parameters
+expected to do best.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.random_recommender.RandomRecommender.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/random_recommender.html#RandomRecommender.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.random_recommender.RandomRecommender.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update ML / Parameter recommendations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> (<em>DataFrame</em>) – columns corresponding to:
+‘algorithm’
+‘parameters’
+self.metric</p></li>
+<li><p><strong>results_mf</strong> (<em>DataFrame</em><em>, </em><em>optional</em>) – columns corresponding to metafeatures of each dataset in
+results_data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="average-recommender">
+<h3>Average Recommender<a class="headerlink" href="#average-recommender" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="ai.recommender.average_recommender.AverageRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.average_recommender.</code><code class="sig-name descname">AverageRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/average_recommender.html#AverageRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.average_recommender.AverageRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Penn AI average recommender.</p>
+<p>Recommends machine learning algorithms and parameters based on their average
+performance across all evaluated datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_type</strong> (<em>str</em><em>, </em><em>'classifier'</em><em> or </em><em>'regressor'</em>) – Recommending classifiers or regressors. Used to determine ML options.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em> (</em><em>default: accuracy for classifiers</em><em>, </em><em>mse for regressors</em><em>)</em>) – The metric by which to assess performance on the datasets.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ai.recommender.average_recommender.AverageRecommender.recommend">
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dataset_mf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/average_recommender.html#AverageRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.average_recommender.AverageRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a model and parameter values expected to do best on dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – ID of the dataset for which the recommender is generating
+recommendations.</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em><em> (</em><em>default: 1</em><em>)</em><em>, </em><em>optional</em>) – Return a list of length n_recs in order of estimators and parameters
+expected to do best.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.average_recommender.AverageRecommender.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/average_recommender.html#AverageRecommender.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.average_recommender.AverageRecommender.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update ML / Parameter recommendations based on overall performance in
+results_data.</p>
+<p>Updates self.scores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results_data</strong> (<em>DataFrame with columns corresponding to:</em>) – ‘dataset’
+‘algorithm’
+‘parameters’
+self.metric</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="knn-recommender">
+<h3>KNN Recommender<a class="headerlink" href="#knn-recommender" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.knn_meta_recommender.</code><code class="sig-name descname">KNNMetaRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Penn AI KNN meta recommender.</p>
+<dl>
+<dt>Recommends machine learning algorithms and parameters as follows:</dt><dd><ul class="simple">
+<li><p>store the best ML + P on every dataset.</p></li>
+<li><p>given a new dataset, measure its distance to all results in</p></li>
+</ul>
+<p>metafeature space.
+- recommend ML + P with best performance on closest dataset.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_type</strong> (<em>str</em><em>, </em><em>'classifier'</em><em> or </em><em>'regressor'</em>) – Recommending classifiers or regressors. Used to determine ML options.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em> (</em><em>default: accuracy for classifiers</em><em>, </em><em>mse for regressors</em><em>)</em>) – The metric by which to assess performance on the datasets.</p></li>
+<li><p><strong>ml_p</strong> (<em>DataFrame</em><em> (</em><em>default: None</em><em>)</em>) – Contains all valid ML parameter combos, with columns ‘algorithm’ and
+‘parameters’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender.all_dataset_mf">
+<code class="sig-name descname">all_dataset_mf</code><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender.all_dataset_mf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize recommendation system.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender.best_model_prediction">
+<code class="sig-name descname">best_model_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span></em>, <em class="sig-param"><span class="n">df_mf</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender.best_model_prediction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender.best_model_prediction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict scores over many variations of ML+P and pick the best</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender.recommend">
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dataset_mf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a model and parameter values expected to do best on dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – ID of the dataset for which the recommender is generating
+recommendations.</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em><em> (</em><em>default: 1</em><em>)</em><em>, </em><em>optional</em>) – Return a list of length n_recs in order of estimators and parameters
+expected to do best.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update ML / Parameter recommendations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> (<em>DataFrame</em>) – columns corresponding to:
+‘algorithm’
+‘parameters’
+self.metric</p></li>
+<li><p><strong>results_mf</strong> (<em>DataFrame</em>) – columns corresponding to metafeatures of each dataset in
+results_data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.knn_meta_recommender.KNNMetaRecommender.update_model">
+<code class="sig-name descname">update_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender.update_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender.update_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores best ML-P on each dataset.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="surprise-recommenders">
+<h3>Surprise Recommenders<a class="headerlink" href="#surprise-recommenders" title="Permalink to this headline">¶</a></h3>
+<p>We have a customized version of the Surprise library available <a class="reference external" href="https://github.com/lacava/surprise">here.</a></p>
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.SurpriseRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">SurpriseRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SurpriseRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SurpriseRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to support generic recommenders from the Surprise library.
+Not intended to be used as a standalone class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_type</strong> (<em>str</em><em>, </em><em>'classifier'</em><em> or </em><em>'regressor'</em>) – Recommending classifiers or regressors. Used to determine ML options.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em> (</em><em>default: accuracy for classifiers</em><em>, </em><em>mse for regressors</em><em>)</em>) – The metric by which to assess performance on the datasets.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ai.recommender.surprise_recommenders.SurpriseRecommender.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SurpriseRecommender.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SurpriseRecommender.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a saved recommender state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ai.recommender.surprise_recommenders.SurpriseRecommender.max_epochs">
+<code class="sig-name descname">max_epochs</code><a class="headerlink" href="#ai.recommender.surprise_recommenders.SurpriseRecommender.max_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize recommendation system.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.surprise_recommenders.SurpriseRecommender.recommend">
+<code class="sig-name descname">recommend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dataset_mf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SurpriseRecommender.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SurpriseRecommender.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a model and parameter values expected to do best on dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>string</em>) – ID of the dataset for which the recommender is generating
+recommendations.</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em><em> (</em><em>default: 1</em><em>)</em><em>, </em><em>optional</em>) – Return a list of length n_recs in order of estimators and
+parameters expected to do
+best.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.recommender.surprise_recommenders.SurpriseRecommender.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_data</span></em>, <em class="sig-param"><span class="n">results_mf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'pennai'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SurpriseRecommender.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SurpriseRecommender.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update ML / Parameter recommendations based on overall performance in
+results_data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> – DataFrame with columns corresponding to:
+‘dataset’
+‘algorithm’
+‘parameters’
+self.metric</p></li>
+<li><p><strong>results_mf</strong> – metafeatures for the datasets in results_data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.CoClusteringRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">CoClusteringRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#CoClusteringRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.CoClusteringRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates recommendations via CoClustering, see
+<a class="reference external" href="https://surprise.readthedocs.io/en/stable/co_clustering.html">https://surprise.readthedocs.io/en/stable/co_clustering.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.KNNWithMeansRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">KNNWithMeansRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#KNNWithMeansRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.KNNWithMeansRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates recommendations via KNNWithMeans, see
+<a class="reference external" href="https://surprise.readthedocs.io/en/stable/knn_inspired.html">https://surprise.readthedocs.io/en/stable/knn_inspired.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.KNNDatasetRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">KNNDatasetRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#KNNDatasetRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.KNNDatasetRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates recommendations via KNN with clusters defined over datasets, see
+<a class="reference external" href="https://surprise.readthedocs.io/en/stable/knn_inspired.html">https://surprise.readthedocs.io/en/stable/knn_inspired.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.KNNMLRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">KNNMLRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#KNNMLRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.KNNMLRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates recommendations via KNN with clusters defined over algorithms, see
+<a class="reference external" href="https://surprise.readthedocs.io/en/stable/knn_inspired.html">https://surprise.readthedocs.io/en/stable/knn_inspired.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.SlopeOneRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">SlopeOneRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SlopeOneRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SlopeOneRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates recommendations via SlopeOne, see
+<a class="reference external" href="https://surprise.readthedocs.io/en/stable/slope_one.html">https://surprise.readthedocs.io/en/stable/slope_one.html</a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.recommender.surprise_recommenders.SVDRecommender">
+<em class="property">class </em><code class="sig-prename descclassname">ai.recommender.surprise_recommenders.</code><code class="sig-name descname">SVDRecommender</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ml_type</span><span class="o">=</span><span class="default_value">'classifier'</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ml_p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_results</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">knowledgebase_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">load_serialized_rec</span><span class="o">=</span><span class="default_value">'if_exists'</span></em>, <em class="sig-param"><span class="n">serialized_rec_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">serialized_rec_filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SVDRecommender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SVDRecommender" title="Permalink to this definition">¶</a></dt>
+<dd><p>SVD recommender.
+see <a class="reference external" href="https://surprise.readthedocs.io/en/stable/matrix_factorization.html">https://surprise.readthedocs.io/en/stable/matrix_factorization.html</a>
+Recommends machine learning algorithms and parameters using the SVD algorithm.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>stores ML + P and every dataset.</p></li>
+<li><p>learns a matrix factorization on the non-missing data.</p></li>
+<li><p>given a dataset, estimates the rankings of all ML+P and returns the top</p></li>
+</ul>
+<p>n_recs.</p>
+</div></blockquote>
+<p>Note that we use a custom online version of SVD found here:
+<a class="reference external" href="https://github.com/lacava/surprise">https://github.com/lacava/surprise</a></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="scikit-learn-api-for-pennai-engine">
+<h2>Scikit-learn API for PennAI engine<a class="headerlink" href="#scikit-learn-api-for-pennai-engine" title="Permalink to this headline">¶</a></h2>
+<p>This is the API for using PennAI engine as a standalone python package.</p>
+<dl class="py class">
+<dt id="ai.sklearn.pennai_sklearn.PennAI">
+<em class="property">class </em><code class="sig-prename descclassname">ai.sklearn.pennai_sklearn.</code><code class="sig-name descname">PennAI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_class</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">serialized_rec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scoring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">n_iters</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">knowledgebase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kb_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ensemble</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_time_mins</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stopping_criteria</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Penn AI standalone sklearn wrapper.</p>
+<p>Responsible for:
+- checking for user requests for recommendations,
+- checking for new results from experiments,
+- calling the recommender system to generate experiment recommendations,
+- posting the recommendations to the API.
+- handling communication with the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_class</strong> – ai.BaseRecommender - recommender to use</p></li>
+<li><p><strong>verbose</strong> – int, 0 quite, 1 info, 2 debug</p></li>
+<li><p><strong>serialized_rec</strong> – string or None
+Path of the file to save/load a serialized recommender.
+If the filename is not provided, the default filename based on the recommender
+type, and metric, and knowledgebase used.</p></li>
+<li><p><strong>scoring</strong> – str - scoring for evaluating recommendations</p></li>
+<li><p><strong>n_recs</strong> – int - number of recommendations to make for each iteration</p></li>
+<li><p><strong>n_iters</strong> – int = total number of iteration</p></li>
+<li><p><strong>knowledgebase</strong> – file - input file for knowledgebase</p></li>
+<li><p><strong>kb_metafeatures</strong> – inputfile for metafeature</p></li>
+<li><p><strong>config_dict</strong> – python dictionary - inputfile for hyperparams space for all ML algorithms</p></li>
+<li><p><strong>ensemble</strong> – if it is a integer N, PennAI will use
+VotingClassifier/VotingRegressor to ensemble
+top N best models into one model.</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>stopping_criteria</strong> – int, optional
+A number of iterations without improvments in best metric.
+Stop recommendations early if the best metric
+does not improve in the number of iterations iterations.</p></li>
+<li><p><strong>random_state</strong> – random state for recommenders</p></li>
+<li><p><strong>n_jobs</strong> – int (default: 1) The number of cores to dedicate to
+computing the scores with joblib. Assigning this parameter to -1
+will dedicate as many cores as are available on your system.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ai.sklearn.pennai_sklearn.PennAI.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trains PennAI on X,y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like {n_samples</em><em>, </em><em>n_features}</em>) – Feature matrix of the training set</p></li>
+<li><p><strong>y</strong> (<em>ndarray of shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Target of the training set</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.sklearn.pennai_sklearn.PennAI.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predictions for X.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array-like {n_samples</em><em>, </em><em>n_features}</em>) – Feature matrix of the testing set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – The predicted target.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ai.sklearn.pennai_sklearn.PennAI.score">
+<code class="sig-name descname">score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI.score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the score on the given testing data using the user-specified
+scoring function.
+:param X: Feature matrix of the testing set
+:type X: array-like {n_samples, n_features}
+:param y: Target of the testing set
+:type y: ndarray of shape (n_samples,)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>accuracy_score</strong> – The estimated test set accuracy</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Two classes below can be imported from <cite>pennai.sklearn</cite> after installing <cite>pennaipy</cite> package via pip. (see <a class="reference internal" href="userguide_sklearn_api.html#userguide-sklearn-api"><span class="std std-ref">User Guide of PennAIpy</span></a>)</p>
+<dl class="py class">
+<dt id="ai.sklearn.pennai_sklearn.PennAIClassifier">
+<em class="property">class </em><code class="sig-prename descclassname">ai.sklearn.pennai_sklearn.</code><code class="sig-name descname">PennAIClassifier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_class</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">serialized_rec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scoring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">n_iters</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">knowledgebase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kb_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ensemble</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_time_mins</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stopping_criteria</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAIClassifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAIClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>PennAI engine for classification tasks.</p>
+<p>Read more in the <a class="reference internal" href="userguide_sklearn_api.html#userguide-sklearn-api"><span class="std std-ref">User Guide of PennAIpy</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the PennAI engine.
+if it is None, PennAI will use SVDRecommender by default.</p></li>
+<li><p><strong>verbose</strong> (<em>int</em>) – 0 quite, 1 info, 2 debug</p></li>
+<li><p><strong>serialized_rec</strong> (<em>string</em><em> or </em><em>None</em>) – Path of the file to save/load a serialized recommender.
+If the filename is not provided, the default filename based
+on the recommender type, and metric, and knowledgebase used.</p></li>
+<li><p><strong>scoring</strong> (<em>str</em>) – scoring for evaluating recommendations. It could be “accuracy”,
+“balanced_accuracy”, “f1”, “f1_macro”</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em>) – number of recommendations to make for each iteration</p></li>
+<li><p><strong>n_iters</strong> (<em>int</em>) – total number of iterations</p></li>
+<li><p><strong>knowledgebase</strong> (<em>str</em>) – input file for knowledgebase</p></li>
+<li><p><strong>kb_metafeatures</strong> (<em>str</em>) – input file for metafeature</p></li>
+<li><p><strong>config_dict</strong> (<em>python dictionary</em>) – dictionary for hyperparameter search space for all ML algorithms</p></li>
+<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+to ensemble top N best models into one model.</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>stopping_criteria</strong> (<em>int</em>) – A number of iterations without improvments in best metric.
+Stop recommendations early if the best metric
+does not improve in the number of iterations iterations.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – random state for recommenders</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em>) – The number of cores to dedicate to computing the scores with joblib.
+Assigning this parameter to -1 will dedicate as many cores as
+are available on your system.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ai.sklearn.pennai_sklearn.PennAIRegressor">
+<em class="property">class </em><code class="sig-prename descclassname">ai.sklearn.pennai_sklearn.</code><code class="sig-name descname">PennAIRegressor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rec_class</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">serialized_rec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scoring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_recs</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">n_iters</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">knowledgebase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kb_metafeatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ensemble</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_time_mins</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stopping_criteria</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAIRegressor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAIRegressor" title="Permalink to this definition">¶</a></dt>
+<dd><p>PennAI engine for regression tasks.</p>
+<p>Read more in the <a class="reference internal" href="userguide_sklearn_api.html#userguide-sklearn-api"><span class="std std-ref">User Guide of PennAIpy</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the PennAI engine.
+if it is None, PennAI will use SVDRecommender by default.</p></li>
+<li><p><strong>verbose</strong> (<em>int</em>) – 0 quite, 1 info, 2 debug</p></li>
+<li><p><strong>serialized_rec</strong> (<em>string</em><em> or </em><em>None</em>) – Path of the file to save/load a serialized recommender.
+If the filename is not provided, the default filename based
+on the recommender type, and metric, and knowledgebase used.</p></li>
+<li><p><strong>scoring</strong> (<em>str</em>) – scoring for evaluating recommendations. It could be “r2”,
+“explained_variance”, “neg_mean_squared_error”</p></li>
+<li><p><strong>n_recs</strong> (<em>int</em>) – number of recommendations to make for each iteration</p></li>
+<li><p><strong>n_iters</strong> (<em>int</em>) – total number of iterations</p></li>
+<li><p><strong>knowledgebase</strong> (<em>str</em>) – input file for knowledgebase</p></li>
+<li><p><strong>kb_metafeatures</strong> (<em>str</em>) – input file for metafeature</p></li>
+<li><p><strong>config_dict</strong> (<em>python dictionary</em>) – dictionary for hyperparameter search space for all ML algorithms</p></li>
+<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+to ensemble top N best models into one model.</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>stopping_criteria</strong> (<em>int</em>) – A number of iterations without improvments in best metric.
+Stop recommendations early if the best metric
+does not improve in the number of iterations iterations.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – random state for recommenders</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em>) – The number of cores to dedicate to computing the scores with joblib.
+Assigning this parameter to -1 will dedicate as many cores as
+are available on your system.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="learn">
+<h2>Learn<a class="headerlink" href="#learn" title="Permalink to this headline">¶</a></h2>
+<p>This is the API for building ML models.
+PennAI uses scikit-learn to achieve this.</p>
+</div>
+<div class="section" id="io">
+<h2>IO<a class="headerlink" href="#io" title="Permalink to this headline">¶</a></h2>
+<p>These methods control data flow from the server to and from sklearn models.</p>
+<dl class="py class">
+<dt id="machine.learn.io_utils.Experiment">
+<em class="property">class </em><code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">basedir</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.Experiment" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="machine.learn.io_utils.Experiment.get_input">
+<code class="sig-name descname">get_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#Experiment.get_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.Experiment.get_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get input data based on experiment ID (_id) from PennAI API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>input_data</strong> – pandas.DataFrame: PennAI will use train_test_split to
+make train/test splits list of two pandas.DataFrame:
+The 1st pandas.DataFrame is training dataset,
+while the 2nd one is testing dataset</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pandas.Dataframe or list of two pandas.Dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="machine.learn.io_utils.Experiment.get_model">
+<code class="sig-name descname">get_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#Experiment.get_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.Experiment.get_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build scikit learn method based on arguments from PennAI API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>model</strong> (<em>scikit-learn Estimator</em>) – a machine learning model with scikit-learn API</p></li>
+<li><p><strong>method_type</strong> (<em>string</em>) – ‘classification’: classification model
+‘regression’: regression model</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.get_projects">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">get_projects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.get_projects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all machine learning algorithm’s information from PennAI API This
+information should be the same with projects.json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>projects</strong> – A dict of all machine learning algorithm’s information</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.parse_args">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">parse_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#parse_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.parse_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse arguments for machine learning algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>args</strong> (<em>dict</em>) – Arguments of a experiment from PennAI API</p></li>
+<li><p><strong>param_grid</strong> (<em>dict</em>) – Dictionary with parameters names (string) as keys
+and lists of parameter settings to try as values,
+or a list of such dictionaries, in which case the
+grids spanned by each dictionary in the list are
+explored. This enables searching over any sequence
+of parameter settings.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.get_input_data">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">get_input_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">tmpdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.get_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get input dataset information from PennAI API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Path of temporary directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>input_data</strong> (<em>pandas.Dataframe or list of two pandas.Dataframe</em>) – pandas.DataFrame: PennAI will use train_test_split
+to make train/test splits
+list of two pandas.DataFrame.
+The 1st pandas.DataFrame is training dataset,
+while the 2nd one is testing dataset</p></li>
+<li><p><strong>data_info</strong> (<em>dict</em>) –</p>
+<ul>
+<li><p>target_name: string, target column name</p></li>
+<li><p>filename: list, filename(s)</p></li>
+<li><p>categories: list, categorical feature name(s)</p></li>
+<li><p>ordinals: dict</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>keys: categorical feature name(s)</p></li>
+<li><p>values: categorical values</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.get_file_data">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">get_file_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_file_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.get_file_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to retrieve dataset file. If the file is corrupt or an error
+response is returned, it will rasie an ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_id</strong> (<em>string</em>) – File ID from the PennAI database</p></li>
+<li><p><strong>Return</strong> (<em>string</em>) – Dataset strings which will be read by pandas
+and converted to pd.DataFrame</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.check_column">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">check_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">column_name</span></em>, <em class="sig-param"><span class="n">dataframe</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#check_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.check_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if a column exists in Pandas DataFrame.
+:param column_name: column name
+:type column_name: string
+:param dataframe: input dataset DataFrame
+:type dataframe: pandas.DataFrame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.bool_type">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">bool_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#bool_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.bool_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert argument to boolean type.
+:param val: Value of a parameter in string type
+:type val: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>_</strong> – Converted value in boolean type</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.none">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">none</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.none" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert nono argument to None.
+:param val: Value of a parameter in string type
+:type val: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>_</strong> – If input value if “none”, then the function will return None,
+otherwise it will retune string.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.io_utils.get_type">
+<code class="sig-prename descclassname">machine.learn.io_utils.</code><code class="sig-name descname">get_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">param_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.io_utils.get_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return convertion function for input type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>param_type</strong> (<em>string</em><em> or </em><em>list</em>) – string, type of a parameter which is defined in projects.json
+list, list of parameter types
+(for parameter supportting multiple input types)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>known_types[type]</strong> – Function for converting argument from PennAI UI
+for assigning to scikit-learn estimator</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="scikit-learn-utils">
+<h2>Scikit-learn Utils<a class="headerlink" href="#scikit-learn-utils" title="Permalink to this headline">¶</a></h2>
+<p>These methods generate sklearn models and evaluate them.</p>
+<dl class="py function">
+<dt id="machine.learn.skl_utils.balanced_accuracy">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">balanced_accuracy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y_true</span></em>, <em class="sig-param"><span class="n">y_pred</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#balanced_accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.balanced_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default scoring function of classification: balanced accuracy.
+Balanced accuracy computes each class’ accuracy on a per-class basis using a
+one-vs-rest encoding, then computes an unweighted average of the class accuracies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>numpy.ndarray {n_samples}</em>) – True class labels</p></li>
+<li><p><strong>y_pred</strong> (<em>numpy.ndarray {n_samples}</em>) – Predicted class labels by the estimator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fitness</strong> – Returns a float value indicating balanced accuracy
+0.5 is as good as chance, and 1.0 is perfect predictive accuracy</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.generate_results">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">generate_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">input_data</span></em>, <em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">target_name</span><span class="o">=</span><span class="default_value">'class'</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'classification'</span></em>, <em class="sig-param"><span class="n">figure_export</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">['test_dataset']</span></em>, <em class="sig-param"><span class="n">categories</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ordinals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encoding_strategy</span><span class="o">=</span><span class="default_value">'OneHotEncoder'</span></em>, <em class="sig-param"><span class="n">param_grid</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#generate_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.generate_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate reaults for applying a model on dataset in PennAI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>scikit-learn Estimator</em>) – A machine learning model following scikit-learn API</p></li>
+<li><p><strong>input_data</strong> (<em>pandas.Dataframe</em><em> or </em><em>list of two pandas.Dataframe</em>) – pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.
+list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
+while the 2nd one is testing dataset</p></li>
+<li><p><strong>target_name</strong> (<em>string</em>) – Target name in input data</p></li>
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment id</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – ‘classification’: Run classification analysis
+‘regression’: Run regression analysis</p></li>
+<li><p><strong>figure_export</strong> (<em>boolean</em>) – If figure_export is True, the figures will be generated and exported.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random seed</p></li>
+<li><p><strong>filename</strong> (<em>list</em>) – Filename for input dataset</p></li>
+<li><p><strong>categories</strong> (<em>list</em>) – List of column names for one-hot encoding</p></li>
+<li><p><strong>ordinals</strong> (<em>dict</em>) – <dl class="simple">
+<dt>Dictionary of ordinal features:</dt><dd><p>Keys of dictionary: categorical feature name(s)
+Values of dictionary: categorical values</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>encoding_strategy</strong> (<em>string</em>) – Encoding strategy for categorical features defined in projects.json</p></li>
+<li><p><strong>param_grid</strong> (<em>dict</em>) – If grid_search is non-empty dictionary, then the experiment will
+do parameter tuning via GridSearchCV. It should report best result to UI
+and save all results to knowlegde base.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.get_col_idx">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">get_col_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_names_list</span></em>, <em class="sig-param"><span class="n">columns</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#get_col_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.get_col_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get unique indexes of columns based on list of column names.
+:param feature_names_list: List of column names on dataset
+:type feature_names_list: list
+:param columns: List of selected column names
+:type columns: list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>col_idx</strong> – list of selected column indexes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.setup_model_params">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">setup_model_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">parameter_name</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#setup_model_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.setup_model_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign value to a parameter in a model.
+:param model: Machine learning model following scikit-learn API
+:type model: scikit-learn Estimator
+:param parameter_name: Parameter name in the scikit-learn model
+:type parameter_name: string
+:param value: Values for assigning to the parameter
+:type value: object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>model</strong> – A new scikit-learn model with a updated parameter</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>scikit-learn Estimator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.compute_imp_score">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">compute_imp_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">metric</span></em>, <em class="sig-param"><span class="n">features</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">random_state</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#compute_imp_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.compute_imp_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute permuation importance scores for features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>model</strong> (<em>scikit-learn Estimator</em>) – A fitted scikit-learn model</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>callable</em>) – The metric for evaluating the feature importance through
+permutation. By default, the strings ‘accuracy’ is
+recommended for classifiers and the string ‘r2’ is
+recommended for regressors. Optionally, a custom
+scoring function (e.g., <cite>metric=scoring_func</cite>) that
+accepts two arguments, y_true and y_pred, which have
+similar shape to the <cite>y</cite> array.</p></li>
+<li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random seed for permuation importances</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>coefs</strong> (<em>np.darray</em>) – Feature importance scores</p></li>
+<li><p><strong>imp_score_type</strong> (<em>string</em>) – Importance score type</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.save_json_fmt">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">save_json_fmt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">content</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#save_json_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.save_json_fmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save results into json format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdir</strong> (<em>string</em>) – Path of output directory</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>fname</strong> (<em>string</em>) – File name</p></li>
+<li><p><strong>content</strong> (<em>list</em><em> or </em><em>directory</em>) – Content for results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.plot_confusion_matrix">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">plot_confusion_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">class_names</span></em>, <em class="sig-param"><span class="n">cv_scores</span></em>, <em class="sig-param"><span class="n">figure_export</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make plot for confusion matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>X</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>y</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+<li><p><strong>class_names</strong> (<em>list</em>) – List of class names</p></li>
+<li><p><strong>cv_scores</strong> (<em>dictionary</em>) – Return from sklearn.model_selection.cross_validate</p></li>
+<li><p><strong>figure_export</strong> (<em>boolean</em>) – If true, then export roc curve plot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.plot_roc_curve">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">plot_roc_curve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">cv_scores</span></em>, <em class="sig-param"><span class="n">figure_export</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_roc_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_roc_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot ROC Curve.
+:param tmpdir: Temporary directory for saving experiment results
+:type tmpdir: string
+:param _id: Experiment ID in PennAI
+:type _id: string
+:param X: Features in training dataset
+:type X: np.darray/pd.DataFrame
+:param y: Target in training dataset
+:type y: np.darray/pd.DataFrame
+:param cv_scores: Return from sklearn.model_selection.cross_validate
+:type cv_scores: dictionary
+:param figure_export: If true, then export roc curve plot
+:type figure_export: boolean</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.plot_imp_score">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">plot_imp_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">coefs</span></em>, <em class="sig-param"><span class="n">feature_names</span></em>, <em class="sig-param"><span class="n">imp_score_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_imp_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_imp_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot importance scores for features.
+:param tmpdir: Temporary directory for saving experiment results
+:type tmpdir: string
+:param _id: Experiment ID in PennAI
+:type _id: string
+:param coefs: Feature importance scores
+:type coefs: array
+:param feature_names: List of feature names
+:type feature_names: np.array
+:param imp_score_type: Importance score type
+:type imp_score_type: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>top_features</strong> (<em>list</em>) – Top features with high importance score</p></li>
+<li><p><strong>indices</strong> (<em>ndarray</em>) – Array of indices of top important features</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.plot_dot_plot">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">plot_dot_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">features</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">top_features_name</span></em>, <em class="sig-param"><span class="n">indices</span></em>, <em class="sig-param"><span class="n">random_state</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_dot_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_dot_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make dot plot for based on decision tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+<li><p><strong>top_features</strong> (<em>list</em>) – Top feature_names</p></li>
+<li><p><strong>indices</strong> (<em>ndarray</em>) – Array of indices of top important features</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random seed for permuation importances</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – ‘classification’: Run classification analysis
+‘regression’: Run regression analysis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Test score from fitting decision tree on top important feat’</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dtree_train_score, float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.export_model">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">export_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmpdir</span></em>, <em class="sig-param"><span class="n">_id</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">target_name</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'classification'</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">42</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#export_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.export_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>export model as a pickle file and generate a scripts for using the pickled model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>model</strong> (<em>scikit-learn estimator</em>) – A fitted scikit-learn model</p></li>
+<li><p><strong>filename</strong> (<em>string</em>) – File name of input dataset</p></li>
+<li><p><strong>target_name</strong> (<em>string</em>) – Target name in input data</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – ‘classification’: Run classification analysis
+‘regression’: Run regression analysis</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random seed in model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="machine.learn.skl_utils.generate_export_codes">
+<code class="sig-prename descclassname">machine.learn.skl_utils.</code><code class="sig-name descname">generate_export_codes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pickle_file_name</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">target_name</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'classification'</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">42</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#generate_export_codes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#machine.learn.skl_utils.generate_export_codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate all library import calls for use in stand alone python scripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pickle_file_name</strong> (<em>string</em>) – Pickle file name for a fitted scikit-learn estimator</p></li>
+<li><p><strong>model</strong> (<em>scikit-learn estimator</em>) – A fitted scikit-learn model</p></li>
+<li><p><strong>filename</strong> (<em>string</em>) – File name of input dataset</p></li>
+<li><p><strong>target_name</strong> (<em>string</em>) – Target name in input data</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – ‘classification’: Run classification analysis
+‘regression’: Run regression analysis</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random seed in model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pipeline_text</strong> – The Python scripts for applying the current
+optimized pipeline in stand-alone python environment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>String</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="userguide_sklearn_api.html" class="btn btn-neutral float-right" title="User Guide of PennAIpy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="recommenders.html" class="btn btn-neutral float-left" title="Recommenders" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Penn
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
