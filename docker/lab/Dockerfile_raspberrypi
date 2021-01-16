@@ -99,7 +99,7 @@ RUN set -ex \
   && yarn --version
 
 ARG docker_filepath=docker/lab/files
-ARG python_wheel_directory=docker/pennai-arm64-deps/lab
+ARG python_wheel_directory=docker/pennai-arm64-deps/lab/wheel
 
 RUN apt-get update --fix-missing && apt-get install -y \
     openssh-client openssh-server telnet apache2 \
@@ -152,11 +152,11 @@ RUN python --version
 RUN pip --version
 
 # setup python environment
-COPY ${docker_filepath}/requirements.txt /root/
+COPY ${docker_filepath}/requirements-raspberrypi.txt /root/
 RUN mkdir /root/wheel
-COPY ${python_wheel_directory}/lab /root/wheel
+COPY ${python_wheel_directory}/*.whl /root/wheel/
 RUN pip3 install --no-cache-dir cython
-RUN pip3 install --no-index --find-links=/root/wheel -r /root/requirements.txt
+RUN pip3 install --no-index --find-links=/root/wheel -r /root/requirements-raspberrypi.txt
 ### bill's surprise fork
 # NOTE: For some reason, this install doesn't seem to recognize the installed numpy
 #       when run on Docker. As a workaround, the `wheel` directory includes a wheel

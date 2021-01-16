@@ -54,7 +54,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && npm --version
 
 ARG docker_filepath=docker/machine/files
-ARG python_wheel_directory=docker/pennai-arm64-deps
+ARG python_wheel_directory=docker/pennai-arm64-deps/machine/wheel
 
 RUN apt-get update --fix-missing && apt-get install -y \
     openssh-client openssh-server graphviz \
@@ -67,11 +67,10 @@ RUN apt-get update --fix-missing && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # setup python environment
-COPY ${docker_filepath}/requirements.txt /root/
+COPY ${docker_filepath}/requirements-raspberrypi.txt /root/
 RUN mkdir /root/wheel
-COPY ${docker_filepath}/wheel /root/wheel
-COPY ${python_wheel_directory}/machine /root/wheel
-RUN python -m pip install --no-index --find-links=/root/wheel -r /root/requirements.txt
+COPY ${python_wheel_directory}/*.whl /root/wheel/
+RUN python -m pip install --no-index --find-links=/root/wheel -r /root/requirements-raspberrypi.txt
 
 # setup node environment
 RUN npm install -g pm2 --silent --progress=false
