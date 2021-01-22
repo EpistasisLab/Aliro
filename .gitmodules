@@ -1,0 +1,3 @@
+[submodule "surprise"]
+	path = surprise
+	url = https://github.com/lacava/surprise
