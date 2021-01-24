@@ -4,7 +4,7 @@ services:
   lab:
     build:
       context: .
-      dockerfile: docker/lab/Dockerfile_raspberrypi
+      dockerfile: docker/lab/rpi.Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -22,7 +22,7 @@ services:
   machine:
     build:
       context: .
-      dockerfile: docker/machine/Dockerfile_raspberrypi
+      dockerfile: docker/machine/rpi.Dockerfile
     tty: true
     stdin_open: true
     volumes:
@@ -40,7 +40,7 @@ services:
   dbmongo:
     build:
       context: .
-      dockerfile: docker/dbmongo/Dockerfile_raspberrypi
+      dockerfile: docker/dbmongo/rpi.Dockerfile
     tty: true
     stdin_open: true
     ports:
