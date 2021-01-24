@@ -1,4 +1,4 @@
-FROM python:3.7-stretch
+FROM python:3.7-buster
 
 ENV NODE_VERSION 12.20.0
 
@@ -59,12 +59,14 @@ ARG python_wheel_directory=docker/pennai-arm64-deps/machine/wheel
 RUN apt-get update --fix-missing && apt-get install -y \
     openssh-client openssh-server graphviz \
     net-tools iputils-ping xz-utils \
-    ngrep ca-cacert \
-    build-essential cmake lsb-core cpio mesa-common-dev \
+    ngrep \
+    libatlas-base-dev \
+    build-essential cmake cpio mesa-common-dev \
     libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+# Removed: lsb-core ca-cacert glibc
 
 # setup python environment
 COPY ${docker_filepath}/requirements-raspberrypi.txt /root/
