@@ -111,7 +111,7 @@ class FileUpload extends Component {
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
-
+    this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -975,105 +975,28 @@ handleCatFeaturesUserTextCancel() {
    *  @retuns {JSX} Return JSX with button for field type Ordinal, otherwise null for no button.
    */
   getDataTableOrdinalRankButton(feature) {
-        //Helper method for sortable list component
-        // https://github.com/clauderic/react-sortable-hoc
-        // https://clauderic.github.io/react-sortable-hoc/#/basic-configuration/multiple-lists?_k=7ghtqv
-        const SortableItem = SortableElement(({value}) => <li className={"file-upload-sortable-list-item"}>{value}</li>);
-        //Helper method for sortable list component
-        const SortableList = SortableContainer(({items}) => {
-          return (
-            <ul className={"file-upload-sortable-list"}>
-              {items.map((value, index) => (
-                <SortableItem key={`item-${value}`} index={index} value={value} />
-              ))}
-            </ul>
-          );
-        });
+    //If it's ordinal add a button for user to define rank of values within the feature,
+    // but only if we're not ranking another ordinal feature
+    if(this.state.ordinalFeaturesObject[feature] !== undefined && 
+      this.state.ordinalFeatureToRank === undefined) {
+        return (
+          <Segment>
+            <Button
+              content={"Rank"}
+              inverted
+              color="blue"
+              compact
+              size="small"
+              customfeaturetorank={feature}
+              onClick={this.handleOrdinalRankClick}
+            />
+          </Segment>                  
+        )
+      }
 
-        //If we're currently ranking this ordinal feature, show the sortable list
-        //
-        if(this.state.ordinalFeatureToRank === feature)
-          return (
-            //This puts the sortable list right in the cell. Awkward but it works.
-            <Segment>
-              <SortableList helperClass='file-upload-sortable-list-item-helper' items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
-              <Button
-                content={"Accept"}
-                inverted
-                color="blue"
-                compact
-                size="small"
-                onClick={this.handleOrdinalSortAccept}
-              />
-              <Button
-                content={"Cancel"}
-                inverted
-                color="blue"
-                compact
-                size="small"
-                onClick={this.handleOrdinalSortCancel}
-              />
-              </Segment>              
-            /* NOTE
-               This shows the modal pop-up like expected, and can properly drag the values around in the list,
-               But I get a warning that all children in list should have a unique 'key' prop, even though code
-               looks like they do. Can't figure out.
-               ALSO the styles set in SortableList aren't coming through here.
-            <Modal basic style={{ marginTop:'0' }} open={true} onClose={this.handleErrorModalClose} closeIcon>
-              <Modal.Header>Rank the feature's ordinal values</Modal.Header>
-              <Modal.Content>
-                <SortableList items={this.state.ordinalFeaturesObject[feature]} onSortEnd={this.handleOrdinalSortDragRelease} />
-              </Modal.Content>
-            </Modal>
-            */
-          )
-
-        //If it's ordinal add a button for user to define rank of values within the feature,
-        // but only if we're not ranking another ordinal feature
-        if(this.state.ordinalFeaturesObject[feature] !== undefined && 
-           this.state.ordinalFeatureToRank === undefined) {
-              return (
-                <Segment>
-                  <Button
-                    content={"Rank"}
-                    inverted
-                    color="blue"
-                    compact
-                    size="small"
-                    customfeaturetorank={feature}
-                    onClick={this.handleOrdinalRankClick}
-                  />
-                  
-                  {/*<Popup 
-                    key={'orderPopup_'+feature}
-                    on="click"
-                    position="right center"
-                    header="Rank the Feature Values"
-                    content={
-                      <div className="content">
-                      {"Drag-n-drop to change rank"}
-                      <SortableList items={this.state.ordinalFeaturesObject[feature]} onSortEnd={this.handleOrdinalSortDragRelease} />
-                      </div>
-                    }
-                    trigger={
-                      <Button
-                        content={"Rank"}
-                        inverted
-                        color="blue"
-                        compact
-                        size="small"
-                        customfeaturetorank={feature}
-                        onClick={this.handleOrdinalRankClick}
-                      />
-                      } 
-                    />*/}
-                </Segment>                  
-              )
-           }
-
-          //Otherwise just return null for no segment
-          return null;
-        }
+    //Otherwise just return null for no segment
+    return null;
+  }
 
   /**
    * Helper method to get all cells for the data table preview header row.
@@ -1427,6 +1350,7 @@ handleCatFeaturesUserTextCancel() {
               closeOnDimmerClick={false}
               closeOnEscape={true}
               disabled={this.state.ordinalFeatureToRank !== undefined}
+              inverted
             >
               <Modal.Header>Ordinal Feature Input</Modal.Header>
                 <Modal.Description style={{width: '65%', margin: '1em'}}>
@@ -1439,15 +1363,14 @@ handleCatFeaturesUserTextCancel() {
                   <br/>
                 </Modal.Description>
                 <Form>
-                <textarea
-                  className="file-upload-ordinal-text-area"
-                  id="ordinal_features_text_area_input"
-                  label="Ordinal Features"
-                  onChange={this.handleOrdinalFeaturesUserTextOnChange}
-                  placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
-                  value={this.state.ordinalFeaturesUserText}
-                >
-                </textarea>
+                  <textarea
+                    className="file-upload-ordinal-text-area"
+                    id="ordinal_features_text_area_input"
+                    label="Ordinal Features"
+                    onChange={this.handleOrdinalFeaturesUserTextOnChange}
+                    placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
+                    value={this.state.ordinalFeaturesUserText}
+                  />
                 </Form>
               <Modal.Actions>
                 <Button 
@@ -1614,6 +1537,52 @@ handleCatFeaturesUserTextCancel() {
     return content;
   }
 
+  getOridinalRankingDialog() {
+      //Helper method for sortable list component
+      // https://github.com/clauderic/react-sortable-hoc
+      // https://clauderic.github.io/react-sortable-hoc/#/basic-configuration/multiple-lists?_k=7ghtqv
+      const SortableItem = SortableElement(({value}) => <li className={"file-upload-sortable-list-item"}>{value}</li>);
+      //Helper method for sortable list component
+      const SortableList = SortableContainer(({items}) => {
+        return (
+          <ul className={"file-upload-sortable-list"}>
+            {items.map((value, index) => (
+              <SortableItem key={`item-${value}`} index={index} value={value} />
+            ))}
+          </ul>
+        );
+      });
+
+    return (
+      <div class="file-upload-centered-div">
+        <Segment raised compact>
+          <SceneHeader header="Rank the Feature Values"/>
+          <Segment raised style={{overflow: 'auto', maxHeight: '50vh' }}>
+            <SortableList helperClass='file-upload-sortable-list-item-helper' items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
+          </Segment>
+          <Button
+            content={"Accept"}
+            style={{float: 'right'}}
+            inverted
+            color="blue"
+            compact
+            size="small"
+            onClick={this.handleOrdinalSortAccept}
+          />
+          <Button
+            content={"Cancel"}
+            style={{float: 'right'}}
+            inverted
+            color="red"
+            compact
+            size="small"
+            onClick={this.handleOrdinalSortCancel}
+          />
+      </Segment>
+    </div>
+    )
+  }
+
   handleErrorModalClose(){
     this.setState({
       openErrorModal: false,
@@ -1691,9 +1660,18 @@ handleCatFeaturesUserTextCancel() {
         </React.Fragment>
       )
     }
+    
     //Progress spinner if we're loading and processing a file
     if( this.state.processingFileForPreview){
       return <Loader active inverted size="large" content="Processing your file..." />;      
+    }
+
+    //Show just the ordinal feature ranking UI if user has clicked 'Rank' button.
+    //NOTE there was a lot of trouble getting styling of this sortable list to work
+    // properly in the Semantic UI Modal element, so do it just this simple way as
+    // a pseudo-modal dialog.
+    if(this.state.ordinalFeatureToRank !== undefined) {
+      return this.getOridinalRankingDialog();
     }
 
     //Main UI elements
@@ -1738,7 +1716,16 @@ handleCatFeaturesUserTextCancel() {
               <Header inverted as='h4'> Upload </Header>
             </Divider>
 
-            <Form.Field>
+            <Form.Field style={{float: 'right'}}>
+              {/* Cancel button */}
+              <Button 
+                onClick={() => this.resetState()}
+                inverted               
+                className="file-upload-button"
+                color='red' 
+                content="Cancel"
+              />
+              {/* Upload Button */}
               <Button
                 inverted
                 color="blue"
@@ -1748,13 +1735,6 @@ handleCatFeaturesUserTextCancel() {
                 content="Upload Dataset"
                 className="file-upload-button"
                 onClick={this.handleUpload}
-              />
-              <Button 
-                  onClick={() => this.resetState()}
-                  color='red' 
-                  inverted               
-                  style={{float: 'right'}}
-                  content="Cancel"
               />
             </Form.Field>
             </div>

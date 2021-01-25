@@ -38,6 +38,9 @@ body {
 /* file upload form styling */
 .pennai .file-upload-segment {
     max-width: 630px;
+    /* add 'overflow: auto' so the floated child 
+       buttons stay contained within the segment */
+    overflow: auto;
 }
 .pennai .file-upload-form-dataset-input {
     width: 40%;
@@ -66,18 +69,27 @@ body {
 .pennai .file-upload-ordinal-text-area {
     width: 90%
 }
-.pennai .file-upload-sortable-list {
+.pennai .file-upload-centered-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 80vh;
+}
+.file-upload-sortable-list {
     list-style-type: none;
     margin: auto;
     width: 80%;
     padding: 10px 5px;
 }
-.pennai .file-upload-sortable-list-item {
+.file-upload-sortable-list-item {
     /*border-style: solid;*/
     border: 1px solid;
     text-align: center;
     padding: 2px;
     border-color: rgb(84,200,255);
+    color: rgba(255, 255, 255, 0.9);
     border-radius: 4px;
 }
 /* This class is for the list item that moves
@@ -89,20 +101,9 @@ the element isn't visible at all.
 See https://github.com/clauderic/react-sortable-hoc/issues/87
 */
 .file-upload-sortable-list-item-helper {
-    border: 2px solid;
-    text-align: center;
-    /* something happens to the padding compared to the regular item defined above,
-       and the text is aligned at bottom of border instead of middle.
-       But these settings aren't effecting things. Huh. 
-    */
-    padding-top: 0 !important;
-    padding-bottom: 5px !important;
-    border-color: yellow; /* rgb(84,200,255);*/
-    border-radius: 4px;
     z-index: 10; /*important*/
-    color: rgba(255,255,255,.9);
-    list-style-type: none; /*remove the bullet*/
- }
+    list-style-type: none;
+}
 .pennai .file-upload-table {
     line-height: 1;
 }
