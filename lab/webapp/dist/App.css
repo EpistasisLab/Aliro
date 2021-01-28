@@ -66,15 +66,25 @@ body {
 .pennai .file-upload-help-icon {
     padding-left: 0;
 }
-.pennai .file-upload-ordinal-text-area {
-    width: 90%
+.pennai .file-upload-pseudo-dialog-button {
+    size: "small";
+    float: right;
+}
+.pennai .file-upload-feature-text-info{
+    color:rgba(255, 255, 255, 0.9);
+    background-color:rgba(17, 17, 17, 0.9);
+}
+.pennai .file-upload-feature-text-input{
+    width: 100%;
+    color:rgba(255, 255, 255, 0.9);
+    background-color:rgba(17, 17, 17, 0.9);
+    resize: none;
 }
 .pennai .file-upload-centered-div {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
     min-height: 80vh;
 }
 .file-upload-sortable-list {

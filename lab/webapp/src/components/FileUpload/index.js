@@ -112,6 +112,8 @@ class FileUpload extends Component {
     this.getDependentColumn = this.getDependentColumn.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
+    this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
+    this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -1304,19 +1306,6 @@ handleCatFeaturesUserTextCancel() {
 
   /** Create the UI for users to enter feature types manually */
   getUserFeatureTypeControls() {
-    //First determine whether there's a user-supplied string of cat features to show that
-    // may contain feature ranges.
-    let catFeaturesUserTextToDisplay = this.state.catFeaturesUserText;
-    if( this.state.datasetPreview ) {
-      let res = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserTextRaw);
-      if( res.success ) {
-        // If the current fully expanded string equals the expanded verison of the raw string,
-        // show the raw string since it may contain feature ranges.
-        if( this.state.catFeaturesUserText.split(",").sort().join() === res.expanded.split(",").sort().join() ){
-          catFeaturesUserTextToDisplay = this.state.catFeaturesUserTextRaw;
-        }
-      }  
-    }
 
     let itemContent=(
       <React.Fragment>
@@ -1332,65 +1321,16 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Row>
         <Grid.Column>
           <Form.Input>
-            <Modal
-              trigger=
-                {<Button 
+            <Button
                   color='blue'
                   size='small'
                   fluid
                   inverted
                   disabled={this.state.ordinalFeatureToRank !== undefined}
                   className="file-upload-button"
-                >
-                  Set Ordinal
-                </Button>}
-              open={this.state.ordinalFeaturesUserTextModalOpen}
-              onOpen={() => this.setState({ordinalFeaturesUserTextModalOpen: true})}
-              onClose={() => this.handleOrdinalFeaturesUserTextCancel()}
-              closeOnDimmerClick={false}
-              closeOnEscape={true}
-              disabled={this.state.ordinalFeatureToRank !== undefined}
-              inverted
-            >
-              <Modal.Header>Ordinal Feature Input</Modal.Header>
-                <Modal.Description style={{width: '65%', margin: '1em'}}>
-                  <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
-                    &emsp;[feature name],[1st unique value],[2nd unique value],...</p>
-                  <p>For example:<br/>
-                    &emsp;month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec<br/>
-                    &emsp;day,mon,tue,wed,thu,fri,sat,sun</p>
-                  <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p>
-                  <br/>
-                </Modal.Description>
-                <Form>
-                  <textarea
-                    className="file-upload-ordinal-text-area"
-                    id="ordinal_features_text_area_input"
-                    label="Ordinal Features"
-                    onChange={this.handleOrdinalFeaturesUserTextOnChange}
-                    placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
-                    value={this.state.ordinalFeaturesUserText}
-                  />
-                </Form>
-              <Modal.Actions>
-                <Button 
-                  color='red' 
-                  onClick={this.handleOrdinalFeaturesUserTextCancel}
-                  size="small"
-                  inverted
-                  content="Cancel"
-                />
-                <Button
-                  content="Accept"
-                  icon='checkmark'
-                  onClick={this.handleOrdinalFeaturesUserTextAccept}
-                  positive
-                  inverted
-                  color="blue"
-                  size="small"
-                />
-              </Modal.Actions>
-            </Modal>
+                  content="Set Ordinal"
+                  onClick={() => this.setState({ordinalFeaturesUserTextModalOpen: !this.ordinalFeaturesUserTextModalOpen})}
+            />
             <Popup
               on="click"
               position="right center"
@@ -1414,70 +1354,16 @@ handleCatFeaturesUserTextCancel() {
         {/*---- Categorical Feature Text Input ----*/}
         <Grid.Column>
           <Form.Input>
-            <Modal
-              trigger={<Button 
-                color='blue'
-                size='small'
-                fluid
-                inverted
-                disabled={this.state.ordinalFeatureToRank !== undefined}
-                className="file-upload-button"
-              >
-                Set Categorical
-              </Button>}
-              open={this.state.catFeaturesUserTextModalOpen}
-              onOpen={() => this.setState({catFeaturesUserTextModalOpen: true})}
-              onClose={() => this.handleCatFeaturesUserTextCancel()}
-              closeOnDimmerClick={false}
-              closeOnEscape={true}
-            >
-              <Modal.Header>Categorical Feature Input</Modal.Header>
-                <Modal.Description style={{width: '65%', margin: '1em'}}>
-                  <p>Enter a comma-separated list to specify which features are Categorical.<br/>
-                      This will override selections in the Dataset Preview. </p>
-                  <p>For example:<br/>
-                      &emsp;<i>sex,eye_color,hair_color,disease_state</i>
-                  </p>
-                  <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
-                    and the range is expanded using the column numbers. For example, working from the example above in which
-                    we assume the features are present in the data in the same order as listed, entering <br/>
-                    &emsp;<i>sex-disease_state</i><br/><br/>
-                    would expand to<br/>
-                    &emsp;<i>sex,eye_color,hair_color,disease_state</i>
-                  </p>
-                  <br/>
-                </Modal.Description>
-                <Form>
-                <textarea
-                    className="file-upload-categorical-text-area"
-                    id="categorical_features_text_area_input"
-                    label="Categorical Features"
-                    onChange={this.handleCatFeaturesUserTextOnChange}
-                    onBlur={this.handleCatFeaturesUserTextBlur}
-                    placeholder={this.getCatFeatures().length === 0 ? "(No Categorical features have been specified)" : "" }
-                    value={catFeaturesUserTextToDisplay}
-                >
-                </textarea>
-                </Form>
-              <Modal.Actions>
-                <Button 
-                  color='red' 
-                  onClick={this.handleCatFeaturesUserTextCancel}
-                  size="small"
-                  inverted
-                  content="Cancel"
-                />
-                <Button
-                  content="Accept"
-                  icon='checkmark'
-                  onClick={this.handleCatFeaturesUserTextAccept}
-                  positive
-                  inverted
-                  color="blue"
-                  size="small"
-                />
-              </Modal.Actions>
-            </Modal>
+            <Button
+              color='blue'
+              size='small'
+              fluid
+              inverted
+              disabled={this.state.ordinalFeatureToRank !== undefined}
+              className="file-upload-button"
+              content="Set Categorical"
+              onClick={() => this.setState({catFeaturesUserTextModalOpen: true})}
+              />
             <Popup
               on="click"
               position="right center"
@@ -1537,6 +1423,11 @@ handleCatFeaturesUserTextCancel() {
     return content;
   }
 
+  /** Return the UI for ranking ordinal features via drag-and-drop 
+   *  NOTE there was a lot of trouble getting styling of this sortable list to work
+   *  properly in the Semantic UI Modal element, so do it just this simple way as
+   * a pseudo-modal dialog.
+  */
   getOridinalRankingDialog() {
       //Helper method for sortable list component
       // https://github.com/clauderic/react-sortable-hoc
@@ -1554,32 +1445,150 @@ handleCatFeaturesUserTextCancel() {
       });
 
     return (
-      <div class="file-upload-centered-div">
+      <div className="file-upload-centered-div">
         <Segment raised compact>
           <SceneHeader header="Rank the Feature Values"/>
           <Segment raised style={{overflow: 'auto', maxHeight: '50vh' }}>
             <SortableList helperClass='file-upload-sortable-list-item-helper' items={this.state.ordinalFeatureToRankValues} onSortEnd={this.handleOrdinalSortDragRelease} />
           </Segment>
           <Button
+            className='file-upload-pseudo-dialog-button'
             content={"Accept"}
-            style={{float: 'right'}}
             inverted
             color="blue"
-            compact
-            size="small"
             onClick={this.handleOrdinalSortAccept}
           />
           <Button
+            className='file-upload-pseudo-dialog-button'
             content={"Cancel"}
-            style={{float: 'right'}}
             inverted
             color="red"
-            compact
-            size="small"
             onClick={this.handleOrdinalSortCancel}
           />
-      </Segment>
-    </div>
+        </Segment>
+      </div>
+    )
+  }
+
+  /** Return a pseudo-modal UI for specifying categorical features via text input.
+   * NOTE couldn't get semantic ui react's Modal option to do the 'inverted' property,
+   * or to change colors based on styles, so am doing it this way with a simple div that
+   * replaces everything else while it's active. 
+   */
+  getCatFeaturesUserTextModal() {
+    //First determine whether there's a user-supplied string of cat features to show that
+    // may contain feature ranges.
+    let catFeaturesUserTextToDisplay = this.state.catFeaturesUserText;
+    if( this.state.datasetPreview ) {
+      let res = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserTextRaw);
+      if( res.success ) {
+        // If the current fully expanded string equals the expanded verison of the raw string,
+        // show the raw string since it may contain feature ranges.
+        if( this.state.catFeaturesUserText.split(",").sort().join() === res.expanded.split(",").sort().join() ){
+          catFeaturesUserTextToDisplay = this.state.catFeaturesUserTextRaw;
+        }
+      }  
+    }
+
+    return(
+      <div className="file-upload-centered-div">
+        <Segment raised compact >
+          <SceneHeader header="Categorical Feature Specification"/>
+          <Segment className="file-upload-feature-text-info">
+            <p>Enter a comma-separated list to specify which features are Categorical.<br/>
+                This will override selections in the Dataset Preview. </p>
+            <p>For example:<br/>
+                &emsp;<i>sex,eye_color,hair_color,disease_state</i>
+            </p>
+            <p>Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, 
+              and the range is expanded using the column numbers. For example, working from the example above in which
+              we assume the features are present in the data in the same order as listed, entering <br/>
+              &emsp;<i>sex-disease_state</i><br/><br/>
+              would expand to<br/>
+              &emsp;<i>sex,eye_color,hair_color,disease_state</i>
+            </p>
+          </Segment>
+          <Segment>
+            <textarea
+              className="file-upload-feature-text-input"
+              id="categorical_features_text_area_input"
+              label="Categorical Features"
+              onChange={this.handleCatFeaturesUserTextOnChange}
+              onBlur={this.handleCatFeaturesUserTextBlur}
+              placeholder={this.getCatFeatures().length === 0 ? "(No Categorical features have been specified)" : "" }
+              value={catFeaturesUserTextToDisplay}
+              autoFocus
+              rows={10}
+            />
+          </Segment>
+          <Button
+            className='file-upload-pseudo-dialog-button'
+            content="Accept"
+            icon='checkmark'
+            onClick={this.handleCatFeaturesUserTextAccept}
+            inverted
+            color="blue"
+          />
+          <Button 
+            className='file-upload-pseudo-dialog-button'
+            color='red' 
+            onClick={this.handleCatFeaturesUserTextCancel}
+            inverted
+            content="Cancel"
+          />
+        </Segment>
+      </div>
+    )
+  }
+
+  /** Return a pseudo-modal UI for specifying ordinal features and values via text input.
+   * NOTE couldn't get semantic ui react's Modal option to do the 'inverted' property,
+   * or to change colors based on styles, so am doing it this way with a simple div that
+   * replaces everything else while it's active. 
+   */
+  getOrdinalFeaturesUserTextModal() {
+    return(
+      <div className="file-upload-centered-div">
+        <Segment raised compact >
+          <SceneHeader header="Ordinal Feature Specification"/>
+          <Segment className="file-upload-feature-text-info">
+            <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
+              &emsp;[feature name],[1st unique value],[2nd unique value],...</p>
+            <p>For example:<br/>
+              &emsp;month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec<br/>
+              &emsp;day,mon,tue,wed,thu,fri,sat,sun</p>
+            <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p>
+            <br/>
+          </Segment>
+          <Segment>
+            <textarea
+              className="file-upload-feature-text-input"
+              id="ordinal_features_text_area_input"
+              label="Ordinal Features"
+              onChange={this.handleOrdinalFeaturesUserTextOnChange}
+              placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
+              value={this.state.ordinalFeaturesUserText}
+              autoFocus
+              rows={10}
+            />
+          </Segment>
+          <Button
+            className='file-upload-pseudo-dialog-button'
+            content="Accept"
+            icon='checkmark'
+            onClick={this.handleOrdinalFeaturesUserTextAccept}
+            color="blue"
+            inverted
+          />
+          <Button 
+            className='file-upload-pseudo-dialog-button'
+            color='red' 
+            onClick={this.handleOrdinalFeaturesUserTextCancel}
+            content="Cancel"
+            inverted
+          />
+        </Segment>
+      </div>
     )
   }
 
@@ -1666,12 +1675,33 @@ handleCatFeaturesUserTextCancel() {
       return <Loader active inverted size="large" content="Processing your file..." />;      
     }
 
+    //Modal for error messages
+    //NOTE - check this BEFORE the pseudo-modal dialogs and other blocking
+    // UI elements that get checked below before the main return statement.
+    // This is outside the main return statement scope because of the use
+    // of the pseudo-modal windows just below.
+    if(this.state.openErrorModal){
+      return(
+      <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon>
+        <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
+        <Modal.Content>{this.state.errorModalContent}</Modal.Content>
+      </Modal>
+      )
+    }
+  
     //Show just the ordinal feature ranking UI if user has clicked 'Rank' button.
-    //NOTE there was a lot of trouble getting styling of this sortable list to work
-    // properly in the Semantic UI Modal element, so do it just this simple way as
-    // a pseudo-modal dialog.
     if(this.state.ordinalFeatureToRank !== undefined) {
       return this.getOridinalRankingDialog();
+    }
+
+    //Show pseudo-modal window for textual input of ordinal feature specifications.
+    if(this.state.ordinalFeaturesUserTextModalOpen) {
+      return this.getOrdinalFeaturesUserTextModal();
+    }
+
+    //Show pseudo-modal window for textual input of categorical feature specifications.
+    if(this.state.catFeaturesUserTextModalOpen) {
+      return this.getCatFeaturesUserTextModal();
     }
 
     //Main UI elements
@@ -1683,13 +1713,6 @@ handleCatFeaturesUserTextCancel() {
             
             {/* Handle file input */}
             {fileInputElem}
-
-            {/*Modal for error messages*/}
-            <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon>
-              <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
-              <Modal.Content>{this.state.errorModalContent}</Modal.Content>
-            </Modal>
-            <br/>
 
             <div
               id="file-upload-form-input-area"
