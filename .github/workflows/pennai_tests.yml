@@ -71,15 +71,8 @@ jobs:
         uses: AndreMiras/coveralls-python-action@develop
         with:
           parallel: true
-          flag-name: Unit Test
-  coveralls_finish:
-    needs: build_web_app
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        parallel-finished: true
+          flag-name: Unit Test for webapp
+
   build_pypkg:
     name: Unit Tests for scikit-learn API
     # The type of runner that the job will run on
@@ -91,18 +84,43 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.7'
-
       - name: Build Docker Images
         run: |
           docker-compose -f ./docker-compose-unit-test.yml build -m 8g
-
       # Runs a set of commands using the runners shell
       - name: Run Unit Tests
         run: |
           git lfs fetch --all
           git lfs pull
-          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
-      # Run deployment steps if pervious steps are success
+          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester coverage run -m nose -s -v ai/tests/test_sklearn_api.py
+          coverage combine
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test for scikit-learn api
+
+  coveralls_finish:
+    needs: [build_web_app, build_pypkg]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true
+
+  deploy_pypkg:
+    name: Deploy python package
+    needs: build_pypkg
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
       - name: Install dependencies
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: |
@@ -119,7 +137,7 @@ jobs:
 
   build_docs:
     name: Doc Builder
-    needs: [build_int_test, build_web_app]
+    needs: [build_int_test, build_web_app, build_pypkg]
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
