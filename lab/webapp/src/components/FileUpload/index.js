@@ -94,7 +94,7 @@ class FileUpload extends Component {
     this.handleOrdinalSortDragRelease = this.handleOrdinalSortDragRelease.bind(this);
     this.handleOrdinalRankClick = this.handleOrdinalRankClick.bind(this);
     this.handleOrdinalSortAccept = this.handleOrdinalSortAccept.bind(this);
-    this.handleOrdinalSortCancel = this.handleOrdinalSortCancel.bind(this);
+    this.handleOrdinalRankCancel = this.handleOrdinalRankCancel.bind(this);
     this.getUniqueValuesForFeature = this.getUniqueValuesForFeature.bind(this);
     this.getFeatureDefaultType = this.getFeatureDefaultType.bind(this);
     this.ordinalFeaturesClearToDefault = this.ordinalFeaturesClearToDefault.bind(this);
@@ -114,6 +114,8 @@ class FileUpload extends Component {
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
     this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
+    this.escFunction = this.escFunction.bind(this);
+
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
@@ -207,6 +209,22 @@ class FileUpload extends Component {
   */
   componentDidMount() {
     this.setState(this.initState); //Not sure why this is called here
+    document.addEventListener("keydown", this.escFunction, false);
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.escFunction, false);
+  }
+
+  /** Special document-wide key event handler.
+   * Use it to handle our pseudo-modal dialogs.
+   */
+  escFunction(event){
+    if(event.keyCode === 27 ) {
+      this.handleOrdinalRankCancel();
+      this.handleOrdinalFeaturesUserTextCancel();
+      this.handleCatFeaturesUserTextCancel();
+    }
   }
 
   /** Helper routine for debugging. Get elapsed time in sec from 
@@ -840,8 +858,8 @@ handleCatFeaturesUserTextCancel() {
     });
   }
 
-  /** Handle user canceling the ordinal sort/ranking */
-  handleOrdinalSortCancel() {
+  /** Handle user canceling the ordinal sort/ranking and modal text-input */
+  handleOrdinalRankCancel() {
     this.setState({
       ordinalFeatureToRank: undefined,
       ordinalFeatureToRankValues: []
@@ -1463,7 +1481,7 @@ handleCatFeaturesUserTextCancel() {
             content={"Cancel"}
             inverted
             color="red"
-            onClick={this.handleOrdinalSortCancel}
+            onClick={this.handleOrdinalRankCancel}
           />
         </Segment>
       </div>
@@ -1491,6 +1509,11 @@ handleCatFeaturesUserTextCancel() {
     }
 
     return(
+      //--
+      // NOTE the component layout and classNames used here are the same as for getOrdinalFeaturesUserTextModal,
+      // but that one renders with a nice width-limited top-segment, while this one renders and stretches to fill
+      // window width. I can't figure out why.
+      //--
       <div className="file-upload-centered-div">
         <Segment raised compact >
           <SceneHeader header="Categorical Feature Specification"/>
@@ -1549,7 +1572,7 @@ handleCatFeaturesUserTextCancel() {
   getOrdinalFeaturesUserTextModal() {
     return(
       <div className="file-upload-centered-div">
-        <Segment raised compact >
+        <Segment raised compact>
           <SceneHeader header="Ordinal Feature Specification"/>
           <Segment className="file-upload-feature-text-info">
             <p> For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): <br/>
