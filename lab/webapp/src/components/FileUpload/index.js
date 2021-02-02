@@ -114,7 +114,8 @@ class FileUpload extends Component {
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
     this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
-    this.escFunction = this.escFunction.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.enableKeyDownHandler = this.enableKeyDownHandler.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -155,6 +156,10 @@ class FileUpload extends Component {
       selectedFile: null,
       /** Flag tells us when a file is being loaded and processed for preview. */
       processingFileForPreview: false,
+      /** The dataset object for preview, read from file */
+      datasetPreview: null,
+      /** Show the model error dialog */
+      showErrorModal: false,
       /** {array} String-array holding the type for each feature, in same index order as features within the data. 
        * For assignment, use the gettors:
        *  featureTypeNumeric, featureTypeCategorical,  featureTypeOrdinal, featureTypeDependent }
@@ -195,31 +200,40 @@ class FileUpload extends Component {
     }
   }
 
+  /** Reset the state to its default, clearing any loaded data. */
   resetState() {
-    this.setState({
-      selectedFile: null,
-      datasetPreview: null,
-      openErrorModal: false,
-      processingFileForPreview: false
-    });  
+    this.setState(this.initState);
   }
 
   /**
   * React lifecycle method, when component loads into html dom, 'reset' state
   */
   componentDidMount() {
-    this.setState(this.initState); //Not sure why this is called here
-    document.addEventListener("keydown", this.escFunction, false);
+    this.resetState(); //Not sure why this is called here
+    //Add listener for keystrokes so we can process esc key globablly.
+    this.enableKeyDownHandler(true);
   }
 
   componentWillUnmount(){
-    document.removeEventListener("keydown", this.escFunction, false);
+    //Supposedly if we don't remove the listener we can get memory leaks
+    this.enableKeyDownHandler(false);
   }
 
-  /** Special document-wide key event handler.
-   * Use it to handle our pseudo-modal dialogs.
-   */
-  escFunction(event){
+  enableKeyDownHandler(enable){
+    if(enable){
+      //Do this with a delay because otherwise any events (e.g. from modal error dialog)
+      // meant to be handled by a proper modal dialog will also be handled by this handler,
+      // which we don't want.
+      setTimeout(() => {document.addEventListener("keydown", this.handleKeyDown, false);}, 100);
+    }
+    else {
+      document.removeEventListener("keydown", this.handleKeyDown, false);
+    }
+  }
+
+  /** Special document-wide key event handler */
+  handleKeyDown(event){
+    //handle escape key to close our pseudo-modal dialogs.
     if(event.keyCode === 27 ) {
       this.handleOrdinalRankCancel();
       this.handleOrdinalFeaturesUserTextCancel();
@@ -531,7 +545,7 @@ handleCatFeaturesUserTextCancel() {
           this.setState({
             selectedFile: null,
             datasetPreview: null,
-            openErrorModal: false,
+            showErrorModal: false,
             processingFileForPreview: false
           });
           this.showErrorModal("Error With File", JSON.stringify(error));
@@ -544,7 +558,7 @@ handleCatFeaturesUserTextCancel() {
         this.setState({
           selectedFile: files[0],
           datasetPreview: null,
-          openErrorModal: false,
+          showErrorModal: false,
           processingFileForPreview: true
         });
 
@@ -553,7 +567,7 @@ handleCatFeaturesUserTextCancel() {
         this.setState({
           selectedFile: null,
           datasetPreview: null,
-          openErrorModal: true,
+          showErrorModal: true,
           processingFileForPreview: false
         });
       }
@@ -1617,10 +1631,12 @@ handleCatFeaturesUserTextCancel() {
 
   handleErrorModalClose(){
     this.setState({
-      openErrorModal: false,
+      showErrorModal: false,
       errorModalHeader: "",
       errorModalContent: ""
     });
+    //Reenable document-wide keydown handling
+    this.enableKeyDownHandler(true);
   }  
 
   /**
@@ -1631,8 +1647,14 @@ handleCatFeaturesUserTextCancel() {
    * @return {void} 
    */
   showErrorModal(header, content) {
+    //Turn off document-wide key handling because they'll get handled
+    // by this modal, but then also by document, which is not what we want.
+    // If we leave this enabled at his esc to dismiss error dialog, the esc
+    // keydown event is also caught by the document and closes the other
+    // dialog that may be open under the error dialog. ugly.
+    this.enableKeyDownHandler(false);
     this.setState({
-      openErrorModal: true,
+      showErrorModal: true,
       errorModalHeader: header,
       errorModalContent: content
     });
@@ -1703,9 +1725,9 @@ handleCatFeaturesUserTextCancel() {
     // UI elements that get checked below before the main return statement.
     // This is outside the main return statement scope because of the use
     // of the pseudo-modal windows just below.
-    if(this.state.openErrorModal){
+    if(this.state.showErrorModal){
       return(
-      <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon>
+      <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon>
         <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
         <Modal.Content>{this.state.errorModalContent}</Modal.Content>
       </Modal>
