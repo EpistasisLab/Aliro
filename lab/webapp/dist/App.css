@@ -66,6 +66,9 @@ body {
 .pennai .file-upload-help-icon {
     padding-left: 0;
 }
+.pennai .file-upload-header {
+    margin-top: 1em;
+}
 .pennai .file-upload-pseudo-dialog-button {
     size: "small";
     float: right;
@@ -437,10 +440,13 @@ See https://github.com/clauderic/react-sortable-hoc/issues/87
  * The bug is in v1.3.1 and v2.0.0.
  * Note that there's no way to reference a color value from the .ui class
  * that defines the inverted color w/out adding a css preprocessor */
- .pennai .inverted-dropdown-search .ui.search.dropdown {
+.pennai .inverted-dropdown-search .ui.search.dropdown {
     color: rgba(255,255,255,0.9);
+    border: 2px solid rgb(84,200,255);
+    border-radius: 4px;
+    padding: 0.4em 1em;
 }
- .pennai .inverted-dropdown-search .ui.search.dropdown > input.search {
+.pennai .inverted-dropdown-search .ui.search.dropdown > input.search {
     color: rgba(255,255,255,0.9);
 }
 /* Manual fix for color of dropdown text in an inline form.field dropdown control
@@ -448,6 +454,9 @@ See https://github.com/clauderic/react-sortable-hoc/issues/87
 */
 .pennai .inverted-dropdown-inline .ui.dropdown {
     color: rgba(255,255,255,0.9);
+    border: 2px solid rgb(84,200,255);
+    border-radius: 4px;
+    padding: 0.4em 1em;
 }
 
 .gauge {

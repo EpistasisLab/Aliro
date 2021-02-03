@@ -1266,22 +1266,23 @@ handleCatFeaturesUserTextCancel() {
     return (
         <Grid columns={4} >
         <Grid.Row>
-          <Grid.Column width={7}>
+          <Grid.Column width={6}>
             <Form.Field 
               inline
               label="Target"
               control={Dropdown}
               search
+              fluid
               placeholder="Select a column"
               options={depColOptions}
               onChange={this.handleDepColDropdown}
               className="inverted-dropdown-search"
             />
           </Grid.Column>
-          <Grid.Column width={1}>
+          <Grid.Column width={2} style={{marginTop: '1.9em', paddingLeft: '0'}}>
             <Popup
               on="click"
-              header="Dependent Column Help"
+              header="Target Column Help"
               position="right center"
               content={
                 <div className="content">
@@ -1307,10 +1308,11 @@ handleCatFeaturesUserTextCancel() {
               defaultValue={this.defaultPredictionType}
               options={predictionOptions}
               onChange = {this.handlePredictionType}
+              fluid
               className="inverted-dropdown-inline"
             />
           </Grid.Column>
-          <Grid.Column width={2}>
+          <Grid.Column width={2} style={{marginTop: '1.9em', paddingLeft: '0'}}>
             <Popup
               on="click"
               position="left center"
@@ -1704,11 +1706,11 @@ handleCatFeaturesUserTextCancel() {
       fileInputElem = (
         <React.Fragment>
           <Divider inverted horizontal>
-            <Header inverted as='h4'>
+            <Header inverted as='h4' className="file-upload-header">
               File
             </Header>
            </Divider>
-          <Header inverted as='h5'>
+          <Header inverted as='h5' style={{marginTop: '1em'}}>
             {this.state.selectedFile.name}
           </Header>
         </React.Fragment>
