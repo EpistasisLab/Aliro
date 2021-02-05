@@ -34,6 +34,7 @@ import { Grid, Segment, Header, Table, Loader, Icon, GridColumn } from 'semantic
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
 import BarChart from '../BarChart';
+import StackedBarChart from '../StackedBarChart';
 
 class Dataset extends Component {
   constructor(props) {
@@ -90,6 +91,23 @@ class Dataset extends Component {
   handleCloseFileDetails() {
     this.setState({ metadataStuff: null });
   }
+
+  // fetchCsv() {
+  //   return fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv').then(function (response) {
+  //       let reader = response.body.getReader();
+  //       let decoder = new TextDecoder('utf-8');
+
+  //       return reader.read().then(function (result) {
+  //           return decoder.decode(result.value);
+  //       });
+  //   });
+  // }
+
+  // fetchPlotData() {
+  //   console.log("called fetchplotdata")
+  //   let csvData = this.fetchCsv();
+  //   return Papa.parse(csvData)
+  // }
 
   getCatAndOrdTable() {
     const { dataset } = this.state;
@@ -196,6 +214,13 @@ class Dataset extends Component {
     //window.console.log("ord feats: ", ord_feats);
 
     let catAndOrdTable = this.getCatAndOrdTable();
+    let plotData = [
+      {"group":"banana", "Nitrogen":"12", "normal":"1", "stress":"13"},
+      {"group":"poacee", "Nitrogen":"6", "normal":"6", "stress":"33"},
+      {"group":"sorgho", "Nitrogen":"11", "normal":"28", "stress":"12"},
+      {"group": "triticum", "Nitrogen":"19", "normal":"6", "stress":"1"}
+    ]
+    //console.log(plotData);
 
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
       if(first.includes(key)) { return; }
@@ -310,7 +335,7 @@ class Dataset extends Component {
             </Segment>
           </Grid.Column>
           <Grid.Column>
-            <BarChart data={[5,10,1,3]} size={[500,500]} />
+            <StackedBarChart />
           </Grid.Column>
         </Grid>
       </div>
