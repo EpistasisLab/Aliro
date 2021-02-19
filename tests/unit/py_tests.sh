@@ -42,8 +42,8 @@ coverage combine
 coverage html -d "${COVERAGE_PATH}/html"
 coverage xml -o "${COVERAGE_PATH}/nose_cover.xml"
 
-echo "coverage erase"
-coverage erase
+#echo "coverage erase"
+#coverage erase
 
 echo "starting mocha tests"
 mocha --reporter xunit --reporter-options output="${REPORT_PATH}/mocha_xunit.xml" $MOCHA_TESTS
