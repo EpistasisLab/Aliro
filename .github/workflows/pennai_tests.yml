@@ -1,4 +1,4 @@
-name: Tests of PennAI
+name: PennAI CI/CD
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events
@@ -13,7 +13,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build_int_test:
-    name: Integration Tests of PennAI
+    name: Integration Tests
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -102,7 +102,7 @@ jobs:
           flag-name: Unit Test for scikit-learn api
 
   coveralls_finish:
-    name: Coveralls Done
+    name: Publish Coveralls
     needs: [build_web_app, build_pypkg]
     runs-on: ubuntu-latest
     steps:
@@ -138,7 +138,9 @@ jobs:
           twine upload dist/*
 
   build_docs:
-    name: Doc Builder
+    # Only publish docs on master branch
+    if: github.ref == 'refs/heads/master'
+    name: Publish Docs
     needs: [build_int_test, build_web_app, build_pypkg]
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
