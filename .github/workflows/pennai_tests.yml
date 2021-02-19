@@ -55,7 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: |
           git lfs fetch --all
-          docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit -V
+          docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit -V
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
         with:
@@ -101,6 +101,7 @@ jobs:
         parallel-finished: true
 
   deploy_pypkg:
+    if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
     name: Deploy python package
     needs: build_pypkg
     # The type of runner that the job will run on
