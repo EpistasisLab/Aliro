@@ -364,7 +364,7 @@ class Results extends Component {
                   scores={experiment.data.scores}
                 />
                 <Score
-                  scoreName="R2"
+                  scoreName="R^2"
                   scoreValueList={R2List}
                   chartKey="R2"
                   chartColor="#55D6BE"
