@@ -64,7 +64,7 @@ function BestResult({ result, hasMetadata }) {
             inverted
             progress='value'
             value={getValue()}
-            total='1'
+            total='1.0'
             className="accuracy-score"
             label="R^2"
           />

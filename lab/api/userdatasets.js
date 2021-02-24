@@ -131,18 +131,21 @@ var annotate_dataset = function(dataset) {
     var running = 0;
     var finished = 0;
     var failed = 0;
-    var best_score = 0;
+    var best_score; // R^2 scores can be negative
     var best_experiment_id;
     var best_experiment_name;
     var prediction_type;
     if (dataset['experiments']) {
         experiments = dataset['experiments']
         prediction_type = experiments[0]['_prediction_type']
+        
         for (var j = 0; j < experiments.length; j++) {
             var experiment = experiments[j];
             var _status = experiment['_status'];
             var _scores = experiment['_scores'];
-            if (_scores !== undefined && _scores['exp_table_score'] >= best_score) {
+
+            if (_scores !== undefined && 
+                ( best_score == undefined || _scores['exp_table_score'] >= best_score) ) {
                 best_score = _scores['exp_table_score']
                 best_experiment_id = experiment['_id']
                 if (experiment['algorithm'] && experiment['algorithm']['name']) {
