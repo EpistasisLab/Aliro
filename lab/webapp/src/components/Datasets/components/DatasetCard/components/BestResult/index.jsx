@@ -46,6 +46,13 @@ function BestResult({ result, hasMetadata }) {
   
   const getValue = () => (result.score).toFixed(2);
 
+  /*
+  const getValue = () => {
+    if (result.score <=0 ) return '≤ 0';
+    return (result.score).toFixed(2);
+  }
+  */
+
   const renderProgressBar = (result) => {
     switch(result.prediction_type) {
       case 'classification':
@@ -66,7 +73,7 @@ function BestResult({ result, hasMetadata }) {
             value={getValue()}
             total='1.0'
             className="accuracy-score"
-            label="R^2"
+            label="Coefficient of Determination"
           />
         );
       default:

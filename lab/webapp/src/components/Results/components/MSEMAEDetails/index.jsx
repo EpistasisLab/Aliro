@@ -81,32 +81,32 @@ function MSEMAEDetails({scores}) {
             <Header
               inverted
               as='h4'
-              content="Train/Test"
+              content='Train/&thinsp;Test'
             />
           </Grid.Column>
           <Grid.Column>
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content="MSE"
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content={scores['train_neg_mean_squared_error_score'].toFixed(2)}
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content={scores['neg_mean_squared_error_score'].toFixed(2)}
             />
           </Grid.Column>
           <Grid.Column>
-          <Header inverted as='h5'>
+          <Header inverted as='h5' sub>
             {msefold.toFixed(2)}
             <Popup content={mseicons[2]}
             trigger={
@@ -123,26 +123,26 @@ function MSEMAEDetails({scores}) {
           <Grid.Column>
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content="MAE"
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content={scores['train_neg_mean_absolute_error_score'].toFixed(2)}
             />
           </Grid.Column>
           <Grid.Column textAlign="center">
             <Header
               inverted
-              as='h5'
+              as='h5' sub
               content={scores['neg_mean_absolute_error_score'].toFixed(2)}
             />
           </Grid.Column>
           <Grid.Column>
-            <Header inverted as='h5'>
+            <Header inverted as='h5' sub>
               {maefold.toFixed(2)}
               <Popup content={maeicons[2]}
               trigger={
