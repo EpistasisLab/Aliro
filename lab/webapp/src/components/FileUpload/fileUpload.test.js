@@ -56,34 +56,39 @@ configure({ adapter: new Adapter() });
 describe('basic testing of fileupload react component', () => {
   let store = mockStore(initialState);
   let fullDom;
+  let shallowDom;
   let instance;
-  let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
-  let fakeFileTsv = {target: {files: [{name: 'iris.tsv'}]}};
-  let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
+  let fakeFile = {name: 'iris.csv'};
+  let fakeFileTsv = {name: 'iris.tsv'};
+  let badFakeFile = {name: 'iris.txt'};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
     fullDom = mount(<FileUpload store={store} testProp='hello' />);
-    instance = shallow(<FileUpload store={store}/>).dive().instance();
+    //NOTE with react-redux, need 'dive()' to get the 'true' (not sure of the term) component instance.
+    shallowDom = shallow(<FileUpload store={store}/>).dive();
+    instance = shallowDom.instance();
   })
   afterEach(() => {
     fullDom.unmount();
   })
 
   //test that the componement instance is viable
-  it('test instance', () => {
-    //NOTE with react-redux, need 'dive()' to get the 'true' (not sure of the term) component instance.
+  //NOTE 'it' is an alias for 'test'
+  it('DONE - test instance', () => {
     expect(instance).not.toEqual(null);
     //Test calling a method on the instance
     expect(instance.instanceTest()).toEqual('foobar');
     //Test retrieving state from the instance. See note above about accessing state.
     expect(instance.state.testStateValue).toEqual('foobar');
+    expect(shallowDom.state('testStateValue')).toEqual('foobar');
   })
 
   // test for existence
-  //NOTE 'it' is an alias for 'test'
-  it('create mock fileupload component, test for existence', () => {
+  it('DONE - fileupload component, test for existence', () => {
     //console.log('jest console log!'); //this works, outputs to console at test script runtime
+    // Find the component itself
+    expect(fullDom.find(FileUpload)).toHaveLength(1);
     fullDom.setProps({ name: 'bar' });
     expect(fullDom.name()).toEqual('Connect(FileUpload)');
     expect(fullDom.props().testProp).toEqual('hello');
@@ -92,304 +97,49 @@ describe('basic testing of fileupload react component', () => {
 
   //snapshot of component
   //I believe shallow is better since it won't include child components
-  it('full component snapshot', () => {
+  it('DONE - full component snapshot', () => {
     expect(shallow(<FileUpload store={store}/>).dive()).toMatchSnapshot();
   })
 
-  it('simple change to component state', () => {
-    expect(fullDom.props().name).toBeUndefined();
-    expect(fullDom.state('dependentCol')).toBeUndefined();
-    fullDom.setState({dependentCol: 'class'})
-    expect(fullDom.state('dependentCol')).toEqual('class');
-  })
-
-  it('TODO - simulate user entering data with file upload form inputs', () => {
-    expect(fullDom.find('FileUpload').length).toEqual(1);
-
-    // asked about how to simulate user actions here, using enzyme simulate doesn't quite
-    // work, using 'onChange' prop to fake user action:
-    // https://stackoverflow.com/questions/55638365/how-to-access-internal-pieces-of-react-component-and-mock-api-call-with-jest-e/55641884#55641884
-
-    // these actions are supposed to tigger event handlers in the component being
-    // tested (which they do) & update component react state (which doesn't appear to happen)
-    // this might be a limitation of enzyme
-
-/*
-    // this should create a browser console error - using javascript library to
-    // create a file preview which attempts to parse given input, if input not a
-    // file/blob the error is generated. The file onChange handler attempts to
-    // create the file preview and set the selected file obj and file name in
-    // the component's react state
-
-    fullDom.find('input').at(0).prop('onChange')(fakeFile);
-
-    // update() is supposed to forceUpdate/re-render the component
-    fullDom.update();
-    // manually updating, component react state does not contain anything, in any
-    // case need to call update() to access elements by html dom ID
-
-
-    // the following is a standin for user input entering metadata
-
-    let depColTextField = fullDom.find('#dependent_column_text_field_input').at(0);
-    // still need to access with 'at', using find('#dependent_column_text_field_input')
-    // returns 4 nodes somehow
-    depColTextField.prop('onChange')(
-      {target:{value: 'test_class'}},
-      {value:'test dep input'}
-    );
-    let ordTextArea = fullDom.find('#ordinal_features_text_area_input');
-    ordTextArea.prop('onChange')(
-      {target:{value: {testOrdKey: 'testHello'}}},
-      {value:'test ord input'}
-    );
-    let catTextArea = fullDom.find('#categorical_features_text_area_input');
-    catTextArea.prop('onChange')(
-      {target:{value: 'testCatHello1, testCatHello2'}},
-      {value:'test cat input'}
-    );
-    // cheating for now and just updating component state directly...
-    fullDom.setState({
-      selectedFile: fakeFile.target.files[0],
-      ordinalFeatures: {testOrdKey: 'testHello'},
-      catFeatures: 'testCatHello1, testCatHello2',
-      dependentCol: 'test_class'
-    });
-    //console.log('test state: ', fullDom.state());
-    //console.log('test file: ', fullDom.state('selectedFile'));
-    // ...and checking for state which was just manually set above
-    expect(fullDom.state('selectedFile')).toEqual(fakeFile.target.files[0]);
-    expect(fullDom.state('ordinalFeatures')).toEqual({testOrdKey: 'testHello'});
-    expect(fullDom.state('catFeatures')).toEqual('testCatHello1, testCatHello2');
-    expect(fullDom.state('dependentCol')).toEqual('test_class');
-  */
-  })
-
-  it('TODO - try uploading non csv/tsv file type', () => {
-/*
-    fullDom.find('input').at(0).prop('onChange')(badFakeFile);
-    fullDom.update();
-    //expect(fullDom.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
-    expect(fullDom.state('selectedFile')).toBeUndefined();
-    let formBody = fullDom.find('#file-upload-form-input-area');
+  // the intended behavior of this component is to hide the fields to enter info
+  // about the file being uploaded until a file with a filename has been selected
+  it('DONE - check UI form is hidden w/o a file selection', () => {
+    let formBody = shallowDom.find('#file-upload-form-input-area');
+    expect(formBody.length).toEqual(1)
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
-*/
   })
+  
+  it('TODO - try selecting non-csv/tsv file type', () => {
 
-  it('TODO - try testing generateFileData - good input', () => {
-/*
-    // use dive() to get at inner FileUpload class functions -
-    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
-    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
-    // all input from user will be read as strings
-    const fakeUserInput = {
-      depCol: 'target_class',
-      catCols: 'a, b, c',
-      ordFeats: '{"species": ["cat", "dog", "bird"]}'
-    };
-    // add fake file with filename so generateFileData will do something, if
-    // no file & filename present generateFileData returns blank/empty formData
-    shallowFileUpload.setState({
-      selectedFile: fakeFile.target.files[0],
-      dependentCol: fakeUserInput.depCol,
-      catFeatures: fakeUserInput.catCols,
-      ordinalFeatures: fakeUserInput.ordFeats
-    });
-
-    // expect list of comma separated cat cols to get parsed with string split
-    // dependent columns will be stored as is (type string)
-    // ordFeats will parse given JSON
-    const expectedInput = {
-      depCol: 'target_class',
-      catCols: ['a', 'b', 'c'],
-      ordFeats: {
-        species: ["cat", "dog", "bird"]
-      }
-    };
-    // use instance to get access to inner function
-    const instance = shallowFileUpload.instance();
-    // create spy, check function gets called
-    const spy = jest.spyOn(instance, 'generateFileData');
-    const testData = instance.generateFileData(); // FormData
-    // get stuff stored in returned formdata, stingified in preparation to make
-    // network request
-    const metadata = JSON.parse(testData.get('_metadata'));
-    expect(spy).toBeCalled();
-    // value of _metadata defined in generateFileData
-    expect(metadata.dependent_col).toEqual(expectedInput.depCol);
-    expect(metadata.categorical_features).toEqual(expectedInput.catCols);
-    expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
-*/
-  })
-
-  it('TODO - Select tsv file - expect form to be displayed', () => {
-/*    
-    fullDom.find('input').at(0).prop('onChange')(fakeFileTsv);
-
-    // update() is supposed to forceUpdate/re-render the component
-    fullDom.update();
-    fullDom.setState({
-      selectedFile: fakeFileTsv.target.files[0]
-    });
+    let dropzoneButton = fullDom.find("#file-dropzone");
+    expect(dropzoneButton).toHaveLength(1);
+    // Simulate callback receiving bad file obj
+    dropzoneButton.at(0).prop('onDropAccepted')([badFakeFile]);
+    // Should not have changed file object
+    expect(shallowDom.state('selectedFile')).toBeNull();
+    // Check the UI isn't showing for file specifications
     let formBody = fullDom.find('#file-upload-form-input-area');
-
     // check for CSS style which hides form
-    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(false);
-    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
-    expect(fullDom.state('selectedFile')).toEqual(fakeFileTsv.target.files[0]);
-*/
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
+  })
+    
+  //TODO - redo these
+  it('TODO - try testing generateFileData - good input', () => {
+
   })
 
   it('TODO - try testing generateFileData - bad input, no ordinal features', () => {
-/*
-    // use dive() to get at inner FileUpload class functions -
-    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
-    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
-    // all input from user will be read as strings
-    const fakeUserInput = {
-      depCol: 'target_c@#$@#$',
-      catCols: 'a, b, c   , 4,,, ,',
-      ordFeats: ''
-    };
-    // add fake file with filename so generateFileData will do something, if
-    // no file & filename present generateFileData returns blank/empty formData
-    shallowFileUpload.setState({
-      selectedFile: fakeFileTsv.target.files[0],
-      dependentCol: fakeUserInput.depCol,
-      catFeatures: fakeUserInput.catCols,
-      ordinalFeatures: fakeUserInput.ordFeats
-    });
 
-    // expect list of comma separated cat cols to get parsed with string split
-    //  (remove whitespace and empty strings)
-    // dependent columns will be stored as is (type string)
-    // ordFeats will parse given JSON, if not proper JSON return empty obj
-    const expectedInput = {
-      depCol: 'target_c@#$@#$',
-      catCols: ['a', 'b', 'c', '4'],
-      ordFeats: ''
-    };
-    // use instance to get access to inner function
-    const instance = shallowFileUpload.instance();
-    // create spy, check function gets called
-    const spy = jest.spyOn(instance, 'generateFileData');
-    const testData = instance.generateFileData(); // FormData
-    // get stuff stored in returned formdata, stingified in preparation to make
-    // network request
-    const metadata = JSON.parse(testData.get('_metadata'));
-    expect(spy).toBeCalled();
-    // value of _metadata defined in generateFileData
-    expect(metadata.dependent_col).toEqual(expectedInput.depCol);
-    expect(metadata.categorical_features).toEqual(expectedInput.catCols);
-    expect(metadata.ordinal_features).toEqual(expectedInput.ordFeats);
-*/
   })
 
   it('TODO - try testing generateFileData - bad input, with ordinal features', () => {
-/*
-    // use dive() to get at inner FileUpload class functions -
-    // https://github.com/airbnb/enzyme/issues/208#issuecomment-292631244
-    const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
-    // all input from user will be read as strings
-    const fakeUserInput = {
-      depCol: 'target_c@#$@#$',
-      catCols: 'a, b, c   , 4,,, ,',
-      ordFeats: '{"species": ["cat", "dog", "bird"]}{"missing_comma": ["one","two"]}'
-    };
-    // add fake file with filename so generateFileData will do something, if
-    // no file & filename present generateFileData returns blank/empty formData
-    shallowFileUpload.setState({
-      selectedFile: fakeFile.target.files[0],
-      dependentCol: fakeUserInput.depCol,
-      catFeatures: fakeUserInput.catCols,
-      ordinalFeatures: fakeUserInput.ordFeats
-    });
 
-    // expect list of comma separated cat cols to get parsed with string split
-    //  (remove whitespace and empty strings)
-    // dependent columns will be stored as is (type string)
-    // ordFeats will parse given JSON, if not proper JSON return empty obj
-    const expectedInput = {
-      depCol: 'target_c@#$@#$',
-      catCols: ['a', 'b', 'c', '4'],
-      ordFeats: ''
-    };
-    // use instance to get access to inner f
-    const instance = shallowFileUpload.instance();
-    // create spy, check function gets called
-    const spy = jest.spyOn(instance, 'generateFileData');
-    const testData = instance.generateFileData(); // FormData
-    // returned content from generateFileData should be object containing error
-    //console.log('error test: ', testData);
-    expect(testData.errorResp).toBeDefined();
-    expect(testData.errorResp).toEqual('SyntaxError: Unexpected token { in JSON at position 35');
-*/
   })
 }) //describe
-
-// 
-// describe('testing user input with table', () => {
-//   describe.each`
-//     testname | dependent_column | categorical_cols | ordinal_features | expected_cat | expected_ord
-//     ${`Good input - no cat or ord`} | ${`test_class`} | ${""} | ${""} | ${[]} | ${{}}
-//     ${`Good input - cat no ord`} | ${`test_class`} | ${"cat1, cat2"} | ${""} | ${["cat1","cat2"]} | ${{}}
-//     ${`Good input - cat and ord`} | ${`test_class`} | ${"cat1, cat2"} | ${'{"species": ["cat", "dog", "bird"]}'}| ${["cat1","cat2"]} | ${{'species': ["cat", "dog", "bird"]}}
-//     `("test good input", ({testname, dependent_column, categorical_cols, ordinal_features, expected_cat, expected_ord}) => {
-//       it(`${testname}`, () => {
-//         //console.log(`${testname} test`);
-//
-//         let store = mockStore(initialState);
-//         const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
-//         let fullDom;
-//         let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
-//         const expectedInput = {
-//           depCol: 'test_class',
-//           catCols: ['cat1', 'cat2'],
-//           ordFeats: {
-//             species: ["cat", "dog", "bird"]
-//           }
-//         };
-//
-//         shallowFileUpload.setState({
-//           selectedFile: fakeFile.target.files[0],
-//           dependentCol: `${dependent_column}`,
-//           catFeatures: `${categorical_cols}`,
-//           ordinalFeatures: `${ordinal_features}`
-//         });
-//
-//
-//         // use instance to get access to inner function
-//         const instance = shallowFileUpload.instance();
-//         // create spy, check function gets called
-//         const spy = jest.spyOn(instance, 'generateFileData');
-//         const testData = instance.generateFileData(); // FormData
-//         console.log(`test data: `, testData);
-//         // get stuff stored in returned formdata, stingified in preparation to make
-//         // network request
-//         const metadata = JSON.parse(testData.get('_metadata'));
-//         console.log(`test data: `, metadata);
-//         expect(spy).toBeCalled();
-//         // value of _metadata defined in generateFileData
-//         expect(metadata.dependent_col).toEqual(`${dependent_column}`);
-//         expect(metadata.categorical_features).toEqual(`${expected_cat}`);
-//         expect(metadata.ordinal_features).toEqual(`${expected_ord}`);
-//       })
-//     })
-//
-//   // describe.each`
-//   //   testname | dependent_column | categoricals | ordinal
-//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${[]} | ${{}}
-//   //   ${`Good input - no cat or ord`} | ${`test_class`} | ${"cat1, cat2"} | ${{}}
-//   // `('test good input', ({testname, dependent_column, categorical, ordinal}) => {
-//   //   it(`${testname}`, () => {
-//   //          console.log(`${testname} test`);
-//   //        })
-//   // });
-// })
-//
 
 
 // https://jestjs.io/docs/en/tutorial-async
@@ -448,7 +198,7 @@ describe('mock network request', () => {
       .then(data => expect(data.id).toEqual(7654321));
   })
 
-  it('testing promise for unsuccessful case, improper dependent_col', () => {
+  it('TODO check this - testing promise for unsuccessful case, improper dependent_col', () => {
     expect.assertions(1);
     return uploadFile(fakeDatasets[1])
       .catch(e => {
@@ -474,89 +224,72 @@ describe('mock network request', () => {
   })
 })
 
-// go through basic file upload flow - select file & info, upload file
-// cover two scenarios - upload success and failure
-
-// this test examines styling based on mock user input
-describe('DONE - basic file upload flow with fake file', () => {
-
-  let store = mockStore(initialState);
-  let testShallow;
-
-  beforeEach(() => {
-    // https://github.com/airbnb/enzyme/issues/1002
-    testShallow = shallow(<FileUpload store={store} />).dive();
-    // having some trouble using mount, updating state, & checking for expected UI changes
-    //fullDom = mount(<FileUpload store={store} />);
-  })
-
-  // the intended behavior of this component is to hide the fields to enter info
-  // about the file being uploaded until a file with a filename has been selected
-  it('DONE - check UI form is hidden w/o a file selection', () => {
-    let formBody = testShallow.find('#file-upload-form-input-area');
-    expect(formBody.length).toEqual(1)
-
-    // check for CSS style which hides form
-    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
-    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
-  })
-
-  it('DONE - test selecting file and displaying UI form after file selection', () => {
-    // fake user submission by entering info directly into component state
-    let fileName = 'iris.csv';
-    let testFile = {
-      name: fileName
-    };
-    let formBody = testShallow.find('#file-upload-form-input-area');
-
-    // check for CSS style which hides form
-    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
-
-    // Fake that a file has been loaded.
-    // UI only checks for a valid filename field to change state of what's shown.
-    testShallow.setState({
-      selectedFile: testFile
-    });
-
-    // not sure but must be getting new copy of enzyme/react node with expected
-    // CSS class after state changes by re-assigning variable
-    formBody = testShallow.find('#file-upload-form-input-area');
-
-    // user info is entered in form, check if form input area is visible
-    // look for css styling to display form
-    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
-  })
-
-})
-
+// Test various functionality with a file blob that
+// simulates actual data loaded
 describe('test with mock file blob', () => {
   let store = mockStore(initialState);
   let fullDom;
+  let shallowDom;
   let instance;
 
-  //test blob
-  let featureNames=['col1','col2','col3','class'];
-  let data= featureNames.join()+`\n
+  // Create a test blob.
+  // Simulates raw data loaded by file I/O, before it's parsed as csv data.
+  //
+  let features=['col1','col2','col3','class'];
+  let data= features.join()+`\n
             one,cat,1,yes\n
             three,dog,2,no\n
-            two,cat,3,yes
+            two,cat,3,yes\n
             one,bird,2.5,42`;
+  let catFeaturesOrig = [features[0],features[1],features[3]];
+  data = data.replace(/ +?/g, ''); //Remove spaces added by multiline assignment
   let filename = 'testFile.csv';
   let blob = new Blob([data], {type: 'text/csv'});
   blob.lastModifiedDate = new Date();
   let testFileBlob = new File([blob], filename);
 
+  function getFeatureTypesOrig(){
+    return [instance.featureTypeCategorical, instance.featureTypeCategorical, instance.featureTypeNumeric, instance.featureTypeCategorical];
+  }
+
+  // Helper method so this is kept in one place
+  // typeOrArray - type string to expect all to be, or 'default' for auto defaults, or array of types
+  function testFeatureTypes(typeOrArray)
+  {
+    let testArray;
+    if(Array.isArray(typeOrArray)){
+      testArray = typeOrArray;
+    }
+    else {
+      if(typeOrArray === 'default'){
+        testArray = getFeatureTypesOrig();
+      }
+      else{
+        testArray = [0,0,0,0];
+        testArray.fill(typeOrArray);
+      }
+    }
+    for( let i=0; i < 4; i++)
+      expect(instance.getFeatureType(features[i])).toEqual(testArray[i]);
+  }
+
+  // Return true if error modal is showing
+  function errorModalIsShowing() {
+    return shallowDom.find("#error_modal_dialog").at(0).prop('open');
+  }
+
   // Use beforeAll so that the blob stays loaded w/out having
   // to do all the tests in the mocked callback below.
   beforeAll(() => {
     fullDom = mount(<FileUpload store={store} />);
-    instance = shallow(<FileUpload store={store}/>).dive().instance();
+    shallowDom = shallow(<FileUpload store={store}/>).dive();
+    instance = shallowDom.instance();
   })
   afterAll(() => {
     fullDom.unmount();
   })
 
-  it('load simulated file blob', done => {
+  it('DONE - load simulated file blob', done => {
     // Mock the method FileUpload.handleSelectedFileCompletedStub for unit testing.
     // It gets called when file blob
     // is loaded successfully, just for unit testing since the file loader
@@ -584,46 +317,166 @@ describe('test with mock file blob', () => {
   // Subsquent tests rely on the wrapper from above still being loaded
   // and having the test file blob loaded.
 
-  it('test feature behaviors', () => {
-      // Test the auto-assigned feature types and getFeatureType()
-      expect(instance.getFeatureType(featureNames[0])).toEqual(instance.featureTypeCategorical);
-      expect(instance.getFeatureType(featureNames[1])).toEqual(instance.featureTypeCategorical);
-      expect(instance.getFeatureType(featureNames[2])).toEqual(instance.featureTypeNumeric);
-      expect(instance.getFeatureType(featureNames[3])).toEqual(instance.featureTypeCategorical);
+  it('test features states after file blob load', () => {
+    // Verify error modal is not showing
+    expect(errorModalIsShowing()).toBe(false);
 
-      // Test assigning a categorical feature to type numeric.
-      // Should silently reject and not change to numeric.
-      instance.setFeatureType(featureNames[0], instance.featureTypeNumeric);
-      expect(instance.getFeatureType(featureNames[0])).toEqual(instance.featureTypeCategorical);
+    // Test the auto-assigned feature types and getFeatureType()
+    testFeatureTypes('default');
+    
+    // No ordinal features should be specified. Object should be empty
+    expect(instance.state.ordinalFeaturesObject).toEqual({});
 
-      // Get array of categorical features
-      let cats = [featureNames[0],featureNames[1],featureNames[3]];
-      expect(instance.getCatFeatures()).toEqual(cats);
-
-      // Dependent column should be unset
-      expect(instance.getDependentColumn()).toEqual(dep);
-      
-      // Assigning dependent column
-      let dep = featureNames[3];
-      instance.setFeatureType(dep, instance.featureTypeDependent);
-      expect(instance.getFeatureType(dep)).toEqual(instance.featureTypeDependent);
-      expect(instance.getDependentColumn()).toEqual(dep);
-      
-      // Dependent column should no longer be included as categorical
-      let catsnew = [featureNames[0],featureNames[1]];
-      expect(instance.getCatFeatures().find(el => el === dep)).toEqual(undefined);
-
-      // No ordinal features should be specified. Object should be empty
-      expect(Object.keys(instance.ordinalFeaturesObject).length).toEqual(0); why is ordinalFeaturesObject coming thru as undefined instead of {}??
-
-      // Set ordinal feature, w/out specifying rank
-      let ord = featureNames[0];
-      instance.setFeatureType(ord, instance.featureTypeOrdinal);
-      expect(instance.getFeatureType(dep)).toEqual(instance.featureTypeOrdinal);
-      let uniqueVals = ['one','three','two'];
-      expect(instance.ordinalFeaturesObject).toEqual({ord: uniqueVals});
-      // Should not be included as a categorical feature
-
+    // Dependent feature should be unset after load
+    expect(instance.getDependentFeature()).toEqual(undefined);
   })
 
+  it('DONE - test feature assignment behaviors via direct manipulation', () => {
+    // Test assigning a categorical feature to type numeric.
+    // Should silently reject and not change to numeric.
+    instance.setFeatureType(features[0], instance.featureTypeNumeric);
+    expect(instance.getFeatureType(features[0])).toEqual(instance.featureTypeCategorical);
+
+    // Test getting array of categorical features
+    let catFeatures = [...catFeaturesOrig];
+    expect(instance.getCatFeatures()).toEqual(catFeatures);
+
+    // Set ordinal feature, w/out specifying rank
+    let ordFeature = features[0];
+    instance.setFeatureType(ordFeature, instance.featureTypeOrdinal);
+    expect(instance.getFeatureType(ordFeature)).toEqual(instance.featureTypeOrdinal);
+    let ordsExpected = {[ordFeature]: ["one","three","two"]};
+    expect(instance.state.ordinalFeaturesObject).toEqual(ordsExpected);
+    // Should not be included as a categorical feature
+    catFeatures = catFeatures.filter( val => val !== ordFeature); //remove ordinal feature
+    expect(instance.getCatFeatures().find(el => el === ordFeature)).toEqual(undefined);
+
+    // Reset to default types, unset dependent, and verify
+    instance.clearDependentFeature();
+    instance.setAllFeatureTypes('autoDefault');
+    testFeatureTypes('default');
+
+    // Set all to ordinal
+    // Note that features that default to numeric can still be set as categorical or ordinal
+    instance.setAllFeatureTypes(instance.featureTypeOrdinal);
+    testFeatureTypes(instance.featureTypeOrdinal);
+    
+    // Set all to categorical
+    instance.setAllFeatureTypes(instance.featureTypeCategorical);
+    testFeatureTypes(instance.featureTypeCategorical);
+
+    // Set all to numeric
+    // This should not set default-categorical types to numeric. They should be left as-is.
+    instance.setAllFeatureTypes(instance.featureTypeNumeric);
+    testFeatureTypes('default'); // Should now all equal default types because of how I've structured the test up to here
+
+    // Invalid feature names should be handled properly
+    expect(instance.validateFeatureName('The Spanish Inquisition')).toEqual(false);
+    // Should return default type for invalid feature name
+    expect(instance.getFeatureType('xkcd4eva')).toEqual(instance.featureTypeDefault);
+    expect(instance.getFeatureDefaultType('Frank the Furter')).toEqual(instance.featureTypeDefault);
+  })
+
+  it('DONE - test dependent feature and prediction type behaviors via direct manipulation', () => {
+    //Reset feature types
+    instance.clearDependentFeature();
+    instance.setAllFeatureTypes('autoDefault');
+    
+    // Dependent feature should be unset
+    expect(instance.getDependentFeature()).toEqual(undefined);
+    
+    // Assigning dependent feature
+    let dep1 = features[2];
+    instance.setFeatureType(dep1, instance.featureTypeDependent);
+    expect(instance.getFeatureType(dep1)).toEqual(instance.featureTypeDependent);
+    expect(instance.getDependentFeature()).toEqual(dep1);
+    
+    // Reassigning dependent feature should reset the previous one
+    // to its default type
+    let dep2 = features[3];
+    instance.setFeatureType(dep2, instance.featureTypeDependent);
+    expect(instance.getFeatureType(dep2)).toEqual(instance.featureTypeDependent);
+    expect(instance.getDependentFeature()).toEqual(dep2);
+    expect(instance.getFeatureType(dep1)).toEqual(instance.getFeatureDefaultType(dep1));
+
+    // Dependent column should no longer be included as categorical
+    //expect(instance.getCatFeatures().find(el => el === dep2)).toEqual(undefined);
+    expect(instance.getCatFeatures()).not.toContain(dep2);
+
+    // Prediction type - should be set to default
+    expect(instance.state.predictionType).toEqual(instance.defaultPredictionType);
+  })
+
+  // Test the methods used by the dialogs for text-based specification of
+  // feature types and ordinal ranking
+  it('test text-based categorical-type specification', () => {
+    //Reset feature types to dfault
+    instance.clearDependentFeature();
+    instance.setAllFeatureTypes('autoDefault');
+
+    // Get the text input element
+    let textInput = shallowDom.find("#categorical_features_text_area_input");
+    expect(textInput.length).toEqual(1);
+
+    // Simulate entering text and then accepting it
+    function updateText(text) {
+      let event = {target: {value: text}};
+      textInput.at(0).prop('onChange')(event); // stores text to state
+      textInput.at(0).prop('onBlur')(event); // stores text as raw to state
+      shallowDom.find("#cat_features_user_text_accept_button").at(0).simulate('click'); //uses state vars
+      shallowDom.update();
+    }
+
+    // Should all be default still after empty string
+    updateText("");
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes('default');
+
+    // Assign single feature (that's already categorical) via text. 
+    // This shouldn't change anything because other features that default to categorical
+    // will stay as such.
+    updateText(catFeaturesOrig[0]); 
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes('default');
+
+    // Assign all as categorical by passing string 'col1,col2,col3,class'
+    updateText(features.join());
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes(instance.featureTypeCategorical);
+
+    // Assign just default-categorical again, and the one default-numeric feature
+    // should revert to numeric
+  /* TODO needs merge from FileUploadUiTweaksNew branch that fixes bug
+    updateText(features.join()); // set all to type cat
+    updateText(catFeaturesOrig.join()); // leaves out those not cat by default
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes('default');
+  */
+
+    // Reset
+    instance.setAllFeatureTypes('autoDefault');
+
+    // Test with range - set all to categorical
+    updateText(features[0]+"-"+features[3]);
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes(instance.featureTypeCategorical);
+
+    // Test with smaller range. Should set all to categorical
+    instance.setAllFeatureTypes(instance.featureTypeOrdinal);
+    updateText(features[0]+","+features[1]+"-"+features[2]+","+features[3]);
+    expect(errorModalIsShowing()).toBe(false);
+    testFeatureTypes(instance.featureTypeCategorical);
+    
+    // Test with bad string. Should see error modal and unchanged feature types
+    updateText("woogie woogie");
+    expect(errorModalIsShowing()).toBe(true);
+    testFeatureTypes(instance.featureTypeCategorical);
+
+  })
 })
+
+//TODO
+// Test UI contents (eg table has right entries)
+// Test behaviors via UI interaction simulation
+// Test textual input for cat and ord feature specifications
+// Test submit behavior and validation - incl. generateFileData method
