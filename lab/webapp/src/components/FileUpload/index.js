@@ -62,6 +62,8 @@ class FileUpload extends Component {
   /** Special type to mark the dependent column. 
    *  It's not properly a feature, but use same terminology for consistency. */
   get featureTypeDependent() { return 'dependent'; }
+  //Type to return in case of errors
+  get featureTypeDefault() {return this.featureTypeNumeric; }
 
   /**
   * FileUpload reac component - UI form for uploading datasets
@@ -109,7 +111,8 @@ class FileUpload extends Component {
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
-    this.getDependentColumn = this.getDependentColumn.bind(this);
+    this.getDependentFeature = this.getDependentFeature.bind(this);
+    this.clearDependentFeature = this.clearDependentFeature.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
@@ -401,7 +404,7 @@ handleCatFeaturesUserTextCancel() {
     const allowedPredictionTypes = ["classification", "regression"]
 
     const data = new FormData();
-    let depCol = this.getDependentColumn();
+    let depCol = this.getDependentFeature();
     let ordFeatures = "";
     let predictionType = this.state.predictionType;
 
@@ -687,7 +690,7 @@ handleCatFeaturesUserTextCancel() {
     let i = this.getFeatureIndex(feature);
     if( i === -1 ) {
       console.log("ERROR: unrecognized feature: " + feature);
-      return this.featureTypeNumeric;
+      return this.featureTypeDefault;
     }
     return this.state.featureType[i];
   }
@@ -763,7 +766,7 @@ handleCatFeaturesUserTextCancel() {
   getFeatureDefaultType(feature) {
     if( !this.validateFeatureName(feature)) {
       console.log("Cannot get default type for unrecognized feature: " + feature);
-      return this.featureTypeNumeric;
+      return this.featureTypeDefault;
     }
     return this.state.featureTypeDefaults[feature];
   }
@@ -771,8 +774,9 @@ handleCatFeaturesUserTextCancel() {
   /**
    * Set the feature type for all features in the data.
    * Does NOT change type of column/feature that is assigned as dependent column.
-   * @param {string} type - one of [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
-   *  where 'autoDefault' will set each feature type based on analysis of each feature's values
+   * Does NOT change features with any non-numeric values to type numeric. They are left unchanged.
+   * @param {string} type - one of either [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
+   *  or 'autoDefault' which will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
     if(this.state.datasetPreview == null) {
@@ -828,11 +832,10 @@ handleCatFeaturesUserTextCancel() {
       return;
     }
   
-    // Handle dependent column type
+    // Handle setting dependent column type
     if( type == this.featureTypeDependent) {
         //Clear the currently-assigned dependent column if there is one
-        let currentDep = this.getDependentColumn();
-        currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
+        this.clearDependentFeature();
     }
     
     // Handle ordinal type
@@ -1204,6 +1207,14 @@ handleCatFeaturesUserTextCancel() {
     return result;
   }
 
+  /** Clear the depedent feature selection and return it to
+   *  its default type.
+   */
+  clearDependentFeature() {
+    let currentDep = this.getDependentFeature();
+    currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
+  }
+
   /**
    * Small helper to get an array of features that have been assigned
    * to type 'categorical'
@@ -1278,7 +1289,7 @@ handleCatFeaturesUserTextCancel() {
     })
     //Check that user isn't including the currently-defined dependent column
     if( success ) {
-      let depCol = this.getDependentColumn();
+      let depCol = this.getDependentFeature();
       if( depCol !== undefined && expanded.indexOf(depCol) > -1 ) {
         success = false;
         message = "The feature " + depCol + " cannot be used because it is assigned as the Dependent Column.";
@@ -1813,6 +1824,13 @@ handleCatFeaturesUserTextCancel() {
             
             {/* File dropzone/chooser */}
             {fileInputElem}
+
+            {/*Modal for error messages*/}
+            <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog">
+              <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
+              <Modal.Content>{this.state.errorModalContent}</Modal.Content>
+            </Modal>
+            <br/>
 
             <div
               id="file-upload-form-input-area"

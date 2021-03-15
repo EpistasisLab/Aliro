@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`basic testing of fileupload react component full component snapshot 1`] = `
+exports[`basic testing of fileupload react component DONE - full component snapshot 1`] = `
 <div>
   <SceneHeader
     header="Submit Datasets"
@@ -14,6 +14,7 @@ exports[`basic testing of fileupload react component full component snapshot 1`]
     >
       <Dropzone
         accept=".csv,.tsv,text/csv,text/tsv"
+        id="file-dropzone"
         multiple={false}
         onDropAccepted={[Function]}
         onDropRejected={[Function]}
@@ -27,6 +28,7 @@ exports[`basic testing of fileupload react component full component snapshot 1`]
         closeOnDocumentClick={false}
         dimmer={true}
         eventPool="Modal"
+        id="error_modal_dialog"
         onClose={[Function]}
         style={
           Object {
@@ -414,6 +416,7 @@ exports[`basic testing of fileupload react component full component snapshot 1`]
                         color="blue"
                         content="Accept"
                         icon="checkmark"
+                        id="cat_features_user_text_accept_button"
                         inverted={true}
                         onClick={[Function]}
                         positive={true}
