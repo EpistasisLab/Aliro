@@ -116,6 +116,7 @@ class FileUpload extends Component {
     this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.enableKeyDownHandler = this.enableKeyDownHandler.bind(this);
+    this.initDependentColumn = this.initDependentColumn.bind(this);
 
     //this.cleanedInput = this.cleanedInput.bind(this)
 
@@ -478,6 +479,9 @@ handleCatFeaturesUserTextCancel() {
     this.ordinalFeaturesClearToDefault();  
     //Init the store of default feature types
     this.initFeatureTypeDefaults();
+    //Init the default dependent column.
+    //Do this before setAllFeatureTypes
+    this.initDependentColumn();
     //Init the feature type assignments
     this.setAllFeatureTypes('autoDefault');
     //Clear 
@@ -692,6 +696,10 @@ handleCatFeaturesUserTextCancel() {
    * @returns {null} 
    */
   initFeatureTypeDefaults() {
+    if(this.state.datasetPreview == null) {
+      console.log('ERROR - FileUpload.initFeatureTypeDefaults: datasetPreview is null');
+      return;
+    }
     let newDefaults = {};
     //First init all to type Numeric
     this.state.datasetPreview.meta.fields.forEach( (feature) => {
@@ -708,6 +716,28 @@ handleCatFeaturesUserTextCancel() {
       })
     })
     this.setState({ featureTypeDefaults: newDefaults });
+  }
+
+  /**
+   * Initialize the dependent feature and set UI.
+   * Looks for columns with particular headers, and if none found,
+   * use the last column as dependent.
+   * Make sure this gets called before the first call to setAllFeatureTypes, but
+   * only gets called during init so user can override via UI.
+   */
+  initDependentColumn() {
+    if(this.state.datasetPreview == null) {
+      console.log('ERROR - FileUpload.initDependentColumn: datasetPreview is null');
+      return;
+    }
+    let fields = this.state.datasetPreview.meta.fields;
+    for( let i=0; i < fields.length; i++) {
+      let feature = this.state.datasetPreview.meta.fields[i];
+      if(feature.toLowerCase() === 'class' || feature.toLowerCase() === 'target' || i === (fields.length-1)){
+        this.setFeatureType(feature, this.featureTypeDependent);       
+        break;
+      }
+    }
   }
 
   /**
@@ -731,6 +761,10 @@ handleCatFeaturesUserTextCancel() {
    *  where 'autoDefault' will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
+    if(this.state.datasetPreview == null) {
+      console.log('ERROR - FileUpload.setAllFeatureTypes: datasetPreview is null');
+      return;
+    }
     //Batch the setState calls that happen in setFeatureType so they don't re-render each time.
     //Some discussion here: https://medium.com/swlh/react-state-batch-update-b1b61bd28cd2
     //setFeatureType calls setState() each time it's called, and this triggers a re-render
@@ -1146,6 +1180,8 @@ handleCatFeaturesUserTextCancel() {
    *  @returns {string} - Column/feature name. undefined if not set.
    */
   getDependentColumn() {
+    if(this.state.datasetPreview == null)
+      return undefined;
     let result = undefined;
     this.state.datasetPreview.meta.fields.forEach( (feature) => {
       if(this.getFeatureType(feature) === this.featureTypeDependent)
@@ -1277,6 +1313,7 @@ handleCatFeaturesUserTextCancel() {
               options={depColOptions}
               onChange={this.handleDepColDropdown}
               className="inverted-dropdown-search"
+              defaultValue={this.getDependentColumn()}
             />
           </Grid.Column>
           <Grid.Column width={2} style={{marginTop: '1.9em', paddingLeft: '0'}}>
