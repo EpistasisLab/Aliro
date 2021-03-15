@@ -12,3 +12,5 @@ npm run test
 echo "starting '/lab/webapp' jest reports"
 cd "/appsrc/lab/webapp/"
 npm run test
+
+cd "/appsrc"

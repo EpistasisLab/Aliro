@@ -45,46 +45,67 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 
 
-// mock out stuff fileupload depends on
-//jest.mock('../SceneHeader', () => 'Scene_Header');
-
+//// NOTE on getting state
+//
+// The enzyme wrapper method 'state' (and related methods) is not working on mount(<my component>).
+// I think it's because the component is wrapped with redux connect().
+// So you can use shallow(<my component>).dive().state(),
+//  or more direclty shallow(<my component>).dive().instance().state
+// I don't know which is better.
+//
 describe('basic testing of fileupload react component', () => {
   let store = mockStore(initialState);
-  let testFileUpload;
-  let tree;
+  let fullDom;
+  let instance;
   let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
   let fakeFileTsv = {target: {files: [{name: 'iris.tsv'}]}};
   let badFakeFile = {target: {files: [{name: 'iris.txt'}]}};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
   beforeEach(() => {
-    testFileUpload = mount(<FileUpload store={store} testProp='hello' />);
-    //tree = renderer.create(<FileUpload store={store} />).toJSON();
+    fullDom = mount(<FileUpload store={store} testProp='hello' />);
+    instance = shallow(<FileUpload store={store}/>).dive().instance();
   })
   afterEach(() => {
-    testFileUpload.unmount();
+    fullDom.unmount();
+  })
+
+  //test that the componement instance is viable
+  it('test instance', () => {
+    //NOTE with react-redux, need 'dive()' to get the 'true' (not sure of the term) component instance.
+    expect(instance).not.toEqual(null);
+    //Test calling a method on the instance
+    expect(instance.instanceTest()).toEqual('foobar');
+    //Test retrieving state from the instance. See note above about accessing state.
+    expect(instance.state.testStateValue).toEqual('foobar');
   })
 
   // test for existence
+  //NOTE 'it' is an alias for 'test'
   it('create mock fileupload component, test for existence', () => {
-    //const testFileUpload = shallow(<FileUpload store={store} testProp='hello' />);
-    testFileUpload.setProps({ name: 'bar' });
-    //let tree = component.toJSON();
-    expect(testFileUpload.name()).toEqual('Connect(FileUpload)');
-    expect(testFileUpload.props().testProp).toEqual('hello');
-    expect(testFileUpload.props().name).toEqual('bar');
-    // test snapshot
-    //expect(tree).toMatchSnapshot();
+    //console.log('jest console log!'); //this works, outputs to console at test script runtime
+    fullDom.setProps({ name: 'bar' });
+    expect(fullDom.name()).toEqual('Connect(FileUpload)');
+    expect(fullDom.props().testProp).toEqual('hello');
+    expect(fullDom.props().name).toEqual('bar');
+  })
+
+  //snapshot of component
+  //I believe shallow is better since it won't include child components
+  it('full component snapshot', () => {
+    expect(shallow(<FileUpload store={store}/>).dive()).toMatchSnapshot();
   })
 
   it('simple change to component state', () => {
-    expect(testFileUpload.props().name).toBeUndefined();
-    expect(testFileUpload.state('dependentCol')).toBeUndefined();
-    testFileUpload.setState({dependentCol: 'class'})
-    expect(testFileUpload.state('dependentCol')).toEqual('class');
+    expect(fullDom.props().name).toBeUndefined();
+    expect(fullDom.state('dependentCol')).toBeUndefined();
+    fullDom.setState({dependentCol: 'class'})
+    expect(fullDom.state('dependentCol')).toEqual('class');
   })
 
   it('TODO - simulate user entering data with file upload form inputs', () => {
+    expect(fullDom.find('FileUpload').length).toEqual(1);
+
     // asked about how to simulate user actions here, using enzyme simulate doesn't quite
     // work, using 'onChange' prop to fake user action:
     // https://stackoverflow.com/questions/55638365/how-to-access-internal-pieces-of-react-component-and-mock-api-call-with-jest-e/55641884#55641884
@@ -93,66 +114,64 @@ describe('basic testing of fileupload react component', () => {
     // tested (which they do) & update component react state (which doesn't appear to happen)
     // this might be a limitation of enzyme
 
-//    expect(testFileUpload.find(FileUpload)).to.have.lengthOf(1);
 /*
-
     // this should create a browser console error - using javascript library to
     // create a file preview which attempts to parse given input, if input not a
     // file/blob the error is generated. The file onChange handler attempts to
     // create the file preview and set the selected file obj and file name in
     // the component's react state
 
-    testFileUpload.find('input').at(0).prop('onChange')(fakeFile);
+    fullDom.find('input').at(0).prop('onChange')(fakeFile);
 
     // update() is supposed to forceUpdate/re-render the component
-    testFileUpload.update();
+    fullDom.update();
     // manually updating, component react state does not contain anything, in any
     // case need to call update() to access elements by html dom ID
 
 
     // the following is a standin for user input entering metadata
 
-    let depColTextField = testFileUpload.find('#dependent_column_text_field_input').at(0);
+    let depColTextField = fullDom.find('#dependent_column_text_field_input').at(0);
     // still need to access with 'at', using find('#dependent_column_text_field_input')
     // returns 4 nodes somehow
     depColTextField.prop('onChange')(
       {target:{value: 'test_class'}},
       {value:'test dep input'}
     );
-    let ordTextArea = testFileUpload.find('#ordinal_features_text_area_input');
+    let ordTextArea = fullDom.find('#ordinal_features_text_area_input');
     ordTextArea.prop('onChange')(
       {target:{value: {testOrdKey: 'testHello'}}},
       {value:'test ord input'}
     );
-    let catTextArea = testFileUpload.find('#categorical_features_text_area_input');
+    let catTextArea = fullDom.find('#categorical_features_text_area_input');
     catTextArea.prop('onChange')(
       {target:{value: 'testCatHello1, testCatHello2'}},
       {value:'test cat input'}
     );
     // cheating for now and just updating component state directly...
-    testFileUpload.setState({
+    fullDom.setState({
       selectedFile: fakeFile.target.files[0],
       ordinalFeatures: {testOrdKey: 'testHello'},
       catFeatures: 'testCatHello1, testCatHello2',
       dependentCol: 'test_class'
     });
-    //console.log('test state: ', testFileUpload.state());
-    //console.log('test file: ', testFileUpload.state('selectedFile'));
+    //console.log('test state: ', fullDom.state());
+    //console.log('test file: ', fullDom.state('selectedFile'));
     // ...and checking for state which was just manually set above
-    expect(testFileUpload.state('selectedFile')).toEqual(fakeFile.target.files[0]);
-    expect(testFileUpload.state('ordinalFeatures')).toEqual({testOrdKey: 'testHello'});
-    expect(testFileUpload.state('catFeatures')).toEqual('testCatHello1, testCatHello2');
-    expect(testFileUpload.state('dependentCol')).toEqual('test_class');
+    expect(fullDom.state('selectedFile')).toEqual(fakeFile.target.files[0]);
+    expect(fullDom.state('ordinalFeatures')).toEqual({testOrdKey: 'testHello'});
+    expect(fullDom.state('catFeatures')).toEqual('testCatHello1, testCatHello2');
+    expect(fullDom.state('dependentCol')).toEqual('test_class');
   */
   })
 
   it('TODO - try uploading non csv/tsv file type', () => {
 /*
-    testFileUpload.find('input').at(0).prop('onChange')(badFakeFile);
-    testFileUpload.update();
-    //expect(testFileUpload.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
-    expect(testFileUpload.state('selectedFile')).toBeUndefined();
-    let formBody = testFileUpload.find('#file-upload-form-input-area');
+    fullDom.find('input').at(0).prop('onChange')(badFakeFile);
+    fullDom.update();
+    //expect(fullDom.state('selectedFile')).toEqual(badFakeFile.target.files[0]);
+    expect(fullDom.state('selectedFile')).toBeUndefined();
+    let formBody = fullDom.find('#file-upload-form-input-area');
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
@@ -208,19 +227,19 @@ describe('basic testing of fileupload react component', () => {
 
   it('TODO - Select tsv file - expect form to be displayed', () => {
 /*    
-    testFileUpload.find('input').at(0).prop('onChange')(fakeFileTsv);
+    fullDom.find('input').at(0).prop('onChange')(fakeFileTsv);
 
     // update() is supposed to forceUpdate/re-render the component
-    testFileUpload.update();
-    testFileUpload.setState({
+    fullDom.update();
+    fullDom.setState({
       selectedFile: fakeFileTsv.target.files[0]
     });
-    let formBody = testFileUpload.find('#file-upload-form-input-area');
+    let formBody = fullDom.find('#file-upload-form-input-area');
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(false);
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
-    expect(testFileUpload.state('selectedFile')).toEqual(fakeFileTsv.target.files[0]);
+    expect(fullDom.state('selectedFile')).toEqual(fakeFileTsv.target.files[0]);
 */
   })
 
@@ -298,7 +317,7 @@ describe('basic testing of fileupload react component', () => {
       catCols: ['a', 'b', 'c', '4'],
       ordFeats: ''
     };
-    // use instance to get access to inner function
+    // use instance to get access to inner f
     const instance = shallowFileUpload.instance();
     // create spy, check function gets called
     const spy = jest.spyOn(instance, 'generateFileData');
@@ -324,8 +343,7 @@ describe('basic testing of fileupload react component', () => {
 //
 //         let store = mockStore(initialState);
 //         const shallowFileUpload = shallow(<FileUpload store={store}/>).dive();
-//         let testFileUpload;
-//         let tree;
+//         let fullDom;
 //         let fakeFile = {target: {files: [{name: 'iris.csv'}]}};
 //         const expectedInput = {
 //           depCol: 'test_class',
@@ -385,11 +403,11 @@ describe('basic testing of fileupload react component', () => {
 import { uploadFile } from '../../utils/__mocks__/apiHelper';
 describe('mock network request', () => {
   let store = mockStore(initialState);
-  let testFileUpload;
+  let fullDom;
 
   beforeEach(() => {
-    //testFileUpload = mount(<FileUpload store={store} testProp='hello' />);
-    testFileUpload = shallow(<FileUpload store={store} />).dive();
+    //fullDom = mount(<FileUpload store={store} testProp='hello' />);
+    fullDom = shallow(<FileUpload store={store} />).dive();
   })
 
   const fakeDatasets = [
@@ -411,8 +429,8 @@ describe('mock network request', () => {
     }
   ];
 
-  it('testing promise for successful case, proper dependent_col', () => {
-    expect.assertions(1);
+  it('TODO - what is this testing??? - testing promise for successful case, proper dependent_col', () => {
+    expect.assertions(1); //this expects one jest assertion to be made during this test. good for testing the promises are run
     //return uploadDataset(fakeDataset).then(data => expect(data.name).toEqual('iris.csv'));
     //return uploadFile('fakeurl').then(data => expect(data.name).toEqual('iris.csv'));
 
@@ -420,6 +438,12 @@ describe('mock network request', () => {
     // flag in server response to control logic for UI to display message on error
     // or page redirection on success, not sure how to get at those pieces with
     // this testing framework. DOM does not seem to be updating correctly
+    //
+    //NOTE Returning a promise tells jest to wait for the promise resolution before finishing the test.
+    //Test will fail if promise is rejected.
+    //
+    //MGS - I don't see what this is testing. It's a mock api call and has nothing to do
+    // with FileUpload componenet.
     return uploadFile(fakeDatasets[0])
       .then(data => expect(data.id).toEqual(7654321));
   })
@@ -433,7 +457,7 @@ describe('mock network request', () => {
         // fake setting state, normally occurs in upload handler function in
         // FileUpload component after promise making actual upload resolves
 
-        // testFileUpload.setState({
+        // fullDom.setState({
         //   errorResp: e,
         //   serverResp: e
         // });
@@ -442,9 +466,9 @@ describe('mock network request', () => {
         // to 'true' in case of error response, not sure if this is incorrect method
         // of testing how UI should look based on react component state
 
-        // testFileUpload = shallow(<FileUpload store={store} />).dive();
-        // testFileUpload.update();
-        // let popup = testFileUpload.find('Popup').at(0);
+        // fullDom = shallow(<FileUpload store={store} />).dive();
+        // fullDom.update();
+        // let popup = fullDom.find('Popup').at(0);
         // console.log('popup props', popup.props());
       });
   })
@@ -454,61 +478,152 @@ describe('mock network request', () => {
 // cover two scenarios - upload success and failure
 
 // this test examines styling based on mock user input
-describe('basic file upload flow', () => {
+describe('DONE - basic file upload flow with fake file', () => {
 
   let store = mockStore(initialState);
-  let testFileUpload;
+  let testShallow;
 
   beforeEach(() => {
     // https://github.com/airbnb/enzyme/issues/1002
-    testFileUpload = shallow(<FileUpload store={store} />).dive();
+    testShallow = shallow(<FileUpload store={store} />).dive();
     // having some trouble using mount, updating state, & checking for expected UI changes
-    //testFileUpload = mount(<FileUpload store={store} />);
+    //fullDom = mount(<FileUpload store={store} />);
   })
 
   // the intended behavior of this component is to hide the fields to enter info
   // about the file being uploaded until a file with a filename has been selected
-  it('check UI form is hidden w/o a file selection', () => {
-    let formBody = testFileUpload.find('#file-upload-form-input-area');
+  it('DONE - check UI form is hidden w/o a file selection', () => {
+    let formBody = testShallow.find('#file-upload-form-input-area');
+    expect(formBody.length).toEqual(1)
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
   })
 
-  it('test selecting file and displaying UI form after file selection', () => {
+  it('DONE - test selecting file and displaying UI form after file selection', () => {
     // fake user submission by entering info directly into component state
     let fileName = 'iris.csv';
     let testFile = {
       name: fileName
     };
-    let depCol = 'class';
-    let catFeatures = '';
-    let ordFeatures = {};
-    let formBody = testFileUpload.find('#file-upload-form-input-area');
+    let formBody = testShallow.find('#file-upload-form-input-area');
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
 
-    // essentially fake user input
-    testFileUpload.setState({
-      selectedFile: testFile,
-      dependentCol: depCol,
-      catFeatures: catFeatures,
-      ordinalFeatures: ordFeatures
+    // Fake that a file has been loaded.
+    // UI only checks for a valid filename field to change state of what's shown.
+    testShallow.setState({
+      selectedFile: testFile
     });
-    //expect(testFileUpload.state('selectedFile')).toBeDefined();
-    //expect(testFileUpload.state('selectedFile').name).toEqual('iris.csv');
-    // force rerender - component is wrapped in redux stuff (Provider), don't think it will rerender
-    //testFileUpload.update();
 
     // not sure but must be getting new copy of enzyme/react node with expected
     // CSS class after state changes by re-assigning variable
-    formBody = testFileUpload.find('#file-upload-form-input-area');
+    formBody = testShallow.find('#file-upload-form-input-area');
 
     // user info is entered in form, check if form input area is visible
     // look for css styling to display form
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(true);
+  })
+
+})
+
+describe('test with mock file blob', () => {
+  let store = mockStore(initialState);
+  let fullDom;
+  let instance;
+
+  //test blob
+  let featureNames=['col1','col2','col3','class'];
+  let data= featureNames.join()+`\n
+            one,cat,1,yes\n
+            three,dog,2,no\n
+            two,cat,3,yes
+            one,bird,2.5,42`;
+  let filename = 'testFile.csv';
+  let blob = new Blob([data], {type: 'text/csv'});
+  blob.lastModifiedDate = new Date();
+  let testFileBlob = new File([blob], filename);
+
+  // Use beforeAll so that the blob stays loaded w/out having
+  // to do all the tests in the mocked callback below.
+  beforeAll(() => {
+    fullDom = mount(<FileUpload store={store} />);
+    instance = shallow(<FileUpload store={store}/>).dive().instance();
+  })
+  afterAll(() => {
+    fullDom.unmount();
+  })
+
+  it('load simulated file blob', done => {
+    // Mock the method FileUpload.handleSelectedFileCompletedStub for unit testing.
+    // It gets called when file blob
+    // is loaded successfully, just for unit testing since the file loader
+    // calls a callback when complete, and thus otherwise wouldn't be
+    // handled before this test copmletes. The 'done' method here is
+    // provided by jest to handle async testing.
+    // Messy but it works.
+    const mockcb = jest.fn( () => { 
+      // Test that it finished loading successfully
+      expect(mockcb.mock.calls.length).toBe(1);
+      
+      // Test that the file object is set
+      expect(instance.state.selectedFile.name).toEqual(filename); 
+
+      // Tell jest we're done with this test. 
+      done();       
+    });
+    instance.handleSelectedFileCompletedStub = mockcb;
+
+    // Load file obj directly via handler
+    instance.handleSelectedFile([testFileBlob]);
+  }, 15000/* long timeout just in case*/)
+
+  // ** NOTE **
+  // Subsquent tests rely on the wrapper from above still being loaded
+  // and having the test file blob loaded.
+
+  it('test feature behaviors', () => {
+      // Test the auto-assigned feature types and getFeatureType()
+      expect(instance.getFeatureType(featureNames[0])).toEqual(instance.featureTypeCategorical);
+      expect(instance.getFeatureType(featureNames[1])).toEqual(instance.featureTypeCategorical);
+      expect(instance.getFeatureType(featureNames[2])).toEqual(instance.featureTypeNumeric);
+      expect(instance.getFeatureType(featureNames[3])).toEqual(instance.featureTypeCategorical);
+
+      // Test assigning a categorical feature to type numeric.
+      // Should silently reject and not change to numeric.
+      instance.setFeatureType(featureNames[0], instance.featureTypeNumeric);
+      expect(instance.getFeatureType(featureNames[0])).toEqual(instance.featureTypeCategorical);
+
+      // Get array of categorical features
+      let cats = [featureNames[0],featureNames[1],featureNames[3]];
+      expect(instance.getCatFeatures()).toEqual(cats);
+
+      // Dependent column should be unset
+      expect(instance.getDependentColumn()).toEqual(dep);
+      
+      // Assigning dependent column
+      let dep = featureNames[3];
+      instance.setFeatureType(dep, instance.featureTypeDependent);
+      expect(instance.getFeatureType(dep)).toEqual(instance.featureTypeDependent);
+      expect(instance.getDependentColumn()).toEqual(dep);
+      
+      // Dependent column should no longer be included as categorical
+      let catsnew = [featureNames[0],featureNames[1]];
+      expect(instance.getCatFeatures().find(el => el === dep)).toEqual(undefined);
+
+      // No ordinal features should be specified. Object should be empty
+      expect(Object.keys(instance.ordinalFeaturesObject).length).toEqual(0); why is ordinalFeaturesObject coming thru as undefined instead of {}??
+
+      // Set ordinal feature, w/out specifying rank
+      let ord = featureNames[0];
+      instance.setFeatureType(ord, instance.featureTypeOrdinal);
+      expect(instance.getFeatureType(dep)).toEqual(instance.featureTypeOrdinal);
+      let uniqueVals = ['one','three','two'];
+      expect(instance.ordinalFeaturesObject).toEqual({ord: uniqueVals});
+      // Should not be included as a categorical feature
+
   })
 
 })
