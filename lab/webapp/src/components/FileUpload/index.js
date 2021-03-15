@@ -181,7 +181,7 @@ class FileUpload extends Component {
       ordinalFeaturesUserTextModalOpen: false,
       /** {object} Object used as dictionary to track the features designated as ordinal by user via dataset preview UI.
        *  key: feature name from dataPreview
-       *  value: string-array holding possibly-ordered values for the feature.
+       *  value: string-array holding possibly-ordered unique values for the feature.
        *  Will be empty object if none defined.
        *  Gets updated with new order as user orders them using the UI in dataset preview.
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
@@ -198,6 +198,8 @@ class FileUpload extends Component {
       ordinalFeatureToRankValues: [],
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
+      /** {string} Used in unit testing to test state retrieval */
+      testStateValue: 'foobar'
     }
   }
 
@@ -242,6 +244,11 @@ class FileUpload extends Component {
     }
   }
 
+  /** Simple test method for unit testing */
+  instanceTest(){
+    return 'foobar';
+  }
+  
   /** Helper routine for debugging. Get elapsed time in sec from 
    * either init or from the previous call to this method.
    */
@@ -488,6 +495,11 @@ handleCatFeaturesUserTextCancel() {
     this.setState({processingFileForPreview: false});
   }
 
+  /** Stub method that's mocked in unit testing */
+  handleSelectedFileCompletedStub(){
+    //do nothing
+  }
+
   /**
    * Event handler for selecting files, takes user file from html file input, stores
    * selected file in component react state, generates file preview and stores that
@@ -521,6 +533,10 @@ handleCatFeaturesUserTextCancel() {
   
         if(this.isDevBuild)
           console.log( this.getElapsedTime() + " - done with initDatasetPreview.");
+
+        //Call this method for use in unit testing, to know we've completed successfully here,
+        // and can inspect the new state
+        this.handleSelectedFileCompletedStub();
       }
     };
 
@@ -528,8 +544,6 @@ handleCatFeaturesUserTextCancel() {
     if(files && files[0]) {
       // immediately try to get dataset preview on file input html element change
       // need to be mindful of garbage data/files
-      //console.log(typeof event.target.files[0]);
-      //console.log(event.target.files[0]);
       let uploadFile = files[0]
       let fileExt = uploadFile.name.split('.').pop();
 
@@ -667,7 +681,7 @@ handleCatFeaturesUserTextCancel() {
   /**
    * For the passed feature name, return its type
    * @param {string} feature 
-   * @returns {string} feature type (ordinal, categorical, numeric)
+   * @returns {string} feature type (as returned by one of gettors: featureTypeOrdinal, ...Categorical, ...Numeric, ...Dependent)
    */
   getFeatureType(feature) {
     let i = this.getFeatureIndex(feature);
@@ -1755,6 +1769,7 @@ handleCatFeaturesUserTextCancel() {
     }
     
     //Progress spinner if we're loading and processing a file
+    //
     if( this.state.processingFileForPreview){
       return <Loader active inverted size="large" content="Processing your file..." />;      
     }
@@ -1789,13 +1804,14 @@ handleCatFeaturesUserTextCancel() {
     }
 
     //Main UI elements
+    //
     return (
       <div> 
         <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             
-            {/* Handle file input */}
+            {/* File dropzone/chooser */}
             {fileInputElem}
 
             <div
@@ -1811,6 +1827,7 @@ handleCatFeaturesUserTextCancel() {
           
             {/*dropdowns for selecting dep. feature and prediction type*/}
             {userDatasetOptions}
+
             {/*buttons for specifying feature types*/}
             <Form.Field
                 label="Features Types"
