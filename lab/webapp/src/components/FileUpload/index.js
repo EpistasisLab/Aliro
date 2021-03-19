@@ -288,15 +288,23 @@ class FileUpload extends Component {
 
   /** Process the passed string and update Categorical feature settings.
    *  Assumes the input string has been validated.
-   *  Will override any settings made via feature-type dropdowns selectors,
+   *  Will override any settings made via feature-type dropdowns selectors
+   *  by setting any current Categorical features to their default type,
    *  EXCEPT that any fields that are auto-detected as type Categorical will
-   *  stay as type Categorical even if not listed in the user string.
+   *  stay as type Categorical even if not listed in the input string.
    */ 
   catFeaturesUserTextIngest(input) {
-    let cats = input.split(',');
-    cats.forEach( (feature) => {
-      this.setFeatureType(feature.trim(), this.featureTypeCategorical);
+    //First take all current cat features and set them to their auto-defaults.
+    //This is necessary for condition when user unassigns a cat feature via new input.
+    this.getCatFeatures().forEach( feature => {
+      this.setFeatureType(feature, this.getFeatureDefaultType(feature));
     })
+    //Now set cat features from the input string
+    if(input != "") {
+      input.split(',').forEach( (feature) => {
+        this.setFeatureType(feature.trim(), this.featureTypeCategorical);
+      })
+    }
   }
 
   /** Handler for accepting button to accept categorical feature user text element.
@@ -307,15 +315,7 @@ class FileUpload extends Component {
    * @returns {void} - no return value
   */
   handleCatFeaturesUserTextAccept(e) {
-    //If empty string, just populate with current categorical features
-    if(this.state.catFeaturesUserText.trim() === "") {
-      this.setState({
-        catFeaturesUserText: this.getCatFeatures().join(),
-        catFeaturesUserTextModalOpen: false,
-      })
-      return;
-    }
-    //Validate the whole text
+    //Validate the whole text. Handles empty strings cleanly.
     let result = this.catFeaturesUserTextValidateAndExpand(this.state.catFeaturesUserText);
     if( result.success ) {
       this.catFeaturesUserTextIngest(result.expanded);
@@ -1240,7 +1240,7 @@ handleCatFeaturesUserTextCancel() {
    *                      expanded:<string>  // String holding fully-expanded list of categorical features
    */
   catFeaturesUserTextValidateAndExpand(userText) {
-    if(userText === "") {
+    if(userText.trim() === "") {
       return {success: true, message: "", expanded: ""}
     }
     let success = true;
