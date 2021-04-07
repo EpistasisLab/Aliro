@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Analysis Quickstart &mdash; PennAI 0.18a0 documentation</title>
@@ -168,7 +169,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="analysis-quickstart">
+  <section id="analysis-quickstart">
 <h1>Analysis Quickstart<a class="headerlink" href="#analysis-quickstart" title="Permalink to this headline">¶</a></h1>
 <p>This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results.
 It assumes you have already installed PennAI (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
@@ -177,7 +178,7 @@ It assumes you have already installed PennAI (see <a class="reference internal" 
 For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
 Experiments that are running or finished will appear here as well.
 Click on the name of the dataset to see information about it, including a data preview and metafeatures.</p>
-<div class="section" id="uploading-a-dataset">
+<section id="uploading-a-dataset">
 <h2>Uploading a dataset<a class="headerlink" href="#uploading-a-dataset" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/dataset_upload.png"><img alt="Dataset Upload." class="align-center" src="_images/dataset_upload.png" style="width: 600px;" /></a>
 <p>Upload a dataset by clicking the “+ Add new” button.
@@ -185,8 +186,8 @@ This will take you to the Dataset Upload screen where you can select a .csv or .
 You will see a preview of the data.
 Specify the name of the dependent column, as well as any nominal or ordinal features.
 Some example datasets can be found in the <a class="reference external" href="https://epistasislab.github.io/pmlb">Penn Machine Learning Benchmarks github repository</a>.</p>
-</div>
-<div class="section" id="building-your-own-experiment">
+</section>
+<section id="building-your-own-experiment">
 <h2>Building your own experiment<a class="headerlink" href="#building-your-own-experiment" title="Permalink to this headline">¶</a></h2>
 <p>Click <cite>Build New Experiment</cite> at the bottom of your dataset box.
 This takes you to the experiment building page.</p>
@@ -195,16 +196,16 @@ This takes you to the experiment building page.</p>
 Its default parameters will be selected in blue.
 Choose the parameter settings for the algorithm and click <cite>Launch Experiment</cite>.
 You will be navigated to the <strong>Experiments</strong> page.</p>
-</div>
-<div class="section" id="ai-analysis">
+</section>
+<section id="ai-analysis">
 <h2>AI analysis<a class="headerlink" href="#ai-analysis" title="Permalink to this headline">¶</a></h2>
 <p>To allow the AI to choose experiments for you, simply toggle on the AI button in the upper right corner of the dataset box.
 The AI will then run one or more experiments for which it chooses its own algorithms to run.
 Progress can be viewed from the Experiments page.
 To configure the AI settings (for example, the number of experiments to run or time limits), see the configuration file in <cite>config/ai.env</cite>.</p>
 <a class="reference internal image-reference" href="_images/ai_requested.png"><img alt="Experiment building page." class="align-center" src="_images/ai_requested.png" style="width: 400px;" /></a>
-</div>
-<div class="section" id="experiments">
+</section>
+<section id="experiments">
 <h2>Experiments<a class="headerlink" href="#experiments" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/experiments.png"><img alt="Experiment building page." class="align-center" src="_images/experiments.png" style="width: 600px;" /></a>
 <p>The Experiments page lists information about current experiments, including start time, status, and performance.
@@ -216,8 +217,8 @@ Use it to run analysis on more datasets.</p></li>
 <li><p><strong>Download script</strong> gives you a Python script to reproduce the analysis in the experiment.</p></li>
 </ul>
 <p>Clicking on any experiment will navigate to the <strong>Results</strong> page.</p>
-</div>
-<div class="section" id="results">
+</section>
+<section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/results.png"><img alt="The Results page." class="align-center" src="_images/results.png" style="width: 600px;" /></a>
 <p>The Results page summarizes the experiment results through figures and statistics.
@@ -226,8 +227,8 @@ On the right, the training and testing balances accuracies are shown.
 For every experiment, the top 10 most important features are shown in a bar plot on the bottom left.
 For every classification problem, a confusion matrix is shown.
 For binary classification, an ROC curve and AUC score is provided.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Recommenders &mdash; PennAI 0.18a0 documentation</title>
@@ -169,10 +170,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="recommenders">
+  <section id="recommenders">
 <h1>Recommenders<a class="headerlink" href="#recommenders" title="Permalink to this headline">¶</a></h1>
 <p>A recommender is responsible for deciding what ML-parameter combination will be run when the AI button is clicked.</p>
-<div class="section" id="recommendation-basics">
+<section id="recommendation-basics">
 <h2>Recommendation Basics<a class="headerlink" href="#recommendation-basics" title="Permalink to this headline">¶</a></h2>
 <p>A recommender should inherit from the BaseRecommender class, which contains the minimum methods needed.</p>
 <ul class="simple">
@@ -180,8 +181,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">recommend(self,</span> <span class="pre">dataset_id=None,</span> <span class="pre">n_recs=1,</span> <span class="pre">dataset_mf=None)</span></code>: Returns an ML choice, its parameter values, and the internal score of its recommendation for <code class="docutils literal notranslate"><span class="pre">dataset_id</span></code>.</p></li>
 </ul>
 <p>For a new recommender, these two classes, along with the class constructor, must be implemented.</p>
-</div>
-<div class="section" id="current-recommenders">
+</section>
+<section id="current-recommenders">
 <h2>Current Recommenders<a class="headerlink" href="#current-recommenders" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p><strong>RandomRecommender</strong></p>
@@ -218,8 +219,8 @@ maintained.</p>
 </div></blockquote>
 </li>
 </ul>
-</div>
-<div class="section" id="building-your-own-recommender">
+</section>
+<section id="building-your-own-recommender">
 <h2>Building your own recommender<a class="headerlink" href="#building-your-own-recommender" title="Permalink to this headline">¶</a></h2>
 <p>To build your own recommender, start with the <code class="docutils literal notranslate"><span class="pre">recommender/base.py</span></code> file.
 From there, implement <code class="docutils literal notranslate"><span class="pre">update()</span></code> and <code class="docutils literal notranslate"><span class="pre">recommend()</span></code> strategies.
@@ -257,7 +258,7 @@ to the argument parser:</p>
 </li>
 </ol>
 <p>That should be all the required changes.</p>
-<div class="section" id="running-your-recommender">
+<section id="running-your-recommender">
 <h3>Running your recommender<a class="headerlink" href="#running-your-recommender" title="Permalink to this headline">¶</a></h3>
 <p>You should now be able to start the AI with your recommender.
 The easiest way to do so is to add your recommender to the <code class="docutils literal notranslate"><span class="pre">config/ai.env</span></code> file.
@@ -278,9 +279,9 @@ Then, attach to the <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 <p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ai.ai</span> <span class="pre">-h</span></code> to see additional options.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

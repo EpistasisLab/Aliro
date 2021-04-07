@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Developer Guide &mdash; PennAI 0.18a0 documentation</title>
@@ -196,11 +197,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="developer-guide">
+  <section id="developer-guide">
 <h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="developer-installation">
+<section id="developer-installation">
 <h2>Developer Installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="requirements">
+<section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
 <p>Install Docker and docker-compose as per the main installation requirements (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
 <ul class="simple">
@@ -210,7 +211,7 @@
 </ul>
 </li>
 </ul>
-<div class="section" id="optional-dependencies-for-development-testing">
+<section id="optional-dependencies-for-development-testing">
 <h4>Optional dependencies for development/testing:<a class="headerlink" href="#optional-dependencies-for-development-testing" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)</p>
@@ -226,24 +227,24 @@
 </ul>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="building-docker-images">
+</section>
+</section>
+<section id="building-docker-images">
 <h3>Building Docker Images<a class="headerlink" href="#building-docker-images" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>Clone the PennAI project using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/pennai.git</span></code></p></li>
 <li><p>Set up your local PennAI configuration file. From the pennai directory, copy <code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
 <li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from the pennai directory.  It will take several minutes for the images to be built the first time this is run.</p></li>
 </ol>
-</div>
-<div class="section" id="starting-and-stopping">
+</section>
+<section id="starting-and-stopping">
 <h3>Starting and Stopping<a class="headerlink" href="#starting-and-stopping" title="Permalink to this headline">¶</a></h3>
 <p>To start PennAI, from the PennAI directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  To stop PennAI, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the process to exit.</p>
 <p>PennAI can be run with multiple machine instances using the <code class="docutils literal notranslate"><span class="pre">docker-compose-multi-machine.yml</span></code> docker compose file, as per: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-f</span> <span class="pre">./docker-compose-multi-machine.yml</span></code></p>
 <p>To reset the docker volumes, restart using the <code class="docutils literal notranslate"><span class="pre">--force-recreate</span></code> flag or run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code> after the server has been stopped.</p>
-</div>
-</div>
-<div class="section" id="development-notes">
+</section>
+</section>
+<section id="development-notes">
 <h2>Development Notes<a class="headerlink" href="#development-notes" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>After any code changes are pulled, <strong>ALWAYS</strong> rerun <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> and when you first reload the webpage first do a hard refresh with ctrl+F5 instead of just F5 to clear any deprecated code out of the browser cache.</p></li>
@@ -267,7 +268,7 @@ python -m ai.ai -v -n 2
 </ul>
 </li>
 </ul>
-<div class="section" id="web-development">
+<section id="web-development">
 <h3>Web Development<a class="headerlink" href="#web-development" title="Permalink to this headline">¶</a></h3>
 <p>The frontend UI source is in <code class="docutils literal notranslate"><span class="pre">\lab\webapp</span></code> and is managed using <a class="reference external" href="https://webpack.js.org/">webpack</a>.  When developing the UI, webpack can be configured to run in <a class="reference external" href="https://webpack.js.org/configuration/watch/">watch mode</a> to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to <a class="reference external" href="https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache">hard refresh</a> with ctrl+F5 for the changes to be seen in the browser.</p>
 <p>There are two ways to enable watch mode:</p>
@@ -281,8 +282,8 @@ npm run build-dev
 </li>
 <li><p>To automatically start in watch mode, add the line <code class="docutils literal notranslate"><span class="pre">WEBDEV=1</span></code> to the configuration file <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code></p></li>
 </ul>
-</div>
-<div class="section" id="npm-package-management">
+</section>
+<section id="npm-package-management">
 <h3>NPM Package Management<a class="headerlink" href="#npm-package-management" title="Permalink to this headline">¶</a></h3>
 <p>To update or add NPM package dependencies:</p>
 <ul class="simple">
@@ -294,25 +295,25 @@ npm run build-dev
 <p>Package management for node is configured in three places: the main backend API (<code class="docutils literal notranslate"><span class="pre">lab\package.json</span></code>), the frontend UI (<code class="docutils literal notranslate"><span class="pre">lab\webapp\package.json</span></code>), and the machine container API (<code class="docutils literal notranslate"><span class="pre">machine\package.json</span></code>).</p>
 <p>Node package installation (<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">install</span></code>) takes palace as part of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> process.  If there are changes to a <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file, then during the build those changes will be detected and the updated npm packages will be installed.</p>
 <p>When not using the production docker-compose file, node packages are installed in docker anonymous volumes <code class="docutils literal notranslate"><span class="pre">lab/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">lab/webapp/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">machine/node_modules</span></code>.  When starting PennAI after the packages have been rebuilt, the <code class="docutils literal notranslate"><span class="pre">--renew-anon-volumes</span></code> flag should be used.</p>
-</div>
-</div>
-<div class="section" id="architecture-overview">
+</section>
+</section>
+<section id="architecture-overview">
 <h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h2>
 <p>PennAI is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.</p>
 <a class="reference external image-reference" href="https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true"><img alt="PennAI Architecture Diagram" src="https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true" /></a>
 <p>The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.</p>
 <p>A MongoDb database is used for persistent storage.</p>
 <p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.</p>
-</div>
-<div class="section" id="code-documentation">
+</section>
+<section id="code-documentation">
 <h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Sphinx documentation can be built in the context of a docker container with the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-doc-builder.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code>.</p></li>
 </ul>
-</div>
-<div class="section" id="tests">
+</section>
+<section id="tests">
 <h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="local-test-instructions">
+<section id="local-test-instructions">
 <h3>Local Test Instructions<a class="headerlink" href="#local-test-instructions" title="Permalink to this headline">¶</a></h3>
 <p>The unit and integration tests can be run locally using the followng commands:</p>
 <ul class="simple">
@@ -321,8 +322,8 @@ npm run build-dev
 </ul>
 <p>The test results in html format can be found in the directory <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html</span></code></p>
 <p>Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
-</div>
-<div class="section" id="integration">
+</section>
+<section id="integration">
 <h3>Integration<a class="headerlink" href="#integration" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Type: Docker, runs <a class="reference external" href="https://jestjs.io/">Jest</a></p></li>
@@ -335,12 +336,12 @@ npm run build-dev
 </li>
 <li><p>Docs: See <a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/tests/integration/readme.md">Documentation</a> for details.</p></li>
 </ul>
-</div>
-<div class="section" id="unit">
+</section>
+<section id="unit">
 <h3>Unit<a class="headerlink" href="#unit" title="Permalink to this headline">¶</a></h3>
 <p>There are several unit test suites for the various components of PennAI.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.</p>
 <p>The default location of the test output is the <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\</span></code> directory.</p>
-<div class="section" id="docker-unit-test-runner">
+<section id="docker-unit-test-runner">
 <h4>Docker unit test runner<a class="headerlink" href="#docker-unit-test-runner" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
@@ -353,8 +354,8 @@ npm run build-dev
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="host-unit-test-runner">
+</section>
+<section id="host-unit-test-runner">
 <h4>Host unit test runner<a class="headerlink" href="#host-unit-test-runner" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Type: Bash script that runs all the python unit tests on the host system and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
@@ -372,10 +373,10 @@ npm run build-dev
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="unit-test-suite-details">
+</section>
+<section id="unit-test-suite-details">
 <h4>Unit test suite details<a class="headerlink" href="#unit-test-suite-details" title="Permalink to this headline">¶</a></h4>
-<div class="section" id="ai-recommnender">
+<section id="ai-recommnender">
 <h5>AI Recommnender<a class="headerlink" href="#ai-recommnender" title="Permalink to this headline">¶</a></h5>
 <ul>
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
@@ -386,8 +387,8 @@ npm run build-dev
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="ai-controller">
+</section>
+<section id="ai-controller">
 <h5>AI Controller<a class="headerlink" href="#ai-controller" title="Permalink to this headline">¶</a></h5>
 <ul>
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
@@ -398,8 +399,8 @@ npm run build-dev
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="metafeature-generation">
+</section>
+<section id="metafeature-generation">
 <h5>Metafeature Generation<a class="headerlink" href="#metafeature-generation" title="Permalink to this headline">¶</a></h5>
 <ul>
 <li><p>Type: Python</p></li>
@@ -410,8 +411,8 @@ npm run build-dev
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="machine">
+</section>
+<section id="machine">
 <h5>Machine<a class="headerlink" href="#machine" title="Permalink to this headline">¶</a></h5>
 <ul>
 <li><p>Type: Python via <a class="reference external" href="https://pypi.org/project/nose/">nose</a> and Javascript via <a class="reference external" href="https://mochajs.org/">mocha</a></p></li>
@@ -433,13 +434,13 @@ npm run build-dev
 </div>
 </li>
 </ul>
-</div>
-</div>
-</div>
-</div>
-<div class="section" id="production-builds">
+</section>
+</section>
+</section>
+</section>
+<section id="production-builds">
 <h2>Production Builds<a class="headerlink" href="#production-builds" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="generating-and-publishing-production-builds">
+<section id="generating-and-publishing-production-builds">
 <h3>Generating and publishing production builds<a class="headerlink" href="#generating-and-publishing-production-builds" title="Permalink to this headline">¶</a></h3>
 <p>To create a production release:</p>
 <ul class="simple">
@@ -481,22 +482,22 @@ npm run build-dev
 <li><p><strong>Create Github Release.</strong>  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}.zip</span></code> as an archive asset.</p></li>
 <li><p><strong>Update the .env file in the master branch with the new dev version.</strong>  Update the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the master branch with the next version number and the <code class="docutils literal notranslate"><span class="pre">a0</span></code> suffix (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">Pre-release versioning conventions</a> and push the changes to git.  For example, <code class="docutils literal notranslate"><span class="pre">0.14</span></code> was just released, the new dev tag should be <code class="docutils literal notranslate"><span class="pre">0.15a0</span></code>.</p></li>
 </ol>
-</div>
-<div class="section" id="installing-a-production-build">
+</section>
+<section id="installing-a-production-build">
 <h3>Installing a production build<a class="headerlink" href="#installing-a-production-build" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>Download a production build from github</p></li>
 <li><p>Unzip the archive</p></li>
 </ol>
-</div>
-<div class="section" id="running-from-production-build">
+</section>
+<section id="running-from-production-build">
 <h3>Running from production build<a class="headerlink" href="#running-from-production-build" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>From the pennai directory, run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> to start the PennAI server.</p></li>
 </ol>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>User Guide of PennAIpy &mdash; PennAI 0.18a0 documentation</title>
@@ -167,9 +168,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="user-guide-of-pennaipy">
+  <section id="user-guide-of-pennaipy">
 <span id="userguide-sklearn-api"></span><h1>User Guide of PennAIpy<a class="headerlink" href="#user-guide-of-pennaipy" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installation-of-ai-engine-as-a-standalone-python-package">
+<section id="installation-of-ai-engine-as-a-standalone-python-package">
 <h2>Installation of AI engine as a standalone python package<a class="headerlink" href="#installation-of-ai-engine-as-a-standalone-python-package" title="Permalink to this headline">¶</a></h2>
 <p>PennAI AI engine is built on top of several existing Python libraries, including:</p>
 <ul class="simple">
@@ -195,8 +196,8 @@
 <div class="highlight-Shell notranslate"><div class="highlight"><pre><span></span>pip install pennaipy
 </pre></div>
 </div>
-</div>
-<div class="section" id="example-of-using-pennai-ai-engine">
+</section>
+<section id="example-of-using-pennai-ai-engine">
 <h2>Example of using PennAI AI engine<a class="headerlink" href="#example-of-using-pennai-ai-engine" title="Permalink to this headline">¶</a></h2>
 <p>The following code illustrates how PennAI can be employed for performing a simple <em>classification task</em> over the Iris dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
@@ -221,8 +222,8 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">pennai</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="default-knowledgebase-metafeatures-of-pennai-ai-engine">
+</section>
+<section id="default-knowledgebase-metafeatures-of-pennai-ai-engine">
 <h2>Default knowledgebase/metafeatures of PennAI AI engine<a class="headerlink" href="#default-knowledgebase-metafeatures-of-pennai-ai-engine" title="Permalink to this headline">¶</a></h2>
 <p>If you don’t specify <code class="docutils literal notranslate"><span class="pre">knowledgebase</span></code> and <code class="docutils literal notranslate"><span class="pre">kb_metafeatures</span></code> in <code class="docutils literal notranslate"><span class="pre">PennAIClassifier</span></code> or <code class="docutils literal notranslate"><span class="pre">PennAIRegressor</span></code>, PennAI AI engine will use default knowledgebase based on <a class="reference external" href="https://github.com/EpistasisLab/penn-ml-benchmarks">pmlb</a>(version0.3).</p>
 <table class="docutils align-default">
@@ -248,8 +249,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature">
+</section>
+<section id="example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature">
 <h2>Example of using PennAI AI engine with non-default knowledgebase/metafeature.<a class="headerlink" href="#example-of-using-pennai-ai-engine-with-non-default-knowledgebase-metafeature" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
 <span class="kn">from</span> <span class="nn">pennai.recommender</span> <span class="kn">import</span> <span class="n">KNNMetaRecommender</span>
@@ -278,8 +279,8 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">pennai</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender">
+</section>
+<section id="example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender">
 <h2>Example of using PennAI AI engine with pre-trained SVG recommender<a class="headerlink" href="#example-of-using-pennai-ai-engine-with-pre-trained-svg-recommender" title="Permalink to this headline">¶</a></h2>
 <p>The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pennai.sklearn</span> <span class="kn">import</span> <span class="n">PennAIClassifier</span>
@@ -313,8 +314,8 @@
 </pre></div>
 </div>
 <p>Please check the “Scikit-learn API for PennAI engine” section in <a class="reference internal" href="api.html#api"><span class="std std-ref">API</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>AI Overview &mdash; PennAI 0.18a0 documentation</title>
@@ -161,7 +162,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="ai-overview">
+  <section id="ai-overview">
 <h1>AI Overview<a class="headerlink" href="#ai-overview" title="Permalink to this headline">¶</a></h1>
 <p>The AI system consists of an AI class that looks for new requests and results, and uses these to update an internal recommendation ssytem. It is built to be run from the command line as a module. The run command is <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ai.ai</span></code> from the root directory. Type <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ai.ai</span> <span class="pre">-h</span></code> to see options.</p>
 <p>While the AI is running, it checks for new requests and results every 5 seconds.
@@ -173,7 +174,7 @@ Various recommenders are available in the <code class="docutils literal notransl
 Each recommender implements an <code class="docutils literal notranslate"><span class="pre">update()</span></code> method that is called when new results are found,
 and a <code class="docutils literal notranslate"><span class="pre">recommend()</span></code> method that is called when new AI requests are receieved.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">LabAPI</span></code> class is a helper class that encapsulates all calls to the server.</p>
-</div>
+</section>
 
 
            </div>
