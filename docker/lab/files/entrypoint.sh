@@ -60,13 +60,21 @@ if [ ${AI_AUTOSTART} -eq 1 ]; then
     [ -n "$AI_NUMRECOMMEND" ] && { PARMS+=" -n ${AI_NUMRECOMMEND}"; }
     [ -n "$AI_TERM_COND" ] && { PARMS+=" -term_condition ${AI_TERM_COND}"; }
     [ -n "$AI_MAX_TIME" ] && { PARMS+=" -max_time ${AI_MAX_TIME}"; }
+    [ -n "$AI_TRAIN_SAVE_ONLY" ] && { PARMS+=" --train_save_only ${TRAIN_SAVE_ONLY}"; }
 
 
     echo "python -m ai.ai $PARMS"
 
     cd $PROJECT_ROOT/
-    #python -m ai.ai $PARMS
-    pm2 start "python -u -m ai.ai $PARMS" --name ai
+    
+    if [ ${AI_TRAIN_SAVE_ONLY} -eq 1 ]; then
+        pm2 start "python -u -m ai.ai $PARMS" --name ai --no-autorestart
+        #pm2 stop lab
+        #exit
+    else
+        pm2 start "python -u -m ai.ai $PARMS" --name ai
+    fi
+    
 
 else
     echo "not autostarting ai..."

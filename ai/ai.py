@@ -100,7 +100,8 @@ class AI():
                 datasets=False,
                 use_knowledgebase=False,
                 term_condition='n_recs',
-                max_time=5):
+                max_time=5,
+                train_save_only=False):
         """Initializes AI managing agent."""
         if 'RANDOM_SEED' in os.environ:
             self.random_state = int(os.environ['RANDOM_SEED'])
@@ -177,6 +178,11 @@ class AI():
         # store dataset_id to hash dictionary
         self.dataset_mf_cache_id_hash_lookup = {}
 
+        # retrain and save recs and exit
+        if train_save_only == True:
+            self.train_save_recommenders(rec_class)
+            return
+
         # set recommender status
         self.labApi.set_recommender_status(
                 RECOMMENDER_STATUS.INITIALIZING.value)
@@ -249,16 +255,51 @@ class AI():
                 self.rec_engines[pred_type]  = \
                         self.DEFAULT_REC_CLASS[pred_type](**recArgs)
 
+        logger.debug("recomendation engines initialized: ")
+        for prob_type, rec in self.rec_engines.items():
+            logger.debug(f'\tproblemType: {prob_type} - {rec}')
+            #logger.debug('\trec.ml_p:\n'+str(rec.ml_p.head()))
 
-            # self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
-            #         self.dataset_mf_cache, source='knowledgebase')
-            ##########################################################
-            # this section is used to save trained recommenders
-            # on the PMLB knowledgebases.            
-            # For normal operation, they can be skipped.
-            # logger.info('saving recommender')
-            # self.rec_engines[pred_type].save()
-            ##########################################################
+
+    def train_save_recommenders(self, rec_class):
+        """
+        Initilize classification and regression recommenders
+        """
+
+        kb = self.load_knowledgebase()
+        assert kb is not None
+
+        for pred_type in self.rec_engines.keys():
+            logger.info('initialiazing rec engine for problem type "'
+                    +pred_type+'"')
+
+            # get the ml parameters for the given recommender type
+            logger.debug("getting ml_p")
+            ml_p = self.labApi.get_all_ml_p(pred_type)
+            assert ml_p is not None
+            assert len(ml_p) > 0
+
+            # Create supervised learning recommenders
+            logger.debug("initializing engine")
+            recArgs = self.DEFAULT_REC_ARGS[pred_type]
+            recArgs['ml_p'] = ml_p
+
+            recArgs['serialized_rec_directory'] = 'data/recommenders/pennaiweb'
+            recArgs['load_serialized_rec'] = "never" 
+            recArgs['knowledgebase_results'] = kb['resultsData'][pred_type]
+
+            if (rec_class):
+                self.rec_engines[pred_type] = rec_class(**recArgs)
+            else:
+                self.rec_engines[pred_type]  = \
+                        self.DEFAULT_REC_CLASS[pred_type](**recArgs)
+
+
+            #self.rec_engines[pred_type].update(kb['resultsData'][pred_type], 
+            #        self.dataset_mf_cache, source='knowledgebase')
+
+            logger.info('saving recommender')
+            self.rec_engines[pred_type].save()
 
         logger.debug("recomendation engines initialized: ")
         for prob_type, rec in self.rec_engines.items():
@@ -598,6 +639,10 @@ def main():
     parser.add_argument('--knowledgebase','-k', action='store_true',
             dest='USE_KNOWLEDGEBASE', default=False,
             help='Load a knowledgebase for the recommender')
+    parser.add_argument('--train_save_only', action='store_true',
+            dest='TRAIN_SAVE_ONLY', default=False,
+            help='Retrain and save recommenders and exit')
+
 
     args = parser.parse_args()
 
@@ -628,7 +673,8 @@ def main():
             verbose=args.VERBOSE, n_recs=args.N_RECS, 
             warm_start=args.WARM_START, datasets=args.DATASETS, 
             use_knowledgebase=args.USE_KNOWLEDGEBASE,
-            term_condition=args.TERM_COND, max_time=args.MAX_TIME)
+            term_condition=args.TERM_COND, max_time=args.MAX_TIME,
+            train_save_only=args.TRAIN_SAVE_ONLY)
 
     n = 0;
     try:
@@ -654,8 +700,9 @@ def main():
     finally:
         # shut down gracefully
         logger.info("Shutting down AI engine...")
-        logger.info("...Shutting down Request Manager...")
-        pennai.requestManager.shutdown()
+        if hasattr(pennai, "requestManager"):
+            logger.info("...Shutting down Request Manager...")
+            pennai.requestManager.shutdown()
         logger.info("Goodbye")
 
 if __name__ == '__main__':
