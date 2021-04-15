@@ -266,6 +266,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                         as="button"
                         color="red"
                         content="Cancel"
+                        id="ordinal_features_user_text_cancel_button"
                         inverted={true}
                         onClick={[Function]}
                         size="small"
@@ -275,6 +276,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                         color="blue"
                         content="Accept"
                         icon="checkmark"
+                        id="ordinal_features_user_text_accept_button"
                         inverted={true}
                         onClick={[Function]}
                         positive={true}
@@ -407,6 +409,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                         as="button"
                         color="red"
                         content="Cancel"
+                        id="cat_features_user_text_cancel_button"
                         inverted={true}
                         onClick={[Function]}
                         size="small"
