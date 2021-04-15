@@ -933,16 +933,22 @@ handleCatFeaturesUserTextCancel() {
 
   /** Clear any features that have been specified as type ordinal, along with any related data,
    * and set them to type auto-determined default type.
-   * Does NOT clear the storage of previous ordinal features, so you can still recover previous
-   * settings even when changing from user text input.
+   * @param {boolean} clearPrev - false by default, to NOT clear the storage of previous ordinal features, 
+   * so you can still recover previous settings even when changing from user text input. 'True' will
+   * clear the previous values (for testing).
   */
-  ordinalFeaturesClearToDefault() {
+  ordinalFeaturesClearToDefault( clearPrev = false) {
     for(var feature in this.state.ordinalFeaturesObject) {
       this.setFeatureType(feature, this.getFeatureDefaultType(feature));
     }
     this.setState({
       ordinalFeaturesObject: {},
     })
+    if(clearPrev) {
+      this.setState({
+        ordinalFeaturesObjectPrev: {},
+      })
+    }
   }
 
   /** From state, convert the lists of unique values for ordinal features into a string with
@@ -1042,13 +1048,16 @@ handleCatFeaturesUserTextCancel() {
    * @returns {null} 
    */
   ordinalFeaturesUserTextIngest() {
+    // Get the lines before clearing ordinal features to default. Otherwise can
+    // end up clearing ordinalFeaturesUserText in some cases.
+    let lines = this.state.ordinalFeaturesUserText.split(/\r?\n/);
     this.ordinalFeaturesClearToDefault();
     //Process each line individually
-    this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
-      if(line === "")
-        return;
-      let ordObj = this.ordinalFeaturesUserTextParse(line);
-      this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);
+    lines.map((line) => {
+      if(line != "") {
+        let ordObj = this.ordinalFeaturesUserTextParse(line);
+        this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);       
+      }
     })    
     //console.log("ingest: ordinals: ");
     //console.log(this.state.ordinalFeaturesObject);
@@ -1110,6 +1119,7 @@ handleCatFeaturesUserTextCancel() {
           let fieldTypeItem = ( field === this.getDependentColumn() ?
             <i>Target</i> :
             <Dropdown
+              id={'featureTypeDropdown-' + i.toString()}
               value={this.state.featureType[i]}
               options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
               onChange={this.handleFeatureTypeDropdown}
