@@ -111,7 +111,7 @@ class FileUpload extends Component {
     this.setAllFeatureTypes = this.setAllFeatureTypes.bind(this);
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
-    this.getDependentFeature = this.getDependentFeature.bind(this);
+    this.getDependentColumn = this.getDependentColumn.bind(this);
     this.clearDependentFeature = this.clearDependentFeature.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
@@ -404,7 +404,7 @@ handleCatFeaturesUserTextCancel() {
     const allowedPredictionTypes = ["classification", "regression"]
 
     const data = new FormData();
-    let depCol = this.getDependentFeature();
+    let depCol = this.getDependentColumn();
     let ordFeatures = "";
     let predictionType = this.state.predictionType;
 
@@ -458,7 +458,8 @@ handleCatFeaturesUserTextCancel() {
       //window.console.log('preview of uploaded data: ', dataPrev);
       // after uploading a dataset request new list of datasets to update the page
     } else {
-      window.console.log('no file available');
+      window.console.log('generateFileDate: no file available');
+      return { errorResp: "No file is available." };
     }
 
     return data;
@@ -612,7 +613,6 @@ handleCatFeaturesUserTextCancel() {
     this.setState({uploadButtonDisabled:true});
 
     const { uploadDataset } = this.props;
-
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let data = this.generateFileData(); // should be FormData
@@ -1117,7 +1117,8 @@ handleCatFeaturesUserTextCancel() {
       dataPrev.meta.fields.map((field, i) => {
           //Assign dropdown items for setting field type, or just 'Target' label for columns that's designated as target
           let fieldTypeItem = ( field === this.getDependentColumn() ?
-            <i>Target</i> :
+            <i id={"featureTypeTargetLabel-"+i.toString()}>Target</i>
+            :
             <Dropdown
               id={'featureTypeDropdown-' + i.toString()}
               value={this.state.featureType[i]}
@@ -1129,7 +1130,7 @@ handleCatFeaturesUserTextCancel() {
           return (
             <Table.HeaderCell key={field} verticalAlign='top'>
               <Segment.Group compact>
-                <Segment> {field} </Segment>
+                <Segment id={"table_header_label_" + field}> {field} </Segment>
                 <Segment inverted> {fieldTypeItem} </Segment>
                 {/*Return a segment with 'rank'button, or null, based on field type*/}
                 {this.getDataTableOrdinalRankButton(field)}
@@ -1162,9 +1163,9 @@ handleCatFeaturesUserTextCancel() {
           <Table.Row key={i}>
             <Table.Cell key={'dataTablePrevRow_'+i}>{i+1}</Table.Cell>
             {dataPrev.meta.fields.map(field => {
-                let tempKey = i + field;
+                let key_id = 'data_table_prev_' + i.toString() +'_' + field;
                 return (
-                  <Table.Cell key={'dataTablePrev_' + tempKey.toString()}>
+                  <Table.Cell key={key_id} id={key_id}>
                     {row[field]}
                   </Table.Cell>
                 )
@@ -1221,7 +1222,7 @@ handleCatFeaturesUserTextCancel() {
    *  its default type.
    */
   clearDependentFeature() {
-    let currentDep = this.getDependentFeature();
+    let currentDep = this.getDependentColumn();
     currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
   }
 
@@ -1299,7 +1300,7 @@ handleCatFeaturesUserTextCancel() {
     })
     //Check that user isn't including the currently-defined dependent column
     if( success ) {
-      let depCol = this.getDependentFeature();
+      let depCol = this.getDependentColumn();
       if( depCol !== undefined && expanded.indexOf(depCol) > -1 ) {
         success = false;
         message = "The feature " + depCol + " cannot be used because it is assigned as the Dependent Column.";
@@ -1339,6 +1340,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Row>
           <Grid.Column width={6}>
             <Form.Field 
+              id="target_dropdown"
               inline
               label="Target"
               control={Dropdown}
@@ -1373,7 +1375,8 @@ handleCatFeaturesUserTextCancel() {
             />
           </Grid.Column>
           <Grid.Column width={6}>
-            <Form.Field 
+            <Form.Field
+              id="prediction_type_dropdown" 
               inline
               label="Prediction Type"
               control={Dropdown} 
@@ -1428,14 +1431,15 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
-                  color='blue'
-                  size='small'
-                  fluid
-                  inverted
-                  disabled={this.state.ordinalFeatureToRank !== undefined}
-                  className="file-upload-button"
-                  content="Set Ordinal"
-                  onClick={() => this.setState({ordinalFeaturesUserTextModalOpen: !this.ordinalFeaturesUserTextModalOpen})}
+              id="ord_features_text_input_open_button"
+              color='blue'
+              size='small'
+              fluid
+              inverted
+              disabled={this.state.ordinalFeatureToRank !== undefined}
+              className="file-upload-button"
+              content="Set Ordinal"
+              onClick={() => this.setState({ordinalFeaturesUserTextModalOpen: !this.ordinalFeaturesUserTextModalOpen})}
             />
             <Popup
               on="click"
@@ -1461,6 +1465,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
+              id="cat_features_text_input_open_button"
               color='blue'
               size='small'
               fluid
@@ -1493,6 +1498,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
+              id='set_all_to_button'
               color='blue'
               size='small'
               fluid
@@ -1503,14 +1509,20 @@ handleCatFeaturesUserTextCancel() {
             />
             {/*dropdown menu*/}
             <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
-              <Menu vertical open={this.state.allFeaturesMenuOpen}>
-                <Menu.Item content={'Categorical'}
+              <Menu vertical open={this.state.allFeaturesMenuOpen} id='set_all_to_menu'>
+                <Menu.Item 
+                  id='set_all_to_menu_categorical'
+                  content={'Categorical'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
                 />
-                <Menu.Item content={'Ordinal'}
+                <Menu.Item 
+                  id='set_all_to_menu_ordinal'
+                  content={'Ordinal'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
                 />
-                <Menu.Item content={
+                <Menu.Item 
+                  id='set_all_to_menu_default'
+                  content={
                     <React.Fragment>
                       {'Numeric / Categorical'}
                       <div>(auto-detect)</div>
@@ -1621,8 +1633,8 @@ handleCatFeaturesUserTextCancel() {
           </Segment>
           <Segment>
             <textarea
-              className="file-upload-feature-text-input"
               id="categorical_features_text_area_input"
+              className="file-upload-feature-text-input"
               label="Categorical Features"
               onChange={this.handleCatFeaturesUserTextOnChange}
               onBlur={this.handleCatFeaturesUserTextBlur}
@@ -1633,6 +1645,7 @@ handleCatFeaturesUserTextCancel() {
             />
           </Segment>
           <Button
+            id="cat_features_user_text_accept_button"
             className='file-upload-pseudo-dialog-button'
             content="Accept"
             icon='checkmark'
@@ -1641,6 +1654,7 @@ handleCatFeaturesUserTextCancel() {
             color="blue"
           />
           <Button 
+            id="cat_features_user_text_cancel_button"
             className='file-upload-pseudo-dialog-button'
             color='red' 
             onClick={this.handleCatFeaturesUserTextCancel}
@@ -1684,6 +1698,7 @@ handleCatFeaturesUserTextCancel() {
             />
           </Segment>
           <Button
+            id="ordinal_features_user_text_accept_button"
             className='file-upload-pseudo-dialog-button'
             content="Accept"
             icon='checkmark'
@@ -1691,7 +1706,8 @@ handleCatFeaturesUserTextCancel() {
             color="blue"
             inverted
           />
-          <Button 
+          <Button
+            id="ordinal_features_user_text_cancel_button" 
             className='file-upload-pseudo-dialog-button'
             color='red' 
             onClick={this.handleOrdinalFeaturesUserTextCancel}
@@ -1756,7 +1772,8 @@ handleCatFeaturesUserTextCancel() {
     let fileInputElem = undefined;
     if( this.state.selectedFile == null ) {
       fileInputElem = (
-        <Dropzone 
+        <Dropzone
+            id="file-dropzone"
             onDropAccepted={this.handleSelectedFile}
             onDropRejected={this.handleRejectedFile}
             accept=".csv,.tsv,text/csv,text/tsv"
@@ -1802,7 +1819,7 @@ handleCatFeaturesUserTextCancel() {
     // of the pseudo-modal windows just below.
     if(this.state.showErrorModal){
       return(
-      <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon>
+      <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog"> 
         <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
         <Modal.Content>{this.state.errorModalContent}</Modal.Content>
       </Modal>
@@ -1834,12 +1851,6 @@ handleCatFeaturesUserTextCancel() {
             
             {/* File dropzone/chooser */}
             {fileInputElem}
-
-            {/*Modal for error messages*/}
-            <Modal style={{ marginTop:'0' }} open={this.state.openErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog">
-              <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
-              <Modal.Content>{this.state.errorModalContent}</Modal.Content>
-            </Modal>
             <br/>
 
             <div

@@ -3,7 +3,7 @@
 exports[`basic testing of fileupload react component DONE - full component snapshot 1`] = `
 <div>
   <SceneHeader
-    header="Submit Datasets"
+    header="Upload Datasets"
   />
   <Form
     as="form"
@@ -21,24 +21,6 @@ exports[`basic testing of fileupload react component DONE - full component snaps
       >
         <Component />
       </Dropzone>
-      <Modal
-        centered={true}
-        closeIcon={true}
-        closeOnDimmerClick={true}
-        closeOnDocumentClick={false}
-        dimmer={true}
-        eventPool="Modal"
-        id="error_modal_dialog"
-        onClose={[Function]}
-        style={
-          Object {
-            "marginTop": "0",
-          }
-        }
-      >
-        <ModalHeader />
-        <ModalContent />
-      </Modal>
       <br />
       <div
         className="file-upload-form-hide-inputs"
@@ -52,7 +34,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
             as="h4"
             inverted={true}
           >
-            Feature Specification
+            Specification
           </Header>
         </Divider>
         <Grid
@@ -60,21 +42,29 @@ exports[`basic testing of fileupload react component DONE - full component snaps
         >
           <GridRow>
             <GridColumn
-              width={7}
+              width={6}
             >
               <FormField
                 className="inverted-dropdown-search"
                 control={[Function]}
+                fluid={true}
+                id="target_dropdown"
                 inline={true}
-                label="Dependent Feature"
+                label="Target"
                 onChange={[Function]}
                 options={Array []}
-                placeholder="Select a feature"
+                placeholder="Select a column"
                 search={true}
               />
             </GridColumn>
             <GridColumn
-              width={1}
+              style={
+                Object {
+                  "marginTop": "1.9em",
+                  "paddingLeft": "0",
+                }
+              }
+              width={2}
             >
               <Popup
                 content={
@@ -92,7 +82,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                 }
                 disabled={false}
                 eventsEnabled={true}
-                header="Dependent Column Help"
+                header="Target Column Help"
                 offset={0}
                 on="click"
                 pinned={false}
@@ -116,6 +106,8 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                 className="inverted-dropdown-inline"
                 control={[Function]}
                 defaultValue="classification"
+                fluid={true}
+                id="prediction_type_dropdown"
                 inline={true}
                 label="Prediction Type"
                 onChange={[Function]}
@@ -136,6 +128,12 @@ exports[`basic testing of fileupload react component DONE - full component snaps
               />
             </GridColumn>
             <GridColumn
+              style={
+                Object {
+                  "marginTop": "1.9em",
+                  "paddingLeft": "0",
+                }
+              }
               width={2}
             >
               <Popup
@@ -196,94 +194,18 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                   as={[Function]}
                   control={[Function]}
                 >
-                  <Modal
-                    centered={true}
-                    closeOnDimmerClick={false}
-                    closeOnDocumentClick={false}
-                    closeOnEscape={true}
-                    dimmer={true}
+                  <Button
+                    as="button"
+                    className="file-upload-button"
+                    color="blue"
+                    content="Set Ordinal"
                     disabled={false}
-                    eventPool="Modal"
-                    onClose={[Function]}
-                    onOpen={[Function]}
-                    open={false}
-                    trigger={
-                      <Button
-                        as="button"
-                        className="file-upload-button"
-                        color="blue"
-                        disabled={false}
-                        fluid={true}
-                        inverted={true}
-                        size="small"
-                      >
-                        Set Ordinal
-                      </Button>
-                    }
-                  >
-                    <ModalHeader>
-                      Ordinal Feature Input
-                    </ModalHeader>
-                    <ModalDescription
-                      style={
-                        Object {
-                          "margin": "1em",
-                          "width": "65%",
-                        }
-                      }
-                    >
-                      <p>
-                         For each ordinal feature, enter one comma-separated line with the following format (this overrides selections in the Dataset Preview): 
-                        <br />
-                         [feature name],[1st unique value],[2nd unique value],...
-                      </p>
-                      <p>
-                        For example:
-                        <br />
-                         month,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec
-                        <br />
-                         day,mon,tue,wed,thu,fri,sat,sun
-                      </p>
-                      <p>
-                        To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. 
-                      </p>
-                      <br />
-                    </ModalDescription>
-                    <Form
-                      as="form"
-                    >
-                      <textarea
-                        className="file-upload-ordinal-text-area"
-                        id="ordinal_features_text_area_input"
-                        label="Ordinal Features"
-                        onChange={[Function]}
-                        placeholder="(No Ordinal features have been specified.)"
-                        value=""
-                      />
-                    </Form>
-                    <ModalActions>
-                      <Button
-                        as="button"
-                        color="red"
-                        content="Cancel"
-                        id="ordinal_features_user_text_cancel_button"
-                        inverted={true}
-                        onClick={[Function]}
-                        size="small"
-                      />
-                      <Button
-                        as="button"
-                        color="blue"
-                        content="Accept"
-                        icon="checkmark"
-                        id="ordinal_features_user_text_accept_button"
-                        inverted={true}
-                        onClick={[Function]}
-                        positive={true}
-                        size="small"
-                      />
-                    </ModalActions>
-                  </Modal>
+                    fluid={true}
+                    id="ord_features_text_input_open_button"
+                    inverted={true}
+                    onClick={[Function]}
+                    size="small"
+                  />
                   <Popup
                     content={
                       <div
@@ -325,108 +247,18 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                   as={[Function]}
                   control={[Function]}
                 >
-                  <Modal
-                    centered={true}
-                    closeOnDimmerClick={false}
-                    closeOnDocumentClick={false}
-                    closeOnEscape={true}
-                    dimmer={true}
-                    eventPool="Modal"
-                    onClose={[Function]}
-                    onOpen={[Function]}
-                    open={false}
-                    trigger={
-                      <Button
-                        as="button"
-                        className="file-upload-button"
-                        color="blue"
-                        disabled={false}
-                        fluid={true}
-                        inverted={true}
-                        size="small"
-                      >
-                        Set Categorical
-                      </Button>
-                    }
-                  >
-                    <ModalHeader>
-                      Categorical Feature Input
-                    </ModalHeader>
-                    <ModalDescription
-                      style={
-                        Object {
-                          "margin": "1em",
-                          "width": "65%",
-                        }
-                      }
-                    >
-                      <p>
-                        Enter a comma-separated list to specify which features are Categorical.
-                        <br />
-                        This will override selections in the Dataset Preview. 
-                      </p>
-                      <p>
-                        For example:
-                        <br />
-                         
-                        <i>
-                          sex,eye_color,hair_color,disease_state
-                        </i>
-                      </p>
-                      <p>
-                        Ranges - you can specify features using ranges. Each feature name in a range is converted to a column number within the data, and the range is expanded using the column numbers. For example, working from the example above in which we assume the features are present in the data in the same order as listed, entering 
-                        <br />
-                         
-                        <i>
-                          sex-disease_state
-                        </i>
-                        <br />
-                        <br />
-                        would expand to
-                        <br />
-                         
-                        <i>
-                          sex,eye_color,hair_color,disease_state
-                        </i>
-                      </p>
-                      <br />
-                    </ModalDescription>
-                    <Form
-                      as="form"
-                    >
-                      <textarea
-                        className="file-upload-categorical-text-area"
-                        id="categorical_features_text_area_input"
-                        label="Categorical Features"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        placeholder="(No Categorical features have been specified)"
-                        value=""
-                      />
-                    </Form>
-                    <ModalActions>
-                      <Button
-                        as="button"
-                        color="red"
-                        content="Cancel"
-                        id="cat_features_user_text_cancel_button"
-                        inverted={true}
-                        onClick={[Function]}
-                        size="small"
-                      />
-                      <Button
-                        as="button"
-                        color="blue"
-                        content="Accept"
-                        icon="checkmark"
-                        id="cat_features_user_text_accept_button"
-                        inverted={true}
-                        onClick={[Function]}
-                        positive={true}
-                        size="small"
-                      />
-                    </ModalActions>
-                  </Modal>
+                  <Button
+                    as="button"
+                    className="file-upload-button"
+                    color="blue"
+                    content="Set Categorical"
+                    disabled={false}
+                    fluid={true}
+                    id="cat_features_text_input_open_button"
+                    inverted={true}
+                    onClick={[Function]}
+                    size="small"
+                  />
                   <Popup
                     content={
                       <div
@@ -474,6 +306,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                     color="blue"
                     content="Set All To..."
                     fluid={true}
+                    id="set_all_to_button"
                     inverted={true}
                     onClick={[Function]}
                     size="small"
@@ -486,15 +319,18 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                     }
                   >
                     <Menu
+                      id="set_all_to_menu"
                       open={false}
                       vertical={true}
                     >
                       <MenuItem
                         content="Categorical"
+                        id="set_all_to_menu_categorical"
                         onClick={[Function]}
                       />
                       <MenuItem
                         content="Ordinal"
+                        id="set_all_to_menu_ordinal"
                         onClick={[Function]}
                       />
                       <MenuItem
@@ -506,6 +342,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
                             </div>
                           </React.Fragment>
                         }
+                        id="set_all_to_menu_default"
                         onClick={[Function]}
                       />
                     </Menu>
@@ -523,23 +360,34 @@ exports[`basic testing of fileupload react component DONE - full component snaps
             as="h4"
             inverted={true}
           >
-            Submit
+             Upload 
           </Header>
         </Divider>
-        <FormInput
-          as={[Function]}
-          control={[Function]}
+        <FormField
+          style={
+            Object {
+              "float": "right",
+            }
+          }
         >
           <Button
             as="button"
             className="file-upload-button"
+            color="red"
+            content="Cancel"
+            inverted={true}
+            onClick={[Function]}
+          />
+          <Button
+            as="button"
+            className="file-upload-button"
             color="blue"
-            content="Submit Dataset"
+            content="Upload Dataset"
             icon="upload"
             inverted={true}
             onClick={[Function]}
           />
-        </FormInput>
+        </FormField>
       </div>
     </Segment>
   </Form>
