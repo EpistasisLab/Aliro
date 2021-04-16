@@ -29,12 +29,8 @@ import FileUpload from './';
 //import SceneHeader from '../SceneHeader';
 // try getting react pieces and framework for test rendering
 import React from 'react';
-import renderer from 'react-test-renderer';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import fetch from 'jest-fetch-mock';
-import fetchMock from 'fetch-mock';
-import Dropzone from 'react-dropzone'
 
 const middlewares = [thunk];
 const initialState = {};
@@ -58,8 +54,6 @@ describe('basic testing of fileupload react component', () => {
   let fullDom;
   let shallowDom;
   let instance;
-  let fakeFile = {name: 'iris.csv'};
-  let fakeFileTsv = {name: 'iris.tsv'};
   let badFakeFile = {name: 'iris.txt'};
   // basic bookkeeping before/after each test; mount/unmount component, should be
   // similar to how piece will actually work in browser
@@ -102,7 +96,7 @@ describe('basic testing of fileupload react component', () => {
   })
 
   // the intended behavior of this component is to hide the fields to enter info
-  // about the file being uploaded until a file with a filename has been selected
+  // about the file being uploaded until a file with a testFilename has been selected
   it('DONE - check UI form is hidden w/o a file selection', () => {
     let formBody = shallowDom.find('#file-upload-form-input-area');
     expect(formBody.length).toEqual(1)
@@ -127,106 +121,11 @@ describe('basic testing of fileupload react component', () => {
     expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
   })
     
-  //TODO - redo these
-  it('TODO - try testing generateFileData - good input', () => {
-
-  })
-
-  it('TODO - try testing generateFileData - bad input, no ordinal features', () => {
-
-  })
-
-  it('TODO - try testing generateFileData - bad input, with ordinal features', () => {
-
-  })
 }) //describe
-
-
-// https://jestjs.io/docs/en/tutorial-async
-// jest mock is not working, not returning promise, must be improperly configured and/or
-// not setup correctly or something
-
-//jest.mock('../../utils/apiHelper');
-//import uploadDataset from '../../data/datasets/dataset/api';
-
-// cheating and just importing fake apiHelper directly - probably not recommended
-import { uploadFile } from '../../utils/__mocks__/apiHelper';
-describe('mock network request', () => {
-  let store = mockStore(initialState);
-  let fullDom;
-
-  beforeEach(() => {
-    //fullDom = mount(<FileUpload store={store} testProp='hello' />);
-    fullDom = shallow(<FileUpload store={store} />).dive();
-  })
-
-  const fakeDatasets = [
-    {
-      'name': 'auto.csv',
-      'username': 'testuser',
-      'dependent_col' : 'class',
-      'categorical_features': '',
-      'ordinal_features': '',
-      'timestamp': Date.now(),
-    },
-    {
-      'name': 'iris.csv',
-      'username': 'testuser',
-      'dependent_col' : 'target_class',
-      'categorical_features': '',
-      'ordinal_features': '',
-      'timestamp': Date.now(),
-    }
-  ];
-
-  it('TODO - what is this testing??? - testing promise for successful case, proper dependent_col', () => {
-    expect.assertions(1); //this expects one jest assertion to be made during this test. good for testing the promises are run
-    //return uploadDataset(fakeDataset).then(data => expect(data.name).toEqual('iris.csv'));
-    //return uploadFile('fakeurl').then(data => expect(data.name).toEqual('iris.csv'));
-
-    // on successful upload, change window location/redirect the page, uses error
-    // flag in server response to control logic for UI to display message on error
-    // or page redirection on success, not sure how to get at those pieces with
-    // this testing framework. DOM does not seem to be updating correctly
-    //
-    //NOTE Returning a promise tells jest to wait for the promise resolution before finishing the test.
-    //Test will fail if promise is rejected.
-    //
-    //MGS - I don't see what this is testing. It's a mock api call and has nothing to do
-    // with FileUpload componenet.
-    return uploadFile(fakeDatasets[0])
-      .then(data => expect(data.id).toEqual(7654321));
-  })
-
-  it('TODO check this - testing promise for unsuccessful case, improper dependent_col', () => {
-    expect.assertions(1);
-    return uploadFile(fakeDatasets[1])
-      .catch(e => {
-        expect(e).toEqual({'error': 'dependent_col: target_class invalid'});
-
-        // fake setting state, normally occurs in upload handler function in
-        // FileUpload component after promise making actual upload resolves
-
-        // fullDom.setState({
-        //   errorResp: e,
-        //   serverResp: e
-        // });
-
-        // manually setting state is not working correctly?, popup open prop should be set
-        // to 'true' in case of error response, not sure if this is incorrect method
-        // of testing how UI should look based on react component state
-
-        // fullDom = shallow(<FileUpload store={store} />).dive();
-        // fullDom.update();
-        // let popup = fullDom.find('Popup').at(0);
-        // console.log('popup props', popup.props());
-      });
-  })
-})
 
 // Test various functionality with a file blob that
 // simulates actual data loaded
-describe('test with mock file blob', () => {
+describe('series of tests with mock file blob', () => {
   let store = mockStore(initialState);
   let fullDom;
   let shallowDom;
@@ -235,20 +134,35 @@ describe('test with mock file blob', () => {
   // Create a test blob.
   // Simulates raw data loaded by file I/O, before it's parsed as csv data.
   //
-  let features=['col1','col2','col3','class'];
-  let dataCSV = features.join()+`\n
-            one,cat,1,yes\n
-            three,dog,2,no\n
-            two,cat,3,yes\n
-            one,bird,2.5,42`;
-  let catFeaturesOrig = [features[0],features[1],features[3]];
-  dataCSV = dataCSV.replace(/ +?/g, ''); //Remove spaces added by multiline assignment
-  let filename = 'testFile.csv';
+  let featureNames=['col1','col2','class','col3'];
+  let depColumnIndex = 2;
+  // The data, with each feature as a row
+  let dataByFeature = [
+    ['one','three','two','one'], //column 0
+    ['cat','dog','cat','bird'],  //column 1, etc..
+    [1,2,3,2.5],
+    ['yes','no','yes','42']
+  ]
+  // Make CSV version of data
+  let dataCSV = featureNames.join()+`\n`;
+  for(let row=0; row < dataByFeature[0].length; row++) {
+    let line = "";
+    for(let col=0; col < featureNames.length; col++) {
+      line += dataByFeature[col][row];
+      if(col < (featureNames.length-1))
+        line += ','
+    }
+    line += '\n';
+    dataCSV += line;
+  }
+
+  let catFeaturesOrig = [featureNames[0],featureNames[1],featureNames[3]];
+  let testFilename = 'testFile.csv';
   let blob = new Blob([dataCSV], {type: 'text/csv'});
   blob.lastModifiedDate = new Date();
-  let testFileBlob = new File([blob], filename);
+  let testFileBlob = new File([blob], testFilename);
 
-  function getFeatureTypesOrig(){
+  function getFeatureTypesDefault(){
     return [instance.featureTypeCategorical, instance.featureTypeCategorical, instance.featureTypeNumeric, instance.featureTypeCategorical];
   }
 
@@ -258,6 +172,10 @@ describe('test with mock file blob', () => {
     instance.setAllFeatureTypes('autoDefault');
     // This will clear the previous value of ordinal features that's otherwise stored.
     instance.ordinalFeaturesClearToDefault(true);
+    // Set predicition type
+    instance.setState(  {
+      predictionType: instance.defaultPredictionType,
+    });
     shallowDom.update();
   }
 
@@ -271,7 +189,7 @@ describe('test with mock file blob', () => {
     }
     else {
       if(typeOrArray === 'default'){
-        testArray = getFeatureTypesOrig();
+        testArray = getFeatureTypesDefault();
       }
       else{
         testArray = [0,0,0,0];
@@ -279,18 +197,18 @@ describe('test with mock file blob', () => {
       }
     }
     //Don't test in a loop, it makes error reporting harder to understand
-    expect(features.length).toBe(4);
+    expect(featureNames.length).toBe(4);
     expect(testArray.length).toBe(4);
-    expect(instance.getFeatureType(features[0])).toEqual(testArray[0]);
-    expect(instance.getFeatureType(features[1])).toEqual(testArray[1]);
-    expect(instance.getFeatureType(features[2])).toEqual(testArray[2]);
-    expect(instance.getFeatureType(features[3])).toEqual(testArray[3]);
+    expect(instance.getFeatureType(featureNames[0])).toEqual(testArray[0]);
+    expect(instance.getFeatureType(featureNames[1])).toEqual(testArray[1]);
+    expect(instance.getFeatureType(featureNames[2])).toEqual(testArray[2]);
+    expect(instance.getFeatureType(featureNames[3])).toEqual(testArray[3]);
   }
 
   // Return obj { result: true if error modal is showing, header: header string, content: content string }
   function errorModalIsShowing() {
     let res = {
-      result: shallowDom.find("#error_modal_dialog").at(0).prop('open'),
+      result: shallowDom.find("#error_modal_dialog").length > 0 && shallowDom.find("#error_modal_dialog").at(0).prop('open'),
       header: instance.state.errorModalHeader,
       content: instance.state.errorModalContent
     }
@@ -305,8 +223,6 @@ describe('test with mock file blob', () => {
     //shallowDom.find(".close").at(0).simulate('click'); //tries to find the close icon on the modal, but it fails
     instance.handleErrorModalClose();
     shallowDom.update();
-    // let res = errorModalIsShowing();
-    // console.log(res);
   }
 
   // Use beforeAll so that the blob stays loaded w/out having
@@ -335,7 +251,7 @@ describe('test with mock file blob', () => {
       expect(mockcb.mock.calls.length).toBe(1);
       
       // Test that the file object is set
-      expect(instance.state.selectedFile.name).toEqual(filename); 
+      expect(instance.state.selectedFile.name).toEqual(testFilename); 
 
       // Tell jest we're done with this test. 
       done();       
@@ -355,27 +271,36 @@ describe('test with mock file blob', () => {
     expect(errorModalIsShowing().result).toBe(false);
 
     // Test the auto-assigned feature types and getFeatureType()
-    testFeatureTypes('default');
+    // Expect dep. column to be set
+    let expected = getFeatureTypesDefault();
+    expected[depColumnIndex] = instance.featureTypeDependent;
+    testFeatureTypes(expected);
     
     // No ordinal features should be specified. Object should be empty
     expect(instance.state.ordinalFeaturesObject).toEqual({});
 
-    // Dependent feature should be unset after load
-    expect(instance.getDependentFeature()).toEqual(undefined);
+    // Dependent column should be set to column with name 'class' after load, 
+    // because the name 'class' is used to auto-detect dependent column
+    expect(instance.getDependentColumn()).toEqual(featureNames[depColumnIndex]);
+
+    // Set all features to default type and check. This will
+    // clear dependent column.
+    setAllFeaturesToDefaults();
+    testFeatureTypes('default');
   })
 
   it('DONE - test feature assignment behaviors via direct manipulation', () => {
     // Test assigning a categorical feature to type numeric.
     // Should silently reject and not change to numeric.
-    instance.setFeatureType(features[0], instance.featureTypeNumeric);
-    expect(instance.getFeatureType(features[0])).toEqual(instance.featureTypeCategorical);
+    instance.setFeatureType(featureNames[0], instance.featureTypeNumeric);
+    expect(instance.getFeatureType(featureNames[0])).toEqual(instance.featureTypeCategorical);
 
     // Test getting array of categorical features
     let catFeatures = [...catFeaturesOrig];
     expect(instance.getCatFeatures()).toEqual(catFeatures);
 
     // Set ordinal feature, w/out specifying rank
-    let ordFeature = features[0];
+    let ordFeature = featureNames[0];
     instance.setFeatureType(ordFeature, instance.featureTypeOrdinal);
     expect(instance.getFeatureType(ordFeature)).toEqual(instance.featureTypeOrdinal);
     let ordsExpected = {[ordFeature]: ["one","three","two"]};
@@ -414,20 +339,20 @@ describe('test with mock file blob', () => {
     setAllFeaturesToDefaults();
     
     // Dependent feature should be unset
-    expect(instance.getDependentFeature()).toEqual(undefined);
+    expect(instance.getDependentColumn()).toEqual(undefined);
     
     // Assigning dependent feature
-    let dep1 = features[2];
+    let dep1 = featureNames[2];
     instance.setFeatureType(dep1, instance.featureTypeDependent);
     expect(instance.getFeatureType(dep1)).toEqual(instance.featureTypeDependent);
-    expect(instance.getDependentFeature()).toEqual(dep1);
+    expect(instance.getDependentColumn()).toEqual(dep1);
     
     // Reassigning dependent feature should reset the previous one
     // to its default type
-    let dep2 = features[3];
+    let dep2 = featureNames[3];
     instance.setFeatureType(dep2, instance.featureTypeDependent);
     expect(instance.getFeatureType(dep2)).toEqual(instance.featureTypeDependent);
-    expect(instance.getDependentFeature()).toEqual(dep2);
+    expect(instance.getDependentColumn()).toEqual(dep2);
     expect(instance.getFeatureType(dep1)).toEqual(instance.getFeatureDefaultType(dep1));
 
     // Dependent column should no longer be included as categorical
@@ -441,24 +366,38 @@ describe('test with mock file blob', () => {
   // Test the methods used by the dialogs for text-based specification of
   // categorical feature types
   it('test text-based categorical-type specification', () => {
-    //Reset feature types to dfault
-    setAllFeaturesToDefaults();
-
-    // Get the text input element
-    let textInput = shallowDom.find("#categorical_features_text_area_input");
-    expect(textInput.length).toEqual(1);
-
-    // Simulate entering text and then accepting it
+    // Helper to simulate opening dialog, entering text and then accepting it
+    // cancel - pass true to cancel the input instead of accepting
     function updateCatText(text, cancel = false) {
+      // Open the dialog
+      let openButton = shallowDom.find("#cat_features_text_input_open_button");
+      expect(openButton.length).toEqual(1);
+      openButton.at(0).simulate('click');
+      // Get the text input element
+      let textInput = shallowDom.find("#categorical_features_text_area_input");
+      expect(textInput.length).toEqual(1);
+      // Simulate text input event
       let event = {target: {value: text}};
       textInput.at(0).prop('onChange')(event); // stores text to state
       textInput.at(0).prop('onBlur')(event); // stores text as raw to state
+      // Simulate button press
       if(cancel)
         shallowDom.find("#cat_features_user_text_cancel_button").at(0).simulate('click'); //uses state vars
       else
         shallowDom.find("#cat_features_user_text_accept_button").at(0).simulate('click'); //uses state vars
       shallowDom.update();
     }
+
+    // Close the cat feature text input dialog
+    function closeCatText() {
+      let button = shallowDom.find("#cat_features_user_text_cancel_button");
+      if(button.length > 0) {
+        button.at(0).simulate('click'); //uses state vars
+      }
+    }
+
+    //Reset feature types to dfault
+    setAllFeaturesToDefaults();
 
     // Should all be default still after empty string
     updateCatText("");
@@ -474,18 +413,18 @@ describe('test with mock file blob', () => {
 
     // Change text to set all features as categorical, but hit cancel button.
     // Shouldn't change feature assignments.
-    updateCatText(features.join(), true /*simulate clicking cancel button*/);
+    updateCatText(featureNames.join(), true /*simulate clicking cancel button*/);
     expect(errorModalIsShowing().result).toBe(false);
     testFeatureTypes('default');
 
-    // Assign all as categorical by passing string 'col1,col2,col3,class'
-    updateCatText(features.join());
+    // Assign all as categorical by passing string of all feature names
+    updateCatText(featureNames.join());
     expect(errorModalIsShowing().result).toBe(false);
     testFeatureTypes(instance.featureTypeCategorical);
 
     // Assign just default-categorical again, and the one default-numeric feature
     // should revert to numeric
-    updateCatText(features.join()); // set all to type cat
+    updateCatText(featureNames.join()); // set all to type cat
     updateCatText(catFeaturesOrig.join()); // leaves out those not cat by default
     expect(errorModalIsShowing().result).toBe(false);
     testFeatureTypes('default');
@@ -494,13 +433,13 @@ describe('test with mock file blob', () => {
     setAllFeaturesToDefaults();
 
     // Test with range - set all to categorical
-    updateCatText(features[0]+"-"+features[3]);
+    updateCatText(featureNames[0]+"-"+featureNames[3]);
     expect(errorModalIsShowing().result).toBe(false);
     testFeatureTypes(instance.featureTypeCategorical);
 
     // Test with smaller range. Should set all to categorical
     instance.setAllFeatureTypes(instance.featureTypeOrdinal);
-    updateCatText(features[0]+","+features[1]+"-"+features[2]+","+features[3]);
+    updateCatText(featureNames[0]+","+featureNames[1]+"-"+featureNames[2]+","+featureNames[3]);
     expect(errorModalIsShowing().result).toBe(false);
     testFeatureTypes(instance.featureTypeCategorical);
     
@@ -509,30 +448,34 @@ describe('test with mock file blob', () => {
     updateCatText("woogie woogie");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeCatText();
     testFeatureTypes('default');
 
     // Test with a bad range at begin
     setAllFeaturesToDefaults();
-    updateCatText("frankenNoodle-"+features[3]);
+    updateCatText("frankenNoodle-"+featureNames[3]);
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeCatText();
     testFeatureTypes('default');
 
     // Test with a bad range at end
     setAllFeaturesToDefaults();
-    updateCatText(features[0]+"-frankenNoodle");
+    updateCatText(featureNames[0]+"-frankenNoodle");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeCatText();
     testFeatureTypes('default');
 
     // Test with setting dependent feature.
     // The dependent feature should not change when its feature is entered in text input,
     // and we should see error dialog.
-    instance.setFeatureType(features[0], instance.featureTypeDependent);
+    instance.setFeatureType(featureNames[0], instance.featureTypeDependent);
     updateCatText(catFeaturesOrig.join());
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
-    let expected = [...getFeatureTypesOrig()];
+    closeCatText();
+    let expected = [...getFeatureTypesDefault()];
     expected[0] = instance.featureTypeDependent;
     testFeatureTypes(expected);
 
@@ -544,13 +487,18 @@ describe('test with mock file blob', () => {
     //Reset feature types to dfault
     setAllFeaturesToDefaults();
 
-    // Get the text input element
-    let textInput = shallowDom.find("#ordinal_features_text_area_input");
-    expect(textInput.length).toEqual(1);
 
     // Simulate entering text and then accepting it.
     // cancel - pass true to simulate clicking the cancel button in text entry box.
     function updateOrdText(text, cancel = false) {
+      // Open the dialog
+      let openButton = shallowDom.find("#ord_features_text_input_open_button");
+      expect(openButton.length).toEqual(1);
+      openButton.at(0).simulate('click');
+      // Get the text input element
+      let textInput = shallowDom.find("#ordinal_features_text_area_input");
+      expect(textInput.length).toEqual(1);
+      // Simulate text change event
       let event = {target: {value: text}};
       textInput.at(0).prop('onChange')(event); // stores text to state
       shallowDom.update();
@@ -559,6 +507,13 @@ describe('test with mock file blob', () => {
       else
         shallowDom.find("#ordinal_features_user_text_accept_button").at(0).simulate('click'); //uses state vars to process text
       shallowDom.update();
+    }
+
+    function closeOrdText() {
+      let button = shallowDom.find("#ordinal_features_user_text_cancel_button");
+      if(button.length > 0){
+        button.at(0).simulate('click'); //uses state vars to process text
+      }
     }
 
     // Should all be default still after empty string
@@ -572,6 +527,7 @@ describe('test with mock file blob', () => {
     updateOrdText("knights,ni");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeOrdText();
     testFeatureTypes('default');
 
     // Test valid feature name, but invalid values
@@ -579,6 +535,7 @@ describe('test with mock file blob', () => {
     updateOrdText("col1,ni");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeOrdText();
     testFeatureTypes('default');
 
     // Test canceling input. Feature types should not change.
@@ -592,7 +549,7 @@ describe('test with mock file blob', () => {
     setAllFeaturesToDefaults();
     updateOrdText("col1,one,two,three");
     expect(errorModalIsShowing().result).toBe(false);
-    let expected = [...getFeatureTypesOrig()];
+    let expected = [...getFeatureTypesDefault()];
     expected[0] = instance.featureTypeOrdinal;
     testFeatureTypes(expected);
     let ords = { col1: ['one','two','three']};
@@ -602,7 +559,7 @@ describe('test with mock file blob', () => {
     setAllFeaturesToDefaults();
     updateOrdText("col1,one,two,three\ncol2,bird,cat,dog");
     expect(errorModalIsShowing().result).toBe(false);
-    expected = [...getFeatureTypesOrig()];
+    expected = [...getFeatureTypesDefault()];
     expected[0] = instance.featureTypeOrdinal;
     expected[1] = instance.featureTypeOrdinal;
     testFeatureTypes(expected);
@@ -614,6 +571,7 @@ describe('test with mock file blob', () => {
     updateOrdText("col1,one,two,three\nunassumingduck,bird,cat,dog");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeOrdText();
     expect(instance.state.ordinalFeaturesObject).toEqual({});
     testFeatureTypes('default');
 
@@ -622,17 +580,19 @@ describe('test with mock file blob', () => {
     updateOrdText("col1,one,two,three\ncol2,bird,cat,fish");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
+    closeOrdText();
     expect(instance.state.ordinalFeaturesObject).toEqual({});
     testFeatureTypes('default');
 
     // Test valid feature name but that's set as dependent feature.
     // Expect an error and dependent feature not to be changed.
     setAllFeaturesToDefaults();
-    instance.setFeatureType(features[0], instance.featureTypeDependent);
+    instance.setFeatureType(featureNames[0], instance.featureTypeDependent);
     updateOrdText("col1,one,two,three");
     expect(errorModalIsShowing().result).toBe(true);
     closeErrorModal();
-    expected = [...getFeatureTypesOrig()];
+    closeOrdText();
+    expected = [...getFeatureTypesDefault()];
     expected[0] = instance.featureTypeDependent;
     testFeatureTypes(expected);
 
@@ -645,7 +605,7 @@ describe('test with mock file blob', () => {
     expect(errorModalIsShowing().result).toBe(false);
     ords = { col2: ['cat','dog','bird']};
     expect(instance.state.ordinalFeaturesObject).toEqual(ords);
-    expected = [...getFeatureTypesOrig()];
+    expected = [...getFeatureTypesDefault()];
     expected[1] = instance.featureTypeOrdinal;
     testFeatureTypes(expected);
 
@@ -657,42 +617,204 @@ describe('test with mock file blob', () => {
     let featureDrop = shallowDom.find("#featureTypeDropdown-0");
     expect(featureDrop.length).toEqual(1);
     let index = 0;
+    // Simulate setting its value
     featureDrop.at(index).simulate('change', 
       { target: { value: 'testval', name: 'testname' } },
       {value: instance.featureTypeOrdinal, customindexid: index}
     );
     // Expect the feature to be type ordinal now
-    expected = [...getFeatureTypesOrig()];
+    expected = [...getFeatureTypesDefault()];
     expected[index] = instance.featureTypeOrdinal;
     testFeatureTypes(expected);
-    // Expect the default ordering of values
+    // Expect the default/orig ordering of values
     let ordsArr = ['one','three','two'];
     ords = { col1: ordsArr };
     expect(instance.state.ordinalFeaturesObject).toEqual(ords);
     // Expect the text string in the ordinal specification box to match
+    let openButton = shallowDom.find("#ord_features_text_input_open_button");
+    expect(openButton.length).toEqual(1);
+    openButton.at(0).simulate('click');
     let ordTextInput = shallowDom.find("#ordinal_features_text_area_input");
     expect(ordTextInput.length).toEqual(1);
-    let expectedString = features[index] + ',' + ordsArr.join() + '\n';
+    let expectedString = featureNames[index] + ',' + ordsArr.join() + '\n';
     let value = ordTextInput.at(index).props().value;
     expect(value).toBe(expectedString);
 
+    // cleanup double-check
+    closeErrorModal();
+    closeOrdText();
   })
 
-  it('test UI element contents', () => {
-    // Reset feature types to dfault
+  // Test UI elements directly to see that they hold the right values
+  //
+  it('test other UI elements', () => {
+    // Reset feature types to default AND clears dependent column to undefined
     setAllFeaturesToDefaults();
 
     // Verify various dataset preview table values
-    //
-    // Header row
-    //
     
+    // Header row
+    featureNames.forEach( (feature, index) => {
+      // Verify column header label
+      let label = shallowDom.find("#table_header_label_" + feature);
+      expect(label.length).toEqual(1);
+      // Empirically, the text assigned to the Segment component is
+      // in the second child object.
+      expect(label.at(0).props().children[1]).toEqual(featureNames[index]);
+          
+      // Verify correct feature types in dropdowns
+      let drop = shallowDom.find("#featureTypeDropdown-" + index.toString());
+      expect(drop.length).toEqual(1);
+      expect(drop.at(0).props().value).toEqual(getFeatureTypesDefault()[index]);
+    } )
+
+    // Target/Dependent column 
+    //
+    // Set column via dropdown
+    let targetDrop = shallowDom.find("#target_dropdown");
+    expect(targetDrop.length).toEqual(1);
+    // Simulate setting its value
+    let index = 2;
+    targetDrop.at(0).simulate('change', 
+      { target: { value: 'testval', name: 'testname' } },
+      {value: featureNames[index]}
+    );
+    let expected = getFeatureTypesDefault();
+    expected[index] = instance.featureTypeDependent;
+    testFeatureTypes(expected);
+
+    // Expect a label of 'Target' instead of a dropdown in the data table preview
+    let targetLabel = shallowDom.find("#featureTypeTargetLabel-" + index.toString());
+    expect(targetLabel.length).toEqual(1);
+
+    // Verify the data shown in table preview
+    for( let row=0; row < dataByFeature[0].length; row++) {
+      featureNames.forEach( (feature, index) => {
+        let id = '#data_table_prev_' + row.toString() + '_' + feature;
+        let data = shallowDom.find(id);
+        // Empirically, TableCell component has one child that holds value
+        expect(data.length).toEqual(1);
+        expect(data.at(0).props().children.toString()).toEqual(dataByFeature[index][row].toString());
+      })
+    }
+    
+    // Prediction type dropdown
+    // Should default to default prediction type
+    let predDrop = shallowDom.find("#prediction_type_dropdown");
+    expect(predDrop.length).toEqual(1);
+    //TODO - figure out how to check currenty value of dropdown. It doesn't
+    // work to check predDrop.at(0).props().value with this type of dropdown
+    // which is part of a Field.
+    //console.log('prepDrop ', predDrop.at(0).props().value);
+    //
+    // Set to type regression via event handler
+    let newPredType = 'regression';
+    predDrop.at(0).simulate('change', 
+      { target: { value: 'testval', name: 'testname' } },
+      {value: newPredType}
+    );
+    // Check that it's changed
+    expect(instance.state.predictionType).toEqual(newPredType);
 
   })
 
-})
+  // Test the button/menu that sets all features to particular type
+  // The 'Set-all-to' button.
+  it('test set-all-features-to menu', () => {
+    setAllFeaturesToDefaults();
+    
+    // Click the 'set-all-to' button and check that menu is open
+    let button = shallowDom.find("#set_all_to_button");
+    expect(button.length).toEqual(1);
+    button.at(0).simulate('click');
+    let menu = shallowDom.find("#set_all_to_menu");
+    expect(menu.length).toEqual(1);
+    expect(menu.at(0).props().open).toEqual(true);
 
-//TODO
-// Test UI contents (eg table has right entries)
-// Test behaviors via UI interaction simulation
-// Test submit behavior and validation - generateFileData method, but not actual submission because that's an integration test
+    // Test set all to categorical
+    let catMenu = shallowDom.find("#set_all_to_menu_categorical");
+    expect(catMenu.length).toEqual(1);
+    catMenu.at(0).simulate('click');
+    testFeatureTypes(instance.featureTypeCategorical);
+
+    // Test set all to ordinal
+    let ordMenu = shallowDom.find("#set_all_to_menu_ordinal");
+    expect(ordMenu.length).toEqual(1);
+    ordMenu.at(0).simulate('click');
+    testFeatureTypes(instance.featureTypeOrdinal);
+    
+    // Test set all to defaults
+    let defMenu = shallowDom.find("#set_all_to_menu_default");
+    expect(defMenu.length).toEqual(1);
+    defMenu.at(0).simulate('click');
+    testFeatureTypes('default');
+    
+  })
+
+  // Test the routine that preapes data for uploading.
+  // Does NOT test the actual uploading process, since
+  // that's an integration test.
+  it('test generate file data', () => {
+    setAllFeaturesToDefaults();
+
+    // Set the dependent column
+    instance.setFeatureType(featureNames[depColumnIndex], instance.featureTypeDependent);
+    // Change the prediction type
+    let predType = 'regression';
+    instance.setState( {predictionType: predType});
+    shallowDom.update();
+    // Set first feature to ordinal
+    instance.setFeatureType(featureNames[0], instance.featureTypeOrdinal);
+
+    let formData = instance.generateFileData();
+    // Check results
+    expect(formData.errorResp).toBeUndefined();
+    expect(errorModalIsShowing().result).toEqual(false);
+    // Get the metadata values
+    let result = JSON.parse( formData.get('_metadata') );
+    // Ordinals
+    let ords = {};
+    ords[featureNames[0]] = ['one','three','two'];
+    expect(result['ordinal_features']).toEqual(ords);
+    // Categoricals
+    let cats= [ featureNames[1], featureNames[3] ];
+    expect(result.categorical_features).toEqual(cats);
+    // Prediction type
+    expect(result.prediction_type).toEqual(predType);
+    // Dependent column
+    expect(result.dependent_col).toEqual(featureNames[depColumnIndex]);
+    // Filename
+    expect(result.name).toEqual(testFilename);
+
+    // Test with bad prediction type.
+    instance.setState( {
+      predictionType: 'nice try buddy!',
+      uploadButtonDisabled: false //hack
+    });
+    shallowDom.update();
+    formData = instance.generateFileData();
+    expect(formData.errorResp).toBeDefined();
+
+    // Test again with the handleUpload method to test that error gets caught and handled.
+    // Should get error modal.
+    instance.handleUpload();
+    shallowDom.update();
+    expect(errorModalIsShowing().result).toEqual(true);
+    closeErrorModal();
+
+    // Test with undefined dependent column
+    setAllFeaturesToDefaults(); //clears dep. column
+    formData = instance.generateFileData();
+    expect(formData.errorResp).toBeDefined();
+
+    // Test again with handleUpload. Should get error modal
+    instance.setState( {
+      uploadButtonDisabled: false //hack for check that's done in handleUpload
+    });
+    shallowDom.update();
+    instance.handleUpload();
+    shallowDom.update();
+    expect(errorModalIsShowing().result).toEqual(true);
+    closeErrorModal();
+  })
+})
