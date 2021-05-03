@@ -236,6 +236,10 @@ describe('series of tests with mock file blob', () => {
     fullDom.unmount();
   })
 
+  it('dummy test', () => {
+    expect('foo').toEqual('bar');
+  })
+
   // DO THIS TEST FIRST for this group of tets.
   // Load the simulated file blob. Handles async behavior. 
   it('DONE - load simulated file blob', done => {

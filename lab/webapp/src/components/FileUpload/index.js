@@ -152,6 +152,7 @@ class FileUpload extends Component {
 
     //Debug
     this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
+    console.log('devBuild: ', this.isDevBuild);
     this.timingPrevTimeMsec = new Date().getTime();
   }
 
