@@ -7,12 +7,16 @@ export JEST_JUNIT_OUTPUT_DIR="${REPORT_PATH}"
 echo "starting '/lab' jest reports"
 cd "/appsrc/lab/"
 npm run test
-echo "==== lab unit tests result "$?
-
+labres=$?
+echo "==== labres unit tests result "$labres
 
 echo "starting '/lab/webapp' jest reports"
 cd "/appsrc/lab/webapp/"
 npm run test
-echo "==== webapp unit tests result "$?
+webappres=$?
+echo "==== webappres unit tests result "$webappres
 
 cd "/appsrc"
+
+# exit with error code 1 if either test fails
+if [[ $labres == 0 ]] && [[ $webappres == 0 ]]; then exit 0; else exit 1; fi

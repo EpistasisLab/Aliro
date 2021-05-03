@@ -236,7 +236,7 @@ describe('series of tests with mock file blob', () => {
     fullDom.unmount();
   })
 
-  it('dummy test', () => {
+  it('----------- dummy test to force fail', () => {
     expect('foo').toEqual('bar');
   })
 
