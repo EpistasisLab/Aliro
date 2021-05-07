@@ -590,7 +590,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">requestManager</span><span class="o">.</span><span class="n">add_request</span><span class="p">(</span>
                         <span class="n">datasetId</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> 
                         <span class="n">datasetName</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span> 
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
         <span class="c1"># get all datasets that have a manual &#39;off&#39; status</span>
         <span class="c1"># and terminate their ai requests</span>
         <span class="n">dsFilter</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ai&#39;</span><span class="p">:[</span><span class="n">AI_STATUS</span><span class="o">.</span><span class="n">OFF</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;dummy&#39;</span><span class="p">]}</span>

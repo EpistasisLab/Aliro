@@ -1084,7 +1084,7 @@
 
     <span class="k">if</span> <span class="n">figure_export</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
-                 <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Chance&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Chance&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="n">mean_fpr</span><span class="p">,</span>
             <span class="n">mean_tpr</span><span class="p">,</span>
@@ -1093,13 +1093,13 @@
             <span class="p">(</span><span class="n">mean_auc</span><span class="p">,</span>
              <span class="n">std_auc</span><span class="p">),</span>
             <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
             <span class="n">mean_fpr</span><span class="p">,</span>
             <span class="n">tprs_lower</span><span class="p">,</span>
             <span class="n">tprs_upper</span><span class="p">,</span>
             <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;95% Confidence Interval&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>

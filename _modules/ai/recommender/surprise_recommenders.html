@@ -569,9 +569,9 @@
         <span class="n">alg_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_factors&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span>
                 <span class="s1">&#39;biased&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span>
                 <span class="s1">&#39;init_mean&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
-                <span class="s1">&#39;init_std_dev&#39;</span><span class="p">:</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span>
-                <span class="s1">&#39;lr_all&#39;</span><span class="p">:</span><span class="o">.</span><span class="mi">01</span><span class="p">,</span>
-                <span class="s1">&#39;reg_all&#39;</span><span class="p">:</span><span class="o">.</span><span class="mi">02</span><span class="p">,</span>
+                <span class="s1">&#39;init_std_dev&#39;</span><span class="p">:</span><span class="mf">.2</span><span class="p">,</span>
+                <span class="s1">&#39;lr_all&#39;</span><span class="p">:</span><span class="mf">.01</span><span class="p">,</span>
+                <span class="s1">&#39;reg_all&#39;</span><span class="p">:</span><span class="mf">.02</span><span class="p">,</span>
                 <span class="s1">&#39;verbose&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
         <span class="n">alg_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">surprise_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algo</span> <span class="o">=</span> <span class="n">mySVD</span><span class="p">(</span><span class="o">**</span><span class="n">alg_kwargs</span><span class="p">)</span>
