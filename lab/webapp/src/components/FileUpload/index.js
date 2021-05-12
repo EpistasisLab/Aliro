@@ -1844,8 +1844,9 @@ handleCatFeaturesUserTextCancel() {
     //Main UI elements
     //
     return (
-      <div> 
-        <SceneHeader header="Upload Datasets"/>
+      <div id={"build_mode_" + this.isDevBuild ? "development" : "production"}> 
+        {/*Use the id of top div to show build mode, so that in unit testing, if there's a snapshot problem because of differences in development and production build, we can see that immediately.*/}
+      <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             

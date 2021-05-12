@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`basic testing of fileupload react component DONE - full component snapshot 1`] = `
-<div>
+<div
+  id="development"
+>
   <SceneHeader
     header="Upload Datasets"
   />

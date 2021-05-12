@@ -236,6 +236,11 @@ describe('series of tests with mock file blob', () => {
     fullDom.unmount();
   })
 
+  //debug
+  it('DEBUG - show build mode', () => {
+    console.log("@@@ @@@ build mode ", instance.isDevBuild ? 'dev' : 'prod');
+  })
+
   // DO THIS TEST FIRST for this group of tets.
   // Load the simulated file blob. Handles async behavior. 
   it('DONE - load simulated file blob', done => {
