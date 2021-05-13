@@ -16,10 +16,21 @@ exports[`basic testing of fileupload react component DONE - full component snaps
     >
       <Dropzone
         accept=".csv,.tsv,text/csv,text/tsv"
+        disabled={false}
+        getFilesFromEvent={[Function]}
         id="file-dropzone"
+        maxFiles={0}
+        maxSize={Infinity}
+        minSize={0}
         multiple={false}
+        noClick={false}
+        noDrag={false}
+        noDragEventsBubbling={false}
+        noKeyboard={false}
         onDropAccepted={[Function]}
         onDropRejected={[Function]}
+        preventDropOnDocument={true}
+        validator={null}
       >
         <Component />
       </Dropzone>
