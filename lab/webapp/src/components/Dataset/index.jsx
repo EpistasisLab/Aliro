@@ -33,12 +33,13 @@ import DatasetModal from './components/DatasetModal';
 import { Grid, Segment, Header, Table, Loader, Icon, GridColumn } from 'semantic-ui-react';
 import { formatDataset, formatTime } from 'utils/formatter';
 import Papa from 'papaparse';
-import BarChart from '../BarChart';
-import StackedBarChart from '../StackedBarChart';
 
 class Dataset extends Component {
   constructor(props) {
     super(props);
+    //console.log("Child params: ");
+    //console.log(this.props.params);
+
     this.state = {
       dataset: 'fetching',
       dataPreview: null
@@ -214,12 +215,6 @@ class Dataset extends Component {
     //window.console.log("ord feats: ", ord_feats);
 
     let catAndOrdTable = this.getCatAndOrdTable();
-    let plotData = [
-      {"group":"banana", "Nitrogen":"12", "normal":"1", "stress":"13"},
-      {"group":"poacee", "Nitrogen":"6", "normal":"6", "stress":"33"},
-      {"group":"sorgho", "Nitrogen":"11", "normal":"28", "stress":"12"},
-      {"group": "triticum", "Nitrogen":"19", "normal":"6", "stress":"1"}
-    ]
     //console.log(plotData);
 
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
@@ -333,9 +328,6 @@ class Dataset extends Component {
                 </Table>
               </div>
             </Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <StackedBarChart />
           </Grid.Column>
         </Grid>
       </div>

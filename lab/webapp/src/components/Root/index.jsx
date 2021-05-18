@@ -32,6 +32,7 @@ import { Router, Route, IndexRedirect, hashHistory } from 'react-router';
 import App from '../App';
 import Datasets from '../Datasets';
 import FileUpload from '../FileUpload';
+import DatasetTabbed from '../DatasetTabbed';
 import Dataset from '../Dataset';
 import Experiments from '../Experiments';
 import Builder from '../Builder';
@@ -50,7 +51,7 @@ function Root({ store }) {
           <IndexRedirect to="datasets" />
           <Route path="upload_datasets" component={FileUpload} />
           <Route path="datasets" component={Datasets} />
-          <Route path="datasets/:id" component={Dataset} />
+          <Route path="datasets/:id" component={DatasetTabbed} />
           <Route path="experiments" component={Experiments} />
           <Route path="builder" component={Builder} />
           <Route path="results/:id" component={Results} />
