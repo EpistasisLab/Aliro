@@ -5,7 +5,6 @@ import DataStats from '../DataStats';
 import PlotlyBarPlot from '../PlotlyBarPlot';
 import PlotlyStackedBarPlot from '../PlotlyStackedBarPlot';
 import PlotlyBoxPlot from '../PlotlyBoxPlot';
-import './style.css';
 
 class DatasetTabbed extends Component {
     constructor(props) {
