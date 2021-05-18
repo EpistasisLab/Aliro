@@ -20,7 +20,6 @@ class DataStats extends Component {
     }
 
     componentDidMount() {
-       console.log("Component did mount called")
         fetch(`/api/datasets/${this.props.params.id}`)
           .then(response => {
             if(response.status >= 400) {
@@ -71,16 +70,9 @@ class DataStats extends Component {
 
     render() {
       const { dataset, fullDataset, fields, isReady } = this.state;
-      
       if(isReady === false){
-        console.log("isReady: "+isReady);
         return null;
       }
-
-      console.log("full data: ")
-      console.log(fullDataset)
-      console.log("dataset: ")
-      console.log(dataset)
       // categorical_features & ordinal_features
       const n = 20;
       let cat_feats = dataset.files[0].categorical_features;
@@ -99,6 +91,7 @@ class DataStats extends Component {
                 <Grid.Column>
                 {cat_feats.map(field =>
                   <PlotlyBarPlot 
+                    key={field}
                     data={fullDataset[field]}
                     width={300}
                     height={400}
@@ -121,6 +114,7 @@ class DataStats extends Component {
                 <Grid.Column>
                 {num_feats.map(field =>
                   <PlotlyBoxPlot 
+                    key={field}
                     data={[
                       {
                         x: fullDataset[field],

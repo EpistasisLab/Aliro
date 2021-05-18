@@ -37,8 +37,6 @@ import Papa from 'papaparse';
 class Dataset extends Component {
   constructor(props) {
     super(props);
-    //console.log("Child params: ");
-    //console.log(this.props.params);
 
     this.state = {
       dataset: 'fetching',
@@ -92,23 +90,6 @@ class Dataset extends Component {
   handleCloseFileDetails() {
     this.setState({ metadataStuff: null });
   }
-
-  // fetchCsv() {
-  //   return fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv').then(function (response) {
-  //       let reader = response.body.getReader();
-  //       let decoder = new TextDecoder('utf-8');
-
-  //       return reader.read().then(function (result) {
-  //           return decoder.decode(result.value);
-  //       });
-  //   });
-  // }
-
-  // fetchPlotData() {
-  //   console.log("called fetchplotdata")
-  //   let csvData = this.fetchCsv();
-  //   return Papa.parse(csvData)
-  // }
 
   getCatAndOrdTable() {
     const { dataset } = this.state;
@@ -215,7 +196,6 @@ class Dataset extends Component {
     //window.console.log("ord feats: ", ord_feats);
 
     let catAndOrdTable = this.getCatAndOrdTable();
-    //console.log(plotData);
 
     Object.entries(dataset.metafeatures).forEach(([key, value]) => {
       if(first.includes(key)) { return; }

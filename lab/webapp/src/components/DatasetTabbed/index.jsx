@@ -82,9 +82,6 @@ class DatasetTabbed extends Component {
     }
 
     render() {
-        console.log("Params: ");
-        console.log(this.props.params);
-
         const panes = [
             { menuItem: 'Preview', render: () => <Tab.Pane ><Dataset params = {this.props.params}/></Tab.Pane>},
             { menuItem: 'Basic Stats', render: () => <Tab.Pane><DataStats params = {this.props.params}/></Tab.Pane> },
