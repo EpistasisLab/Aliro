@@ -43,7 +43,7 @@ class DataStats extends Component {
                 return response.text();
             })
             .then(text => {
-                var parsedData = Papa.parse(text, { header: true, preview: 5 });
+                var parsedData = Papa.parse(text, { header: true, preview: 1000 });
                 this.setState({
                   fullDataset: this.modifyFilterData(parsedData.data),
                   fields: parsedData.meta.fields,
@@ -70,10 +70,12 @@ class DataStats extends Component {
 
     render() {
       const { dataset, fullDataset, fields, isReady } = this.state;
+      //Wait till processed data is available
       if(isReady === false){
         return null;
       }
-      // categorical_features & ordinal_features
+      //create a list of categorical_features, ordinal_features & numerical features
+      //only extract a max of 20 features from each category type
       const n = 20;
       let cat_feats = dataset.files[0].categorical_features;
       let ord_feats = dataset.files[0].ordinal_features;
@@ -81,20 +83,24 @@ class DataStats extends Component {
       cat_feats = cat_feats.slice(0,n);
       ord_feats = ord_feats.slice(0,n);
 
+      //define style properties
+      const width = 300;
+      const height = 400;
+      const header_style = { display: 'inline', marginRight: '0.5em', color: 'white' };
       return (
         <Grid columns={1}>
         { Object.keys(cat_feats).length ?
               <Grid.Column>
                 <Grid.Column>
-                <Header as="h2" content="Categorical Features" style={{ display: 'inline', marginRight: '0.5em', color: 'white' }} />
+                <Header as="h2" content="Categorical Features" style={header_style} />
                 </Grid.Column>
                 <Grid.Column>
                 {cat_feats.map(field =>
                   <PlotlyBarPlot 
                     key={field}
                     data={fullDataset[field]}
-                    width={300}
-                    height={400}
+                    width={width}
+                    height={height}
                     header={'Plotly BarPlot for '+field} 
                     axis_color={"#fff"}
                     font_color={"#fff"}
@@ -103,13 +109,36 @@ class DataStats extends Component {
                 </Grid.Column>
               </Grid.Column>
               : <Grid.Column>
-                  <Header as="h2" content="No Categorical Features" style={{ display: 'inline', marginRight: '0.5em', color: 'white' }} />
+                  <Header as="h2" content="No Categorical Features" style={header_style} />
+                </Grid.Column>
+        }
+        { Object.keys(ord_feats).length ?
+              <Grid.Column>
+                <Grid.Column>
+                <Header as="h2" content="Ordinal Features" style={header_style} />
+                </Grid.Column>
+                <Grid.Column>
+                {ord_feats.map(field =>
+                  <PlotlyBarPlot 
+                    key={field}
+                    data={fullDataset[field]}
+                    width={width}
+                    height={height}
+                    header={'Plotly BarPlot for '+field} 
+                    axis_color={"#fff"}
+                    font_color={"#fff"}
+                /> 
+                )}
+                </Grid.Column>
+              </Grid.Column>
+              : <Grid.Column>
+                  <Header as="h2" content="No Ordinal Features" style={header_style} />
                 </Grid.Column>
         }
         { Object.keys(num_feats).length ?
                 <Grid.Column>
                 <Grid.Column>
-                <Header as="h2" content="Numerical Features" style={{ display: 'inline', marginRight: '0.5em', color: 'white' }} />
+                <Header as="h2" content="Numerical Features" style={header_style} />
                 </Grid.Column>
                 <Grid.Column>
                 {num_feats.map(field =>
@@ -122,8 +151,8 @@ class DataStats extends Component {
                         name: field
                       }
                     ]}
-                    width={300}
-                    height={400}
+                    width={width}
+                    height={height}
                     header={'Horizontal Box Plot for '+field} 
                     axis_color={"#fff"}
                     font_color={"#fff"}
@@ -133,7 +162,7 @@ class DataStats extends Component {
               </Grid.Column>
               </Grid.Column>
               : <Grid.Column>
-                  <Header as="h2" content="No Numerical Features" style={{ display: 'inline', marginRight: '0.5em', color: 'white' }} />
+                  <Header as="h2" content="No Numerical Features" style={header_style} />
                 </Grid.Column>
         }
         </Grid>

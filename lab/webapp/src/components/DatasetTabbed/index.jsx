@@ -5,6 +5,7 @@ import DataStats from '../DataStats';
 import PlotlyBarPlot from '../PlotlyBarPlot';
 import PlotlyStackedBarPlot from '../PlotlyStackedBarPlot';
 import PlotlyBoxPlot from '../PlotlyBoxPlot';
+import './style.css';
 
 class DatasetTabbed extends Component {
     constructor(props) {
@@ -88,7 +89,7 @@ class DatasetTabbed extends Component {
             { menuItem: 'Sample', render: () => <Tab.Pane>{this.getsampleplot()}</Tab.Pane> },
           ]
 
-        return ( <Tab panes={panes}/> )
+        return ( <Tab menu={{color:'grey'}} panes={panes} /> )
     }
 }
 
