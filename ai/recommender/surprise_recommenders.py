@@ -95,7 +95,7 @@ class SurpriseRecommender(BaseRecommender):
         self.first_fit = True
 
         # reader for translating btw PennAI results and Suprise training set
-        self.reader = Reader()
+        self.reader = Reader(rating_scale=(0,1))
 
         self.ml_type = ml_type
 
@@ -224,7 +224,7 @@ class SurpriseRecommender(BaseRecommender):
         data = Dataset.load_from_df(self.results_df[['_id',
                                                      'algorithm-parameters',
                                                      'score']],
-                                    self.reader, rating_scale=(0,1))
+                                    self.reader)
         # build training set from the data
         self.trainset = data.build_full_trainset()
         logger.debug('self.trainset # of ML-P combos: ' +

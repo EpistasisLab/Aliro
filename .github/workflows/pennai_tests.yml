@@ -1,19 +1,15 @@
-name: Tests of PennAI
+name: PennAI CI/CD
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events
   push:
-  pull_request:
-    branches: [ master ]
-
+  
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build_int_test:
-    name: Integration Tests of PennAI
+    name: Integration Tests
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -29,9 +25,9 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run Integration Tests
         run: |
-          docker-compose  -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
+          docker-compose -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
           docker-compose -f ./docker-compose-int-test.yml down
-  # This workflow contains a single job called "build"
+  
   build_web_app:
     name: Unit Tests for Webapp
     # The type of runner that the job will run on
@@ -44,30 +40,22 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.7'
-
-
+          
       # Runs a single command using the runners shell
       - name: Build Docker Images
         run: |
-          pip install coveralls
           docker-compose -f ./docker-compose-unit-test.yml build -m 8g
 
       # Runs a set of commands using the runners shell
       - name: Run Unit Tests
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git lfs fetch --all
-          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester mocha machine/test/test.js
-          docker run -v $(pwd):/appsrc -v /appsrc/lab/webapp/node_modules -w /appsrc/lab/webapp/ pennai_unit_tester npm run test
-          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester \
-              coverage run -m nose -s -v \
-              machine/test/learn_tests.py \
-              lab/pyutils/tests/*.py \
-              ai/tests/test_a*.py \
-              ai/tests/lab_*.py \
-              ai/tests/test_re*.py \
-              ai/tests/test_k*utils.py
+          docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit -V
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test for webapp
 
   build_pypkg:
     name: Unit Tests for scikit-learn API
@@ -80,18 +68,46 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.7'
-
       - name: Build Docker Images
         run: |
+          pip install coveralls
           docker-compose -f ./docker-compose-unit-test.yml build -m 8g
-
       # Runs a set of commands using the runners shell
       - name: Run Unit Tests
         run: |
           git lfs fetch --all
           git lfs pull
-          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester nosetests -s -v ai/tests/test_sklearn_api.py
-      # Run deployment steps if pervious steps are success
+          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester coverage run -m nose -s -v ai/tests/test_sklearn_api.py
+          coverage combine
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test for scikit-learn api
+
+  coveralls_finish:
+    name: Publish Coveralls
+    needs: [build_web_app, build_pypkg]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true
+
+  deploy_pypkg:
+    if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+    name: Deploy python package
+    needs: build_pypkg
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
       - name: Install dependencies
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: |
@@ -105,3 +121,34 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
           twine upload dist/*
+
+  build_docs:
+    # Only publish docs on master branch
+    if: github.ref == 'refs/heads/master'
+    name: Publish Docs
+    needs: [build_int_test, build_web_app, build_pypkg]
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Build Docker Images
+        run: |
+          docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
+      # Building docs # Tell GitHub not to use jekyll to compile the docs
+      - name: Building Docs
+        run: |
+          docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
+          sudo touch target/ai_docs/html/.nojekyll
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: target/ai_docs/html/
+          CLEAN: false # Automatically remove deleted files from the deploy branch

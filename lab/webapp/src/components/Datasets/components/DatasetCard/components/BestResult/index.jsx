@@ -29,6 +29,8 @@ import React from 'react';
 import { Segment, Header, Progress } from 'semantic-ui-react';
 import { formatAlgorithm } from '../../../../../../utils/formatter';
 
+
+
 function BestResult({ result, hasMetadata }) {
   const getNoResultMessage = () => {
     if(!hasMetadata) {
@@ -41,6 +43,44 @@ function BestResult({ result, hasMetadata }) {
   const getResultLink = () => `/#/results/${result._id}`;
 
   const getPercent = () => (result.score * 100).toFixed(2);
+  
+  const getValue = () => (result.score).toFixed(2);
+
+  /*
+  const getValue = () => {
+    if (result.score <=0 ) return '≤ 0';
+    return (result.score).toFixed(2);
+  }
+  */
+
+  const renderProgressBar = (result) => {
+    switch(result.prediction_type) {
+      case 'classification':
+        return (
+          <Progress
+            inverted
+            progress
+            percent={getPercent()}
+            className="accuracy-score"
+            label="Balanced Accuracy"
+          />
+        );
+      case 'regression':
+        return (
+          <Progress
+            inverted
+            progress='value'
+            value={getValue()}
+            total='1.0'
+            className="accuracy-score"
+            label="Coefficient of Determination"
+          />
+        );
+      default:
+        return;
+    }
+  }
+
 
   if(!result) {
     return (
@@ -50,13 +90,6 @@ function BestResult({ result, hasMetadata }) {
     );
   }
 
-  // add label for best results
-  var label = "";
-  if (result.prediction_type == "classification") {
-    label = "Balanced Accuracy";
-  } else if (result.prediction_type == "regression") {
-    label = "R2";
-  }
 
   return (
     <Segment
@@ -72,13 +105,7 @@ function BestResult({ result, hasMetadata }) {
           <span>{`#${result._id}`}</span>
         </Header.Subheader>
       </Header>
-      <Progress
-        inverted
-        progress
-        percent={getPercent()}
-        className="accuracy-score"
-        label={label}
-      />
+      { renderProgressBar(result) }
     </Segment>
   );
 }

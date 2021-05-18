@@ -37,9 +37,9 @@ jobs:
             ai/tests/lab_*.py
             ai/tests/test_re*.py
             ai/tests/test_k*utils.py"
-        - coverage combine
+        #- coverage combine
         #- docker cp pennai_unit_tester:/.coverage ./
-        - coveralls
+        #- coveralls
     - stage: Test
       name: "Unit Tests for scikit-learn API"
       install:
@@ -54,19 +54,19 @@ jobs:
         #password: $PYPI_TOKEN
         #on:
           #tags: true
-    - stage: "Docs"
-      name: "Doc Builder"
-      install:
-        - docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
-      script:
-        # Building docs
-        - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
-        # Tell GitHub not to use jekyll to compile the docs
-        - sudo touch target/ai_docs/html/.nojekyll
-      deploy:
-          provider: pages
-          cleanup: false
-          github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
-          on:
-              branch: master
-          local_dir: target/ai_docs/html/
+    # - stage: "Docs"
+    #   name: "Doc Builder"
+    #   install:
+    #     - docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
+    #   script:
+    #     # Building docs
+    #     - docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
+    #     # Tell GitHub not to use jekyll to compile the docs
+    #     - sudo touch target/ai_docs/html/.nojekyll
+    #   deploy:
+    #       provider: pages
+    #       cleanup: false
+    #       github_token: $GH_TOKEN  # Set in travis-ci.org dashboard, marked secure
+    #       on:
+    #           branch: master
+    #       local_dir: target/ai_docs/html/
