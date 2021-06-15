@@ -332,7 +332,7 @@ app.post("/api/v1/projects", (req, res, next) => {
 */
 app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     //console.log(`======app.put datasets ${req.get('Content-Type')}`)
-    //console.log(`======app.put datasets ${req.body._metadata}`)
+    //console.log(`app.put datasets ${req.body._metadata}`);
 
     // Parse request
     if (req.body._metadata === undefined) {
@@ -398,7 +398,9 @@ app.put("/api/v1/datasets", upload.array("_files", 1), (req, res, next) => {
     stageDatasetFile(req.files[0])
     .then((file_id) => {return registerDataset(file_id, prediction_type, dependent_col, categorical_features, ordinal_features, metadata)})
     .then((dataset_id) => {
-        //console.log(`==added file, dataset_id: ${dataset_id}==`)
+        //Pass the new dataset id to event emitter
+        req.params = { ...req.params, dataset_id: dataset_id };
+        emitEvent('datasetAdded', req);
         res.send({
             message: "Files uploaded",
             dataset_id: dataset_id

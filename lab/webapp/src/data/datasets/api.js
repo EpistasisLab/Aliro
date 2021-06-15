@@ -29,7 +29,7 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 
 export const fetchDatasets = () => 
-  fetch('/api/userdatasets')
+  fetch('/api/userdatasets') //See lab\webapp\src\data\datasets\dataset\api.js 
     .then(response => {
       if(response.status >= 400) {
         throw new Error(`${response.status}: ${response.statusText}`);
