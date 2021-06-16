@@ -62,6 +62,8 @@ class FileUpload extends Component {
   /** Special type to mark the dependent column. 
    *  It's not properly a feature, but use same terminology for consistency. */
   get featureTypeDependent() { return 'dependent'; }
+  //Type to return in case of errors
+  get featureTypeDefault() {return this.featureTypeNumeric; }
 
   /**
   * FileUpload reac component - UI form for uploading datasets
@@ -110,6 +112,7 @@ class FileUpload extends Component {
     this.parseFeatureToken = this.parseFeatureToken.bind(this);
     this.initFeatureTypeDefaults = this.initFeatureTypeDefaults.bind(this);
     this.getDependentColumn = this.getDependentColumn.bind(this);
+    this.clearDependentFeature = this.clearDependentFeature.bind(this);
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
@@ -181,7 +184,7 @@ class FileUpload extends Component {
       ordinalFeaturesUserTextModalOpen: false,
       /** {object} Object used as dictionary to track the features designated as ordinal by user via dataset preview UI.
        *  key: feature name from dataPreview
-       *  value: string-array holding possibly-ordered values for the feature.
+       *  value: string-array holding possibly-ordered unique values for the feature.
        *  Will be empty object if none defined.
        *  Gets updated with new order as user orders them using the UI in dataset preview.
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
@@ -198,6 +201,8 @@ class FileUpload extends Component {
       ordinalFeatureToRankValues: [],
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
+      /** {string} Used in unit testing to test state retrieval */
+      testStateValue: 'foobar'
     }
   }
 
@@ -242,6 +247,11 @@ class FileUpload extends Component {
     }
   }
 
+  /** Simple test method for unit testing */
+  instanceTest(){
+    return 'foobar';
+  }
+  
   /** Helper routine for debugging. Get elapsed time in sec from 
    * either init or from the previous call to this method.
    */
@@ -448,7 +458,8 @@ handleCatFeaturesUserTextCancel() {
       //window.console.log('preview of uploaded data: ', dataPrev);
       // after uploading a dataset request new list of datasets to update the page
     } else {
-      window.console.log('no file available');
+      window.console.log('generateFileDate: no file available');
+      return { errorResp: "No file is available." };
     }
 
     return data;
@@ -488,6 +499,11 @@ handleCatFeaturesUserTextCancel() {
     this.setState({processingFileForPreview: false});
   }
 
+  /** Stub method that's mocked in unit testing */
+  handleSelectedFileCompletedStub(){
+    //do nothing
+  }
+
   /**
    * Event handler for selecting files, takes user file from html file input, stores
    * selected file in component react state, generates file preview and stores that
@@ -521,6 +537,10 @@ handleCatFeaturesUserTextCancel() {
   
         if(this.isDevBuild)
           console.log( this.getElapsedTime() + " - done with initDatasetPreview.");
+
+        //Call this method for use in unit testing, to know we've completed successfully here,
+        // and can inspect the new state
+        this.handleSelectedFileCompletedStub();
       }
     };
 
@@ -528,8 +548,6 @@ handleCatFeaturesUserTextCancel() {
     if(files && files[0]) {
       // immediately try to get dataset preview on file input html element change
       // need to be mindful of garbage data/files
-      //console.log(typeof event.target.files[0]);
-      //console.log(event.target.files[0]);
       let uploadFile = files[0]
       let fileExt = uploadFile.name.split('.').pop();
 
@@ -595,7 +613,6 @@ handleCatFeaturesUserTextCancel() {
     this.setState({uploadButtonDisabled:true});
 
     const { uploadDataset } = this.props;
-
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
       let data = this.generateFileData(); // should be FormData
@@ -667,13 +684,13 @@ handleCatFeaturesUserTextCancel() {
   /**
    * For the passed feature name, return its type
    * @param {string} feature 
-   * @returns {string} feature type (ordinal, categorical, numeric)
+   * @returns {string} feature type (as returned by one of gettors: featureTypeOrdinal, ...Categorical, ...Numeric, ...Dependent)
    */
   getFeatureType(feature) {
     let i = this.getFeatureIndex(feature);
     if( i === -1 ) {
       console.log("ERROR: unrecognized feature: " + feature);
-      return this.featureTypeNumeric;
+      return this.featureTypeDefault;
     }
     return this.state.featureType[i];
   }
@@ -749,7 +766,7 @@ handleCatFeaturesUserTextCancel() {
   getFeatureDefaultType(feature) {
     if( !this.validateFeatureName(feature)) {
       console.log("Cannot get default type for unrecognized feature: " + feature);
-      return this.featureTypeNumeric;
+      return this.featureTypeDefault;
     }
     return this.state.featureTypeDefaults[feature];
   }
@@ -757,8 +774,9 @@ handleCatFeaturesUserTextCancel() {
   /**
    * Set the feature type for all features in the data.
    * Does NOT change type of column/feature that is assigned as dependent column.
-   * @param {string} type - one of [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
-   *  where 'autoDefault' will set each feature type based on analysis of each feature's values
+   * Does NOT change features with any non-numeric values to type numeric. They are left unchanged.
+   * @param {string} type - one of either [featureTypeNumeric, featureTypeCategorical, featureTypeOrdinal, 'autoDefault'],
+   *  or 'autoDefault' which will set each feature type based on analysis of each feature's values
    */
   setAllFeatureTypes(type) {
     if(this.state.datasetPreview == null) {
@@ -814,11 +832,10 @@ handleCatFeaturesUserTextCancel() {
       return;
     }
   
-    // Handle dependent column type
+    // Handle setting dependent column type
     if( type == this.featureTypeDependent) {
         //Clear the currently-assigned dependent column if there is one
-        let currentDep = this.getDependentColumn();
-        currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
+        this.clearDependentFeature();
     }
     
     // Handle ordinal type
@@ -916,16 +933,22 @@ handleCatFeaturesUserTextCancel() {
 
   /** Clear any features that have been specified as type ordinal, along with any related data,
    * and set them to type auto-determined default type.
-   * Does NOT clear the storage of previous ordinal features, so you can still recover previous
-   * settings even when changing from user text input.
+   * @param {boolean} clearPrev - false by default, to NOT clear the storage of previous ordinal features, 
+   * so you can still recover previous settings even when changing from user text input. 'True' will
+   * clear the previous values (for testing).
   */
-  ordinalFeaturesClearToDefault() {
+  ordinalFeaturesClearToDefault( clearPrev = false) {
     for(var feature in this.state.ordinalFeaturesObject) {
       this.setFeatureType(feature, this.getFeatureDefaultType(feature));
     }
     this.setState({
       ordinalFeaturesObject: {},
     })
+    if(clearPrev) {
+      this.setState({
+        ordinalFeaturesObjectPrev: {},
+      })
+    }
   }
 
   /** From state, convert the lists of unique values for ordinal features into a string with
@@ -1025,13 +1048,16 @@ handleCatFeaturesUserTextCancel() {
    * @returns {null} 
    */
   ordinalFeaturesUserTextIngest() {
+    // Get the lines before clearing ordinal features to default. Otherwise can
+    // end up clearing ordinalFeaturesUserText in some cases.
+    let lines = this.state.ordinalFeaturesUserText.split(/\r?\n/);
     this.ordinalFeaturesClearToDefault();
     //Process each line individually
-    this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
-      if(line === "")
-        return;
-      let ordObj = this.ordinalFeaturesUserTextParse(line);
-      this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);
+    lines.map((line) => {
+      if(line != "") {
+        let ordObj = this.ordinalFeaturesUserTextParse(line);
+        this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);       
+      }
     })    
     //console.log("ingest: ordinals: ");
     //console.log(this.state.ordinalFeaturesObject);
@@ -1091,8 +1117,10 @@ handleCatFeaturesUserTextCancel() {
       dataPrev.meta.fields.map((field, i) => {
           //Assign dropdown items for setting field type, or just 'Target' label for columns that's designated as target
           let fieldTypeItem = ( field === this.getDependentColumn() ?
-            <i>Target</i> :
+            <i id={"featureTypeTargetLabel-"+i.toString()}>Target</i>
+            :
             <Dropdown
+              id={'featureTypeDropdown-' + i.toString()}
               value={this.state.featureType[i]}
               options={this.getFeatureDefaultType(field) === this.featureTypeNumeric ? featureTypeOptionsAll : featureTypeOptionsNonNumeric}
               onChange={this.handleFeatureTypeDropdown}
@@ -1102,7 +1130,7 @@ handleCatFeaturesUserTextCancel() {
           return (
             <Table.HeaderCell key={field} verticalAlign='top'>
               <Segment.Group compact>
-                <Segment> {field} </Segment>
+                <Segment id={"table_header_label_" + field}> {field} </Segment>
                 <Segment inverted> {fieldTypeItem} </Segment>
                 {/*Return a segment with 'rank'button, or null, based on field type*/}
                 {this.getDataTableOrdinalRankButton(field)}
@@ -1135,9 +1163,9 @@ handleCatFeaturesUserTextCancel() {
           <Table.Row key={i}>
             <Table.Cell key={'dataTablePrevRow_'+i}>{i+1}</Table.Cell>
             {dataPrev.meta.fields.map(field => {
-                let tempKey = i + field;
+                let key_id = 'data_table_prev_' + i.toString() +'_' + field;
                 return (
-                  <Table.Cell key={'dataTablePrev_' + tempKey.toString()}>
+                  <Table.Cell key={key_id} id={key_id}>
                     {row[field]}
                   </Table.Cell>
                 )
@@ -1188,6 +1216,14 @@ handleCatFeaturesUserTextCancel() {
         result = feature;
     })
     return result;
+  }
+
+  /** Clear the depedent feature selection and return it to
+   *  its default type.
+   */
+  clearDependentFeature() {
+    let currentDep = this.getDependentColumn();
+    currentDep !== undefined && this.setFeatureType(currentDep, this.getFeatureDefaultType(currentDep));
   }
 
   /**
@@ -1304,6 +1340,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Row>
           <Grid.Column width={6}>
             <Form.Field 
+              id="target_dropdown"
               inline
               label="Target"
               control={Dropdown}
@@ -1338,7 +1375,8 @@ handleCatFeaturesUserTextCancel() {
             />
           </Grid.Column>
           <Grid.Column width={6}>
-            <Form.Field 
+            <Form.Field
+              id="prediction_type_dropdown" 
               inline
               label="Prediction Type"
               control={Dropdown} 
@@ -1393,14 +1431,15 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
-                  color='blue'
-                  size='small'
-                  fluid
-                  inverted
-                  disabled={this.state.ordinalFeatureToRank !== undefined}
-                  className="file-upload-button"
-                  content="Set Ordinal"
-                  onClick={() => this.setState({ordinalFeaturesUserTextModalOpen: !this.ordinalFeaturesUserTextModalOpen})}
+              id="ord_features_text_input_open_button"
+              color='blue'
+              size='small'
+              fluid
+              inverted
+              disabled={this.state.ordinalFeatureToRank !== undefined}
+              className="file-upload-button"
+              content="Set Ordinal"
+              onClick={() => this.setState({ordinalFeaturesUserTextModalOpen: !this.ordinalFeaturesUserTextModalOpen})}
             />
             <Popup
               on="click"
@@ -1426,6 +1465,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
+              id="cat_features_text_input_open_button"
               color='blue'
               size='small'
               fluid
@@ -1458,6 +1498,7 @@ handleCatFeaturesUserTextCancel() {
         <Grid.Column>
           <Form.Input>
             <Button
+              id='set_all_to_button'
               color='blue'
               size='small'
               fluid
@@ -1468,14 +1509,20 @@ handleCatFeaturesUserTextCancel() {
             />
             {/*dropdown menu*/}
             <div style={{ display: this.state.allFeaturesMenuOpen ? "block" : "none" }}>
-              <Menu vertical open={this.state.allFeaturesMenuOpen}>
-                <Menu.Item content={'Categorical'}
+              <Menu vertical open={this.state.allFeaturesMenuOpen} id='set_all_to_menu'>
+                <Menu.Item 
+                  id='set_all_to_menu_categorical'
+                  content={'Categorical'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeCategorical); this.setState({allFeaturesMenuOpen: false}) }}
                 />
-                <Menu.Item content={'Ordinal'}
+                <Menu.Item 
+                  id='set_all_to_menu_ordinal'
+                  content={'Ordinal'}
                   onClick={() => {this.setAllFeatureTypes(this.featureTypeOrdinal); this.setState({allFeaturesMenuOpen: false}) }}
                 />
-                <Menu.Item content={
+                <Menu.Item 
+                  id='set_all_to_menu_default'
+                  content={
                     <React.Fragment>
                       {'Numeric / Categorical'}
                       <div>(auto-detect)</div>
@@ -1586,8 +1633,8 @@ handleCatFeaturesUserTextCancel() {
           </Segment>
           <Segment>
             <textarea
-              className="file-upload-feature-text-input"
               id="categorical_features_text_area_input"
+              className="file-upload-feature-text-input"
               label="Categorical Features"
               onChange={this.handleCatFeaturesUserTextOnChange}
               onBlur={this.handleCatFeaturesUserTextBlur}
@@ -1598,6 +1645,7 @@ handleCatFeaturesUserTextCancel() {
             />
           </Segment>
           <Button
+            id="cat_features_user_text_accept_button"
             className='file-upload-pseudo-dialog-button'
             content="Accept"
             icon='checkmark'
@@ -1606,6 +1654,7 @@ handleCatFeaturesUserTextCancel() {
             color="blue"
           />
           <Button 
+            id="cat_features_user_text_cancel_button"
             className='file-upload-pseudo-dialog-button'
             color='red' 
             onClick={this.handleCatFeaturesUserTextCancel}
@@ -1649,6 +1698,7 @@ handleCatFeaturesUserTextCancel() {
             />
           </Segment>
           <Button
+            id="ordinal_features_user_text_accept_button"
             className='file-upload-pseudo-dialog-button'
             content="Accept"
             icon='checkmark'
@@ -1656,7 +1706,8 @@ handleCatFeaturesUserTextCancel() {
             color="blue"
             inverted
           />
-          <Button 
+          <Button
+            id="ordinal_features_user_text_cancel_button" 
             className='file-upload-pseudo-dialog-button'
             color='red' 
             onClick={this.handleOrdinalFeaturesUserTextCancel}
@@ -1721,7 +1772,8 @@ handleCatFeaturesUserTextCancel() {
     let fileInputElem = undefined;
     if( this.state.selectedFile == null ) {
       fileInputElem = (
-        <Dropzone 
+        <Dropzone
+            id="file-dropzone"
             onDropAccepted={this.handleSelectedFile}
             onDropRejected={this.handleRejectedFile}
             accept=".csv,.tsv,text/csv,text/tsv"
@@ -1755,6 +1807,7 @@ handleCatFeaturesUserTextCancel() {
     }
     
     //Progress spinner if we're loading and processing a file
+    //
     if( this.state.processingFileForPreview){
       return <Loader active inverted size="large" content="Processing your file..." />;      
     }
@@ -1766,7 +1819,7 @@ handleCatFeaturesUserTextCancel() {
     // of the pseudo-modal windows just below.
     if(this.state.showErrorModal){
       return(
-      <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon>
+      <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog"> 
         <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
         <Modal.Content>{this.state.errorModalContent}</Modal.Content>
       </Modal>
@@ -1789,14 +1842,16 @@ handleCatFeaturesUserTextCancel() {
     }
 
     //Main UI elements
+    //
     return (
       <div> 
         <SceneHeader header="Upload Datasets"/>
         <Form inverted>
           <Segment className="file-upload-segment">
             
-            {/* Handle file input */}
+            {/* File dropzone/chooser */}
             {fileInputElem}
+            <br/>
 
             <div
               id="file-upload-form-input-area"
@@ -1811,6 +1866,7 @@ handleCatFeaturesUserTextCancel() {
           
             {/*dropdowns for selecting dep. feature and prediction type*/}
             {userDatasetOptions}
+
             {/*buttons for specifying feature types*/}
             <Form.Field
                 label="Features Types"
