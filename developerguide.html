@@ -317,9 +317,15 @@ npm run build-dev
 <h3>Local Test Instructions<a class="headerlink" href="#local-test-instructions" title="Permalink to this headline">¶</a></h3>
 <p>The unit and integration tests can be run locally using the followng commands:</p>
 <ul class="simple">
-<li><p>Unit: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">-V</span></code></p></li>
+<li><p>Unit (both javascript and python): <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">-V</span></code></p>
+<ul>
+<li><p>Run only webapp/javascript unit tests: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-js-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
+<li><p>Run only python unit tests: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-py-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
+</ul>
+</li>
 <li><p>Integration: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
 </ul>
+<p><em>NOTE</em> It is best to run local unit tests using the above command. An optional way is to attach a shell to a running container instance via <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">pennai-dev_lab_1</span> <span class="pre">/bin/bash</span></code> and then manually run the unit test runner <code class="docutils literal notranslate"><span class="pre">.\tests\unit\unit_test_runner.sh</span></code>. This is faster than running via <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and a new container instance. <em>However</em>, this method can produce different react component snapshots, and possibly other differences, so if you use this method for rapid development of tests, always follow up with running via the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> commands above to assure compatibility with how the tests are run for CI tests.</p>
 <p>The test results in html format can be found in the directory <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html</span></code></p>
 <p>Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
 </section>
@@ -346,7 +352,11 @@ npm run build-dev
 <ul class="simple">
 <li><p>Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
 <li><p>Dependencies: Docker-compose</p></li>
-<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
+<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p>
+<ul>
+<li><p>To run only javascript or python tests, see the <a class="reference external" href="#local-test-instructions">further details above</a></p></li>
+</ul>
+</li>
 <li><p>Results:</p>
 <ul>
 <li><p>The results will in xcode format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\nose_xunit.xml</span></code></p></li>
