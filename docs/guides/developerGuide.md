@@ -99,8 +99,12 @@ The UI component (_Vizualization / UI Engine_ in the diagram above) is a web app
 
 ### Local Test Instructions
 The unit and integration tests can be run locally using the followng commands:
-- Unit: `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit -V`
+- Unit (both javascript and python): `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit -V`
+  - Run only webapp/javascript unit tests: `docker-compose --env-file ./config/unit-test-js-only.env -f .\docker-compose-unit-test.yml up --abort-on-container-exit`
+  - Run only python unit tests: `docker-compose --env-file ./config/unit-test-py-only.env -f .\docker-compose-unit-test.yml up --abort-on-container-exit`
 - Integration: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`
+
+*NOTE* It is best to run local unit tests using the above command. An optional way is to attach a shell to a running container instance via `docker exec -it pennai-dev_lab_1 /bin/bash` and then manually run the unit test runner `.\tests\unit\unit_test_runner.sh`. This is faster than running via `docker-compose` and a new container instance. *However*, this method can produce different react component snapshots, and possibly other differences, so if you use this method for rapid development of tests, always follow up with running via the `docker-compose` commands above to assure compatibility with how the tests are run for CI tests.
 
 The test results in html format can be found in the directory `.\target\test-reports\html`
 
@@ -124,6 +128,7 @@ The default location of the test output is the `.\target\test-reports\` director
 - Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the `.\target` directory
 - Dependencies: Docker-compose
 - Usage: `docker-compose -f .\docker-compose-unit-test.yml up --abort-on-container-exit`
+  - To run only javascript or python tests, see the [further details above](#local-test-instructions)
 - Results:
 	- The results will in xcode format be in `.\target\test-reports\nose_xunit.xml`
 	- The xml cobertura coverage report will be in `.\target\test-reports\cobertura\nose_cover.xml`
