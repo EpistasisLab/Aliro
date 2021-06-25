@@ -208,6 +208,11 @@ function ExperimentsTableBody({
                 {formatDataset(experiment.dataset_name)}
               </a>
             </Table.Cell>
+            <Table.Cell selectable>
+              <a href={experimentLink}>
+                {formatDataset(experiment.prediction_type)}
+              </a>
+            </Table.Cell>
             {shouldDisplayErrorMessage &&
               <Table.Cell selectable>
               <a href={experimentLink}>

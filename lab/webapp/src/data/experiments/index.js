@@ -36,6 +36,7 @@ import {
 } from './actions';
 import selected from './selected';
 import { formatDataset, formatAlgorithm } from 'utils/formatter';
+import experiment from './selected';
 
 const list = (state = [], action) => {
   switch(action.type) {
@@ -93,6 +94,7 @@ export const getFilters = createSelector(
     const filterKeys = [
       //{ key: 'status', textPath: ['status'], valuePath: ['status'] },
       { key: 'dataset', textPath: ['dataset_name'], valuePath: ['dataset_id'] },
+      { key: 'prediction', textPath: ['prediction_type'], valuePath: ['prediction_type'] },
       { key: 'algorithm', textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
     ];
 
@@ -176,13 +178,14 @@ export const getVisibleExperiments = createSelector(
 );
 
 const filterBy = (filters) => (experiment) => {
-  const { status, dataset, algorithm } = filters;
+  const { status, dataset, algorithm, prediction } = filters;
 
   // status category 'completed' includes 'success', 'cancelled', and 'fail'
   return (
     (status.selected === 'all' || status.selected === experiment.status || status.selected === 'completed' && ['success', 'cancelled', 'fail'].includes(experiment.status)) &&
     (dataset.selected === 'all' || dataset.selected === experiment.dataset_id) &&
-    (algorithm.selected === 'all' || algorithm.selected === experiment.algorithm)
+    (algorithm.selected === 'all' || algorithm.selected === experiment.algorithm) &&
+    (prediction.selected === 'all' || prediction.selected === experiment.prediction_type)
   );
 };
 

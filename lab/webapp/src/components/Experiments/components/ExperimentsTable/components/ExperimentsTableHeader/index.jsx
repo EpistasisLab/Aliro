@@ -90,6 +90,13 @@ function ExperimentsTableHeader({
         >
           {'Dataset'}
         </Table.HeaderCell>
+        <Table.HeaderCell
+          rowSpan={shouldDisplayParams ? 0 : 2}
+          sorted={getIsSorted('dataset_prediction')}
+          onClick={() => onSort('dataset_prediction')}
+        >
+          {'Prediction Type'}
+        </Table.HeaderCell>
         {shouldDisplayErrorMessage &&
           <Table.HeaderCell
             rowSpan={shouldDisplayParams ? 0 : 2}

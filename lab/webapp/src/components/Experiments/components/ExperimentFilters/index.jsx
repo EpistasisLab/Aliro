@@ -58,6 +58,15 @@ function ExperimentFilters({
           />
           <Form.Field 
             inline
+            label="Prediction Type:"
+            control={Dropdown} 
+            value={filters.prediction.selected}
+            options={filters.prediction.options}
+            onChange={(e, data) => updateQuery('prediction', data.value)}
+            className="filter"
+          />
+          <Form.Field 
+            inline
             label="Algorithm:"
             control={Dropdown} 
             value={filters.algorithm.selected}
