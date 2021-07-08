@@ -38,7 +38,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rimraf": "^2.5.2",
-    "ws": "^3.3.3"
+    "ws": "^5.2.3"
   },
   "devDependencies": {
     "mocha": "^7.1.1"
