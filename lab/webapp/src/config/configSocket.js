@@ -26,9 +26,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 import io from 'socket.io-client';
-import { updateAI, updateDataset } from 'data/datasets/dataset/actions';
+import { updateAI, updateDataset, addDataset } from 'data/datasets/dataset/actions';
 import { addExperiment, updateExperiment } from 'data/experiments/actions';
 import { fetchRecommender} from 'data/recommender/actions';
+import { fetchDatasets } from 'data/datasets/actions';
 
 let socket = io(`${location.protocol}//${location.hostname}:${location.port}`);
 /**
@@ -43,7 +44,12 @@ const configSocket = (store) => {
 
   socket.on('updateDataset', data => {
     const dataset = JSON.parse(data)[0];
-    store.dispatch(updateDataset(dataset));
+    store.dispatch(updateDataset(dataset)); 
+  });
+
+  socket.on('addDataset', data => {
+    const dataset = JSON.parse(data)[0];
+    store.dispatch(addDataset(dataset)); 
   });
 
   socket.on('updateExperiment', data => {

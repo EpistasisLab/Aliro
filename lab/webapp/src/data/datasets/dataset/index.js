@@ -31,11 +31,17 @@ import {
   TOGGLE_AI_FAILURE,
   AI_UPDATE,
   DATASET_UPDATE,
+  DATASET_ADD,
   UPLOAD_DATASET_REQUEST,
   UPLOAD_DATASET_SUCCESS,
   UPLOAD_DATASET_FAILURE
 } from './actions';
 
+/***
+  NOTE - this isn't a reducer itself. It's called by the reducer datasets.byId, and
+         this is why it has the params 'state' and 'action'.
+         So don't be confused like I was! HTH
+ ***/
 const dataset = (state = {}, action) => {
   switch(action.type) {
     case TOGGLE_AI_REQUEST:
@@ -57,6 +63,7 @@ const dataset = (state = {}, action) => {
         ai: action.nextAIState
       });
     case DATASET_UPDATE:
+    case DATASET_ADD:
       return action.dataset;
     case UPLOAD_DATASET_REQUEST:
       //window.console.log('UPLOAD_DATASET_REQUEST action', action);

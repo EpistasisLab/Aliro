@@ -55,19 +55,18 @@ function emitEvent(event, req) {
 			return rp(FGLAB_URL + "/api/datasets")
 		  	.then(datasets => {
 		  		datasets.forEach(dataset =>
-		  			//sockets.forEach(socket => socket.emit('updateDataset', dataset))
 		  			sockets.forEach(socket => socket.emit('updateAIToggle', dataset._id, dataset.ai))
 		  		)
 		    })
 		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 
 		case 'aiToggled':
-			console.log(`=socketServer:aiToggled(${req.params.id})`)
+			//console.log(`=socketServer:aiToggled(${req.params.id})`)
 			return sockets.forEach(socket => 
 				socket.emit('updateAIToggle', JSON.stringify({ _id: req.params.id, nextAIState: req.body.ai }))
 			);
 		case 'recommenderStatusUpdated':
-			console.log(`=socketServer:recommenderStatusUpdated(${req.body.status})`)
+			//console.log(`=socketServer:recommenderStatusUpdated(${req.body.status})`)
 			return sockets.forEach(socket => 
 				socket.emit('updateRecommender', JSON.stringify({recommenderStatus: req.body.status }))
 			);
@@ -84,6 +83,7 @@ function emitEvent(event, req) {
 		    })
 		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		case 'expUpdated':
+			//console.log("==== socketServer - case expUpdated");
 			return rp(FGLAB_URL + "/api/userexperiments/" + req.params.id)
 		  	.then(experiment => {
 		    	sockets.forEach(socket => socket.emit('updateExperiment', experiment));
@@ -95,6 +95,13 @@ function emitEvent(event, req) {
 				    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
 		    })
 		    .catch((err) => {console.log(`Error: ${err}`)}); // Ignore failures
+		case 'datasetAdded':
+			//console.log(`* emitEvent - datasetAdded ${req.params.dataset_id}`);
+			return rp(FGLAB_URL + "/api/userdatasets/" + req.params.dataset_id)
+				.then(dataset => {
+				  	sockets.forEach(socket => socket.emit('addDataset', dataset));
+				})
+				.catch((err) => {console.log(`socketServer.emitEvent addDataset Error: ${err}`)}); // Ignore failures	
 	}
 }
 
@@ -102,4 +109,3 @@ module.exports = {
 	socketServer: socketServer,
 	emitEvent: emitEvent
 };
-

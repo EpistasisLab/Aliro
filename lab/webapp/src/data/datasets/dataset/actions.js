@@ -31,6 +31,7 @@ export const TOGGLE_AI_SUCCESS = 'TOGGLE_AI_SUCCESS';
 export const TOGGLE_AI_FAILURE = 'TOGGLE_AI_FAILURE';
 export const AI_UPDATE = 'AI_UPDATE';
 export const DATASET_UPDATE = 'DATASET_UPDATE';
+export const DATASET_ADD = 'DATASET_ADD';
 export const UPLOAD_DATASET_REQUEST = 'UPLOAD_DATASET_REQUEST';
 export const UPLOAD_DATASET_SUCCESS = 'UPLOAD_DATASET_SUCCESS';
 export const UPLOAD_DATASET_FAILURE = 'UPLOAD_DATASET_FAILURE';
@@ -100,3 +101,8 @@ export const updateDataset = (dataset) => ({
   type: DATASET_UPDATE,
   dataset
 });
+
+export const addDataset = (dataset) => ({
+  type: DATASET_ADD,
+  dataset
+})

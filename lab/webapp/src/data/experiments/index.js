@@ -85,6 +85,8 @@ const experiments = combineReducers({
 
 export default experiments;
 
+// Selectors //
+
 const getExperiments = (state) => state.experiments;
 const getQuery = (state, props) => props.location.query;
 export const getFilters = createSelector(
