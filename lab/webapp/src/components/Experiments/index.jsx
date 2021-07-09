@@ -61,6 +61,13 @@ class Experiments extends Component {
       Object.assign(nextLocation.query, { [key]: value });
     }
     hashHistory.push(nextLocation);
+    //Special check for Dataset value. If it's not set to show all,
+    // the Prediction Type filter gets hidden in ExperimentFilters,
+    // so we have to force it's value to be 'all' so it doesn't get
+    // stuck on an inappropriate value
+    if(key === 'dataset' && value !== 'all'){
+      this.updateQuery('prediction','all');
+    }
   }
 
   resetQuery() {
