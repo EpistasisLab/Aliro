@@ -143,6 +143,12 @@ export const getFilters = createSelector(
     filters.status.options = statusOptions.map(option => ({ text: option, value: option }));
     filters.status.selected = query.status || 'all';
 
+    // Top-level options for showing all experiments by algorithm in separate tables, 
+    //  with algorithm detail views
+    // "simple" is for single table including multiple algorithms (if algorithm filter is 'all').
+    // "expanded" for multiple tables, one for each algorithm, and showing algorithm details
+    filters.viewMode = query.viewMode || "simple";
+
     return filters;
   }
 );

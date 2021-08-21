@@ -36,22 +36,17 @@ function ExperimentsTable({
   sort,
   updateQuery
 }) {
+  //'experiments' is an array of experiments, and in the case of viewMode 'simple' will
+  // may have multiple different algorithm types. In the case of viewMode 'expanded' it 
+  // will have experiments only of the same algorithm.
   const selectedStatus = filters.status.selected;
-
   const selectedDataset = filters.dataset.selected;
-
-  const selectedAlgorithm = filters.algorithm.selected;
-
+  let selectedAlgorithm = filters.viewMode === "simple" ? filters.algorithm.selected : experiments[0].algorithm;
   const currentParameters = experiments[0].params;
-
   const shouldDisplayQuality = selectedStatus === 'suggested';
-
   const shouldDisplayAwards = selectedDataset !== 'all';
-
-  const shouldDisplayParams = selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0;
-
+  let shouldDisplayParams = filters.viewMode === "expanded" || (selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0);
   const shouldDisplayErrorMessage = selectedStatus === 'fail';
-
   const orderedParamKeys = Object.keys(currentParameters).sort();
 
   return (
