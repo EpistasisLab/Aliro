@@ -31,7 +31,7 @@ import { withRouter } from 'react-router';
 import { 
   getVisibleExperiments, 
   getFilters,
-  getSort
+  getSortAll
 } from 'data/experiments';
 import * as actions from 'data/experiments/actions';
 import SceneHeader from '../SceneHeader';
@@ -48,7 +48,6 @@ class Experiments extends Component {
     this.updateQuery = this.updateQuery.bind(this);
     this.resetQuery = this.resetQuery.bind(this);
     this.getTables = this.getTables.bind(this);
-    this.getExperimentsByAlgorithm = this.getExperimentsByAlgorithm.bind(this);
   }
 
   componentDidMount() {
@@ -90,27 +89,11 @@ class Experiments extends Component {
     hashHistory.push(nextLocation);
   }
 
-  /** 
-   * Parse the passed array of experiments and group by algorithm type.
-   * Returns an object, with each key named for an algorithm and
-   * holding an array of experiments that use that algorithm.
-  */
-  getExperimentsByAlgorithm(experimentsArray) {
-    let result = {}
-    experimentsArray.forEach( exp => {
-      if( !result.hasOwnProperty(exp.algorithm)) {
-        result[exp.algorithm] = []
-      }
-      result[exp.algorithm].push(exp);
-    })
-    return result;
-  }
-  
-  /** Generate a single table showing single or all algorithms, or an array of table components, one for each algorithm type
+  /** Generate either a single table showing a single or all algorithms, or an array of tables with one for each algorithm type
    * that has one or more experiments.
    */
   getTables() {
-    const { experiments, fetchExperiments, filters, sort } = this.props;
+    const { experiments, fetchExperiments, filters, sortAll } = this.props;
 
     if (experiments.list.length == 0 ) {
       return (
@@ -122,36 +105,40 @@ class Experiments extends Component {
     // is an array of experiments.
     // There's either a single value for viewMode 'simple', or one or more
     // values for viewMode 'expanded' in which each array holds experiments
-    // of a single algorithm type.
+    // of a single algorithm type. Note that these have been filtered by view filters.
     let groupedExperiments = {};
     if(filters.viewMode === "simple" ){
       groupedExperiments = {simple: experiments.list}
     }
     else {
-      groupedExperiments = this.getExperimentsByAlgorithm(experiments.list);
+      //
+      groupedExperiments = experiments.byAlgorithm;
     }
 
     let result = [];
-    Object.values(groupedExperiments).forEach( experiments => {
-      result.push((
-        <Segment inverted attached="bottom" key={experiments[0]._id}>
-          <React.Fragment>
-            {filters.viewMode === "simple" ? undefined : <Header as='h3'>{formatAlgorithm(experiments[0].algorithm)}</Header>}
-            <ExperimentsTable 
-              experiments={experiments}
-              filters={filters}
-              sort={sort}
-              updateQuery={this.updateQuery}
-            />
-          </React.Fragment>
-        </Segment>
-      ))
+    Object.keys(groupedExperiments).forEach( key => {
+      let experiments = groupedExperiments[key];
+      if(experiments.length > 0){
+        result.push((
+          <Segment inverted attached="bottom" key={experiments[0]._id}>
+            <React.Fragment>
+              {filters.viewMode === "simple" ? undefined : <Header as='h3'>{formatAlgorithm(experiments[0].algorithm)}</Header>}
+              <ExperimentsTable 
+                experiments={experiments}
+                filters={filters}
+                sortSingle={sortAll[key]}
+                updateQuery={this.updateQuery}
+              />
+            </React.Fragment>
+          </Segment>
+        ))
+      }
     })
     return result;
   }
 
   render() {
-    const { experiments, fetchExperiments, filters, sort } = this.props;
+    const { experiments, fetchExperiments, filters } = this.props;
     
     if(experiments.isFetching) {
       return (
@@ -188,7 +175,7 @@ class Experiments extends Component {
 const mapStateToProps = (state, props) => ({
   experiments: getVisibleExperiments(state, props),
   filters: getFilters(state, props),
-  sort: getSort(state, props)
+  sortAll: getSortAll(state, props)
 });
 
 export { Experiments };

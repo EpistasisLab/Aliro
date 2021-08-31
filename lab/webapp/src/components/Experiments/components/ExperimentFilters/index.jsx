@@ -40,12 +40,16 @@ function ExperimentFilters({
         <Form.Group>
           <Form.Field
             inline
-            className="filter"
+            inverted 
+            color="blue"
+            size="large" 
+            compact
+            icon={filters.viewMode === "expanded" ? "minus square outline" : "plus square outline"}
             control={Button}
+            className="reset"
+            style={{padding: 0}}
             onClick={() => updateQuery('viewMode', filters.viewMode === "simple" ? "expanded" : "simple")}
-          >
-            <Icon name={filters.viewMode === "expanded" ? "angle down" : "angle right"}></Icon>
-          </Form.Field>
+          />
           <Form.Field 
             inline
             label="Status:"

@@ -35,25 +35,25 @@ function ExperimentsTableHeader({
   shouldDisplayParams,
   shouldDisplayErrorMessage,
   orderedParamKeys,
-  sort,
+  sortSingle,
   updateQuery
 }){
   // for sorting to work, clickedColumn string must be defined as keyPath for value
   // ex: scores-accuracy_score -> getIn([scores, accuracy_score])
   const onSort = (clickedColumn) => {
     let direction;
-    if(clickedColumn === sort.column) {
-      direction = sort.direction === 'ascending' ? 'descending' : 'ascending';
+    if(clickedColumn === sortSingle.column) {
+      direction = sortSingle.direction === 'ascending' ? 'descending' : 'ascending';
     } else {
       direction = 'ascending';
     }
 
-    updateQuery('col', clickedColumn);
-    updateQuery('direction', direction);
+    updateQuery(sortSingle.columnKey, clickedColumn);
+    updateQuery(sortSingle.directionKey, direction);
   };
 
   const getIsSorted = (column) => {
-    return (sort.column === column && sort.direction) || null;
+    return (sortSingle.column === column && sortSingle.direction) || null;
   };
 
   return (

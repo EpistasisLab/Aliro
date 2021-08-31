@@ -33,7 +33,7 @@ import { Table } from 'semantic-ui-react';
 function ExperimentsTable({
   experiments, 
   filters,
-  sort,
+  sortSingle,
   updateQuery
 }) {
   //'experiments' is an array of experiments, and in the case of viewMode 'simple' will
@@ -67,7 +67,7 @@ function ExperimentsTable({
           shouldDisplayParams={shouldDisplayParams}
           shouldDisplayErrorMessage={shouldDisplayErrorMessage}
           orderedParamKeys={orderedParamKeys}
-          sort={sort}
+          sortSingle={sortSingle}
           updateQuery={updateQuery}
         />
         <ExperimentsTableBody
