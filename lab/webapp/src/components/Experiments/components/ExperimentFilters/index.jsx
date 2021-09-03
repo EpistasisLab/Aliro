@@ -47,7 +47,6 @@ function ExperimentFilters({
             icon={filters.viewMode === "expanded" ? "minus square outline" : "plus square outline"}
             control={Button}
             className="reset"
-            style={{padding: 0}}
             onClick={() => updateQuery('viewMode', filters.viewMode === "simple" ? "expanded" : "simple")}
           />
           <Form.Field 
