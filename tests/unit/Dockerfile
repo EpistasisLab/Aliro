@@ -26,6 +26,8 @@ RUN pip install --no-cache-dir -r /root/lab_requirements.txt
 
 COPY /docker/machine/files/requirements.txt /root/mach_requirements.txt
 RUN pip install --no-cache-dir -r /root/mach_requirements.txt
+COPY /docker/machine/files/requirements_shap.txt /root/mach_requirements_shap.txt
+RUN pip install --no-cache-dir -r /root/mach_requirements_shap.txt
 
 # install lab/node_modules to an anon volume
 WORKDIR /appsrc/lab
