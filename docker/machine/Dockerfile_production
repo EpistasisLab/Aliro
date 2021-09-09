@@ -26,6 +26,8 @@ RUN apt-get update --fix-missing && apt-get install -y \
 # setup python environment
 COPY ${docker_filepath}/requirements.txt /root/
 RUN pip install --no-cache-dir -r /root/requirements.txt
+COPY ${docker_filepath}/requirements_shap.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements_shap.txt
 
 # setup node environment
 RUN npm install -g pm2 --silent --progress=false
