@@ -40,9 +40,9 @@ function ExperimentFilters({
         <Form.Group>
           <Form.Field
             inline
-            inverted 
             color="blue"
-            size="large" 
+            style={{backgroundColor: 'transparent'}}
+            size="small" 
             compact
             icon={filters.viewMode === "expanded" ? "minus square outline" : "plus square outline"}
             control={Button}
