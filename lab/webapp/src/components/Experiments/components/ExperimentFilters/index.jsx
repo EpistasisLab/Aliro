@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 import React from 'react';
-import { Form, Dropdown, Header } from 'semantic-ui-react';
+import { Form, Dropdown, Header, Icon, Button } from 'semantic-ui-react';
 
 function ExperimentFilters({ 
   filters,
@@ -38,6 +38,17 @@ function ExperimentFilters({
     <span className="filters">
       <Form inverted>
         <Form.Group>
+          <Form.Field
+            inline
+            color="blue"
+            style={{backgroundColor: 'transparent'}}
+            size="small" 
+            compact
+            icon={filters.viewMode === "expanded" ? "minus square outline" : "plus square outline"}
+            control={Button}
+            className="reset"
+            onClick={() => updateQuery('viewMode', filters.viewMode === "simple" ? "expanded" : "simple")}
+          />
           <Form.Field 
             inline
             label="Status:"

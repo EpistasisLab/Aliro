@@ -67,18 +67,19 @@ class Results extends Component {
     let testList = [];
     let expScores = experiment.data.scores;
 
-    keyList.forEach(scoreKey => {
-        if(typeof expScores[scoreKey].toFixed === 'function'){
+    if(typeof(expScores) === 'object'){
+      keyList.forEach(scoreKey => {
+        if(expScores[scoreKey] && typeof expScores[scoreKey].toFixed === 'function'){
           let tempLabel;
           scoreKey.includes('train')
             ? tempLabel = 'Train (' + expScores[scoreKey].toFixed(2) + ')'
             : tempLabel = 'Test (' + expScores[scoreKey].toFixed(2) + ')';
           testList.push(
             [tempLabel, expScores[scoreKey]]
-          )
+          );
         }
-      }
-    );
+      });     
+    }
 
     return testList;
   }
