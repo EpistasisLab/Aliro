@@ -49,7 +49,7 @@ function Navbar({ preferences }) {
   return (
     <Menu inverted color="grey" fixed="top" size="large" borderless>
       <Link to="datasets" className="link">
-        <Menu.Item header name="PennAI" />
+        <Menu.Item header name="Aliro" />
       </Link>
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
         <Menu.Item name="Your friendly AI assistant" />

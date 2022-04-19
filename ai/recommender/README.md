@@ -97,9 +97,9 @@ You should now be able to start the AI with your recommender.
 The easiest way to do so is to add your recommender to the `config/ai.env` file.
 Edit this file so that `AI_RECOMMENDER=myrec`.
 
-Then when PennAI is launched, it will run with your recommender. 
+Then when Aliro is launched, it will run with your recommender. 
 
-For more control and for testing, launch PennAI with `AI_AUTOSTART=0` set in the
+For more control and for testing, launch Aliro with `AI_AUTOSTART=0` set in the
 `config/ai.env` file. 
 Then, attach to the `pennai_lab_1` docker container with the command
 
