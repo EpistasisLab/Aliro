@@ -5,7 +5,7 @@
 ### Requirements
 Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
 - Docker setup
-  - Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
+  - Shared Drive: (Windows only)  Share the drive that will have the Aliro source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
 
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)
@@ -16,24 +16,24 @@ Install Docker and docker-compose as per the main installation requirements (see
     - [https://nodejs.org/en/](https://nodejs.org/en/)
 
 ### Building Docker Images
-1. Clone the PennAI project using `git clone git@github.com:EpistasisLab/pennai.git`
+1. Clone the Aliro project using `git clone git@github.com:EpistasisLab/Aliro.git`
 
 
-2. Set up your local PennAI configuration file. From the pennai directory, copy `config\ai.env-template` to `config\ai.env`.
+2. Set up your local Aliro configuration file. From the Aliro directory, copy `config\ai.env-template` to `config\ai.env`.
 
 
-3. Build the development service images by running `docker-compose build` from the pennai directory.  It will take several minutes for the images to be built the first time this is run.
+3. Build the development service images by running `docker-compose build` from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.
 
 ### Starting and Stopping ###
-To start PennAI, from the PennAI directory run the command `docker-compose up`.  To stop PennAI, kill the process with `ctrl+c` and wait for the process to exit.
+To start Aliro, from the Aliro directory run the command `docker-compose up`.  To stop Aliro, kill the process with `ctrl+c` and wait for the process to exit.
 
-PennAI can be run with multiple machine instances using the `docker-compose-multi-machine.yml` docker compose file, as per: `docker-compose up -f ./docker-compose-multi-machine.yml`
+Aliro can be run with multiple machine instances using the `docker-compose-multi-machine.yml` docker compose file, as per: `docker-compose up -f ./docker-compose-multi-machine.yml`
 
 To reset the docker volumes, restart using the `--force-recreate` flag or run `docker-compose down` after the server has been stopped.
 
 ## Development Notes
 -  After any code changes are pulled, **ALWAYS** rerun `docker-compose build` and when you first reload the webpage first do a hard refresh with ctrl+F5 instead of just F5 to clear any deprecated code out of the browser cache.
-- Whenever there are updates to any of the npm libraries as configured with `package.json` files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting PennAI `docker-compose up --renew-anon-volumes` or `docker-compose up -V`.
+- Whenever there are updates to any of the npm libraries as configured with `package.json` files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting Aliro `docker-compose up --renew-anon-volumes` or `docker-compose up -V`.
 - Use `docker-compose build` to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See [docker build docs,](https://docs.docker.com/compose/reference/build/)
 - To get the cpu and memory status of the running containers use `docker stats`
 - To clear out all files not checked into git, use `git clean -xdf`
@@ -56,7 +56,7 @@ The frontend UI source is in `\lab\webapp` and is managed using [webpack](https:
 
 There are two ways to enable watch mode:
 
-* To enable watch mode after PennAi has been started, do the following:
+* To enable watch mode after Aliro has been started, do the following:
     ```
     docker exec -it "pennai_lab_1" /bin/bash
     cd $PROJECT_ROOT/lab/webapp
@@ -69,7 +69,7 @@ There are two ways to enable watch mode:
 To update or add NPM package dependencies:
 * Update the appropriate `package.json` file
 * Rebuild the images (`docker-compose build`, `docker-compose -f .\docker-compose-int-test.yml build` etc.)
-* Refresh anonymous volumes when restarting PennAI with `docker-compose up --renew-anon-volumes` or `docker-compose up -V`
+* Refresh anonymous volumes when restarting Aliro with `docker-compose up --renew-anon-volumes` or `docker-compose up -V`
 
 ---
 
@@ -77,20 +77,20 @@ Package management for node is configured in three places: the main backend API 
 
 Node package installation (`npm install`) takes palace as part of the `docker build` process.  If there are changes to a `package.json` file, then during the build those changes will be detected and the updated npm packages will be installed.  
 
-When not using the production docker-compose file, node packages are installed in docker anonymous volumes `lab/node_modules`, `lab/webapp/node_modules`, `machine/node_modules`.  When starting PennAI after the packages have been rebuilt, the `--renew-anon-volumes` flag should be used.
+When not using the production docker-compose file, node packages are installed in docker anonymous volumes `lab/node_modules`, `lab/webapp/node_modules`, `machine/node_modules`.  When starting Aliro after the packages have been rebuilt, the `--renew-anon-volumes` flag should be used.
 
 
 ##  Architecture Overview
-PennAI is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  
+Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  
 
-![PennAI Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true "PennAI Architecture Diagram")
+![Aliro Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true "Aliro Architecture Diagram")
 
 ##### Controller Engine (aka _The Server_)
 The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  
 ##### Database
 A MongoDb database is used for persistent storage.  
 ##### UI Component (aka _The Client_)
-The UI component (_Vizualization / UI Engine_ in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
+The UI component (_Vizualization / UI Engine_ in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
 
 ##  Code Documentation
 - Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.  
@@ -116,11 +116,11 @@ Note: If the npm packages have been updated, the unit tests docker image need to
 - Results:
 	- The results will in xcode format be in `.\target\test-reports\int_jest_xunit.xml`
 	- The results will in html format be in `.\target\test-reports\html\int_jest_test_report.html`
-- Docs: See [Documentation](https://github.com/EpistasisLab/pennai/blob/master/tests/integration/readme.md) for details.
+- Docs: See [Documentation](https://github.com/EpistasisLab/Aliro/blob/master/tests/integration/readme.md) for details.
 
 
 ### Unit
-There are several unit test suites for the various components of PennAI.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.
+There are several unit test suites for the various components of Aliro.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.
 
 The default location of the test output is the `.\target\test-reports\` directory.
 
@@ -199,7 +199,7 @@ To create a production release:
 
 Release procedure:
 
-0. **Test production build.** In the master branch with all changes applied, run `docker-compose -f ./docker-compose-production.yml build` followed by `docker-compose -f ./docker-compose-production.yml up -V`.  This should start an instance of PennAI using the production build environment.  Test that it works as expected.
+0. **Test production build.** In the master branch with all changes applied, run `docker-compose -f ./docker-compose-production.yml build` followed by `docker-compose -f ./docker-compose-production.yml up -V`.  This should start an instance of Aliro using the production build environment.  Test that it works as expected.
 
 1. **Update the `.env` file with a new version number.** In the master branch, update the TAG environment variable in `.env` to the current production version as per [semantic versioning](https://semver.org/) and the python package version specification [PEP440](https://www.python.org/dev/peps/pep-0440).  Development images should have a tag indicating it is a [pre-release](https://www.python.org/dev/peps/pep-0440/#pre-releases) (for example, `a0`).
 
@@ -221,7 +221,7 @@ git checkout production
 bash release/deploy_production_release.sh
 ```
 
-5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of PennAI that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version. 
+5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/pennai-${VERSION}` and running `docker-compose up`.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version. 
 
 6. **Create Github Release.**  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file `target/production/pennai-${VERSION}.zip` as an archive asset.
 
@@ -233,4 +233,4 @@ bash release/deploy_production_release.sh
 2. Unzip the archive
 
 ### Running from production build
-1. From the pennai directory, run the command `docker-compose up` to start the PennAI server.
+1. From the Aliro directory, run the command `docker-compose up` to start the Aliro server.

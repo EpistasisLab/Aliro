@@ -1,9 +1,9 @@
 # Knowledgebases
 
 Knowledgebases are collections of previous results from machine learning analyses 
-that are used to bootstrap PennAI. 
+that are used to bootstrap Aliro. 
 
-The results are stored in a .tsv.gz file. By default PennAI loads results from the
+The results are stored in a .tsv.gz file. By default Aliro loads results from the
 benchmark of scikit-learn described in these papers:
 
  - Olson, Randal S., William La Cava, Patryk Orzechowski, Ryan J. Urbanowicz, and 

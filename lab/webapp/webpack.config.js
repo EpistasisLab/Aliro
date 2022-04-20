@@ -77,7 +77,7 @@ var config = {
        inject: false,
        template: require('html-webpack-template'),
 
-       title: 'PennAI Launchpad',
+       title: 'Aliro Launchpad',
        headHtmlSnippet: `    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="libraries/semantic-ui/semantic.min.css" /> <!-- Semantic UI - 2.3.3 -->
     <link rel="stylesheet" href="App.css" />`,

@@ -1,4 +1,4 @@
-FROM python:3.7.4-stretch
+FROM python:3.7.11-stretch
 
 #nodejs
 RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \

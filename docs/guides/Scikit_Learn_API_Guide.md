@@ -1,7 +1,7 @@
 #  User Guide of PennAIpy
 
 ### Installation of AI engine as a standalone python package ###
-PennAI AI engine is built on top of several existing Python libraries, including:
+Aliro AI engine is built on top of several existing Python libraries, including:
 
 * [NumPy](http://www.numpy.org/)
 
@@ -20,7 +20,7 @@ PennAI AI engine is built on top of several existing Python libraries, including
 
 Most of the necessary Python packages can be installed via the [Anaconda Python distribution](https://www.anaconda.com/products/individual), which we strongly recommend that you use.
 
-You can install PennAI AI engine using `pip`.
+You can install Aliro AI engine using `pip`.
 
 NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via the command:
 
@@ -28,7 +28,7 @@ NumPy, SciPy, scikit-learn, pandas and joblib can be installed in Anaconda via t
 conda install numpy scipy scikit-learn pandas joblib simplejson
 ```
 
-Surprise was tweaked for the PennAI AI engine and it can be install with `pip` via the command below. **Note: [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is required for building the surprise package in Windows OS. Please download and run the installer with selecting "C++ Build tools". Additionally, the latest version of [`cython`](https://cython.org) is required and it can be installed/updated via `pip install --upgrade cython`.**
+Surprise was tweaked for the Aliro AI engine and it can be install with `pip` via the command below. **Note: [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is required for building the surprise package in Windows OS. Please download and run the installer with selecting "C++ Build tools". Additionally, the latest version of [`cython`](https://cython.org) is required and it can be installed/updated via `pip install --upgrade cython`.**
 
 ```Shell
 pip install --no-cache-dir git+https://github.com/lacava/surprise.git@1.1.1.1
@@ -40,9 +40,9 @@ Finally to install AI engine itself, run the following command:
 pip install pennaipy
 ```
 
-### Example of using PennAI AI engine ###
+### Example of using Aliro AI engine ###
 
-The following code illustrates how PennAI can be employed for performing a simple _classification task_ over the Iris dataset.
+The following code illustrates how Aliro can be employed for performing a simple _classification task_ over the Iris dataset.
 
 ```Python
 from pennai.sklearn import PennAIClassifier
@@ -68,17 +68,17 @@ print(pennai.score(X_test, y_test))
 
 ```
 
-### Default knowledgebase/metafeatures of PennAI AI engine
+### Default knowledgebase/metafeatures of Aliro AI engine
 
-If you don't specify `knowledgebase` and `kb_metafeatures` in `PennAIClassifier` or `PennAIRegressor`, PennAI AI engine will use default knowledgebase based on [pmlb](https://github.com/EpistasisLab/penn-ml-benchmarks)(version0.3).
+If you don't specify `knowledgebase` and `kb_metafeatures` in `PennAIClassifier` or `PennAIRegressor`, Aliro AI engine will use default knowledgebase based on [pmlb](https://github.com/EpistasisLab/penn-ml-benchmarks)(version0.3).
 
 |                | Default Knowledgebase                          | Default Metafeatures                    |
 |----------------|------------------------------------------------|-----------------------------------------|
-| Classification | [sklearn-benchmark-data-knowledgebase-r6.tsv.gz](https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz) | [pmlb_classification_metafeatures.csv.gz](https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_classification_metafeatures.csv.gz) |
-| Regression     | [pmlb_regression_results.tsv.gz](https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_regression_results.tsv.gz)                 | [pmlb_regression_metafeatures.csv.gz](https://github.com/EpistasisLab/pennai/blob/master/data/knowledgebases/pmlb_regression_metafeatures.csv.gz)     |
+| Classification | [sklearn-benchmark-data-knowledgebase-r6.tsv.gz](https://github.com/EpistasisLab/Aliro/blob/master/data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz) | [pmlb_classification_metafeatures.csv.gz](https://github.com/EpistasisLab/Aliro/blob/master/data/knowledgebases/pmlb_classification_metafeatures.csv.gz) |
+| Regression     | [pmlb_regression_results.tsv.gz](https://github.com/EpistasisLab/Aliro/blob/master/data/knowledgebases/pmlb_regression_results.tsv.gz)                 | [pmlb_regression_metafeatures.csv.gz](https://github.com/EpistasisLab/Aliro/blob/master/data/knowledgebases/pmlb_regression_metafeatures.csv.gz)     |
 
 
-### Example of using PennAI AI engine with non-default knowledgebase/metafeature. ###
+### Example of using Aliro AI engine with non-default knowledgebase/metafeature. ###
 
 
 ```Python
@@ -92,8 +92,8 @@ iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64),
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
-classification_kb = "https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"
-classification_metafeatures="https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
+classification_kb = "https://github.com/EpistasisLab/Aliro/raw/ai_sklearn_api/data/knowledgebases/sklearn-benchmark5-data-knowledgebase-small.tsv.gz"
+classification_metafeatures="https://github.com/EpistasisLab/Aliro/raw/ai_sklearn_api/data/knowledgebases/pmlb_classification_metafeatures.csv.gz"
 
 pennai = PennAIClassifier(
               rec_class=KNNMetaRecommender,
@@ -110,9 +110,9 @@ print(pennai.score(X_test, y_test))
 
 ```
 
-### Example of using PennAI AI engine with pre-trained SVG recommender ###
+### Example of using Aliro AI engine with pre-trained SVG recommender ###
 
-The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in PennAI. The following code illustrates how to use the pre-trained SVG recommender:
+The pre-trained SVG recommender is provided for saving computational time for initializing the recommender with default knowledgebase in Aliro. The following code illustrates how to use the pre-trained SVG recommender:
 
 ```Python
 from pennai.sklearn import PennAIClassifier
@@ -129,7 +129,7 @@ X_train, X_test, y_train, y_test = train_test_split(iris.data.astype(np.float64)
     iris.target.astype(np.float64), train_size=0.75, test_size=0.25, random_state=42)
 
 # download pre-trained SVG recommender for pennai's github
-urllib.request.urlretrieve("https://github.com/EpistasisLab/pennai/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz", "SVDRecommender_classifier_accuracy_pmlb.pkl.gz")
+urllib.request.urlretrieve("https://github.com/EpistasisLab/Aliro/raw/ai_sklearn_api/data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz", "SVDRecommender_classifier_accuracy_pmlb.pkl.gz")
 serialized_rec = "SVDRecommender_classifier_accuracy_pmlb.pkl.gz"
 
 pennai = PennAIClassifier(
