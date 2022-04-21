@@ -47,7 +47,7 @@ print(sys.path)
 
 # -- Project information -----------------------------------------------------
 
-project = 'PennAI'
+project = 'Aliro'
 copyright = '2018, Penn'
 author = 'University of Pennsylvania'
 
