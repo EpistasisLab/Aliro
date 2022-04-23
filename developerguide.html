@@ -1,77 +1,39 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Developer Guide &mdash; PennAI 0.18a0 documentation</title>
-  
-
-  
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Guide &mdash; Aliro 0.18a0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="AI Overview" href="ai.html" />
     <link rel="prev" title="User Guide" href="userguide.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> PennAI
-          
-
-          
-            
+            <a href="index.html" class="icon icon-home"> Aliro
             <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.18a0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,17 +41,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
@@ -135,84 +87,46 @@
 <li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">PennAI</a>
-        
+          <a href="index.html">Aliro</a>
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Developer Guide</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/developerguide.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="developer-guide">
-<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline"></a></h1>
 <section id="developer-installation">
-<h2>Developer Installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h2>
+<h2>Developer Installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline"></a></h2>
 <section id="requirements">
-<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h3>
 <p>Install Docker and docker-compose as per the main installation requirements (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
 <ul class="simple">
 <li><p>Docker setup</p>
 <ul>
-<li><p>Shared Drive: (Windows only)  Share the drive that will have the PennAI source code with the Docker desktop <a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Docker Shared Drives</a></p></li>
+<li><p>Shared Drive: (Windows only)  Share the drive that will have the Aliro source code with the Docker desktop <a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Docker Shared Drives</a></p></li>
 </ul>
 </li>
 </ul>
 <section id="optional-dependencies-for-development-testing">
-<h4>Optional dependencies for development/testing:<a class="headerlink" href="#optional-dependencies-for-development-testing" title="Permalink to this headline">¶</a></h4>
+<h4>Optional dependencies for development/testing:<a class="headerlink" href="#optional-dependencies-for-development-testing" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)</p>
 <ul>
@@ -230,25 +144,25 @@
 </section>
 </section>
 <section id="building-docker-images">
-<h3>Building Docker Images<a class="headerlink" href="#building-docker-images" title="Permalink to this headline">¶</a></h3>
+<h3>Building Docker Images<a class="headerlink" href="#building-docker-images" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
-<li><p>Clone the PennAI project using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/pennai.git</span></code></p></li>
-<li><p>Set up your local PennAI configuration file. From the pennai directory, copy <code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
-<li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from the pennai directory.  It will take several minutes for the images to be built the first time this is run.</p></li>
+<li><p>Clone the Aliro project using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/Aliro.git</span></code></p></li>
+<li><p>Set up your local Aliro configuration file. From the Aliro directory, copy <code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
+<li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.</p></li>
 </ol>
 </section>
 <section id="starting-and-stopping">
-<h3>Starting and Stopping<a class="headerlink" href="#starting-and-stopping" title="Permalink to this headline">¶</a></h3>
-<p>To start PennAI, from the PennAI directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  To stop PennAI, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the process to exit.</p>
-<p>PennAI can be run with multiple machine instances using the <code class="docutils literal notranslate"><span class="pre">docker-compose-multi-machine.yml</span></code> docker compose file, as per: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-f</span> <span class="pre">./docker-compose-multi-machine.yml</span></code></p>
+<h3>Starting and Stopping<a class="headerlink" href="#starting-and-stopping" title="Permalink to this headline"></a></h3>
+<p>To start Aliro, from the Aliro directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  To stop Aliro, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the process to exit.</p>
+<p>Aliro can be run with multiple machine instances using the <code class="docutils literal notranslate"><span class="pre">docker-compose-multi-machine.yml</span></code> docker compose file, as per: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-f</span> <span class="pre">./docker-compose-multi-machine.yml</span></code></p>
 <p>To reset the docker volumes, restart using the <code class="docutils literal notranslate"><span class="pre">--force-recreate</span></code> flag or run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code> after the server has been stopped.</p>
 </section>
 </section>
 <section id="development-notes">
-<h2>Development Notes<a class="headerlink" href="#development-notes" title="Permalink to this headline">¶</a></h2>
+<h2>Development Notes<a class="headerlink" href="#development-notes" title="Permalink to this headline"></a></h2>
 <ul>
 <li><p>After any code changes are pulled, <strong>ALWAYS</strong> rerun <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> and when you first reload the webpage first do a hard refresh with ctrl+F5 instead of just F5 to clear any deprecated code out of the browser cache.</p></li>
-<li><p>Whenever there are updates to any of the npm libraries as configured with <code class="docutils literal notranslate"><span class="pre">package.json</span></code> files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting PennAI <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code>.</p></li>
+<li><p>Whenever there are updates to any of the npm libraries as configured with <code class="docutils literal notranslate"><span class="pre">package.json</span></code> files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting Aliro <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code>.</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See <a class="reference external" href="https://docs.docker.com/compose/reference/build/">docker build docs,</a></p></li>
 <li><p>To get the cpu and memory status of the running containers use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">stats</span></code></p></li>
 <li><p>To clear out all files not checked into git, use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clean</span> <span class="pre">-xdf</span></code></p></li>
@@ -269,11 +183,11 @@ python -m ai.ai -v -n 2
 </li>
 </ul>
 <section id="web-development">
-<h3>Web Development<a class="headerlink" href="#web-development" title="Permalink to this headline">¶</a></h3>
+<h3>Web Development<a class="headerlink" href="#web-development" title="Permalink to this headline"></a></h3>
 <p>The frontend UI source is in <code class="docutils literal notranslate"><span class="pre">\lab\webapp</span></code> and is managed using <a class="reference external" href="https://webpack.js.org/">webpack</a>.  When developing the UI, webpack can be configured to run in <a class="reference external" href="https://webpack.js.org/configuration/watch/">watch mode</a> to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to <a class="reference external" href="https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache">hard refresh</a> with ctrl+F5 for the changes to be seen in the browser.</p>
 <p>There are two ways to enable watch mode:</p>
 <ul>
-<li><p>To enable watch mode after PennAi has been started, do the following:</p>
+<li><p>To enable watch mode after Aliro has been started, do the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;pennai_lab_1&quot; /bin/bash
 cd $PROJECT_ROOT/lab/webapp
 npm run build-dev
@@ -284,37 +198,37 @@ npm run build-dev
 </ul>
 </section>
 <section id="npm-package-management">
-<h3>NPM Package Management<a class="headerlink" href="#npm-package-management" title="Permalink to this headline">¶</a></h3>
+<h3>NPM Package Management<a class="headerlink" href="#npm-package-management" title="Permalink to this headline"></a></h3>
 <p>To update or add NPM package dependencies:</p>
 <ul class="simple">
 <li><p>Update the appropriate <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file</p></li>
 <li><p>Rebuild the images (<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">build</span></code> etc.)</p></li>
-<li><p>Refresh anonymous volumes when restarting PennAI with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code></p></li>
+<li><p>Refresh anonymous volumes when restarting Aliro with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code></p></li>
 </ul>
 <hr class="docutils" />
 <p>Package management for node is configured in three places: the main backend API (<code class="docutils literal notranslate"><span class="pre">lab\package.json</span></code>), the frontend UI (<code class="docutils literal notranslate"><span class="pre">lab\webapp\package.json</span></code>), and the machine container API (<code class="docutils literal notranslate"><span class="pre">machine\package.json</span></code>).</p>
 <p>Node package installation (<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">install</span></code>) takes palace as part of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> process.  If there are changes to a <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file, then during the build those changes will be detected and the updated npm packages will be installed.</p>
-<p>When not using the production docker-compose file, node packages are installed in docker anonymous volumes <code class="docutils literal notranslate"><span class="pre">lab/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">lab/webapp/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">machine/node_modules</span></code>.  When starting PennAI after the packages have been rebuilt, the <code class="docutils literal notranslate"><span class="pre">--renew-anon-volumes</span></code> flag should be used.</p>
+<p>When not using the production docker-compose file, node packages are installed in docker anonymous volumes <code class="docutils literal notranslate"><span class="pre">lab/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">lab/webapp/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">machine/node_modules</span></code>.  When starting Aliro after the packages have been rebuilt, the <code class="docutils literal notranslate"><span class="pre">--renew-anon-volumes</span></code> flag should be used.</p>
 </section>
 </section>
 <section id="architecture-overview">
-<h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h2>
-<p>PennAI is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.</p>
-<a class="reference external image-reference" href="https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true"><img alt="PennAI Architecture Diagram" src="https://raw.githubusercontent.com/EpistasisLab/pennai/master/docs/source/_static/pennai_architecture.png?raw=true" /></a>
+<h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline"></a></h2>
+<p>Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.</p>
+<a class="reference external image-reference" href="https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true"><img alt="Aliro Architecture Diagram" src="https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true" /></a>
 <p>The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.</p>
 <p>A MongoDb database is used for persistent storage.</p>
-<p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A PennAI instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.</p>
+<p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.</p>
 </section>
 <section id="code-documentation">
-<h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>Sphinx documentation can be built in the context of a docker container with the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-doc-builder.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code>.</p></li>
 </ul>
 </section>
 <section id="tests">
-<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline"></a></h2>
 <section id="local-test-instructions">
-<h3>Local Test Instructions<a class="headerlink" href="#local-test-instructions" title="Permalink to this headline">¶</a></h3>
+<h3>Local Test Instructions<a class="headerlink" href="#local-test-instructions" title="Permalink to this headline"></a></h3>
 <p>The unit and integration tests can be run locally using the followng commands:</p>
 <ul class="simple">
 <li><p>Unit (both javascript and python): <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">-V</span></code></p>
@@ -330,7 +244,7 @@ npm run build-dev
 <p>Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
 </section>
 <section id="integration">
-<h3>Integration<a class="headerlink" href="#integration" title="Permalink to this headline">¶</a></h3>
+<h3>Integration<a class="headerlink" href="#integration" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Type: Docker, runs <a class="reference external" href="https://jestjs.io/">Jest</a></p></li>
 <li><p>Usage: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
@@ -340,15 +254,15 @@ npm run build-dev
 <li><p>The results will in html format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html\int_jest_test_report.html</span></code></p></li>
 </ul>
 </li>
-<li><p>Docs: See <a class="reference external" href="https://github.com/EpistasisLab/pennai/blob/master/tests/integration/readme.md">Documentation</a> for details.</p></li>
+<li><p>Docs: See <a class="reference external" href="https://github.com/EpistasisLab/Aliro/blob/master/tests/integration/readme.md">Documentation</a> for details.</p></li>
 </ul>
 </section>
 <section id="unit">
-<h3>Unit<a class="headerlink" href="#unit" title="Permalink to this headline">¶</a></h3>
-<p>There are several unit test suites for the various components of PennAI.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.</p>
+<h3>Unit<a class="headerlink" href="#unit" title="Permalink to this headline"></a></h3>
+<p>There are several unit test suites for the various components of Aliro.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.</p>
 <p>The default location of the test output is the <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\</span></code> directory.</p>
 <section id="docker-unit-test-runner">
-<h4>Docker unit test runner<a class="headerlink" href="#docker-unit-test-runner" title="Permalink to this headline">¶</a></h4>
+<h4>Docker unit test runner<a class="headerlink" href="#docker-unit-test-runner" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
 <li><p>Dependencies: Docker-compose</p></li>
@@ -366,7 +280,7 @@ npm run build-dev
 </ul>
 </section>
 <section id="host-unit-test-runner">
-<h4>Host unit test runner<a class="headerlink" href="#host-unit-test-runner" title="Permalink to this headline">¶</a></h4>
+<h4>Host unit test runner<a class="headerlink" href="#host-unit-test-runner" title="Permalink to this headline"></a></h4>
 <ul class="simple">
 <li><p>Type: Bash script that runs all the python unit tests on the host system and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
 <li><p>Dependencies: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span> <span class="pre">coverage</span></code></p>
@@ -385,9 +299,9 @@ npm run build-dev
 </ul>
 </section>
 <section id="unit-test-suite-details">
-<h4>Unit test suite details<a class="headerlink" href="#unit-test-suite-details" title="Permalink to this headline">¶</a></h4>
+<h4>Unit test suite details<a class="headerlink" href="#unit-test-suite-details" title="Permalink to this headline"></a></h4>
 <section id="ai-recommnender">
-<h5>AI Recommnender<a class="headerlink" href="#ai-recommnender" title="Permalink to this headline">¶</a></h5>
+<h5>AI Recommnender<a class="headerlink" href="#ai-recommnender" title="Permalink to this headline"></a></h5>
 <ul>
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
 <li><p>Prereqs: install nose <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></code></p></li>
@@ -399,7 +313,7 @@ npm run build-dev
 </ul>
 </section>
 <section id="ai-controller">
-<h5>AI Controller<a class="headerlink" href="#ai-controller" title="Permalink to this headline">¶</a></h5>
+<h5>AI Controller<a class="headerlink" href="#ai-controller" title="Permalink to this headline"></a></h5>
 <ul>
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
 <li><p>Prereqs: install nose <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></code></p></li>
@@ -411,7 +325,7 @@ npm run build-dev
 </ul>
 </section>
 <section id="metafeature-generation">
-<h5>Metafeature Generation<a class="headerlink" href="#metafeature-generation" title="Permalink to this headline">¶</a></h5>
+<h5>Metafeature Generation<a class="headerlink" href="#metafeature-generation" title="Permalink to this headline"></a></h5>
 <ul>
 <li><p>Type: Python</p></li>
 <li><p>Usage:</p>
@@ -423,7 +337,7 @@ npm run build-dev
 </ul>
 </section>
 <section id="machine">
-<h5>Machine<a class="headerlink" href="#machine" title="Permalink to this headline">¶</a></h5>
+<h5>Machine<a class="headerlink" href="#machine" title="Permalink to this headline"></a></h5>
 <ul>
 <li><p>Type: Python via <a class="reference external" href="https://pypi.org/project/nose/">nose</a> and Javascript via <a class="reference external" href="https://mochajs.org/">mocha</a></p></li>
 <li><p>Prereqs:</p>
@@ -449,9 +363,9 @@ npm run build-dev
 </section>
 </section>
 <section id="production-builds">
-<h2>Production Builds<a class="headerlink" href="#production-builds" title="Permalink to this headline">¶</a></h2>
+<h2>Production Builds<a class="headerlink" href="#production-builds" title="Permalink to this headline"></a></h2>
 <section id="generating-and-publishing-production-builds">
-<h3>Generating and publishing production builds<a class="headerlink" href="#generating-and-publishing-production-builds" title="Permalink to this headline">¶</a></h3>
+<h3>Generating and publishing production builds<a class="headerlink" href="#generating-and-publishing-production-builds" title="Permalink to this headline"></a></h3>
 <p>To create a production release:</p>
 <ul class="simple">
 <li><p>the source should be added to the <code class="docutils literal notranslate"><span class="pre">production</span></code> branch with a tagged commit</p></li>
@@ -461,7 +375,7 @@ npm run build-dev
 </ul>
 <p>Release procedure:</p>
 <ol class="arabic simple">
-<li><p><strong>Test production build.</strong> In the master branch with all changes applied, run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">build</span></code> followed by <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">up</span> <span class="pre">-V</span></code>.  This should start an instance of PennAI using the production build environment.  Test that it works as expected.</p></li>
+<li><p><strong>Test production build.</strong> In the master branch with all changes applied, run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">build</span></code> followed by <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">up</span> <span class="pre">-V</span></code>.  This should start an instance of Aliro using the production build environment.  Test that it works as expected.</p></li>
 <li><p><strong>Update the ``.env`` file with a new version number.</strong> In the master branch, update the TAG environment variable in <code class="docutils literal notranslate"><span class="pre">.env</span></code> to the current production version as per <a class="reference external" href="https://semver.org/">semantic versioning</a> and the python package version specification <a class="reference external" href="https://www.python.org/dev/peps/pep-0440">PEP440</a>.  Development images should have a tag indicating it is a <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">pre-release</a> (for example, <code class="docutils literal notranslate"><span class="pre">a0</span></code>).</p></li>
 <li><p><strong>Push changes to github.</strong>  Merge the master branch into the <code class="docutils literal notranslate"><span class="pre">production</span></code> branch and push the changes to github.</p></li>
 <li><p><strong>Build production docker images with ``bash release/generate_production_release.sh``.</strong> While in the prodution branch, build the production images and generate the user production .zip by running <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/generate_production_release.sh</span></code>.  This will:</p></li>
@@ -488,22 +402,22 @@ npm run build-dev
 </li>
 </ul>
 <ol class="arabic simple">
-<li><p><strong>Test DockerHub images and production code.</strong>  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  This should start an instance of PennAI that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, ‘TAG’ matches the current version.</p></li>
+<li><p><strong>Test DockerHub images and production code.</strong>  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, ‘TAG’ matches the current version.</p></li>
 <li><p><strong>Create Github Release.</strong>  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}.zip</span></code> as an archive asset.</p></li>
 <li><p><strong>Update the .env file in the master branch with the new dev version.</strong>  Update the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the master branch with the next version number and the <code class="docutils literal notranslate"><span class="pre">a0</span></code> suffix (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">Pre-release versioning conventions</a> and push the changes to git.  For example, <code class="docutils literal notranslate"><span class="pre">0.14</span></code> was just released, the new dev tag should be <code class="docutils literal notranslate"><span class="pre">0.15a0</span></code>.</p></li>
 </ol>
 </section>
 <section id="installing-a-production-build">
-<h3>Installing a production build<a class="headerlink" href="#installing-a-production-build" title="Permalink to this headline">¶</a></h3>
+<h3>Installing a production build<a class="headerlink" href="#installing-a-production-build" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
 <li><p>Download a production build from github</p></li>
 <li><p>Unzip the archive</p></li>
 </ol>
 </section>
 <section id="running-from-production-build">
-<h3>Running from production build<a class="headerlink" href="#running-from-production-build" title="Permalink to this headline">¶</a></h3>
+<h3>Running from production build<a class="headerlink" href="#running-from-production-build" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
-<li><p>From the pennai directory, run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> to start the PennAI server.</p></li>
+<li><p>From the Aliro directory, run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> to start the Aliro server.</p></li>
 </ol>
 </section>
 </section>
@@ -511,51 +425,33 @@ npm run build-dev
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ai.html" class="btn btn-neutral float-right" title="AI Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="userguide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="userguide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ai.html" class="btn btn-neutral float-right" title="AI Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2018, Penn
-
-    </p>
+    <p>&#169; Copyright 2018, Penn.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

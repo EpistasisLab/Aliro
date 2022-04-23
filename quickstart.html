@@ -1,77 +1,39 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Analysis Quickstart &mdash; PennAI 0.18a0 documentation</title>
-  
-
-  
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Quickstart &mdash; Aliro 0.18a0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="User Guide" href="userguide.html" />
-    <link rel="prev" title="PennAI: Accessible Data Science" href="index.html" /> 
+    <link rel="prev" title="Aliro: Accessible Data Science" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> PennAI
-          
-
-          
-            
+            <a href="index.html" class="icon icon-home"> Aliro
             <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.18a0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,17 +41,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Analysis Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#uploading-a-dataset">Uploading a dataset</a></li>
@@ -107,79 +59,41 @@
 <li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">PennAI</a>
-        
+          <a href="index.html">Aliro</a>
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Analysis Quickstart</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="analysis-quickstart">
-<h1>Analysis Quickstart<a class="headerlink" href="#analysis-quickstart" title="Permalink to this headline">¶</a></h1>
+<h1>Analysis Quickstart<a class="headerlink" href="#analysis-quickstart" title="Permalink to this headline"></a></h1>
 <p>This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results.
-It assumes you have already installed PennAI (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
+It assumes you have already installed Aliro (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
 <a class="reference internal image-reference" href="_images/landing_page.png"><img alt="Dataset elements on the landing page." class="align-center" src="_images/landing_page.png" style="width: 400px;" /></a>
-<p>The landing page for PennAI shows you your datasets.
+<p>The landing page for Aliro shows you your datasets.
 For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
 Experiments that are running or finished will appear here as well.
 Click on the name of the dataset to see information about it, including a data preview and metafeatures.</p>
 <section id="uploading-a-dataset">
-<h2>Uploading a dataset<a class="headerlink" href="#uploading-a-dataset" title="Permalink to this headline">¶</a></h2>
+<h2>Uploading a dataset<a class="headerlink" href="#uploading-a-dataset" title="Permalink to this headline"></a></h2>
 <a class="reference internal image-reference" href="_images/dataset_upload.png"><img alt="Dataset Upload." class="align-center" src="_images/dataset_upload.png" style="width: 600px;" /></a>
 <p>Upload a dataset by clicking the “+ Add new” button.
 This will take you to the Dataset Upload screen where you can select a .csv or .tsv file to upload.
@@ -188,7 +102,7 @@ Specify the name of the dependent column, as well as any nominal or ordinal feat
 Some example datasets can be found in the <a class="reference external" href="https://epistasislab.github.io/pmlb">Penn Machine Learning Benchmarks github repository</a>.</p>
 </section>
 <section id="building-your-own-experiment">
-<h2>Building your own experiment<a class="headerlink" href="#building-your-own-experiment" title="Permalink to this headline">¶</a></h2>
+<h2>Building your own experiment<a class="headerlink" href="#building-your-own-experiment" title="Permalink to this headline"></a></h2>
 <p>Click <cite>Build New Experiment</cite> at the bottom of your dataset box.
 This takes you to the experiment building page.</p>
 <a class="reference internal image-reference" href="_images/build_experiment.png"><img alt="Experiment building page." class="align-center" src="_images/build_experiment.png" style="width: 600px;" /></a>
@@ -198,7 +112,7 @@ Choose the parameter settings for the algorithm and click <cite>Launch Experimen
 You will be navigated to the <strong>Experiments</strong> page.</p>
 </section>
 <section id="ai-analysis">
-<h2>AI analysis<a class="headerlink" href="#ai-analysis" title="Permalink to this headline">¶</a></h2>
+<h2>AI analysis<a class="headerlink" href="#ai-analysis" title="Permalink to this headline"></a></h2>
 <p>To allow the AI to choose experiments for you, simply toggle on the AI button in the upper right corner of the dataset box.
 The AI will then run one or more experiments for which it chooses its own algorithms to run.
 Progress can be viewed from the Experiments page.
@@ -206,7 +120,7 @@ To configure the AI settings (for example, the number of experiments to run or t
 <a class="reference internal image-reference" href="_images/ai_requested.png"><img alt="Experiment building page." class="align-center" src="_images/ai_requested.png" style="width: 400px;" /></a>
 </section>
 <section id="experiments">
-<h2>Experiments<a class="headerlink" href="#experiments" title="Permalink to this headline">¶</a></h2>
+<h2>Experiments<a class="headerlink" href="#experiments" title="Permalink to this headline"></a></h2>
 <a class="reference internal image-reference" href="_images/experiments.png"><img alt="Experiment building page." class="align-center" src="_images/experiments.png" style="width: 600px;" /></a>
 <p>The Experiments page lists information about current experiments, including start time, status, and performance.
 By filtering by Algorithm, you can see the algorithm’s parameters for each experiment.
@@ -219,7 +133,7 @@ Use it to run analysis on more datasets.</p></li>
 <p>Clicking on any experiment will navigate to the <strong>Results</strong> page.</p>
 </section>
 <section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
 <a class="reference internal image-reference" href="_images/results.png"><img alt="The Results page." class="align-center" src="_images/results.png" style="width: 600px;" /></a>
 <p>The Results page summarizes the experiment results through figures and statistics.
 The algorithm configuration and runtime information is displayed on the left.
@@ -232,51 +146,33 @@ For binary classification, an ROC curve and AUC score is provided.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="userguide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="PennAI: Accessible Data Science" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Aliro: Accessible Data Science" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="userguide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2018, Penn
-
-    </p>
+    <p>&#169; Copyright 2018, Penn.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
