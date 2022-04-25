@@ -1,4 +1,4 @@
-name: PennAI CI/CD
+name: Aliro CI/CD
 # Controls when the action will run.
 on:
   push:
