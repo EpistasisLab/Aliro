@@ -2,12 +2,6 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/pennai_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/pennai_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/pennai/badge.svg)](https://coveralls.io/github/EpistasisLab/pennai)
 
-News
-==================================
-**04/18/2022: PennAI** is becoming **Aliro**<br/>
-Over the next few weeks, PennAI will be rebranded as **Aliro.** The repository name will be updated on **TBD** and thus the URL for this project will change as well.
-
-
 Aliro: AI-Driven Data Science
 ==================================
 
