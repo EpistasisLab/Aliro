@@ -38,9 +38,9 @@ if [ ! -z "$git_status" ]; then
 fi
 
 # make sure the docker images and production zip exist
-docker image inspect moorelab/Aliro_lab:${TAG}
-docker image inspect moorelab/Aliro_machine:${TAG}
-docker image inspect moorelab/Aliro_dbmongo:${TAG}
+docker image inspect moorelab/aliro_lab:${TAG}
+docker image inspect moorelab/aliro_machine:${TAG}
+docker image inspect moorelab/aliro_dbmongo:${TAG}
 
 echo "Found docker images"
 
@@ -58,9 +58,9 @@ fi
 
 #### push to dockerhub
 echo "Pushing to images to DockerHub"
-docker push moorelab/Aliro_lab:${TAG}
-docker push moorelab/Aliro_machine:${TAG}
-docker push moorelab/Aliro_dbmongo:${TAG}
+docker push moorelab/aliro_lab:${TAG}
+docker push moorelab/aliro_machine:${TAG}
+docker push moorelab/aliro_dbmongo:${TAG}
 
 # git tag
 git tag -fa "v${TAG}" -m "v${TAG}"

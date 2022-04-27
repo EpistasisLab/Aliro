@@ -101,9 +101,9 @@ Then when Aliro is launched, it will run with your recommender.
 
 For more control and for testing, launch Aliro with `AI_AUTOSTART=0` set in the
 `config/ai.env` file. 
-Then, attach to the `Aliro_lab_1` docker container with the command
+Then, attach to the `aliro_lab_1` docker container with the command
 
-    docker exec -it "Aliro_lab_1" /bin/bash
+    docker exec -it "aliro_lab_1" /bin/bash
 
 Change to the project root:
 

@@ -44,12 +44,12 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
 - To manually start the AI service, attach to the lab container with bash and start the AI service:
 
   ```
-  docker exec -it "Aliro_lab_1" /bin/bash
+  docker exec -it "aliro_lab_1" /bin/bash
   cd $PROJECT_ROOT/
   python -m ai.ai -v -n 2
   ```
-	- Note: If `docker exec -it "Aliro_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
-	- Note: `docker attach Aliro_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
+	- Note: If `docker exec -it "aliro_lab_1" /bin/bash ` returns 'Error: no such container', use `docker container ps` to get the name of the lab container
+	- Note: `docker attach aliro_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 
 ### Web Development
 The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured to run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+F5 for the changes to be seen in the browser.  
@@ -58,7 +58,7 @@ There are two ways to enable watch mode:
 
 * To enable watch mode after Aliro has been started, do the following:
     ```
-    docker exec -it "Aliro_lab_1" /bin/bash
+    docker exec -it "aliro_lab_1" /bin/bash
     cd $PROJECT_ROOT/lab/webapp
     npm run build-dev
     ```

@@ -43,6 +43,6 @@ echo "Building docker production images"
 docker-compose -f docker-compose-production.yml build -m 10g
 
 echo "Tagging production images"
-docker tag Aliro_lab:${TAG} moorelab/Aliro_lab:${TAG}
-docker tag Aliro_machine:${TAG} moorelab/Aliro_machine:${TAG}
-docker tag Aliro_dbmongo:${TAG} moorelab/Aliro_dbmongo:${TAG}
+docker tag aliro_lab:${TAG} moorelab/aliro_lab:${TAG}
+docker tag aliro_machine:${TAG} moorelab/aliro_machine:${TAG}
+docker tag aliro_dbmongo:${TAG} moorelab/aliro_dbmongo:${TAG}
