@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 """
-Submission Queue functions for Penn-AI
+Submission Queue functions for Aliro
 """
 
 import queue

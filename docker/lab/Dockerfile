@@ -67,7 +67,7 @@ COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 
-## PennAI Lab server
+## Aliro Lab server
 COPY ${docker_filepath}/entrypoint.sh /root/
 RUN ["chmod", "+x", "/root/entrypoint.sh"]
 

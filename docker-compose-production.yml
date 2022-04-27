@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: docker/lab/Dockerfile_production
-    image: "pennai_lab:${TAG}"
+    image: "aliro_lab:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -26,7 +26,7 @@ services:
     build:
       context: .
       dockerfile: docker/machine/Dockerfile_production
-    image: "pennai_machine:${TAG}"
+    image: "aliro_machine:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -45,7 +45,7 @@ services:
     build:
       context: .
       dockerfile: docker/dbmongo/Dockerfile
-    image: "pennai_dbmongo:${TAG}"
+    image: "aliro_dbmongo:${TAG}"
     tty: true
     stdin_open: true
     ports:

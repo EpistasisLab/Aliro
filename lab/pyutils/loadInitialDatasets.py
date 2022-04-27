@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 '''
-Script to validate and register with the PennAI server all the .csv or .tsv files in a directory as datasets
+Script to validate and register with the Aliro server all the .csv or .tsv files in a directory as datasets
 '''
 
 import argparse
@@ -122,7 +122,7 @@ def getMetadataForDatafile(root, file):
 
 def registerDatafile(root, file, target_column, prediction_type, categorical_features, ordinal_features, apiPath):
 	'''
-	Register a datafile with the main PennAI server
+	Register a datafile with the main Aliro server
 	'''
 	filepath = os.path.join(root, file)
 	path = apiPath + "/api/v1/datasets"

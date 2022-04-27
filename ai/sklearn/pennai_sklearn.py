@@ -32,11 +32,11 @@ from joblib import Parallel, delayed
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 logger = logging.getLogger(__name__)
-GitHub_URL = ("https://github.com/EpistasisLab/pennai/raw/"
+GitHub_URL = ("https://github.com/EpistasisLab/Aliro/raw/"
             "master/data/knowledgebases/")
 
 class PennAI(BaseEstimator):
-    """Penn AI standalone sklearn wrapper.
+    """Aliro standalone sklearn wrapper.
 
     Responsible for:
     - checking for user requests for recommendations,
@@ -57,10 +57,10 @@ class PennAI(BaseEstimator):
     :param knowledgebase: file - input file for knowledgebase
     :param kb_metafeatures: inputfile for metafeature
     :param config_dict: python dictionary - inputfile for hyperparams space for all ML algorithms
-    :param ensemble: if it is a integer N, PennAI will use
+    :param ensemble: if it is a integer N, Aliro will use
             VotingClassifier/VotingRegressor to ensemble
             top N best models into one model.
-    :param max_time_mins: maximum time in minutes that PennAI can run
+    :param max_time_mins: maximum time in minutes that Aliro can run
     :param stopping_criteria: int, optional
             A number of iterations without improvments in best metric.
             Stop recommendations early if the best metric
@@ -427,7 +427,7 @@ class PennAI(BaseEstimator):
             return False
 
     def fit(self, X, y):
-        """Trains PennAI on X,y.
+        """Trains Aliro on X,y.
 
         Parameters
         ----------
@@ -662,15 +662,15 @@ def _bool_or_none(val):
 
 
 class PennAIClassifier(PennAI, ClassifierMixin):
-    """PennAI engine for classification tasks.
+    """Aliro engine for classification tasks.
 
     Read more in the :ref:`userguide_sklearn_api`.
 
     Parameters
     ----------
     rec_class: ai.recommender.base.BaseRecommender or None
-        Recommender to use in the PennAI engine.
-        if it is None, PennAI will use SVDRecommender by default.
+        Recommender to use in the Aliro engine.
+        if it is None, Aliro will use SVDRecommender by default.
     verbose: int
         0 quite, 1 info, 2 debug
     serialized_rec: string or None
@@ -691,10 +691,10 @@ class PennAIClassifier(PennAI, ClassifierMixin):
     config_dict: python dictionary
         dictionary for hyperparameter search space for all ML algorithms
     ensemble: int
-        if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+        if it is a integer N, Aliro will use VotingClassifier/VotingRegressor
         to ensemble top N best models into one model.
     max_time_mins:
-        maximum time in minutes that PennAI can run
+        maximum time in minutes that Aliro can run
     stopping_criteria: int
         A number of iterations without improvments in best metric.
         Stop recommendations early if the best metric
@@ -716,15 +716,15 @@ class PennAIClassifier(PennAI, ClassifierMixin):
 
 
 class PennAIRegressor(PennAI, RegressorMixin):
-    """PennAI engine for regression tasks.
+    """Aliro engine for regression tasks.
 
     Read more in the :ref:`userguide_sklearn_api`.
 
     Parameters
     ----------
     rec_class: ai.recommender.base.BaseRecommender or None
-        Recommender to use in the PennAI engine.
-        if it is None, PennAI will use SVDRecommender by default.
+        Recommender to use in the Aliro engine.
+        if it is None, Aliro will use SVDRecommender by default.
     verbose: int
         0 quite, 1 info, 2 debug
     serialized_rec: string or None
@@ -745,10 +745,10 @@ class PennAIRegressor(PennAI, RegressorMixin):
     config_dict: python dictionary
         dictionary for hyperparameter search space for all ML algorithms
     ensemble: int
-        if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+        if it is a integer N, Aliro will use VotingClassifier/VotingRegressor
         to ensemble top N best models into one model.
     max_time_mins:
-        maximum time in minutes that PennAI can run
+        maximum time in minutes that Aliro can run
     stopping_criteria: int
         A number of iterations without improvments in best metric.
         Stop recommendations early if the best metric

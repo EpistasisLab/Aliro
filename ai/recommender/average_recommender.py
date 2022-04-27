@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 """
-Recommender system for Penn AI.
+Recommender system for Aliro.
 """
 import pdb
 import pandas as pd
@@ -40,7 +40,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 class AverageRecommender(BaseRecommender):
-    """Penn AI average recommender.
+    """Aliro average recommender.
 
     Recommends machine learning algorithms and parameters based on their average
     performance across all evaluated datasets.

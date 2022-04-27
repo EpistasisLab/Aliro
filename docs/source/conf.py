@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -72,6 +72,7 @@ release = env("TAG")
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
@@ -79,7 +80,6 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon',
     'm2r2',
 ]
 
@@ -127,7 +127,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static','figs']
+html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -146,7 +146,7 @@ html_logo = '_static/logo_blank_small.png'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PennAIdoc'
+htmlhelp_basename = 'Alirodoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -173,7 +173,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PennAI.tex', 'PennAI Documentation',
+    (master_doc, 'Aliro.tex', 'Aliro Documentation',
      'Penn', 'manual'),
 ]
 
@@ -183,7 +183,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pennai', 'PennAI Documentation',
+    (master_doc, 'Aliro', 'Aliro Documentation',
      [author], 1)
 ]
 
@@ -194,8 +194,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PennAI', 'PennAI Documentation',
-     author, 'PennAI', 'One line description of project.',
+    (master_doc, 'Aliro', 'Aliro Documentation',
+     author, 'Aliro', 'One line description of project.',
      'Miscellaneous'),
 ]
 

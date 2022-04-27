@@ -1,7 +1,7 @@
 {
-  "name": "pennai-machine",
+  "name": "aliro-machine",
   "version": "1.0.0",
-  "description": "PennAI Machine",
+  "description": "Aliro Machine",
   "main": "machine.js",
   "scripts": {
     "start": "node machine.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EpistasisLab/pennai.git"
+    "url": "https://github.com/EpistasisLab/Aliro.git"
   },
   "keywords": [
     "machine learning"
@@ -18,9 +18,9 @@
   "author": "University of Pennsylvania",
   "license": "GPL 3.0",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/pennai/issues"
+    "url": "https://github.com/EpistasisLab/Aliro/issues"
   },
-  "homepage": "https://github.com/EpistasisLab/pennai",
+  "homepage": "https://github.com/EpistasisLab/Aliro",
   "dependencies": {
     "bluebird": "^3.4.7",
     "body-parser": "^1.15.0",

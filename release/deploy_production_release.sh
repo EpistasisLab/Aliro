@@ -7,8 +7,8 @@ source .env
 echo "tag: $TAG"
 
 # get production folder
-PROD_BUILD_DIR="${PROD_BASE_DIR}/pennai-${TAG}"
-PROD_ZIP_FILENAME="${PROD_BASE_DIR}/pennai-${TAG}.zip"
+PROD_BUILD_DIR="${PROD_BASE_DIR}/Aliro-${TAG}"
+PROD_ZIP_FILENAME="${PROD_BASE_DIR}/Aliro-${TAG}.zip"
 
 # get current branch
 branch_name=$(git symbolic-ref HEAD)
@@ -38,9 +38,9 @@ if [ ! -z "$git_status" ]; then
 fi
 
 # make sure the docker images and production zip exist
-docker image inspect moorelab/pennai_lab:${TAG}
-docker image inspect moorelab/pennai_machine:${TAG}
-docker image inspect moorelab/pennai_dbmongo:${TAG}
+docker image inspect moorelab/Aliro_lab:${TAG}
+docker image inspect moorelab/Aliro_machine:${TAG}
+docker image inspect moorelab/Aliro_dbmongo:${TAG}
 
 echo "Found docker images"
 
@@ -58,9 +58,9 @@ fi
 
 #### push to dockerhub
 echo "Pushing to images to DockerHub"
-docker push moorelab/pennai_lab:${TAG}
-docker push moorelab/pennai_machine:${TAG}
-docker push moorelab/pennai_dbmongo:${TAG}
+docker push moorelab/Aliro_lab:${TAG}
+docker push moorelab/Aliro_machine:${TAG}
+docker push moorelab/Aliro_dbmongo:${TAG}
 
 # git tag
 git tag -fa "v${TAG}" -m "v${TAG}"

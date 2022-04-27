@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -75,7 +75,7 @@ if (process.env.LAB_HOST && process.env.LAB_PORT) {
 } else if (process.env.LAB_URL) {
     laburi = process.env.LAB_URL;
 } else {
-    console.log("Error: No PennAiServer address specified");
+    console.log("Error: No AliroServer address specified");
     process.exit(1);
 }
 
@@ -144,7 +144,7 @@ rp({
         gzip: true
     })
     .then((body) => {
-        console.log("Registered with PennAI server successfully");
+        console.log("Registered with Aliro server successfully");
         // Save ID and specs
         fs.writeFile("specs.json", JSON.stringify(body, null, "\t"));
         // Reload specs with _id (prior to adding projects)
@@ -169,7 +169,7 @@ rp({
                 gzip: true
             })
             .then((msg) => {
-                console.log("Projects registered with PennAI server successfully");
+                console.log("Projects registered with Aliro server successfully");
                 if (msg.projects !== undefined) {
                     projects = msg.projects;
                 }

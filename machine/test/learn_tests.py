@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -98,7 +98,7 @@ def make_train_test_split(input_data, target_name, random_state):
     ----------
 
     input_data: pandas.Dataframe
-        pandas.DataFrame: PennAI will use train_test_split to make train/test splits
+        pandas.DataFrame: Aliro will use train_test_split to make train/test splits
     target_name: string
         target name in input data
     random_state: int
@@ -1013,7 +1013,7 @@ class APITESTCLASS(unittest.TestCase):
 
 
 def test_balanced_accuracy():
-    """Assert that the balanced_accuracy in PennAI returns correct accuracy."""
+    """Assert that the balanced_accuracy in Aliro returns correct accuracy."""
     y_true = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
                        2, 2, 3, 3, 3, 3, 3, 4, 4, 4])
     y_pred1 = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
@@ -1556,7 +1556,7 @@ def balanced_accuracy(y_true, y_pred):
         all_class_accuracies.append(this_class_accuracy)
     return np.mean(all_class_accuracies)
 
-# reproducing training score and testing score from PennAI
+# reproducing training score and testing score from Aliro
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
@@ -1724,7 +1724,7 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python')
 
-# reproducing training score and testing score from PennAI
+# reproducing training score and testing score from Aliro
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset

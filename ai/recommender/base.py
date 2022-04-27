@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 """
-Recommender system for Penn AI.
+Recommender system for Aliro.
 """
 import logging
 logger = logging.getLogger(__name__)
@@ -53,10 +53,10 @@ class MC(type):
         return self.__qualname__
 
 class BaseRecommender(object, metaclass=MC):
-    """Base recommender for PennAI
+    """Base recommender for Aliro
 
     The BaseRecommender is not intended to be used directly; it is a skeleton 
-    class defining the interface for future recommenders within the PennAI 
+    class defining the interface for future recommenders within the Aliro 
     project.
 
     Parameters
@@ -318,9 +318,9 @@ class BaseRecommender(object, metaclass=MC):
             Name of file to load
         :param knowledgebase: string or None
             DataFrame with columns corresponding to:
-                'dataset'
-                'algorithm'
-                'parameters'
+                dataset
+                algorithm
+                parameters
                 self.metric
         """
         if filename is None:

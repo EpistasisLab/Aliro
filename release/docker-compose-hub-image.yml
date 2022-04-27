@@ -2,7 +2,7 @@ version: '3'
 
 services:
   lab:
-    image: "moorelab/pennai_lab:${TAG}"
+    image: "moorelab/Aliro_lab:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -19,7 +19,7 @@ services:
       - dbmongo
 
   machine:
-    image: "moorelab/pennai_machine:${TAG}"
+    image: "moorelab/Aliro_machine:${TAG}"
     tty: true
     stdin_open: true
     volumes:
@@ -38,7 +38,7 @@ services:
 # Uncomment for additoinal 'machine' container instances #
 ##########################################################
 #  machine_2:
-#    image: "moorelab/pennai_machine:${TAG}"
+#    image: "moorelab/Aliro_machine:${TAG}"
 #    tty: true
 #    stdin_open: true
 #    volumes:
@@ -54,7 +54,7 @@ services:
 #      - dbmongo
 #
 #  machine_3:
-#    image: "moorelab/pennai_machine:${TAG}"
+#    image: "moorelab/Aliro_machine:${TAG}"
 #    tty: true
 #    stdin_open: true
 #    volumes:
@@ -70,7 +70,7 @@ services:
 #      - dbmongo
 #
 #  machine_4:
-#    image: "moorelab/pennai_machine:${TAG}"
+#    image: "moorelab/Aliro_machine:${TAG}"
 #    tty: true
 #    stdin_open: true
 #    volumes:
@@ -86,7 +86,7 @@ services:
 #      - dbmongo
 #
 #  machine_5:
-#    image: "moorelab/pennai_machine:${TAG}"
+#    image: "moorelab/Aliro_machine:${TAG}"
 #    tty: true
 #    stdin_open: true
 #    volumes:
@@ -102,7 +102,7 @@ services:
 #      - dbmongo
 #
 #  machine_6:
-#    image: "moorelab/pennai_machine:${TAG}"
+#    image: "moorelab/Aliro_machine:${TAG}"
 #    tty: true
 #    stdin_open: true
 #    volumes:
@@ -118,7 +118,7 @@ services:
 #      - dbmongo
 
   dbmongo:
-    image: "moorelab/pennai_dbmongo:${TAG}"
+    image: "moorelab/Aliro_dbmongo:${TAG}"
     tty: true
     stdin_open: true
     ports:

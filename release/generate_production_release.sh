@@ -8,8 +8,8 @@ source .env
 echo "tag: $TAG"
 
 # create and zip production folder
-PROD_BUILD_DIR="${PROD_BASE_DIR}/pennai-${TAG}"
-PROD_ZIP_FILENAME="${PROD_BASE_DIR}/pennai-${TAG}.zip"
+PROD_BUILD_DIR="${PROD_BASE_DIR}/Aliro-${TAG}"
+PROD_ZIP_FILENAME="${PROD_BASE_DIR}/Aliro-${TAG}.zip"
 
 echo "Creating production directory: ${PROD_BUILD_DIR}"
 
@@ -43,6 +43,6 @@ echo "Building docker production images"
 docker-compose -f docker-compose-production.yml build -m 10g
 
 echo "Tagging production images"
-docker tag pennai_lab:${TAG} moorelab/pennai_lab:${TAG}
-docker tag pennai_machine:${TAG} moorelab/pennai_machine:${TAG}
-docker tag pennai_dbmongo:${TAG} moorelab/pennai_dbmongo:${TAG}
+docker tag Aliro_lab:${TAG} moorelab/Aliro_lab:${TAG}
+docker tag Aliro_machine:${TAG} moorelab/Aliro_machine:${TAG}
+docker tag Aliro_dbmongo:${TAG} moorelab/Aliro_dbmongo:${TAG}

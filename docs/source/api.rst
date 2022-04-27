@@ -67,10 +67,10 @@ We have a customized version of the Surprise library available `here. <https://g
 
 
 ==================================
-Scikit-learn API for PennAI engine
+Scikit-learn API for Aliro engine
 ==================================
 
-This is the API for using PennAI engine as a standalone python package.
+This is the API for using Aliro engine as a standalone python package.
 
 .. autoclass:: ai.sklearn.pennai_sklearn.PennAI
     :members:
@@ -88,7 +88,7 @@ Learn
 =====
 
 This is the API for building ML models.
-PennAI uses scikit-learn to achieve this.
+Aliro uses scikit-learn to achieve this.
 
 ==
 IO

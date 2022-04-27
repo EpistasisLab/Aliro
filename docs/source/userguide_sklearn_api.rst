@@ -4,4 +4,4 @@
 .. mdinclude:: ../guides/Scikit_Learn_API_Guide.md
 
 
-Please check the "Scikit-learn API for PennAI engine" section in :ref:`api`.
+Please check the "Scikit-learn API for Aliro engine" section in :ref:`api`.

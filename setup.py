@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -51,7 +51,7 @@ setup(
                 'pennai.sklearn': 'ai/sklearn',
                 'pennai.recommender': 'ai/recommender',
                 'pennai.sklearn.config': 'ai/sklearn/config'},
-    url='https://github.com/epistasislab/pennai',
+    url='https://github.com/epistasislab/Aliro',
     license='GNU/GPLv3',
     test_suite='nose.collector',
     tests_require=['nose'],
@@ -61,7 +61,7 @@ A system that intelligently manages machine learning workflows for data science
 
 Contact: Heather Williams (hwilli@upenn.edu), Weixuan Fu (weixuanf@upenn.edu), William La Cava (lacava@upenn.edu)
 
-This project is hosted at https://github.com/epistasislab/pennai
+This project is hosted at https://github.com/epistasislab/Aliro
 ''',
     zip_safe=True,
     install_requires=['numpy>=1.16.3',

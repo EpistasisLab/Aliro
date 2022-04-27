@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -34,7 +34,7 @@ import requests
 import pandas as pd
 from io import StringIO
 
-# get PennAI environment information
+# get Aliro environment information
 LAB_HOST = os.environ.get('LAB_HOST', 'lab')
 LAB_PORT = os.environ.get('LAB_PORT', '5080')
 basedir = os.environ.get('PROJECT_ROOT', '.')
@@ -42,12 +42,12 @@ basedir = os.environ.get('PROJECT_ROOT', '.')
 
 class Experiment:
     def __init__(self, args, basedir=basedir):
-        """Experiment class for PennAI.
+        """Experiment class for Aliro.
 
         Parameters
         ----------
         args: dict
-            Arguments of a experiment from PennAI API
+            Arguments of a experiment from Aliro API
         basedir: string
             Base directory for this project
 
@@ -65,12 +65,12 @@ class Experiment:
             os.makedirs(self.tmpdir)
 
     def get_input(self):
-        """Get input data based on experiment ID (_id) from PennAI API.
+        """Get input data based on experiment ID (_id) from Aliro API.
 
         Returns
         -------
         input_data: pandas.Dataframe or list of two pandas.Dataframe
-            pandas.DataFrame: PennAI will use train_test_split to
+            pandas.DataFrame: Aliro will use train_test_split to
             make train/test splits list of two pandas.DataFrame:
             The 1st pandas.DataFrame is training dataset,
             while the 2nd one is testing dataset
@@ -78,7 +78,7 @@ class Experiment:
         return get_input_data(self.args['_id'], self.tmpdir)
 
     def get_model(self):
-        """Build scikit learn method based on arguments from PennAI API.
+        """Build scikit learn method based on arguments from Aliro API.
 
         Returns
         -------
@@ -107,7 +107,7 @@ class Experiment:
 
 
 def get_projects():
-    """Get all machine learning algorithm's information from PennAI API This
+    """Get all machine learning algorithm's information from Aliro API This
     information should be the same with projects.json.
 
     Returns
@@ -126,7 +126,7 @@ def parse_args():
     Returns
     -------
     args: dict
-        Arguments of a experiment from PennAI API
+        Arguments of a experiment from Aliro API
     param_grid: dict
         Dictionary with parameters names (string) as keys
         and lists of parameter settings to try as values,
@@ -137,7 +137,7 @@ def parse_args():
     """
     projects = get_projects()
     parser = argparse.ArgumentParser(
-        description='Driver for all machine learning algorithms in PennAI')
+        description='Driver for all machine learning algorithms in Aliro')
     subparsers = parser.add_subparsers(
         dest='method', help="ML Learning Algorithm")
 
@@ -185,19 +185,19 @@ def parse_args():
 
 
 def get_input_data(_id, tmpdir):
-    """ Get input dataset information from PennAI API.
+    """ Get input dataset information from Aliro API.
     
     Parameters
     ----------
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     tmpdir: string
         Path of temporary directory
 
     Returns
     -------
     input_data: pandas.Dataframe or list of two pandas.Dataframe
-        pandas.DataFrame: PennAI will use train_test_split
+        pandas.DataFrame: Aliro will use train_test_split
         to make train/test splits
         list of two pandas.DataFrame.
         The 1st pandas.DataFrame is training dataset,
@@ -297,7 +297,7 @@ def get_file_data(file_id):
     Parameters
     ----------
     file_id: string
-        File ID from the PennAI database
+        File ID from the Aliro database
 
     Return: string
         Dataset strings which will be read by pandas
@@ -389,7 +389,7 @@ def get_type(param_type):
     Returns
     -------
     known_types[type]: function
-        Function for converting argument from PennAI UI
+        Function for converting argument from Aliro UI
         for assigning to scikit-learn estimator
     """
     known_types = {
