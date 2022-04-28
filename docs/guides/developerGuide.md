@@ -85,11 +85,11 @@ Aliro is designed as a multi-component docker architecture that uses a variety o
 
 ![Aliro Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true "Aliro Architecture Diagram")
 
-##### Controller Engine (aka _The Server_)
+### Controller Engine (aka _The Server_)
 The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  
-##### Database
+### Database
 A MongoDb database is used for persistent storage.  
-##### UI Component (aka _The Client_)
+### UI Component (aka _The Client_)
 The UI component (_Vizualization / UI Engine_ in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
 
 ##  Code Documentation

@@ -318,9 +318,10 @@ class BaseRecommender(object, metaclass=MC):
             Name of file to load
         :param knowledgebase: string or None
             DataFrame with columns corresponding to:
-                dataset
-                algorithm
-                parameters
+
+                'dataset'
+                'algorithm'
+                'parameters'
                 self.metric
         """
         if filename is None:

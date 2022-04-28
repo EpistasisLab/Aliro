@@ -396,6 +396,7 @@ class SVDRecommender(SurpriseRecommender):
     """SVD recommender.
     see https://surprise.readthedocs.io/en/stable/matrix_factorization.html
     Recommends machine learning algorithms and parameters using the SVD algorithm.
+
         - stores ML + P and every dataset.
         - learns a matrix factorization on the non-missing data.
         - given a dataset, estimates the rankings of all ML+P and returns the top n_recs.
