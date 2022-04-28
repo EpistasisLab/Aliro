@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; Aliro 0.18a0 documentation</title>
+  <title>API &mdash; Aliro 0.19a0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
@@ -32,7 +32,7 @@
             <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.18a0
+                0.19a0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -58,7 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#surprise-recommenders">Surprise Recommenders</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#scikit-learn-api-for-pennai-engine">Scikit-learn API for PennAI engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scikit-learn-api-for-aliro-engine">Scikit-learn API for Aliro engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#learn">Learn</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#io">IO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scikit-learn-utils">Scikit-learn Utils</a></li>
@@ -227,7 +227,7 @@ self.new_data, and then clear self.new_data.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.recommender.base.</span></span><span class="sig-name descname"><span class="pre">BaseRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classifier'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'if_exists'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/base.html#BaseRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.recommender.base.BaseRecommender" title="Permalink to this definition"></a></dt>
 <dd><p>Base recommender for Aliro</p>
 <p>The BaseRecommender is not intended to be used directly; it is a skeleton
-class defining the interface for future recommenders within the PennAI
+class defining the interface for future recommenders within the Aliro
 project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -359,7 +359,7 @@ results_data.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.recommender.random_recommender.RandomRecommender">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.recommender.random_recommender.</span></span><span class="sig-name descname"><span class="pre">RandomRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classifier'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'if_exists'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/random_recommender.html#RandomRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.recommender.random_recommender.RandomRecommender" title="Permalink to this definition"></a></dt>
-<dd><p>Penn AI random recommender.</p>
+<dd><p>Aliro random recommender.</p>
 <p>Recommends random machine learning algorithms and parameters from the possible
 algorithms fetched from the server.</p>
 <dl class="field-list simple">
@@ -414,7 +414,7 @@ results_data.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.recommender.average_recommender.AverageRecommender">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.recommender.average_recommender.</span></span><span class="sig-name descname"><span class="pre">AverageRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classifier'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'if_exists'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/average_recommender.html#AverageRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.recommender.average_recommender.AverageRecommender" title="Permalink to this definition"></a></dt>
-<dd><p>Penn AI average recommender.</p>
+<dd><p>Aliro average recommender.</p>
 <p>Recommends machine learning algorithms and parameters based on their average
 performance across all evaluated datasets.</p>
 <dl class="field-list simple">
@@ -465,7 +465,7 @@ self.metric</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.recommender.knn_meta_recommender.KNNMetaRecommender">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.recommender.knn_meta_recommender.</span></span><span class="sig-name descname"><span class="pre">KNNMetaRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classifier'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'if_exists'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/knn_meta_recommender.html#KNNMetaRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.recommender.knn_meta_recommender.KNNMetaRecommender" title="Permalink to this definition"></a></dt>
-<dd><p>Penn AI KNN meta recommender.</p>
+<dd><p>Aliro KNN meta recommender.</p>
 <dl class="simple">
 <dt>Recommends machine learning algorithms and parameters as follows:</dt><dd><ul class="simple">
 <li><p>store the best ML + P on every dataset.</p></li>
@@ -643,8 +643,8 @@ self.metric</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.recommender.surprise_recommenders.SVDRecommender">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.recommender.surprise_recommenders.</span></span><span class="sig-name descname"><span class="pre">SVDRecommender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classifier'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'if_exists'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/recommender/surprise_recommenders.html#SVDRecommender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.recommender.surprise_recommenders.SVDRecommender" title="Permalink to this definition"></a></dt>
-<dd><p>SVD recommender.</p>
-<p>see <a class="reference external" href="https://surprise.readthedocs.io/en/stable/matrix_factorization.html">https://surprise.readthedocs.io/en/stable/matrix_factorization.html</a>
+<dd><p>SVD recommender.
+see <a class="reference external" href="https://surprise.readthedocs.io/en/stable/matrix_factorization.html">https://surprise.readthedocs.io/en/stable/matrix_factorization.html</a>
 Recommends machine learning algorithms and parameters using the SVD algorithm.</p>
 <blockquote>
 <div><ul class="simple">
@@ -659,13 +659,13 @@ Recommends machine learning algorithms and parameters using the SVD algorithm.</
 
 </section>
 </section>
-<section id="scikit-learn-api-for-pennai-engine">
-<h2>Scikit-learn API for PennAI engine<a class="headerlink" href="#scikit-learn-api-for-pennai-engine" title="Permalink to this headline"></a></h2>
-<p>This is the API for using PennAI engine as a standalone python package.</p>
+<section id="scikit-learn-api-for-aliro-engine">
+<h2>Scikit-learn API for Aliro engine<a class="headerlink" href="#scikit-learn-api-for-aliro-engine" title="Permalink to this headline"></a></h2>
+<p>This is the API for using Aliro engine as a standalone python package.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.sklearn.pennai_sklearn.PennAI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.sklearn.pennai_sklearn.</span></span><span class="sig-name descname"><span class="pre">PennAI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_recs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kb_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time_mins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI" title="Permalink to this definition"></a></dt>
-<dd><p>Penn AI standalone sklearn wrapper.</p>
+<dd><p>Aliro standalone sklearn wrapper.</p>
 <p>Responsible for:
 - checking for user requests for recommendations,
 - checking for new results from experiments,
@@ -687,10 +687,10 @@ type, and metric, and knowledgebase used.</p></li>
 <li><p><strong>knowledgebase</strong> – file - input file for knowledgebase</p></li>
 <li><p><strong>kb_metafeatures</strong> – inputfile for metafeature</p></li>
 <li><p><strong>config_dict</strong> – python dictionary - inputfile for hyperparams space for all ML algorithms</p></li>
-<li><p><strong>ensemble</strong> – if it is a integer N, PennAI will use
+<li><p><strong>ensemble</strong> – if it is a integer N, Aliro will use
 VotingClassifier/VotingRegressor to ensemble
 top N best models into one model.</p></li>
-<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that Aliro can run</p></li>
 <li><p><strong>stopping_criteria</strong> – int, optional
 A number of iterations without improvments in best metric.
 Stop recommendations early if the best metric
@@ -705,7 +705,7 @@ will dedicate as many cores as are available on your system.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="ai.sklearn.pennai_sklearn.PennAI.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAI.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAI.fit" title="Permalink to this definition"></a></dt>
-<dd><p>Trains PennAI on X,y.</p>
+<dd><p>Trains Aliro on X,y.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -764,13 +764,13 @@ scoring function.
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.sklearn.pennai_sklearn.PennAIClassifier">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.sklearn.pennai_sklearn.</span></span><span class="sig-name descname"><span class="pre">PennAIClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_recs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kb_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time_mins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAIClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAIClassifier" title="Permalink to this definition"></a></dt>
-<dd><p>PennAI engine for classification tasks.</p>
+<dd><p>Aliro engine for classification tasks.</p>
 <p>Read more in the <a class="reference internal" href="userguide_sklearn_api.html#userguide-sklearn-api"><span class="std std-ref">User Guide of PennAIpy</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the PennAI engine.
-if it is None, PennAI will use SVDRecommender by default.</p></li>
+<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the Aliro engine.
+if it is None, Aliro will use SVDRecommender by default.</p></li>
 <li><p><strong>verbose</strong> (<em>int</em>) – 0 quite, 1 info, 2 debug</p></li>
 <li><p><strong>serialized_rec</strong> (<em>string</em><em> or </em><em>None</em>) – Path of the file to save/load a serialized recommender.
 If the filename is not provided, the default filename based
@@ -782,9 +782,9 @@ on the recommender type, and metric, and knowledgebase used.</p></li>
 <li><p><strong>knowledgebase</strong> (<em>str</em>) – input file for knowledgebase</p></li>
 <li><p><strong>kb_metafeatures</strong> (<em>str</em>) – input file for metafeature</p></li>
 <li><p><strong>config_dict</strong> (<em>python dictionary</em>) – dictionary for hyperparameter search space for all ML algorithms</p></li>
-<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, Aliro will use VotingClassifier/VotingRegressor
 to ensemble top N best models into one model.</p></li>
-<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that Aliro can run</p></li>
 <li><p><strong>stopping_criteria</strong> (<em>int</em>) – A number of iterations without improvments in best metric.
 Stop recommendations early if the best metric
 does not improve in the number of iterations iterations.</p></li>
@@ -800,13 +800,13 @@ are available on your system.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="ai.sklearn.pennai_sklearn.PennAIRegressor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ai.sklearn.pennai_sklearn.</span></span><span class="sig-name descname"><span class="pre">PennAIRegressor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialized_rec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_recs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knowledgebase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kb_metafeatures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time_mins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ai/sklearn/pennai_sklearn.html#PennAIRegressor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ai.sklearn.pennai_sklearn.PennAIRegressor" title="Permalink to this definition"></a></dt>
-<dd><p>PennAI engine for regression tasks.</p>
+<dd><p>Aliro engine for regression tasks.</p>
 <p>Read more in the <a class="reference internal" href="userguide_sklearn_api.html#userguide-sklearn-api"><span class="std std-ref">User Guide of PennAIpy</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the PennAI engine.
-if it is None, PennAI will use SVDRecommender by default.</p></li>
+<li><p><strong>rec_class</strong> (<a class="reference internal" href="#ai.recommender.base.BaseRecommender" title="ai.recommender.base.BaseRecommender"><em>ai.recommender.base.BaseRecommender</em></a><em> or </em><em>None</em>) – Recommender to use in the Aliro engine.
+if it is None, Aliro will use SVDRecommender by default.</p></li>
 <li><p><strong>verbose</strong> (<em>int</em>) – 0 quite, 1 info, 2 debug</p></li>
 <li><p><strong>serialized_rec</strong> (<em>string</em><em> or </em><em>None</em>) – Path of the file to save/load a serialized recommender.
 If the filename is not provided, the default filename based
@@ -818,9 +818,9 @@ on the recommender type, and metric, and knowledgebase used.</p></li>
 <li><p><strong>knowledgebase</strong> (<em>str</em>) – input file for knowledgebase</p></li>
 <li><p><strong>kb_metafeatures</strong> (<em>str</em>) – input file for metafeature</p></li>
 <li><p><strong>config_dict</strong> (<em>python dictionary</em>) – dictionary for hyperparameter search space for all ML algorithms</p></li>
-<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, PennAI will use VotingClassifier/VotingRegressor
+<li><p><strong>ensemble</strong> (<em>int</em>) – if it is a integer N, Aliro will use VotingClassifier/VotingRegressor
 to ensemble top N best models into one model.</p></li>
-<li><p><strong>max_time_mins</strong> – maximum time in minutes that PennAI can run</p></li>
+<li><p><strong>max_time_mins</strong> – maximum time in minutes that Aliro can run</p></li>
 <li><p><strong>stopping_criteria</strong> (<em>int</em>) – A number of iterations without improvments in best metric.
 Stop recommendations early if the best metric
 does not improve in the number of iterations iterations.</p></li>
@@ -837,7 +837,7 @@ are available on your system.</p></li>
 <section id="learn">
 <h2>Learn<a class="headerlink" href="#learn" title="Permalink to this headline"></a></h2>
 <p>This is the API for building ML models.
-PennAI uses scikit-learn to achieve this.</p>
+Aliro uses scikit-learn to achieve this.</p>
 </section>
 <section id="io">
 <h2>IO<a class="headerlink" href="#io" title="Permalink to this headline"></a></h2>
@@ -848,10 +848,10 @@ PennAI uses scikit-learn to achieve this.</p>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="machine.learn.io_utils.Experiment.get_input">
 <span class="sig-name descname"><span class="pre">get_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#Experiment.get_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.io_utils.Experiment.get_input" title="Permalink to this definition"></a></dt>
-<dd><p>Get input data based on experiment ID (_id) from PennAI API.</p>
+<dd><p>Get input data based on experiment ID (_id) from Aliro API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>input_data</strong> – pandas.DataFrame: PennAI will use train_test_split to
+<dd class="field-odd"><p><strong>input_data</strong> – pandas.DataFrame: Aliro will use train_test_split to
 make train/test splits list of two pandas.DataFrame:
 The 1st pandas.DataFrame is training dataset,
 while the 2nd one is testing dataset</p>
@@ -865,7 +865,7 @@ while the 2nd one is testing dataset</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="machine.learn.io_utils.Experiment.get_model">
 <span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#Experiment.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.io_utils.Experiment.get_model" title="Permalink to this definition"></a></dt>
-<dd><p>Build scikit learn method based on arguments from PennAI API.</p>
+<dd><p>Build scikit learn method based on arguments from Aliro API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
@@ -883,7 +883,7 @@ while the 2nd one is testing dataset</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="machine.learn.io_utils.get_projects">
 <span class="sig-prename descclassname"><span class="pre">machine.learn.io_utils.</span></span><span class="sig-name descname"><span class="pre">get_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.io_utils.get_projects" title="Permalink to this definition"></a></dt>
-<dd><p>Get all machine learning algorithm’s information from PennAI API This
+<dd><p>Get all machine learning algorithm’s information from Aliro API This
 information should be the same with projects.json.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -902,7 +902,7 @@ information should be the same with projects.json.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><strong>args</strong> (<em>dict</em>) – Arguments of a experiment from PennAI API</p></li>
+<li><p><strong>args</strong> (<em>dict</em>) – Arguments of a experiment from Aliro API</p></li>
 <li><p><strong>param_grid</strong> (<em>dict</em>) – Dictionary with parameters names (string) as keys
 and lists of parameter settings to try as values,
 or a list of such dictionaries, in which case the
@@ -918,17 +918,17 @@ of parameter settings.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="machine.learn.io_utils.get_input_data">
 <span class="sig-prename descclassname"><span class="pre">machine.learn.io_utils.</span></span><span class="sig-name descname"><span class="pre">get_input_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/io_utils.html#get_input_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.io_utils.get_input_data" title="Permalink to this definition"></a></dt>
-<dd><p>Get input dataset information from PennAI API.</p>
+<dd><p>Get input dataset information from Aliro API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
 <li><p><strong>tmpdir</strong> (<em>string</em>) – Path of temporary directory</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul>
-<li><p><strong>input_data</strong> (<em>pandas.Dataframe or list of two pandas.Dataframe</em>) – pandas.DataFrame: PennAI will use train_test_split
+<li><p><strong>input_data</strong> (<em>pandas.Dataframe or list of two pandas.Dataframe</em>) – pandas.DataFrame: Aliro will use train_test_split
 to make train/test splits
 list of two pandas.DataFrame.
 The 1st pandas.DataFrame is training dataset,
@@ -962,7 +962,7 @@ response is returned, it will rasie an ValueError.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_id</strong> (<em>string</em>) – File ID from the PennAI database</p></li>
+<li><p><strong>file_id</strong> (<em>string</em>) – File ID from the Aliro database</p></li>
 <li><p><strong>Return</strong> (<em>string</em>) – Dataset strings which will be read by pandas
 and converted to pd.DataFrame</p></li>
 </ul>
@@ -1029,7 +1029,7 @@ list, list of parameter types
 (for parameter supportting multiple input types)</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>known_types[type]</strong> – Function for converting argument from PennAI UI
+<dd class="field-even"><p><strong>known_types[type]</strong> – Function for converting argument from Aliro UI
 for assigning to scikit-learn estimator</p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -1068,12 +1068,12 @@ one-vs-rest encoding, then computes an unweighted average of the class accuracie
 <dl class="py function">
 <dt class="sig sig-object py" id="machine.learn.skl_utils.generate_results">
 <span class="sig-prename descclassname"><span class="pre">machine.learn.skl_utils.</span></span><span class="sig-name descname"><span class="pre">generate_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'class'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classification'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['test_dataset']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordinals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OneHotEncoder'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#generate_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.skl_utils.generate_results" title="Permalink to this definition"></a></dt>
-<dd><p>Generate reaults for applying a model on dataset in PennAI.</p>
+<dd><p>Generate reaults for applying a model on dataset in Aliro.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<em>scikit-learn Estimator</em>) – A machine learning model following scikit-learn API</p></li>
-<li><p><strong>input_data</strong> (<em>pandas.Dataframe</em><em> or </em><em>list of two pandas.Dataframe</em>) – pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.
+<li><p><strong>input_data</strong> (<em>pandas.Dataframe</em><em> or </em><em>list of two pandas.Dataframe</em>) – pandas.DataFrame: Aliro will use 10 fold CV to estimate train/test scroes.
 list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
 while the 2nd one is testing dataset</p></li>
 <li><p><strong>target_name</strong> (<em>string</em>) – Target name in input data</p></li>
@@ -1180,7 +1180,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outdir</strong> (<em>string</em>) – Path of output directory</p></li>
-<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
 <li><p><strong>fname</strong> (<em>string</em>) – File name</p></li>
 <li><p><strong>content</strong> (<em>list</em><em> or </em><em>directory</em>) – Content for results</p></li>
 </ul>
@@ -1199,7 +1199,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
-<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
 <li><p><strong>X</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
 <li><p><strong>y</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
 <li><p><strong>class_names</strong> (<em>list</em>) – List of class names</p></li>
@@ -1219,7 +1219,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dd><p>Plot ROC Curve.
 :param tmpdir: Temporary directory for saving experiment results
 :type tmpdir: string
-:param _id: Experiment ID in PennAI
+:param _id: Experiment ID in Aliro
 :type _id: string
 :param X: Features in training dataset
 :type X: np.darray/pd.DataFrame
@@ -1242,7 +1242,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dd><p>Plot importance scores for features.
 :param tmpdir: Temporary directory for saving experiment results
 :type tmpdir: string
-:param _id: Experiment ID in PennAI
+:param _id: Experiment ID in Aliro
 :type _id: string
 :param coefs: Feature importance scores
 :type coefs: array
@@ -1269,7 +1269,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
-<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
 <li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
 <li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
 <li><p><strong>top_features</strong> (<em>list</em>) – Top feature_names</p></li>
@@ -1296,7 +1296,7 @@ similar shape to the <cite>y</cite> array.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
-<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in PennAI</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
 <li><p><strong>model</strong> (<em>scikit-learn estimator</em>) – A fitted scikit-learn model</p></li>
 <li><p><strong>filename</strong> (<em>string</em>) – File name of input dataset</p></li>
 <li><p><strong>target_name</strong> (<em>string</em>) – Target name in input data</p></li>

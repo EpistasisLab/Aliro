@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>machine.learn.skl_utils &mdash; Aliro 0.18a0 documentation</title>
+  <title>machine.learn.skl_utils &mdash; Aliro 0.19a0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/logo_blank_small.png"/>
@@ -29,7 +29,7 @@
             <img src="../../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.18a0
+                0.19a0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -74,11 +74,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for machine.learn.skl_utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the Aliro library~</span>
 
 <span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
 
-<span class="sd">PennAI is maintained by:</span>
+<span class="sd">Aliro is maintained by:</span>
 <span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
 <span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
 <span class="sd">    - William La Cava (lacava@upenn.edu)</span>
@@ -250,14 +250,14 @@
                      <span class="n">encoding_strategy</span><span class="o">=</span><span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">,</span>
                      <span class="n">param_grid</span><span class="o">=</span><span class="p">{}</span>
                      <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate reaults for applying a model on dataset in PennAI.</span>
+    <span class="sd">&quot;&quot;&quot;Generate reaults for applying a model on dataset in Aliro.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model: scikit-learn Estimator</span>
 <span class="sd">        A machine learning model following scikit-learn API</span>
 <span class="sd">    input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
-<span class="sd">        pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.</span>
+<span class="sd">        pandas.DataFrame: Aliro will use 10 fold CV to estimate train/test scroes.</span>
 <span class="sd">        list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,</span>
 <span class="sd">        while the 2nd one is testing dataset</span>
 <span class="sd">    target_name: string</span>
@@ -635,7 +635,7 @@
 <span class="sd">    outdir: string</span>
 <span class="sd">        Path of output directory</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    fname: string</span>
 <span class="sd">        File name</span>
 <span class="sd">    content: list or directory</span>
@@ -664,7 +664,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    X: np.darray/pd.DataFrame</span>
 <span class="sd">        Features in training dataset</span>
 <span class="sd">    y: np.darray/pd.DataFrame</span>
@@ -767,7 +767,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    model: scikit-learn estimator</span>
 <span class="sd">        A fitted scikit-learn model</span>
 <span class="sd">    features: np.darray/pd.DataFrame</span>
@@ -947,7 +947,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    X: np.darray/pd.DataFrame</span>
 <span class="sd">        Features in training dataset</span>
 <span class="sd">    y: np.darray/pd.DataFrame</span>
@@ -1041,7 +1041,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    coefs: array</span>
 <span class="sd">        Feature importance scores</span>
 <span class="sd">    feature_names: np.array</span>
@@ -1085,7 +1085,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    features: np.darray/pd.DataFrame</span>
 <span class="sd">        Features in training dataset</span>
 <span class="sd">    target: np.darray/pd.DataFrame</span>
@@ -1148,7 +1148,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    X: np.darray/pd.DataFrame</span>
 <span class="sd">        Features in training dataset</span>
 <span class="sd">    y: np.darray/pd.DataFrame</span>
@@ -1223,7 +1223,7 @@
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Temporary directory for saving experiment results</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    model: scikit-learn estimator</span>
 <span class="sd">        A fitted scikit-learn model</span>
 <span class="sd">    filename: string</span>
@@ -1360,7 +1360,7 @@
 <span class="s2">        all_class_accuracies.append(this_class_accuracy)</span>
 <span class="s2">    return np.mean(all_class_accuracies)</span>
 
-<span class="s2"># reproducing training score and testing score from PennAI</span>
+<span class="s2"># reproducing training score and testing score from Aliro</span>
 <span class="s2">features = input_data.drop(target_column, axis=1).values</span>
 <span class="s2">target = input_data[target_column].values</span>
 <span class="s2"># Checking dataset</span>
@@ -1401,7 +1401,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;regression&quot;</span><span class="p">:</span>
         <span class="n">exported_codes_1</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2"># reproducing training score and testing score from PennAI</span>
+<span class="s2"># reproducing training score and testing score from Aliro</span>
 <span class="s2">features = input_data.drop(target_column, axis=1).values</span>
 <span class="s2">target = input_data[target_column].values</span>
 <span class="s2"># Checking dataset</span>

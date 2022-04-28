@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ai.ai &mdash; Aliro 0.18a0 documentation</title>
+  <title>ai.ai &mdash; Aliro 0.19a0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/logo_blank_small.png"/>
@@ -29,7 +29,7 @@
             <img src="../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.18a0
+                0.19a0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -74,11 +74,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for ai.ai</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the Aliro library~</span>
 
 <span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
 
-<span class="sd">PennAI is maintained by:</span>
+<span class="sd">Aliro is maintained by:</span>
 <span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
 <span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
 <span class="sd">    - William La Cava (lacava@upenn.edu)</span>
@@ -158,7 +158,6 @@
 <span class="sd">    :param n_recs: int - number of recommendations to make for each request</span>
 <span class="sd">    :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup</span>
 <span class="sd">    :param use_pmlb_knowledgebase: Boolean</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -210,7 +209,7 @@
 
         <span class="c1"># api parameters, will be removed from self once the recommenders no </span>
         <span class="c1"># longer call the api directly.</span>
-        <span class="c1"># See #98 &lt;https://github.com/EpistasisLab/pennai/issues/98&gt;</span>
+        <span class="c1"># See #98 &lt;https://github.com/EpistasisLab/Aliro/issues/98&gt;</span>
         <span class="k">if</span> <span class="n">api_path</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">api_path</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_HOST&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span>
                         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;LAB_PORT&#39;</span><span class="p">])</span>
@@ -636,9 +635,9 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Handles command line arguments and runs Penn-AI.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Handles command line arguments and runs Aliro.&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;PennAI is a recommendation system for data science. &#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Aliro is a recommendation system for data science. &#39;</span><span class="p">,</span>
             <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;help&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show this help message and exit.&quot;</span><span class="p">)</span>
@@ -694,7 +693,7 @@
             <span class="s1">&#39;slopeone&#39;</span><span class="p">:</span> <span class="n">SlopeOneRecommender</span>
             <span class="p">}</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=======&#39;</span><span class="p">,</span><span class="s1">&#39;Penn AI&#39;</span><span class="p">,</span><span class="s1">&#39;=======&#39;</span><span class="p">)</span><span class="c1">#,sep=&#39;\n&#39;)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=======&#39;</span><span class="p">,</span><span class="s1">&#39;Aliro&#39;</span><span class="p">,</span><span class="s1">&#39;=======&#39;</span><span class="p">)</span><span class="c1">#,sep=&#39;\n&#39;)</span>
 
     <span class="n">pennai</span> <span class="o">=</span> <span class="n">AI</span><span class="p">(</span><span class="n">rec_class</span><span class="o">=</span><span class="n">name_to_rec</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">REC</span><span class="p">],</span>
             <span class="n">api_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">API_PATH</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">USER</span><span class="p">,</span>

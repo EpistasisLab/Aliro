@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer Guide &mdash; Aliro 0.18a0 documentation</title>
+  <title>Developer Guide &mdash; Aliro 0.19a0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/logo_blank_small.png"/>
@@ -32,7 +32,7 @@
             <img src="_static/logo_blank_small.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.18a0
+                0.19a0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,7 +60,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#npm-package-management">NPM Package Management</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-overview">Architecture Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#controller-engine-aka-the-server">Controller Engine (aka <em>The Server</em>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#database">Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-component-aka-the-client">UI Component (aka <em>The Client</em>)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#code-documentation">Code Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tests">Tests</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#local-test-instructions">Local Test Instructions</a></li>
@@ -171,14 +176,14 @@
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">rmi</span> <span class="pre">$(docker</span> <span class="pre">images</span> <span class="pre">-q)</span></code> to remove all docker images</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;container_name&quot;</span> <span class="pre">/bin/bash</span></code> to attach to a running container with a bash prompt</p></li>
 <li><p>To manually start the AI service, attach to the lab container with bash and start the AI service:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;pennai_lab_1&quot; /bin/bash
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;aliro_lab_1&quot; /bin/bash
 cd $PROJECT_ROOT/
 python -m ai.ai -v -n 2
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;pennai_lab_1&quot;</span> <span class="pre">/bin/bash</span></code> returns ‘Error: no such container’, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ps</span></code> to get the name of the lab container</p></li>
-<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">pennai_lab_1</span></code> will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.</p></li>
+<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;aliro_lab_1&quot;</span> <span class="pre">/bin/bash</span></code> returns ‘Error: no such container’, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ps</span></code> to get the name of the lab container</p></li>
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">aliro_lab_1</span></code> will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.</p></li>
 </ul>
 </li>
 </ul>
@@ -188,7 +193,7 @@ python -m ai.ai -v -n 2
 <p>There are two ways to enable watch mode:</p>
 <ul>
 <li><p>To enable watch mode after Aliro has been started, do the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;pennai_lab_1&quot; /bin/bash
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;aliro_lab_1&quot; /bin/bash
 cd $PROJECT_ROOT/lab/webapp
 npm run build-dev
 </pre></div>
@@ -215,9 +220,18 @@ npm run build-dev
 <h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline"></a></h2>
 <p>Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.</p>
 <a class="reference external image-reference" href="https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true"><img alt="Aliro Architecture Diagram" src="https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true" /></a>
+<section id="controller-engine-aka-the-server">
+<h3>Controller Engine (aka <em>The Server</em>)<a class="headerlink" href="#controller-engine-aka-the-server" title="Permalink to this headline"></a></h3>
 <p>The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.</p>
+</section>
+<section id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline"></a></h3>
 <p>A MongoDb database is used for persistent storage.</p>
+</section>
+<section id="ui-component-aka-the-client">
+<h3>UI Component (aka <em>The Client</em>)<a class="headerlink" href="#ui-component-aka-the-client" title="Permalink to this headline"></a></h3>
 <p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.</p>
+</section>
 </section>
 <section id="code-documentation">
 <h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline"></a></h2>
@@ -239,7 +253,7 @@ npm run build-dev
 </li>
 <li><p>Integration: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
 </ul>
-<p><em>NOTE</em> It is best to run local unit tests using the above command. An optional way is to attach a shell to a running container instance via <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">pennai-dev_lab_1</span> <span class="pre">/bin/bash</span></code> and then manually run the unit test runner <code class="docutils literal notranslate"><span class="pre">.\tests\unit\unit_test_runner.sh</span></code>. This is faster than running via <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and a new container instance. <em>However</em>, this method can produce different react component snapshots, and possibly other differences, so if you use this method for rapid development of tests, always follow up with running via the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> commands above to assure compatibility with how the tests are run for CI tests.</p>
+<p><em>NOTE</em> It is best to run local unit tests using the above command. An optional way is to attach a shell to a running container instance via <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">Aliro-dev_lab_1</span> <span class="pre">/bin/bash</span></code> and then manually run the unit test runner <code class="docutils literal notranslate"><span class="pre">.\tests\unit\unit_test_runner.sh</span></code>. This is faster than running via <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and a new container instance. <em>However</em>, this method can produce different react component snapshots, and possibly other differences, so if you use this method for rapid development of tests, always follow up with running via the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> commands above to assure compatibility with how the tests are run for CI tests.</p>
 <p>The test results in html format can be found in the directory <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html</span></code></p>
 <p>Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
 </section>
@@ -382,7 +396,7 @@ npm run build-dev
 </ol>
 <ul>
 <li><p>Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file</p></li>
-<li><p>Create the production .zip named <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}.zip</span></code></p>
+<li><p>Create the production .zip named <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">production</span>
 <span class="n">bash</span> <span class="n">release</span><span class="o">/</span><span class="n">generate_production_release</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
@@ -402,8 +416,8 @@ npm run build-dev
 </li>
 </ul>
 <ol class="arabic simple">
-<li><p><strong>Test DockerHub images and production code.</strong>  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, ‘TAG’ matches the current version.</p></li>
-<li><p><strong>Create Github Release.</strong>  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/pennai-${VERSION}.zip</span></code> as an archive asset.</p></li>
+<li><p><strong>Test DockerHub images and production code.</strong>  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, ‘TAG’ matches the current version.</p></li>
+<li><p><strong>Create Github Release.</strong>  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code> as an archive asset.</p></li>
 <li><p><strong>Update the .env file in the master branch with the new dev version.</strong>  Update the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the master branch with the next version number and the <code class="docutils literal notranslate"><span class="pre">a0</span></code> suffix (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">Pre-release versioning conventions</a> and push the changes to git.  For example, <code class="docutils literal notranslate"><span class="pre">0.14</span></code> was just released, the new dev tag should be <code class="docutils literal notranslate"><span class="pre">0.15a0</span></code>.</p></li>
 </ol>
 </section>

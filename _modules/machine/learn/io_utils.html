@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>machine.learn.io_utils &mdash; Aliro 0.18a0 documentation</title>
+  <title>machine.learn.io_utils &mdash; Aliro 0.19a0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/logo_blank_small.png"/>
@@ -29,7 +29,7 @@
             <img src="../../../_static/logo_blank_small.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.18a0
+                0.19a0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -74,11 +74,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for machine.learn.io_utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the PennAI library~</span>
+<span></span><span class="sd">&quot;&quot;&quot;~This file is part of the Aliro library~</span>
 
 <span class="sd">Copyright (C) 2017 Epistasis Lab, University of Pennsylvania</span>
 
-<span class="sd">PennAI is maintained by:</span>
+<span class="sd">Aliro is maintained by:</span>
 <span class="sd">    - Heather Williams (hwilli@upenn.edu)</span>
 <span class="sd">    - Weixuan Fu (weixuanf@upenn.edu)</span>
 <span class="sd">    - William La Cava (lacava@upenn.edu)</span>
@@ -110,7 +110,7 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
-<span class="c1"># get PennAI environment information</span>
+<span class="c1"># get Aliro environment information</span>
 <span class="n">LAB_HOST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LAB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;lab&#39;</span><span class="p">)</span>
 <span class="n">LAB_PORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LAB_PORT&#39;</span><span class="p">,</span> <span class="s1">&#39;5080&#39;</span><span class="p">)</span>
 <span class="n">basedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PROJECT_ROOT&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
@@ -118,12 +118,12 @@
 
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">basedir</span><span class="o">=</span><span class="n">basedir</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Experiment class for PennAI.</span>
+        <span class="sd">&quot;&quot;&quot;Experiment class for Aliro.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args: dict</span>
-<span class="sd">            Arguments of a experiment from PennAI API</span>
+<span class="sd">            Arguments of a experiment from Aliro API</span>
 <span class="sd">        basedir: string</span>
 <span class="sd">            Base directory for this project</span>
 
@@ -141,12 +141,12 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Experiment.get_input"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_input">[docs]</a>    <span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get input data based on experiment ID (_id) from PennAI API.</span>
+        <span class="sd">&quot;&quot;&quot;Get input data based on experiment ID (_id) from Aliro API.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
-<span class="sd">            pandas.DataFrame: PennAI will use train_test_split to</span>
+<span class="sd">            pandas.DataFrame: Aliro will use train_test_split to</span>
 <span class="sd">            make train/test splits list of two pandas.DataFrame:</span>
 <span class="sd">            The 1st pandas.DataFrame is training dataset,</span>
 <span class="sd">            while the 2nd one is testing dataset</span>
@@ -154,7 +154,7 @@
         <span class="k">return</span> <span class="n">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.get_model"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Build scikit learn method based on arguments from PennAI API.</span>
+        <span class="sd">&quot;&quot;&quot;Build scikit learn method based on arguments from Aliro API.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -183,7 +183,7 @@
 
 
 <div class="viewcode-block" id="get_projects"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_projects">[docs]</a><span class="k">def</span> <span class="nf">get_projects</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Get all machine learning algorithm&#39;s information from PennAI API This</span>
+    <span class="sd">&quot;&quot;&quot;Get all machine learning algorithm&#39;s information from Aliro API This</span>
 <span class="sd">    information should be the same with projects.json.</span>
 
 <span class="sd">    Returns</span>
@@ -202,7 +202,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    args: dict</span>
-<span class="sd">        Arguments of a experiment from PennAI API</span>
+<span class="sd">        Arguments of a experiment from Aliro API</span>
 <span class="sd">    param_grid: dict</span>
 <span class="sd">        Dictionary with parameters names (string) as keys</span>
 <span class="sd">        and lists of parameter settings to try as values,</span>
@@ -213,7 +213,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">projects</span> <span class="o">=</span> <span class="n">get_projects</span><span class="p">()</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Driver for all machine learning algorithms in PennAI&#39;</span><span class="p">)</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Driver for all machine learning algorithms in Aliro&#39;</span><span class="p">)</span>
     <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;ML Learning Algorithm&quot;</span><span class="p">)</span>
 
@@ -261,19 +261,19 @@
 
 
 <div class="viewcode-block" id="get_input_data"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_input_data">[docs]</a><span class="k">def</span> <span class="nf">get_input_data</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Get input dataset information from PennAI API.</span>
+    <span class="sd">&quot;&quot;&quot; Get input dataset information from Aliro API.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    _id: string</span>
-<span class="sd">        Experiment ID in PennAI</span>
+<span class="sd">        Experiment ID in Aliro</span>
 <span class="sd">    tmpdir: string</span>
 <span class="sd">        Path of temporary directory</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    input_data: pandas.Dataframe or list of two pandas.Dataframe</span>
-<span class="sd">        pandas.DataFrame: PennAI will use train_test_split</span>
+<span class="sd">        pandas.DataFrame: Aliro will use train_test_split</span>
 <span class="sd">        to make train/test splits</span>
 <span class="sd">        list of two pandas.DataFrame.</span>
 <span class="sd">        The 1st pandas.DataFrame is training dataset,</span>
@@ -373,7 +373,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_id: string</span>
-<span class="sd">        File ID from the PennAI database</span>
+<span class="sd">        File ID from the Aliro database</span>
 
 <span class="sd">    Return: string</span>
 <span class="sd">        Dataset strings which will be read by pandas</span>
@@ -465,7 +465,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    known_types[type]: function</span>
-<span class="sd">        Function for converting argument from PennAI UI</span>
+<span class="sd">        Function for converting argument from Aliro UI</span>
 <span class="sd">        for assigning to scikit-learn estimator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">known_types</span> <span class="o">=</span> <span class="p">{</span>
