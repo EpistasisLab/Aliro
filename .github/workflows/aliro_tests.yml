@@ -77,7 +77,7 @@ jobs:
         run: |
           git lfs fetch --all
           git lfs pull
-          docker run -v $(pwd):/appsrc -w /appsrc pennai_unit_tester coverage run -m nose -s -v ai/tests/test_sklearn_api.py
+          docker run -v $(pwd):/appsrc -w /appsrc aliro_unit_tester coverage run -m nose -s -v ai/tests/test_sklearn_api.py
           coverage combine
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
