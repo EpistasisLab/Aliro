@@ -1,6 +1,6 @@
 [![Logo](./docs/source/_static/logo_blank_small.png)]()
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/pennai_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/pennai/badge.svg)](https://coveralls.io/github/EpistasisLab/pennai)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/pennai/badge.svg)](https://coveralls.io/github/EpistasisLab/pennai)
 
 Aliro: AI-Driven Data Science
 ==================================
