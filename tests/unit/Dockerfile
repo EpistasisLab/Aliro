@@ -1,10 +1,10 @@
 FROM python:3.7.11-stretch
 
 #nodejs
-RUN wget --quiet https://nodejs.org/dist/v11.14.0/node-v11.14.0-linux-x64.tar.xz -O ~/node.tar.xz && \
+RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
     tar -xvf ~/node.tar.xz -C /opt/ && \
     rm ~/node.tar.xz
-ENV PATH /opt/node-v11.14.0-linux-x64/bin:$PATH
+ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
 
 RUN apt-get update --fix-missing \
     && apt-get install -y --no-install-recommends \
