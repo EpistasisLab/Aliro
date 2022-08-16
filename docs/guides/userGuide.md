@@ -10,7 +10,6 @@ Aliro is a multi-container docker project that uses ([Docker-Compose](https://do
     - Most recent stable release, minimum version is 17.06.0
       - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
       - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-        - **Hyper-V**: (Windows only) Please note that the **Hyper-V** backend is required for development.
     - **Runtime Memory**: (Mac and Windows only) If using **Windows** or **Mac**, we recommend docker VM to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)).  By default, docker VM on Windows or Mac starts with 2G runtime memory.
     - **File Sharing**: (Windows only) Share the drive that will contain the Aliro directory with Docker by opening Docker Desktop, navigating to Resources->File Sharing and sharing the drive. [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
   - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations

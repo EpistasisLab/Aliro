@@ -5,6 +5,7 @@
 ### Requirements
 Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
 - Docker setup
+  - **Hyper-V**: (Windows only) Please note that the **Hyper-V** backend is required for development. See [issue #371](https://github.com/EpistasisLab/Aliro/issues/371) for more information.
   - Shared Drive: (Windows only)  Share the drive that will have the Aliro source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
 
 #### Optional dependencies for development/testing:
