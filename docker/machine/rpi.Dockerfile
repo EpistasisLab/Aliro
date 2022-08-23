@@ -1,10 +1,6 @@
 FROM python:3.7-buster
 
-<<<<<<< HEAD
 ENV NODE_VERSION 12.22.9
-=======
-ENV NODE_VERSION 12.20.0
->>>>>>> 6157f68666d57632f83a685ab5521145d6c923fc
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && case "${dpkgArch##*-}" in \
@@ -33,11 +29,8 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
       108F52B48DB57BB0CC439B2997B01419BD92F80A \
       B9E2F5981AA6E0CD28160D9FF13993A75599653C \
     ; do \
-<<<<<<< HEAD
       gpg --batch --keyserver hkp://keyring.debian.org:80 --recv-keys "$key" || \
       gpg --batch --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" || \
-=======
->>>>>>> 6157f68666d57632f83a685ab5521145d6c923fc
       gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
       gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
       gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
