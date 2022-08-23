@@ -207,26 +207,26 @@ Release procedure:
 2. **Push changes to github.**  Merge the master branch into the `production` branch and push the changes to github.
 
 3. **Build production docker images with `bash release/generate_production_release.sh`.** While in the prodution branch, build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
-* Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file  
-* Create the production .zip named `target/production/Aliro-${VERSION}.zip`
-```
-git checkout production
-bash release/generate_production_release.sh
-```
+    * Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file  
+    * Create the production .zip named `target/production/Aliro-${VERSION}.zip`
+    ```
+    git checkout production
+    bash release/generate_production_release.sh
+    ```
 
 4. **Push docker images to DockerHub and tag the production git branch by running `deploy_production_release.sh`.**  While in the produciton branch, run `bash release/deploy_production_release.sh`.  This will:
-* Push the production lab, machine and dbmongo production docker images to dockerHub
-* Tag the production git branch with the version defined in `.env`
-```
-git checkout production
-bash release/deploy_production_release.sh
-```
+    * Push the production lab, machine and dbmongo production docker images to dockerHub
+    * Tag the production git branch with the version defined in `.env`
+    ```
+    git checkout production
+    bash release/deploy_production_release.sh
+    ```
 
 5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/Aliro-${VERSION}` and running `docker-compose up`.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version. 
 
 6. **Create Github Release.**  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file `target/production/Aliro-${VERSION}.zip` as an archive asset.
 
-7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `a0` suffix (see [Pre-release versioning conventions](https://www.python.org/dev/peps/pep-0440/#pre-releases) and push the changes to git.  For example, `0.14` was just released, the new dev tag should be `0.15a0`. 
+7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `a0` suffix (see [Pre-release versioning conventions](https://www.python.org/dev/peps/pep-0440/#pre-releases) and push the changes to git.  For example, `0.18` was just released, the new dev tag should be `0.19a0`. 
 
 ### Installing a production build
 1. Download a production build from github
