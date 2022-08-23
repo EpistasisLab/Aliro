@@ -1,7 +1,11 @@
 version: '3'
 
 services:
+<<<<<<< HEAD
   lab_rpi:
+=======
+  lab:
+>>>>>>> 6157f68666d57632f83a685ab5521145d6c923fc
     build:
       context: .
       dockerfile: docker/lab/rpi.Dockerfile
@@ -19,7 +23,11 @@ services:
     depends_on:
       - dbmongo
 
+<<<<<<< HEAD
   machine_rpi:
+=======
+  machine:
+>>>>>>> 6157f68666d57632f83a685ab5521145d6c923fc
     build:
       context: .
       dockerfile: docker/machine/rpi.Dockerfile
@@ -37,7 +45,11 @@ services:
       - lab
       - dbmongo
 
+<<<<<<< HEAD
   dbmongo_rpi:
+=======
+  dbmongo:
+>>>>>>> 6157f68666d57632f83a685ab5521145d6c923fc
     build:
       context: .
       dockerfile: docker/dbmongo/rpi.Dockerfile
