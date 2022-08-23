@@ -1,5 +1,9 @@
 FROM python:3.7-buster
 
+# copy src for machine
+COPY machine /appsrc/machine/
+COPY config/machine_config.json /appsrc/config/machine_config.json
+
 ENV NODE_VERSION 12.22.9
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \

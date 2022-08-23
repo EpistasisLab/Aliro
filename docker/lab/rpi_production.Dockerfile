@@ -1,5 +1,9 @@
 FROM ubuntu:bionic
 
+# copy src for lab
+COPY lab /appsrc/lab
+COPY ai /appsrc/ai
+
 #RUN apt-get update --fix-missing && apt-get install -y wget
 
 #nodejs
@@ -222,8 +226,14 @@ RUN dos2unix /root/start.sh \
 	&& dos2unix /root/wait-for-it.sh \
 	&& dos2unix /root/entrypoint.sh
 
+# copy knowledgebase
+COPY 'data/knowledgebases/sklearn-benchmark-data-knowledgebase-r6.tsv.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_classification_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_results.pkl.gz' /appsrc/data/knowledgebases/
+COPY 'data/knowledgebases/pmlb_regression_metafeatures.csv.gz' /appsrc/data/knowledgebases/
+
 # set version and build environment; tag.sh is sourced in entrypoint.sh
-ENV BUILD_ENV='dev'
+ENV BUILD_ENV='prod'
 COPY .env /etc/profile.d/
 RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
 RUN dos2unix /etc/profile.d/tag.sh
