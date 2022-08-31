@@ -142,6 +142,36 @@
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Aliro is a multi-container docker project that uses (<a class="reference external" href="https://docs.docker.com/compose/">Docker-Compose</a>).</p>
+<section id="requirements-raspberry-pi-only">
+<h3>Requirements (Raspberry Pi Only)<a class="headerlink" href="#requirements-raspberry-pi-only" title="Permalink to this headline">¶</a></h3>
+<p>We provide a custom Raspberry Pi image (built on top of the <a class="reference external" href="https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit">Raspberry Pi OS with Desktop (64-bit)</a> - released on April 4th 2022)<span class="raw-html-m2r"><br></span>
+If you prefer to install Aliro on an existing Rasbperry Pi OS, you may follow the instructions <a class="reference external" href="#requirements">below</a>.</p>
+<section id="hardware">
+<h4>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Raspberry Pi 400</p></li>
+<li><p>SD Card or USB Flash Drive (32GB)
+#### Software</p></li>
+<li><p>Our custom Raspberry Pi image contains all required software pre-installed:</p>
+<ul>
+<li><p>Docker Engine</p></li>
+<li><p>Docker-Compose
+#### Installation</p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple">
+<li><p>Download our custom <a href="#id3"><span class="problematic" id="id4">`Raspberry Pi Image &lt;&gt;`_</span></a></p></li>
+<li><p>Download the <a class="reference external" href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> - Available for Windows, MacOS and Ubuntu Linux.</p></li>
+<li><p><a class="reference external" href="https://www.raspberrypi.com/software/">Raspberrypi.com</a> provides a short instructional video on how to install the Operating System onto an SD Card</p>
+<ul class="simple">
+<li><p>The same instructions apply for installing the Operating System on a USB Flash Drive</p></li>
+<li><p><strong>Note:</strong> Under <strong>Operating System</strong> choose “Use Custom” which will prompt you to select the custom image you downloaded in step 1.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -167,7 +197,11 @@
 <section id="id2">
 <h3>Installation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li><p>Download the production zip <code class="docutils literal notranslate"><span class="pre">Aliro-*.zip</span></code> from the asset section of the <a class="reference external" href="https://github.com/EpistasisLab/Aliro/releases/latest">latest release</a> (note that this is different from the source code zip file).</p></li>
+<li><p>Download the production zip <code class="docutils literal notranslate"><span class="pre">Aliro-*.zip</span></code> or <code class="docutils literal notranslate"><span class="pre">Aliro-rpi-*.zip</span></code> (for the Raspberry Pi) from the asset section of the <a class="reference external" href="https://github.com/EpistasisLab/Aliro/releases/latest">latest release</a> or <a class="reference external" href="https://github.com/EpistasisLab/Aliro/releases">releases</a></p>
+<ul class="simple">
+<li><p>Note that this is different from the source code zip file.</p></li>
+</ul>
+</li>
 <li><p>Unzip the archive</p></li>
 </ol>
 </section>
@@ -245,6 +279,10 @@
                 <ul>
 <li><a class="reference internal" href="#">User Guide</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#requirements-raspberry-pi-only">Requirements (Raspberry Pi Only)</a><ul>
+<li><a class="reference internal" href="#hardware">Hardware</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#id2">Installation</a></li>
 </ul>
