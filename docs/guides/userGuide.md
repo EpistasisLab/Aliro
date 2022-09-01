@@ -5,23 +5,6 @@ Aliro is a platform to help researchers leverage supervised machine learning tec
 ## Installation
 Aliro is a multi-container docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
 
-### Requirements (Raspberry Pi Only)
-We provide a custom Raspberry Pi image (built on top of the [Raspberry Pi OS with Desktop (64-bit)](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit) - released on April 4th 2022)  
-If you prefer to install Aliro on an existing Rasbperry Pi OS, you may follow the instructions [below](#requirements).
-#### Hardware
-  - Raspberry Pi 400
-  - SD Card or USB Flash Drive (32GB)
-#### Software
-  - Our custom Raspberry Pi image contains all required software pre-installed:
-    - Docker Engine
-    - Docker-Compose
-#### Installation
-  1. Download our custom [Raspberry Pi Image]()
-  2. Download the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) - Available for Windows, MacOS and Ubuntu Linux.
-  3. [Raspberrypi.com](https://www.raspberrypi.com/software/) provides a short instructional video on how to install the Operating System onto an SD Card
-      - The same instructions apply for installing the Operating System on a USB Flash Drive
-      - **Note:** Under **Operating System** choose "Use Custom" which will prompt you to select the custom image you downloaded in step 1.
-
 ### Requirements
   - Docker
     - Most recent stable release, minimum version is 17.06.0
@@ -33,7 +16,7 @@ If you prefer to install Aliro on an existing Rasbperry Pi OS, you may follow th
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
 ### Installation
-1. Download the production zip `Aliro-*.zip` or `Aliro-rpi-*.zip` (for the Raspberry Pi) from the asset section of the [latest release](https://github.com/EpistasisLab/Aliro/releases/latest) or [releases](https://github.com/EpistasisLab/Aliro/releases) 
+1. Download the production zip `Aliro-*.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/Aliro/releases/latest)  
     - Note that this is different from the source code zip file.
 2. Unzip the archive
 
