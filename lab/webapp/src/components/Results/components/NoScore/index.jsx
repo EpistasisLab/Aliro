@@ -55,7 +55,7 @@ function foldcheck(fold) {
   return [iconname, iconcolor, iconmsg];
 }
 
-function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type }) {
+function NoScore({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type }) {
   const getCardContent = () => {
     if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
       if (scoreName.includes('AUC') ) {
@@ -71,22 +71,22 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
 
       return (
 
-        <GaugeAll
-          expList={scoreValueList}
-          chartKey={chartKey}
-          chartColor={chartColor}
-          min={0.5}
-          max={1.0}
-        />
+        // <GaugeAll
+        //   expList={scoreValueList}
+        //   chartKey={chartKey}
+        //   chartColor={chartColor}
+        //   min={0.5}
+        //   max={1.0}
+        // />
         
       
-      // <DonutChart
-      //   expList={scoreValueList}
-      //   chartKey={chartKey}
-      //   chartColor={chartColor}
-      //   min={0.5}
-      //   max={1.0}
-      // />
+      <DonutChart
+        expList={scoreValueList}
+        chartKey={chartKey}
+        chartColor={chartColor}
+        min={0.5}
+        max={1.0}
+      />
       
 
       );
@@ -112,13 +112,7 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
         />
       );
     }
-    /*return (
-      <Gauge
-        value={scoreValue}
-        chartKey={chartKey}
-        chartColor={chartColor}
-      />
-    );*/
+
   };
 
   if(typeof(scoreValue) !== 'number' && !scoreValueList.length){
@@ -147,11 +141,16 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
     );
 
     return (
+      // <InvertedCard
+      //   header={scoreName}
+      //   headericon={headericon}
+      //   content={getCardContent()}
+      // />
       <InvertedCard
-        header={scoreName}
-        headericon={headericon}
-        content={getCardContent()}
-      />
+      header={scoreName}
+      content={getCardContent()}
+    />
+      
     );
   }
 
@@ -160,7 +159,7 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
 }
 
 
-Score.propTypes = {
+NoScore.propTypes = {
   scoreName: PropTypes.string.isRequired,
   scoreValue: PropTypes.oneOfType([
     PropTypes.number,
@@ -170,4 +169,4 @@ Score.propTypes = {
   chartColor: PropTypes.string.isRequired
 };
 
-export default Score;
+export default NoScore;

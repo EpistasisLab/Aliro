@@ -21,7 +21,6 @@ services:
       - ./config/ai.env
     depends_on:
       - dbmongo
-    restart: always
 
   machine:
     build:
@@ -41,7 +40,6 @@ services:
     depends_on:
       - lab
       - dbmongo
-    restart: always
 
   dbmongo:
     build:
@@ -53,4 +51,3 @@ services:
     ports:
       - "27017:27017"
     env_file: ./config/common.env
-    restart: always
