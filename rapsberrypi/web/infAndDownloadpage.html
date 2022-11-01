@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Hyunjun Choi and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.101.0">
+    <title>Aliro ED</title>
+
+    <!-- <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/"> -->
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="JSfiles/Aliro.js"></script>
+    <script type="text/javascript" src="JSfiles/jquery-1.7.1.min.js"></script>
+
+    <!-- Own favicon -->
+    <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
+    <link rel="icon" href="Logo/rpi-imager.ico">
+      
+
+<!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
+<!-- <link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="css/style.css">
+    
+
+    
+  </head>
+
+  <!-- <body onload="pingURL()"> -->
+    <body>
+      <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+      <script src="JSfiles/d3.v4.js"></script>
+      <!-- <script src="d3.v4.js"></script> -->
+      <script src="JSfiles/carousel.js"></script>
+      
+    
+
+
+
+    
+<header>
+  <div class="collapse bg-dark" id="navbarHeader">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white">About</h4>
+          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+        </div>
+        <div class="col-sm-4 offset-md-1 py-4">
+          <h4 class="text-white">Contact</h4>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white">Follow on Twitter</a></li>
+            <li><a href="#" class="text-white">Like on Facebook</a></li>
+            <li><a href="#" class="text-white">Email me</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="navbar navbar-dark bg-dark shadow-sm"> -->
+    <!-- Change navar-dar blight -->
+
+
+    <!-- <div class="navbar navbar-light bg-secondary shadow-sm"> -->
+    <div class="navbar navbar-dark bg-info shadow-sm">
+    <div class="container">
+      <a href="/main.html" class="navbar-brand d-flex align-items-center">
+        
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> -->
+        <!-- <img src="Logo/PENNAILOGO.png" alt="PENNAILOGO" width="35" height="35">
+        <strong>Aliro ED</strong> -->
+        <img id="mainLogo" class="" src="Logo/rpi-imager.ico" alt="PENNAILOGO" width="50" height="50">
+        
+        <strong id="mainName">Aliro Ed</strong>
+
+      </a>
+      <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button> -->
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="/infAndDownloadpage.html">Download</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Production</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"></a>
+      </li>
+    </div>
+  </div>
+</header>
+
+<main class="">
+
+  <video autoplay muted loop id="myVideo">
+    <source src="Videos/video.mp4" type="video/mp4">
+  </video>
+
+
+  <div id="overlay" onclick="off()"></div>
+
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5 bg-info">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <!-- <h1 class="fw-light">A visual introduction to Aliro ED</h1> -->
+        <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
+        
+         <!-- make video responsive -->
+        <!-- <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/zpOULjyy-n8" allowfullscreen></iframe>
+        </div> -->
+          <video width="620" height="360" controls>
+            <source src="Videos/video.mp4" type="video/mp4">
+            
+          Your browser does not support the video tag.
+          </video> 
+
+
+          <!-- <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="video.mp4"></iframe>
+          </div> -->
+
+          <!-- <div class="bs-example col-sm-4" data-example-id="responsive-embed-16by9-iframe-youtube">
+            <div class="embed-responsive embed-responsive-1by1">
+              <iframe class="embed-responsive-item" src="video.mp4" allowfullscreen=""></iframe>
+            </div>
+          </div> -->
+          
+          
+            
+          <!-- <iframe class="embed-responsive-item" src="video.mp4"></iframe> -->
+
+          
+        
+        
+        <div id="downloadpage_area_div" class="col-lg-10 col-md-10 mx-auto">
+
+          <!-- <p class="text-start text-white">Sponsor FileZilla development and reach developers, webmasters and bloggers
+            Welcome to the homepage of FileZilla®, the free FTP solution. The FileZilla Client not only supports FTP, but also FTP over TLS (FTPS) and SFTP. It is open source software distributed free of charge under the terms of the GNU General Public License.
+            We are also offering FileZilla Pro, with additional protocol support for WebDAV, Amazon S3, Backblaze B2, Dropbox, Microsoft OneDrive, Google Drive, Microsoft Azure Blob and File Storage, and Google Cloud Storage.
+            Last but not least, FileZilla Server is a free open source FTP and FTPS Server.
+            Support is available through our forums, the wiki and the bug and feature request trackers.
+            In addition, you will find documentation on how to compile FileZilla and nightly builds for multiple platforms in the development section.  </p>
+          
+            <p class="text-start text-white"> -->
+
+          
+            
+        </div>
+        
+      </div>
+      <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div> -->
+      <!-- <div class="col-sm-4" style="background-color:lavenderblush;">.col-sm-4</div> -->
+      <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>   -->
+      <!-- <div class="col-lg-4 col-md-4 mx-auto" style="background-color:#212529;"> -->
+        <div class="col-lg-4 col-md-4 mx-auto "> 
+        <div id="intuition_exp"> 
+
+          <!-- change the below contenct to explain download  -->
+
+          <h2 class="text-start text-white"> Overview </h2>
+          <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p>
+
+
+            <p class="text-start text-white">Sponsor FileZilla development and reach developers, webmasters and bloggers
+              Welcome to the homepage of FileZilla®, the free FTP solution. The FileZilla Client not only supports FTP, 
+              but also FTP over TLS (FTPS) and SFTP. It is open source software distributed free of charge under the terms of the GNU General Public License.
+
+
+              
+                
+            </p>
+
+
+            
+
+            
+              
+
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <!-- <li id="downloadLi" class="page-item all-scroll"><a id="downloadA" class="page-link text-secondary" href="/storage/test_download.json" download>Download</a></li> -->
+            
+              <li id="downloadLi" class="page-item all-scroll"><a id='infanddownload' href="/storage/test_download.json" class="btn btn-primary my-2" download>Download</a></li>
+            
+            </ul>
+
+            <!-- <p>
+              <a id='infanddownload' href="/infAndDownloadpage.html" class="btn btn-primary my-2">Download</a>
+            </p>
+             -->
+            <!-- <h2 class="text-start text-white"> Quick download links </h2>
+            <button class="btn-download"><i class="fa fa-download"></i> Download</button> -->
+            
+          </nav>
+
+        </div>
+        
+        <div id="addingnuance" style="display:none;"> 
+          
+
+
+          <h2 class="text-start text-white"> Using various kinds of features together </h2>
+          <p class="text-start text-white">  In this data set, we have two different features petal-length on X axis and sepal-length on Y axis.
+         </p>
+          <p class="text-start text-white"> Using various kinds of <strong>features</strong> together allows for more nuance. </p>
+          <p class="text-start text-white"> So visualizing petal-length and sepal-length in a <strong>scatterplot</strong> helps us distinguish three different species of iris flowers.  </p>
+          <p class="text-start text-white"> 
+
+            The dataset suggests that, among the three species, the <strong> Iris-setosa</strong> has the smallest petal-length and sepal-length,
+            the <strong> Iris-versicolor</strong> has the medium petal-length and sepal-length,
+            and the <strong> Iris-virginica</strong> has the largest petal-length and sepal-length.
+          </p>
+          
+
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li id="fromaddntofsi" class="page-item"><a class="page-link text-secondary" >Previous</a></li>
+              
+              <li id="fromaddntodrawb" class="page-item"><a class="page-link text-secondary" >Next</a></li>
+            </ul>
+          </nav>
+
+          
+
+
+
+        </div>
+
+        <div id="drawingboundaries" style="display:none;"> 
+          <!-- visibility:visible" -->
+          <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+          <!-- <h2 class="text-start text-white">  Drawing boundaries </h2>
+          <p class="text-start text-white">  You can visualize your elevation (>73 m) and price per square foot (>$19,116.7) observations as the boundaries of regions in your scatterplot. Homes plotted in the green and blue regions would be in San Francisco and New York, respectively.  </p>
+          <p class="text-start text-white">  Identifying boundaries in data using math is the essence of statistical learning. </p>
+          <p class="text-start text-white">  Of course, you’ll need additional information to distinguish homes with lower elevations <em>and</em>  lower per-square-foot prices.   </p> -->
+
+          <h2 class="text-start text-white">  Drawing boundaries </h2>
+          <p class="text-start text-white">  You can visualize your petal-length and sepal-length observations as the boundaries of regions in your scatterplot. 
+            Dots plotted in the three regions would be in the three species of iris flowers, respectively.  </p>
+          <p class="text-start text-white">  Identifying boundaries in data using math is the essence of statistical learning. </p>
+          <p class="text-start text-white">  The boundaries are called <strong>decision boundaries</strong>. </p>
+          <p class="text-start text-white">  Visualizing decision boundaries in two dimensions and three dimensions could give us a better understanding of the given data set.</p>
+
+
+
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li id="fromdrawbtoaddn" class="page-item"><a class="page-link" >Previous</a></li>
+              <li id="fromdrawbto" class="page-item" ><a class="page-link"  href="http://localhost:8000/int_ml_02.html#">Next</a></li>
+            </ul>
+          </nav>
+
+
+
+        </div>
+        
+      </div>  
+
+      <div class="col-lg-2 col-md-2 mx-auto ">
+        <h2 class="text-start text-white"> News </h2>
+        <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p>
+      </div>
+
+      <!-- Add a svg area, empty -->
+      <!-- <svg id="dataviz_area" height=100% width=100%></svg> -->
+      <!-- <svg id="dataviz_area" height=1000 width=100%></svg> -->
+
+    </div>
+  </section>
+
+   <!-- Slideshow container -->
+<!-- <div class="slideshow-container">
+
+  
+  <div class="mySlides fade">
+    <div class="numbertext">1 / 3</div>
+    <div class="col">
+      <div class="card shadow-sm">
+        
+        <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+        
+       
+          <div class="card-body bg-secondary">
+          <p class="card-text text-white">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <a href="int_ml_01.html">
+                <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+              </a>
+                         </div>
+            <small class="text-muted">9 mins</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text">Caption Text</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">2 / 3</div>
+    <div class="col">
+      <div class="card shadow-sm">
+        
+        <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+        
+        <div class="card-body bg-secondary">
+          <p class="card-text text-white">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+            </div>
+            <small class="text-muted">9 mins</small>
+          </div>
+        </div>
+      </div>
+    </div>    <div class="text">Caption Two</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">3 / 3</div>
+    <div class="col">
+      <div class="card shadow-sm">
+        
+        <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+        
+        
+        <div class="card-body bg-secondary">
+          <p class="card-text text-white">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+              </div>
+            <small class="text-muted">9 mins</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text">Caption Three</div>
+  </div>
+
+
+  <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+  <a class="next" onclick="plusSlides(1)">&#10095;</a>
+</div> -->
+<br>
+
+<!-- The dots/circles -->
+<!-- <div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span>
+  <span class="dot" onclick="currentSlide(2)"></span>
+  <span class="dot" onclick="currentSlide(3)"></span>
+</div>  -->
+
+
+
+  <!-- cards -->
+  <div class="album py-5">
+    <div class="container">
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card shadow-sm">
+            
+            
+           
+            <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+
+           
+              <div class="card-body bg-secondary">
+              <p class="card-text text-white">This card explains some intuition using scatterplot.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a href="int_ml_01.html">
+                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            
+            <img src="secondThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            
+            <div class="card-body bg-secondary">
+              <p class="card-text text-white">This card explains boundaries to distinguish class.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a href="int_ml_02.html">
+                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+                  </a>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <img src="thirdThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <div class="card-body bg-secondary">
+              <p class="card-text text-white">This card explains how decision tree works. .</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a href="int_ml_03_decision_tree.html">
+                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>
+  
+
+</main>
+<!-- make footer located on the bottom of page -->
+<footer class="text-muted py-5 bg-info">
+  <div class="container">
+    <p class="float-end mb-13">
+      <a href="#">Back to top</a>
+    </p>
+    <!-- <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
+    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p> -->
+    <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
+  </div>
+</footer>
+
+
+    <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- <script src="JSfiles/Aliro.js"></script> -->
+    <script>
+     
+    // onedplotToTwodPlot()
+    // show_or_block_each_part()
+    
+
+    </script>
+
+
+  <!-- <script src="JSfiles/nond3works.js"></script> -->
+  <script src="JSfiles/backgroundOverlayeffect.js"></script>
+      
+  </body>
+</html>

@@ -1,0 +1,497 @@
+{
+    "name": "petal length (cm) > 2.45000004768",
+    "pred":  "100 of yes, 50 of no",
+    "children": [
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "balance > 662.5",
+                                            "pred": "7 of no, 8 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 15.0
+                                        },
+                                        {
+                                            "name": "balance <= 662.5",
+                                            "pred": "1 of no, 11 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 12.0
+                                        }
+                                    ],
+                                    "name": "campaign > 3.5",
+                                    "side": "right",
+                                    "type": "numerical",
+                                    "size": 27.0,
+                                    "pred": "8 of no, 19 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "job = technician",
+                                            "pred": "2 of no, 7 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 9.0
+                                        },
+                                        {
+                                            "name": "job != technician",
+                                            "pred": "49 of no, 34 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 83.0
+                                        }
+                                    ],
+                                    "name": "campaign <= 3.5",
+                                    "side": "left",
+                                    "type": "numerical",
+                                    "size": 92.0,
+                                    "pred": "51 of no, 41 of yes"
+                                }
+                            ],
+                            "name": "contact = cellular",
+                            "side": "right",
+                            "type": "categorical",
+                            "size": 119.0,
+                            "pred": "59 of no, 60 of yes"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "poutcome = success",
+                                            "pred": "1 of no, 0 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 1.0
+                                        },
+                                        {
+                                            "name": "poutcome != success",
+                                            "pred": "0 of no, 7 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 7.0
+                                        }
+                                    ],
+                                    "name": "job = retired",
+                                    "side": "right",
+                                    "type": "categorical",
+                                    "size": 8.0,
+                                    "pred": "1 of no, 7 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "duration > 1249.5",
+                                            "pred": "4 of no, 7 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 11.0
+                                        },
+                                        {
+                                            "name": "duration <= 1249.5",
+                                            "pred": "56 of no, 11 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 67.0
+                                        }
+                                    ],
+                                    "name": "job != retired",
+                                    "side": "left",
+                                    "type": "categorical",
+                                    "size": 78.0,
+                                    "pred": "60 of no, 18 of yes"
+                                }
+                            ],
+                            "name": "contact != cellular",
+                            "side": "left",
+                            "type": "categorical",
+                            "size": 86.0,
+                            "pred": "61 of no, 25 of yes"
+                        }
+                    ],
+                    "name": "marital = married",
+                    "side": "right",
+                    "type": "categorical",
+                    "size": 205.0,
+                    "pred": "120 of no, 85 of yes"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "duration > 1020.5",
+                                            "pred": "3 of no, 15 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 18.0
+                                        },
+                                        {
+                                            "name": "duration <= 1020.5",
+                                            "pred": "24 of no, 15 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 39.0
+                                        }
+                                    ],
+                                    "name": "day > 19.5",
+                                    "side": "right",
+                                    "type": "numerical",
+                                    "size": 57.0,
+                                    "pred": "27 of no, 30 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "age > 55.5",
+                                            "pred": "5 of no, 3 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 8.0
+                                        },
+                                        {
+                                            "name": "age <= 55.5",
+                                            "pred": "11 of no, 51 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 62.0
+                                        }
+                                    ],
+                                    "name": "day <= 19.5",
+                                    "side": "left",
+                                    "type": "numerical",
+                                    "size": 70.0,
+                                    "pred": "16 of no, 54 of yes"
+                                }
+                            ],
+                            "name": "day > 7.5",
+                            "side": "right",
+                            "type": "numerical",
+                            "size": 127.0,
+                            "pred": "43 of no, 84 of yes"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "name": "previous > 1.5",
+                                    "pred": "0 of no, 3 of yes",
+                                    "type": "numerical",
+                                    "side": "right",
+                                    "size": 3.0
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "duration > 678.5",
+                                            "pred": "16 of no, 6 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 22.0
+                                        },
+                                        {
+                                            "name": "duration <= 678.5",
+                                            "pred": "0 of no, 2 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 2.0
+                                        }
+                                    ],
+                                    "name": "previous <= 1.5",
+                                    "side": "left",
+                                    "type": "numerical",
+                                    "size": 24.0,
+                                    "pred": "16 of no, 8 of yes"
+                                }
+                            ],
+                            "name": "day <= 7.5",
+                            "side": "left",
+                            "type": "numerical",
+                            "size": 27.0,
+                            "pred": "16 of no, 11 of yes"
+                        }
+                    ],
+                    "name": "marital != married",
+                    "side": "left",
+                    "type": "categorical",
+                    "size": 154.0,
+                    "pred": "59 of no, 95 of yes"
+                }
+            ],
+            "name": "duration > 645.5",
+            "side": "right",
+            "type": "numerical",
+            "size": 359.0,
+            "pred": "179 of no, 180 of yes"
+        },
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "duration > 339.0",
+                                            "pred": "1 of no, 4 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 5.0
+                                        },
+                                        {
+                                            "name": "duration <= 339.0",
+                                            "pred": "6 of no, 1 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 7.0
+                                        }
+                                    ],
+                                    "name": "month = may",
+                                    "side": "right",
+                                    "type": "categorical",
+                                    "size": 12.0,
+                                    "pred": "7 of no, 5 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "pdays > 35.5",
+                                            "pred": "11 of no, 62 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 73.0
+                                        },
+                                        {
+                                            "name": "pdays <= 35.5",
+                                            "pred": "1 of no, 0 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 1.0
+                                        }
+                                    ],
+                                    "name": "month != may",
+                                    "side": "left",
+                                    "type": "categorical",
+                                    "size": 74.0,
+                                    "pred": "12 of no, 62 of yes"
+                                }
+                            ],
+                            "name": "duration > 180.5",
+                            "side": "right",
+                            "type": "numerical",
+                            "size": 86.0,
+                            "pred": "19 of no, 67 of yes"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "job = technician",
+                                            "pred": "2 of no, 1 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 3.0
+                                        },
+                                        {
+                                            "name": "job != technician",
+                                            "pred": "0 of no, 6 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 6.0
+                                        }
+                                    ],
+                                    "name": "education = tertiary",
+                                    "side": "right",
+                                    "type": "categorical",
+                                    "size": 9.0,
+                                    "pred": "2 of no, 7 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "marital = divorced",
+                                            "pred": "0 of no, 1 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 1.0
+                                        },
+                                        {
+                                            "name": "marital != divorced",
+                                            "pred": "18 of no, 1 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 19.0
+                                        }
+                                    ],
+                                    "name": "education != tertiary",
+                                    "side": "left",
+                                    "type": "categorical",
+                                    "size": 20.0,
+                                    "pred": "18 of no, 2 of yes"
+                                }
+                            ],
+                            "name": "duration <= 180.5",
+                            "side": "left",
+                            "type": "numerical",
+                            "size": 29.0,
+                            "pred": "20 of no, 9 of yes"
+                        }
+                    ],
+                    "name": "poutcome = success",
+                    "side": "right",
+                    "type": "categorical",
+                    "size": 115.0,
+                    "pred": "39 of no, 76 of yes"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "balance > 5477.5",
+                                            "pred": "1 of no, 0 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 1.0
+                                        },
+                                        {
+                                            "name": "balance <= 5477.5",
+                                            "pred": "0 of no, 11 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 11.0
+                                        }
+                                    ],
+                                    "name": "pdays > 373.0",
+                                    "side": "right",
+                                    "type": "numerical",
+                                    "size": 12.0,
+                                    "pred": "1 of no, 11 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "month = oct",
+                                            "pred": "11 of no, 16 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 27.0
+                                        },
+                                        {
+                                            "name": "month != oct",
+                                            "pred": "1207 of no, 173 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 1380.0
+                                        }
+                                    ],
+                                    "name": "pdays <= 373.0",
+                                    "side": "left",
+                                    "type": "numerical",
+                                    "size": 1407.0,
+                                    "pred": "1218 of no, 189 of yes"
+                                }
+                            ],
+                            "name": "duration > 222.5",
+                            "side": "right",
+                            "type": "numerical",
+                            "size": 1419.0,
+                            "pred": "1219 of no, 200 of yes"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "name": "day > 19.5",
+                                            "pred": "6 of no, 9 of yes",
+                                            "type": "numerical",
+                                            "side": "right",
+                                            "size": 15.0
+                                        },
+                                        {
+                                            "name": "day <= 19.5",
+                                            "pred": "20 of no, 1 of yes",
+                                            "type": "numerical",
+                                            "side": "left",
+                                            "size": 21.0
+                                        }
+                                    ],
+                                    "name": "month = oct",
+                                    "side": "right",
+                                    "type": "categorical",
+                                    "size": 36.0,
+                                    "pred": "26 of no, 10 of yes"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "name": "month = mar",
+                                            "pred": "21 of no, 9 of yes",
+                                            "type": "categorical",
+                                            "side": "right",
+                                            "size": 30.0
+                                        },
+                                        {
+                                            "name": "month != mar",
+                                            "pred": "2516 of no, 46 of yes",
+                                            "type": "categorical",
+                                            "side": "left",
+                                            "size": 2562.0
+                                        }
+                                    ],
+                                    "name": "month != oct",
+                                    "side": "left",
+                                    "type": "categorical",
+                                    "size": 2592.0,
+                                    "pred": "2537 of no, 55 of yes"
+                                }
+                            ],
+                            "name": "duration <= 222.5",
+                            "side": "left",
+                            "type": "numerical",
+                            "size": 2628.0,
+                            "pred": "2563 of no, 65 of yes"
+                        }
+                    ],
+                    "name": "poutcome != success",
+                    "side": "left",
+                    "type": "categorical",
+                    "size": 4047.0,
+                    "pred": "3782 of no, 265 of yes"
+                }
+            ],
+            "name": "50 of setosa, 0 of versicolor, 0 of virginica",
+            "side": "left",
+            "type": "numerical",
+            "size": 50,
+            "pred": "50 of setosa, 0 of versicolor&virginica"
+        }
+
+    ],
+    "side": "right",
+    "size": 150
+}
+
+
+
+
+
+
+
+
+
+
