@@ -101,6 +101,19 @@ class Builder extends Component {
       setCurrentAlgorithm,
       setParamValue
     } = this.props;
+
+
+    function openTrueOrFalse_submit_experiment_popup()
+  {
+    if (sessionStorage.getItem("submit-experiment-popup") == "true"){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+
+
     return (
       <div className="builder-scene">
         <SceneHeader 
@@ -120,6 +133,11 @@ class Builder extends Component {
             setParamValue={setParamValue}
           />
         </Grid>
+
+
+        <Popup 
+          id = "submit-experiment-popup"
+          trigger={
         <div className="builder-btns">
           <Popup
             header="Error submitting experiment:"
@@ -144,6 +162,29 @@ class Builder extends Component {
             onClick={this.handleResetExperiment}
           />
         </div>
+          }
+          
+          content="Launch experiment"
+          position="top left"
+          
+          open = {openTrueOrFalse_submit_experiment_popup()}
+
+          onClick = { () => 
+            {
+              if (document.getElementById("submit-experiment-popup") != null) {
+              
+                document.getElementById("submit-experiment-popup").style.cssText += ';display:none !important;';
+
+                sessionStorage.setItem("submit-experiment-popup", "true");
+                // show the local storage on the console
+                console.log("submit-experiment-popup", sessionStorage.getItem("submit-experiment-popup"));
+
+              }
+            }
+          }
+          />
+
+
       </div>
     );
   }

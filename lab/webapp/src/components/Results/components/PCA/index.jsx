@@ -31,7 +31,7 @@ import React, { Component } from 'react';
 import InvertedCard from '../../../InvertedCard';
 import { Header, Image, Loader } from 'semantic-ui-react';
 
-class InteractiveConfusionMatrix extends Component {
+class PCA extends Component {
   constructor(props) {
     super(props);
     this.state = { image_url: null };
@@ -48,11 +48,9 @@ class InteractiveConfusionMatrix extends Component {
           }  
           return response.blob();
         })
-        .then(blob => {
-          this.setState({ 
-            image_url: URL.createObjectURL(blob) 
-          });
-        });
+        .then(blob => this.setState({ 
+          image_url: URL.createObjectURL(blob) 
+        }));
     }
   }
 
@@ -62,23 +60,23 @@ class InteractiveConfusionMatrix extends Component {
 
     if(!file) {
       return (
-        <Header inverted size="tiny" content="Confusion matrix is not available." />
+        <Header inverted size="tiny" content="PCA is not available." />
       );
     }
 
     if(!image_url) {
       return (
-        <Loader active inverted inline="centered" content="Retrieving confusion matrix..." />
+        <Loader active inverted inline="centered" content="Retrieving learning curve..." />
       );
     }
 
     return (
       <InvertedCard
-        header="Confusion Matrix"
+        header="PCA"
         content={<Image src={image_url} />}
       />
     );
   }
 }
 
-export default InteractiveConfusionMatrix;
+export default PCA;

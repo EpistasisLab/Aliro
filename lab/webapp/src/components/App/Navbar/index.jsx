@@ -30,6 +30,8 @@ import MediaQuery from 'react-responsive';
 import DeviceWatcher from '../../../utils/device-watcher';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
+
+
 /**
 * child component of menu bar - if preferences successfully retrieved, create
 * menu bar with links to other sections of site
@@ -52,7 +54,7 @@ function Navbar({ preferences }) {
         <Menu.Item header name="Aliro" />
       </Link>
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
-        <Menu.Item name="Your friendly AI assistant" />
+        <Menu.Item name="Hello Your friendly AI assistant" />
       </MediaQuery>
       {preferences &&
         <Menu.Menu position="right">
@@ -80,12 +82,32 @@ function Navbar({ preferences }) {
               </MediaQuery>
             </Menu.Item>
           </Link>
-          <Menu.Item>
+          {/* if machine is not window then do not show below item */}
+          
+          {/* <Menu.Item id='user_item'>
             <Icon name="user" />
             <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
               {preferences.username}
             </MediaQuery>
-          </Menu.Item>
+          </Menu.Item> */}
+
+          {/* {window.navigator.oscpu==='Intel Mac OS X 10.15'? */}
+          {window.navigator.oscpu==='Intel Mac OS X 10.15.'?
+
+                <Menu.Item id='user_item'>
+                <Icon name="user" />
+                <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
+                  {preferences.username}
+                </MediaQuery>
+                </Menu.Item> :
+
+            // empty div
+            <div></div>
+
+          }
+          
+
+
         </Menu.Menu>
       }
     </Menu>
