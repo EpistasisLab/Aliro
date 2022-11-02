@@ -30,13 +30,13 @@ function pingURL() {
 
 
 
-        const sele = document.getElementById('temp');
+        const sele = document.getElementById('loadingbutton');
         // make button with id temp always same size
         // sele.style.width = "100%";
         // sele.style.height = "100%";
 
 
-        sele.innerHTML = "Aliro is running";
+        sele.innerHTML = "Aliro is ready to run";
 
         // Add URL to the button id temp href
         sele.href = URL;
@@ -60,8 +60,36 @@ function pingURL() {
 
 
 
-        // d3.select('#temp').text('Aliro is running');
-        // d3.select('#temp').style('color', 'red');
+
+        // make blinkingtextcir text changed
+        const sele2 = document.getElementById('blinkingtextcir');
+
+        
+        
+
+        // make the blinkingtextcir clickable and link to the URL
+
+        sele2.innerHTML = "Aliro is ready to run";
+        sele2.href = URL;
+
+        // make the mouse cursor pointer like hand
+        sele2.style.cursor = "pointer";
+
+        sele2.addEventListener('click', function () {
+          // move to the URL
+          window.location.href = URL;
+        } ); 
+
+
+        const selcir = document.getElementsByClassName('blinkingcir')
+
+        for (var i = 0; i < selcir.length; i++) {
+          // selcir.setAttribute("r", "10"); 
+          selcir[i].setAttribute("r", "7");
+        }
+
+
+
 
 
 
@@ -85,7 +113,98 @@ function pingURL() {
 
 }
 
-// d3.select('#temp').text('Aliro is running');
+
+
+function pingURL_DOWNLOAD() {
+
+  // Aliro URL
+  var URL = "http://localhost:5080"
+  // var URL = "http://google.com"
+  // var URL = "http://www.daum.net"
+  var settings = {
+
+    // Defines the configurations
+    // for the request
+
+    cache: false,
+    dataType: "jsonp",
+    async: true,
+    crossDomain: true,
+    url: URL,
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    timeout: 10000,
+    tryCount: 0,
+    tryLimit: 100,
+    // tryLimit: 2,
+    statusCode: {
+      200: function (response) {
+
+
+
+
+        
+
+
+
+
+
+        // make blinkingtextcir text changed
+        const sele2 = document.getElementById('blinkingtextcir');
+
+        
+        
+
+        // make the blinkingtextcir clickable and link to the URL
+
+        sele2.innerHTML = "Aliro is ready to run";
+        sele2.href = URL;
+
+        // make the mouse cursor pointer like hand
+        sele2.style.cursor = "pointer";
+
+        sele2.addEventListener('click', function () {
+          // move to the URL
+          window.location.href = URL;
+        } ); 
+
+
+        const selcir = document.getElementsByClassName('blinkingcir')
+
+        for (var i = 0; i < selcir.length; i++) {
+          // selcir.setAttribute("r", "10"); 
+          selcir[i].setAttribute("r", "7");
+        }
+
+
+
+
+
+
+
+      },
+      0: function () {
+        this.url = URL;
+        if (this.tryCount++ < this.tryLimit) {
+
+          $.ajax(this);
+        }
+      }
+    },
+  };
+
+
+
+
+  $.ajax(settings)
+
+
+}
+
+// d3.select('#temp').text('Aliro is ready to run');
 // d3.select('#temp').style('color', 'red');
 
 

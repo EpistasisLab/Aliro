@@ -35,7 +35,7 @@ function pingURL() {
           // sele.style.height = "100%";
 
 
-          sele.innerHTML = "Aliro is running";
+          sele.innerHTML = "Aliro is ready to run";
 
           // Add URL to the button id temp href
           sele.href = URL;
@@ -59,7 +59,7 @@ function pingURL() {
           
 
 
-          // d3.select('#temp').text('Aliro is running');
+          // d3.select('#temp').text('Aliro is ready to run');
           // d3.select('#temp').style('color', 'red');
           
           
@@ -84,7 +84,7 @@ function pingURL() {
 
 }
 
-// d3.select('#temp').text('Aliro is running');
+// d3.select('#temp').text('Aliro is ready to run');
 // d3.select('#temp').style('color', 'red');
 
 

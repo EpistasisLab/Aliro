@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Hyunjun Choi and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.101.0">
-    <title>Aliro ED</title>
+    <title>Aliro Ed</title>
 
     <!-- <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/"> -->
 
@@ -19,8 +19,9 @@
 
     <!-- Own favicon -->
     <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
-    <link rel="icon" href="Logo/rpi-imager.ico">
-      
+    <!-- <link rel="icon" href="./Logo/rpi-imager.png"> -->
+    
+    <link rel="icon" href="build/rpi-imager.icns">
 
 <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
@@ -72,12 +73,13 @@
     <!-- <div class="navbar navbar-light bg-secondary shadow-sm"> -->
     <div class="navbar navbar-dark bg-info shadow-sm">
     <div class="container">
-      <a href="/main.html" class="navbar-brand d-flex align-items-center">
+      <a href="./main.html" class="navbar-brand d-flex align-items-center">
         
         <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> -->
         <!-- <img src="Logo/PENNAILOGO.png" alt="PENNAILOGO" width="35" height="35">
-        <strong>Aliro ED</strong> -->
-        <img id="mainLogo" class="" src="Logo/rpi-imager.ico" alt="PENNAILOGO" width="50" height="50">
+        <strong>Aliro Ed</strong> -->
+        <!-- <img id="mainLogo" class="" src="Logo/rpi-imager.ico" alt="PENNAILOGO" width="50" height="50"> -->
+        <!-- <img id="mainLogo" class="" src="build/rpi-imager.icns" alt="PENNAILOGO" width="50" height="50"> -->
         
         <strong id="mainName">Aliro Ed</strong>
 
@@ -86,10 +88,10 @@
         <span class="navbar-toggler-icon"></span>
       </button> -->
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="/infAndDownloadpage.html">Download</a>
+        <a class="nav-link active" aria-current="page" href="./infAndDownloadpage.html">Download</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Production</a>
+        <a class="nav-link" href="#"></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#"></a>
@@ -126,7 +128,17 @@
 
   <video autoplay muted loop id="myVideo">
     <source src="Videos/video.mp4" type="video/mp4">
+    <!-- <source src="Videos/video_how_to_install.mp4" type="video/mp4"> -->
+    
   </video>
+
+
+  <svg height="100" width="250" class="blinking">
+  
+    <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
+    <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
+    Sorry, your browser does not support inline SVG.  
+  </svg> 
 
 
   <div id="overlay" onclick="off()"></div>
@@ -134,7 +146,7 @@
   <section class="py-5 text-center container">
     <div class="row py-lg-5 bg-info">
       <div class="col-lg-6 col-md-8 mx-auto">
-        <!-- <h1 class="fw-light">A visual introduction to Aliro ED</h1> -->
+        <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
         <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
         
          <!-- make video responsive -->
@@ -191,16 +203,12 @@
           <!-- change the below contenct to explain download  -->
 
           <h2 class="text-start text-white"> Overview </h2>
-          <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p>
+          <p class="text-start text-white"> Welcome to the download page of Aliro Ed.  </p>
 
 
-            <p class="text-start text-white">Sponsor FileZilla development and reach developers, webmasters and bloggers
-              Welcome to the homepage of FileZilla®, the free FTP solution. The FileZilla Client not only supports FTP, 
-              but also FTP over TLS (FTPS) and SFTP. It is open source software distributed free of charge under the terms of the GNU General Public License.
-
-
+            <p class="text-start text-white">Welcome to the download page of Aliro Ed image. Using this file, you can easily install Aliro Ed on Raspberry Pi 4. Please watch the video left to see how to install it.
               
-                
+
             </p>
 
 
@@ -211,14 +219,16 @@
 
           <nav aria-label="Page navigation example">
             <ul class="pagination">
-              <!-- <li id="downloadLi" class="page-item all-scroll"><a id="downloadA" class="page-link text-secondary" href="/storage/test_download.json" download>Download</a></li> -->
+              <!-- <li id="downloadLi" class="page-item all-scroll"><a id="downloadA" class="page-link text-secondary" href="./storage/test_download.json" download>Download</a></li> -->
             
-              <li id="downloadLi" class="page-item all-scroll"><a id='infanddownload' href="/storage/test_download.json" class="btn btn-primary my-2" download>Download</a></li>
+              <!-- <li id="downloadLi" class="page-item all-scroll"><a id='infanddownload' href="./storage/test_download.json" class="btn btn-primary my-2" download>Download</a></li> -->
+
+              <li id="downloadLi" class="page-item all-scroll"><a id='infanddownload' href="./storage/Aliro.img.xz" class="btn btn-primary my-2" download>Download</a></li>
             
             </ul>
 
             <!-- <p>
-              <a id='infanddownload' href="/infAndDownloadpage.html" class="btn btn-primary my-2">Download</a>
+              <a id='infanddownload' href="./infAndDownloadpage.html" class="btn btn-primary my-2">Download</a>
             </p>
              -->
             <!-- <h2 class="text-start text-white"> Quick download links </h2>
@@ -292,7 +302,18 @@
 
       <div class="col-lg-2 col-md-2 mx-auto ">
         <h2 class="text-start text-white"> News </h2>
-        <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p>
+        <!-- make dot list below the News -->
+        
+        <ul>
+          <li class="text-start text-white">2022-##-##- Aliro Ed 1.0.0 is released.
+
+            
+            <!-- <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p> -->
+          </li>
+          
+        </ul> 
+
+        <!-- <p class="text-start text-white"> Welcome to the homepage of Aliro Ed.  </p> -->
       </div>
 
       <!-- Add a svg area, empty -->
@@ -462,7 +483,7 @@
       <a href="#">Back to top</a>
     </p>
     <!-- <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p> -->
+    <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p> -->
     <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
   </div>
 </footer>
@@ -476,6 +497,7 @@
      
     // onedplotToTwodPlot()
     // show_or_block_each_part()
+    pingURL_DOWNLOAD()
     
 
     </script>
