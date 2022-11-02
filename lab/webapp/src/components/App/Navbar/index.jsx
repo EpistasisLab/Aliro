@@ -54,7 +54,7 @@ function Navbar({ preferences }) {
         <Menu.Item header name="Aliro" />
       </Link>
       <MediaQuery minWidth={DeviceWatcher.breakpoints.MAX_MOBILE}>
-        <Menu.Item name="Hello Your friendly AI assistant" />
+        <Menu.Item name="Your friendly AI assistant" />
       </MediaQuery>
       {preferences &&
         <Menu.Menu position="right">
@@ -92,7 +92,12 @@ function Navbar({ preferences }) {
           </Menu.Item> */}
 
           {/* {window.navigator.oscpu==='Intel Mac OS X 10.15'? */}
-          {window.navigator.oscpu==='Intel Mac OS X 10.15.'?
+
+          {/* mac os, ubuntu, window */}
+          {/* my idea */}
+
+          {/* {window.navigator.oscpu==='Intel Mac OS X 10.15.' ||  */}
+          {window.navigator.oscpu==='Intel Mac OS X 10.15.' ?
 
                 <Menu.Item id='user_item'>
                 <Icon name="user" />
@@ -105,6 +110,8 @@ function Navbar({ preferences }) {
             <div></div>
 
           }
+
+          {/* jay's idea */}
           
 
 
