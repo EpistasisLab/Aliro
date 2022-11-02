@@ -59,3 +59,5 @@ share/python-wheels/
 *.egg
 MANIFEST
 .vscode
+
+.xz
