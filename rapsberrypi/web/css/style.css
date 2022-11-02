@@ -352,7 +352,9 @@ border-radius: 1rem;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.3);
+  /* background-color: rgba(0,0,0,0.3); */
+    background-color: rgba(0,0,0,0.4);
+  /* background-color: rgba(255, 255, 255, 0.3); */
   z-index: 1;
   cursor: pointer;
 }
@@ -417,4 +419,19 @@ border-radius: 1rem;
   color: #ffffff;
  }
 
+ 
 
+
+
+.blinking {
+  animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+  position:absolute;  
+  /* transform translate to the right side of web page */
+  transform: translate(550%, -90%);
+  /* transform: translate(0, 0); */
+}
+
+@keyframes blinker {  
+from { opacity: 1; }
+to { opacity: 0; }
+}
