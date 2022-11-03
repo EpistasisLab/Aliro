@@ -31,7 +31,7 @@ import React, { Component } from 'react';
 import InvertedCard from '../../../InvertedCard';
 import { Header, Image, Loader } from 'semantic-ui-react';
 
-class ConfusionMatrix extends Component {
+class InteractiveConfusionMatrix extends Component {
   constructor(props) {
     super(props);
     this.state = { image_url: null };
@@ -81,4 +81,4 @@ class ConfusionMatrix extends Component {
   }
 }
 
-export default ConfusionMatrix;
+export default InteractiveConfusionMatrix;

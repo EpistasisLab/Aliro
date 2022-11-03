@@ -40,7 +40,24 @@ function ParameterOptions({
 
   const getReturnValue = (info, i) => info.ui.values ? info.ui.values[i] : info.ui.choices[i];
 
+  function openTrueOrFalse_param_popup()
+  {
+    if (sessionStorage.getItem("param-popup") == "true"){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+
   return (
+
+    <Popup 
+    id = "param-popup"
+    // prevent the popup change location when the user scrolls down the page
+    // position = "fixed"
+
+    trigger={
     <Grid.Row>
       {params && Object.entries(params).map(([param, info]) => (
         <Grid.Column
@@ -51,6 +68,7 @@ function ParameterOptions({
           widescreen={8}
           largeScreen={8}
         >
+
           <Segment inverted attached="top" className="panel-header">
             <Popup
               on="click"
@@ -75,6 +93,8 @@ function ParameterOptions({
               className="param-name"
             />
           </Segment>
+
+          
           <Segment inverted attached="bottom">
             <Grid columns={calcCols(info.ui.choices)} className="compressed">
             {info.ui.choices.map((choice, i) => (
@@ -91,9 +111,53 @@ function ParameterOptions({
             ))}
             </Grid>
           </Segment>
+          
+          
         </Grid.Column>
       ))}
     </Grid.Row>
+    }
+    content="Step 5: Select the parameters for the algorithm"
+    // prevent the popups from overlapping
+
+
+
+    
+    position="top center"
+    open = {openTrueOrFalse_param_popup()}
+
+      onClick = { () => 
+        {
+          if (document.getElementById("param-popup") != null) {
+          
+            document.getElementById("param-popup").style.cssText += ';display:none !important;';
+
+            sessionStorage.setItem("param-popup", "true");
+              // show the local storage on the console
+            console.log("param-popup", sessionStorage.getItem("param-popup"));
+
+
+            // get class name content under id aiTooglePopup
+            var content = document.getElementById("submit-experiment-popup").getElementsByClassName("content")[0];
+            // set border-radius: 10px;
+            content.style.cssText += ';border-radius: 10px;';
+
+            var submitexperimentpopup = document.getElementById("submit-experiment-popup")
+            
+            // set display: flex;
+            submitexperimentpopup.style.cssText += ';display: flex;';
+            // set flex-direction: row;
+            submitexperimentpopup.style.cssText += ';flex-direction: row;';
+            // set align-items: center;
+            submitexperimentpopup.style.cssText += ';align-items: center;';
+
+            // set animation: blinker 3s linear infinite;
+            submitexperimentpopup.style.cssText += ';animation: blinker 3s linear infinite;';
+          
+          }
+        }
+      }
+    />
   );
 }
 

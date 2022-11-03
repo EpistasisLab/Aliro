@@ -43,6 +43,9 @@ import NotFound from '../NotFound';
 * Use react router to delineate different parts of website; essentially links
 */
 function Root({ store }) {
+
+  // var [eventsEnabled, setEventsEnabled] = React.useState(true)
+  // var [open, setOpen] = React.useState(true)
   return (
     <Provider store={store}>
       <Router history={hashHistory} onUpdate={() => window.scrollTo(0, 0)}>
@@ -56,10 +59,18 @@ function Root({ store }) {
           <Route path="results/:id" component={Results} />
           <Route path="admin" component={Admin} />
           <Route path="*" component={NotFound} />
+          
         </Route>
       </Router>
     </Provider>
+    
   );
+  
 }
 
 export default Root;
+
+
+
+
+

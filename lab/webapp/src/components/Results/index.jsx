@@ -34,11 +34,15 @@ import AlgorithmDetails from './components/AlgorithmDetails';
 import RunDetails from './components/RunDetails'
 import MSEMAEDetails from './components/MSEMAEDetails';;
 import ConfusionMatrix from './components/ConfusionMatrix';
+import InteractiveConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
 import ShapSummaryCurve from './components/ShapSummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
+import LearningCurve from './components/LearningCurve';
+import PCA from './components/PCA';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
+import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 
@@ -62,10 +66,22 @@ class Results extends Component {
   *   value - actual score
   * passed to Score component which uses javascript library C3 to create graphic
   */
+
+  // async getData(filename){
+  //   const res = await fetch(filename);
+  //   const data = await res.json();
+  //   return this.setState({data});
+  // }
+
   getGaugeArray(keyList) {
     const { experiment } = this.props;
     let testList = [];
     let expScores = experiment.data.scores;
+
+    // console.log("experiment.data")
+    // console.log(experiment.data)
+    // console.log(experiment.data['class_1'][0])
+    // console.log(experiment.data['class_-1'][0])
 
     if(typeof(expScores) === 'object'){
       keyList.forEach(scoreKey => {
@@ -134,11 +150,14 @@ class Results extends Component {
         });
     };
 
-    console.log(experiment.data.prediction_type)
+    // console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
-      let confusionMatrix, rocCurve, importanceScore, shap_explainer, shap_num_samples;
+      let confusionMatrix, rocCurve, importanceScore, learningCurve, pca, shap_explainer, shap_num_samples;
+      
       let shapSummaryCurveDict = {};
+
+          
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
         if(filename.includes('confusion_matrix')) {
@@ -147,12 +166,20 @@ class Results extends Component {
           rocCurve = file;
         } else if(filename.includes('imp_score')) {
           importanceScore = file;
-        } else if(filename.includes('shap_summary_curve')) {
+        } else if(filename.includes('learning_curve')) {
+          learningCurve = file;
+          
+          
+        } else if(filename.includes('pca')) {
+          pca = file;
+          
+        }else if(filename.includes('shap_summary_curve')) {
           let class_name = filename.split('_').slice(-2,-1);
           shapSummaryCurveDict[class_name] = file;
           shap_explainer=experiment.data.shap_explainer;
           shap_num_samples=experiment.data.shap_num_samples;
-        }
+        } 
+        
       });
       // balanced accuracy
       let balancedAccKeys = ['train_balanced_accuracy_score', 'balanced_accuracy_score'];
@@ -170,6 +197,42 @@ class Results extends Component {
       let aucList = this.getGaugeArray(aucKeys);
       let recallList = this.getGaugeArray(recallKeys);
       let f1List = this.getGaugeArray(f1Keys);
+      let class_percentage = [];
+
+      
+      
+      
+      experiment.data.class_names.forEach(eachclass => {
+
+        console.log('eachclass.toString()', eachclass.toString())
+        // if type of experiment.data['class_' +  eachclass.toString()] === 'object'
+        if ((typeof experiment.data['class_' +  eachclass.toString()]) === 'object')
+        {
+          class_percentage.push(
+            [eachclass.toString(), experiment.data['class_' +  eachclass.toString()][0]]
+          );
+          console.log("experiment.data['class_1']", experiment.data['class_1'])
+        }
+        else
+        {
+          class_percentage.push(
+            [eachclass.toString(), experiment.data['class_' +  eachclass.toString()]]
+        );
+        console.log("experiment.data['class_1']", experiment.data['class_1'])
+        }
+
+
+        
+      });
+
+
+
+
+      // print class_percentage
+      // console.log("class_percentage", class_percentage)
+
+      // print experiment.data
+      // console.log("experiment.data['class_1']", experiment.data['class_1'])
 
 
 
@@ -225,8 +288,18 @@ class Results extends Component {
                   launchedBy={experiment.data.launched_by}
                 />
                 <ImportanceScore file={importanceScore} />
+                <LearningCurve file={learningCurve}/>
+                <PCA file={pca}/>
               </Grid.Column>
               <Grid.Column>
+                <NoScore
+                  scoreName="Class Rate"
+                  scoreValueList={class_percentage}
+                  chartKey="test"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+                {/* <InteractiveConfusionMatrix /> */}
                 <ConfusionMatrix file={confusionMatrix} />
                 <ROCCurve file={rocCurve} />
                 <ShapSummaryCurve
@@ -270,6 +343,9 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="classification"
                 />
+
+                {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
+
               </Grid.Column>
             </Grid.Row>
           </Grid>

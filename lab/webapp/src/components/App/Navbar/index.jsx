@@ -30,6 +30,8 @@ import MediaQuery from 'react-responsive';
 import DeviceWatcher from '../../../utils/device-watcher';
 import { Menu, Dropdown, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router';
+
+
 /**
 * child component of menu bar - if preferences successfully retrieved, create
 * menu bar with links to other sections of site
@@ -80,12 +82,39 @@ function Navbar({ preferences }) {
               </MediaQuery>
             </Menu.Item>
           </Link>
-          <Menu.Item>
+          {/* if machine is not window then do not show below item */}
+          
+          {/* <Menu.Item id='user_item'>
             <Icon name="user" />
             <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
               {preferences.username}
             </MediaQuery>
-          </Menu.Item>
+          </Menu.Item> */}
+
+          {/* {window.navigator.oscpu==='Intel Mac OS X 10.15'? */}
+
+          {/* mac os, ubuntu, window */}
+          {/* my idea */}
+
+          {/* {window.navigator.oscpu==='Intel Mac OS X 10.15.' ||  */}
+          {window.navigator.oscpu==='Intel Mac OS X 10.15.' ?
+
+                <Menu.Item id='user_item'>
+                <Icon name="user" />
+                <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
+                  {preferences.username}
+                </MediaQuery>
+                </Menu.Item> :
+
+            // empty div
+            <div></div>
+
+          }
+
+          {/* jay's idea */}
+          
+
+
         </Menu.Menu>
       }
     </Menu>
