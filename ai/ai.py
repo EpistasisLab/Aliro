@@ -233,7 +233,7 @@ class AI():
             recArgs = self.DEFAULT_REC_ARGS[pred_type]
             recArgs['ml_p'] = ml_p
 
-            recArgs['serialized_rec_directory'] = '/appsrc/data/recommenders/pennaiweb'
+            recArgs['serialized_rec_directory'] = 'data/recommenders/pennaiweb'
             recArgs['load_serialized_rec'] = "if_exists" 
 
             if kb is not None:
