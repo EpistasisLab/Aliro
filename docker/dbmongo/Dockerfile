@@ -3,12 +3,6 @@ WORKDIR /opt/
 
 ARG docker_filepath=docker/dbmongo/files
 
-# RUN apt-get update
-# RUN apt-get install gpg wget
-# RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-# RUN apt-get update
-
-
 #add repo for mongodb
 RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update --fix-missing && \
