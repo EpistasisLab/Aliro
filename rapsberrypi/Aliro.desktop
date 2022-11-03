@@ -1,7 +1,0 @@
-#! /usr/bin/env xgd-open
-[Desktop Entry]
-Encoding=UTF-8
-Name=Aliro
-Type=Link
-URL=/home/aliro/target/production/Alrio-rpi-0.18/web/Aliro.html
-Icon=/home/aliro/target/production/Aliro-rpi-0.18/web/logo_blank_small.png
