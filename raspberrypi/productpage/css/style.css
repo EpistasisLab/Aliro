@@ -81,7 +81,7 @@ a#downloadImage{
 
 
 .bg-info {
-    --bs-bg-opacity: 0.1!important;
+    --bs-bg-opacity: 0.5!important;
 }
 
 
@@ -447,4 +447,8 @@ a#Downloadpage{
 
 #blinkingtextcir{
   visibility: hidden;
+}
+
+body {
+  background-color: rgb(24, 52, 62);
 }
