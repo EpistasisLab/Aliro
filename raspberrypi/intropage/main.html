@@ -69,12 +69,12 @@
       </div>
     </div>
   </div>
-  <!-- <div class="navbar navbar-dark bg-dark shadow-sm"> -->
+  <!-- <div id="topaliro" class="navbar navbar-dark bg-dark shadow-sm"> -->
     <!-- Change navar-dar blight -->
 
 
     <!-- <div class="navbar navbar-light bg-light shadow-sm"> -->
-    <div class="navbar navbar-dark bg-info shadow-sm">
+    <div id="topaliro" id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
     <div class="container">
       <a href="./main.html" class="navbar-brand d-flex align-items-center">
         
@@ -161,7 +161,7 @@
     </video>
    </div> -->
 
-  <video autoplay muted loop id="myVideo">
+  <video stop muted loop id="myVideo">
     <source src="Videos/video.mp4" type="video/mp4">
   </video>
 
@@ -183,7 +183,7 @@
 <svg height="100" width="250" class="blinking">
   
   <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
-  <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
+  <text id="blinkingtextcir" x="70" y="55" fill="red">Loading Aliro Ed...</text>
   Sorry, your browser does not support inline SVG.  
 </svg> 
 
@@ -205,7 +205,7 @@
       <!-- <div class="numbertext ">1 / 3</div> -->
       <!-- <img id="firstC" src="firstThumbnail_resized.png" style="width:100%"> -->
       <!-- <p>Hello!!!!</p> -->
-      <h1 class="fw-light text-white">Aliro Ed</h1>
+      <h1 class="fw-light text-white">What is Aliro Ed?</h1>
        
         <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">Aliro Ed is a software for users who are not familiar with machine learning. Users can experience machine learning tasks on Raspberry Pi 4 with Aliro Ed. 
           Users can download the raspberry pi image from the Aliro Ed website.
@@ -231,10 +231,8 @@
 
 
 
-    <div class="mySlides row py-lg-5">
-      <!-- <div class="numbertext ">1 / 3</div> -->
-      <!-- <img id="firstC" src="firstThumbnail_resized.png" style="width:100%"> -->
-      <!-- <p>Hello!!!!</p> -->
+    <!-- <div class="mySlides row py-lg-5">
+     
       <h1 class="fw-light text-white">Are you ready to run Aliro?</h1>
        
       <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">
@@ -242,8 +240,8 @@
         <p>
           <a id='loadingbutton' href="#" class="btn btn-primary my-2">Loading Aliro Ed ...</a>
         </p>
-      <!-- <div class="text">Caption Text</div> -->
-    </div>
+      
+    </div> -->
 
     
       
@@ -268,7 +266,7 @@
   <div style="text-align:center">
     <span class="dot" onclick="currentSlide(1)"></span>
     <span class="dot" onclick="currentSlide(2)"></span>
-    <span class="dot" onclick="currentSlide(3)"></span>
+    <!-- <span class="dot" onclick="currentSlide(3)"></span> -->
     <!-- <span class="dot" onclick="currentSlide(4)"></span> -->
   </div> 
 
@@ -347,23 +345,23 @@
 </main>
 
 
-<!-- <footer class="text-muted py-5 bg-info">
+<!-- <footer id="bottomfooter" class="text-muted py-5">
   <div class="container" >
     <p class="float-end mb-1">
-      <a href="#">Back to top</a>
+      <a id="backtotop" href="#">Back to top</a>
     </p>
     <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
     <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
   </div>
 </footer> -->
-<footer class="text-muted py-5 bg-info">
+<footer id="bottomfooter" class="text-muted py-5">
   <div class="container" >
     <p class="float-end mb-1">
-      <a href="#">Back to top</a>
+      <a id="backtotop" href="#">Back to top</a>
     </p>
 
-    <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
-    <!-- <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p> -->
+    <p id="footertext" class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
+    
   </div>
 </footer>
 
@@ -380,7 +378,8 @@
       // d3.select('#temp').style('color', 'black');
      
       // console.log(pingURL())
-      pingURL();
+      // pingURL();
+      pingURL_DOWNLOAD()
 
 
 

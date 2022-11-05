@@ -21,7 +21,7 @@
     <!-- Own favicon -->
     <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
     <!-- <link rel="icon" href="Logo/rpi-imager.ico"> -->
-    <link rel="icon" href="build/rpi-imager.icns">
+    <!-- <link rel="icon" href="build/rpi-imager.icns"> -->
       
 
 <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet"> -->
@@ -150,9 +150,9 @@
           <a id="projectyaxia" class="btn btn-secondary my-2">Project on Y axis</a>
           <a id="twoDPlot" class="btn btn-secondary my-2">Plot on 2D</a> -->
 
-          <!-- <button id="rotateprojectxaxia" type="button" class="btn btn-outline-success">Rotate and Project on X axis</button> -->
-          <button id="rotateprojectxaxia" type="button" class="btn btn-outline-success">Transform into histogram</button>
-          <!-- <button id="projectyaxia" type="button" class="btn btn-outline-danger">Function B</button>
+          <!-- <button id="rotateprojectxaxia" type="button" class="btn btn btn-primary">Rotate and Project on X axis</button> -->
+          <button id="rotateprojectxaxia" type="button" class="btn btn btn-primary">Transform into histogram</button>
+          <!-- <button id="projectyaxia" type="button" class="btn btn-secondary">Function B</button>
           <button id="twoDPlot" type="button" class="btn btn-outline-warning">Function C</button> -->
             
 
@@ -180,13 +180,13 @@
         <div id="intuition_exp"> 
 
           <h2 class="text-start text-white"> Better boundaries to distinguish classes </h2>
-          <p class="text-start text-white"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the green button. </p>
-          <p class="text-start text-white"> <strong id ="class1text" style="color:#440154;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#21918c;"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#fde725;"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
+          <p class="text-start text-white"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the transformmation button. </p>
+          <p class="text-start text-white"> <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#ff006e;"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#8338ec;"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
           <p class="text-start text-white"> Please click the Y axis. It will show an example to put boundaries  </p>
           <p class="text-start text-white">Please click the Y axis. It will show an example to put boundaries to distinguish classes of iris flowers. Then please click the Different boundaries button. It will show an example to put different boundaries to distinguish classes of iris flowers.</p>
           
           <!-- <p class="text-start text-white"> Let’s&nbsp;say you had to determine whether a dot is in 
-            <strong style="color:#440154;"> Class_1</strong> or <strong style="color:#21918c;"> in Class_2</strong> or <strong style="color:#fde725;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
+            <strong style="color:#ffbe0b;"> Class_1</strong> or <strong style="color:#ff006e;"> in Class_2</strong> or <strong style="color:#8338ec;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
           <p class="text-start text-white"> Since San Francisco is relatively hilly, the elevation of a home may be a good way to distinguish the two cities. </p>
           <p class="text-start text-white"> Based on the home-elevation data to the right, you could argue that a home above 73 meters should be <strong> classified</strong> as one in San Francisco. </p>
            -->
@@ -210,7 +210,7 @@
 
             <nav aria-label="Page navigation example">
               <ul class="pagination">
-                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary"  href="http://localhost:8000/int_ml_03_decision_tree.html#">Show decision tree</a></li>
+                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary"  href="int_ml_03_decision_tree.html">Show decision tree</a></li>
               </ul>
             </nav>
 
@@ -363,7 +363,7 @@
 <footer class="text-muted py-5 bg-info">
   <div class="container" >
     <p class="float-end mb-1">
-      <a href="#">Back to top</a>
+      <a id="backtotop" href="#">Back to top</a>
     </p>
     
     <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
@@ -387,7 +387,7 @@
       // window.d3 = null;
     </script>
 
-    <script src="https://d3js.org/d3.v3.js"></script>
+    <script src="JSfiles/d3.v3.js"></script>
     <script src="JSfiles/backgroundOverlayeffect.js"></script>
     
     <script>

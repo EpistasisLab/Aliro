@@ -1,3 +1,5 @@
+// this js file includes data in the code.
+
 
 function pingURL() {
 
@@ -216,14 +218,15 @@ function pingURL_DOWNLOAD() {
 
 function colorClass(class_cat) {
   if (class_cat == 0) {
-    // return "#440154";
-    return "#c701bb";
+    // return "#ffbe0b";
+    return "#ffbe0b";
   }
   else if (class_cat == 1) {
-    return "#21918c";
+    // return "#ff006e";
+    return "#ff006e";
   }
   else {
-    return "#fde725";
+    return "#8338ec";
   }
 
 }
@@ -437,16 +440,6 @@ function drawing_boundaries_on_2d_plot() {
 
 
 
-  // // mouseover the circles
-  // svg.selectAll("circle")
-  // .on("mouseover", function(d) {
-  //   console.log(x(d['petal-length']));
-  //   console.log(y(d['sepal-length']));
-  // })
-
-
-
-
 
   var svg = d3.select("#dataviz_area_div_svg")
   // make a box brom 0,0 to 123, 138 on the svg
@@ -470,7 +463,7 @@ function drawing_boundaries_on_2d_plot() {
     .duration(2000)
     .attr("width", d => d[1][0] - d[0][0])
     .attr("height", d => d[1][1] - d[0][1])
-    .attr("fill", "#440154")
+    .attr("fill", "#ffbe0b")
     .attr("opacity", 0.2)
     .attr("id","drawn_boundaries_1");
 
@@ -496,7 +489,9 @@ function drawing_boundaries_on_2d_plot() {
     .duration(2000)
     .attr("width", d => d[1][0] - d[0][0])
     .attr("height", d => d[1][1] - d[0][1])
-    .attr("fill", "#21918c")
+    // .attr("fill", "#ff006e")
+
+    .attr("fill", "#ff006e")
     .attr("opacity", 0.2)
     .attr("id","drawn_boundaries_2");
 
@@ -519,7 +514,7 @@ function drawing_boundaries_on_2d_plot() {
     .duration(2000)
     .attr("width", d => d[1][0] - d[0][0])
     .attr("height", d => d[1][1] - d[0][1])
-    .attr("fill", "#fde725!important")
+    .attr("fill", "#8338ec!important")
     .attr("opacity", 0.2)
     .attr("id","drawn_boundaries_3");
 
@@ -3308,7 +3303,9 @@ function decisiontree() {
   d3.json(filetochoose, function (error, flare) {
     if (error) throw error;
 
-    console.log(getDepth(flare))
+    
+
+    // console.log(getDepth(flare))
 
 
     tree = d3.layout.tree()
@@ -3367,6 +3364,336 @@ function decisiontree() {
     update(root, l.length);
     // createLabels(l);
   });
+
+  // get data from the iris_tree_data.js
+
+  // var iris_tree_Data = {
+  //   "name": "petal length (cm) > 2.45000004768",
+  //   "pred": "100 of no, 50 of yes",
+  //   "children": [
+  //       {
+  //           "children": [
+  //               {
+  //                   "children": [
+  //                       {
+                            
+  //                           "name": "The number of data = 43",
+  //                           "children": [
+  
+  
+  
+  //                              {
+                                    
+  //                                   "name": "0 = setosa",
+  //                                   "children": [],
+  //                                   "side": "right",
+  //                                   "type": "categorical",
+  //                                   "size": 0,
+  //                                   "pred": "0 of no, 0 of yes"
+  //                               },
+  //                               {
+                                    
+  //                                 "name": "0 = versicolor",
+  //                                 "children": [],
+  //                                 "side": "right",
+  //                                 "type": "categorical",
+  //                                 "size": 0,
+  //                                 "pred": "0 of no, 0 of yes"
+  //                             }
+  //                             ,
+  //                               {
+                                    
+  //                                 "name": "43 = virginica",
+  //                                 "children": [],
+  //                                 "side": "right",
+  //                                 "type": "categorical",
+  //                                 "size": 43,
+  //                                 "pred": "43 of no, 0 of yes"
+  //                             }
+  
+  //                           ],
+  //                           "side": "right",
+  //                           "type": "categorical",
+  //                           "size": 43,
+  //                           "pred": "0 of no, 0 of yes"
+  //                       },
+  //                       {
+                            
+  //                         "name": "The number of data = 3",
+  //                         "children": [
+  
+  
+  //                           {
+                                    
+  //                             "name": "0 = setosa",
+  //                             "children": [],
+  //                             "side": "right",
+  //                             "type": "categorical",
+  //                             "size": 0,
+  //                             "pred": "0 of no, 0 of yes"
+  //                         },
+  //                         {
+                              
+  //                           "name": "1 = versicolor",
+  //                           "children": [],
+  //                           "side": "right",
+  //                           "type": "categorical",
+  //                           "size": 1,
+  //                           "pred": "1 of no, 0 of yes"
+  //                       }
+  //                       ,
+  //                         {
+                              
+  //                           "name": "2 = virginica",
+  //                           "children": [],
+  //                           "side": "right",
+  //                           "type": "categorical",
+  //                           "size": 2,
+  //                           "pred": "2 of no, 0 of yes"
+  //                       }
+  
+  
+  
+  
+  //                         ],
+  //                         "side": "right",
+  //                         "type": "categorical",
+  //                         "size": 3,
+  //                         "pred": "0 of no, 0 of yes"
+  //                     }
+  
+  //                   ],
+  //                   "name": "petal length (cm) > 4.85000038147",
+  //                   "side": "right",
+  //                   "type": "categorical",
+  //                   "size": 46,
+  //                   "pred": "43 of no, 3 of yes"
+  //               },
+  //               {
+                    
+  //                   "name": "petal length (cm) > 4.94999980927",
+  //                   "children": [
+  
+  //                     {
+                              
+  //                         "name": "The number of data = 6",
+  //                         "children": [
+    
+    
+    
+  //                            {
+                                  
+  //                                 "name": "0 = setosa",
+  //                                 "children": [],
+  //                                 "side": "right",
+  //                                 "type": "categorical",
+  //                                 "size": 0,
+  //                                 "pred": "0 of no, 0 of yes"
+  //                             },
+  //                             {
+                                  
+  //                               "name": "2 = versicolor",
+  //                               "children": [],
+  //                               "side": "right",
+  //                               "type": "categorical",
+  //                               "size": 2,
+  //                               "pred": "2 of no, 0 of yes"
+  //                           }
+  //                           ,
+  //                             {
+                                  
+  //                               "name": "4 = virginica",
+  //                               "children": [],
+  //                               "side": "right",
+  //                               "type": "categorical",
+  //                               "size": 4,
+  //                               "pred": "4 of no, 0 of yes"
+  //                           }
+    
+  //                         ],
+  //                         "side": "right",
+  //                         "type": "categorical",
+  //                         "size": 6,
+  //                         "pred": "0 of no, 0 of yes"
+  //                     },
+                      
+  //                     {
+                          
+  //                       "name": "The number of data = 48",
+  //                       "children": [
+    
+    
+  //                         {
+                                  
+  //                           "name": "0 = setosa",
+  //                           "children": [],
+  //                           "side": "right",
+  //                           "type": "categorical",
+  //                           "size": 0,
+  //                           "pred": "0 of no, 0 of yes"
+  //                       },
+  //                       {
+                            
+  //                         "name": "47 = versicolor",
+  //                         "children": [],
+  //                         "side": "right",
+  //                         "type": "categorical",
+  //                         "size": 47,
+  //                         "pred": "47 of no, 0 of yes"
+  //                     }
+  //                     ,
+  //                       {
+                            
+  //                         "name": "1 = virginica",
+  //                         "children": [],
+  //                         "side": "right",
+  //                         "type": "categorical",
+  //                         "size": 1,
+  //                         "pred": "1 of no, 0 of yes"
+  //                     }
+    
+    
+    
+    
+  //                       ],
+  //                       "side": "right",
+  //                       "type": "categorical",
+  //                       "size": 48,
+  //                       "pred": "0 of no, 0 of yes"
+  //                     }
+    
+                        
+    
+  //                     ],
+  //                   "side": "left",
+  //                   "type": "categorical",
+  //                   "size": 54,
+  //                   "pred": "6 of no, 48 of yes"
+  //               }
+  //           ],
+  //           "name": "petal width (cm) > 1.75",
+  //           "side": "right",
+  //           "type": "numerical",
+  //           "size": 100,
+  //           "pred": "46 of no, 54 of yes"
+  //       },{
+  //         "name": "The number of data = 50",
+  //         "children": [
+  
+  
+  
+  //             {
+                  
+  //                 "name": "50 = setosa",
+  //                 "children": [],
+  //                 "side": "right",
+  //                 "type": "categorical",
+  //                 "size": 50,
+  //                 "pred": "50 of no, 0 of yes"
+  //             },
+  //             {
+                  
+  //               "name": "0 = versicolor",
+  //               "children": [],
+  //               "side": "right",
+  //               "type": "categorical",
+  //               "size": 0,
+  //               "pred": "0 of no, 0 of yes"
+  //           }
+  //           ,
+  //             {
+                  
+  //               "name": "0 = virginica",
+  //               "children": [],
+  //               "side": "right",
+  //               "type": "categorical",
+  //               "size": 0,
+  //               "pred": "0 of no, 0 of yes"
+  //           }
+  
+  //         ],
+  //         "side": "right",
+  //         "type": "categorical",
+  //         "size": 50,
+  //         "pred": "0 of no, 0 of yes"
+  //       }
+  //   ],
+  //   "side": "right",
+  //   "size": 150
+  // }
+
+//  function loadDataIrisTree (flare) {
+
+    
+
+//     // console.log(getDepth(flare))
+
+
+//     tree = d3.layout.tree()
+//       .separation(function (a, b) { return ((a.parent == root) && (b.parent == root)) ? strokeness : strokeness; })
+//       .size([height, getDepth(flare) * width / 8]);
+
+//     diagonal = d3.svg.diagonal()
+//       .projection(function (d) { return [d.y, d.x]; });
+
+//     // svg = d3.select("body").append("svg")
+//     //   .attr("width", getDepth(flare) * width / 8 + margin.right + margin.left)
+//     //   .attr("height", height + margin.top + margin.bottom)
+//     //   .append("g")
+//     //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+
+//     svg = d3.select("#dataviz_area_div")
+//       .append("svg")
+//       .attr("id", "dataviz_area_div_svg")
+//       .attr("width", width + margin.left + margin.right)
+//       .attr("height", height + margin.top + margin.bottom)
+//       // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+//       // .attr("viewBox", `-25 -15 400 250`)
+//       // .attr("viewBox", `-30 -30 500 400`)  
+//       // current
+//       // .attr("viewBox", `-90 -30 500 400`)
+//       // .attr("viewBox", `-90 -30 600 800`)  
+//         // .attr("viewBox", `-90 -30 600 500`)  
+//         .attr("viewBox", `30 -80 600 600`)  
+        
+
+
+//     TOTAL_SIZE = flare.size
+//     l = flare.pred.replace(/of/g, "").split(', ')
+//     for (var j = 0; j < l.length; j++) {
+//       l[j] = l[j].split(' ')[2]
+//     }
+//     label_names = l
+
+
+//     root = flare;
+//     root.x0 = height / 2;
+//     root.y0 = 0;
+
+//     function collapse(d) {
+//       if (d.children) {
+//         d._children = d.children;
+//         d._children.forEach(collapse);
+//         d.children = null;
+//       }
+//     }
+
+//     root.children.forEach(collapse);
+//     update(root, l.length);
+//     // createLabels(l);
+//   };
+
+  // make variable for 
+
+  // loadDataIrisTree(iris_tree_Data)
+
+
+
+
+  // make the 
 
   d3.select(self.frameElement).style("height", "480px");
 
@@ -4053,6 +4380,64 @@ var diagonal = d3.svg.diagonal()
   root.children.forEach(collapse);
   update(root);
 });
+
+// var iris_tree_Data2  = {
+//   "name": "petal length (cm) > 2.45000004768",
+//   "children": [
+//     {
+//       "name": "petal width (cm) > 1.75",
+//       "children": [
+//         {
+//           "name": "petal length (cm) > 4.85000038147",
+//           "children": [
+//             {
+//               "name": "0 of setosa, 0 of versicolor, 43 of virginica"
+//             },
+//             {
+//               "name": "0 of setosa, 1 of versicolor, 2 of virginica"
+//             }
+//           ]
+//         },
+//         {
+//           "name": "petal length (cm) > 4.94999980927",
+//           "children": [
+//             {
+//               "name": "0 of setosa, 2 of versicolor, 4 of virginica"
+//             },
+//             {
+//               "name": "0 of setosa, 47 of versicolor, 1 of virginica"
+//             }
+//           ]
+//         }
+//       ]
+//     },
+//     {
+//       "name": "50 of setosa, 0 of versicolor, 0 of virginica"
+//     }
+//   ]
+// }
+
+// function loadDataIrisTree2(flare) {
+  
+
+//   root = flare;
+//   root.x0 = height / 2;
+//   root.y0 = 0;
+
+//   function collapse(d) {
+//     if (d.children) {
+//       d._children = d.children;
+//       d._children.forEach(collapse);
+//       d.children = null;
+//     }
+//   }
+
+//   root.children.forEach(collapse);
+//   update(root);
+// };
+
+
+// loadDataIrisTree2(iris_tree_Data2)
 
 d3.select(self.frameElement).style("height", "480px");
 

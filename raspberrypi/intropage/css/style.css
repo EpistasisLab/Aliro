@@ -52,9 +52,22 @@ white-space: nowrap;
 
 
 a#infanddownload, #loadingbutton {
-    --bs-btn-bg: #182435;
-    --bs-btn-hover-bg: #849ab9;
+    /* --bs-btn-bg: #182435;
+    --bs-btn-hover-bg: #849ab9; */
+    --bs-btn-bg: #f2efe9;
+    /* --bs-btn-hover-bg: #e3085d; */
+    --bs-btn-hover-bg: #c6678f;
+    /* change text color */
+    --bs-btn-color: #e3085d;
+
+    /* change border color */
+    --bs-btn-border-color: #182435;
+    --bs-btn-hover-border-color: #f2efe9;
 }
+
+/* #infanddownload{
+  visibility: hidden;
+} */
 
 a#downloadImage{
   --bs-btn-bg: #182435;
@@ -70,19 +83,29 @@ a#downloadImage{
 
 
 #mainName{
-    color: #ffffff;
+    /* color: #ffffff; */
+    color: #e3085d;
     font-size: 2.5rem;
     font-weight: 700;
     font-family: 'Roboto', sans-serif;
-    text-shadow: 0 0 0.5rem #1A1110;
+    
+    /* text-shadow: 0 0 0.5rem #1A1110; */
 
 }
 
 
 
 .bg-info {
-    --bs-bg-opacity: 0.1!important;
+    --bs-bg-opacity: 0.3!important;
+    /* background-color: #e1970f!important; */
 }
+
+
+#topaliro, #bottomfooter{
+  /* --bs-bg-opacity: 0!important; */
+  background-color: #f2efe9!important;
+}
+
 
 
 /* make element rect look transparent */
@@ -131,6 +154,12 @@ min-width: 100%;
 min-height: 100%;
 z-index: -1;
 background: rgba(0, 0, 0, 0.50);
+visibility: hidden;
+}
+
+/* main background color */
+main {
+background: #e3085d;
 }
 
 /* Add some content at the bottom of the video/page */
@@ -353,7 +382,7 @@ border-radius: 1rem;
   right: 0;
   bottom: 0;
   /* background-color: rgba(0,0,0,0.3); */
-    background-color: rgba(0,0,0,0.4);
+/*background-color: rgba(0,0,0,0.4);*/
   /* background-color: rgba(255, 255, 255, 0.3); */
   z-index: 1;
   cursor: pointer;
@@ -414,10 +443,7 @@ border-radius: 1rem;
 }
 
 
-.footerCon{
-  /* text color  */
-  color: #ffffff;
- }
+
 
  
 
@@ -442,4 +468,28 @@ a#Downloadpage{
   color:white!important;
   visibility: hidden;
 
+}
+
+
+
+/* #blinkingtextcir{
+  visibility: hidden;
+} */
+
+body {
+
+  background-color: #4a4a4d !important;
+}
+
+
+/* #backtotop{
+  color:rgb(255, 255, 255)
+} */
+
+/* #navbarHeader{
+  background-color: #0d131b!important;
+} */
+
+#footertex{
+  color:#e3085d!important;
 }
