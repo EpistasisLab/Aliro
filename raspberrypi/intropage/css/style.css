@@ -97,6 +97,7 @@ a#downloadImage{
 
 .bg-info {
     --bs-bg-opacity: 0.3!important;
+    /* --bs-bg-color: #c02e1e!important; */
     /* background-color: #e1970f!important; */
 }
 
@@ -334,6 +335,13 @@ border-radius: 1rem;
 
 
 
+.bg-danger {
+    /* --bs-bg-opacity: 1!important; */
+    /* --bs-bg-color: #c02e1e!important; */
+    /* background-color: #e1970f!important; */
+}
+
+
 
 
 
@@ -493,3 +501,14 @@ body {
 #footertex{
   color:#e3085d!important;
 }
+
+
+
+
+
+
+/* div class="row py-lg-5 bg-info" */
+.row.py-lg-5.bg-success{
+  /* make edge round */
+  border-radius: 1rem;
+  }
