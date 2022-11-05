@@ -353,7 +353,7 @@ border-radius: 1rem;
   right: 0;
   bottom: 0;
   /* background-color: rgba(0,0,0,0.3); */
-    background-color: rgba(0,0,0,0.4);
+/*background-color: rgba(0,0,0,0.4);*/
   /* background-color: rgba(255, 255, 255, 0.3); */
   z-index: 1;
   cursor: pointer;
@@ -450,5 +450,6 @@ a#Downloadpage{
 }
 
 body {
-  background-color: rgb(24, 52, 62);
+
+  background-color: #4a4a4d !important;
 }

@@ -673,7 +673,8 @@ function onedplotToTwodPlot() {
   //  "data/datasets/pmlb_small/iris/iris_two_classes.csv"
 
 
-  d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
+  //commenting out d3.csv call
+  //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
 
 
     console.log(data) 
@@ -1076,7 +1077,7 @@ function onedplotToTwodPlot() {
       .on("click", twoDPlot);
 
 
-  })
+ // })
 
   // if user mouse over the dot, show the class
 
@@ -1154,7 +1155,7 @@ function boxplot() {
   //  "data/datasets/pmlb_small/iris/iris_two_classes.csv"
 
 
-  d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
+  //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
 
 
     // console.log(data)
@@ -1838,7 +1839,7 @@ function boxplot() {
     // .on("click", project_x_axis );
 
 
-  })
+  //})
 
   // if user mouse over the dot, show the class
 
@@ -1910,7 +1911,7 @@ function boxplot_direct_from_y() {
   //  "data/datasets/pmlb_small/iris/iris_two_classes.csv"
 
 
-  d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
+  //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
 
 
     // console.log(data)
@@ -3185,7 +3186,7 @@ function boxplot_direct_from_y() {
 
 
 
-  })
+  //})
 
 
 
