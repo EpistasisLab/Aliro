@@ -14,13 +14,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="data/datasets/pmlb_small/iris/iris_Comma.js"></script>
     <script src="JSfiles/Aliro.js"></script>
     <script type="text/javascript" src="JSfiles/jquery-1.7.1.min.js"></script>
 
     <!-- Own favicon -->
     <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
-    <!-- <link rel="icon" href="Logo/rpi-imager.ico"> -->
+    <link rel="icon" href="Logo/rpi-imager.ico">
     <!-- <link rel="icon" href="build/rpi-imager.icns"> -->
       
 
@@ -69,7 +68,7 @@
     <!-- Change navar-dar blight -->
 
 
-    <div class="navbar navbar-dark bg-info shadow-sm">
+    <div id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
       <div class="container">
         <a href="./main.html" class="navbar-brand d-flex align-items-center">
           
@@ -138,7 +137,7 @@
   <div id="overlay" onclick="off()"></div>
 
   <section class="py-5 text-center container">
-    <div class="row py-lg-5 bg-info">
+    <div class="row py-lg-5 bg-success">
       <div class="col-lg-6 col-md-8 mx-auto">
         <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
         <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
@@ -150,9 +149,9 @@
           <a id="projectyaxia" class="btn btn-secondary my-2">Project on Y axis</a>
           <a id="twoDPlot" class="btn btn-secondary my-2">Plot on 2D</a> -->
 
-          <!-- <button id="rotateprojectxaxia" type="button" class="btn btn btn-primary">Rotate and Project on X axis</button> -->
-          <button id="rotateprojectxaxia" type="button" class="btn btn btn-primary">Transform into histogram</button>
-          <!-- <button id="projectyaxia" type="button" class="btn btn-secondary">Function B</button>
+          <!-- <button id="rotateprojectxaxia" type="button" class="btn btn-outline-success">Rotate and Project on X axis</button> -->
+          <button id="rotateprojectxaxia" type="button" class="btn btn-primary">Transform into histogram</button>
+          <!-- <button id="projectyaxia" type="button" class="btn btn-outline-danger">Function B</button>
           <button id="twoDPlot" type="button" class="btn btn-outline-warning">Function C</button> -->
             
 
@@ -180,13 +179,13 @@
         <div id="intuition_exp"> 
 
           <h2 class="text-start text-white"> Better boundaries to distinguish classes </h2>
-          <p class="text-start text-white"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the transformmation button. </p>
-          <p class="text-start text-white"> <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#ff006e;"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#8338ec;"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
+          <p class="text-start text-white"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the green button. </p>
+          <p class="text-start text-white"> <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#ff006e"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#8338ec"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
           <p class="text-start text-white"> Please click the Y axis. It will show an example to put boundaries  </p>
           <p class="text-start text-white">Please click the Y axis. It will show an example to put boundaries to distinguish classes of iris flowers. Then please click the Different boundaries button. It will show an example to put different boundaries to distinguish classes of iris flowers.</p>
           
           <!-- <p class="text-start text-white"> Let’s&nbsp;say you had to determine whether a dot is in 
-            <strong style="color:#ffbe0b;"> Class_1</strong> or <strong style="color:#ff006e;"> in Class_2</strong> or <strong style="color:#8338ec;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
+            <strong style="color:#440154;"> Class_1</strong> or <strong style="color:#21918c;"> in Class_2</strong> or <strong style="color:#fde725;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
           <p class="text-start text-white"> Since San Francisco is relatively hilly, the elevation of a home may be a good way to distinguish the two cities. </p>
           <p class="text-start text-white"> Based on the home-elevation data to the right, you could argue that a home above 73 meters should be <strong> classified</strong> as one in San Francisco. </p>
            -->
@@ -210,7 +209,7 @@
 
             <nav aria-label="Page navigation example">
               <ul class="pagination">
-                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary"  href="int_ml_03_decision_tree.html">Show decision tree</a></li>
+                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary"  href="http://localhost:8000/int_ml_03_decision_tree.html#">Show decision tree</a></li>
               </ul>
             </nav>
 
@@ -301,7 +300,7 @@
             
             
            
-            <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src="firstThumbnail_scatter.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
 
            
               <div class="card-body bg-secondary">
@@ -319,7 +318,7 @@
         <div class="col">
           <div class="card shadow-sm">
             
-            <img src="secondThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src="thirdThumbnail_barchart.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
             
             <div class="card-body bg-secondary">
               <p class="card-text text-white">This card explains boundaries to distinguish class.</p>
@@ -336,7 +335,7 @@
         </div>
         <div class="col">
           <div class="card shadow-sm">
-            <img src="thirdThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src="thirdThumbnail_decision_tree.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
             <div class="card-body bg-secondary">
               <p class="card-text text-white">This card explains how decision tree works.</p>
               <div class="d-flex justify-content-between align-items-center">
@@ -360,10 +359,10 @@
 
 </main>
 
-<footer class="text-muted py-5 bg-info">
+<footer id="bottomfooter" class="text-muted py-5 bg-info">
   <div class="container" >
     <p class="float-end mb-1">
-      <a id="backtotop" href="#">Back to top</a>
+      <a href="#">Back to top</a>
     </p>
     
     <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
@@ -387,7 +386,7 @@
       // window.d3 = null;
     </script>
 
-    <script src="JSfiles/d3.v3.js"></script>
+    <script src="https://d3js.org/d3.v3.js"></script>
     <script src="JSfiles/backgroundOverlayeffect.js"></script>
     
     <script>

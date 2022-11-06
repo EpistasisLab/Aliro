@@ -38,7 +38,7 @@ function pingURL() {
         // sele.style.width = "100%";
         // sele.style.height = "100%";
 
-
+        console.log(sele.innerHTML)
         sele.innerHTML = "Aliro is ready to run";
 
         // Add URL to the button id temp href
@@ -150,7 +150,32 @@ function pingURL_DOWNLOAD() {
 
 
 
-        
+        const sele = document.getElementById('loadingbutton');
+        // make button with id temp always same size
+        // sele.style.width = "100%";
+        // sele.style.height = "100%";
+
+        console.log(sele.innerHTML)
+        sele.innerHTML = "Aliro is ready to run";
+
+        // Add URL to the button id temp href
+        sele.href = URL;
+
+
+        // Create flashing/glowing button effect to the button id temp
+
+
+
+        // if mouse is on the element with id temp, then make the innerHTML bold
+
+        sele.addEventListener('mouseover', function () {
+          sele.style.fontWeight = 'bold';
+        });
+
+        // if mouse is not on the element with id temp, then make the innerHTML normal
+        sele.addEventListener('mouseout', function () {
+          sele.style.fontWeight = 'normal';
+        });
 
 
 
