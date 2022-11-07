@@ -238,7 +238,9 @@ border-radius: 1rem;
   border-radius: 0 3px 3px 0;
   user-select: none;
 }
-
+a{
+  text-decoration: none!important;
+}
 /* Position the "next button" to the right */
 .next {
   right: 0;
@@ -401,7 +403,7 @@ border-radius: 1rem;
 .nav-item{
   color: transparent!important;
   background-color: transparent!important;
-  -webkit-text-fill-color: rgb(255, 255, 255)!important;
+  /* -webkit-text-fill-color: rgb(255, 255, 255)!important; */
   list-style-type: none;
   
   /* change font size */
@@ -460,10 +462,15 @@ border-radius: 1rem;
 
 .blinking {
   animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
-  position:absolute;  
+  /* position:absolute;  */
+  position:inherit; 
   /* transform translate to the right side of web page */
-  transform: translate(550%, -90%);
+  /* transform: translate(550%, -90%); */
   /* transform: translate(0, 0); */
+  /* transform: translate(50%, 0); */
+
+  /* locate all ways  */
+
 }
 
 @keyframes blinker {  
@@ -477,6 +484,11 @@ a#Downloadpage{
   color:white!important;
   visibility: hidden;
 
+}
+
+a#loadingeds{
+  color:red!important;
+  
 }
 
 

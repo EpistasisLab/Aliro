@@ -64,13 +64,13 @@ function pingURL() {
 
 
 
-        // make blinkingtextcir text changed
-        const sele2 = document.getElementById('blinkingtextcir');
+        // make loadingeds text changed
+        const sele2 = document.getElementById('loadingeds');
 
         
         
 
-        // make the blinkingtextcir clickable and link to the URL
+        // make the loadingeds clickable and link to the URL
 
         sele2.innerHTML = "Aliro is ready to run";
         sele2.href = URL;
@@ -155,6 +155,9 @@ function pingURL_DOWNLOAD() {
         // sele.style.width = "100%";
         // sele.style.height = "100%";
 
+        if (sele != null )
+        {
+
         console.log(sele.innerHTML)
         sele.innerHTML = "Aliro is ready to run";
 
@@ -176,18 +179,19 @@ function pingURL_DOWNLOAD() {
         sele.addEventListener('mouseout', function () {
           sele.style.fontWeight = 'normal';
         });
+      }
 
 
 
 
 
-        // make blinkingtextcir text changed
-        const sele2 = document.getElementById('blinkingtextcir');
+        // make loadingeds text changed
+        const sele2 = document.getElementById('loadingeds');
 
         
         
 
-        // make the blinkingtextcir clickable and link to the URL
+        // make the loadingeds clickable and link to the URL
 
         sele2.innerHTML = "Aliro is ready to run";
         sele2.href = URL;
