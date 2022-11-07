@@ -22,8 +22,8 @@
     
 
     <!-- Own favicon -->
-    <link rel="icon" href="Logo/PENNAILOGO.png">
-    <!-- <link rel="icon" href="Logo/rpi-imager.ico"> -->
+    <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
+    <link rel="icon" href="Logo/rpi-imager.ico">
     <!-- <link rel="icon" href="build/rpi-imager.icns"> -->
       
 
@@ -69,12 +69,12 @@
       </div>
     </div>
   </div>
-  <!-- <div class="navbar navbar-dark bg-dark shadow-sm"> -->
+  <!-- <div id="topaliro" class="navbar navbar-dark bg-dark shadow-sm"> -->
     <!-- Change navar-dar blight -->
 
 
     <!-- <div class="navbar navbar-light bg-light shadow-sm"> -->
-    <div class="navbar navbar-dark bg-info shadow-sm">
+    <div id="topaliro" id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
     <div class="container">
       <a href="./main.html" class="navbar-brand d-flex align-items-center">
         
@@ -161,7 +161,6 @@
     </video>
    </div> -->
 
-   <!-- <video autoplay muted loop id="myVideo"> -->
   <video stop muted loop id="myVideo">
     <source src="Videos/video.mp4" type="video/mp4">
   </video>
@@ -184,7 +183,7 @@
 <svg height="100" width="250" class="blinking">
   
   <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
-  <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
+  <text id="blinkingtextcir" x="70" y="55" fill="red">Loading Aliro Ed...</text>
   Sorry, your browser does not support inline SVG.  
 </svg> 
 
@@ -202,11 +201,11 @@
   <div class="slideshow-container">
 
     <!-- <div class="mySlides row py-lg-5 bg-info"> -->
-      <div class="mySlides row py-lg-5">
+      <div class="mySlides row py-lg-5 ">
       <!-- <div class="numbertext ">1 / 3</div> -->
-      <!-- <img id="firstC" src="firstThumbnail_resized.png" style="width:100%"> -->
+      <!-- <img id="firstC" src="firstThumbnail_scatter.png" style="width:100%"> -->
       <!-- <p>Hello!!!!</p> -->
-      <h1 class="fw-light text-white">Aliro Ed</h1>
+      <h1 class="fw-light text-white">What is Aliro Ed?</h1>
        
         <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">Aliro Ed is a software for users who are not familiar with machine learning. Users can experience machine learning tasks on Raspberry Pi 4 with Aliro Ed. 
           Users can download the raspberry pi image from the Aliro Ed website.
@@ -287,7 +286,7 @@
             
             
            
-            <img src="firstThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src="firstThumbnail_scatter.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
 
            
               <div class="card-body bg-secondary">
@@ -305,7 +304,7 @@
         <div class="col">
           <div class="card shadow-sm">
             
-            <img src="secondThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src=" thirdThumbnail_barchart.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
             
             <div class="card-body bg-secondary">
               <p class="card-text text-white">This card explains boundaries to distinguish class.</p>
@@ -322,7 +321,7 @@
         </div>
         <div class="col">
           <div class="card shadow-sm">
-            <img src="thirdThumbnail_resized.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+            <img src="thirdThumbnail_decision_tree.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
             <div class="card-body bg-secondary">
               <p class="card-text text-white">This card explains how decision tree works.</p>
               <div class="d-flex justify-content-between align-items-center">
@@ -346,7 +345,7 @@
 </main>
 
 
-<!-- <footer class="text-muted py-5 bg-info">
+<!-- <footer id="bottomfooter" class="text-muted py-5">
   <div class="container" >
     <p class="float-end mb-1">
       <a id="backtotop" href="#">Back to top</a>
@@ -355,14 +354,14 @@
     <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
   </div>
 </footer> -->
-<footer class="text-muted py-5 bg-info">
+<footer id="bottomfooter" class="text-muted py-5">
   <div class="container" >
     <p class="float-end mb-1">
       <a id="backtotop" href="#">Back to top</a>
     </p>
 
-    <p class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
-    <!-- <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p> -->
+    <p id="footertext" class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
+    
   </div>
 </footer>
 
@@ -379,7 +378,8 @@
       // d3.select('#temp').style('color', 'black');
      
       // console.log(pingURL())
-      pingURL();
+      // pingURL();
+      pingURL_DOWNLOAD()
 
 
 

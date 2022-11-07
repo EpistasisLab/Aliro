@@ -240,15 +240,15 @@ function int_ml_01_iris_data(){
 function colorClass(class_cat) {
   if (class_cat==0)
   {
-    return "#ffbe0b";
+    return "#440154";
   }
   else if (class_cat==1)
   {
-    return "#ff006e";
+    return "#21918c";
   }
   else
   {
-    return "#8338ec";
+    return "#fde725";
   }
 
 }
@@ -461,7 +461,7 @@ var rects_class1 = svg.selectAll("hey")
   .duration(2000)
   .attr("width", d=> d[1][0] - d[0][0])
 	.attr("height", d=> d[1][1] - d[0][1])
-	.attr("fill", "#ffbe0b")
+	.attr("fill", "#440154")
   .attr("opacity", 0.2);
 
 
@@ -486,7 +486,7 @@ var rects_class2 = svg.selectAll("hey")
   .duration(2000)
   .attr("width", d=> d[1][0] - d[0][0])
 	.attr("height", d=> d[1][1] - d[0][1])
-	.attr("fill", "#ff006e")
+	.attr("fill", "#21918c")
   .attr("opacity", 0.2);
 
 var data_class3 = 
@@ -508,7 +508,7 @@ var rects_class3 = svg.selectAll("hey")
   .duration(2000)
   .attr("width", d=> d[1][0] - d[0][0])
 	.attr("height", d=> d[1][1] - d[0][1])
-	.attr("fill", "#8338ec")
+	.attr("fill", "#fde725")
   .attr("opacity", 0.2);
 
 

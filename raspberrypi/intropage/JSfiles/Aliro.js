@@ -38,7 +38,7 @@ function pingURL() {
         // sele.style.width = "100%";
         // sele.style.height = "100%";
 
-
+        console.log(sele.innerHTML)
         sele.innerHTML = "Aliro is ready to run";
 
         // Add URL to the button id temp href
@@ -64,13 +64,13 @@ function pingURL() {
 
 
 
-        // make blinkingtextcir text changed
-        const sele2 = document.getElementById('blinkingtextcir');
+        // make loadingeds text changed
+        const sele2 = document.getElementById('loadingeds');
 
         
         
 
-        // make the blinkingtextcir clickable and link to the URL
+        // make the loadingeds clickable and link to the URL
 
         sele2.innerHTML = "Aliro is ready to run";
         sele2.href = URL;
@@ -150,19 +150,48 @@ function pingURL_DOWNLOAD() {
 
 
 
+        const sele = document.getElementById('loadingbutton');
+        // make button with id temp always same size
+        // sele.style.width = "100%";
+        // sele.style.height = "100%";
+
+        if (sele != null )
+        {
+
+        console.log(sele.innerHTML)
+        sele.innerHTML = "Aliro is ready to run";
+
+        // Add URL to the button id temp href
+        sele.href = URL;
+
+
+        // Create flashing/glowing button effect to the button id temp
+
+
+
+        // if mouse is on the element with id temp, then make the innerHTML bold
+
+        sele.addEventListener('mouseover', function () {
+          sele.style.fontWeight = 'bold';
+        });
+
+        // if mouse is not on the element with id temp, then make the innerHTML normal
+        sele.addEventListener('mouseout', function () {
+          sele.style.fontWeight = 'normal';
+        });
+      }
+
+
+
+
+
+        // make loadingeds text changed
+        const sele2 = document.getElementById('loadingeds');
+
+        
         
 
-
-
-
-
-        // make blinkingtextcir text changed
-        const sele2 = document.getElementById('blinkingtextcir');
-
-        
-        
-
-        // make the blinkingtextcir clickable and link to the URL
+        // make the loadingeds clickable and link to the URL
 
         sele2.innerHTML = "Aliro is ready to run";
         sele2.href = URL;
