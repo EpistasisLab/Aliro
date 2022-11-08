@@ -515,3 +515,9 @@ body {
   /* make edge round */
   border-radius: 1rem;
   }
+
+
+a{
+  text-decoration: none!important;
+
+}

@@ -84,7 +84,8 @@ a#downloadImage{
 
 #mainName{
     /* color: #ffffff; */
-    color: #e3085d;
+    /* color: #e3085d; */
+    color: #C31C4A;
     font-size: 2.5rem;
     font-weight: 700;
     font-family: 'Roboto', sans-serif;
@@ -160,7 +161,10 @@ visibility: hidden;
 
 /* main background color */
 main {
-background: #e3085d;
+/* background: #e3085d; */
+background: #C31C4A;
+
+/* background: #C6878F; */
 }
 
 /* Add some content at the bottom of the video/page */
@@ -200,6 +204,12 @@ color: black;
 border-radius: 1rem;
 }
 
+
+.bg-my{
+  background-color: #F2EFE9;
+  border-radius: 1rem;
+
+}
 
 
 
@@ -310,7 +320,7 @@ a{
 /* domain is axis */
 .domain {
   /* fill: rgb(255, 255, 255); */
-  stroke: rgb(255, 255, 255);
+  stroke: rgb(0, 0, 0)!important;
   /* shape-rendering: crispEdges; */
 }
 
@@ -332,7 +342,7 @@ a{
 
 .card-body.bg-secondary{
     /* background-color: #0d131b!important; */
-    background-color: #103445!important;
+    background-color: #137833!important;
     
 }
 
@@ -487,7 +497,10 @@ a#Downloadpage{
 }
 
 a#loadingeds{
-  color:red!important;
+  /* color:red!important; */
+  color:#C31C4A!important;
+  /* make the text bold */
+  font-weight: bold;
   
 }
 
@@ -513,6 +526,8 @@ body {
 
 #footertex{
   color:#e3085d!important;
+
+  /* color: #C31C4A!important; */
 }
 
 
@@ -524,4 +539,20 @@ body {
 .row.py-lg-5.bg-success{
   /* make edge round */
   border-radius: 1rem;
+
+  }
+
+  .bg-success {
+    /* --bs-bg-opacity: 1!important; */
+    --bs-bg-color: #b1928f!important;
+    /* background-color :#849ab9!important; */
+    /* background-color: #e1970f!important; */
+    /* background-color: #0d131b!important; */
+  }
+
+
+
+
+  .dfboubutton{
+    cursor:pointer;
   }

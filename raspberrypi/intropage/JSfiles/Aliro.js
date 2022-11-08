@@ -721,7 +721,7 @@ function onedplotToTwodPlot() {
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x))
       .attr("opacity", "0")
-      .attr("stroke", "white")
+      .attr("stroke", "black")
 
     // Add Y axis
     var y = d3.scaleLinear()
@@ -745,7 +745,7 @@ function onedplotToTwodPlot() {
       .attr("opacity", "0")
       // make y axis white
       // .attr("fill", "white")
-      .attr("stroke", "white")
+      .attr("stroke", "black")
       // .attr("stroke-width", "1px")
       ;
 
@@ -1960,7 +1960,7 @@ function boxplot_direct_from_y() {
       .attr("opacity", "0")
       
       // show white axis
-      .attr("stroke", "white")
+      .attr("stroke", "black")
 
     // Add Y axis
     var y = d3.scaleLinear()
@@ -1982,7 +1982,7 @@ function boxplot_direct_from_y() {
       .attr("transform", "translate(0," + "0" + ")")
       .call(d3.axisLeft(y))
       .attr("opacity", "1")
-      .attr("stroke", "white");
+      .attr("stroke", "black");
 
 
 
@@ -2588,8 +2588,8 @@ function boxplot_direct_from_y() {
           })
           // .style("fill", "red")
           // .style("stroke", "red")
-          .style("fill", "#CDD7E0")
-          .style("stroke", "#CDD7E0")
+          .style("fill", "rgb(37, 14, 14)")
+          .style("stroke", "rgb(37, 14, 14)")
           .style("stroke-width", 1)
           // .attr("class", "circle_symbol_indicator")
           .attr("id", "indicator" + i)
@@ -2627,8 +2627,8 @@ function boxplot_direct_from_y() {
           })
           // .style("fill", "red")
           // .style("stroke", "red")
-          .style("fill", "#CDD7E0")
-          .style("stroke", "#CDD7E0")
+          .style("fill", "rgb(37, 14, 14)")
+          .style("stroke", "rgb(37, 14, 14)")
           .style("stroke-width", 1)
           // .attr("class", "rect_indicator")
           .attr("id", "indicator")
@@ -2696,8 +2696,8 @@ function boxplot_direct_from_y() {
         .style("opacity", 0)
         // .style("fill", "red")
         // .style("stroke", "red")
-        .style("fill", "#CDD7E0")
-        .style("stroke", "#CDD7E0")
+        .style("fill", "rgb(37, 14, 14)")
+        .style("stroke", "rgb(37, 14, 14)")
         .style("stroke-width", 1)
 
 
@@ -2709,8 +2709,8 @@ function boxplot_direct_from_y() {
         .style("opacity", 0.5)
         // .style("fill", "red")
         // .style("stroke", "red")
-        .style("fill", "#CDD7E0")
-        .style("stroke", "#CDD7E0")
+        .style("fill", "rgb(37, 14, 14)")
+        .style("stroke", "rgb(37, 14, 14)")
         .style("stroke-width", 1)
 
 
@@ -2720,8 +2720,8 @@ function boxplot_direct_from_y() {
         .style("opacity", 0.5)
         // .style("fill", "red")
         // .style("stroke", "red")
-        .style("fill", "#CDD7E0")
-        .style("stroke", "#CDD7E0")
+        .style("fill", "rgb(37, 14, 14)")
+        .style("stroke", "rgb(37, 14, 14)")
         .style("stroke-width", 1)
 
 
@@ -3818,7 +3818,9 @@ function decisiontree() {
       .style("font-size", "12px")
       .style("font-family", "Verdana")
       // .style("stroke", "#c2c2c2")
-      .style("stroke", "#f2efe9")
+      // .style("stroke", "#f2efe9")
+      .style("stroke", "black")
+      
       // .style("stroke-width", "0.05em")
       .text(function (d) { return true ? d.size + " / " + (d.size * 100 / TOTAL_SIZE).toFixed(0) + "%" : ""; })
       .attr('visibility', function () {

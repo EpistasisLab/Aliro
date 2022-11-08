@@ -1,7 +1,7 @@
 {
   "name": "aliro_ed_album_template_product_rp_dep_electron",
   "version": "1.0.0",
-  "description": "Develop Aliro Ed cross-platform application with Electron",
+  "description": "Develop Aliro-Ed cross-platform application with Electron",
   "main": "index.js",
   "author": "Hyunjun Choi",
   "license": "GPL-3.0",
@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "com.aliro.ed",
-    "productName": "Aliro Ed",
+    "productName": "Aliro-Ed",
     "directories": {
       "output": "dist"
     },
