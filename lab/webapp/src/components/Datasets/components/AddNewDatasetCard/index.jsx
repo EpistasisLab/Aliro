@@ -167,6 +167,12 @@ const AddNewDatasetCard = () => {
               as={ Link }
               to={"/upload_datasets"}
               content="Add New Dataset"
+              onClick={() => {
+
+                sessionStorage.setItem("addNewPopup", "true")
+              }
+                
+              }
               // positioning content "bottom right"
               // position="bottom right"
              >
@@ -176,7 +182,7 @@ const AddNewDatasetCard = () => {
              </Button> 
             
           }
-          content = "Step 1: click this button to upload your dataset."
+          content = "Step 1: click this button to upload your dataset. Warning: when you click this button, all tooltips will disappear."
           
           // style={style}
           

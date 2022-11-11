@@ -189,14 +189,15 @@ class SurpriseRecommender(BaseRecommender):
         print('self.results_df_hash', self.results_df_hash)
 
         print('newHash == self.results_df_hash',newHash == self.results_df_hash)
-        # if hasattr(self, 'results_df_hash'):
-        #     if newHash == self.results_df_hash:
-        #         logger.info('results_df hashes match')
-        #     else:
-        #         error_msg = 'the results_df hash from the pickle is different'
-        #         logger.error(error_msg)
-        #         raise ValueError(error_msg)
-        #     del self.results_df_hash
+        
+        if hasattr(self, 'results_df_hash'):
+            if newHash == self.results_df_hash:
+                logger.info('results_df hashes match')
+            else:
+                error_msg = 'the results_df hash from the pickle is different'
+                logger.error(error_msg)
+                raise ValueError(error_msg)
+            del self.results_df_hash
 
     def load(self, filename=None, knowledgebase = None):
         """Load a saved recommender state."""

@@ -129,7 +129,7 @@
 
   <svg height="100" width="250" class="blinking">
   
-    <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
+    <!-- <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" /> -->
     <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
     Sorry, your browser does not support inline SVG.  
   </svg> 
@@ -137,7 +137,7 @@
   <div id="overlay" onclick="off()"></div>
 
   <section class="py-5 text-center container">
-    <div class="row py-lg-5 bg-success">
+    <div class="row py-lg-5 bg-my">
       <div class="col-lg-6 col-md-8 mx-auto">
         <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
         <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
@@ -178,11 +178,11 @@
         
         <div id="intuition_exp"> 
 
-          <h2 class="text-start text-white"> Better boundaries to distinguish classes </h2>
-          <p class="text-start text-white"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the green button. </p>
-          <p class="text-start text-white"> <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#ff006e"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#8338ec"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
-          <p class="text-start text-white"> Please click the Y axis. It will show an example to put boundaries  </p>
-          <p class="text-start text-white">Please click the Y axis. It will show an example to put boundaries to distinguish classes of iris flowers. Then please click the Different boundaries button. It will show an example to put different boundaries to distinguish classes of iris flowers.</p>
+          <h2 class="text-start text-black"> Better boundaries to distinguish classes </h2>
+          <p class="text-start text-black"> Let's transform our visualiztion into a histogram to see how frequently each species appears at each sepal-length. Please click the green button. </p>
+          <p class="text-start text-black"> <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> has the lowest average of sepal-length, <strong  id ="class2text" style="color:#ff006e"> Class_2 (Iris-versicolor)</strong> has the second lowest average of sepal-length, and <strong id ="class3text" style="color:#8338ec"> Class_3 (Iris-virginica)</strong> has the highest average of sepal-length. </p>
+          <p class="text-start text-black"> Please click the Y axis. It will show an example to put boundaries  </p>
+          <p class="text-start text-black">Please click the Y axis. It will show an example to put boundaries to distinguish classes of iris flowers. Then please click the Different boundaries button. It will show an example to put different boundaries to distinguish classes of iris flowers.</p>
           
           <!-- <p class="text-start text-white"> Let’s&nbsp;say you had to determine whether a dot is in 
             <strong style="color:#440154;"> Class_1</strong> or <strong style="color:#21918c;"> in Class_2</strong> or <strong style="color:#fde725;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
@@ -193,23 +193,23 @@
           <nav aria-label="Page navigation example">
             <ul class="pagination">
               
-              <li id="fbbfirsttosecondbound" class="page-item"><a class="page-link text-secondary" >Different boundaries</a></li>
+              <li id="fbbfirsttosecondbound" class="page-item"><a class="page-link text-secondary dfboubutton" >Different boundaries</a></li>
               <!-- <li id="show_piechart" class="page-item"><a class="page-link" >Show Pie Chart</a></li> -->
             </ul>
             
             <!-- <ul class="pagination">
               
-              <li id="show_piechart" class="page-item"><a class="page-link text-secondary" >Show Pie Chart</a></li>
+              <li id="show_piechart" class="page-item"><a class="page-link text-secondary dfboubutton" >Show Pie Chart</a></li>
             </ul>
 
             <ul class="pagination">
-              <li id="show_piechart_another" class="page-item"><a class="page-link text-secondary" >Show another Pie Chart</a></li>
+              <li id="show_piechart_another" class="page-item"><a class="page-link text-secondary dfboubutton" >Show another Pie Chart</a></li>
             </ul> -->
 
 
             <nav aria-label="Page navigation example">
               <ul class="pagination">
-                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary"  href="http://localhost:8000/int_ml_03_decision_tree.html#">Show decision tree</a></li>
+                <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary dfboubutton"  href="http://localhost:8000/int_ml_03_decision_tree.html#">Show decision tree</a></li>
               </ul>
             </nav>
 
@@ -247,8 +247,8 @@
           <!-- visibility:visible" -->
           <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
 
-          <h2 class="text-start">  Drawing boundaries </h2>
-          <p class="text-start">  You can visualize your elevation (>73 m) and price per square foot (>$19,116.7) observations as the boundaries of regions in your scatterplot. Homes plotted in the green and blue regions would be in San Francisco and New York, respectively.  </p>
+          <h2 class="text-start text-black">  Drawing boundaries </h2>
+          <p class="text-start text-black">  You can visualize your elevation (>73 m) and price per square foot (>$19,116.7) observations as the boundaries of regions in your scatterplot. Homes plotted in the green and blue regions would be in San Francisco and New York, respectively.  </p>
           <p class="text-start">  Identifying boundaries in data using math is the essence of statistical learning. </p>
           <p class="text-start">  Of course, you’ll need additional information to distinguish homes with lower elevations <em>and</em>  lower per-square-foot prices.   </p>
 
@@ -394,7 +394,7 @@
       window.d3 = null
       // show d3 version
       console.log("d3v3",d3v3.version);
-      pingURL_DOWNLOAD()
+      // pingURL_DOWNLOAD()
       boxplot_direct_from_y()
     </script>
       

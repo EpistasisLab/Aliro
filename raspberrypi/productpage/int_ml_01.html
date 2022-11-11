@@ -72,7 +72,7 @@
 
 
     <!-- <div class="navbar navbar-light bg-secondary shadow-sm"> -->
-      <div id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
+      <div id="topaliro" class="navbar navbar-dark bg-my shadow-sm">
     <div class="container">
       <a href="./main.html" class="navbar-brand d-flex align-items-center">
         
@@ -135,7 +135,7 @@
 
   <svg height="100" width="250" class="blinking">
   
-    <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
+    <!-- <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" /> -->
     <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
     Sorry, your browser does not support inline SVG.  
   </svg> 
@@ -143,7 +143,7 @@
   <div id="overlay" onclick="off()"></div>
 
   <section class="py-5 text-center container">
-    <div class="row py-lg-5 bg-success">
+    <div class="row py-lg-5 bg-my">
       <div class="col-lg-6 col-md-8 mx-auto">
         <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
         <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
@@ -176,8 +176,8 @@
         <div class="col-lg-4 col-md-4 mx-auto "> 
         <div id="intuition_exp"> 
 
-          <h2 class="text-start text-white"> First, some intuition </h2>
-          <p class="text-start text-white"> Consider the situation where you want to decide if a dot belongs in 
+          <h2 class="text-start text-black"> First, some intuition </h2>
+          <p class="text-start text-black"> Consider the situation where you want to decide if a dot belongs in 
             <strong id ="class1text" style="color:#ffbe0b;"> Class_1 (Iris-setosa)</strong> or <strong  id ="class2text" style="color:#ff006e;"> Class_2 (Iris-versicolor)</strong>, or <strong id ="class3text" style="color:#8338ec;"> Class_3 (Iris-virginica)</strong>.
             </strong>
             Assigning a class to a data point is called <strong>classification</strong> task in machine learning terms. </p>
@@ -185,7 +185,7 @@
             <!-- class_1: Iris-setosa, class_2: Iris-versicolor, class_3: Iris-virginica -->
             <!-- sepal-length -->
 
-            <p class="text-start text-white">In the left chart, the dots are the data points. The color of the dots represents the class of the data point.
+            <p class="text-start text-black">In the left chart, the dots are the data points. The color of the dots represents the class of the data point.
               In this example, our task is to classify the data points into one of the three classes.
               Now, let's click the red button to project the data points on the Y axis.
               In the current chart, dots are projected on the <strong>sepal-length</strong> axis, which is Y axis.
@@ -193,7 +193,7 @@
               What about the X axis? Can we find points on the X axis that separate the dots into three classes?
               Each of the sepal-length and petal-length can be used to classify the data points into the three classes.  </p>
             
-              <p class="text-start text-white">
+              <p class="text-start text-black">
 
               Can we do better classify the data points into the three classes using only both of the two features? Let's move to the next page. </p>
             
@@ -209,7 +209,7 @@
           <nav aria-label="Page navigation example">
             <ul class="pagination">
               <!-- <li class="page-item"><a class="page-link" >Previous</a></li> -->
-              <li id="fromfsitoaddn" class="page-item"><a class="page-link text-secondary" >Next</a></li>
+              <li id="fromfsitoaddn" class="page-item"><a class="page-link text-secondary dfboubutton" >Next</a></li>
             </ul>
           </nav>
 
@@ -234,25 +234,25 @@
          // .attr("cy", function (d) { return y(d['sepal-length']); } ) -->
 
 
-          <h2 class="text-start text-white"> Using various kinds of features together </h2>
-          <p class="text-start text-white">  In this data set, we have two different features petal-length on X axis and sepal-length on Y axis.
+          <h2 class="text-start text-black"> Using various kinds of features together </h2>
+          <p class="text-start text-black">  In this data set, we have two different features petal-length on X axis and sepal-length on Y axis.
          </p>
-          <p class="text-start text-white"> Using various kinds of <strong>features</strong> together allows for more nuance. </p>
-          <p class="text-start text-white"> So visualizing petal-length and sepal-length in a <strong>scatterplot</strong> helps us distinguish three different species of iris flowers.  </p>
-          <p class="text-start text-white"> 
+          <p class="text-start text-black"> Using various kinds of <strong>features</strong> together allows for more nuance. </p>
+          <p class="text-start text-black"> So visualizing petal-length and sepal-length in a <strong>scatterplot</strong> helps us distinguish three different species of iris flowers.  </p>
+          <p class="text-start text-black"> 
 
             The dataset suggests that, among the three species, the <strong> Iris-setosa</strong> has the smallest petal-length and sepal-length,
             the <strong> Iris-versicolor</strong> has the medium petal-length and sepal-length,
             and the <strong> Iris-virginica</strong> has the largest petal-length and sepal-length.
           </p>
-          <!-- <p class="text-start text-white"> Definition of features </p> -->
+          <!-- <p class="text-start text-black"> Definition of features </p> -->
 
 
           <nav aria-label="Page navigation example">
             <ul class="pagination">
-              <li id="fromaddntofsi" class="page-item"><a class="page-link text-secondary" >Previous</a></li>
+              <li id="fromaddntofsi" class="page-item"><a class="page-link text-secondary dfboubutton" >Previous</a></li>
               <!-- <p class="text-secondary">.text-secondary</p> -->
-              <li id="fromaddntodrawb" class="page-item"><a class="page-link text-secondary" >Next</a></li>
+              <li id="fromaddntodrawb" class="page-item"><a class="page-link text-secondary dfboubutton" >Next</a></li>
             </ul>
           </nav>
 
@@ -269,19 +269,19 @@
           <p class="text-start text-white">  Identifying boundaries in data using math is the essence of statistical learning. </p>
           <p class="text-start text-white">  Of course, you’ll need additional information to distinguish homes with lower elevations <em>and</em>  lower per-square-foot prices.   </p> -->
 
-          <h2 class="text-start text-white">  Drawing boundaries </h2>
-          <p class="text-start text-white">  You can visualize your petal-length and sepal-length observations as the boundaries of regions in your scatterplot. 
+          <h2 class="text-start text-black">  Drawing boundaries </h2>
+          <p class="text-start text-black">  You can visualize your petal-length and sepal-length observations as the boundaries of regions in your scatterplot. 
             Dots plotted in the three regions would be in the three species of iris flowers, respectively.  </p>
-          <p class="text-start text-white">  Identifying boundaries in data using math is the essence of statistical learning. </p>
-          <p class="text-start text-white">  The boundaries are called <strong>decision boundaries</strong>. </p>
-          <p class="text-start text-white">  Visualizing decision boundaries in two dimensions and three dimensions could give us a better understanding of the given data set.</p>
+          <p class="text-start text-black">  Identifying boundaries in data using math is the essence of statistical learning. </p>
+          <p class="text-start text-black">  The boundaries are called <strong>decision boundaries</strong>. </p>
+          <p class="text-start text-black">  Visualizing decision boundaries in two dimensions and three dimensions could give us a better understanding of the given data set.</p>
 
 
 
           <nav aria-label="Page navigation example">
             <ul class="pagination">
-              <li id="fromdrawbtoaddn" class="page-item"><a class="page-link" >Previous</a></li>
-              <li id="fromdrawbto" class="page-item" ><a class="page-link"  href="http://localhost:8000/int_ml_02.html#">Next</a></li>
+              <li id="fromdrawbtoaddn" class="page-item"><a class="page-link text-secondary dfboubutton" >Previous</a></li>
+              <li id="fromdrawbto" class="page-item" ><a class="page-link text-secondary dfboubutton"  href="int_ml_02.html#">Next</a></li>
             </ul>
           </nav>
 
@@ -453,7 +453,7 @@
 
 </main>
 <!-- make footer located on the bottom of page -->
-<footer id="bottomfooter" class="text-muted py-5 bg-info">
+<footer id="bottomfooter" class="text-muted py-5 bg-my">
   <div class="container" >
     <p class="float-end mb-1">
       <a href="#">Back to top</a>
@@ -486,7 +486,7 @@
     // int_ml_01_test_iris_data()
     // int_ml_01_test_iris_data_tooltip()
     // int_ml_01_test_iris_data_tooltip_1d_barscatter()
-    pingURL_DOWNLOAD()
+    // pingURL_DOWNLOAD()
     onedplotToTwodPlot()
     show_or_block_each_part()
     // int_ml_01_test_iris_data_tooltip_2d()

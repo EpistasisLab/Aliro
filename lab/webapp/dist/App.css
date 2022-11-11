@@ -532,7 +532,8 @@ a#addNewDatasetBtnCross i {
 
     position: absolute;
     top: 45%;
-    right: 40%;
+    transform: translateX(70%);
+    /* transform: translateY(-120%); */
     font-size: xxx-large;
 }
 

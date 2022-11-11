@@ -105,7 +105,8 @@ class Datasets extends Component {
 
     if (document.getElementById("aiTooglePopupready") == null) {
   
-  
+      console.log("aiTooglePopupready!!!")
+
       // create a new div element id with aiTooglePopupready
       var temp=document.createElement("div");
       document.body.appendChild(temp);
@@ -119,9 +120,6 @@ class Datasets extends Component {
     
 
     return (
-      
-      
-      
       
       <div>
         {/*<FileUpload />*/}

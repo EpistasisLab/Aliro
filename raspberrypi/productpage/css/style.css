@@ -309,7 +309,8 @@ border-radius: 1rem;
 /* domain is axis */
 .domain {
   /* fill: rgb(255, 255, 255); */
-  stroke: rgb(255, 255, 255);
+  stroke: rgb(0, 0, 0);
+
   /* shape-rendering: crispEdges; */
 }
 
@@ -329,12 +330,17 @@ border-radius: 1rem;
 
 
 
-.card-body.bg-secondary{
-    /* background-color: #0d131b!important; */
+/* .card-body.bg-secondary{
     background-color: #103445!important;
     
-}
+} */
 
+.card-body.bg-secondary{
+  /* background-color: #0d131b!important; */
+  /* background-color: #137833!important; */
+  background-color: #73877B!important;
+  
+}
 
 
 .bg-danger {
@@ -519,5 +525,17 @@ body {
 
 a{
   text-decoration: none!important;
+
+}
+
+
+.dfboubutton{
+  cursor:pointer;
+}
+
+
+.bg-my{
+  background-color: #F2EFE9;
+  border-radius: 1rem;
 
 }

@@ -115,7 +115,7 @@ function pingURL() {
 
 
 
-function pingURL_DOWNLOAD() {
+function // pingURL_DOWNLOAD() {
 
   // Aliro URL
   var URL = "http://localhost:5080"

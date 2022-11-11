@@ -3886,19 +3886,47 @@ function decisiontree() {
 
 
 
+      //   function temp(d) {
+      //     console.log('temp')
+      //     console.log(d)
+      //     return d ? 133 : 0
+      //   }
+      
+
+      // d=4
+      // val=temp(d)
+      // console.log('val')
+      // console.log(val)
+
+
+
+      
+
       nodeEnter.append("rect")
         .attr("width", function (d) {
+
           var v;
           if (d.pred) {
             console.log(parseInt(d.pred.split(",")[curr].match(/\d+/)[0]), ' *133/', d.size)
             v = parseInt(d.pred.split(",")[curr].match(/\d+/)[0]) * 133 / d.size;
+            console.log("1")
+            console.log(d)
           }
           else if (!d.children) {
             v = 40
+            console.log("2")
           }
 
-          if (square) return (d.children || d._children) || version2 ? 133 / label_names.length - 4 : 40
-          else return (d.children || d._children) || version2 ? v : 40
+          if (square) {
+            console.log("3")
+            return (d.children || d._children) || version2 || d==null ? 133 / label_names.length - 4 : 40
+          }
+          else {
+            console.log("4")
+            console.log(d)
+            return (d.children || d._children) || version2 || d==null ? v : 40
+          }
+
         })
         .attr("height", 20)
         .attr('rx', function (d) { return square ? 0 : 4 })
