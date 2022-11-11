@@ -24,6 +24,15 @@ cp release/userReadme.txt "${PROD_BUILD_DIR}/readme.txt"
 
 cp data/datasets/user/myDataset_metadata.json.example "${PROD_BUILD_DIR}/data/datasets/user"
 cp data/datasets/user/readme.md "${PROD_BUILD_DIR}/data/datasets/user"
+# preload datasets
+cp data/datasets/user/BNGbreastTumor.tsv "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/BNGbreastTumor_metadata.json "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/ESL.tsv "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/ESL_metadata.json "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/iris.tsv "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/iris_metadata.json "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/titanic.tsv "${PROD_BUILD_DIR}/data/datasets/user"
+cp data/datasets/user/titanic_metadata.json "${PROD_BUILD_DIR}/data/datasets/user"
 
 cp data/recommenders/pennaiweb/SVDRecommender_*.pkl.gz "${PROD_BUILD_DIR}/data/recommenders"
 
@@ -33,7 +42,7 @@ cp config/ai.env-template "${PROD_BUILD_DIR}/config"
 cp "${PROD_BUILD_DIR}/config/ai.env-template" "${PROD_BUILD_DIR}/config/ai.env"
 
 cp .env "${PROD_BUILD_DIR}/.env"
-cp release/docker-compose-hub-image.yml "${PROD_BUILD_DIR}/docker-compose.yml"
+cp release/docker-compose-rpi-hub-image.yml "${PROD_BUILD_DIR}/docker-compose.yml"
 
 zip -r $PROD_ZIP_FILENAME $PROD_BUILD_DIR
 
