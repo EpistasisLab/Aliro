@@ -172,7 +172,7 @@
 
   <svg height="100" width="250" class="blinking">
   
-    <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" />
+    <!-- <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" /> -->
     <text id="blinkingtextcir" x="70" y="55" fill="white">Loading Aliro Ed...</text>
     Sorry, your browser does not support inline SVG.  
   </svg> 
@@ -181,7 +181,7 @@
   <div id="overlay" onclick="off()"></div>
 
   <section class="py-5 text-center container">
-    <div class="row py-lg-5 bg-success">
+    <div class="row py-lg-5 bg-my">
       <div class="col-lg-6 col-md-8 mx-auto">
         <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
         <!-- <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p> -->
@@ -220,13 +220,13 @@
         
         <div id="intuition_exp"> 
 
-          <h2 class="text-start text-white"> Decision tree with iris data</h2>
+          <h2 class="text-start text-black"> Decision tree with iris data</h2>
           <!-- <p class="text-start text-white"> Let’s&nbsp;say you had to determine whether a dot is in 
             <strong style="color:#440154;"> Class_1</strong> or <strong style="color:#21918c;"> in Class_2</strong> or <strong style="color:#fde725;"> in Class_3</strong>. In machine learning  terms, categorizing data points is a <strong>classification</strong> task. </p>
           <p class="text-start text-white"> Since San Francisco is relatively hilly, the elevation of a home may be a good way to distinguish the two cities. </p>
           <p class="text-start text-white"> Based on the home-elevation data to the right, you could argue that a home above 73 meters should be <strong> classified</strong> as one in San Francisco. </p>
            -->
-           <p id= "mainDTcon" class="text-start text-white" style="display: block;">
+           <p id= "mainDTcon" class="text-start text-black" style="display: block;">
             In this example, we are going to use the iris data set to build a decision tree.
             The iris data set contains 100 samples of three different species of iris flowers.
             There are four features in the dataset: sepal length, sepal width, petal length, and petal width.
@@ -240,7 +240,7 @@
             </br> 
             </p>
 
-            <p id= "mainDTfirst" class="text-start text-white" style="display:none">
+            <p id= "mainDTfirst" class="text-start text-black" style="display:none">
             <!-- <p id= "mainDTfirst" class="text-start text-white">  -->
             46% of data point has petal-width greather than 1.75.
             93% of data point in the thrid split has petal-length greater than 4.85.
@@ -315,7 +315,7 @@
           <!-- visibility:visible" -->
           <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
 
-          <h2 class="text-start">  Drawing boundaries </h2>
+          <h2 class="text-black">  Drawing boundaries </h2>
           <p class="text-start">  You can visualize your elevation (>73 m) and price per square foot (>$19,116.7) observations as the boundaries of regions in your scatterplot. Homes plotted in the green and blue regions would be in San Francisco and New York, respectively.  </p>
           <p class="text-start">  Identifying boundaries in data using math is the essence of statistical learning. </p>
           <p class="text-start">  Of course, you’ll need additional information to distinguish homes with lower elevations <em>and</em>  lower per-square-foot prices.   </p>
@@ -457,7 +457,7 @@
     <script src="JSfiles/backgroundOverlayeffect.js"></script>
     
     <script>
-      pingURL_DOWNLOAD()
+      // pingURL_DOWNLOAD()
 
       d3v3 = window.d3;
       window.d3 = null

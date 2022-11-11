@@ -150,7 +150,19 @@ class Builder extends Component {
                 content="Launch Experiment"
                 icon={isSubmitting ? <Icon loading name="spinner" /> : null}
                 disabled={isSubmitting}
-                onClick={this.handleSubmitExperiment}
+                // onClick={this.handleSubmitExperiment}
+                onClick={() => {
+                  sessionStorage.setItem("algorithm-popup", "true");
+                  // param-popup
+                  sessionStorage.setItem("param-popup", "true");
+
+                  sessionStorage.setItem("submit-experiment-popup", "true");
+
+                  this.handleSubmitExperiment();
+
+
+                }}
+                  
               />
             }
           />

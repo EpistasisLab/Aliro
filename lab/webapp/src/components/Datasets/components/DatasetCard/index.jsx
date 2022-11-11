@@ -45,6 +45,8 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 			icon_type = "line graph";
 	}
 
+  console.log("DatasetCard refresh");
+
   if (document.getElementById("aiTooglePopup") == null && document.getElementById("aiTooglePopupready") != null) {
   
     // console.log("aiTooglePopup is null");
@@ -123,7 +125,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
           }
           position="bottom right"
           // header={formatDataset(dataset.name)}
-          content = "Step 2: If you want to generate machine learning experiments automatically, please click to toggle AI button"
+          content = "Step 2: If you want to generate machine learning experiments automatically, please click to toggle AI button. Warning: when you toggle AI button, all tooltips will disappear." 
           
           // make the open ture but display none
           
@@ -190,11 +192,22 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             color="blue"
             attached="bottom"
             content="Build New Experiment"
+            onClick = { () =>
+              {
+                sessionStorage.setItem("addNewPopup", "true");
+                sessionStorage.setItem('aiTooglePopup', 'true');
+                sessionStorage.setItem('buildNewExpPopup', 'true');
+                
+              }
+            }
+
+
             href={builderLink}
           />
         }
         // content="Build a new experiment using this dataset"
-        content="Step 3: Please click this button to build a machine learning experiment."
+        content="Step 3: Please click this button to build a machine learning experiment. 
+        Warning: when you click this button, all tooltips will disappear."
         position="bottom center"
         // openOnTriggerClick
         // get information on whehter user click on the popup or not
@@ -212,13 +225,30 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
         onClick = { () => 
           {
             if (document.getElementById("buildNewExpPopup") != null) {
+
+
             
               document.getElementById("buildNewExpPopup").style.cssText += ';display:none !important;';
 
-              
+
+                // addNewPopup
+
+                // aiTooglePopup
+
+                // buildNewExpPopup
+
+                
+
 
                  // save flag to local storage to avoid showing the popup again
                  sessionStorage.setItem("buildNewExpPopup", "true");
+
+                //  sessionStorage.setItem("aiTooglePopup", "true");
+
+                //  sessionStorage.setItem("addNewPopup", "true");
+
+
+
                  // show the local storage on the console
                  console.log("buildNewExpPopup", sessionStorage.getItem("buildNewExpPopup"));
 
