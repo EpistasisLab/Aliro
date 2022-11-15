@@ -722,12 +722,6 @@ function onedplotToTwodPlot() {
       .call(d3.axisBottom(x))
       .attr("opacity", "0")
       .attr("stroke", "black")
-      .append("text")
-      .attr("fill", "black")//set the fill here
-      // make the title of x axis always located in the middle of the x axis
-      .attr("transform", "translate(" + width / 2 + " ," + (margin.bottom - 3) + ")")
-      // .attr("transform","translate(150, 30)")
-      .text("petal-length");
 
     // Add Y axis
     var y = d3.scaleLinear()
@@ -753,19 +747,8 @@ function onedplotToTwodPlot() {
       // .attr("fill", "white")
       .attr("stroke", "black")
       // .attr("stroke-width", "1px")
-            // .attr("stroke-width", "1px")
-      // .attr('text','y axis')
-      .append("text")
-      .attr("fill", "black")//set the fill here
-
-      // make the title of y axis always located in the end of the y axis. But make the title of y axia and the y axis not overlap
-      
-      // .attr("transform", "translate(" + -margin.left + " ," + height / 2 + ")rotate(-90)")
-
-      .attr("transform", "translate(" + -18 + " ," + height / 2 + ")rotate(-90)")
-
-      .text("sepal-length");
       ;
+
 
 
     // Add dots
@@ -1221,17 +1204,10 @@ function boxplot() {
       .attr("opacity", "0")
 
     // Add Y axis
-    var formatxAxis = d3.format('.0f');
-
-    // d3.format is integer
-    // d3.format(".2f") is float
-
-
     var y = d3.scaleLinear()
       // .domain([0, 9])
       .domain([4, 8.5])
       // .domain([0, 0])
-      .tickFormat(formatxAxis)
       .range([height, 0]);
 
 
@@ -1246,9 +1222,7 @@ function boxplot() {
       // .attr("transform", "translate(0," + width + ")")
       .attr("transform", "translate(0," + "0" + ")")
       .call(d3.axisLeft(y))
-      
       .attr("opacity", "1");
-      
 
 
 
@@ -1989,16 +1963,10 @@ function boxplot_direct_from_y() {
       .attr("stroke", "black")
 
     // Add Y axis
-
-    // scaleLinear show integer number
-    // var formatxAxis = d3.format('.0f');
-    
     var y = d3.scaleLinear()
-      // .domain([0, 10])
+      // .domain([0, 9])
       .domain([4, 8.5])
       // .domain([0, 0])
-      // format in y axis is integer
-      // .tickFormat(formatxAxis)
       .range([height, 0]);
 
 
@@ -2013,25 +1981,8 @@ function boxplot_direct_from_y() {
       // .attr("transform", "translate(0," + width + ")")
       .attr("transform", "translate(0," + "0" + ")")
       .call(d3.axisLeft(y))
-
-      
       .attr("opacity", "1")
-
-      .attr("stroke", "black")
-      // .attr("stroke-width", "1px")
-            // .attr("stroke-width", "1px")
-      // .attr('text','y axis')
-      .append("text")
-      .attr("fill", "black")//set the fill here
-
-      // make the title of y axis always located in the end of the y axis. But make the title of y axia and the y axis not overlap
-      
-      // .attr("transform", "translate(" + -margin.left + " ," + height / 2 + ")rotate(-90)")
-
-      .attr("transform", "translate(" + 30 + " ," + -10 + ")")
-
-      .text("sepal-length");
-    
+      .attr("stroke", "black");
 
 
 
