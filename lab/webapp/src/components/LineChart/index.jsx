@@ -31,11 +31,23 @@ import c3 from 'c3';
 
 import d3 from 'd3';
 
+
+
 // working version
-class DonutChart extends Component {
+class LineChart extends Component {
+
+
+  // train_sizes={train_sizes}
+  // train_scores={train_scores}
+  // test_scores={test_scores}
+  // chartKey={chartKey}
+  // chartColor={chartColor}
+  // min={0.5}
+  // max={1.0}
+
   componentDidMount() {
-    const { expList, chartKey, chartColor, min, max } = this.props;
-    expList && this.renderChart(expList, chartKey, chartColor, min, max);
+    const { train_sizes, train_scores, test_scores, chartKey, chartColor, min, max } = this.props;
+    train_sizes && train_scores &&  test_scores && this.renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max);
   }
 /*
 colors: {
@@ -48,82 +60,99 @@ use anonymous function to 'disable' interaction
 look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
-  renderChart(expList, chartKey, chartColor, min, max) {
-    // window.console.log('exp list: ');
-    window.console.log('expList: ', expList);
-    // print d3 version
-    window.console.log('d3 version: ', d3.version);
-    // print c3 version
-    window.console.log('c3 version: ', c3.version);
+  // renderChart(expList, chartKey, chartColor, min, max) {
+  renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max) {
 
-    // for each row in expList, get the key value pair
+    window.console.log('here in renderChart for linechart');
+    window.console.log('train_sizes: ', train_sizes);
+    window.console.log('train_scores.length: ', train_scores.length);
+    window.console.log('train_scores: ', train_scores);
+    window.console.log('test_scores: ', test_scores);
 
-    const data = expList.map((exp) => 
-    {
-     
-      if (exp[0].includes('class') === false) {
-        
-        window.console.log('exp[0]: ', exp[0]);
-        exp[0] = `class_${exp[0]}`;
-        
+    // // 
+    // min = 0;
+    // // max is last element in train_sizes
+    max = train_sizes[train_sizes.length - 1];
+    max = max + 0.1 * max;
+
+    window.console.log('max: ', max);
+    var total_train_scores=[];
+    var total_test_scores=[];
+    for (var i = 0; i < train_scores.length; i++) {
+      
+      // calculate averge of train_sizes[i]
+      // divide by train_scores[i].length
+
+      var sum_train_scores = 0;
+      var sum_test_scores = 0;
+      for (var j = 0; j < train_scores[i].length; j++) {
+        sum_train_scores += train_scores[i][j];
+        sum_test_scores += test_scores[i][j];
       }
+      var avg_sum_train_scores = sum_train_scores / train_scores[i].length;
+      var avg_sum_test_scores = sum_test_scores / test_scores[i].length;
 
-    });
+      total_train_scores.push(avg_sum_train_scores);
+      total_test_scores.push(avg_sum_test_scores);
+      
 
-    // window.console.log("data:",data)
+    }
 
+    
+    var json = [];
+    for (var i = 0; i < train_sizes.length; i++) {
+      json.push({x: train_sizes[i], Training_score: total_train_scores[i], Cross_validation_score: total_test_scores[i]});
+    }
 
+    // window.console.log('json: ', json);
 
-
-
-    // make expList like[['1',0.2],['2',0.3],['3',0.5]]
-    // expList = [['1',0.2],['2',0.3],['3',0.5]];
-
-    // // print expList
-    // window.console.log('expList: ', expList);
-
-    // make expList [['class_1',0.2],['class_2',0.3],['class_3',0.5]];
-    // var testList = expList.map((exp) => {
-    //   // add class_ to each element
-    //   exp[0] = `class_${exp[0]}`;
-    //   return [exp[0], exp[1]];
-    // });
-
-    // window.console.log('testList: ', testList);
-
-
-  
-
-    // print chartKey
-    window.console.log('chartKey: ', chartKey);
+    // window.console.log('chartKey: ', chartKey);
 
     var chart = c3.generate({
       bindto: `.${chartKey}`,
+      
       data: {
-          
+        json: json,
 
-          columns:expList
-          ,
-          
-          type : 'donut',
-          // colors: {
-          //   columns[0][0]: '#ff0000',
-          //   columns[1][0]: '#00ff00'
-          // }
-          // ,
-          onclick: function (d, i) { console.log("onclick", d, i); },
-          onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-          onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-      },
-      donut: {
-          // title: "Iris Petal Width"
-          title: ""
-          // title: expList
-      },
-      legend: {
-        item: { onclick: function () {} }
+        keys: {
+          x: 'x',
+          value: ['Training_score', 'Cross_validation_score'],
       }
-    });
+      
+    },
+      axis: {
+        y: {
+          min: 0,
+          max: 1,
+          label: 'Score'
+
+        },
+        x: {
+          min: 0,
+          max: max,
+          label: 'Training Set Size',
+          tick: {
+            multiline:false,
+            culling: false // <-- THIS!
+          }
+
+      }
+    },
+    grid: {
+      y: {
+        show: true,
+        color : '#fff!important'
+      },
+      x: {
+        show: true,
+        color : '#fff!important'
+      }
+    }
+
+    
+
+
+  });
 
     // if document element has testuser text, then make it unvisiable 
 
@@ -136,16 +165,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`donut ${this.props.chartKey}`} />
+      <div className={`LineChart ${this.props.chartKey}`} />
     );
   }
 }
 
-DonutChart.defaultProps = {
+LineChart.defaultProps = {
   chartColor: '#60B044'
 };
 
-export default DonutChart;
+export default LineChart;
 
 
 
@@ -158,7 +187,7 @@ export default DonutChart;
 
 
 // test version
-// class DonutChart extends Component {
+// class LineChart extends Component {
 //   componentDidMount() {
 //     const { expList, chartKey, chartColor, min, max } = this.props;
 //     expList && this.renderChart(expList, chartKey, chartColor, min, max);
@@ -201,7 +230,7 @@ export default DonutChart;
 //     //       columns:expList
 //     //       ,
           
-//     //       type : 'donut',
+//     //       type : 'LineChart',
 //     //       // colors: {
 //     //       //   columns[0][0]: '#ff0000',
 //     //       //   columns[1][0]: '#00ff00'
@@ -211,7 +240,7 @@ export default DonutChart;
 //     //       onmouseover: function (d, i) { console.log("onmouseover", d, i); },
 //     //       onmouseout: function (d, i) { console.log("onmouseout", d, i); }
 //     //   },
-//     //   donut: {
+//     //   LineChart: {
 //     //       // title: "Iris Petal Width"
 //     //       title: ""
 //     //       // title: expList
@@ -303,16 +332,16 @@ export default DonutChart;
 
 //   render() {
 //     return (
-//       <div className={`donut ${this.props.chartKey}`} />
+//       <div className={`LineChart ${this.props.chartKey}`} />
 //     );
 //   }
 // }
 
-// DonutChart.defaultProps = {
+// LineChart.defaultProps = {
 //   chartColor: '#60B044'
 // };
 
-// export default DonutChart;
+// export default LineChart;
 
 
 

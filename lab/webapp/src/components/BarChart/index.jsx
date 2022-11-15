@@ -32,11 +32,13 @@ import c3 from 'c3';
 import d3 from 'd3';
 
 // working version
-class DonutChart extends Component {
+class BarChart extends Component {
   componentDidMount() {
-    const { expList, chartKey, chartColor, min, max } = this.props;
-    expList && this.renderChart(expList, chartKey, chartColor, min, max);
+    const { expList,ylist, chartKey, chartColor, min, max } = this.props;
+    expList && this.renderChart(expList,ylist, chartKey, chartColor, min, max);
   }
+
+  
 /*
 colors: {
   'test_score': '#0072b2',  ---- light blue
@@ -48,7 +50,7 @@ use anonymous function to 'disable' interaction
 look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
-  renderChart(expList, chartKey, chartColor, min, max) {
+  renderChart(expList,ylist, chartKey, chartColor, min, max) {
     // window.console.log('exp list: ');
     window.console.log('expList: ', expList);
     // print d3 version
@@ -56,19 +58,23 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     // print c3 version
     window.console.log('c3 version: ', c3.version);
 
+    window.console.log('bar chart key: ', chartKey);
+    window.console.log('expList: ', expList);
+    window.console.log('ylist: ', ylist);
+
     // for each row in expList, get the key value pair
 
-    const data = expList.map((exp) => 
-    {
+    // const data = expList.map((exp) => 
+    // {
      
-      if (exp[0].includes('class') === false) {
+    //   if (exp[0].includes('class') === false) {
         
-        window.console.log('exp[0]: ', exp[0]);
-        exp[0] = `class_${exp[0]}`;
+    //     window.console.log('exp[0]: ', exp[0]);
+    //     exp[0] = `class_${exp[0]}`;
         
-      }
+    //   }
 
-    });
+    // });
 
     // window.console.log("data:",data)
 
@@ -92,36 +98,114 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     // window.console.log('testList: ', testList);
 
 
-  
+    // add 'data1' to expList front
+    // expList.unshift('data1');
 
     // print chartKey
     window.console.log('chartKey: ', chartKey);
 
+
+    // var tempjson 
+    // combine expList and ylist
+    // {label: ylist[i],val: expList[i]}
+    var tempjson = expList.map((exp,i) => {
+      return {label: ylist[i], importance: expList[i]}
+    });
+
+    console.log('tempjson: ', tempjson);
+    // var tempjson = expList.map((exp) => {
+
     var chart = c3.generate({
       bindto: `.${chartKey}`,
-      data: {
+      // data: {
+      //     columns: [
+              
+      //         expList
+      //     ],
           
 
-          columns:expList
-          ,
+      //     color: function(color, d){
+      //       var lst = ['#ffebee', '#ffcdd2', '#ef9a9a', '#e57373', '#ef5350', '#f44336', '#1b5e20', '#388e3c', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
+      //       return(lst[d.index]);
+      //     },
+
+      //     type: 'bar',
           
-          type : 'donut',
-          // colors: {
-          //   columns[0][0]: '#ff0000',
-          //   columns[1][0]: '#00ff00'
-          // }
-          // ,
-          onclick: function (d, i) { console.log("onclick", d, i); },
-          onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-          onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-      },
-      donut: {
-          // title: "Iris Petal Width"
-          title: ""
-          // title: expList
-      },
-      legend: {
-        item: { onclick: function () {} }
+      // },
+
+      data: {
+        // json: [{label: "<-10", val:0},{label: "<-8",val:0},{label: "<-6",val:3},{label: "<-4",val:1},{label: "<-2",val:15},{label: "<0",val:40},{label: "<2",val:82},{label: "<4",val:68},{label: "<6",val:7},{label: "<8",val:6},{label: "<10",val:3},{label: ">10",val:1}],
+
+        json: tempjson,
+
+        
+        keys: {
+            x: 'label',
+            value: ["importance"],
+        },
+        
+
+        color: function(color, d){
+          
+          var lst = ['#ffebee', '#ffcdd2', '#ef9a9a', '#e57373', '#ef5350', '#f44336', '#1b5e20', '#388e3c', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
+          // var continouslst = 
+          return(lst[d.index]);
+        },
+
+        type: 'bar',
+        
+    },                 
+    axis: {
+      // x: {
+      //   rotated: true,
+      //   type: 'category',
+      //   tick: { centered: true, color: '#000000'}
+
+      //   }
+
+      
+        rotated: true,
+        x: {
+            type: 'category',
+            tick: {
+                rotate: 75,
+                // multiline: true
+                multiline: false
+            },
+          
+        },
+        y: {
+          tick: {
+            count: 3,
+            fit: true,
+            // max
+
+            format: d3.format(".5f")
+            
+          }
+        }
+      // axises and labels color white
+
+    },
+    // disable click interaction
+    legend: {
+      item: { onclick: function () {} }
+    },
+  
+    
+
+    title: {
+      text: 'Permutationa Feature Importance',
+      color: '#000000 !important'
+    },
+
+      
+      bar: {
+          width: {
+              ratio: 0.5 // this makes bar width 50% of length between ticks
+          }
+          // or
+          //width: 100 // this makes bar width 100px
       }
     });
 
@@ -136,16 +220,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`donut ${this.props.chartKey}`} />
+      <div className={`Bar ${this.props.chartKey}`} />
     );
   }
 }
 
-DonutChart.defaultProps = {
+BarChart.defaultProps = {
   chartColor: '#60B044'
 };
 
-export default DonutChart;
+export default BarChart;
 
 
 
@@ -158,7 +242,7 @@ export default DonutChart;
 
 
 // test version
-// class DonutChart extends Component {
+// class BarChart extends Component {
 //   componentDidMount() {
 //     const { expList, chartKey, chartColor, min, max } = this.props;
 //     expList && this.renderChart(expList, chartKey, chartColor, min, max);
@@ -201,7 +285,7 @@ export default DonutChart;
 //     //       columns:expList
 //     //       ,
           
-//     //       type : 'donut',
+//     //       type : 'Bar',
 //     //       // colors: {
 //     //       //   columns[0][0]: '#ff0000',
 //     //       //   columns[1][0]: '#00ff00'
@@ -211,7 +295,7 @@ export default DonutChart;
 //     //       onmouseover: function (d, i) { console.log("onmouseover", d, i); },
 //     //       onmouseout: function (d, i) { console.log("onmouseout", d, i); }
 //     //   },
-//     //   donut: {
+//     //   Bar: {
 //     //       // title: "Iris Petal Width"
 //     //       title: ""
 //     //       // title: expList
@@ -303,16 +387,16 @@ export default DonutChart;
 
 //   render() {
 //     return (
-//       <div className={`donut ${this.props.chartKey}`} />
+//       <div className={`Bar ${this.props.chartKey}`} />
 //     );
 //   }
 // }
 
-// DonutChart.defaultProps = {
+// BarChart.defaultProps = {
 //   chartColor: '#60B044'
 // };
 
-// export default DonutChart;
+// export default BarChart;
 
 
 
