@@ -706,7 +706,7 @@ a#addNewDatasetBtnCross i {
  } */
 
 
-.c3-xgrid-line line {
+/* .c3-xgrid-line line {
     stroke: blue;
 }
 .c3-xgrid-line.grid4 line {
@@ -723,7 +723,10 @@ a#addNewDatasetBtnCross i {
 }
 .c3-ygrid-line.grid800 text {
     fill: green;
+} */
+
+
+
+.c3-line {
+    stroke-width: 3px;
 }
-
-
-

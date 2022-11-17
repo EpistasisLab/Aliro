@@ -34,20 +34,17 @@ import d3 from 'd3';
 
 
 // working version
-class LineChart extends Component {
+class ScatterPlot extends Component {
 
 
-  // train_sizes={train_sizes}
-  // train_scores={train_scores}
-  // test_scores={test_scores}
+  // Points={Points}
+  // Labels ={Labels}
   // chartKey={chartKey}
   // chartColor={chartColor}
-  // min={0.5}
-  // max={1.0}
 
   componentDidMount() {
-    const { train_sizes, train_scores, test_scores, chartKey, chartColor, min, max } = this.props;
-    train_sizes && train_scores &&  test_scores && this.renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max);
+    const { Points, Labels, chartKey, chartColor } = this.props;
+    Points && Labels && this.renderChart(Points, Labels, chartKey, chartColor);
   }
 /*
 colors: {
@@ -61,108 +58,148 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
   // renderChart(expList, chartKey, chartColor, min, max) {
-  renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max) {
+  renderChart(Points, Labels, chartKey, chartColor) {
 
-    window.console.log('here in renderChart for linechart');
-    // window.console.log('train_sizes: ', train_sizes);
-    // window.console.log('train_scores.length: ', train_scores.length);
-    // window.console.log('train_scores: ', train_scores);
-    // window.console.log('test_scores: ', test_scores);
+    window.console.log('here in renderChart for ScatterPlot');
+    // window.console.log('Points: ', Points);
+    // window.console.log('Labels: ', Labels);
+    window.console.log('chartKey: ', chartKey);
 
-    // // 
-    // min = 0;
-    // // max is last element in train_sizes
-    max = train_sizes[train_sizes.length - 1];
-    max = max + 0.1 * max;
 
-    window.console.log('max: ', max);
-    var total_train_scores=[];
-    var total_test_scores=[];
-    for (var i = 0; i < train_scores.length; i++) {
-      
-      // calculate averge of train_sizes[i]
-      // divide by train_scores[i].length
 
-      var sum_train_scores = 0;
-      var sum_test_scores = 0;
-      for (var j = 0; j < train_scores[i].length; j++) {
-        sum_train_scores += train_scores[i][j];
-        sum_test_scores += test_scores[i][j];
+     // if chartKey includes pca, then 
+     if (chartKey.includes('pca')) {
+      var axis= {
+        x: {
+            label: 'PC1',
+            tick: {
+                fit: false
+            }
+        },
+        y: {
+            label: 'PC2'
+        }
       }
-      var avg_sum_train_scores = sum_train_scores / train_scores[i].length;
-      var avg_sum_test_scores = sum_test_scores / test_scores[i].length;
-
-      total_train_scores.push(avg_sum_train_scores);
-      total_test_scores.push(avg_sum_test_scores);
-      
-
+      // else if chartKey includes tsne, then
+    } 
+    else if (chartKey.includes('tsne')) {
+      var axis= {
+        x: {
+            label: 'Comp 1',
+            tick: {
+                fit: false
+            }
+        },
+        y: {
+            label: 'Comp 2'
+        }
+      }
     }
 
     
-    var json = [];
-    for (var i = 0; i < train_sizes.length; i++) {
-      json.push({x: train_sizes[i], Training_score: total_train_scores[i], Cross_validation_score: total_test_scores[i]});
+
+  
+    // calculate how many kinds of labels are there in Labels
+    var labelSet = new Set(Labels);
+
+    // convert labelSet to array
+    var labelSet = Array.from(labelSet);
+
+ 
+    var labelSetLength = labelSet.length;
+
+   
+    var columns =[];
+    var xs = {};
+
+    for (var i = 0; i < labelSetLength; i++) {
+      // create x and y array for each label
+      var xArray = [];
+      var yArray = [];
+      // add labelSet[i] to xArray and yArray
+
+      // convert labelSet[i] to string
+
+
+      xArray.push(labelSet[i].toString()+'_x');
+      // yArray.push(labelSet[i].toString()+'_y');
+      // yArray.push(labelSet[i].toString());
+      yArray.push('class_'+labelSet[i].toString());
+
+
+      // xs[labelSet[i].toString()+'_y'] = labelSet[i].toString()+'_x';
+      // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      // xs[labelSet[i]] = labelSet[i]+'_x';
+
+      for (var j = 0; j < Points.length; j++) {
+        if (Labels[j] == labelSet[i]) {
+          xArray.push(Points[j][0]);
+          yArray.push(Points[j][1]);
+        }
+      }
+
+      columns.push(xArray);
+      columns.push(yArray);
     }
 
-    // window.console.log('json: ', json);
+    console.log('xs: ', xs);
+    // Sort xs by the key
+    var xsSorted = {};
+    Object.keys(xs).sort().forEach(function(key) {
+      xsSorted[key] = xs[key];
+    });
 
-    // window.console.log('chartKey: ', chartKey);
+    console.log('xsSorted: ', xsSorted);
 
-    var chart = c3.generate({
-      bindto: `.${chartKey}`,
+    xs = xsSorted;
+
+
+    // console.log('xs: ', xs);
+    // console.log('columns: ', columns);
+
+
+    
+
+
+
+
+    
+
+    // var tempColumns= [
+    //   ["setosa_x", 3.5, 3.0, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 2.9, 3.1, 3.7, 3.4, 3.0, 3.0, 4.0, 4.4, 3.9, 3.5, 3.8, 3.8, 3.4, 3.7, 3.6, 3.3, 3.4, 3.0, 3.4, 3.5, 3.4, 3.2, 3.1, 3.4, 4.1, 4.2, 3.1, 3.2, 3.5, 3.6, 3.0, 3.4, 3.5, 2.3, 3.2, 3.5, 3.8, 3.0, 3.8, 3.2, 3.7, 3.3],
+    //   ["versicolor_x", 3.2, 3.2, 3.1, 2.3, 2.8, 2.8, 3.3, 2.4, 2.9, 2.7, 2.0, 3.0, 2.2, 2.9, 2.9, 3.1, 3.0, 2.7, 2.2, 2.5, 3.2, 2.8, 2.5, 2.8, 2.9, 3.0, 2.8, 3.0, 2.9, 2.6, 2.4, 2.4, 2.7, 2.7, 3.0, 3.4, 3.1, 2.3, 3.0, 2.5, 2.6, 3.0, 2.6, 2.3, 2.7, 3.0, 2.9, 2.9, 2.5, 2.8],
+    //   ["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
+    //   ["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3]]
+
+    //   console.log('tempColumns: ', tempColumns);
+
+
+
+
+
+  var chart = c3.generate({
+    bindto: `.${chartKey}`,
+    data: {
+        
+        xs: xsSorted,
+
       
-      data: {
-        json: json,
-
-        keys: {
-          x: 'x',
-          value: ['Training_score', 'Cross_validation_score'],
-      }
-      
+        columns: columns,
+        type: 'scatter'
     },
-      axis: {
-        y: {
-          min: 0,
-          max: 1,
-          label: 'Score'
-
-        },
-        x: {
-          min: 0,
-          max: max,
-          label: 'Training examples',
-          tick: {
-            multiline:false,
-            culling: false // <-- THIS!
-          }
-
-      }
-    },
-    grid: {
-      y: {
-        show: true,
-        color : '#fff!important'
-      },
-      x: {
-        show: true,
-        color : '#fff!important'
-      }
-    },
-
+    axis: axis,
+    // set tooltip based on your setting 
     tooltip: {
       format: {
-        title: function (d) { return 'Training examples: ' + d; }
+        title: function (d) { return 'x ' + d; },
+        name: function (name, ratio, id, index) { return name; },
+        value: function (value, ratio, id, index) { return value; }
       }
     }
-
-
-    
-
-
   });
 
-    // if document element has testuser text, then make it unvisiable 
-
+   
 
     
 
@@ -172,16 +209,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`LineChart ${this.props.chartKey}`} />
+      <div className={`ScatterPlot ${this.props.chartKey}`} />
     );
   }
 }
 
-LineChart.defaultProps = {
+ScatterPlot.defaultProps = {
   chartColor: '#60B044'
 };
 
-export default LineChart;
+export default ScatterPlot;
 
 
 
@@ -194,7 +231,7 @@ export default LineChart;
 
 
 // test version
-// class LineChart extends Component {
+// class ScatterPlot extends Component {
 //   componentDidMount() {
 //     const { expList, chartKey, chartColor, min, max } = this.props;
 //     expList && this.renderChart(expList, chartKey, chartColor, min, max);
@@ -237,7 +274,7 @@ export default LineChart;
 //     //       columns:expList
 //     //       ,
           
-//     //       type : 'LineChart',
+//     //       type : 'ScatterPlot',
 //     //       // colors: {
 //     //       //   columns[0][0]: '#ff0000',
 //     //       //   columns[1][0]: '#00ff00'
@@ -247,7 +284,7 @@ export default LineChart;
 //     //       onmouseover: function (d, i) { console.log("onmouseover", d, i); },
 //     //       onmouseout: function (d, i) { console.log("onmouseout", d, i); }
 //     //   },
-//     //   LineChart: {
+//     //   ScatterPlot: {
 //     //       // title: "Iris Petal Width"
 //     //       title: ""
 //     //       // title: expList
@@ -339,16 +376,16 @@ export default LineChart;
 
 //   render() {
 //     return (
-//       <div className={`LineChart ${this.props.chartKey}`} />
+//       <div className={`ScatterPlot ${this.props.chartKey}`} />
 //     );
 //   }
 // }
 
-// LineChart.defaultProps = {
+// ScatterPlot.defaultProps = {
 //   chartColor: '#60B044'
 // };
 
-// export default LineChart;
+// export default ScatterPlot;
 
 
 

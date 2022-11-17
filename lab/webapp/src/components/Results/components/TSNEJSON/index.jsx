@@ -83,8 +83,8 @@ function foldcheck(fold) {
     
     if (Points && Labels && type == "classification") {
 
-      console.log("i am here in no score");
-      console.log('labels', Labels);
+      console.log(scoreName+"i am here in no score");
+      console.log(scoreName+'labels', Labels);
 
       return (
 

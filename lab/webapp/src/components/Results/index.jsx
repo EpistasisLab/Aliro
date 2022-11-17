@@ -44,7 +44,7 @@ import LearningCurveJSON from './components/LearningCurveJSON';
 import PCA from './components/PCA';
 import PCAJSON from './components/PCAJSON';
 import TSNE from './components/TSNE';
-// import TSNEJSON from './components/TSNEJSON';
+import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
 import NoScore from './components/NoScore';
@@ -316,7 +316,7 @@ class Results extends Component {
                   finishTime={experiment.data.finished}
                   launchedBy={experiment.data.launched_by}
                 />
-                <ImportanceScore file={importanceScore} />
+                {/* <ImportanceScore file={importanceScore} /> */}
                 <ImportanceScoreJSON
                   scoreName="Feature Importance"
                   scoreValueList={experiment.data.feature_importances}
@@ -325,10 +325,7 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="classification"
                 />
-                <LearningCurve file={learningCurve}/>
-                {/* 'train_sizes':train_sizes.tolist(), */}
-                {/* 'train_scores': train_scores.tolist(), */}
-                {/* 'test_scores': test_scores.tolist() */}
+                {/* <LearningCurve file={learningCurve}/> */}
                 <LearningCurveJSON scoreName="Learning Curve"
                   train_sizes={experiment.data.train_sizes}
                   train_scores={experiment.data.train_scores}
@@ -337,19 +334,23 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="classification"
                 />
-                <PCA file={pca}/>
-                {/* experiment.data.X_pca
-                experiment.data.y_pca */}
-                {/* <PCAJSON file={pca_json}/> */}
-                {/* <PCAJSON
-                  scoreName="Class Rate"
-                  scoreValueList={class_percentage}
-                  chartKey="test"
+                {/* <PCA file={pca}/> */}
+                <PCAJSON scoreName="PCA 2D"
+                  Points={experiment.data.X_pca}
+                  Labels={experiment.data.y_pca}
+                  chartKey="pca_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+                {/* <TSNE file={tsne}/> */}
+                {/* <TSNEJSON file={tsne_json}/> */}
+                {/* <TSNEJSON scoreName="TSNE 2D"
+                  Points={experiment.data.X_tsne}
+                  Labels={experiment.data.y_tsne}
+                  chartKey="tsne_2d"
                   chartColor="#55D6BE"
                   type="classification"
                 /> */}
-                <TSNE file={tsne}/>
-                {/* <TSNEJSON file={tsne_json}/> */}
               </Grid.Column>
               <Grid.Column>
                 <NoScore
@@ -367,6 +368,13 @@ class Results extends Component {
                   fileDict={shapSummaryCurveDict}
                   shap_explainer={shap_explainer}
                   shap_num_samples={shap_num_samples} />
+                <TSNEJSON scoreName="TSNE 2D"
+                  Points={experiment.data.X_tsne}
+                  Labels={experiment.data.y_tsne}
+                  chartKey="tsne_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
               </Grid.Column>
               <Grid.Column>
                 <Score

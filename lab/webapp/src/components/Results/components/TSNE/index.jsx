@@ -72,7 +72,7 @@ class TSNE extends Component {
 
     return (
       <InvertedCard
-        header="TSNE"
+        header="TSNE 2D"
         content={<Image src={image_url} />}
       />
     );
