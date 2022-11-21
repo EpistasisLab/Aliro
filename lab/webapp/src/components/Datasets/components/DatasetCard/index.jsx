@@ -56,6 +56,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
     // console.log(document.getElementById("aiTooglePopupready"));
 
     // remove div element widh id "aiTooglePopupready"
+    // 
     var element = document.getElementById("aiTooglePopupready");
     element.parentNode.removeChild(element);
 
