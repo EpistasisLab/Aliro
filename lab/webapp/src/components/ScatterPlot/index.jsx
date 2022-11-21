@@ -60,10 +60,10 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
   // renderChart(expList, chartKey, chartColor, min, max) {
   renderChart(Points, Labels, chartKey, chartColor) {
 
-    window.console.log('here in renderChart for ScatterPlot');
+    // window.console.log('here in renderChart for ScatterPlot');
     // window.console.log('Points: ', Points);
     // window.console.log('Labels: ', Labels);
-    window.console.log('chartKey: ', chartKey);
+    // window.console.log('chartKey: ', chartKey);
 
 
 
@@ -143,14 +143,14 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       columns.push(yArray);
     }
 
-    console.log('xs: ', xs);
+    // console.log('xs: ', xs);
     // Sort xs by the key
     var xsSorted = {};
     Object.keys(xs).sort().forEach(function(key) {
       xsSorted[key] = xs[key];
     });
 
-    console.log('xsSorted: ', xsSorted);
+    // console.log('xsSorted: ', xsSorted);
 
     xs = xsSorted;
 
@@ -191,11 +191,15 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     axis: axis,
     // set tooltip based on your setting 
     tooltip: {
-      format: {
-        title: function (d) { return 'x ' + d; },
-        name: function (name, ratio, id, index) { return name; },
-        value: function (value, ratio, id, index) { return value; }
-      }
+      // format: {
+      //   title: function (d,name) { return  d,name; },
+        
+        
+
+        
+      // }
+      // do not show tooltip
+      show: false
     }
   });
 

@@ -41,6 +41,7 @@ import ImportanceScore from './components/ImportanceScore';
 import ImportanceScoreJSON from './components/ImportanceScoreJSON';
 import LearningCurve from './components/LearningCurve';
 import LearningCurveJSON from './components/LearningCurveJSON';
+import TestChart from './components/TestChart';
 import PCA from './components/PCA';
 import PCAJSON from './components/PCAJSON';
 import TSNE from './components/TSNE';
@@ -50,6 +51,7 @@ import Score from './components/Score';
 import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
+import ClassRate from './components/ClassRate';
 
 class Results extends Component {
   constructor(props) {
@@ -334,6 +336,18 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="classification"
                 />
+
+                {/* <TestChart scoreName="testChart"
+                  train_sizes={experiment.data.train_sizes}
+                  train_scores={experiment.data.train_scores}
+                  test_scores={experiment.data.test_scores}
+                  chartKey="test_chart"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+                
+                
                 {/* <PCA file={pca}/> */}
                 <PCAJSON scoreName="PCA 2D"
                   Points={experiment.data.X_pca}
@@ -353,7 +367,15 @@ class Results extends Component {
                 /> */}
               </Grid.Column>
               <Grid.Column>
-                <NoScore
+                {/* <NoScore
+                  scoreName="Class Rate"
+                  scoreValueList={class_percentage}
+                  chartKey="test"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+                <ClassRate
                   scoreName="Class Rate"
                   scoreValueList={class_percentage}
                   chartKey="test"

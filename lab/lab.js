@@ -113,6 +113,7 @@ var upload = multer(); // Store files in memory as Buffer objects
 //app.set('superSecret',config.secret);
 app.use(compression()); // Compress all Express requests
 app.use(favicon(path.join(__dirname, "webapp/dist/favicon.ico"))); // Deal with favicon requests
+// app.use(favicon(path.join(__dirname, "webapp/dist/BrainCircuit.ico"))); // Deal with favicon 
 app.use(express.static(path.join(__dirname, "webapp/dist"), {index: false, maxAge: '1d'})); // Static directory
 app.use(morgan("tiny")); // Log requests
 // app.use(bodyParser.urlencoded({extended: false}));
