@@ -34,7 +34,7 @@ import d3 from 'd3';
 
 
 // working version
-// class LineChart extends Component {
+// class TestLineChart extends Component {
 
 
 //   // train_sizes={train_sizes}
@@ -63,7 +63,7 @@ import d3 from 'd3';
 //   // renderChart(expList, chartKey, chartColor, min, max) {
 //   renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max) {
 
-//     window.console.log('here in renderChart for linechart');
+//     window.console.log('here in renderChart for TestLineChart');
 //     // window.console.log('train_sizes: ', train_sizes);
 //     // window.console.log('train_scores.length: ', train_scores.length);
 //     // window.console.log('train_scores: ', train_scores);
@@ -172,16 +172,16 @@ import d3 from 'd3';
 
 //   render() {
 //     return (
-//       <div className={`LineChart ${this.props.chartKey}`} />
+//       <div className={`TestLineChart ${this.props.chartKey}`} />
 //     );
 //   }
 // }
 
-// LineChart.defaultProps = {
+// TestLineChart.defaultProps = {
 //   chartColor: '#60B044'
 // };
 
-// export default LineChart;
+// export default TestLineChart;
 
 
 
@@ -194,11 +194,21 @@ import d3 from 'd3';
 
 
 // test version
-class LineChart extends Component {
+class TestLineChart extends Component {
   componentDidMount() {
-    const { expList, chartKey, chartColor, min, max } = this.props;
-    expList && this.renderChart(expList, chartKey, chartColor, min, max);
+    console.log("hello");
+    // train_sizes={train_sizes}
+    // train_scores={train_scores}
+    // test_scores={test_scores}
+    // chartKey={chartKey}
+    // chartColor={chartColor}
+    // min={0.5}
+    // max={1.0}
+    const { train_sizes,train_scores,test_scores, chartKey, chartColor, min, max } = this.props;
+    this.renderChart(train_sizes,train_scores,test_scores, chartKey, chartColor, min, max);
   }
+
+ 
 /*
 colors: {
   'test_score': '#0072b2',  ---- light blue
@@ -210,24 +220,25 @@ use anonymous function to 'disable' interaction
 look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
-  renderChart(expList, chartKey, chartColor, min, max) {
+  renderChart(train_sizes,train_scores,test_scores, chartKey, chartColor, min, max) {
+    console.log('here in renderChart for TestLineChart');
     // window.console.log('exp list: ');
     // window.console.log('exp list: ', expList);
     // print d3 version
-    window.console.log('d3 version: ', d3.version);
-    // print c3 version
-    window.console.log('c3 version: ', c3.version);
+    // window.console.log('d3 version: ', d3.version);
+    // // print c3 version
+    // window.console.log('c3 version: ', c3.version);
 
 
 
-    // make expList like[['1',0.2],['2',0.3],['3',0.5]]
-    // expList = [['1',0.2],['2',0.3],['3',0.5]];
+    // // make expList like[['1',0.2],['2',0.3],['3',0.5]]
+    // // expList = [['1',0.2],['2',0.3],['3',0.5]];
 
-    // print expList
-    window.console.log('expList: ', expList);
+    // // print expList
+    // window.console.log('expList: ', expList);
 
-    // print chartKey
-    window.console.log('chartKey: ', chartKey);
+    // // print chartKey
+    // window.console.log('chartKey: ', chartKey);
 
     // var chart = c3.generate({
     //   bindto: `.${chartKey}`,
@@ -237,7 +248,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     //       columns:expList
     //       ,
           
-    //       type : 'LineChart',
+    //       type : 'TestLineChart',
     //       // colors: {
     //       //   columns[0][0]: '#ff0000',
     //       //   columns[1][0]: '#00ff00'
@@ -247,7 +258,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     //       onmouseover: function (d, i) { console.log("onmouseover", d, i); },
     //       onmouseout: function (d, i) { console.log("onmouseout", d, i); }
     //   },
-    //   LineChart: {
+    //   TestLineChart: {
     //       // title: "Iris Petal Width"
     //       title: ""
     //       // title: expList
@@ -263,13 +274,31 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
 
     // print curreht class name
-    window.console.log('current class name: ', `.${chartKey}`);
+    window.console.log('TestLine current class name: ', `.${chartKey}`);
 
     
 
       var div = d3.select(`.${chartKey}`)
       // add svg to div 
+      
       var svg = div.append("svg")
+      // make viewbox to make svg responsive
+      .attr("viewBox", "0 0 600 400")
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .append("g")
+      .attr("transform", "translate(50,50)");
+
+      
+      var matrix = [[10,20],[30,40]];
+
+
+      // var matrix = [[10,20],[30,40]];
+
+
+
+      var tempcount=0;
+      
+      
 
       var rect = svg.selectAll("rect")
       .data(matrix)
@@ -285,10 +314,24 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       //   return d3.select(`.${chartKey}`).node().getBoundingClientRect().height/10;
       // })
       .attr("x", function(d, i) {
-        return i * 50;
+        console.log('d: ', d);
+        
+        console.log('d[0][0]: ', d[0]);
+        console.log('d[0][1]: ', d[1]);
+        // loop based on size of d
+        for (var i = 0; i < d.length; i++) {
+          // console.log('d[i]: ', d[i]);
+        // make 1 row 2 column
+          tempcount+=1;
+          console.log('tempcount', tempcount);
+        }
+        
+        return i * 100;
+
       } )
       .attr("y", function(d, i) {
-        return i * 50;
+
+        return i * 100;
       }
       )
       .attr('id', function(d, i) {
@@ -302,35 +345,23 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       // make it show more than background color
       .attr('opacity', 0.5)
       // add mouseover event
-      .on("mouseover", function(d, i) {
-        // change color
-        d3.select(this).attr('fill', 'blue');
-        console.log('number',d)
-        // show this d as string on the rect
-        d3.select(this).text(d);
-        // make the text color white
-        d3.select(this).attr('fill', 'white');
+      // .on("mouseover", function(d, i) {
+      //   // change color
+      //   d3.select(this).attr('fill', 'blue');
+      //   console.log('number',d)
+      //   // show this d as string on the rect
+      //   d3.select(this).text(d);
+      //   // make the text color white
+      //   d3.select(this).attr('fill', 'white');
 
-        d3.select(this).text('This is some information about whatever')
-                .attr('x', 50)
-                .attr('y', 150)
-                .attr('fill', 'white')
+      //   d3.select(this).text('This is some information about whatever')
+      //           .attr('x', 50)
+      //           .attr('y', 150)
+      //           .attr('fill', 'white')
 
-      })
+      // })
       .append('text').text('test');
-      // add data value to each rect text
-
-
-      // matrix 
-      //  20  30
-      //  40  50
-
-      // add the matrix value to rect 
-
-      // var text = svg.selectAll("text")
-      // .data(matrix)
-      // .enter()
-      // .append("text")
+      
 
 
   
@@ -339,16 +370,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`LineChart ${this.props.chartKey}`} />
+      <div className={`TestLineChart ${this.props.chartKey}`} />
     );
   }
 }
 
-LineChart.defaultProps = {
+TestLineChart.defaultProps = {
   chartColor: '#60B044'
 };
 
-export default LineChart;
+export default TestLineChart;
 
 
 

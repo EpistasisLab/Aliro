@@ -9,4 +9,3 @@ pydot==1.4.1
 requests==2.22.0
 xgboost==0.90
 joblib==0.16.0
-json
