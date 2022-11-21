@@ -105,7 +105,7 @@ class Datasets extends Component {
 
     if (document.getElementById("aiTooglePopupready") == null) {
   
-      console.log("aiTooglePopupready!!!")
+      // console.log("aiTooglePopupready!!!")
 
       // create a new div element id with aiTooglePopupready
       var temp=document.createElement("div");
@@ -122,7 +122,7 @@ class Datasets extends Component {
     return (
       
       <div>
-        {/*<FileUpload />*/}
+        {/* <FileUpload /> */}
         <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" linkText='/upload_datasets' />
         
 
@@ -132,19 +132,7 @@ class Datasets extends Component {
 
 
 
-      {/* <>          
-      <Popup
-        id = "popup" 
-        trigger={<Button content='Trigger Popup' />}
-        // context={"test"}
-        content='Hello'
-        position='top center'
-       
-        open={true}
-       
-      />
-
-      </> */}
+      
 
 
 

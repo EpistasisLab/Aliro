@@ -97,14 +97,14 @@ describe('basic testing of fileupload react component', () => {
 
   // the intended behavior of this component is to hide the fields to enter info
   // about the file being uploaded until a file with a testFilename has been selected
-  // it('DONE - check UI form is hidden w/o a file selection', () => {
-  //   let formBody = shallowDom.find('#file-upload-form-input-area');
-  //   expect(formBody.length).toEqual(1)
+  it('DONE - check UI form is hidden w/o a file selection', () => {
+    let formBody = shallowDom.find('#file-upload-form-input-area');
+    expect(formBody.length).toEqual(1)
 
-  //   // check for CSS style which hides form
-  //   expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
-  //   expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
-  // })
+    // check for CSS style which hides form
+    expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
+    expect(formBody.hasClass('file-upload-form-show-inputs')).toEqual(false);
+  })
   
   it('TODO - try selecting non-csv/tsv file type', () => {
 
