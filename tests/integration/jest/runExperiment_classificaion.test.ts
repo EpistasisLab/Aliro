@@ -75,7 +75,8 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 10) {
-			util.delay(10000)
+			// util.delay(10000)
+			util.delay(100000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -157,7 +158,8 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 4) {
-			util.delay(10000)
+			// util.delay(10000)
+			util.delay(100000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -238,7 +240,8 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 4) {
-			util.delay(10000)
+			// util.delay(10000)
+			util.delay(100000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -250,7 +253,8 @@ describe('run experiment', () => {
 		expect(experimentResults._status).toEqual('cancelled')
 
 		// hacky...
-		util.delay(20000)
+		// util.delay(20000)
+		util.delay(200000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});
