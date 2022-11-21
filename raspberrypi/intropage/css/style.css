@@ -106,6 +106,8 @@ a#downloadImage{
 #topaliro, #bottomfooter{
   /* --bs-bg-opacity: 0!important; */
   background-color: #f2efe9!important;
+  /* no round */
+  border-radius: 0!important;
 }
 
 

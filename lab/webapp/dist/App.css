@@ -652,3 +652,81 @@ a#addNewDatasetBtnCross i {
         padding: calc(1rem * 2.5);
     }
 }*/
+
+
+.c3-chart-texts .c3-text-0 {
+    fill: white !important;
+ }
+ 
+ .c3-chart-texts .c3-text-1 {
+    fill: white !important;
+ }
+
+ /* .Bar{
+    stroke: rgb(28, 28, 28);
+ } */
+
+ .donut.test.c3 .g.c3-legend-item-event {
+    stroke: rgb(255, 255, 255)!important;
+ }
+
+ text{
+    fill: rgb(255, 255, 255)!important;
+ }
+
+ .domain{
+    fill: rgb(255, 255, 255)!important;
+ }
+
+
+ .c3-legend-item {
+    cursor:default !important;
+}
+
+/* .c3 line {
+    fill: none;
+    stroke: rgb(255, 255, 255);
+} */
+
+
+.LineChart.learning_curve.c3 path{
+    fill: none;
+    stroke: rgb(255, 255, 255);
+}
+
+
+
+/* .LineChart.learning_curve.c3 .c3-axis-y text {
+   
+    font-size:8px;
+ }
+ .LineChart.learning_curve.c3 .c3-axis-x text {
+     font-size:8px;
+     
+ } */
+
+
+/* .c3-xgrid-line line {
+    stroke: blue;
+}
+.c3-xgrid-line.grid4 line {
+    stroke: pink;
+}
+.c3-xgrid-line.grid4 text {
+    fill: pink;
+}
+.c3-ygrid-line line {
+    stroke: red;
+}
+.c3-ygrid-line.grid800 line {
+    stroke: green;
+}
+.c3-ygrid-line.grid800 text {
+    fill: green;
+} */
+
+
+
+.c3-line {
+    stroke-width: 3px;
+}

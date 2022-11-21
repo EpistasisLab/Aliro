@@ -50,19 +50,49 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   renderChart(expList, chartKey, chartColor, min, max) {
     // window.console.log('exp list: ');
-    // window.console.log('exp list: ', expList);
+    window.console.log('expList: ', expList);
     // print d3 version
     window.console.log('d3 version: ', d3.version);
     // print c3 version
     window.console.log('c3 version: ', c3.version);
+
+    // for each row in expList, get the key value pair
+
+    const data = expList.map((exp) => 
+    {
+     
+      if (exp[0].includes('class') === false) {
+        
+        window.console.log('exp[0]: ', exp[0]);
+        exp[0] = `class_${exp[0]}`;
+        
+      }
+
+    });
+
+    // window.console.log("data:",data)
+
+
 
 
 
     // make expList like[['1',0.2],['2',0.3],['3',0.5]]
     // expList = [['1',0.2],['2',0.3],['3',0.5]];
 
-    // print expList
-    window.console.log('expList: ', expList);
+    // // print expList
+    // window.console.log('expList: ', expList);
+
+    // make expList [['class_1',0.2],['class_2',0.3],['class_3',0.5]];
+    // var testList = expList.map((exp) => {
+    //   // add class_ to each element
+    //   exp[0] = `class_${exp[0]}`;
+    //   return [exp[0], exp[1]];
+    // });
+
+    // window.console.log('testList: ', testList);
+
+
+  
 
     // print chartKey
     window.console.log('chartKey: ', chartKey);
@@ -89,7 +119,14 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
           // title: "Iris Petal Width"
           title: ""
           // title: expList
+      },
+      legend: {
+        item: { onclick: function () {} }
       }
+      ,
+      // tooltip: {
+      //   format: {
+
     });
 
     // if document element has testuser text, then make it unvisiable 

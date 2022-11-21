@@ -72,7 +72,7 @@ class PCA extends Component {
 
     return (
       <InvertedCard
-        header="PCA"
+        header="PCA 2D"
         content={<Image src={image_url} />}
       />
     );

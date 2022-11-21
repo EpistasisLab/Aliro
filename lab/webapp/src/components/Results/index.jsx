@@ -38,13 +38,20 @@ import InteractiveConfusionMatrix from './components/ConfusionMatrix';
 import ROCCurve from './components/ROCCurve';
 import ShapSummaryCurve from './components/ShapSummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
+import ImportanceScoreJSON from './components/ImportanceScoreJSON';
 import LearningCurve from './components/LearningCurve';
+import LearningCurveJSON from './components/LearningCurveJSON';
+import TestChart from './components/TestChart';
 import PCA from './components/PCA';
+import PCAJSON from './components/PCAJSON';
+import TSNE from './components/TSNE';
+import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
 import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
+import ClassRate from './components/ClassRate';
 
 class Results extends Component {
   constructor(props) {
@@ -79,7 +86,7 @@ class Results extends Component {
     let expScores = experiment.data.scores;
 
     // console.log("experiment.data")
-    // console.log(experiment.data)
+    console.log(experiment.data)
     // console.log(experiment.data['class_1'][0])
     // console.log(experiment.data['class_-1'][0])
 
@@ -153,13 +160,19 @@ class Results extends Component {
     // console.log(experiment.data.prediction_type)
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
-      let confusionMatrix, rocCurve, importanceScore, learningCurve, pca, shap_explainer, shap_num_samples;
+
+      console.log("experiment.data", experiment.data)
+      // console.log("X_pca", experiment.data.X_pca)
+      // console.log("y_pca", experiment.data.y_pca)
+
+      let confusionMatrix, rocCurve, importanceScore, learningCurve, pca, pca_json, tsne, tsne_json, shap_explainer, shap_num_samples;
       
       let shapSummaryCurveDict = {};
 
           
       experiment.data.experiment_files.forEach(file => {
         const filename = file.filename;
+        console.log('filename',filename);
         if(filename.includes('confusion_matrix')) {
           confusionMatrix = file;
         } else if(filename.includes('roc_curve')) {
@@ -170,10 +183,27 @@ class Results extends Component {
           learningCurve = file;
           
           
-        } else if(filename.includes('pca')) {
+        } else if(filename.includes('pca') && filename.includes('png')) {
           pca = file;
-          
-        }else if(filename.includes('shap_summary_curve')) {
+          console.log("pca", pca)
+        } else if (filename.includes('pca-json')) {
+          console.log("pca_json")
+          pca_json = file;
+          console.log("pca_json: ", pca_json)
+        }
+
+        else if(filename.includes('tsne') && filename.includes('png')) {
+          tsne = file;
+          console.log("tsne", tsne)
+
+        }
+        else if (filename.includes('tsne-json')) {
+          console.log("tsne_json")
+          tsne_json = file;
+          console.log("tsne_json: ", tsne_json)
+        } 
+        
+        else if(filename.includes('shap_summary_curve')) {
           let class_name = filename.split('_').slice(-2,-1);
           shapSummaryCurveDict[class_name] = file;
           shap_explainer=experiment.data.shap_explainer;
@@ -198,6 +228,7 @@ class Results extends Component {
       let recallList = this.getGaugeArray(recallKeys);
       let f1List = this.getGaugeArray(f1Keys);
       let class_percentage = [];
+      // let pca_data = [];
 
       
       
@@ -287,12 +318,64 @@ class Results extends Component {
                   finishTime={experiment.data.finished}
                   launchedBy={experiment.data.launched_by}
                 />
-                <ImportanceScore file={importanceScore} />
-                <LearningCurve file={learningCurve}/>
-                <PCA file={pca}/>
+                {/* <ImportanceScore file={importanceScore} /> */}
+                <ImportanceScoreJSON
+                  scoreName="Feature Importance"
+                  scoreValueList={experiment.data.feature_importances}
+                  featureList={experiment.data.feature_names}
+                  chartKey="importance_score"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+                {/* <LearningCurve file={learningCurve}/> */}
+                <LearningCurveJSON scoreName="Learning Curve"
+                  train_sizes={experiment.data.train_sizes}
+                  train_scores={experiment.data.train_scores}
+                  test_scores={experiment.data.test_scores}
+                  chartKey="learning_curve"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+
+                {/* <TestChart scoreName="testChart"
+                  train_sizes={experiment.data.train_sizes}
+                  train_scores={experiment.data.train_scores}
+                  test_scores={experiment.data.test_scores}
+                  chartKey="test_chart"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+                
+                
+                {/* <PCA file={pca}/> */}
+                <PCAJSON scoreName="PCA 2D"
+                  Points={experiment.data.X_pca}
+                  Labels={experiment.data.y_pca}
+                  chartKey="pca_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+                {/* <TSNE file={tsne}/> */}
+                {/* <TSNEJSON file={tsne_json}/> */}
+                {/* <TSNEJSON scoreName="TSNE 2D"
+                  Points={experiment.data.X_tsne}
+                  Labels={experiment.data.y_tsne}
+                  chartKey="tsne_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
               </Grid.Column>
               <Grid.Column>
-                <NoScore
+                {/* <NoScore
+                  scoreName="Class Rate"
+                  scoreValueList={class_percentage}
+                  chartKey="test"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+                <ClassRate
                   scoreName="Class Rate"
                   scoreValueList={class_percentage}
                   chartKey="test"
@@ -301,11 +384,19 @@ class Results extends Component {
                 />
                 {/* <InteractiveConfusionMatrix /> */}
                 <ConfusionMatrix file={confusionMatrix} />
+                {/* <ConfusionMatrixJSON  */}
                 <ROCCurve file={rocCurve} />
                 <ShapSummaryCurve
                   fileDict={shapSummaryCurveDict}
                   shap_explainer={shap_explainer}
                   shap_num_samples={shap_num_samples} />
+                <TSNEJSON scoreName="TSNE 2D"
+                  Points={experiment.data.X_tsne}
+                  Labels={experiment.data.y_tsne}
+                  chartKey="tsne_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
               </Grid.Column>
               <Grid.Column>
                 <Score

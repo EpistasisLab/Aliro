@@ -20,7 +20,7 @@ for (var i = 0; i < document.getElementsByClassName("0").length; i++) {
 
     
     // make .style("stroke", "red")
-    document.getElementsByClassName("0")[i].style.stroke = "white";
+    document.getElementsByClassName("0")[i].style.stroke = "red";
 
 }
 
@@ -48,7 +48,7 @@ function mouseOverClass2() {
     
         
         // make .style("stroke", "red")
-        document.getElementsByClassName("1")[i].style.stroke = "white";
+        document.getElementsByClassName("1")[i].style.stroke = "red";
     
     }
     
@@ -76,7 +76,7 @@ function mouseOverClass3() {
     
         
         // make .style("stroke", "red")
-        document.getElementsByClassName("2")[i].style.stroke = "white";
+        document.getElementsByClassName("2")[i].style.stroke = "red";
     
     }
     

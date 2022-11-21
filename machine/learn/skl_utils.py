@@ -46,6 +46,11 @@ import shap
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
+from sklearn import decomposition
+import matplotlib.colors as mcolors
+from matplotlib.patches import Patch
+from sklearn.manifold import TSNE
+
 mpl.use('Agg')
 
 # if system environment allows to export figures
@@ -430,6 +435,41 @@ def generate_results(model, input_data,
         'feature_importance_type': imp_score_type
     }
 
+    print("feature_importances",feature_importances)
+
+    top_feature_importances={}
+    # if size of feature_importances is greater than 10, then
+    # only top 10 features whose feature_importances are greater than 0 are returned
+    if len(feature_importances['feature_importances']) > 10:
+        for i in range(len(feature_importances['feature_importances'])):
+            if feature_importances['feature_importances'][i] >= 0:
+                top_feature_importances[feature_importances['feature_names'][i]] = feature_importances['feature_importances'][i]
+    
+        # sort the dictionary in descending order of feature_importances
+        top_feature_importances = dict(sorted(top_feature_importances.items(), key=lambda item: item[1], reverse=True))
+        # get top 10 features
+        top_feature_importances = dict(list(top_feature_importances.items())[:10])
+
+        # print("top_feature_importances",top_feature_importances)
+
+        # add  'feature_importance_type': imp_score_type to top_feature_importances
+        # top_feature_importances['feature_importance_type'] = imp_score_type
+
+        
+        # make top_feature_importances format like feature_importances
+        top_feature_importances = {
+            'feature_names': list(top_feature_importances.keys()),
+            'feature_importances': list(top_feature_importances.values()),
+            'feature_importance_type': imp_score_type
+        }
+
+        # print("new_top_feature_importances",top_feature_importances)
+
+        feature_importances = top_feature_importances
+         
+
+
+
     save_json_fmt(
         outdir=tmpdir,
         _id=_id,
@@ -459,10 +499,11 @@ def generate_results(model, input_data,
                               cv_scores,
                               figure_export)
         # plot pca
-        plot_pca_3d(tmpdir,_id,features,target)
-        # plot_pca_2d(tmpdir,_id,features,target)
+        
+        plot_pca_2d(tmpdir,_id,features,target)
+        # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
-
+        plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -1064,7 +1105,12 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     train_scores_std = np.std(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
     test_scores_std = np.std(test_scores, axis=1)
+
     plt.grid()
+
+    # print('train_scores_mean',train_scores_mean)
+    # print('test_scores_mean',test_scores_mean)
+    # print('train_sizes',train_sizes)
 
     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.1,
@@ -1086,10 +1132,16 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
   
     plt.close()
 
+    # train_scores_mean = np.mean(train_scores, axis=1)
+    # train_scores_std = np.std(train_scores, axis=1)
+    # test_scores_mean = np.mean(test_scores, axis=1)
+    # test_scores_std = np.std(test_scores, axis=1)
+
     learning_curve_dict = {
         'train_sizes':train_sizes.tolist(),
         'train_scores': train_scores.tolist(),
         'test_scores': test_scores.tolist()
+        
     }
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="learning_curve.json", content=learning_curve_dict)
@@ -1100,8 +1152,10 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # import matplotlib.pyplot as plt
 
 
-    from sklearn import decomposition
-    import matplotlib.colors as mcolors
+    # from sklearn import decomposition
+    # import matplotlib.colors as mcolors
+    # from matplotlib.patches import Patch
+
 
     # from sklearn import datasets
 
@@ -1111,7 +1165,8 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # print(features)
     X = np.array(features)
     y = np.array(target)
-    y[y == -1] = 0
+    
+    print(set(y))
 
 
 
@@ -1126,14 +1181,41 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap(["black", "green"]))
 
     # plt.show()
-  
-    colors = np.array(["black", "green"])
-    # plt.scatter(X[:, 0], X[:, 1], cmap = mcolors.ListedColormap(["black", "green"]))
-    plt.scatter(X[:, 0], X[:, 1], cmap = colors)
+    
+    
+    # version 1 
+    # colors = np.array(["black", "green"])
+    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
 
 
-    print("X")
-    print(X)
+
+    # version 2
+    num_classes = len(set(y))
+    # generate the number of colors equal to the number of classes
+    colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
+
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
+    # plot the legend where the colors are mapped to the classes
+    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
+
+    # cb = plt.colorbar()
+    # loc = np.arange(0,max(label),max(label)/float(len(colors)))
+    # cb.set_ticks(loc)
+    # cb.set_ticklabels(colors)
+
+    
+
+   
+
+    # write x axis as pc1 and y axis as pc2
+    plt.xlabel('PC1')
+    plt.ylabel('PC2')
+
+
+
+
+    # print("X")
+    # print(X)
 
 
     # ax.w_xaxis.set_ticklabels([])
@@ -1146,12 +1228,36 @@ def plot_pca_2d(tmpdir,_id,features,target):
 
 
 
+    path = tmpdir + _id + '/pcaJson_' + _id + '.json'
+    import json
+    
+
+
+    # save X and y to json file
+    pca_dict = {
+        'X_pca': X.tolist(),
+        'y_pca': y.tolist()
+    }
+
+    # with open(tmpdir + _id + '/p-c-a-Json_' + _id + '.json', 'w') as f:
+    #     json.dump(pca_dict, f)
+
+    # with open(tmpdir + _id + '/aaachoi_' + _id + '.json', 'w') as f:
+    #     json.dump(pca_dict, f)
+    
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="pca-json.json", content=pca_dict)
+
+    # 
+    # save pca_dict to json file with the path
+
+
 def plot_pca_3d(tmpdir,_id,features,target):
     # import numpy as np
     # import matplotlib.pyplot as plt
 
 
-    from sklearn import decomposition
+    
     # from sklearn import datasets
 
     # np.random.seed(5)
@@ -1233,12 +1339,20 @@ def plot_pca_3d(tmpdir,_id,features,target):
 
     ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
     # ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y)
+    # show which color is which class label based on scatter plot
+
+
+
+
 
 
     print("X")
     print(X)
 
-
+    # write x axis as pc1 and y axis as pc2
+    ax.set_xlabel('PC1')
+    ax.set_ylabel('PC2')
+    ax.set_zlabel('PC3')
     ax.w_xaxis.set_ticklabels([])
     ax.w_yaxis.set_ticklabels([])
     ax.w_zaxis.set_ticklabels([])
@@ -1248,7 +1362,10 @@ def plot_pca_3d(tmpdir,_id,features,target):
     plt.close()
 
 
+
 def plot_pca_3d_iris(tmpdir,_id,features,target):
+
+
     # import numpy as np
     # import matplotlib.pyplot as plt
 
@@ -1312,6 +1429,95 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
     # plt.show()
     plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
     plt.close()
+
+def plot_tsne(tmpdir,_id,features,target):
+
+    # import numpy as np
+    # import matplotlib.pyplot as plt
+    # from sklearn.manifold import TSNE
+
+    # X = np.array([[1, 1], [2, 1], [1, 0],
+    #               [4, 7], [3, 5], [3, 6]])
+    # y = np.array([0, 0, 0, 1, 1, 1])
+
+    # tsne = TSNE(n_components=2, random_state=0)
+    # X_2d = tsne.fit_transform(X)
+
+    # plt.scatter(X_2d[:, 0], X_2d[:, 1])
+    # plt.show()
+
+ 
+
+    # X = np.array([[1, 1], [2, 1], [1, 0],
+    #               [4, 7], [3, 5], [3, 6]])
+    # y = np.array([0, 0, 0, 1, 1, 1])
+
+    X = features
+    y = target
+
+    # print(X)
+    # print(y)
+
+    tsne = TSNE(n_components=2, verbose=1, random_state=123)
+    X_2d = tsne.fit_transform(X)
+
+    # df = pd.DataFrame()
+    # df["y"] = y
+    # df["comp-1"] = X_2d[:,0]
+    # df["comp-2"] = X_2d[:,1]
+
+    # version 2
+    num_classes = len(set(y))
+    # generate the number of colors equal to the number of classes
+    colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
+
+    plt.scatter(X_2d[:,0], X_2d[:,1], c=y, cmap=mcolors.ListedColormap(colors))
+    # plot the legend where the colors are mapped to the classes
+    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
+
+
+    # write x axis as pc1 and y axis as pc2
+    plt.xlabel('comp-1')
+    plt.ylabel('comp-2')
+
+
+
+    # plt.show()
+    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
+    plt.close()
+
+
+
+
+
+    # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
+    import json
+    
+
+
+    # save X and y to json file
+    tsne_dict = {
+        'X_tsne': X_2d.tolist(),
+        'y_tsne': y.tolist()
+    }
+
+    # print('tsne_dict',tsne_dict)
+
+    # with open(tmpdir + _id + '/t-sne-Json_' + _id + '.json', 'w') as f:
+    #     json.dump(tsne_dict, f)
+    # with open(tmpdir + _id + '/wwwchoi_' + _id + '.json', 'w') as f:
+    #     json.dump(tsne_dict, f)
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="tsne-json.json", content=tsne_dict)
+        
+    # save_json_fmt(outdir=tmpdir, _id=_id,
+    #               fname="value.json", content=metrics_dict)
+
+ 
+ 
+
+    
 
 def plot_dot_plot(tmpdir, _id, features,
                   target,

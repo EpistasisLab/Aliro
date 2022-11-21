@@ -21,9 +21,8 @@ Browse the repo:
 About the Project
 =================
 
-Aliro is actively developed by the [Institute for Biomedical Informatics](http://upibi.org) at the University of Pennsylvania.
-Contributors include Heather Williams, Weixuan Fu, William La Cava, Josh Cohen,
-Steve Vitale, Sharon Tartarone, Randal Olson, Patryk Orzechowski, and Jason Moore. 
+Aliro is actively developed by the Center for Artificial Intelligence Research (CAIR) in the [Department of Computational Biomedicine](https://www.cedars-sinai.edu/research/departments-institutes/computational-biomedicine.html) at [Cedars-Sinai Medical Center](https://www.cedars-sinai.org/) in Los Angeles.
+Contributors include Hyunjun Choi, Miguel Hernandez, Nick Matsumoto, Jay Moran, Paul Wang, and Jason Moore (PI).
 
 Cite
 ====
