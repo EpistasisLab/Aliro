@@ -99,6 +99,7 @@ describe('basic testing of fileupload react component', () => {
   // about the file being uploaded until a file with a testFilename has been selected
   it('DONE - check UI form is hidden w/o a file selection', () => {
     let formBody = shallowDom.find('#file-upload-form-input-area');
+    printDom(formBody);
     expect(formBody.length).toEqual(1)
 
     // check for CSS style which hides form

@@ -2468,7 +2468,7 @@ handleCatFeaturesUserTextCancel() {
 
     if (this.state.selectedFile != null) {
 
-      console.log("selected file is not null and I am removing file icons")
+      // console.log("selected file is not null and I am removing file icons")
       // when a file is selected, remove all file icons
       // if there is a icon with id preloaded_data_1, then remove it
       if (document.getElementById("preloaded_data_1")) {
