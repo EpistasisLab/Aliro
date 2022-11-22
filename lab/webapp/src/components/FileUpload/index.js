@@ -582,9 +582,9 @@ class FileUpload extends Component {
   }
 
   /** Simple test method for unit testing */
-  // instanceTest(){
-  //   return 'foobar';
-  // }
+  instanceTest(){
+    return 'foobar';
+  }
   
   /** Helper routine for debugging. Get elapsed time in sec from 
    * either init or from the previous call to this method.
@@ -834,9 +834,9 @@ handleCatFeaturesUserTextCancel() {
   }
 
   /** Stub method that's mocked in unit testing */
-  // handleSelectedFileCompletedStub(){
-  //   //do nothing
-  // }
+  handleSelectedFileCompletedStub(){
+    //do nothing
+  }
 
   /**
    * Event handler for selecting files, takes user file from html file input, stores
@@ -882,7 +882,7 @@ handleCatFeaturesUserTextCancel() {
 
         //Call this method for use in unit testing, to know we've completed successfully here,
         // and can inspect the new state
-        // this.handleSelectedFileCompletedStub();
+        this.handleSelectedFileCompletedStub();
       }
     };
 
@@ -2359,9 +2359,6 @@ handleCatFeaturesUserTextCancel() {
       fileInputElem = (
         // make any file icon on web site work with dropzone
 
-
-        
-
        
         <Dropzone
             id="file-dropzone"
@@ -2468,7 +2465,7 @@ handleCatFeaturesUserTextCancel() {
 
     if (this.state.selectedFile != null) {
 
-      // console.log("selected file is not null and I am removing file icons")
+      console.log("selected file is not null and I am removing file icons")
       // when a file is selected, remove all file icons
       // if there is a icon with id preloaded_data_1, then remove it
       if (document.getElementById("preloaded_data_1")) {
