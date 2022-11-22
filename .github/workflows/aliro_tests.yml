@@ -8,54 +8,54 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # build_int_test:
-  #   name: Integration Tests
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
+  build_int_test:
+    name: Integration Tests
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #     - uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-  #     # Runs a single command using the runners shell
-  #     - name: Build Docker Images
-  #       run: docker-compose -f ./docker-compose-int-test.yml build -m 8g
+      # Runs a single command using the runners shell
+      - name: Build Docker Images
+        run: docker-compose -f ./docker-compose-int-test.yml build -m 8g
 
-  #     # Runs a set of commands using the runners shell
-  #     - name: Run Integration Tests
-  #       run: |
-  #         docker-compose -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
-  #         docker-compose -f ./docker-compose-int-test.yml down
+      # Runs a set of commands using the runners shell
+      - name: Run Integration Tests
+        run: |
+          docker-compose -f ./docker-compose-int-test.yml run tester bash -c "sh /root/wait_pennai.sh && npm test"
+          docker-compose -f ./docker-compose-int-test.yml down
   
-  # build_web_app:
-  #   name: Unit Tests for Webapp
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
+  build_web_app:
+    name: Unit Tests for Webapp
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.7'
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
           
-  #     # Runs a single command using the runners shell
-  #     - name: Build Docker Images
-  #       run: |
-  #         docker-compose -f ./docker-compose-unit-test.yml build -m 8g
+      # Runs a single command using the runners shell
+      - name: Build Docker Images
+        run: |
+          docker-compose -f ./docker-compose-unit-test.yml build -m 8g
 
-  #     # Runs a set of commands using the runners shell
-  #     - name: Run Unit Tests
-  #       run: |
-  #         git lfs fetch --all
-  #         docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit -V
-  #     - name: Coveralls
-  #       uses: AndreMiras/coveralls-python-action@develop
-  #       with:
-  #         parallel: true
-  #         flag-name: Unit Test for webapp
+      # Runs a set of commands using the runners shell
+      - name: Run Unit Tests
+        run: |
+          git lfs fetch --all
+          docker-compose -f ./docker-compose-unit-test.yml up --abort-on-container-exit -V
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test for webapp
 
   build_pypkg:
     name: Unit Tests for scikit-learn API
@@ -85,15 +85,15 @@ jobs:
           parallel: true
           flag-name: Unit Test for scikit-learn api
 
-  # coveralls_finish:
-  #   name: Publish Coveralls
-  #   needs: [build_web_app, build_pypkg]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Coveralls Finished
-  #     uses: AndreMiras/coveralls-python-action@develop
-  #     with:
-  #       parallel-finished: true
+  coveralls_finish:
+    name: Publish Coveralls
+    needs: [build_web_app, build_pypkg]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true
 
   deploy_pypkg:
     if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
@@ -122,33 +122,33 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload dist/*
 
-  # build_docs:
-  #   # Only publish docs on master branch
-  #   if: github.ref == 'refs/heads/master'
-  #   name: Publish Docs
-  #   needs: [build_int_test, build_web_app, build_pypkg]
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.7'
+  build_docs:
+    # Only publish docs on master branch
+    if: github.ref == 'refs/heads/master'
+    name: Publish Docs
+    needs: [build_int_test, build_web_app, build_pypkg]
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
 
-  #     - name: Build Docker Images
-  #       run: |
-  #         docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
-  #     # Building docs # Tell GitHub not to use jekyll to compile the docs
-  #     - name: Building Docs
-  #       run: |
-  #         docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
-  #         sudo touch target/ai_docs/html/.nojekyll
-  #     - name: Deploy
-  #       uses: JamesIves/github-pages-deploy-action@3.7.1
-  #       with:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         BRANCH: gh-pages
-  #         FOLDER: target/ai_docs/html/
-  #         CLEAN: false # Automatically remove deleted files from the deploy branch
+      - name: Build Docker Images
+        run: |
+          docker-compose -f ./docker-compose-doc-builder.yml build -m 8g
+      # Building docs # Tell GitHub not to use jekyll to compile the docs
+      - name: Building Docs
+        run: |
+          docker-compose -f ./docker-compose-doc-builder.yml up --abort-on-container-exit --force-recreate
+          sudo touch target/ai_docs/html/.nojekyll
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: target/ai_docs/html/
+          CLEAN: false # Automatically remove deleted files from the deploy branch
