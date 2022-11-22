@@ -582,9 +582,9 @@ class FileUpload extends Component {
   }
 
   /** Simple test method for unit testing */
-  instanceTest(){
-    return 'foobar';
-  }
+  // instanceTest(){
+  //   return 'foobar';
+  // }
   
   /** Helper routine for debugging. Get elapsed time in sec from 
    * either init or from the previous call to this method.
@@ -834,9 +834,9 @@ handleCatFeaturesUserTextCancel() {
   }
 
   /** Stub method that's mocked in unit testing */
-  handleSelectedFileCompletedStub(){
-    //do nothing
-  }
+  // handleSelectedFileCompletedStub(){
+  //   //do nothing
+  // }
 
   /**
    * Event handler for selecting files, takes user file from html file input, stores
@@ -882,7 +882,7 @@ handleCatFeaturesUserTextCancel() {
 
         //Call this method for use in unit testing, to know we've completed successfully here,
         // and can inspect the new state
-        this.handleSelectedFileCompletedStub();
+        // this.handleSelectedFileCompletedStub();
       }
     };
 
