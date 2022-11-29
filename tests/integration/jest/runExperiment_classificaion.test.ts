@@ -17,7 +17,8 @@ afterAll(() => {
   db.close();
 });
 */
-
+// test
+// print hello
 describe('run experiment', () => {
 	it('run LogisticRegression experiment on banana', async () => {
 		console.log('run LogisticRegression experiment on banana')
