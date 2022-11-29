@@ -53,7 +53,7 @@ import Dropzone from 'react-dropzone'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
-class FileUpload extends Component {
+class FileUploadOrigin extends Component {
   
   //Some pseudo-constants to avoid typos
   get featureTypeNumeric() { return 'numeric'; }
@@ -66,7 +66,7 @@ class FileUpload extends Component {
   get featureTypeDefault() {return this.featureTypeNumeric; }
 
   /**
-  * FileUpload reac component - UI form for uploading datasets
+  * FileUploadOrigin reac component - UI form for uploading datasets
   * @constructor
   */
   constructor(props) {
@@ -714,7 +714,7 @@ handleCatFeaturesUserTextCancel() {
    */
   initFeatureTypeDefaults() {
     if(this.state.datasetPreview == null) {
-      console.log('ERROR - FileUpload.initFeatureTypeDefaults: datasetPreview is null');
+      console.log('ERROR - FileUploadOrigin.initFeatureTypeDefaults: datasetPreview is null');
       return;
     }
     let newDefaults = {};
@@ -744,7 +744,7 @@ handleCatFeaturesUserTextCancel() {
    */
   initDependentColumn() {
     if(this.state.datasetPreview == null) {
-      console.log('ERROR - FileUpload.initDependentColumn: datasetPreview is null');
+      console.log('ERROR - FileUploadOrigin.initDependentColumn: datasetPreview is null');
       return;
     }
     let fields = this.state.datasetPreview.meta.fields;
@@ -780,7 +780,7 @@ handleCatFeaturesUserTextCancel() {
    */
   setAllFeatureTypes(type) {
     if(this.state.datasetPreview == null) {
-      console.log('ERROR - FileUpload.setAllFeatureTypes: datasetPreview is null');
+      console.log('ERROR - FileUploadOrigin.setAllFeatureTypes: datasetPreview is null');
       return;
     }
     //Batch the setState calls that happen in setFeatureType so they don't re-render each time.
@@ -1913,5 +1913,5 @@ const mapStateToProps = (state) => ({
   dataset: state.dataset
 });
 
-export { FileUpload };
-export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);
+export { FileUploadOrigin };
+export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUploadOrigin);
