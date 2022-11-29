@@ -78,7 +78,8 @@ describe('run regression experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 10) {
-			util.delay(10000)
+			// util.delay(10000)
+			util.delay(100000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -104,7 +105,7 @@ describe('run regression experiment', () => {
 
 	it('start and then kill experiment', async () => {
 		console.log('start and then kill experiment')
-		util.delay(15000)
+		util.delay(150000)
 		jest.setTimeout(util.JEST_TIMEOUT+10000)
 
 		let algoName = 'XGBRegressor'
@@ -161,7 +162,7 @@ describe('run regression experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 4) {
-			util.delay(10000)
+			util.delay(100000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -173,7 +174,7 @@ describe('run regression experiment', () => {
 		expect(experimentResults._status).toEqual('cancelled')
 
 		// hacky...
-		util.delay(30000)
+		util.delay(300000)
 		var capRes = await machineApi.fetchCapacity(algoId)
 		expect(capRes.capacity).toEqual(1)
 	});
