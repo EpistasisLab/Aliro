@@ -17,8 +17,7 @@ afterAll(() => {
   db.close();
 });
 */
-// test
-// print hello
+
 describe('run experiment', () => {
 	it('run LogisticRegression experiment on banana', async () => {
 		console.log('run LogisticRegression experiment on banana')
@@ -76,8 +75,7 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		while (experimentResults._status === ('running') && count < 10) {
-			// util.delay(10000)
-			util.delay(1000000)
+			util.delay(10000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
 			console.log("experimentResults._status, count (" + count + "): ", experimentResults._status)
@@ -141,7 +139,6 @@ describe('run experiment', () => {
 		} catch (e) {
 			console.log("submitExperiment exception")
 			var json = await e.response.json() // get the specific error description
-			
 			expect(json).toBeFalsy()
 			expect(e).toBeFalsy() // break even if no message body returned
 		}
