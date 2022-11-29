@@ -38,49 +38,16 @@ function AlgorithmOptions({
     return currentAlgorithm && (algorithm._id === currentAlgorithm._id);
   };
 
-  const contextRef = React.useRef();
-
-
-  function openTrueOrFalse_algorithm_popup(){
-    if (sessionStorage.getItem("algorithm-popup") == "true"){
-
-      // if (document.getElementById("aiTooglePopup")!==null){
-      //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
-      // }
-
-      
-      return false;
-    }
-    else{
-      return true;
-    }
-    
-
-  }
-
-
   return (
     <Grid.Column width={16}>
       <Segment inverted attached="top" className="panel-header">
-
-
-        
         <Header
           inverted
           size="large"
           color="orange"
           content="Select Algorithm"
         />
-       
-        
-        
-
-  
       </Segment>
-
-      <Popup 
-      id = "algorithm-popup"
-      trigger = {
       <Segment inverted attached="bottom">
         <Grid columns={3} stackable className="compressed">
           {algorithms && algorithms.map(algorithm => (
@@ -124,45 +91,6 @@ function AlgorithmOptions({
           ))}
         </Grid>
       </Segment>
-      }
-      content = "Step 4: Select an algorithm to begin building a model."
-      position = "top center"
-      open = {openTrueOrFalse_algorithm_popup()}
-
-      onClick = { () => 
-        {
-          if (document.getElementById("algorithm-popup") != null) {
-          
-            document.getElementById("algorithm-popup").style.cssText += ';display:none !important;';
-
-            sessionStorage.setItem("algorithm-popup", "true");
-              // show the local storage on the console
-            console.log("algorithm-popup", sessionStorage.getItem("algorithm-popup"));
-
-
-            // get class name content under id aiTooglePopup
-            var content = document.getElementById("param-popup").getElementsByClassName("content")[0];
-            // set border-radius: 10px;
-            content.style.cssText += ';border-radius: 10px;';
-
-            var parampopup =document.getElementById("param-popup")
-            
-            // set display: flex;
-            parampopup.style.cssText += ';display: flex;';
-            // set flex-direction: row;
-            parampopup.style.cssText += ';flex-direction: row;';
-            // set align-items: center;
-            parampopup.style.cssText += ';align-items: center;';
-
-            // set animation: blinker 3s linear infinite;
-            parampopup.style.cssText += ';animation: blinker 3s linear infinite;';
-          
-          }
-        }
-      }
-      />
-
-
     </Grid.Column>
   );
 }

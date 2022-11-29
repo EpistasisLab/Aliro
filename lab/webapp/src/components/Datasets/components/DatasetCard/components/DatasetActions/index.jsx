@@ -34,20 +34,6 @@ function DatasetActions({ dataset, recommender, toggleAI }) {
     const aiNextState = aiState === 'off' || aiState === 'finished' ? 'requested' : 'off';
 
     toggleAI(dataset._id, aiNextState);
-
-    console.log("onToggleAI clicked");
-
-    // addNewPopup
-
-    // aiTooglePopup
-
-    // buildNewExpPopup
-
-    sessionStorage.setItem("addNewPopup", "true");
-    sessionStorage.setItem('aiTooglePopup', 'true');
-    sessionStorage.setItem('buildNewExpPopup', 'true');
-
-
   };
 
   // ai states: on, queueing, requested, off, finished

@@ -28,7 +28,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import React, { Component } from 'react';
 import c3 from 'c3';
 
-
 class GaugeAll extends Component {
   componentDidMount() {
     const { expList, chartKey, chartColor, min, max } = this.props;

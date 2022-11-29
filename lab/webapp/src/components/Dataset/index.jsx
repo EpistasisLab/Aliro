@@ -44,75 +44,7 @@ class Dataset extends Component {
     this.fileDetailsClick = this.fileDetailsClick.bind(this);
     this.getCatAndOrdTable = this.getCatAndOrdTable.bind(this);
     this.handleCloseFileDetails = this.handleCloseFileDetails.bind(this);
-
-    // this.cleanOtherTooltipFunction = this.cleanOtherTooltipFunction.bind(this);
   }
-
-  cleanOtherTooltipFunction() {
-    // console.log("Fron app test");
-
-    // get current href
-    const current_href = window.location.href;
-
-
-    if (document.getElementById("div_tooltip_file_upload")!=null && current_href.includes("upload_") == false) {
-     
-     
-      // make hidden 
-      document.getElementById("div_tooltip_file_upload").style.visibility = "hidden";
-
-      
-      // remove span_test
-      document.getElementById("span_test").style.visibility = "hidden";
-      
-      
-    }
-
-    
-
-    // var interval = setInterval(function() {
-
-    //   // if there is span id with span_upload_dataset then make it not visible
-    //   // current href
-    //   var current_href = window.location.href;
-    //   // current href does not include upload_
-    //   // if (current_href.includes("upload_") == false) 
-    //   if (document.getElementById("div_tooltip_file_upload")!=null && current_href.includes("upload_") == false) {
-       
-
-    //      // console.log("div_tooltip_file_upload exists and this is not upload_dataset page");
-
-    //     // remove only the div_tooltip_file_upload 
-    //     var elem_fir = document.getElementById("div_tooltip_file_upload");
-    //     elem_fir.parentNode.removeChild(elem_fir);
-
-    //     // remove span_test
-    //     var elem_Sec = document.getElementById("span_test");
-    //     if (elem_Sec != null) {
-    //       elem_Sec.parentNode.removeChild(elem_Sec);
-    //     }
-
-        
-    //   }
-
-
-    // }, 500);
-
-  }
-
-  get initState() {
-    // this.cleanOtherTooltipFunction();
-    
-    
-    // this.tooltipAppFunction();
-    
-    
-    // this.tooltipAppFunction_with_setInterval();
-
-    
-
-  }
-
 
   componentDidMount() {
     fetch(`/api/datasets/${this.props.params.id}`)

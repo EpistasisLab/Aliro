@@ -119,9 +119,6 @@ RUN apt-get update --fix-missing && apt-get install -y \
 # See: https://stackoverflow.com/a/58562728/1730417
 # and: https://askubuntu.com/a/1176271/260220
 RUN apt-get update && apt-get install -y software-properties-common
-# RUN -E add-apt-repository 'ppa:deadsnakes/ppa'
-# RUN -E add-apt-repository ppa:deadsnakes/ppa
-# RUN add-apt-repository 'ppa:deadsnakes/ppa'
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update
 RUN apt-get install -y python3.7 python3.7-dev python3.7-distutils

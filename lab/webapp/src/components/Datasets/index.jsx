@@ -31,18 +31,11 @@ import { getSortedDatasets } from 'data/datasets';
 import { fetchDatasets } from 'data/datasets/actions';
 import { fetchRecommender } from 'data/recommender/actions';
 import SceneHeader from '../SceneHeader';
-// import tooltip from '../testTest';
 import FileUpload from '../FileUpload';
 import ResponsiveGrid from '../ResponsiveGrid';
 import DatasetCard from './components/DatasetCard';
-// import AddNewDataset from '../src/components/AddNewDataset';
 import FetchError from '../FetchError';
-import { Header, Loader,Popup, Icon, Button } from 'semantic-ui-react';
-import { AddNewDatasetCard } from './components/AddNewDatasetCard';
-
-
-
-// import styled from 'styled-components';
+import { Header, Loader } from 'semantic-ui-react';
 
 
 /**
@@ -63,28 +56,7 @@ class Datasets extends Component {
   }
 
   render() {
-    
-    
-    
-
     const { datasets, recommender, isFetching, error, fetchDatasets, fetchRecommender } = this.props;
-
-
-
-     
-    
-
-    // React.createElement('div', null, `Hello ${this.props.toWhat}`);
-    console.log("Hello!!!!!!!!!!!!!")
-
-    
-
-    
-    
-
-
-
-        
 
     if(isFetching) {
       return (
@@ -101,59 +73,10 @@ class Datasets extends Component {
       );
     }
 
-
-
-    if (document.getElementById("aiTooglePopupready") == null) {
-  
-      console.log("aiTooglePopupready!!!")
-
-      // create a new div element id with aiTooglePopupready
-      var temp=document.createElement("div");
-      document.body.appendChild(temp);
-      // make it invisible
-      // .setAttribute("id", "aiTooglePopupready")
-      temp.id="aiTooglePopupready";
-      temp.style.display = "none";
-      // add the newly created element to the body
-      // document.body.appendChild(document.getElementById("aiTooglePopupready"));
-    }
-    
-
     return (
-      
       <div>
-        {/* <FileUpload /> */}
+        {/*<FileUpload />*/}
         <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" linkText='/upload_datasets' />
-        
-
-
-
-       
-
-
-
-      {/* <>          
-      <Popup
-        id = "popup" 
-        trigger={<Button content='Trigger Popup' />}
-        // context={"test"}
-        content='Hello'
-        position='top center'
-       
-        open={true}
-       
-      />
-
-      </> */}
-
-
-
-
-        
-
-       
-        
-         
         {datasets.length > 0 ? (
           <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
             {datasets.map(dataset => (
@@ -163,47 +86,19 @@ class Datasets extends Component {
                 dataset={dataset}
               />
             ))}
-            
-            <AddNewDatasetCard/>
-            
           </ResponsiveGrid>
         ) : (
-          // <Header inverted size="small" content="You have no datasets uploaded yet." />
-          
-          <ResponsiveGrid mobile={1} tablet={2} desktop={3} lgscreen={4}>
-            
-            
-            <AddNewDatasetCard
-            />
-            <Header inverted size="small" content="You have no datasets uploaded yet." />
-            
-          </ResponsiveGrid>
+          <Header inverted size="small" content="You have no datasets uploaded yet." />
         )}
-
-        
-
-
-
       </div>
-
-      
-      
     );
-
-    
   }
-
 }
 
 const mapDispatchToProps = {
   fetchDatasets,
   fetchRecommender
 }
-
-// // if id hey is mouseover, show console.log("Hello!!!!!!!!!!!!!")
-// document.getElementById("hey").addEventListener("mouseover", function(){
-//   console.log("Hello!!!!!!!!!!!!!")
-// });
 
 const mapStateToProps = (state) => ({
   datasets: getSortedDatasets(state),
