@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 import React from 'react';
-import { Header, Button, Popup, Checkbox, Divider, Grid} from 'semantic-ui-react';
+import { Header, Button } from 'semantic-ui-react';
 import { Link } from 'react-router';
 
 function SceneHeader({
@@ -36,60 +36,6 @@ function SceneHeader({
   btnIcon,
   linkText
 }) {
-
-
-
-
-
-
-  var [eventsEnabled, setEventsEnabled] = React.useState(true)
-  var [open, setOpen] = React.useState(true)
-
-
-  function clearFileIcons(currentFile) {
-    
-    
-    // var selectedFileIconds=document.getElementById(currentFile)
-    // selectedFileIconds.parentNode.removeChild(selectedFileIconds);
-
-    // parse currentFile to get the number
-    var currentFileNumber = currentFile.split("_")[2];
-    
-
-    var fileIcon = document.getElementById("preloaded_data_" + currentFileNumber);
-    if (fileIcon) {
-      fileIcon.parentNode.removeChild(fileIcon); 
-    }
-
-    console.log("clearing file icons at the first page");
-
-    
-
-
-    
-
-
-
-
-  }
-  
-  if (window.location.href.includes("upload_") == false) {
-    clearFileIcons("preloaded_data_1");
-    clearFileIcons("preloaded_data_2");
-    clearFileIcons("preloaded_data_3");
-    clearFileIcons("preloaded_data_4");
-    clearFileIcons("preloaded_data_5");
-  
-
-  }
-
-
-
-  // document.getElementById("aiTooglePopup").style.cssText += ';display:none !important;';
-
-
-
-
   return (
     <div className="scene-header">
       <Header
@@ -98,25 +44,7 @@ function SceneHeader({
         content={header}
         subheader={subheader}
       />
-
-      {/* <Grid.Column>
-        <Checkbox
-          // make it unvisible 
-          style={{display: 'none'}}
-          checked={open}
-          label={{ children: <code>open</code> }}
-          onChange={(e, data) => setOpen(data.checked)}
-        />
-        <Divider fitted hidden />
-        <Checkbox
-        style={{display: 'none'}}
-          checked={eventsEnabled}
-          label={{ children: <code>eventsEnabled</code> }}
-          onChange={(e, data) => setEventsEnabled(data.checked)}
-        />
-      </Grid.Column> */}
-
-      {/* {btnText &&
+      {btnText &&
         <Button
           inverted
           color="blue"
@@ -127,43 +55,7 @@ function SceneHeader({
           as={ Link }
           to={linkText}
         />
-      } */}
-      {btnText &&
-      <Popup
-        id = "addNewPopup_former"
-        // this below button in trigger is the blue button for adding new data.
-        // for now it is removed.
-
-        // trigger=
-        // {<Button
-        //   inverted
-        //   color="blue"
-        //   compact
-        //   size="small"
-        //   icon={btnIcon}
-        //   content={btnText}
-        //   as={ Link }
-        //   to={linkText}
-        // />}
-       
-        content='Step 1: click this button to upload your dataset.'
-
-        position='right center'
-
-        
- 
-
-        
-        open = {false}
-
-        
-
-        
-      />
-
       }
-
-      
     </div>
   );
 }

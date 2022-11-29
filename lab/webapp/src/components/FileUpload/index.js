@@ -34,9 +34,6 @@ import { fetchDatasets } from '../../data/datasets/actions';
 import { uploadDataset } from '../../data/datasets/dataset/actions';
 import SceneHeader from '../SceneHeader';
 import Papa from 'papaparse';
-
-
-
 import {
   Button,
   Dropdown,
@@ -52,16 +49,11 @@ import {
   Grid,
   Loader
 } from 'semantic-ui-react';
-// dropzone and userdropzone
-import Dropzone,{useDropzone} from 'react-dropzone';
+import Dropzone from 'react-dropzone'
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
-
-
 class FileUpload extends Component {
-
-  
   
   //Some pseudo-constants to avoid typos
   get featureTypeNumeric() { return 'numeric'; }
@@ -83,25 +75,15 @@ class FileUpload extends Component {
     this.state = this.initState;
 
     // enter info in text fields
-    // this.cleanOtherTooltipFunction = this.cleanOtherTooltipFunction.bind(this);
-
-    // this.tooltipFileUploadFunction = this.tooltipFileUploadFunction.bind(this);
-
     this.resetState = this.resetState.bind(this);
     this.handleDepColDropdown = this.handleDepColDropdown.bind(this);
     this.handleCatFeaturesUserTextOnChange = this.handleCatFeaturesUserTextOnChange.bind(this);
     this.handleCatFeaturesUserTextBlur = this.handleCatFeaturesUserTextBlur.bind(this);
     this.handleCatFeaturesUserTextAccept = this.handleCatFeaturesUserTextAccept.bind(this);
     this.handleCatFeaturesUserTextCancel = this.handleCatFeaturesUserTextCancel.bind(this);
-
     this.handleOrdinalFeaturesUserTextAccept = this.handleOrdinalFeaturesUserTextAccept.bind(this);
     this.handleOrdinalFeaturesUserTextCancel = this.handleOrdinalFeaturesUserTextCancel.bind(this);
     this.handleOrdinalFeaturesUserTextOnChange = this.handleOrdinalFeaturesUserTextOnChange.bind(this);
-
-    this.handleclassUserTextAccept = this.handleclassUserTextAccept.bind(this);
-    this.handleclassUserTextCancel = this.handleclassUserTextCancel.bind(this);
-    this.handleclassUserTextOnChange = this.handleclassUserTextOnChange.bind(this);
-
     this.handlePredictionType = this.handlePredictionType.bind(this);
     this.getHeaderRowCells = this.getHeaderRowCells.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
@@ -121,7 +103,6 @@ class FileUpload extends Component {
     this.ordinalFeaturesObjectToUserText = this.ordinalFeaturesObjectToUserText.bind(this);
     this.validateFeatureName = this.validateFeatureName.bind(this);
     this.getUserFeatureTypeControls = this.getUserFeatureTypeControls.bind(this);
-    this.getUserFeatureClassControls = this.getUserFeatureClassControls.bind(this);
     this.getUserDatasetOptions = this.getUserDatasetOptions.bind(this);
     this.getFeatureType = this.getFeatureType.bind(this);
     this.getFeatureIndex = this.getFeatureIndex.bind(this);
@@ -135,7 +116,6 @@ class FileUpload extends Component {
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
-    this.getClassUserTextModal = this.getClassUserTextModal.bind(this);
     this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.enableKeyDownHandler = this.enableKeyDownHandler.bind(this);
@@ -170,350 +150,12 @@ class FileUpload extends Component {
     2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
     using the drag-and-drop list of unique categories.</p>);
 
-
-
-  // this.classHelpText = (<p>Class~~~~~. Ordinal features have a discrete number of categories,
-  // and the categories have a logical order (rank). Some examples include size ("small",
-  // "medium", "large"), or rank results ("first", "second", "third").
-  // <br/><br/>
-  // You can specify these features and their rank in two ways:<br/>
-  // 1) In the text input box opened by the button to the left, using the format described in the box <br/>
-  // 2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
-  // using the drag-and-drop list of unique categories.</p>);
-
-
-  this.classHelpText = (<p>Class has a discrete number of categories in the dataset, and the categories can be written with natural language to help users to understand the data. For example, if the dataset has 3 classes such as 0,1, and2, and each class represents tiger, dog, and cat, the classes can be named as "tiger", "dog", and "cat".
-   <br/><br/>
-   You can name the classes in the below way:<br/>
-   1) In the text input box opened by the button to the left, using the format described in the box <br/>
-
-  </p>);
-
     //Debug
     this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
     this.timingPrevTimeMsec = new Date().getTime();
   }
 
-  
-
-
-  cleanOtherTooltipFunction() {
-    console.log("Fron app test");
-
-
-    var interval = setInterval(function() {
-
-      // if there is span id with span_upload_dataset then make it not visible
-      // current href
-      var current_href = window.location.href;
-      // current href does not include upload_
-      // if (current_href.includes("upload_") == false) 
-      if (document.getElementById("span_test")!=null && current_href.includes("upload_") == true) {
-        // remove the span_upload_dataset
-        // var elem = document.getElementById("span_upload_dataset");
-        // elem.parentNode.removeChild(elem);
-        // document.getElementById("div_tooltip_file_upload").remove();
-
-        console.log("span_test exists and this is not first page");
-
-
-
-        // remove span_test
-        var elem_Sec = document.getElementById("span_test");
-        elem_Sec.parentNode.removeChild(elem_Sec); 
-
-        
-      }
-
-
-    }, 500);
-
-  }
-
-
-  tooltipFileUploadFunction() {
-
-    // console.log("Page File upload!!!!")
-
-    // wait until div class name with dropzone is loaded
-    var interval = setInterval(function() {
-
-      // div_tooltip_file_upload id 
-      var div_tooltip_file_upload = document.getElementById("div_tooltip_file_upload");
-
-      // find id with span_upload_dataset
-      var span_upload_dataset = document.getElementById("span_upload_dataset");
-
-      
-      // current href
-      const current_href = window.location.href;
-      
-
-      // if(document.getElementsByClassName("dropzone").length > 0 && span_upload_dataset == null)  {
-      if(div_tooltip_file_upload == null  && span_upload_dataset == null && current_href.includes("upload_")==true)  {
-        clearInterval(interval);
-        // console.log("Page File upload!!!!")
-        
-
-        // const x = document.getElementById("app");
-        // find any elements with the tag name "a" with Hello Add new"
-        const y = document.getElementsByClassName("dropzone");
-
-        // make mouseover event for y
-
-
-
-
-
-        // console.log("y")
-        // console.log(y)
-
-
-        var styles_v3 = 
-        `
-      .tooltip {
-        position: relative;
-        display: inline-block;
-        border-bottom: 1px dotted black;
-      }
-      
-      .tooltip .tooltiptext {
-        visibility: visible;
-        width: 120px;
-        background-color: #555;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 0;
-        position: absolute;
-        z-index: 1;
-        bottom: 500%;
-        left: 970%;
-        margin-left: 0px;
-        opacity: 1;
-        transition: opacity 0.3s;
-      }
-      
-      .tooltip .tooltiptext::after {
-        content: "";
-        position: absolute;
-        top: 30%;
-        left: -8.3%;
-        margin-left: 0px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: transparent #555 transparent transparent;
-      }
-      
-      .tooltip:hover .tooltiptext {
-        visibility: hidden;
-        opacity: 0;
-      `
-
-      
-    
-
-
-      if (document.getElementsByTagName("style").length == 1) {
-      
-        // console.log("show how many style tags: ", document.getElementsByTagName("style").length);
-        // console.log("style tag already exists");
-
-        // remove the all current style tags
-        var elem = document.getElementsByTagName("style");
-
-        for (var i = 0; i < elem.length; i++) {
-          elem[i].parentNode.removeChild(elem[i]);
-        }
-
-        var styleSheet = document.createElement("style")
-        styleSheet.innerText = styles_v3
-        document.head.appendChild(styleSheet)
-      
-      }
-
-      // <div class="tooltip">Hover over me
-          // <span class="tooltiptext">Tooltip text</span>
-      // </div>
-
-
-      // append div_test to app
-      const x = document.getElementById("app");
-      // get body
-      const body = document.getElementsByTagName("body")[0];
-
-
-
-      // create a div with class tooltip and html content "Hover over me"
-      var div_test = document.createElement("div");
-      div_test.id = "div_tooltip_file_upload";
-      div_test.className = "tooltip";
-      // div_test.innerHTML = "Hover over me";
-      div_test.innerHTML = "HelloHello";
-      // male the innerHTML color #1b1d1c
-      div_test.style.color = "#1b1d1c";
-      // background color is white
-      // div_test.style.backgroundColor = "white";
-      div_test.style.backgroundColor = "#1b1d1c";
-      // make div_test transparent
-      // div_test.style.opacity = "0.5";
-      // do not show div_test
-      // div_test.style.display = "none";
-
-      // create a span with class tooltiptext and html content "Tooltip text"
-      var span_test = document.createElement("span");
-      // set id to span_test
-      span_test.id = "span_upload_dataset";
-      span_test.className = "tooltiptext";
-      span_test.innerHTML = "Step 2: Click on the button to upload your dataset";
-
-      // make span_test always visible
-      span_test.style.visibility = "visible";
-
-
-
-      // make span_test always block whever div_test is hovered or not
-      span_test.style.display = "block";
-      
-
-      // append span_test to div_test
-      div_test.appendChild(span_test);
-
-
-      // x.appendChild(div_test);
-
-      
-      
-      // x.appendChild(span_test);
-      body.appendChild(div_test);
-
-
-      const section_ele = document.getElementsByTagName("section")[0];
-      // find any div with class name ui segment file-upload-segment
-      const div_ele = document.getElementsByClassName("ui segment file-upload-segment")[0];
-      
-      // find any div whose class name includes "file-upload-segment"
-
-      // console.log("document.getElementById(span_upload_dataset")
-      // console.log(document.getElementById("span_upload_dataset"));
-
-      var catch_null = document.getElementById("span_upload_dataset");
-      console.log("catch_null")
-      console.log(catch_null)
-
-      var flag_remove=0;
-
-    
-      // replace onclick with mouseover
-      div_ele.onmouseover = function() {
-        console.log("Mouse over dropzone");
-        if (catch_null != null) {
-        document.getElementById("span_upload_dataset").style.visibility = "hidden";    
-        }  
-      } 
-
-      div_ele.onmouseout = function() {
-        console.log("Mouse out dropzone");
-        if (catch_null != null && flag_remove==0) {
-        document.getElementById("span_upload_dataset").style.visibility = "visible";   
-      }     
-     }
-
-      div_ele.onclick = function() {
-        console.log("Mouse click dropzone");
-        if (catch_null != null) {
-        // document.getElementById("span_upload_dataset").style.visibility = "hidden";     
-        
-        // remove document.getElementById("span_upload_dataset") 
-        // document.getElementById("span_upload_dataset").remove();
-        flag_remove = 1;
-
-        }
-      }
-    
-    
-
-  //   div_ele.onmouseover = function() {
-  //     console.log("Mouse over dropzone");
-  //     document.getElementById("span_upload_dataset").style.visibility = "hidden";      
-  //   } 
-
-  //   div_ele.onmouseout = function() {
-  //     console.log("Mouse out dropzone");
-  //     document.getElementById("span_upload_dataset").style.visibility = "visible";      
-  // }
-
-  //   div_ele.onclick = function() {
-  //     console.log("Mouse click dropzone");
-  //     // document.getElementById("span_upload_dataset").style.visibility = "hidden";     
-      
-  //     // remove document.getElementById("span_upload_dataset") 
-  //     document.getElementById("span_upload_dataset").remove();
-  //   }
-
-
-
-    
-
-      }
-    }, 300);
-
-
-
-    // setTimeout(() => {
-    //   //wait until the section is loaded
-    //   const section = document.getElementsByTagName("section")[0];
-    
-    //         if (section) {
-    //           section.addEventListener("mouseover", function( event ) {
-    //         // console.log("mouseover on dropzone");
-  
-    //         // document.getElementById("span_upload_dataset").style.visibility = "hidden";
-    //         if (document.getElementById("span_upload_dataset").style.visibility == "hidden")
-    //         {
-    //           document.getElementById("span_upload_dataset").style.visibility = "visible";
-    //           console.log("document.getElementById(span_upload_dataset).style.visibility = visible");
-    //         }
-    //         else
-    //         {
-    //           document.getElementById("span_upload_dataset").style.visibility = "hidden";
-    //           console.log("document.getElementById(span_upload_dataset).style.visibility = hidden");
-    //         }
-            
-    //         // span_test.style.visibility = "hidden";
-          
-    //       }, false);
-    //     }
-    // }, 1000); 
-
-
-   
-
-    
-
-    // document.addEventListener("DOMContentLoaded", function(e) {
-    //   console.log("Page File upload!!!!")
-
-    //   setTimeout(function() {
-    //     // get any divs with class dropzone
-    //     const x = document.getElementsByClassName("dropzone");
-    //     console.log(x)
-
-    //     // get any divs with class dropzone
-    //     for (var i = 0; i < x.length; i++) {
-    //       console.log(x[i])
-    //       // add .appendChild(span_test);
-          
-    //     }
-    //   }, 2000);
-    // } );
-  }
-
-
   get initState() {
-    // this.cleanOtherTooltipFunction();
-    // this.tooltipFileUploadFunction();
-
     return {
       selectedFile: null,
       /** Flag tells us when a file is being loaded and processed for preview. */
@@ -540,13 +182,6 @@ class FileUpload extends Component {
        *  Must be kept in sync with ordinalFeaturesObject */
       ordinalFeaturesUserText: '',
       ordinalFeaturesUserTextModalOpen: false,
-
-
-      classUserText: '',
-      classUserTextModalOpen: false,
-
-
-      // oridinal
       /** {object} Object used as dictionary to track the features designated as ordinal by user via dataset preview UI.
        *  key: feature name from dataPreview
        *  value: string-array holding possibly-ordered unique values for the feature.
@@ -555,30 +190,21 @@ class FileUpload extends Component {
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
        */
       ordinalFeaturesObject: {},
-      classObject: {},
       /** Holds previous versions of ordinal feature value orderings, so that they can be restored if 
        *  user has defined them, then changed feature type, then goes back to type ordinal.
        */
       ordinalFeaturesObjectPrev: {},
-      classObjectPrev: {},
-
       /** {string} The ordinal feature that is currently being ranked by sortable list, when sortable list is active. */
       ordinalFeatureToRank: undefined,
-      classToRank: undefined,
       /** {array} Array of unique (and possibly sorted) values for the ordinal feature currently being ranked. This gets
        *  modified while user is ranking the values, and then stored to state if user finalizes changes. */
       ordinalFeatureToRankValues: [],
-      classToRankValues: [],
-      
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
       /** {string} Used in unit testing to test state retrieval */
       testStateValue: 'foobar'
     }
   }
-
-
-
 
   /** Reset the state to its default, clearing any loaded data. */
   resetState() {
@@ -617,7 +243,6 @@ class FileUpload extends Component {
     if(event.keyCode === 27 ) {
       this.handleOrdinalRankCancel();
       this.handleOrdinalFeaturesUserTextCancel();
-      this.
       this.handleCatFeaturesUserTextCancel();
     }
   }
@@ -764,72 +389,6 @@ handleCatFeaturesUserTextCancel() {
     });
   }
 
-
-
-
-
-
-
-
-
-/** Handler for accepting button to accept class user text element.
-   *  Examine and validate the contents. 
-   *  If valid, ingest the text and update the ordinal features.
-   *  If invalid, show an error message.
-   * @param {Event} e - DOM Event from user interacting with UI text field
-   * @returns {void} - no return value
-  */
-//  handleOrdinalFeaturesUserTextAccept(e) {
-  handleclassUserTextAccept(e) {
-  //Validate the whole text
-  // let result = this.ordinalFeaturesUserTextValidate();
-  let result = this.classUserTextValidate();
-  if( result.success ) {
-    // this.ordinalFeaturesUserTextIngest();
-    this.classUserTextIngest();
-    // this.setState({ordinalFeaturesUserTextModalOpen: false})
-    this.setState({classUserTextModalOpen: false})
-  }
-  else {
-    //On error, the modal window showing the text input will stay open, so user
-    // must either cancel or correct the error
-    // this.showErrorModal("Error in Ordinal Feature text entry", result.message);
-    this.showErrorModal("Error in Class text entry", result.message);
-    // console.log("Error validating ordinal feature user text: " + result.message);
-    console.log("Error validating class text: " + result.message);
-  }
-}
-
-/** Handle cancel but for ordinal user text modal. 
- *  Resets ordinalFeaturesUserText to state from ordinalFeaturesObject */
-// handleOrdinalFeaturesUserTextCancel() {
-handleclassUserTextCancel() {
-  // console.log("cancel button clicked");
-  this.setState({
-    // ordinalFeaturesUserText: this.ordinalFeaturesObjectToUserText(),
-    classUserText: this.classUserTextObjectToUserText(),
-    // ordinalFeaturesUserTextModalOpen: false,
-    classUserTextModalOpen: false,
-  })
-}
-
-/** Handle text change in the class user text input. 
- *  Simply stores the current value for use if user accepts the input. */
-// handleOrdinalFeaturesUserTextOnChange(e) {
-handleclassUserTextOnChange(e) {
-  this.setState({
-    // ordinalFeaturesUserText: e.target.value,
-    classUserText: e.target.value,
-  });
-}
-
-
-
-
-
-
-
-
   handlePredictionType(e, data) {
     this.setState({
       predictionType: data.value,
@@ -953,16 +512,8 @@ handleclassUserTextOnChange(e) {
    * @param {Array} fileObj - array of selected files (we only expect one, and use just the first)
    * @returns {void} - no return value
    */
-
-
   handleSelectedFile = files => {
 
-    console.log("handleSelectedFile")
-    if (files !=null)
-    {
-      console.log("it is null")
-      console.log(files)
-    }
     const fileExtList = ['csv', 'tsv'];
     //Config for csv reader. We load the whole file so we can let user sort the ordinal features
     let papaConfig = {
@@ -1056,9 +607,6 @@ handleclassUserTextOnChange(e) {
    * @returns {void} - no return value
    */
   handleUpload = (event) => {
-    console.log("hanleupload running")
-
-    
     if (this.state.uploadButtonDisabled) {
       return;
     }
@@ -1067,48 +615,13 @@ handleclassUserTextOnChange(e) {
     const { uploadDataset } = this.props;
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
-
-
-
-
-
-      // console.log("sessionStorage.getItem('class')) ",sessionStorage.getItem('class'))
-      // // if "class" is not in the session storage
-      // if(!sessionStorage.getItem('class')) {
-
-      //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-
-      //   this.setState({uploadButtonDisabled:false});
-      // }
-
-
-
-
-      
-
       let data = this.generateFileData(); // should be FormData
-
-
-      var class_name_log = true
-      if (sessionStorage.getItem('class')===null) {
-            console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
-            class_name_log = false
-      }
-
-
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
         this.showErrorModal("Error with file metadata", data.errorResp);
         //Reenable upload button since this error messge is blocking
         this.setState({uploadButtonDisabled:false});
-      } else if(class_name_log===false){
-
-        console.log("class_name_log in else if",class_name_log)
-        this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-        this.setState({uploadButtonDisabled:false});
-
-      }
-      else {
+      } else {
         // after uploading a dataset request new list of datasets to update the page
         uploadDataset(data).then(stuff => {
           //window.console.log('FileUpload props after download', this.props);
@@ -1116,99 +629,18 @@ handleclassUserTextOnChange(e) {
           let resp = this.props.dataset.fileUploadResp;
           let errorRespObj = this.props.dataset.fileUploadError;
 
-          console.log("resp",resp)
-          console.log("errorRespObj",errorRespObj)
-
-          console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
-          console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
-          
-
-          // var class_name_log = true
-          // if (sessionStorage.getItem('class')===null) {
-          //   console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
-          //   class_name_log = false
-          // }
-          
           // if no error message and successful upload (indicated by presence of dataset_id)
           // 'refresh' page when upload response from server is not an error and
           // redirect to dataset page, when error occurs set component state
           // to display popup containing server/error response
-          
-          // circling
-          // if (!errorRespObj && resp.dataset_id)
-          
-          // 
-          if (!errorRespObj && resp.dataset_id && class_name_log) 
-          {
-
-            console.log("errorRespObj",errorRespObj)
-            console.log("resp.dataset_id",resp.dataset_id)
-            console.log("class_name_log",class_name_log)
-
-
+          if (!errorRespObj && resp.dataset_id) {
             this.props.fetchDatasets();
             window.location = '#/datasets';
             this.setState({uploadButtonDisabled:false});
-
-
-            sessionStorage.removeItem("selectedFile_name");
-            sessionStorage.setItem("selectedFile_name", this.state.selectedFile.name);
-
-            // get class from selectedFile_name
-            let class_string = sessionStorage.getItem("class");
-
-            
-
-            // combine class and this.state.selectedFile.name
-            // let class_and_file = class_string + "&" + this.state.selectedFile.name;
-
-            let class_and_file = class_string + "&" + this.state.selectedFile.name;
-
-            // if "class_and_file" is in sessionStorage, get the value
-            if (sessionStorage.getItem("class_and_file")) {
-              console.log("class_and_file is in sessionStorage");
-              let value = sessionStorage.getItem("class_and_file");
-              value = value +"*"+class_and_file
-              sessionStorage.setItem("class_and_file", value);
-
-              // remove "class" from sessionStorage
-              sessionStorage.removeItem("class");
-
-            } else {
-              // store class_and_file in sessionStorage
-              sessionStorage.setItem("class_and_file", class_and_file);
-              sessionStorage.removeItem("class");
-            }
-
-
-
-
-          } 
-          // else if (!sessionStorage.getItem('class')) {
-            
-          //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-    
-          //   this.setState({uploadButtonDisabled:false});
-          // }
-
-          // if there is no 'class' in sessionStorage, 
-          // make the Upload dataset button disabled
-          // console.log(sessionStorage.getItem('class'));
-          // else if (true) {
-          //   console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
-          //   console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
-          //   this.setState({uploadButtonDisabled:true});
-          // }
-
-          else 
-          {
-            
+          } else {
             this.showErrorModal("Error Uploading Data", errorRespObj.errorResp.error || "Something went wrong");
             this.setState({uploadButtonDisabled:false});
-            
           }
-
-          
         });
       }
 
@@ -1532,20 +964,6 @@ handleclassUserTextOnChange(e) {
     return result;
   }
 
-
-    /** From state, convert the lists of unique values for classes into a string with
-   * the ordinal feature name and its values, one per line.
-   * @returns {string} - multi-line string with one ordinal feature and its unique values, comma-separated, per line
-  */
-  classUserTextObjectToUserText() {
-    let result = "";
-    for(var feature in this.state.classUserTextObject) {
-      let values = this.state.classUserTextObject[feature];
-      result += feature + ',' + values.join() + '\n';
-    }
-    return result;
-  }
-
   /** Parse a single line of user text for specifying ordinal features. 
    *  Expects a comma-separated string of 2 or more field, with format 
    *    <feature name string>,<unique value 1>,<unique value 2>,...
@@ -1563,33 +981,6 @@ handleclassUserTextOnChange(e) {
     });
     return {feature: feature, values: values}
   }
-
-
-    /** Parse a single line of user text for specifying ordinal features. 
-   *  Expects a comma-separated string of 2 or more field, with format 
-   *    <feature name string>,<unique value 1>,<unique value 2>,...
-   *  Leading and trailing whitespace is removed on the whole line and for each comma-separated item
-   * Does not do any validation
-   * @param {string} line - single line of user text for ordinal feature specification
-   * @returns {object} - {feature: <feature name string>, values: <string array of unique values>}
-  */
-    classUserTextParse(line) {
-    // let feature = line.split(",")[0].trim();
-    // let values = line.split(",").slice(1);
-    // line is class_0:A,class_1:B,class_2:C
-    let feature = line.split(":")[0].trim();
-    let values = line.split(":")[1].split(",");
-    //Remove leading and trailing white space from each element
-    values = values.map(function (el) {
-      return el.trim();
-    });
-    return {feature: feature, values: values}
-  }
-
-
-
-
-
 
   /** Take a SINGLE-line string for a SINGLE feature, of the format used in the UI box for a user to specify an ordinal feature and  
    *  the order of its unique values, and check whether it's valid. The contained feature name must exist and the specifed
@@ -1625,69 +1016,6 @@ handleclassUserTextOnChange(e) {
     return {success: true, message: ""}
   }
 
-
-
-
-
-
-
-
-  /** Take a SINGLE-line string for a SINGLE feature, of the format used in the UI box for a user to specify class and  
-   *  the order of its unique values, and check whether it's valid. The contained feature name must exist and the specifed
-   *  unqiue values must all exactly match (regardless of order) the unqiue values for the feature in the data.
-   * @param {string} string - the string holding the user's specification 
-   * @returns {object} - {success:[true|false], message: <relevant error message on failure>
-   */
-  //  ordinalFeatureUserTextLineValidate(string) {
-  classFeatureUserTextLineValidate(string) {
-      // console.log(string)
-    if( string.length === 0 ) {
-      return {success: true, message: ""}
-    }
-    //Parse the line
-    // let ordObj = this.ordinalFeaturesUserTextParse(string);
-    let ordObj = this.classUserTextParse(string);
-    //Make sure feature name is valid
-    // if( !this.validateFeatureName(ordObj.feature) ) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' was not found in the data."}
-    // }
-
-    //Make sure the feature name is not assigned as the dependent column
-    // if( this.getDependentColumn() === ordObj.feature ) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Target Column."};
-    // }
-    //The remaining items are the unique values
-    // if( ordObj.values === undefined || ordObj.values.length === 0) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' - no values specified"}
-    // }
-    //Make sure the passed list of unique values matches the unique values from data,
-    // ignoring order
-    // let dataValues = this.getUniqueValuesForFeature(ordObj.feature);
-    // if( dataValues.sort().join() !== ordObj.values.sort().join()) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "': categories do not match (regardless of order) the unique values in the data: " + dataValues + "."}
-    // }
-    //Otherwise we're good!
-    // return {success: true, message: ""}
-    // console.log(string)
-    // save experiment.data._id and string to the session stroage
-    // sessionStorage.setItem("data_id", this.experiment.data._id);
-    // this.state.selectedFile.name
-    // check if selectedFile_name is in the session storage
-    // if yes, then update the string
-    // if no, then create a new key-value pair
-
-    // remove selectedFile_name from session storage
-    // sessionStorage.removeItem("selectedFile_name");
-
-    // sessionStorage.setItem("selectedFile_name", this.state.selectedFile.name);
-    sessionStorage.setItem("class", string);
-    console.log("success to store data_id and class in session storage")
-    // current data name
-    // experiment.data._id
-    // sessionStorage.setItem("class", string);
-    return {success: true, message: string}
-  }
-
   /** Validate the whole text input for specify ordinal features 
    * Uses the current state var holding the ordinal features user text.
    * @returns {object} - {success: [true|false], message: <error message>}
@@ -1704,34 +1032,6 @@ handleclassUserTextOnChange(e) {
       if(line === "")
         return;
       let result = this.ordinalFeatureUserTextLineValidate(line);
-      if(result.success === false){
-        success = false;
-        message += result.message + "\n";
-      }
-    })
-    return {success: success, message: message}
-  }
-
-    /** Validate the whole text input for specify class 
-   * Uses the current state var holding the ordinal features user text.
-   * @returns {object} - {success: [true|false], message: <error message>}
-  */
-  // ordinalFeaturesUserTextValidate() {
-  classUserTextValidate() {
-    //Return true if empty
-    // if(this.state.ordinalFeaturesUserText === ""){
-    if(this.state.classUserText === ""){
-      return {success: true, message: ""}
-    }
-    let success = true;
-    let message = "";
-    //Check each line individually
-    // this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
-    this.state.classUserText.split(/\r?\n/).map((line) => {
-      if(line === "")
-        return;
-      // let result = this.ordinalFeatureUserTextLineValidate(line);
-      let result = this.classFeatureUserTextLineValidate(line);
       if(result.success === false){
         success = false;
         message += result.message + "\n";
@@ -1762,36 +1062,6 @@ handleclassUserTextOnChange(e) {
     //console.log("ingest: ordinals: ");
     //console.log(this.state.ordinalFeaturesObject);
   }
-
-
-
-
-  /** Process the current class user text state variable to create
-   *  relevant state data variables.
-   *  Overrides any existing values in ordinalFeaturesObject
-   *  Operates only on state variables.
-   *  Does NOT perform any validation on the user text
-   * @returns {null} 
-   */
-   classUserTextIngest() {
-    // Get the lines before clearing ordinal features to default. Otherwise can
-    // end up clearing ordinalFeaturesUserText in some cases.
-    let lines = this.state.classUserText.split(/\r?\n/);
-    // this.ordinalFeaturesClearToDefault();
-    // this.ordinalFeaturesClearToDefault();
-    //Process each line individually
-    lines.map((line) => {
-      if(line != "") {
-        // let ordObj = this.ordinalFeaturesUserTextParse(line);
-        let ordObj = this.classUserTextParse(line);
-        // this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);       
-      }
-    })    
-    //console.log("ingest: ordinals: ");
-    //console.log(this.state.ordinalFeaturesObject);
-  }
-
-  
 
   /** Helper method to generate a segment with a button that opens
    *  Sortable List popups for ordering an ordinal feature.
@@ -2065,19 +1335,10 @@ handleclassUserTextOnChange(e) {
       },
     ]
 
-    // var [eventsEnabled, setEventsEnabled] = React.useState(true)
-    // var [open, setOpen] = React.useState(true)
-    // var [aa, bb] = React.useState(true)
-    // var [ed, cc] = React.useState(true)
-
-    // const [count, setCount] = React.useStat/e(0);
-
     return (
-        
         <Grid columns={4} >
         <Grid.Row>
           <Grid.Column width={6}>
- 
             <Form.Field 
               id="target_dropdown"
               inline
@@ -2091,17 +1352,10 @@ handleclassUserTextOnChange(e) {
               className="inverted-dropdown-search"
               defaultValue={this.getDependentColumn()}
             />
-              
-              
           </Grid.Column>
           <Grid.Column width={2} style={{marginTop: '1.9em', paddingLeft: '0'}}>
             <Popup
               on="click"
-              // visibility={this.state.showDepColHelp ? 'visible' : 'hidden'}
-              // open={this.state.showDepColHelp}
-
-              id="theIdHere"
-              // open
               header="Target Column Help"
               position="right center"
               content={
@@ -2155,9 +1409,7 @@ handleclassUserTextOnChange(e) {
             />
           </Grid.Column>
         </Grid.Row>
-        </Grid>
-        
-
+      </Grid>
     )
   }
 
@@ -2282,65 +1534,6 @@ handleclassUserTextOnChange(e) {
             </div>
           </Form.Input>
         </Grid.Column>
-        </Grid.Row>
-      </Grid>
-      </div>
-    )
-    return content;
-  }
-
-  
-
-
-  getUserFeatureClassControls() {
-
-    let itemContent=(
-      <React.Fragment>
-        {'Numeric / Categorical'}
-        <div>(auto-detect)</div>
-      </React.Fragment>
-    )
-
-    let content = (
-      //---- Ordinal Feature Text Input ----
-      <div>
-      <Grid columns={3}>
-        <Grid.Row>
-        <Grid.Column>
-          <Form.Input>
-            <Button
-              id="class_text_input_open_button"
-              color='blue'
-              size='small'
-              fluid
-              inverted
-              // disabled={this.state.ordinalFeatureToRank !== undefined}
-              className="file-upload-button"
-              content="Set Class names"
-              onClick={() => this.setState({classUserTextModalOpen: !this.classUserTextModalOpen})}
-            />
-            <Popup
-              on="click"
-              position="right center"
-              header="Class Help"
-              content={
-                <div className="content">
-                {/* {this.ordFeatHelpText}*/}
-                {this.classHelpText}
-                </div>
-              }
-              trigger={
-                <Icon
-                  inverted
-                  size="large"
-                  color="blue"
-                  name="info circle"
-                />
-              }
-            />
-          </Form.Input>
-        </Grid.Column>
-        
         </Grid.Row>
       </Grid>
       </div>
@@ -2526,59 +1719,6 @@ handleclassUserTextOnChange(e) {
     )
   }
 
-  getClassUserTextModal() {
-    return(
-      <div className="file-upload-centered-div">
-        <Segment raised compact>
-          <SceneHeader header="Class Specification"/>
-          <Segment className="file-upload-feature-text-info">
-            <p> For each class, enter one comma-separated line with the following format: <br/>
-              &emsp;[first category value:first class name],[second catergory value: second category value] ,...</p>
-            <p>For example:<br/>
-              &emsp;-1: dead, 1:survive<br/>
-              </p>
-            {/* <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p> */}
-            <br/>
-          </Segment>
-          <Segment>
-            <textarea
-              className="file-upload-feature-text-input"
-              id="Class_text_area_input"
-              label="Class"
-              // onChange={this.handleOrdinalFeaturesUserTextOnChange}
-              onChange={this.handleclassUserTextOnChange}
-              // placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
-              placeholder={this.state.classUserText.length === 0 ? "(No Class has been specified.)" : "" }
-              // value={this.state.ordinalFeaturesUserText}
-              value={this.state.classUserText}
-              autoFocus
-              rows={10}
-            />
-          </Segment>
-          <Button
-            id="ordinal_features_user_text_accept_button"
-            className='file-upload-pseudo-dialog-button'
-            content="Accept"
-            icon='checkmark'
-            // onClick={this.handleOrdinalFeaturesUserTextAccept}
-            onClick={this.handleclassUserTextAccept}
-            color="blue"
-            inverted
-          />
-          <Button
-            id="ordinal_features_user_text_cancel_button" 
-            className='file-upload-pseudo-dialog-button'
-            color='red' 
-            // onClick={this.handleOrdinalFeaturesUserTextCancel}
-            onClick={this.handleclassUserTextCancel}
-            content="Cancel"
-            inverted
-          />
-        </Segment>
-      </div>
-    )
-  }
-
   handleErrorModalClose(){
     this.setState({
       showErrorModal: false,
@@ -2610,21 +1750,13 @@ handleclassUserTextOnChange(e) {
     });
   }
 
-
-
   render() {
-
-
-    
-
-
 
     //const { dataset } = this.props;
 
     let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let userFeatureTypeControls = this.getUserFeatureTypeControls();
-    let userFeatureClassControls = this.getUserFeatureClassControls();
     let userDatasetOptions = this.getUserDatasetOptions();
 
     // default to hidden until a file is selected, then display input areas
@@ -2638,239 +1770,12 @@ handleclassUserTextOnChange(e) {
     // https://react-dropzone.js.org/
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept*
     let fileInputElem = undefined;
-
-
-    
-    // let selectedFileIcon =  undefined;
-    
-
-    function onDrop(acceptedFiles) {
-      // const req = request.post('/upload')
-      // acceptedFiles.forEach(file => {
-      //   req.attach(file.name, file)
-      // })
-      // req.end(callback)
-      this.handleUpload
-    }
-    
-
-    // code for dragable icon
-    // prevent each mydivs from being overlapped
-
-
-    var styles = `
-
-    #mydivs_home {
-
-      content: "";
-      display: table;
-      clear: both;
-      
-    
-    }
-
-    #mydiv, #mydiv2, #mydiv3, #mydiv4, #mydiv5 {
-      position: absolute;
-
-      background-color: #fff0;
-      border: 1px solid #fff0;;
-      text-align: center;
-  
-
-
-      float: left;
-  
-      padding: 10px;
-
-      
-
-
-
-    }
-    
-    #mydivheader, #mydivheader2, #mydivheader3, #mydivheader4, #mydivheader5 {
-      padding: 10px;
-      cursor: move;
-
-      background-color: #fff0;
-      color: #fff0;
-      float: left;
-      display: inline-block;
-    }
-`
-
-    
-
-   
-    
-    // add the styles for dragable icon
-    if(document.getElementsByTagName("style").length == 0)
-    {
-
-      var styleSheet = document.createElement("style")
-      styleSheet.innerText = styles
-      document.head.appendChild(styleSheet)
-    }
-
-    // Make the DIV element draggable:
-    if (document.getElementById("mydiv")!=null){
-        dragElement(document.getElementById("mydiv"));
-        dragElement(document.getElementById("mydiv2"));
-        dragElement(document.getElementById("mydiv3"));
-        dragElement(document.getElementById("mydiv4"));
-        dragElement(document.getElementById("mydiv5"));
-        // dragElement(document.getElementById("preloaded_data_1"));
-        // dragElement(document.getElementById("preloaded_data_2"));
-
-    }
-    
-  function dragElement(elmnt) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    if (document.getElementById(elmnt.id + "header")) {
-      // if present, the header is where you move the DIV from:
-      document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-    } else {
-      // otherwise, move the DIV from anywhere inside the DIV:
-      elmnt.onmousedown = dragMouseDown;
-    }
-
-  function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
-  }
-
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-  }
-
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
-}
-
-    // selectedFile
-    // let selectedFile = this.state.selectedFile;
-    // remove all file icons when one of files is clicked
-    function clearFileIcons(currentFile) {
-    
-    // selectedFileIcon=currentFile
-    // console.log(selectedFileIcon)
-    
-    // var selectedFileIconds=document.getElementById(currentFile)
-    // selectedFileIconds.parentNode.removeChild(selectedFileIconds);
-
-    // parse currentFile to get the number
-    var currentFileNumber = currentFile.split("_")[2];
-    console.log(currentFileNumber)
-
-    var fileIcon = document.getElementById("preloaded_data_" + currentFileNumber);
-    if (fileIcon) {
-      fileIcon.parentNode.removeChild(fileIcon); 
-    }
-
-    // if ("preloaded_data_" + currentFileNumber)
-    // {
-    //   onDrop("iris.tsv")
-    // }
-
-    
-
-    console.log("clearing file icons");
-
-    // // generate number from 1 to 5
-    // for (var i = 1; i <= 5; i++) {
-    //   console.log("removing file icon " + i);
-    //   var fileIcon = document.getElementById("preloaded_data_" + i);
-    //   if (fileIcon) {
-    //     fileIcon.parentNode.removeChild(fileIcon); 
-    //   }
-    // }
-
-
-    
-
-
-
-
-    }
-
-    // add checkmark icon t the selected file icon when one of files is clicked
-    function checkonFileIcons(currentFile){
-      // parse currentFile to get the number
-      var currentFileNumber = currentFile.split("_")[2];
-      console.log(currentFileNumber)
-
-      // add checkmark icon to the selected file icon. The checkmark icon should be overlayed on the file icon
-
-      
-      var selectedFileIcon = document.getElementById("preloaded_data_" + currentFileNumber);
-      selectedFileIcon.innerHTML = "<i class='checkmark icon'></i>";
-
-        
-    }
-
-    function DropzoneWithoutClick(props) {
-      const {getRootProps, acceptedFiles} = useDropzone();
-      const files = acceptedFiles.map(file => <li key={file.path}>{file.path}</li>);
-    
-      return (
-        <section className="container">
-          <div {...getRootProps({className: 'dropzone'})}>
-            <p>Dropzone without click events</p>
-          </div>
-          <aside>
-            <h4>Files</h4>
-            <ul>{files}</ul>
-          </aside>
-        </section>
-      );
-    }
-
-
-
-
     if( this.state.selectedFile == null ) {
-
-
-      // function onDrop(acceptedFiles) {
-      //   console.log(acceptedFiles);
-      //   // this.setState({ selectedFile: acceptedFiles[0] });
-      // }
-     
       fileInputElem = (
-        // make any file icon on web site work with dropzone
-
-       
         <Dropzone
             id="file-dropzone"
             onDropAccepted={this.handleSelectedFile}
             onDropRejected={this.handleRejectedFile}
-            
-            // onDrop={onDrop}
-
-            // mouse over the file icon, the file icon will be highlighted
-            
-
-            
-            
-            
             accept=".csv,.tsv,text/csv,text/tsv"
             multiple={false}
         >
@@ -2880,21 +1785,10 @@ handleclassUserTextOnChange(e) {
                 <input {...getInputProps()} />
                 <p>Choose a csv or tsv file</p>
                 <p>Drag 'n drop, or click here</p>
-                {/* <p>Click one of preloaded datasets</p> */}
-                
               </div>
             </section>
           )}
         </Dropzone>
-
-        
-        // <DropzoneWithoutClick></DropzoneWithoutClick>
-
-
-
-
-        
-        
       );
     } else {
       //Cancel button
@@ -2912,15 +1806,6 @@ handleclassUserTextOnChange(e) {
       )
     }
     
-    // console.log("selectedFileIcon")
-    // console.log(selectedFileIcon)
-    // if first file icon is clicked 
-    // if (selectedFileIcon != undefined)
-    // {
-    //   console.log("selectedFileIcon is not undefined")
-    // }
-
-
     //Progress spinner if we're loading and processing a file
     //
     if( this.state.processingFileForPreview){
@@ -2951,446 +1836,22 @@ handleclassUserTextOnChange(e) {
       return this.getOrdinalFeaturesUserTextModal();
     }
 
-    //Show pseudo-modal window for class specifications.
-    if(this.state.classUserTextModalOpen) {
-      return this.getClassUserTextModal();
-    }
-
-
-
     //Show pseudo-modal window for textual input of categorical feature specifications.
     if(this.state.catFeaturesUserTextModalOpen) {
       return this.getCatFeaturesUserTextModal();
     }
 
-
-    // console.log(this.state.selectedFile);
-    // console.log("file-upload-icon).length");
-    // console.log(document.getElementsByClassName("file-upload-icon").length);
-
-    if (this.state.selectedFile != null) {
-
-      console.log("selected file is not null and I am removing file icons")
-      // when a file is selected, remove all file icons
-      // if there is a icon with id preloaded_data_1, then remove it
-      if (document.getElementById("preloaded_data_1")) {
-        console.log("preloaded_data_1 exists")
-        clearFileIcons("preloaded_data_1");
-        clearFileIcons("preloaded_data_2");
-        clearFileIcons("preloaded_data_3");
-        clearFileIcons("preloaded_data_4");
-        clearFileIcons("preloaded_data_5");
-
-        // remove mydiv id 
-        var mydiv = document.getElementById("mydiv");
-        var mydiv2 = document.getElementById("mydiv2");
-        var mydiv3 = document.getElementById("mydiv3");
-        var mydiv4 = document.getElementById("mydiv4");
-        var mydiv5 = document.getElementById("mydiv5");
-
-        if (mydiv != null && mydiv2 != null && mydiv3 != null && mydiv4 != null && mydiv5 != null) {
-          mydiv.parentNode.removeChild(mydiv);
-          mydiv2.parentNode.removeChild(mydiv2);
-          mydiv3.parentNode.removeChild(mydiv3);
-          mydiv4.parentNode.removeChild(mydiv4);
-          mydiv5.parentNode.removeChild(mydiv5);
-        }
-
-      }
-
-      // clearFileIcons("preloaded_data_1")
-    }
-
-
-    // when user did not upload file after clicking the upload button, then show the file icons
-    else if (document.getElementsByClassName("file-upload-icon").length == 0 )
-    {
-
-      if (document.getElementsByClassName("file-upload-icon").length ==1)
-      {
-        document.body.removeChild(document.getElementsByClassName("file-upload-icon")[0]);
-      }
-
-      console.log("selected file is null")
-      // create a div element className "file-upload-icon"
-      var fileUploadIcons = document.createElement("div");
-      fileUploadIcons.className = "file-upload-icon";
-      // add this div element div app 
-      // document.getElementById("app").appendChild(fileUploadIcons);
-
-
-      // <i id = "preloaded_data_1" className="blue huge file icon" onClick = {() => clearFileIcons("preloaded_data_1")}></i>
-      // create a i element className ="blue huge file icon"
-      var fileIcon1 = document.createElement("i");
-      fileIcon1.className = "blue huge file icon";
-      fileIcon1.id = "preloaded_data_1";
-      // fileIcon1.onclick = function () { clearFileIcons("preloaded_data_1") };
-      // make upload the iris.tsv file when the file icon is clicked
-      // fileIcon1.onclick = function () { uploadFile("iris.tsv") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon1);
-
-      // <div id="mydiv">
-              // <div id="mydivheader"></div>
-      // create a div id with mydiv
-      var mydiv = document.createElement("div");
-      mydiv.id = "mydiv";
-      // create a div id with mydivheader
-      var mydivheader = document.createElement("div");
-      mydivheader.id = "mydivheader";
-
-      // add mydivheader to mydiv
-      mydiv.appendChild(mydivheader);
-
-      // add fileIcon1 to mydivheader
-      mydivheader.appendChild(fileIcon1);
-
-      // add mydiv to app
-      // document.getElementById("app").appendChild(mydiv);
-      // add to body
-      // document.body.appendChild(mydiv);
-
-      
-
-      
-
-
-
-
-      
-
-
-
-
-      //  <i id = "preloaded_data_2" className="red huge file icon" onClick = {() => clearFileIcons("preloaded_data_2")}></i>
-      // create a i element className ="red huge file icon"
-      var fileIcon2 = document.createElement("i");
-      fileIcon2.className = "red huge file icon";
-      fileIcon2.id = "preloaded_data_2";
-      // fileIcon2.onclick = function () { clearFileIcons("preloaded_data_2") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon2);
-
-      var mydiv2 = document.createElement("div");
-      mydiv2.id = "mydiv2";
-      // create a div id with mydivheader
-      var mydivheader2 = document.createElement("div");
-      mydivheader2.id = "mydivheader2";
-
-      // add mydivheader to mydiv
-      mydiv2.appendChild(mydivheader2);
-
-      // add fileIcon1 to mydivheader
-      mydivheader2.appendChild(fileIcon2);
-
-      // add mydiv to app
-      // document.getElementById("app").appendChild(mydiv);
-      // add to body
-      // document.body.appendChild(mydiv2);
-
-
-
-
-
-
-
-      //  <i id = "preloaded_data_3" className="green huge file icon" onClick = {() => clearFileIcons("preloaded_data_3")}></i>
-      // create a i element className ="green huge file icon"
-      var fileIcon3 = document.createElement("i");
-      fileIcon3.className = "green huge file icon";
-      fileIcon3.id = "preloaded_data_3";
-      // fileIcon3.onclick = function () { clearFileIcons("preloaded_data_3") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon3);
-
-      var mydiv3 = document.createElement("div");
-      mydiv3.id = "mydiv3";
-      // create a div id with mydivheader
-      var mydivheader3 = document.createElement("div");
-      mydivheader3.id = "mydivheader3";
-
-      // add mydivheader to mydiv
-      mydiv3.appendChild(mydivheader3);
-
-      // add fileIcon1 to mydivheader
-      mydivheader3.appendChild(fileIcon3);
-
-      // add mydiv to app
-      // document.getElementById("app").appendChild(mydiv);
-      // add to body
-      // document.body.appendChild(mydiv3);
-
-
-
-
-      //  <i id = "preloaded_data_4" className="yellow huge file icon" onClick = {() => clearFileIcons("preloaded_data_4")}></i>
-      // create a i element className ="yellow huge file icon"
-      var fileIcon4 = document.createElement("i");
-      fileIcon4.className = "yellow huge file icon";
-      fileIcon4.id = "preloaded_data_4";
-      // fileIcon4.onclick = function () { clearFileIcons("preloaded_data_4") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon4);
-
-      var mydiv4 = document.createElement("div");
-      mydiv4.id = "mydiv4";
-      // create a div id with mydivheader
-      var mydivheader4 = document.createElement("div");
-      mydivheader4.id = "mydivheader4";
-
-      // add mydivheader to mydiv
-      mydiv4.appendChild(mydivheader4);
-
-      // add fileIcon1 to mydivheader
-      mydivheader4.appendChild(fileIcon4);
-
-      // add mydiv to app
-      // document.getElementById("app").appendChild(mydiv);
-      // add to body
-      // document.body.appendChild(mydiv4);
-
-
-      //  <i id = "preloaded_data_5" className="purple huge file icon" onClick = {() => clearFileIcons("preloaded_data_5")}></i>
-      // create a i element className ="purple huge file icon"
-      var fileIcon5 = document.createElement("i");
-      fileIcon5.className = "purple huge file icon";
-      fileIcon5.id = "preloaded_data_5";
-      // fileIcon5.onclick = function () { clearFileIcons("preloaded_data_5") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon5);
-
-      var mydiv5 = document.createElement("div");
-      mydiv5.id = "mydiv5";
-      // create a div id with mydivheader
-      var mydivheader5 = document.createElement("div");
-      mydivheader5.id = "mydivheader5";
-
-      // add mydivheader to mydiv
-      mydiv5.appendChild(mydivheader5);
-
-      // add fileIcon1 to mydivheader
-      mydivheader5.appendChild(fileIcon5);
-
-      // add mydiv to app
-      // document.getElementById("app").appendChild(mydiv);
-      // add to body
-      // document.body.appendChild(mydiv5);
-
-
-
-
-
-
-
-      // add fileUploadIcons to the body
-      document.body.appendChild(fileUploadIcons);
-
-
-
-
-      //make <div id = "iconshome" style="display: flex; justify-content: space-around"> if it does not exist
-      if (document.getElementById("iconshome") == null) {
-        // create a div element id = "iconshome"
-        var iconshome = document.createElement("div");
-        iconshome.id = "iconshome";
-        // iconshome.style = "display: flex; justify-content: space-around";
-
-        // iconshome.style = "display: table; width: 100%; table-layout: fixed; border-spacing: 10px;";
-        iconshome.style = "display: table; width: 100%; border-spacing: 10px;";
-        // add this div element div app
-        document.body.appendChild(iconshome);
-
-        // add mydiv to iconshome
-        document.getElementById("iconshome").appendChild(mydiv);
-        // locate mydiv with x and y coordinates
-        mydiv.style.position = "absolute";
-        mydiv.style.left = '28' + "px";
-        mydiv.style.top = '340' + "px";
-        // add mydiv2 to iconshome
-        document.getElementById("iconshome").appendChild(mydiv2);
-        // locate mydiv2 with x and y coordinates
-        mydiv2.style.position = "absolute";
-        mydiv2.style.left = '128' + "px";
-        mydiv2.style.top = '340' + "px";
-
-        // add mydiv3 to iconshome
-        document.getElementById("iconshome").appendChild(mydiv3);
-        // locate mydiv3 with x and y coordinates
-        mydiv3.style.position = "absolute";
-        mydiv3.style.left = '228' + "px";
-        mydiv3.style.top = '340' + "px";
-        // add mydiv4 to iconshome
-        document.getElementById("iconshome").appendChild(mydiv4);
-        // locate mydiv4 with x and y coordinates
-        mydiv4.style.position = "absolute";
-        mydiv4.style.left = '328' + "px";
-        mydiv4.style.top = '340' + "px";
-        // add mydiv5 to iconshome
-        document.getElementById("iconshome").appendChild(mydiv5);
-        // locate mydiv5 with x and y coordinates
-        mydiv5.style.position = "absolute";
-        mydiv5.style.left = '428' + "px";
-        mydiv5.style.top = '340' + "px";
-      }
-      
-
-
-
-      
-
-    }
-
-    // after cancel
-    else if (document.getElementsByClassName("file-upload-icon").length == 100) {
-
-      console.log("after cancel");
-
-      // remove the existing file-upload-icon div element
-      document.body.removeChild(document.getElementsByClassName("file-upload-icon")[0]);
-
-
-      console.log("selected file is null")
-      // create a div element className "file-upload-icon"
-      var fileUploadIcons = document.createElement("div");
-      fileUploadIcons.className = "file-upload-icon";
-      // add this div element div app 
-      // document.getElementById("app").appendChild(fileUploadIcons);
-
-
-      // <i id = "preloaded_data_1" className="blue huge file icon" onClick = {() => clearFileIcons("preloaded_data_1")}></i>
-      // create a i element className ="blue huge file icon"
-      var fileIcon1 = document.createElement("i");
-      fileIcon1.className = "blue huge file icon";
-      fileIcon1.id = "preloaded_data_1";
-      // fileIcon1.onclick = function () { clearFileIcons("preloaded_data_1") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon1);
-
-
-      //  <i id = "preloaded_data_2" className="red huge file icon" onClick = {() => clearFileIcons("preloaded_data_2")}></i>
-      // create a i element className ="red huge file icon"
-      var fileIcon2 = document.createElement("i");
-      fileIcon2.className = "red huge file icon";
-      fileIcon2.id = "preloaded_data_2";
-      // fileIcon2.onclick = function () { clearFileIcons("preloaded_data_2") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon2);
-
-
-      //  <i id = "preloaded_data_3" className="green huge file icon" onClick = {() => clearFileIcons("preloaded_data_3")}></i>
-      // create a i element className ="green huge file icon"
-      var fileIcon3 = document.createElement("i");
-      fileIcon3.className = "green huge file icon";
-      fileIcon3.id = "preloaded_data_3";
-      // fileIcon3.onclick = function () { clearFileIcons("preloaded_data_3") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon3);
-
-
-      //  <i id = "preloaded_data_4" className="yellow huge file icon" onClick = {() => clearFileIcons("preloaded_data_4")}></i>
-      // create a i element className ="yellow huge file icon"
-      var fileIcon4 = document.createElement("i");
-      fileIcon4.className = "yellow huge file icon";
-      fileIcon4.id = "preloaded_data_4";
-      // fileIcon4.onclick = function () { clearFileIcons("preloaded_data_4") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon4);
-
-
-      //  <i id = "preloaded_data_5" className="purple huge file icon" onClick = {() => clearFileIcons("preloaded_data_5")}></i>
-      // create a i element className ="purple huge file icon"
-      var fileIcon5 = document.createElement("i");
-      fileIcon5.className = "purple huge file icon";
-      fileIcon5.id = "preloaded_data_5";
-      // fileIcon5.onclick = function () { clearFileIcons("preloaded_data_5") };
-      // add this i element to the div element
-      // fileUploadIcons.appendChild(fileIcon5);
-
-
-
-
-
-
-
-      // // add fileUploadIcons to the body
-      document.body.appendChild(fileUploadIcons);
-      
-
-
-
-      
-
-    }
-
-    // if current href does not include  "upload_" 
-
-    else if (window.location.href.includes("upload_") == false) {
-      clearFileIcons("preloaded_data_1");
-      clearFileIcons("preloaded_data_2");
-      clearFileIcons("preloaded_data_3");
-      clearFileIcons("preloaded_data_4");
-      clearFileIcons("preloaded_data_5");
-    
-
-    }
-
-    // find div elements ,whose id string incluses mydiv, mydiv1, mydiv2, mydiv3, mydiv4, mydiv5.
-
-
-    
-
-
-    // make id iconshome unvisible
-    document.getElementById("iconshome").style.visibility = "hidden";
-    
-
-    function openTrueOrFalse_file_upload_popup(){
-      if (sessionStorage.getItem("file_upload_popup") == "true"){
-  
-        // if (document.getElementById("aiTooglePopup")!==null){
-        //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
-        // }
-  
-        
-        return false;
-      }
-      else{
-        return true;
-      }
-      
-  
-    }
-  
-
-
-    
-
     //Main UI elements
     //
     return (
-      
-
       <div> 
         <SceneHeader header="Upload Datasets"/>
-
-       
-
         <Form inverted>
-
-          <Popup
-            id = "file_upload_popup"
-            trigger={
           <Segment className="file-upload-segment">
             
             {/* File dropzone/chooser */}
             {fileInputElem}
-
-                 
             <br/>
-
-
-
-            
 
             <div
               id="file-upload-form-input-area"
@@ -3406,22 +1867,12 @@ handleclassUserTextOnChange(e) {
             {/*dropdowns for selecting dep. feature and prediction type*/}
             {userDatasetOptions}
 
-
             {/*buttons for specifying feature types*/}
             <Form.Field
                 label="Features Types"
                 style={{marginTop: '1em'}}
-                // curdataname={experiment.data._id}
             />
             {userFeatureTypeControls}
-
-            {/*buttons for specifying feature and class*/}
-            <Form.Field
-                label="Class name"
-                style={{marginTop: '1em'}}
-                // curdataname={experiment.data._id}
-            />
-            {userFeatureClassControls}
 
             {/*upload button*/}
             <Divider inverted horizontal>
@@ -3431,10 +1882,7 @@ handleclassUserTextOnChange(e) {
             <Form.Field style={{float: 'right'}}>
               {/* Cancel button */}
               <Button 
-                // onClick={() => this.resetState()}
-                // when click on cancel button, this.resetState() will be called and "class" in session storage will be removed if the "class" exists in the session storage.
-                onClick={() => {this.resetState(); sessionStorage.removeItem("class");}}
-                
+                onClick={() => this.resetState()}
                 inverted               
                 className="file-upload-button"
                 color='red' 
@@ -3453,81 +1901,10 @@ handleclassUserTextOnChange(e) {
               />
             </Form.Field>
             </div>
-            
           </Segment>
-            }
-            // if {fileInputElem} is undefined, then show content "hello"
-            // if {fileInputElem} is defined, then show content "world"
-            // if target is selected then make the popup disappear
-
-
-            
-            content={this.state.selectedFile == null ? "Upload your file." : "Set target, prediction type, feature types, and click the 'upload dataset' button. Please make sure that you set the class name."}
-            
-            // content={this.targetSelected  == null  ? "Set prediction type, feature types, and upload." : "Set target, prediction type, feature types, and upload."}
-            // content="Upload a csv or tsv file"??
-            position="right center"
-            
-            open = {openTrueOrFalse_file_upload_popup()}
-
-            // open = {this.state.file_upload_popup == undefined ? true : false}
-
-            onClick = { () => 
-              {
-                if (document.getElementById("file_upload_popup") != null) {
-                
-                  document.getElementById("file_upload_popup").style.cssText += ';display:none !important;';
-
-                  this.state.file_upload_popup = "none";
-
-                  sessionStorage.setItem("file_upload_popup", "true");
-                  // show the local storage on the console
-                  console.log("file_upload_popup", sessionStorage.getItem("file_upload_popup"));
-                
-                }
-              }
-            }
-           
-
-
-
-          />
-
-        
-        
-
-        
-        
         </Form>
-
-        {/* show any file icon which could be dragable on web */}
-        
-        {/* {<>      
-
-
-            <div id="mydiv">
-              <div id="mydivheader"></div>
-             
-          </div>
-
-          
-          </> 
-        }
-         */}
-
-
-         {/* {
-          // make div for dragable file icons
-          <div id="mydiv_draggable_icons">
-          </div>
-         } */}
-       
         {dataPrevTable}
       </div>
-
-      
-
-
     );
   }
 }
@@ -3538,319 +1915,3 @@ const mapStateToProps = (state) => ({
 
 export { FileUpload };
 export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);
-
-
-
-
-
-
-
-
-
-// // tooltip for "Upload Dataset" page
-// document.addEventListener("DOMContentLoaded", function(e) {
-//   const x = document.getElementById("app");
-//   // find any elements with the tag name "a" with Hello Add new"
-//   const y = x.getElementsByTagName("a");
-
-//   // show content of the first element with the tag name "a"
-//   // y.
-//   // if y lentgh is 0, then wait for 1 second and try again
-//   if (y.length == 0) {
-//     setTimeout(function() {
-    
-
-//       // original code
-//       // .tooltip {
-//       //   position: relative;
-//       //   display: inline-block;
-//       //   border-bottom: 1px dotted black;
-//       // }
-      
-//       // .tooltip .tooltiptext {
-//       //   visibility: visible;
-//       //   width: 120px;
-//       //   background-color: #555;
-//       //   color: #fff;
-//       //   text-align: center;
-//       //   border-radius: 6px;
-//       //   padding: 5px 0;
-//       //   position: absolute;
-//       //   z-index: 1;
-//       //   bottom: 125%;
-//       //   left: 50%;
-//       //   margin-left: -60px;
-//       //   opacity: 1;
-//       //   transition: opacity 0.3s;
-//       // }
-      
-//       // .tooltip .tooltiptext::after {
-//       //   visibility: visible;
-//       //   content: "";
-//       //   position: absolute;
-//       //   top: 100%;
-//       //   left: 50%;
-//       //   margin-left: -5px;
-//       //   border-width: 5px;
-//       //   border-style: solid;
-//       //   border-color: #555 transparent transparent transparent;
-//       // }
-      
-//       // .tooltip:hover .tooltiptext {
-//       //   visibility: hidden;
-//       //   opacity: 1;
-//       // }
-
-      
-
-//     var styles = `
-//     .tooltip {
-//       position: relative;
-//       display: inline-block;
-//       border-bottom: 1px dotted black;
-//     }
-    
-//     .tooltip .tooltiptext {
-//       visibility: visible;
-//       width: 120px;
-//       background-color: #555;
-//       color: #fff;
-//       text-align: center;
-//       border-radius: 6px;
-//       padding: 5px 0;
-//       position: absolute;
-//       z-index: 1;
-//       bottom: 15%;
-//       left: 110%;
-//       margin-left: 0px;
-//       opacity: 1;
-//       transition: opacity 0.3s;
-//     }
-    
-//     .tooltip .tooltiptext::after {
-//       content: "";
-//       position: absolute;
-//       top: 30%;
-//       left: -8.3%;
-//       margin-left: 0px;
-//       border-width: 5px;
-//       border-style: solid;
-//       border-color: transparent #555 transparent transparent;
-//     }
-    
-//     .tooltip:hover .tooltiptext {
-//       visibility: hidden;
-//       opacity: 0;
-// `
-
-    
-
-//     // visibility: visible;
-//     // width: 120px;
-//     // background-color: #555;
-//     // color: #fff;
-//     // text-align: center;
-//     // border-radius: 6px;
-//     // padding: 5px 0;
-//     // position: absolute;
-//     // z-index: 1;
-//     // bottom: 50%;
-//     // left: 100%;
-//     // margin-left: 0px;
-//     // opacity: 1;
-//     // transition: opacity 0.3s;
-
-
-
-//     // var styleSheet = document.createElement("style")
-    
-//     var styleSheet = document.getElementsByTagName("style")
-//     styleSheet.innerText += styles
-//     document.head.appendChild(styleSheet)
-
-//     // <div class="tooltip">Hover over me
-//         // <span class="tooltiptext">Tooltip text</span>
-//     // </div>
-
-//     // create a div with class tooltip and html content "Hover over me"
-//     var div_test = document.createElement("div");
-//     div_test.className = "tooltip";
-//     // div_test.innerHTML = "Hover over me";
-//     div_test.innerHTML = "_";
-//     // background color is white
-//     div_test.style.backgroundColor = "white";
-//     // do not show div_test
-//     // div_test.style.display = "none";
-
-//     // create a span with class tooltiptext and html content "Tooltip text"
-//     var span_test = document.createElement("span");
-//     span_test.className = "tooltiptext";
-//     span_test.innerHTML = "step 1: add new data";
-
-//     // make span_test always visible
-//     span_test.style.visibility = "visible";
-
- 
-    
- 
-    
-
-
-
-
-   
-
-
-
-
-//     // locate the span_test right of the div_test
-//     // span_test.style.left = "100%";
-//     // span_test.style.top = "0";
-//     // span_test.style.marginLeft = "5px";
-//     // span_test.style.marginTop = "-5px";
-
-
-//     // make span_test always block whever div_test is hovered or not
-//     span_test.style.display = "block";
-    
-
-//     // append span_test to div_test
-//     div_test.appendChild(span_test);
-
-
-//     // append div_test to app
-//     // document.getElementById("app").appendChild(div_test);
-
-
-
-//     // real version
-//     const x = document.getElementById("app");
-//     // find any elements with the tag name "a" with Hello Add new"
-//     const y = x.getElementsByTagName("a");
-//     // add mouse over event to the div
-
-    
-
-//     // if current url includes "upload_dataset"
-//     if (window.location.href.includes("upload_dataset")) {
-
-//       console.log("pathname")
-   
-//       console.log(window.location.href)
-
-//       // find any elements with the tag name "div" with class dropzone"
-//       const z = x.getElementsByTagName("div");
-      
-//       // find any divs with class dropzone
-//       for (var i = 0; i < z.length; i++) {
-//         if (z[i].className.includes("dropzone")) {
-//           // add .appendChild(span_test);
-//           z[i].appendChild(span_test);
-//         }
-//       }
-  
-
-      
-      
-//     }
-    
-
-
-//   }, 1000);
-//   } 
- 
-// });
-
-
-
-
-
-// tooltip for "Upload Dataset" page
-// document.addEventListener("DOMContentLoaded", function(e) {
-
-//   // setTimeout(() => {
-//   //   //wait until the section is loaded
-//   //   const section = document.getElementsByTagName("section")[0];
-  
-//   //         if (section) {
-//   //           section.addEventListener("mouseover", function( event ) {
-//   //         // console.log("mouseover on dropzone");
-
-//   //         // document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//   //         if (document.getElementById("span_upload_dataset").style.visibility == "hidden")
-//   //         {
-//   //           document.getElementById("span_upload_dataset").style.visibility = "visible";
-//   //           console.log("document.getElementById(span_upload_dataset).style.visibility = visible");
-//   //         }
-//   //         else
-//   //         {
-//   //           document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//   //           console.log("document.getElementById(span_upload_dataset).style.visibility = hidden");
-//   //         }
-          
-//   //         // span_test.style.visibility = "hidden";
-        
-//   //       }, false);
-//   //     }
-//   // }, 1000); 
-
-//   //wait until the section is loaded
-
-
-
-//       // const section = document.getElementsByTagName("section")[0];
-      
-//       // // y[0] mouseover event
-      
-//       // section.addEventListener("mouseover", function( event ) {
-//       //   // console.log("mouseover on dropzone");
-
-//       //   // document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//       //   if (document.getElementById("span_upload_dataset").style.visibility == "hidden")
-//       //   {
-//       //     document.getElementById("span_upload_dataset").style.visibility = "visible";
-//       //     console.log("document.getElementById(span_upload_dataset).style.visibility = visible");
-//       //   }
-//       //   else
-//       //   {
-//       //     document.getElementById("span_upload_dataset").style.visibility = "hidden";
-//       //     console.log("document.getElementById(span_upload_dataset).style.visibility = hidden");
-//       //   }
-        
-//       //   // span_test.style.visibility = "hidden";
-      
-//       // } , false);
- 
-// });
-
-
-
-
-
-
-// document.addEventListener("DOMContentLoaded", function(e) {
-  
- 
-  
-//     setTimeout(function() {
-    
-
-      
-
-    
-
-//    var preloaded_data_1 = document.getElementById("preloaded_data_1");
-   
-//   //  add to the document.getElementById("mydiv")
-//    document.getElementById("mydivheader").appendChild(preloaded_data_1);
-
-    
-
-
-    
-
-
-//   }, 500);
-  
- 
-// });

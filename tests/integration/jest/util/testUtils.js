@@ -37,8 +37,6 @@ export const DATASET_PATH = '/appsrc/data/datasets/test/integration'  // dataset
 export const NUM_AI_RECS = 1
 //export const NUM_AI_RECS = os.environ['AI_NUMRECOMMEND']
 export const JEST_TIMEOUT = 50000
-// export const JEST_TIMEOUT = 100000
-// export const JEST_TIMEOUT = 10000000
 
 // hacky delay
 export const delay = (ms) => {
