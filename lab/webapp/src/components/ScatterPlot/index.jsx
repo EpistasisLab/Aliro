@@ -43,8 +43,8 @@ class ScatterPlot extends Component {
   // chartColor={chartColor}
 
   componentDidMount() {
-    const { Points, Labels, chartKey, chartColor } = this.props;
-    Points && Labels && this.renderChart(Points, Labels, chartKey, chartColor);
+    const { Points, Labels, chartKey, chartColor, dataname } = this.props;
+    Points && Labels && dataname && this.renderChart(Points, Labels, chartKey, chartColor, dataname);
   }
 /*
 colors: {
@@ -58,12 +58,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
   // renderChart(expList, chartKey, chartColor, min, max) {
-  renderChart(Points, Labels, chartKey, chartColor) {
+  renderChart(Points, Labels, chartKey, chartColor, dataname) {
+
+    console.log("dataname in scatterplot: ", dataname);
 
     // window.console.log('here in renderChart for ScatterPlot');
     // window.console.log('Points: ', Points);
-    // window.console.log('Labels: ', Labels);
+    window.console.log('Labels: ', Labels);
     // window.console.log('chartKey: ', chartKey);
+    
+
 
 
 
@@ -108,42 +112,136 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
  
     var labelSetLength = labelSet.length;
 
+    console.log("labelSetLength: ", labelSetLength);
+
    
     var columns =[];
     var xs = {};
 
-    for (var i = 0; i < labelSetLength; i++) {
-      // create x and y array for each label
-      var xArray = [];
-      var yArray = [];
-      // add labelSet[i] to xArray and yArray
+    // original code
+    // for (var i = 0; i < labelSetLength; i++) {
+    //   // create x and y array for each label
+    //   var xArray = [];
+    //   var yArray = [];
+    //   // add labelSet[i] to xArray and yArray
 
-      // convert labelSet[i] to string
-
-
-      xArray.push(labelSet[i].toString()+'_x');
-      // yArray.push(labelSet[i].toString()+'_y');
-      // yArray.push(labelSet[i].toString());
-      yArray.push('class_'+labelSet[i].toString());
+    //   xArray.push(labelSet[i].toString()+'_x');
+    //   yArray.push('class_'+labelSet[i].toString());
 
 
-      // xs[labelSet[i].toString()+'_y'] = labelSet[i].toString()+'_x';
-      // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      // xs[labelSet[i]] = labelSet[i]+'_x';
+    //   xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+    //   console.log("xs: ", xs);
 
-      for (var j = 0; j < Points.length; j++) {
-        if (Labels[j] == labelSet[i]) {
-          xArray.push(Points[j][0]);
-          yArray.push(Points[j][1]);
+
+    //   for (var j = 0; j < Points.length; j++) {
+    //     if (Labels[j] == labelSet[i]) {
+    //       xArray.push(Points[j][0]);
+    //       yArray.push(Points[j][1]);
+    //     }
+    //   }
+
+    //   columns.push(xArray);
+    //   columns.push(yArray);
+    // }
+
+
+
+    // another
+    // get class_and_file from session storage
+    var class_and_file = sessionStorage.getItem('class_and_file');
+
+    // console.log("class_and_file in scatter plot: ", class_and_file);
+
+    // split class_and_file by *
+    var class_and_file_split_star = class_and_file.split('*');
+
+    // find element in class_and_file_split_star that contains dataname
+    // find element which has dataname
+    const class_and_file_split_star_find = class_and_file_split_star.find((element) => element.includes(dataname))
+
+
+    // split class_and_file by &
+    var class_and_file = class_and_file_split_star_find.split('&');
+
+    // console.log("class_and_file after split: ", class_and_file);
+    
+    // last element in class_and_file
+    var fileName = class_and_file[class_and_file.length-1];
+
+    // split class_and_file by ,
+    var classes = class_and_file[0].split(',');
+
+    console.log("classes: ", classes);
+
+    // sort classes
+    // classes.sort();
+    // console.log("classes after sort: ", classes);
+
+    // get the length of classes
+    var classesLength = classes.length;
+    console.log("classesLength: ", classesLength);
+
+
+    console.log('labelSet', labelSet);
+    // sort labelSet
+    labelSet.sort();
+
+    console.log('labelSet after sort', labelSet);
+
+
+    if (dataname === fileName) {
+
+      for (var i = 0; i < classesLength; i++) {
+        // create x and y array for each label
+        var xArray = [];
+        var yArray = [];
+        // add labelSet[i] to xArray and yArray
+        // console.log('j-test', i);
+
+        // convert labelSet[j] to string
+        var labelSet_i = labelSet[i].toString();
+        // console.log("classes[j]: ", classes[i]);
+        
+        // check whether classes[j] includes labelSet_j
+        if (classes[i].includes(labelSet_i)) {
+          // split classes[j] by :
+          var class_and_label = classes[i].split(':');
+          // get label
+          xArray.push(class_and_label[1]+'_x');
+          yArray.push('class_'+class_and_label[1]);
+
+          xs['class_'+class_and_label[1]] = class_and_label[1]+'_x';
+
+          for (var j = 0; j < Points.length; j++) {
+            if (Labels[j] == labelSet[i]) {
+              xArray.push(Points[j][0]);
+              yArray.push(Points[j][1]);
+            }
+          }
+    
+          columns.push(xArray);
+          columns.push(yArray);
+          
         }
+
+        
+
+
+        
+
+
       }
+  }
 
-      columns.push(xArray);
-      columns.push(yArray);
-    }
 
-    // console.log('xs: ', xs);
+
+
+
+
+
+
+
+    console.log('xs: ', xs);
     // Sort xs by the key
     var xsSorted = {};
     Object.keys(xs).sort().forEach(function(key) {

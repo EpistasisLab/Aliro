@@ -122,7 +122,7 @@ class Datasets extends Component {
     return (
       
       <div>
-        {/*<FileUpload />*/}
+        {/* <FileUpload /> */}
         <SceneHeader header="Datasets" btnText="Add new" btnIcon="plus" linkText='/upload_datasets' />
         
 

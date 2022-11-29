@@ -62,7 +62,7 @@ function Navbar({ preferences }) {
             <Menu.Item name="Datasets">
               <Icon name="file text outline" />
               <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
-                {'Datasets!!!'}
+                {'Datasets'}
               </MediaQuery>
             </Menu.Item>
           </Link>

@@ -117,25 +117,10 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
     var chart = c3.generate({
       bindto: `.${chartKey}`,
-      // data: {
-      //     columns: [
-              
-      //         expList
-      //     ],
-          
-
-      //     color: function(color, d){
-      //       var lst = ['#ffebee', '#ffcdd2', '#ef9a9a', '#e57373', '#ef5350', '#f44336', '#1b5e20', '#388e3c', '#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
-      //       return(lst[d.index]);
-      //     },
-
-      //     type: 'bar',
-          
-      // },
+      
 
       data: {
-        // json: [{label: "<-10", val:0},{label: "<-8",val:0},{label: "<-6",val:3},{label: "<-4",val:1},{label: "<-2",val:15},{label: "<0",val:40},{label: "<2",val:82},{label: "<4",val:68},{label: "<6",val:7},{label: "<8",val:6},{label: "<10",val:3},{label: ">10",val:1}],
-
+        
         json: tempjson,
 
         
