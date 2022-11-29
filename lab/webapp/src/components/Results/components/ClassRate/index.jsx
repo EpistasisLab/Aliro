@@ -55,7 +55,7 @@ function foldcheck(fold) {
   return [iconname, iconcolor, iconmsg];
 }
 
-function ClassRate({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type }) {
+function ClassRate({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type, dataName }) {
   const getCardContent = () => {
     if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
       if (scoreName.includes('AUC') ) {
@@ -86,6 +86,7 @@ function ClassRate({ scoreName, scoreValue, chartKey, chartColor, scoreValueList
         chartColor={chartColor}
         min={0.5}
         max={1.0}
+        dataname={dataName}
       />
       
 

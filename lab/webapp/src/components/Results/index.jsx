@@ -48,7 +48,6 @@ import TSNE from './components/TSNE';
 import TSNEJSON from './components/TSNEJSON';
 import RegFigure from './components/RegFigure';
 import Score from './components/Score';
-import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 import ClassRate from './components/ClassRate';
@@ -276,6 +275,15 @@ class Results extends Component {
                   header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
                   subheader={`Experiment: #${experiment.data._id}`}
                 />
+
+                {/*  */}
+                {/* <form>
+                  <label>
+                    Name:
+                    <input type="text" name="name" />
+                  </label>
+                  <input type="submit" value="Submit" />
+                </form> */}
               </Grid.Column>
               <Grid.Column>
                 <Menu compact inverted floated='right' color='grey'>
@@ -355,6 +363,7 @@ class Results extends Component {
                   chartKey="pca_2d"
                   chartColor="#55D6BE"
                   type="classification"
+                  dataName={experiment.data.dataset_name}
                 />
                 {/* <TSNE file={tsne}/> */}
                 {/* <TSNEJSON file={tsne_json}/> */}
@@ -367,13 +376,7 @@ class Results extends Component {
                 /> */}
               </Grid.Column>
               <Grid.Column>
-                {/* <NoScore
-                  scoreName="Class Rate"
-                  scoreValueList={class_percentage}
-                  chartKey="test"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */}
+                
 
                 <ClassRate
                   scoreName="Class Rate"
@@ -381,6 +384,8 @@ class Results extends Component {
                   chartKey="test"
                   chartColor="#55D6BE"
                   type="classification"
+                  // pass current data name in this experiment
+                  dataName={experiment.data.dataset_name}
                 />
                 {/* <InteractiveConfusionMatrix /> */}
                 <ConfusionMatrix file={confusionMatrix} />
@@ -396,6 +401,7 @@ class Results extends Component {
                   chartKey="tsne_2d"
                   chartColor="#55D6BE"
                   type="classification"
+                  dataName={experiment.data.dataset_name}
                 />
               </Grid.Column>
               <Grid.Column>
