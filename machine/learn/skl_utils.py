@@ -491,19 +491,23 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        plot_confusion_matrix(tmpdir,
-                              _id,
-                              features,
-                              target,
-                              model.classes_,
-                              cv_scores,
-                              figure_export)
-        # plot pca
+        # this
+        # plot_confusion_matrix(tmpdir,
+        #                       _id,
+        #                       features,
+        #                       target,
+        #                       model.classes_,
+        #                       cv_scores,
+        #                       figure_export)
+       
+        # this
+        # plot_pca_2d(tmpdir,_id,features,target)
         
-        plot_pca_2d(tmpdir,_id,features,target)
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
-        plot_tsne(tmpdir,_id,features,target)
+        
+        # this
+        # plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
