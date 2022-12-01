@@ -29,7 +29,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 var os = require("os");
 
 
-export const EXPECTED_MACHINE_ALGO_COUNT = 12; // number of algorithms registered with a machine instance
+// export const EXPECTED_MACHINE_ALGO_COUNT = 12; // number of algorithms registered with a machine instance
+
+export const EXPECTED_MACHINE_ALGO_COUNT = 15; // number of algorithms registered with a machine instance
 export const MIN_EXPECTED_LAB_ALGO_COUNT = 10; // min number of algorithms registered with in the server
 export const MIN_EXPECTED_DATASET_COUNT = 5; // min number of datasets registered with the lab server, more may be added w. tests
 
