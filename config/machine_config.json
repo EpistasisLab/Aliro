@@ -1,3 +1,6 @@
+
+
+
 {
   "algorithms": ["DecisionTreeClassifier",
                 "GradientBoostingClassifier",
@@ -10,5 +13,14 @@
                 "SVR",
                 "KNeighborsRegressor",
                 "KernelRidge",
-                "RandomForestRegressor"]
+                "RandomForestRegressor",
+                "AdaBoostClassifier"
+                ,"KMeans"
+                ,"GaussianNB"
+                ,"MultinomialNB"
+                ,"BernoulliNB"
+                ,"MLPClassifier"
+              ]
 }
+
+
