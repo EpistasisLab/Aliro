@@ -370,7 +370,7 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
-            plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+            # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
 
         
@@ -501,7 +501,7 @@ def generate_results(model, input_data,
         #                       figure_export)
        
         # this
-        # plot_pca_2d(tmpdir,_id,features,target)
+        plot_pca_2d(tmpdir,_id,features,target)
         
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
