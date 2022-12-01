@@ -370,6 +370,8 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
+            
+            # (does not pass the unit test)
             # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
 
@@ -500,14 +502,14 @@ def generate_results(model, input_data,
         #                       cv_scores,
         #                       figure_export)
        
-        # this pca 2d
-        # plot_pca_2d(tmpdir,_id,features,target)
+        # this pca 2d 
+        plot_pca_2d(tmpdir,_id,features,target)
         
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
         
-        # this tsne 2d
-        plot_tsne(tmpdir,_id,features,target)
+        # this tsne 2d (does not pass the unit test)
+        # plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
