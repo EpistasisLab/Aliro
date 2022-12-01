@@ -500,13 +500,13 @@ def generate_results(model, input_data,
         #                       cv_scores,
         #                       figure_export)
        
-        # this
-        plot_pca_2d(tmpdir,_id,features,target)
+        # this pca 2d
+        # plot_pca_2d(tmpdir,_id,features,target)
         
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
         
-        # this
+        # this tsne 2d
         plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
