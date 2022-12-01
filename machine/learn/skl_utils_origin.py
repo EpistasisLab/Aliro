@@ -46,11 +46,6 @@ import shap
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-from sklearn import decomposition
-import matplotlib.colors as mcolors
-from matplotlib.patches import Patch
-from sklearn.manifold import TSNE
-
 mpl.use('Agg')
 
 # if system environment allows to export figures
@@ -241,22 +236,6 @@ def generate_results(model, input_data,
     num_classes = input_data[target_name].unique().shape[0]
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
-   
-    target_arr =  np.array(target)
-    len_target=len(target_arr)
-    classes = list(set(target))
-
-    class_perc={}
-
-    for OneClass in classes:
-        occ = np.count_nonzero(target_arr==OneClass)
-        class_perc["class_"+str(OneClass)]= occ/len_target
-    
-    
-    # show percentage of each class 
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="class_percentage.json", content=class_perc)
-    
 
     features, target = check_X_y(
         features, target, dtype=None, order="C", force_all_finite=True)
@@ -308,19 +287,11 @@ def generate_results(model, input_data,
             scores['roc_auc_score'] = 'not supported for multiclass'
             scores['train_roc_auc_score'] = 'not supported for multiclass'
         else:
-            
-            # https://en.wikipedia.org/wiki/Confusion_matrix
-            # scoring = ["balanced_accuracy",
-            #            "precision",
-            #            "recall",
-            #            "f1",
-            #            "roc_auc"]
             scoring = ["balanced_accuracy",
                        "precision",
                        "recall",
                        "f1",
                        "roc_auc"]
-
 
         metric = "accuracy"
     else:
@@ -334,8 +305,6 @@ def generate_results(model, input_data,
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         if param_grid:
-            print("param_grid")
-            
             if isinstance(model, Pipeline):
                 parameters = {}
                 for key, val in param_grid.items():
@@ -352,7 +321,6 @@ def generate_results(model, input_data,
                                verbose=0,
                                error_score=-float('inf'),
                                return_train_score=True)
-            
             clf.fit(features, target)
             cv_results = clf.cv_results_
             # rename params name from pipeline object
@@ -369,15 +337,7 @@ def generate_results(model, input_data,
             fmt_result.to_csv(fmt_result_file, index=False)
             model = clf.best_estimator_
         else:
-            print("param_grid else")
-            #plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
-
-        
-
-
-        # # plot learning curve
-        # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
 
         # computing cross-validated metrics
         cv_scores = cross_validate(
@@ -389,8 +349,6 @@ def generate_results(model, input_data,
             return_train_score=True,
             return_estimator=True
         )
-    
-
 
     for s in scoring:
         train_scores = cv_scores['train_' + s]
@@ -435,41 +393,6 @@ def generate_results(model, input_data,
         'feature_importance_type': imp_score_type
     }
 
-    print("feature_importances",feature_importances)
-
-    top_feature_importances={}
-    # if size of feature_importances is greater than 10, then
-    # only top 10 features whose feature_importances are greater than 0 are returned
-    if len(feature_importances['feature_importances']) > 10:
-        for i in range(len(feature_importances['feature_importances'])):
-            if feature_importances['feature_importances'][i] >= 0:
-                top_feature_importances[feature_importances['feature_names'][i]] = feature_importances['feature_importances'][i]
-    
-        # sort the dictionary in descending order of feature_importances
-        top_feature_importances = dict(sorted(top_feature_importances.items(), key=lambda item: item[1], reverse=True))
-        # get top 10 features
-        top_feature_importances = dict(list(top_feature_importances.items())[:10])
-
-        # print("top_feature_importances",top_feature_importances)
-
-        # add  'feature_importance_type': imp_score_type to top_feature_importances
-        # top_feature_importances['feature_importance_type'] = imp_score_type
-
-        
-        # make top_feature_importances format like feature_importances
-        top_feature_importances = {
-            'feature_names': list(top_feature_importances.keys()),
-            'feature_importances': list(top_feature_importances.values()),
-            'feature_importance_type': imp_score_type
-        }
-
-        # print("new_top_feature_importances",top_feature_importances)
-
-        feature_importances = top_feature_importances
-         
-
-
-
     save_json_fmt(
         outdir=tmpdir,
         _id=_id,
@@ -491,23 +414,13 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        # this
-        # plot_confusion_matrix(tmpdir,
-        #                       _id,
-        #                       features,
-        #                       target,
-        #                       model.classes_,
-        #                       cv_scores,
-        #                       figure_export)
-       
-        # this
-        # plot_pca_2d(tmpdir,_id,features,target)
-        
-        # plot_pca_3d(tmpdir,_id,features,target)
-        # plot_pca_3d_iris(tmpdir,_id,features,target)
-        
-        # this
-        # plot_tsne(tmpdir,_id,features,target)
+        plot_confusion_matrix(tmpdir,
+                              _id,
+                              features,
+                              target,
+                              model.classes_,
+                              cv_scores,
+                              figure_export)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -539,9 +452,6 @@ def generate_results(model, input_data,
                 target,
                 cv_scores,
                 figure_export)
-
-
-
     else:  # regression
         if figure_export:
             plot_cv_pred(tmpdir, _id, features, target, cv_scores)
@@ -1085,443 +995,6 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.close()
     return top_features, indices
 
-def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
-
-    from sklearn.model_selection import learning_curve
-    from matplotlib import pyplot as plt
-    import numpy as np
-
-    
-    features = np.array(features)
-
-    target = np.array(target)
-    target[target == -1] = 0
-    
-
-
-    train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(model,features,target,None, np.linspace(0.1, 1.0, 5), cv,return_times=True)
-    
-    plt.xlabel("Training examples")
-    plt.ylabel("Score")
-    plt.ylim([-0.05, 1.05])
-
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-
-    plt.grid()
-
-    # print('train_scores_mean',train_scores_mean)
-    # print('test_scores_mean',test_scores_mean)
-    # print('train_sizes',train_sizes)
-
-    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
-                     train_scores_mean + train_scores_std, alpha=0.1,
-                     color="r")
-    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
-                     test_scores_mean + test_scores_std, alpha=0.1, color="b")
-
-
-    
-    plt.plot(train_sizes,np.mean(train_scores,axis=1),'r',label=r'Training score')
-    plt.plot(train_sizes,np.mean(test_scores,axis=1),'b',label=r'Cross-validation score')
-    
-    plt.title('Learning curve')
-    
-    plt.legend(loc='best')
-    # plt.legend(loc="lower right")
-    plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
-
-  
-    plt.close()
-
-    # train_scores_mean = np.mean(train_scores, axis=1)
-    # train_scores_std = np.std(train_scores, axis=1)
-    # test_scores_mean = np.mean(test_scores, axis=1)
-    # test_scores_std = np.std(test_scores, axis=1)
-
-    learning_curve_dict = {
-        'train_sizes':train_sizes.tolist(),
-        'train_scores': train_scores.tolist(),
-        'test_scores': test_scores.tolist()
-        
-    }
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="learning_curve.json", content=learning_curve_dict)
-
-
-def plot_pca_2d(tmpdir,_id,features,target):
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-
-
-    # from sklearn import decomposition
-    # import matplotlib.colors as mcolors
-    # from matplotlib.patches import Patch
-
-
-    # from sklearn import datasets
-
-    # np.random.seed(5)
-
-    # iris = datasets.load_iris()
-    # print(features)
-    X = np.array(features)
-    y = np.array(target)
-    
-    print(set(y))
-
-
-
-
-
-    plt.cla()
-    pca = decomposition.PCA(n_components=2)
-    # pca = decomposition.PCA(n_components=2)
-    pca.fit(X)
-    X = pca.transform(X)
-
-    # plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap(["black", "green"]))
-
-    # plt.show()
-    
-    
-    # version 1 
-    # colors = np.array(["black", "green"])
-    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
-
-
-
-    # version 2
-    num_classes = len(set(y))
-    # generate the number of colors equal to the number of classes
-    colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
-
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
-    # plot the legend where the colors are mapped to the classes
-    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
-
-    # cb = plt.colorbar()
-    # loc = np.arange(0,max(label),max(label)/float(len(colors)))
-    # cb.set_ticks(loc)
-    # cb.set_ticklabels(colors)
-
-    
-
-   
-
-    # write x axis as pc1 and y axis as pc2
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
-
-
-
-
-    # print("X")
-    # print(X)
-
-
-    # ax.w_xaxis.set_ticklabels([])
-    # ax.w_yaxis.set_ticklabels([])
-    # ax.w_zaxis.set_ticklabels([])
-
-    # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
-
-
-
-    path = tmpdir + _id + '/pcaJson_' + _id + '.json'
-    import json
-    
-
-
-    # save X and y to json file
-    pca_dict = {
-        'X_pca': X.tolist(),
-        'y_pca': y.tolist()
-    }
-
-    # with open(tmpdir + _id + '/p-c-a-Json_' + _id + '.json', 'w') as f:
-    #     json.dump(pca_dict, f)
-
-    # with open(tmpdir + _id + '/aaachoi_' + _id + '.json', 'w') as f:
-    #     json.dump(pca_dict, f)
-    
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="pca-json.json", content=pca_dict)
-
-    # 
-    # save pca_dict to json file with the path
-
-
-def plot_pca_3d(tmpdir,_id,features,target):
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-
-
-    
-    # from sklearn import datasets
-
-    # np.random.seed(5)
-
-    # iris = datasets.load_iris()
-    # print(features)
-    X = np.array(features)
-    y = np.array(target)
-    y[y == -1] = 0
-
-
-    # print(X)
-    # print(y)
-
-
-
-    fig = plt.figure(1, figsize=(4, 3))
-    plt.clf()
-
-    ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
-    # ax = fig.add_subplot(111, projection="2d", elev=48, azim=134)
-    ax.set_position([0, 0, 0.95, 1])
-
-
-    plt.cla()
-    pca = decomposition.PCA(n_components=3)
-    # pca = decomposition.PCA(n_components=2)
-    pca.fit(X)
-    X = pca.transform(X)
-
-    # for name, label in [("Setosa", 0), ("Versicolour", 1), ("Virginica", 2)]:
-    #     ax.text3D(
-    #         X[y == label, 0].mean(),
-    #         X[y == label, 1].mean() + 1.5,
-    #         X[y == label, 2].mean(),
-    #         name,
-    #         horizontalalignment="center",
-    #         bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
-    #     )
-
-
-    classes_y=list(set(y))
-    for each_classes_y in classes_y:
-        name_label=(str(each_classes_y), each_classes_y)
-        name = name_label[0]
-        label = name_label[1]
-        ax.text3D(
-            X[y == label, 0].mean(),
-            # X[y == label, 1].mean() + 1.5,
-            X[y == label, 1].mean() + 1.0,
-            X[y == label, 2].mean(),
-            name,
-            horizontalalignment="center",
-            bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
-        )
-
-    # for name, label in [("0", 0), ("1", 1)]:
-    #     ax.text3D(
-    #         X[y == label, 0].mean(),
-    #         # X[y == label, 1].mean() + 1.5,
-    #         X[y == label, 1].mean() + 1.0,
-    #         X[y == label, 2].mean(),
-    #         name,
-    #         horizontalalignment="center",
-    #         bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
-    #     )
-    
-
-    # Reorder the labels to have colors matching the cluster results
-    # y = np.choose(y, [1, 2, 0]).astype(float)
-    # ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
-
-    # y = np.choose(y, [0, 1]).astype(float)
-    # convert y type to float
-    y = y.astype(float)
-
-    # y = np.choose(y, [0, 1]).astype(float)
-    print(y)
-
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
-    # ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y)
-    # show which color is which class label based on scatter plot
-
-
-
-
-
-
-    print("X")
-    print(X)
-
-    # write x axis as pc1 and y axis as pc2
-    ax.set_xlabel('PC1')
-    ax.set_ylabel('PC2')
-    ax.set_zlabel('PC3')
-    ax.w_xaxis.set_ticklabels([])
-    ax.w_yaxis.set_ticklabels([])
-    ax.w_zaxis.set_ticklabels([])
-
-    # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
-
-
-
-def plot_pca_3d_iris(tmpdir,_id,features,target):
-
-
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-
-
-    from sklearn import decomposition
-    from sklearn import datasets
-
-    np.random.seed(5)
-
-    iris = datasets.load_iris()
-    X = iris.data
-    y = iris.target
-
-    # print(X)
-
-    # print(y)
-
-
-
-    # print(X)
-    # print(y)
-
-
-
-    fig = plt.figure(1, figsize=(4, 3))
-    plt.clf()
-
-    ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
-    # ax = fig.add_subplot(111, projection="2d", elev=48, azim=134)
-    ax.set_position([0, 0, 0.95, 1])
-
-
-    plt.cla()
-    pca = decomposition.PCA(n_components=3)
-    # pca = decomposition.PCA(n_components=2)
-    pca.fit(X)
-    X = pca.transform(X)
-
-    for name, label in [("Setosa", 0), ("Versicolour", 1), ("Virginica", 2)]:
-        ax.text3D(
-            X[y == label, 0].mean(),
-            X[y == label, 1].mean() + 1.5,
-            X[y == label, 2].mean(),
-            name,
-            horizontalalignment="center",
-            bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
-        )
-
-
-    # Reorder the labels to have colors matching the cluster results
-    y = np.choose(y, [1, 2, 0]).astype(float)
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
-
-   
-
-
-    ax.w_xaxis.set_ticklabels([])
-    ax.w_yaxis.set_ticklabels([])
-    ax.w_zaxis.set_ticklabels([])
-
-    # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
-
-def plot_tsne(tmpdir,_id,features,target):
-
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-    # from sklearn.manifold import TSNE
-
-    # X = np.array([[1, 1], [2, 1], [1, 0],
-    #               [4, 7], [3, 5], [3, 6]])
-    # y = np.array([0, 0, 0, 1, 1, 1])
-
-    # tsne = TSNE(n_components=2, random_state=0)
-    # X_2d = tsne.fit_transform(X)
-
-    # plt.scatter(X_2d[:, 0], X_2d[:, 1])
-    # plt.show()
-
- 
-
-    # X = np.array([[1, 1], [2, 1], [1, 0],
-    #               [4, 7], [3, 5], [3, 6]])
-    # y = np.array([0, 0, 0, 1, 1, 1])
-
-    X = features
-    y = target
-
-    # print(X)
-    # print(y)
-
-    tsne = TSNE(n_components=2, verbose=1, random_state=123)
-    X_2d = tsne.fit_transform(X)
-
-    # df = pd.DataFrame()
-    # df["y"] = y
-    # df["comp-1"] = X_2d[:,0]
-    # df["comp-2"] = X_2d[:,1]
-
-    # version 2
-    num_classes = len(set(y))
-    # generate the number of colors equal to the number of classes
-    colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
-
-    plt.scatter(X_2d[:,0], X_2d[:,1], c=y, cmap=mcolors.ListedColormap(colors))
-    # plot the legend where the colors are mapped to the classes
-    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
-
-
-    # write x axis as pc1 and y axis as pc2
-    plt.xlabel('comp-1')
-    plt.ylabel('comp-2')
-
-
-
-    # plt.show()
-    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
-    plt.close()
-
-
-
-
-
-    # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
-    import json
-    
-
-
-    # save X and y to json file
-    tsne_dict = {
-        'X_tsne': X_2d.tolist(),
-        'y_tsne': y.tolist()
-    }
-
-    # print('tsne_dict',tsne_dict)
-
-    # with open(tmpdir + _id + '/t-sne-Json_' + _id + '.json', 'w') as f:
-    #     json.dump(tsne_dict, f)
-    # with open(tmpdir + _id + '/wwwchoi_' + _id + '.json', 'w') as f:
-    #     json.dump(tsne_dict, f)
-
-    save_json_fmt(outdir=tmpdir, _id=_id,
-                  fname="tsne-json.json", content=tsne_dict)
-        
-    # save_json_fmt(outdir=tmpdir, _id=_id,
-    #               fname="value.json", content=metrics_dict)
-
- 
- 
-
-    
 
 def plot_dot_plot(tmpdir, _id, features,
                   target,
@@ -1897,5 +1370,3 @@ predict_target = model.predict(input_data.values)
 """
 
     return exported_codes_1, exported_codes_2
-
-
