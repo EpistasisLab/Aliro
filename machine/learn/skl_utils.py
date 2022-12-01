@@ -376,7 +376,7 @@ def generate_results(model, input_data,
         
 
 
-        # plot learning curve
+        # # plot learning curve
         # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
 
         # computing cross-validated metrics

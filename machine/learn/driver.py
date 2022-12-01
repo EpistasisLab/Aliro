@@ -50,6 +50,12 @@ def main(args, param_grid={}):
     exp = Experiment(args)
     input_data, data_info = exp.get_input()
     model, method_type, encoding_strategy = exp.get_model()
+    
+    print("args[grid_search]")
+    print(args['grid_search'])
+
+    
+
     if not args['grid_search']:
         param_grid = {}
     if method_type != data_info["prediction_type"]:
@@ -59,6 +65,12 @@ def main(args, param_grid={}):
             "but method type is {}".format(
                 data_info["prediction_type"],
                 method_type))
+    
+    print("param_grid_gene")
+    print(param_grid)
+    # svd 일때 param grid 차있나?
+    
+
     generate_results(model=model,
                      input_data=input_data,
                      tmpdir=exp.tmpdir,
@@ -74,5 +86,18 @@ def main(args, param_grid={}):
 
 
 if __name__ == "__main__":
-    args, param_grid = parse_args()
+    
+    args, param_grid = parse_args()    
     main(args, param_grid)
+
+
+
+    
+
+    
+    # # args
+    # args= {'method': 'DecisionTreeClassifier', '_id': '631a1ca11b74ba0031813fbd', 'grid_search': False, 'criterion': 'gini', 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'min_weight_fraction_leaf': 0.0, 'max_features': None}
+    # # param_grid
+    # param_grid = {'n_estimators': [100], 'learning_rate': [0.01, 0.1, 1.0], 'max_depth': [1, 3, 5, 10], 'min_child_weight': [1, 3, 5, 10, 20], 'subsample': [0.5, 1.0]}
+    
+    # main(args, param_grid)

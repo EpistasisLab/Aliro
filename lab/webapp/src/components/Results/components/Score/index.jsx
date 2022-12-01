@@ -30,6 +30,7 @@ import PropTypes from 'prop-types';
 import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
 import GaugeAll from '../../../GaugeAll';
+import DonutChart from '../../../DonutChart';
 import BarPlot from '../../../BarPlot';
 import { Header, Icon, Popup} from 'semantic-ui-react';
 /**
@@ -69,6 +70,7 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
     } else if (scoreValueList && type == "classification") {
 
       return (
+
         <GaugeAll
           expList={scoreValueList}
           chartKey={chartKey}
@@ -76,7 +78,19 @@ function Score({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, ty
           min={0.5}
           max={1.0}
         />
+        
+      
+      // <DonutChart
+      //   expList={scoreValueList}
+      //   chartKey={chartKey}
+      //   chartColor={chartColor}
+      //   min={0.5}
+      //   max={1.0}
+      // />
+      
+
       );
+      
     } else if (scoreValueList && type == "r2_or_vaf") {
       return (
         <GaugeAll

@@ -147,12 +147,49 @@ class SurpriseRecommender(BaseRecommender):
         """
         # update trained dataset models and hash table
         super().update(results_data, results_mf, source)
+
+        print('results_data', results_data)
+        print('results_mf', results_mf)
+        print('source', source)
+
         # updates self.results_df and self.trainset
         self._update_training_data(results_data, shuffle=True)
         # check whether the set train data matches the pickled recommender's
         # training data.
         rowHashes = hash_pandas_object(self.results_df).values
+
+        
+        
+        # test
+        data = [10,20,30,40,50,60]
+        df = pd.DataFrame(data, columns=['Numbers'])
+        test_df=hash_pandas_object(df).values
+
+        print('test_df', test_df)
+
+
+
+        print('self.results_df', self.results_df)
+
+        print('rowHashes', rowHashes)
         newHash = hashlib.sha256(rowHashes).hexdigest()
+
+        # for rowHash in rowHashes:
+        #     print('rowHash: ', rowHash)
+
+        print('newHash', newHash)
+
+        # test 
+        test_newHash = hashlib.sha256(b"Nobody inspects the spammish repetition").hexdigest()
+        print('test_newHash: ', test_newHash)
+        
+        # temporary fix for pickled recommender's not having a hash
+        hasattr(self, 'results_df_hash')
+
+        print('self.results_df_hash', self.results_df_hash)
+
+        print('newHash == self.results_df_hash',newHash == self.results_df_hash)
+        
         if hasattr(self, 'results_df_hash'):
             if newHash == self.results_df_hash:
                 logger.info('results_df hashes match')
