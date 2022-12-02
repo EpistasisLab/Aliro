@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -39,7 +39,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 class RandomRecommender(BaseRecommender):
-    """Penn AI random recommender.
+    """Aliro random recommender.
 
     Recommends random machine learning algorithms and parameters from the possible 
     algorithms fetched from the server.

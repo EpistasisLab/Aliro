@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -51,7 +51,7 @@ pickle_file = 'model_5bff04d5758a07002ce3b3bf.pkl'
 dataset = 'iris.csv'
 # target column name
 target_column = 'class'
-# seed to be used for train_test_split (default in PennAI is 42)
+# seed to be used for train_test_split (default in Aliro is 42)
 seed = 42
 
 # Balanced accuracy below was described in [Urbanowicz2015]: the average of sensitivity and specificity is computed for each class and then averaged over total number of classes.
@@ -81,7 +81,7 @@ model = pickle_model['model']
 # read input data
 input_data = pd.read_csv(dataset, sep=None, engine='python', dtype=np.float64)
 
-# Application 1: reproducing training score and testing score from PennAI
+# Application 1: reproducing training score and testing score from Aliro
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset

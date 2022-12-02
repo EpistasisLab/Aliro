@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -36,7 +36,11 @@ import {
 } from './actions';
 import selected from './selected';
 import { formatDataset, formatAlgorithm } from 'utils/formatter';
+import experiment from './selected';
 
+/**
+ * List/array of all experiments
+ */
 const list = (state = [], action) => {
   switch(action.type) {
     case FETCH_EXPERIMENTS_SUCCESS:
@@ -54,6 +58,28 @@ const list = (state = [], action) => {
       return state; 
   }
 };
+
+/** 
+ * Parse the array of experiments and group by algorithm type.
+ * Returns an object, with each key named for an algorithm and
+ * holding an array of experiments that use that algorithm.
+*/
+const byAlgorithm = (state = {}, action) => {
+  switch(action.type) {
+    case FETCH_EXPERIMENTS_SUCCESS:
+      //payload is an array of experiment objects
+      let result = {}
+      action.payload.forEach( exp => {
+        if( !result.hasOwnProperty(exp.algorithm)) {
+          result[exp.algorithm] = []
+        }
+        result[exp.algorithm].push(exp);
+      })
+      return result;
+    default:
+      return state;
+  }
+}
 
 const isFetching = (state = false, action) => {
   switch(action.type) {
@@ -78,12 +104,15 @@ const error = (state = null, action) => {
 
 const experiments = combineReducers({
   list,
+  byAlgorithm,
   isFetching,
   error,
   selected
 });
 
 export default experiments;
+
+// Selectors //
 
 const getExperiments = (state) => state.experiments;
 const getQuery = (state, props) => props.location.query;
@@ -93,6 +122,7 @@ export const getFilters = createSelector(
     const filterKeys = [
       //{ key: 'status', textPath: ['status'], valuePath: ['status'] },
       { key: 'dataset', textPath: ['dataset_name'], valuePath: ['dataset_id'] },
+      { key: 'prediction', textPath: ['prediction_type'], valuePath: ['prediction_type'] },
       { key: 'algorithm', textPath: ['algorithm'], valuePath: ['algorithm'] } // ['algorithm', '_id']
     ];
 
@@ -139,6 +169,12 @@ export const getFilters = createSelector(
     filters.status.options = statusOptions.map(option => ({ text: option, value: option }));
     filters.status.selected = query.status || 'all';
 
+    // Top-level options for showing all experiments by algorithm in separate tables, 
+    //  with algorithm detail views
+    // "simple" is for single table including multiple algorithms (if algorithm filter is 'all').
+    // "expanded" for multiple tables, one for each algorithm, and showing algorithm details
+    filters.viewMode = query.viewMode || "simple";
+
     return filters;
   }
 );
@@ -155,34 +191,81 @@ const formatOptionText = (filterKey, text) => {
   return text;
 };
 
-export const getSort = createSelector(
-  [getQuery],
-  (query) => ({
-    column: query.col || null,
-    direction: query.direction || null
-  })
+/**
+ * Get sort settings for simple and expanded view. Returns object with
+ * one key for 'simple' sorting for showing all experiments
+ * together, and a key for each algorithm used in the 
+ * current experiments, with the current sorting setting for each one.
+ */
+export const getSortAll = createSelector(
+  [getExperiments, getQuery],
+  (experiments, query) => {
+    let result = {};
+    let colPrefix = 'col_';
+    let dirPrefix = 'direction_';
+
+    // First create the sorting set for the simple view, i.e. all experiments in one table
+    result.simple = {
+      column: query[colPrefix+'simple'] || null,
+      columnKey: colPrefix+'simple', //Key/id used in query string
+      direction: query[dirPrefix+'simple'] || null,
+      directionKey: dirPrefix+'simple'
+    }
+
+    //For each algorithm used in the list of experiments, create a sorting set so
+    // we can view experiments in separate tables for algorithm, and sort each
+    // table separately.
+    Object.keys(experiments.byAlgorithm).forEach( alg => {
+      let colKey = colPrefix + alg;
+      let dirKey = dirPrefix + alg;
+      result[alg] = {
+        column: query[colKey] || null,
+        columnKey: colKey,
+        direction: query[dirKey] || null,
+        directionKey: dirKey
+      }
+    })
+
+    return result;
+  }
 );
 
 export const getVisibleExperiments = createSelector(
-  [getExperiments, getFilters, getSort],
-  (experiments, filters, sort) => {
-    const sortedList = experiments.list
+  [getExperiments, getFilters, getSortAll],
+  (experiments, filters, sortAll) => {
+    //Sort the list of all experiments for simple view
+    const sortedSimple = experiments.list
       .slice(0) // clone array
       .filter(filterBy(filters))
-      .sort(sortBy(sort));
+      .sort(sortBy(sortAll.simple));
 
-    return Object.assign({}, experiments, { list: sortedList });
+    //Sort each algorithm's list separately for expanded view
+    //And remove algorithms with no experiments to view after filtering.
+    let byAlg = Object.assign({}, experiments.byAlgorithm);
+    Object.keys(byAlg).forEach( alg => {
+      const sorted = byAlg[alg]
+        .slice(0)
+        .filter(filterBy(filters))
+        .sort(sortBy(sortAll[alg])) //separate sort settings for each algorithm
+      if(sorted.length > 0)
+        byAlg[alg] = sorted;
+      else
+        delete byAlg[alg];
+    })
+
+    return Object.assign({}, experiments, { list: sortedSimple, byAlgorithm: byAlg });
   }
 );
 
 const filterBy = (filters) => (experiment) => {
-  const { status, dataset, algorithm } = filters;
+  const { status, dataset, algorithm, prediction } = filters;
 
   // status category 'completed' includes 'success', 'cancelled', and 'fail'
   return (
     (status.selected === 'all' || status.selected === experiment.status || status.selected === 'completed' && ['success', 'cancelled', 'fail'].includes(experiment.status)) &&
     (dataset.selected === 'all' || dataset.selected === experiment.dataset_id) &&
-    (algorithm.selected === 'all' || algorithm.selected === experiment.algorithm)
+    (algorithm.selected === 'all' || algorithm.selected === experiment.algorithm) &&
+    (prediction.selected === 'all' || prediction.selected === experiment.prediction_type)
   );
 };
 

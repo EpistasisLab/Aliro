@@ -11,7 +11,7 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
     }
     environment {
-        LOCAL_PENNAI_DEPLOY_DIR = '/data/git/pennai'
+        LOCAL_PENNAI_DEPLOY_DIR = '/data/git/Aliro'
         LOCAL_PENNAI_DEPLOY_FILE = "${LOCAL_PENNAI_DEPLOY_DIR}/docker-compose.yml"
     }
     stages {
@@ -65,14 +65,14 @@ pipeline {
             }
 
         }
-        stage('Stop PennAI Locally') {
+        stage('Stop Aliro Locally') {
             steps {
                 sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} stop"
             }
         }
         stage('Integration Tests') {
             steps {
-                // stop any running pennai test or dev instances
+                // stop any running Aliro test or dev instances
                 sh 'docker-compose -f ./docker-compose-int-test.yml stop'
 
                 // run the integration test instance
@@ -85,7 +85,7 @@ pipeline {
                 }
             }
         }
-        stage('Start PennAI Locally') {
+        stage('Start Aliro Locally') {
             steps {
                 sh "docker-compose -f ${LOCAL_PENNAI_DEPLOY_FILE} up --detach --force-recreate"
             }

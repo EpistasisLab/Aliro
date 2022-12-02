@@ -1,19 +1,18 @@
 [![Logo](./docs/source/_static/logo_blank_small.png)]()
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/pennai/blob/master/LICENSE) [![PennAI CI/CD](https://github.com/EpistasisLab/pennai/actions/workflows/pennai_tests.yml/badge.svg)](https://github.com/EpistasisLab/pennai/actions/workflows/pennai_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/pennai/badge.svg)](https://coveralls.io/github/EpistasisLab/pennai)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/pennai/badge.svg)](https://coveralls.io/github/EpistasisLab/pennai)
 
-
-PennAI: AI-Driven Data Science
+Aliro: AI-Driven Data Science
 ==================================
 
-**PennAI** is an easy-to-use data science assistant.
+**Aliro** is an easy-to-use data science assistant.
 It allows researchers without machine learning or coding expertise to run supervised machine learning analysis through a clean web interface. 
 It provides results visualization and reproducible scripts so that the analysis can be taken anywhere. 
-And, it has an *AI* assistant that can choose the analysis to run for you.   Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used.   PennAI comes with an initial knowledgebase generated from the [PMLB benchmark suite](https://github.com/EpistasisLab/penn-ml-benchmarks).
+And, it has an *AI* assistant that can choose the analysis to run for you.   Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used.   Aliro comes with an initial knowledgebase generated from the [PMLB benchmark suite](https://github.com/EpistasisLab/penn-ml-benchmarks).
 
-[**Documentation**](https://epistasislab.github.io/pennai/) 
+[**Documentation**](https://epistasislab.github.io/Aliro/) 
 
-[**Latest Production Release**](https://github.com/EpistasisLab/pennai/releases/latest)
+[**Latest Production Release**](https://github.com/EpistasisLab/Aliro/releases/latest)
 
 Browse the repo:
  - [User Guide](./docs/guides/userGuide.md)
@@ -22,9 +21,8 @@ Browse the repo:
 About the Project
 =================
 
-PennAI is actively developed by the [Institute for Biomedical Informatics](http://upibi.org) at the University of Pennsylvania.
-Contributors include Heather Williams, Weixuan Fu, William La Cava, Josh Cohen,
-Steve Vitale, Sharon Tartarone, Randal Olson, Patryk Orzechowski, and Jason Moore. 
+Aliro is actively developed by the Center for Artificial Intelligence Research (CAIR) in the [Department of Computational Biomedicine](https://www.cedars-sinai.edu/research/departments-institutes/computational-biomedicine.html) at [Cedars-Sinai Medical Center](https://www.cedars-sinai.org/) in Los Angeles.
+Contributors include Hyunjun Choi, Miguel Hernandez, Nick Matsumoto, Jay Moran, Paul Wang, and Jason Moore (PI).
 
 Cite
 ====

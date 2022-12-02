@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
 """
-API utility functions for Penn-AI
+API utility functions for Aliro
 """
 
 import pandas as pd
@@ -62,7 +62,7 @@ class RECOMMENDER_STATUS(Enum):
     RUNNING = 'running'
 
 class LabApi:
-    """Class for communicating with the PennAI server
+    """Class for communicating with the Aliro server
     """
 
     def __init__(self, api_path, user, api_key, extra_payload, verbose):

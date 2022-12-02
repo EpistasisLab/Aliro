@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = PennAI
+SPHINXPROJ    = Aliro
 SOURCEDIR     = source
 BUILDDIR      = ../target/ai_docs
 

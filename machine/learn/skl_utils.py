@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -174,14 +174,14 @@ def generate_results(model, input_data,
                      encoding_strategy="OneHotEncoder",
                      param_grid={}
                      ):
-    """Generate reaults for applying a model on dataset in PennAI.
+    """Generate reaults for applying a model on dataset in Aliro.
 
     Parameters
     ----------
     model: scikit-learn Estimator
         A machine learning model following scikit-learn API
     input_data: pandas.Dataframe or list of two pandas.Dataframe
-        pandas.DataFrame: PennAI will use 10 fold CV to estimate train/test scroes.
+        pandas.DataFrame: Aliro will use 10 fold CV to estimate train/test scroes.
         list of two pandas.DataFrame: The 1st pandas.DataFrame is training dataset,
         while the 2nd one is testing dataset
     target_name: string
@@ -559,7 +559,7 @@ def save_json_fmt(outdir, _id, fname, content):
     outdir: string
         Path of output directory
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     fname: string
         File name
     content: list or directory
@@ -588,7 +588,7 @@ def plot_confusion_matrix(
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     X: np.darray/pd.DataFrame
         Features in training dataset
     y: np.darray/pd.DataFrame
@@ -691,7 +691,7 @@ def plot_shap_analysis_curve(
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     model: scikit-learn estimator
         A fitted scikit-learn model
     features: np.darray/pd.DataFrame
@@ -871,7 +871,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     X: np.darray/pd.DataFrame
         Features in training dataset
     y: np.darray/pd.DataFrame
@@ -965,7 +965,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     coefs: array
         Feature importance scores
     feature_names: np.array
@@ -1009,7 +1009,7 @@ def plot_dot_plot(tmpdir, _id, features,
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     features: np.darray/pd.DataFrame
         Features in training dataset
     target: np.darray/pd.DataFrame
@@ -1072,7 +1072,7 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     X: np.darray/pd.DataFrame
         Features in training dataset
     y: np.darray/pd.DataFrame
@@ -1147,7 +1147,7 @@ def export_model(tmpdir,
     tmpdir: string
         Temporary directory for saving experiment results
     _id: string
-        Experiment ID in PennAI
+        Experiment ID in Aliro
     model: scikit-learn estimator
         A fitted scikit-learn model
     filename: string
@@ -1284,7 +1284,7 @@ def balanced_accuracy(y_true, y_pred):
         all_class_accuracies.append(this_class_accuracy)
     return np.mean(all_class_accuracies)
 
-# reproducing training score and testing score from PennAI
+# reproducing training score and testing score from Aliro
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset
@@ -1325,7 +1325,7 @@ print("Confusion Matrix:", cnf_matrix)
 """
     elif mode == "regression":
         exported_codes_1 += """
-# reproducing training score and testing score from PennAI
+# reproducing training score and testing score from Aliro
 features = input_data.drop(target_column, axis=1).values
 target = input_data[target_column].values
 # Checking dataset

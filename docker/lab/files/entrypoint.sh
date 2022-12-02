@@ -6,7 +6,7 @@ cd ${PROJECT_ROOT}/lab/webapp
 source /etc/profile.d/tag.sh
 
 echo "/================================\\"
-echo "| Starting PennAI version ${TAG} |"
+echo "| Starting Aliro version ${TAG} |"
 echo "| Build environment ${BUILD_ENV} |"
 echo "\\===============================/"
 
@@ -31,7 +31,7 @@ echo "loading initial datasets..."
 python  ./pyutils/loadInitialDatasets.py
 echo "datasets loaded..."
 
-#start pennai
+#start Aliro
 if [ ${AI_AUTOSTART} -eq 1 ]; then
     echo "autostarting ai..."
 

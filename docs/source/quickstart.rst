@@ -2,14 +2,14 @@ Analysis Quickstart
 ===================
 
 This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results.
-It assumes you have already installed PennAI (see :ref:`user-guide`). 
+It assumes you have already installed Aliro (see :ref:`user-guide`). 
 
 .. image:: _static/landing_page.png
     :width: 400
     :alt: Dataset elements on the landing page. 
     :align: center
 
-The landing page for PennAI shows you your datasets. 
+The landing page for Aliro shows you your datasets. 
 For datasets with results, a blue bar indicates the best performance achieved so far, along with the algorithm description.
 Experiments that are running or finished will appear here as well. 
 Click on the name of the dataset to see information about it, including a data preview and metafeatures. 

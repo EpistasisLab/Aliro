@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -39,6 +39,7 @@ import {
   TOGGLE_AI_FAILURE,
   AI_UPDATE,
   DATASET_UPDATE,
+  DATASET_ADD,
   UPLOAD_DATASET_REQUEST,
   UPLOAD_DATASET_SUCCESS,
   UPLOAD_DATASET_FAILURE
@@ -52,6 +53,7 @@ const byId = (state = {}, action) => {
         return map;
       }, {});
     case DATASET_UPDATE:
+    case DATASET_ADD:
       return Object.assign({}, state, {
         [action.dataset._id]: dataset(state[action.dataset._id], action)
       });
@@ -90,6 +92,9 @@ const allIds = (state = [], action) => {
   switch(action.type) {
     case FETCH_DATASETS_SUCCESS:
       return action.payload.map(d => d._id);
+    case DATASET_ADD:
+      //Adding a new dataset
+      return [...state, action.dataset._id];
     default:
       return state;
   }
@@ -128,14 +133,15 @@ const getAllIds = (state) => state.datasets.allIds;
 const getById = (state) => state.datasets.byId;
 export const getSortedDatasets = createSelector(
   [getAllIds, getById],
-  (allIds, byId) =>
-    allIds
+  (allIds, byId) => {
+    return allIds
       .map(id => byId[id])
       .sort((a, b) => {
         const A = a.name.toLowerCase();
         const B = b.name.toLowerCase();
         return A > B ? 1 : A < B ? -1 : 0;
-      })
+      });
+    }
 );
 
 export default datasets;

@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 import React from 'react';
-import { Form, Dropdown, Header } from 'semantic-ui-react';
+import { Form, Dropdown, Header, Icon, Button } from 'semantic-ui-react';
 
 function ExperimentFilters({ 
   filters,
@@ -38,6 +38,17 @@ function ExperimentFilters({
     <span className="filters">
       <Form inverted>
         <Form.Group>
+          <Form.Field
+            inline
+            color="blue"
+            style={{backgroundColor: 'transparent'}}
+            size="small" 
+            compact
+            icon={filters.viewMode === "expanded" ? "minus square outline" : "plus square outline"}
+            control={Button}
+            className="reset"
+            onClick={() => updateQuery('viewMode', filters.viewMode === "simple" ? "expanded" : "simple")}
+          />
           <Form.Field 
             inline
             label="Status:"
@@ -56,6 +67,18 @@ function ExperimentFilters({
             onChange={(e, data) => updateQuery('dataset', data.value)}
             className="filter"
           />
+          {
+            filters.dataset.selected.toLowerCase() === 'all' &&
+            <Form.Field 
+              inline
+              label="Prediction Type:"
+              control={Dropdown} 
+              value={filters.prediction.selected}
+              options={filters.prediction.options}
+              onChange={(e, data) => updateQuery('prediction', data.value)}
+              className="filter"
+            />
+          }
           <Form.Field 
             inline
             label="Algorithm:"

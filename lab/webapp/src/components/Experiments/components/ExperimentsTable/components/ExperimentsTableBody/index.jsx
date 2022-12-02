@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -206,6 +206,11 @@ function ExperimentsTableBody({
             <Table.Cell selectable>
               <a href={experimentLink}>
                 {formatDataset(experiment.dataset_name)}
+              </a>
+            </Table.Cell>
+            <Table.Cell selectable>
+              <a href={experimentLink}>
+                {formatDataset(experiment.prediction_type)}
               </a>
             </Table.Cell>
             {shouldDisplayErrorMessage &&

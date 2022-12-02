@@ -28,6 +28,7 @@ exports[`basic testing of fileupload react component DONE - full component snaps
         onDropAccepted={[Function]}
         onDropRejected={[Function]}
         preventDropOnDocument={true}
+        useFsAccessApi={false}
         validator={null}
       >
         <Component />

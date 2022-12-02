@@ -1,0 +1,56 @@
+# Build production images
+version: '3'
+
+services:
+  lab:
+    build:
+      context: .
+      dockerfile: docker/lab/rpi_production.Dockerfile
+    image: "aliro_lab:${TAG}"
+    tty: true
+    stdin_open: true
+    volumes:
+      - "/appsrc"
+      - "./data/datasets/user:/appsrc/data/datasets/user"
+      - "./data/recommenders/pennaiweb:/appsrc/data/recommenders/pennaiweb"
+      - "./target:/appsrc/target"
+    ports:
+      - "5080:5080"
+    env_file:
+      - ./config/common.env
+      - ./config/ai.env
+    depends_on:
+      - dbmongo
+    restart: always
+
+  machine:
+    build:
+      context: .
+      dockerfile: docker/machine/rpi_production.Dockerfile
+    image: "aliro_machine:${TAG}"
+    tty: true
+    stdin_open: true
+    volumes:
+      - "/appsrc"
+      - "./target:/appsrc/target"
+    ports:
+      - "5081:5081"
+    env_file: ./config/common.env
+    environment:
+      - MACHINE_PORT=5081
+    depends_on:
+      - lab
+      - dbmongo
+    restart: always
+
+  dbmongo:
+    build:
+      context: .
+      dockerfile: docker/dbmongo/rpi.Dockerfile
+    image: "aliro_dbmongo:${TAG}"
+    tty: true
+    stdin_open: true
+    ports:
+      - "27017:27017"
+    env_file: ./config/common.env
+    restart: always

@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -63,7 +63,7 @@ logger.addHandler(ch)
 
 
 class AI():
-    """AI managing agent for Penn AI.
+    """AI managing agent for Aliro.
 
     Responsible for:
     - checking for user requests for recommendations,
@@ -74,17 +74,13 @@ class AI():
 
     :param rec_class: ai.BaseRecommender - recommender to use
     :param api_path: string - path to the lab api server
-    :param extra_payload: dict - any additional payload that needs to be 
-    specified
+    :param extra_payload: dict - any additional payload that needs to be specified
     :param user: string - test user
-    :param rec_score_file: file - pickled score file to keep persistent scores
-    between sessions
+    :param rec_score_file: file - pickled score file to keep persistent scores between sessions
     :param verbose: Boolean
-    :param warm_start: Boolean - if true, attempt to load the ai state from the 
-    file provided by rec_score_file
+    :param warm_start: Boolean - if true, attempt to load the ai state from the file provided by rec_score_file
     :param n_recs: int - number of recommendations to make for each request
-    :param datasets: str or False - if not false, a comma seperated list of 
-    datasets to turn the ai on for at startup
+    :param datasets: str or False - if not false, a comma seperated list of datasets to turn the ai on for at startup
     :param use_pmlb_knowledgebase: Boolean
     """
 
@@ -137,7 +133,7 @@ class AI():
 
         # api parameters, will be removed from self once the recommenders no 
         # longer call the api directly.
-        # See #98 <https://github.com/EpistasisLab/pennai/issues/98>
+        # See #98 <https://github.com/EpistasisLab/Aliro/issues/98>
         if api_path == None:
             api_path = ('http://' + os.environ['LAB_HOST'] + ':' +
                         os.environ['LAB_PORT'])
@@ -563,9 +559,9 @@ class AI():
 import argparse
 
 def main():
-    """Handles command line arguments and runs Penn-AI."""
+    """Handles command line arguments and runs Aliro."""
     parser = argparse.ArgumentParser(
-            description='PennAI is a recommendation system for data science. ',
+            description='Aliro is a recommendation system for data science. ',
             add_help=False)
     parser.add_argument('-h','--help',action='help',
                         help="Show this help message and exit.")
@@ -621,7 +617,7 @@ def main():
             'slopeone': SlopeOneRecommender
             }
 
-    print('=======','Penn AI','=======')#,sep='\n')
+    print('=======','Aliro','=======')#,sep='\n')
 
     pennai = AI(rec_class=name_to_rec[args.REC],
             api_path=args.API_PATH, user=args.USER,

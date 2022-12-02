@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -30,11 +30,11 @@ from skl_utils import generate_results
 
 
 def main(args, param_grid={}):
-    """Main Driver for PennAI experiment.
+    """Main Driver for Aliro experiment.
     Parameters
     ----------
     args: dict
-        arguments for PennAI experiment
+        arguments for Aliro experiment
     param_grid: dict
         If grid_search is non-empty dictionary, then the experiment will
         do parameter tuning via GridSearchCV. It should report best result to UI

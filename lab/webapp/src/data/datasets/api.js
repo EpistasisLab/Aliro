@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -29,7 +29,7 @@ require('es6-promise').polyfill();
 import fetch from 'isomorphic-fetch';
 
 export const fetchDatasets = () => 
-  fetch('/api/userdatasets')
+  fetch('/api/userdatasets') //See lab\webapp\src\data\datasets\dataset\api.js 
     .then(response => {
       if(response.status >= 400) {
         throw new Error(`${response.status}: ${response.statusText}`);

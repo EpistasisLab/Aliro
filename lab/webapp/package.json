@@ -1,5 +1,5 @@
 {
-  "name": "pennai-webapp",
+  "name": "Aliro-webapp",
   "version": "1.0.0",
   "description": "your friendly machine learning assistant",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EpistasisLab/pennai.git"
+    "url": "https://github.com/EpistasisLab/Aliro.git"
   },
   "keywords": [
     "machine learning"
@@ -17,9 +17,9 @@
   "author": "University of Pennsylvania",
   "license": "GPL 3.0",
   "bugs": {
-    "url": "https://github.com/EpistasisLab/pennai/issues"
+    "url": "https://github.com/EpistasisLab/Aliro/issues"
   },
-  "homepage": "https://github.com/EpistasisLab/pennai",
+  "homepage": "https://github.com/EpistasisLab/Aliro",
   "dependencies": {
     "array-move": "^3.0.0",
     "c3": "^0.4.24",

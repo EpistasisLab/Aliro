@@ -1,8 +1,8 @@
-"""~This file is part of the PennAI library~
+"""~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -171,7 +171,7 @@ def validate_data(df, prediction_type="classification", target_column = None, ca
 
 def get_file_from_server(file_id):
 	'''
-	Retrieve a file from the main PennAI server
+	Retrieve a file from the main Aliro server
 	'''
 	apiPath = 'http://' + os.environ['LAB_HOST'] + ':' + os.environ['LAB_PORT']
 	path = apiPath + "/api/v1/files/" + file_id

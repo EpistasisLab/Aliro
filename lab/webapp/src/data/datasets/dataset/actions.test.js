@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -61,6 +61,23 @@ describe('testing how some UI action affects redux action stuff', () => {
     expect(actionStuff.updateDataset(testDataset))
       .toEqual(expectedAction);
   })
+
+  it('addDataset', () => {
+    const testDataset = {
+      id: 'da_data',
+      info: {
+        experiment: 'pass',
+        result: [3,4,5]
+      }
+    };
+    const expectedAction = {
+      type: actionStuff.DATASET_ADD,
+      dataset: testDataset
+    };
+    expect(actionStuff.addDataset(testDataset))
+      .toEqual(expectedAction);
+  })
+
 })
 
 import * as apiTestHelper from './__mocks__/api';

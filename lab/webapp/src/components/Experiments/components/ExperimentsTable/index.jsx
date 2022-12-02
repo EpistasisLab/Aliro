@@ -1,8 +1,8 @@
-/* ~This file is part of the PennAI library~
+/* ~This file is part of the Aliro library~
 
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
-PennAI is maintained by:
+Aliro is maintained by:
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -33,25 +33,20 @@ import { Table } from 'semantic-ui-react';
 function ExperimentsTable({
   experiments, 
   filters,
-  sort,
+  sortSingle,
   updateQuery
 }) {
+  //'experiments' is an array of experiments, and in the case of viewMode 'simple' will
+  // may have multiple different algorithm types. In the case of viewMode 'expanded' it 
+  // will have experiments only of the same algorithm.
   const selectedStatus = filters.status.selected;
-
   const selectedDataset = filters.dataset.selected;
-
-  const selectedAlgorithm = filters.algorithm.selected;
-
+  let selectedAlgorithm = filters.viewMode === "simple" ? filters.algorithm.selected : experiments[0].algorithm;
   const currentParameters = experiments[0].params;
-
   const shouldDisplayQuality = selectedStatus === 'suggested';
-
   const shouldDisplayAwards = selectedDataset !== 'all';
-
-  const shouldDisplayParams = selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0;
-
+  let shouldDisplayParams = filters.viewMode === "expanded" || (selectedAlgorithm !== 'all' && Object.keys(currentParameters).length > 0);
   const shouldDisplayErrorMessage = selectedStatus === 'fail';
-
   const orderedParamKeys = Object.keys(currentParameters).sort();
 
   return (
@@ -72,7 +67,7 @@ function ExperimentsTable({
           shouldDisplayParams={shouldDisplayParams}
           shouldDisplayErrorMessage={shouldDisplayErrorMessage}
           orderedParamKeys={orderedParamKeys}
-          sort={sort}
+          sortSingle={sortSingle}
           updateQuery={updateQuery}
         />
         <ExperimentsTableBody
