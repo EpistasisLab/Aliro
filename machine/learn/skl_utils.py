@@ -1136,7 +1136,7 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     
     plt.legend(loc='best')
     # plt.legend(loc="lower right")
-    plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
+    # plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
 
   
     plt.close()
