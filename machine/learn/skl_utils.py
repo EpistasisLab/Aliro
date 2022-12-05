@@ -1088,7 +1088,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
+    # plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
     plt.close()
     return top_features, indices
 
@@ -1146,6 +1146,11 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     # test_scores_mean = np.mean(test_scores, axis=1)
     # test_scores_std = np.std(test_scores, axis=1)
 
+
+    print('train_sizes.tolist()',train_sizes.tolist())
+    print('train_scores', train_scores.tolist())
+    print('test_scores', test_scores.tolist())
+
     learning_curve_dict = {
         'train_sizes':train_sizes.tolist(),
         'train_scores': train_scores.tolist(),
@@ -1170,12 +1175,11 @@ def plot_pca_2d(tmpdir,_id,features,target):
 
     # np.random.seed(5)
 
-    # iris = datasets.load_iris()
-    # print(features)
+
     X = np.array(features)
     y = np.array(target)
     
-    print(set(y))
+    # print(set(y))
 
 
 
@@ -1183,19 +1187,10 @@ def plot_pca_2d(tmpdir,_id,features,target):
 
     plt.cla()
     pca = decomposition.PCA(n_components=2)
-    # pca = decomposition.PCA(n_components=2)
     pca.fit(X)
     X = pca.transform(X)
 
-    # plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap(["black", "green"]))
-
-    # plt.show()
     
-    
-    # version 1 
-    # colors = np.array(["black", "green"])
-    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
-
 
 
     # version 2
@@ -1204,13 +1199,10 @@ def plot_pca_2d(tmpdir,_id,features,target):
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
 
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
-    # plot the legend where the colors are mapped to the classes
+    
     plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
 
-    # cb = plt.colorbar()
-    # loc = np.arange(0,max(label),max(label)/float(len(colors)))
-    # cb.set_ticks(loc)
-    # cb.set_ticklabels(colors)
+
 
     
 
@@ -1219,6 +1211,10 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # write x axis as pc1 and y axis as pc2
     plt.xlabel('PC1')
     plt.ylabel('PC2')
+
+
+
+    plt.close()
 
 
 
@@ -1493,7 +1489,7 @@ def plot_tsne(tmpdir,_id,features,target):
 
     # plt.show()
     # plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
-    # plt.close()
+    plt.close()
 
 
 
