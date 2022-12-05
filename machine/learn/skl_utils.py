@@ -377,7 +377,7 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
-            plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+            # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
 
         
@@ -514,7 +514,7 @@ def generate_results(model, input_data,
         # plot_pca_3d_iris(tmpdir,_id,features,target)
         
         # this
-        # plot_tsne(tmpdir,_id,features,target)
+        plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -1232,13 +1232,13 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # ax.w_zaxis.set_ticklabels([])
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
+    # plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    # plt.close()
 
 
 
     path = tmpdir + _id + '/pcaJson_' + _id + '.json'
-    import json
+    # import json
     
 
 
@@ -1492,15 +1492,15 @@ def plot_tsne(tmpdir,_id,features,target):
 
 
     # plt.show()
-    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
-    plt.close()
+    # plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
+    # plt.close()
 
 
 
 
 
     # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
-    import json
+    # import json
     
 
 
