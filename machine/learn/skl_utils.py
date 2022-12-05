@@ -37,6 +37,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
+
+from sklearn.manifold import TSNE
+from sklearn.model_selection import learning_curve
+from sklearn import decomposition
+
 import itertools
 import json
 import os
@@ -46,10 +51,12 @@ import shap
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-from sklearn import decomposition
+
 import matplotlib.colors as mcolors
 from matplotlib.patches import Patch
-from sklearn.manifold import TSNE
+
+
+
 
 mpl.use('Agg')
 
@@ -370,7 +377,7 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
-            # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+            plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
 
         
@@ -1087,9 +1094,7 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
 
 def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
-    from sklearn.model_selection import learning_curve
-    from matplotlib import pyplot as plt
-    import numpy as np
+
 
     
     features = np.array(features)
