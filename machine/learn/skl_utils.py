@@ -377,7 +377,7 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
-            # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+            plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
             model.fit(features, target)
 
         
@@ -514,7 +514,7 @@ def generate_results(model, input_data,
         # plot_pca_3d_iris(tmpdir,_id,features,target)
         
         # this
-        plot_tsne(tmpdir,_id,features,target)
+        # plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -1094,7 +1094,8 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
 
 def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
-
+    # Plot learning curve
+    print("Plotting learning curve...")
 
     
     features = np.array(features)
@@ -1146,7 +1147,20 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     # test_scores_mean = np.mean(test_scores, axis=1)
     # test_scores_std = np.std(test_scores, axis=1)
 
+    # if train_sizes.tolist() has nan, then replace it with 0
+    # check if all of train_sizes.tolist has nan
 
+    if np.isnan(train_sizes.tolist()).all():
+        #replace nan with -1
+        train_sizes = np.nan_to_num(train_sizes, nan=-1)
+    if np.isnan(train_scores.tolist()).all():
+        # replace nan with -1
+        train_scores = np.nan_to_num(train_scores, nan=-1)
+    if np.isnan(test_scores.tolist()).all():
+        # replace nan with -1
+        test_scores = np.nan_to_num(test_scores, nan=-1)
+
+    # if train_scores
     print('train_sizes.tolist()',train_sizes.tolist())
     print('train_scores', train_scores.tolist())
     print('test_scores', test_scores.tolist())
@@ -1162,6 +1176,8 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
 
 def plot_pca_2d(tmpdir,_id,features,target):
+
+    print("plot_pca_2d")
     # import numpy as np
     # import matplotlib.pyplot as plt
 
@@ -1463,6 +1479,8 @@ def plot_tsne(tmpdir,_id,features,target):
     # print(X)
     # print(y)
 
+    print("Plotting t-SNE")
+
     tsne = TSNE(n_components=2, verbose=1, random_state=123)
     X_2d = tsne.fit_transform(X)
 
@@ -1498,7 +1516,12 @@ def plot_tsne(tmpdir,_id,features,target):
     # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
     # import json
     
+    # X_2d
+    print("X_2d",X_2d)
+    print("y",y)
 
+    X_2d = [1]
+    y = [1]
 
     # save X and y to json file
     tsne_dict = {
