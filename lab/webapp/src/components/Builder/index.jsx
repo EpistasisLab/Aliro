@@ -105,7 +105,7 @@ class Builder extends Component {
 
     function openTrueOrFalse_submit_experiment_popup()
   {
-    if (sessionStorage.getItem("submit-experiment-popup") == "true"){
+    if (localStorage.getItem("submit-experiment-popup") == "true"){
       return false;
     }
     else{
@@ -152,11 +152,12 @@ class Builder extends Component {
                 disabled={isSubmitting}
                 // onClick={this.handleSubmitExperiment}
                 onClick={() => {
-                  sessionStorage.setItem("algorithm-popup", "true");
+                  localStorage.setItem("algorithm-popup", "true");
+                
                   // param-popup
-                  sessionStorage.setItem("param-popup", "true");
+                  localStorage.setItem("param-popup", "true");
 
-                  sessionStorage.setItem("submit-experiment-popup", "true");
+                  localStorage.setItem("submit-experiment-popup", "true");
 
                   this.handleSubmitExperiment();
 
@@ -187,9 +188,9 @@ class Builder extends Component {
               
                 document.getElementById("submit-experiment-popup").style.cssText += ';display:none !important;';
 
-                sessionStorage.setItem("submit-experiment-popup", "true");
+                localStorage.setItem("submit-experiment-popup", "true");
                 // show the local storage on the console
-                console.log("submit-experiment-popup", sessionStorage.getItem("submit-experiment-popup"));
+                console.log("submit-experiment-popup", localStorage.getItem("submit-experiment-popup"));
 
               }
             }

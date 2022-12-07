@@ -148,7 +148,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
     // another
     // get class_and_file from session storage
-    var class_and_file = sessionStorage.getItem('class_and_file');
+    var class_and_file = localStorage.getItem('class_and_file');
 
     // console.log("class_and_file in scatter plot: ", class_and_file);
 

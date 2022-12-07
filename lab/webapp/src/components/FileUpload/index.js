@@ -1072,9 +1072,9 @@ handleclassUserTextOnChange(e) {
 
 
 
-      // console.log("sessionStorage.getItem('class')) ",sessionStorage.getItem('class'))
+      // console.log("localStorage.getItem('class')) ",localStorage.getItem('class'))
       // // if "class" is not in the session storage
-      // if(!sessionStorage.getItem('class')) {
+      // if(!localStorage.getItem('class')) {
 
       //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
 
@@ -1090,8 +1090,8 @@ handleclassUserTextOnChange(e) {
 
 
       var class_name_log = true
-      if (sessionStorage.getItem('class')===null) {
-            console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
+      if (localStorage.getItem('class')===null) {
+            console.log("localStorage.getItem('class')",localStorage.getItem('class'))
             class_name_log = false
       }
 
@@ -1119,13 +1119,13 @@ handleclassUserTextOnChange(e) {
           console.log("resp",resp)
           console.log("errorRespObj",errorRespObj)
 
-          console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
+          console.log("localStorage.getItem('class')",localStorage.getItem('class'))
           console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
           
 
           // var class_name_log = true
-          // if (sessionStorage.getItem('class')===null) {
-          //   console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
+          // if (localStorage.getItem('class')===null) {
+          //   console.log("localStorage.getItem('class')",localStorage.getItem('class'))
           //   class_name_log = false
           // }
           
@@ -1151,11 +1151,11 @@ handleclassUserTextOnChange(e) {
             this.setState({uploadButtonDisabled:false});
 
 
-            sessionStorage.removeItem("selectedFile_name");
-            sessionStorage.setItem("selectedFile_name", this.state.selectedFile.name);
+            localStorage.removeItem("selectedFile_name");
+            localStorage.setItem("selectedFile_name", this.state.selectedFile.name);
 
             // get class from selectedFile_name
-            let class_string = sessionStorage.getItem("class");
+            let class_string = localStorage.getItem("class");
 
             
 
@@ -1164,38 +1164,38 @@ handleclassUserTextOnChange(e) {
 
             let class_and_file = class_string + "&" + this.state.selectedFile.name;
 
-            // if "class_and_file" is in sessionStorage, get the value
-            if (sessionStorage.getItem("class_and_file")) {
-              console.log("class_and_file is in sessionStorage");
-              let value = sessionStorage.getItem("class_and_file");
+            // if "class_and_file" is in localStorage, get the value
+            if (localStorage.getItem("class_and_file")) {
+              console.log("class_and_file is in localStorage");
+              let value = localStorage.getItem("class_and_file");
               value = value +"*"+class_and_file
-              sessionStorage.setItem("class_and_file", value);
+              localStorage.setItem("class_and_file", value);
 
-              // remove "class" from sessionStorage
-              sessionStorage.removeItem("class");
+              // remove "class" from localStorage
+              localStorage.removeItem("class");
 
             } else {
-              // store class_and_file in sessionStorage
-              sessionStorage.setItem("class_and_file", class_and_file);
-              sessionStorage.removeItem("class");
+              // store class_and_file in localStorage
+              localStorage.setItem("class_and_file", class_and_file);
+              localStorage.removeItem("class");
             }
 
 
 
 
           } 
-          // else if (!sessionStorage.getItem('class')) {
+          // else if (!localStorage.getItem('class')) {
             
           //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
     
           //   this.setState({uploadButtonDisabled:false});
           // }
 
-          // if there is no 'class' in sessionStorage, 
+          // if there is no 'class' in localStorage, 
           // make the Upload dataset button disabled
-          // console.log(sessionStorage.getItem('class'));
+          // console.log(localStorage.getItem('class'));
           // else if (true) {
-          //   console.log("sessionStorage.getItem('class')",sessionStorage.getItem('class'))
+          //   console.log("localStorage.getItem('class')",localStorage.getItem('class'))
           //   console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
           //   this.setState({uploadButtonDisabled:true});
           // }
@@ -1670,21 +1670,21 @@ handleclassUserTextOnChange(e) {
     // return {success: true, message: ""}
     // console.log(string)
     // save experiment.data._id and string to the session stroage
-    // sessionStorage.setItem("data_id", this.experiment.data._id);
+    // localStorage.setItem("data_id", this.experiment.data._id);
     // this.state.selectedFile.name
     // check if selectedFile_name is in the session storage
     // if yes, then update the string
     // if no, then create a new key-value pair
 
     // remove selectedFile_name from session storage
-    // sessionStorage.removeItem("selectedFile_name");
+    // localStorage.removeItem("selectedFile_name");
 
-    // sessionStorage.setItem("selectedFile_name", this.state.selectedFile.name);
-    sessionStorage.setItem("class", string);
+    // localStorage.setItem("selectedFile_name", this.state.selectedFile.name);
+    localStorage.setItem("class", string);
     console.log("success to store data_id and class in session storage")
     // current data name
     // experiment.data._id
-    // sessionStorage.setItem("class", string);
+    // localStorage.setItem("class", string);
     return {success: true, message: string}
   }
 
@@ -3345,7 +3345,7 @@ handleclassUserTextOnChange(e) {
     
 
     function openTrueOrFalse_file_upload_popup(){
-      if (sessionStorage.getItem("file_upload_popup") == "true"){
+      if (localStorage.getItem("file_upload_popup") == "true"){
   
         // if (document.getElementById("aiTooglePopup")!==null){
         //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
@@ -3433,7 +3433,7 @@ handleclassUserTextOnChange(e) {
               <Button 
                 // onClick={() => this.resetState()}
                 // when click on cancel button, this.resetState() will be called and "class" in session storage will be removed if the "class" exists in the session storage.
-                onClick={() => {this.resetState(); sessionStorage.removeItem("class");}}
+                onClick={() => {this.resetState(); localStorage.removeItem("class");}}
                 
                 inverted               
                 className="file-upload-button"
@@ -3480,9 +3480,9 @@ handleclassUserTextOnChange(e) {
 
                   this.state.file_upload_popup = "none";
 
-                  sessionStorage.setItem("file_upload_popup", "true");
+                  localStorage.setItem("file_upload_popup", "true");
                   // show the local storage on the console
-                  console.log("file_upload_popup", sessionStorage.getItem("file_upload_popup"));
+                  console.log("file_upload_popup", localStorage.getItem("file_upload_popup"));
                 
                 }
               }
