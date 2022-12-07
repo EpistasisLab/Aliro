@@ -514,7 +514,7 @@ def generate_results(model, input_data,
         # plot_pca_3d_iris(tmpdir,_id,features,target)
         
         # this
-        # plot_tsne(tmpdir,_id,features,target)
+        plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -1520,8 +1520,8 @@ def plot_tsne(tmpdir,_id,features,target):
     print("X_2d",X_2d)
     print("y",y)
 
-    X_2d = [1]
-    y = [1]
+    # X_2d = [1]
+    # y = [1]
 
     # save X and y to json file
     tsne_dict = {
