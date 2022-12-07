@@ -42,7 +42,7 @@ function AlgorithmOptions({
 
 
   function openTrueOrFalse_algorithm_popup(){
-    if (sessionStorage.getItem("algorithm-popup") == "true"){
+    if (localStorage.getItem("algorithm-popup") == "true"){
 
       // if (document.getElementById("aiTooglePopup")!==null){
       //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
@@ -135,9 +135,9 @@ function AlgorithmOptions({
           
             document.getElementById("algorithm-popup").style.cssText += ';display:none !important;';
 
-            sessionStorage.setItem("algorithm-popup", "true");
+            localStorage.setItem("algorithm-popup", "true");
               // show the local storage on the console
-            console.log("algorithm-popup", sessionStorage.getItem("algorithm-popup"));
+            console.log("algorithm-popup", localStorage.getItem("algorithm-popup"));
 
 
             // get class name content under id aiTooglePopup

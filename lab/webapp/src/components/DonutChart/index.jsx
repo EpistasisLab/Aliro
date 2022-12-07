@@ -74,7 +74,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       
 
         // get class_and_file from session storage
-        const class_and_file = sessionStorage.getItem('class_and_file')
+        const class_and_file = localStorage.getItem('class_and_file')
 
         // split class_and_file with *
         const class_and_file_split_star = class_and_file.split('*')

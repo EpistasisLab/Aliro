@@ -49,10 +49,10 @@ const AddNewDatasetCard = () => {
   // console.log("Link", Link);
 
 	// var icon_type = "question circle";
-  // console.log("sessionStorage.getItem(addNewPopup)",sessionStorage.getItem("addNewPopup"))
+  // console.log("localStorage.getItem(addNewPopup)",localStorage.getItem("addNewPopup"))
 	
   function openTrueOrFalse_addNewPopup(){
-    if (sessionStorage.getItem("addNewPopup") == "true"){
+    if (localStorage.getItem("addNewPopup") == "true"){
 
       // if (document.getElementById("aiTooglePopup")!==null){
       //   document.getElementById("aiTooglePopup").style.cssText = "display: block !important";
@@ -80,7 +80,7 @@ const AddNewDatasetCard = () => {
   }
 
     return (
-      // if sessionStorage does not have addNewPopup
+      // if localStorage does not have addNewPopup
 
 
         <Grid.Column className="dataset-card" id= "gridAddNewdataCard"  >
@@ -169,7 +169,7 @@ const AddNewDatasetCard = () => {
               content="Add New Dataset"
               onClick={() => {
 
-                sessionStorage.setItem("addNewPopup", "true")
+                localStorage.setItem("addNewPopup", "true")
               }
                 
               }
@@ -207,9 +207,9 @@ const AddNewDatasetCard = () => {
               // save flag to local storage to avoid showing the popup again
               // use session storage to avoid showing the popup again
 
-              sessionStorage.setItem("addNewPopup", "true");
+              localStorage.setItem("addNewPopup", "true");
               // show the local storage on the console
-              console.log("addNewPopup", sessionStorage.getItem("addNewPopup"));
+              console.log("addNewPopup", localStorage.getItem("addNewPopup"));
 
 
               // add below to App.css in javascript
