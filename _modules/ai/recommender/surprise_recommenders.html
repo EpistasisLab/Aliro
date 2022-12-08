@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ai.recommender.surprise_recommenders &#8212; Aliro rpi-0.18 documentation</title>
+    <title>ai.recommender.surprise_recommenders &#8212; Aliro 0.18 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/basic_mod.css?v=0.7.0-1" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -287,12 +287,49 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># update trained dataset models and hash table</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;results_data&#39;</span><span class="p">,</span> <span class="n">results_data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;results_mf&#39;</span><span class="p">,</span> <span class="n">results_mf</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
         <span class="c1"># updates self.results_df and self.trainset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_training_data</span><span class="p">(</span><span class="n">results_data</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># check whether the set train data matches the pickled recommender&#39;s</span>
         <span class="c1"># training data.</span>
         <span class="n">rowHashes</span> <span class="o">=</span> <span class="n">hash_pandas_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_df</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+        
+        
+        <span class="c1"># test</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">60</span><span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Numbers&#39;</span><span class="p">])</span>
+        <span class="n">test_df</span><span class="o">=</span><span class="n">hash_pandas_object</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;test_df&#39;</span><span class="p">,</span> <span class="n">test_df</span><span class="p">)</span>
+
+
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;self.results_df&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_df</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;rowHashes&#39;</span><span class="p">,</span> <span class="n">rowHashes</span><span class="p">)</span>
         <span class="n">newHash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">rowHashes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+        <span class="c1"># for rowHash in rowHashes:</span>
+        <span class="c1">#     print(&#39;rowHash: &#39;, rowHash)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;newHash&#39;</span><span class="p">,</span> <span class="n">newHash</span><span class="p">)</span>
+
+        <span class="c1"># test </span>
+        <span class="n">test_newHash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Nobody inspects the spammish repetition&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;test_newHash: &#39;</span><span class="p">,</span> <span class="n">test_newHash</span><span class="p">)</span>
+        
+        <span class="c1"># temporary fix for pickled recommender&#39;s not having a hash</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;results_df_hash&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;self.results_df_hash&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_df_hash</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;newHash == self.results_df_hash&#39;</span><span class="p">,</span><span class="n">newHash</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_df_hash</span><span class="p">)</span>
+        
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;results_df_hash&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">newHash</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_df_hash</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;results_df hashes match&#39;</span><span class="p">)</span>
