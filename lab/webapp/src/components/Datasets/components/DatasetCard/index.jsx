@@ -61,10 +61,10 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 
     function openTrueOrFalse_aiTooglePopup(){
 
-      if (sessionStorage.getItem("aiTooglePopup") == "true" ){
+      if (localStorage.getItem("aiTooglePopup") == "true" ){
         return false;
       }
-      // if sessionStorage does not have aiTooglePopup
+      // if localStorage does not have aiTooglePopup
 
       // document.getElementById("addNewPopup").style.cssText include "display: none;"
       
@@ -78,10 +78,10 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 
     function openTrueOrFalse_buildNewExpPopup(){
 
-      if (sessionStorage.getItem("buildNewExpPopup") == "true" ){
+      if (localStorage.getItem("buildNewExpPopup") == "true" ){
         return false
       }
-      // if sessionStorage does not have buildNewExpPopup
+      // if localStorage does not have buildNewExpPopup
       else {
         return true;
       }
@@ -145,9 +145,9 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
                 // document.getElementById("buildNewExpPopup").style.cssText += ';display:block !important;';
               
                  // save flag to local storage to avoid showing the popup again
-              sessionStorage.setItem("aiTooglePopup", "true");
+              localStorage.setItem("aiTooglePopup", "true");
               // show the local storage on the console
-              console.log("aiTooglePopup", sessionStorage.getItem("aiTooglePopup"));
+              console.log("aiTooglePopup", localStorage.getItem("aiTooglePopup"));
 
 
 
@@ -194,9 +194,9 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
             content="Build New Experiment"
             onClick = { () =>
               {
-                sessionStorage.setItem("addNewPopup", "true");
-                sessionStorage.setItem('aiTooglePopup', 'true');
-                sessionStorage.setItem('buildNewExpPopup', 'true');
+                localStorage.setItem("addNewPopup", "true");
+                localStorage.setItem('aiTooglePopup', 'true');
+                localStorage.setItem('buildNewExpPopup', 'true');
                 
               }
             }
@@ -241,16 +241,16 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 
 
                  // save flag to local storage to avoid showing the popup again
-                 sessionStorage.setItem("buildNewExpPopup", "true");
+                 localStorage.setItem("buildNewExpPopup", "true");
 
-                //  sessionStorage.setItem("aiTooglePopup", "true");
+                //  localStorage.setItem("aiTooglePopup", "true");
 
-                //  sessionStorage.setItem("addNewPopup", "true");
+                //  localStorage.setItem("addNewPopup", "true");
 
 
 
                  // show the local storage on the console
-                 console.log("buildNewExpPopup", sessionStorage.getItem("buildNewExpPopup"));
+                 console.log("buildNewExpPopup", localStorage.getItem("buildNewExpPopup"));
 
 
 

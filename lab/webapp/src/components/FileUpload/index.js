@@ -144,6 +144,7 @@ class FileUpload extends Component {
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
+    localStorage.setItem("predictionType", this.defaultPredictionType);
 
     // help text for dataset upload form - dependent column, categorical & ordinal features
     this.depColHelpText = `The column that describes the label or output for each row.
@@ -834,6 +835,7 @@ handleclassUserTextOnChange(e) {
     this.setState({
       predictionType: data.value,
     });
+    localStorage.setItem("predictionType", data.value);
   }
 
   /**
@@ -1101,8 +1103,9 @@ handleclassUserTextOnChange(e) {
         this.showErrorModal("Error with file metadata", data.errorResp);
         //Reenable upload button since this error messge is blocking
         this.setState({uploadButtonDisabled:false});
-      } else if(class_name_log===false){
+      } else if(class_name_log===false && localStorage.getItem('predictionType')==="classification"){
 
+        console.log("localStorage.getItem('predictionType')",localStorage.getItem('predictionType'))
         console.log("class_name_log in else if",class_name_log)
         this.showErrorModal("Error with class name", "Please write a class name for your dataset");
         this.setState({uploadButtonDisabled:false});
@@ -1115,6 +1118,7 @@ handleclassUserTextOnChange(e) {
           //let resp = Object.keys(this.props.dataset.fileUploadResp);
           let resp = this.props.dataset.fileUploadResp;
           let errorRespObj = this.props.dataset.fileUploadError;
+          console.log("localStorage.getItem('predictionType')",localStorage.getItem('predictionType'))
 
           console.log("resp",resp)
           console.log("errorRespObj",errorRespObj)
@@ -1136,6 +1140,10 @@ handleclassUserTextOnChange(e) {
           
           // circling
           // if (!errorRespObj && resp.dataset_id)
+
+          if (localStorage.getItem('predictionType')==="regression") {
+            class_name_log="regression"
+          }
           
           // 
           if (!errorRespObj && resp.dataset_id && class_name_log) 
