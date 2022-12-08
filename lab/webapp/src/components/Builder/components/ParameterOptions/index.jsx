@@ -42,7 +42,7 @@ function ParameterOptions({
 
   function openTrueOrFalse_param_popup()
   {
-    if (sessionStorage.getItem("param-popup") == "true"){
+    if (localStorage.getItem("param-popup") == "true"){
       return false;
     }
     else{
@@ -132,9 +132,9 @@ function ParameterOptions({
           
             document.getElementById("param-popup").style.cssText += ';display:none !important;';
 
-            sessionStorage.setItem("param-popup", "true");
+            localStorage.setItem("param-popup", "true");
               // show the local storage on the console
-            console.log("param-popup", sessionStorage.getItem("param-popup"));
+            console.log("param-popup", localStorage.getItem("param-popup"));
 
 
             // get class name content under id aiTooglePopup
