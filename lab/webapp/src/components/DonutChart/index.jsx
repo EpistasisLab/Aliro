@@ -34,8 +34,8 @@ import d3 from 'd3';
 // working version
 class DonutChart extends Component {
   componentDidMount() {
-    const { expList, chartKey, chartColor, min, max, dataname } = this.props;
-    expList && dataname && this.renderChart(expList, chartKey, chartColor, min, max, dataname);
+    const { expList, chartKey, chartColor, min, max } = this.props;
+    expList && this.renderChart(expList, chartKey, chartColor, min, max);
   }
 /*
 colors: {
@@ -48,7 +48,7 @@ use anonymous function to 'disable' interaction
 look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 */
 
-  renderChart(expList, chartKey, chartColor, min, max, dataname) {
+  renderChart(expList, chartKey, chartColor, min, max) {
     // window.console.log('exp list: ');
     window.console.log('expList: ', expList);
     // print d3 version
@@ -56,122 +56,17 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     // print c3 version
     window.console.log('c3 version: ', c3.version);
 
-    window.console.log('dataname', dataname);
-
     // for each row in expList, get the key value pair
 
     const data = expList.map((exp) => 
     {
      
-
       if (exp[0].includes('class') === false) {
         
-        // window.console.log('exp[0]: ', exp[0]);
-        // exp[0] = `class_${exp[0]}`;
-
+        window.console.log('exp[0]: ', exp[0]);
+        exp[0] = `class_${exp[0]}`;
         
-        
-      
-
-        // get class_and_file from session storage
-        const class_and_file = localStorage.getItem('class_and_file')
-
-        // split class_and_file with *
-        const class_and_file_split_star = class_and_file.split('*')
-
-        // remove elements which has null
-        
-
-        // find element which has dataname
-        const class_and_file_split_star_find = class_and_file_split_star.find((element) => element.includes(dataname))
-
-
-        console.log("class_and_file_split_star_find", class_and_file_split_star_find)
-
-
-
-
-        const class_and_file_split = class_and_file_split_star_find.split('&')
-
-        window.console.log('class_and_file_split-donut: ', class_and_file_split);
-        console.log('class_and_file_split[1]', class_and_file_split[1])
-
-        if (class_and_file_split[1] === dataname) {
-          // exp[0] = class_and_file_split[1];
-          console.log("class_and_file_split[1] === dataname ");
-        
-          // calculate the length of class_and_file_split
-          const class_and_file_split_length = class_and_file_split.length
-          // get the last element of class_and_file_split
-          const dataname_from_session_storage = class_and_file_split[class_and_file_split_length - 1]
-          console.log('dataname_from_session_storage: ', dataname_from_session_storage)
-
-          // console.log('dataname in ', dataname)
-          
-          const class_and_file_split_without_last_element = class_and_file_split.slice(0, class_and_file_split_length - 1)
-          console.log('class_and_file_split_without_last_element',class_and_file_split_without_last_element)
-
-          // slipt class_and_file_split_without_last_element with ,
-          const class_and_file_split_without_last_element_split = class_and_file_split_without_last_element.join(',').split(',')
-
-          // console.log('class_and_file_split_without_last_element_split',class_and_file_split_without_last_element_split)
-          
-          console.log('class_and_file_split_without_last_element_split',class_and_file_split_without_last_element_split)
-
-          // make key value pair using class_and_file_split_without_last_element_split
-
-
-          // class_and_file_split_without_last_element_split 
-          for (let i = 0; i < class_and_file_split_without_last_element_split.length; i++) {
-            
-
-            // exp[0] to string
-            const exp0 = exp[0].toString()
-            // console.log('exp0', exp0)
-
-            // class_and_file_split_without_last_element_split[i]
-            // console.log('class_and_file_split_without_last_element_split[i]', class_and_file_split_without_last_element_split[i])
-
-
-
-            console.log('class_and_file_split_without_last_element_split[i] and exp0:', class_and_file_split_without_last_element_split[i], exp0)
-
-            // spilit class_and_file_split_without_last_element_split[i] with :
-            const class_and_file_split_without_last_element_split_split = class_and_file_split_without_last_element_split[i].split(':')
-
-            console.log('class_and_file_split_without_last_element_split_split', class_and_file_split_without_last_element_split_split)
-
-            console.log('class_and_file_split_without_last_element_split_split[0]', class_and_file_split_without_last_element_split_split[0])
-
-            // remove any space in class_and_file_split_without_last_element_split_split[0]
-            const class_and_file_split_without_last_element_split_split_0 = class_and_file_split_without_last_element_split_split[0].replace(/\s/g, '')
-
-            // if (class_and_file_split_without_last_element_split[i].includes(exp0)) {
-            if (class_and_file_split_without_last_element_split_split_0 === exp0) {
-
-              console.log('class_and_file_split_without_last_element_split_split_0 === exp0:', class_and_file_split_without_last_element_split_split_0, exp0)
-
-
-              // split with :
-              // const class_and_file_split_without_last_element_split_split = class_and_file_split_without_last_element_split[i].split(':')
-              // console.log('class_and_file_split_without_last_element_split_split',class_and_file_split_without_last_element_split_split)
-              // console.log('class_and_file_split_without_last_element_split_split[1]',class_and_file_split_without_last_element_split_split[1])
-            
-              // class_and_file_split_without_last_element_split_split[1]
-              exp[0] = `class_${class_and_file_split_without_last_element_split_split[1]}`;
-            }
-            }
-
-        }
-
-       
-      
       }
-    
-
-
-
-
 
     });
 
@@ -245,7 +140,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   render() {
     return (
-      <div className={`donut ${this.props.chartKey}` } />
+      <div className={`donut ${this.props.chartKey}`} />
     );
   }
 }

@@ -93,15 +93,9 @@ class FileUpload extends Component {
     this.handleCatFeaturesUserTextBlur = this.handleCatFeaturesUserTextBlur.bind(this);
     this.handleCatFeaturesUserTextAccept = this.handleCatFeaturesUserTextAccept.bind(this);
     this.handleCatFeaturesUserTextCancel = this.handleCatFeaturesUserTextCancel.bind(this);
-
     this.handleOrdinalFeaturesUserTextAccept = this.handleOrdinalFeaturesUserTextAccept.bind(this);
     this.handleOrdinalFeaturesUserTextCancel = this.handleOrdinalFeaturesUserTextCancel.bind(this);
     this.handleOrdinalFeaturesUserTextOnChange = this.handleOrdinalFeaturesUserTextOnChange.bind(this);
-
-    this.handleclassUserTextAccept = this.handleclassUserTextAccept.bind(this);
-    this.handleclassUserTextCancel = this.handleclassUserTextCancel.bind(this);
-    this.handleclassUserTextOnChange = this.handleclassUserTextOnChange.bind(this);
-
     this.handlePredictionType = this.handlePredictionType.bind(this);
     this.getHeaderRowCells = this.getHeaderRowCells.bind(this);
     this.getDataTablePreview = this.getDataTablePreview.bind(this);
@@ -121,7 +115,6 @@ class FileUpload extends Component {
     this.ordinalFeaturesObjectToUserText = this.ordinalFeaturesObjectToUserText.bind(this);
     this.validateFeatureName = this.validateFeatureName.bind(this);
     this.getUserFeatureTypeControls = this.getUserFeatureTypeControls.bind(this);
-    this.getUserFeatureClassControls = this.getUserFeatureClassControls.bind(this);
     this.getUserDatasetOptions = this.getUserDatasetOptions.bind(this);
     this.getFeatureType = this.getFeatureType.bind(this);
     this.getFeatureIndex = this.getFeatureIndex.bind(this);
@@ -135,7 +128,6 @@ class FileUpload extends Component {
     this.getElapsedTime = this.getElapsedTime.bind(this);
     this.getOridinalRankingDialog = this.getOridinalRankingDialog.bind(this);
     this.getOrdinalFeaturesUserTextModal = this.getOrdinalFeaturesUserTextModal.bind(this);
-    this.getClassUserTextModal = this.getClassUserTextModal.bind(this);
     this.getCatFeaturesUserTextModal = this.getCatFeaturesUserTextModal.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.enableKeyDownHandler = this.enableKeyDownHandler.bind(this);
@@ -144,7 +136,6 @@ class FileUpload extends Component {
     //this.cleanedInput = this.cleanedInput.bind(this)
 
     this.defaultPredictionType = "classification"
-    localStorage.setItem("predictionType", this.defaultPredictionType);
 
     // help text for dataset upload form - dependent column, categorical & ordinal features
     this.depColHelpText = `The column that describes the label or output for each row.
@@ -170,25 +161,6 @@ class FileUpload extends Component {
     1) In the text input box opened by the button to the left, using the format described in the box <br/>
     2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
     using the drag-and-drop list of unique categories.</p>);
-
-
-
-  // this.classHelpText = (<p>Class~~~~~. Ordinal features have a discrete number of categories,
-  // and the categories have a logical order (rank). Some examples include size ("small",
-  // "medium", "large"), or rank results ("first", "second", "third").
-  // <br/><br/>
-  // You can specify these features and their rank in two ways:<br/>
-  // 1) In the text input box opened by the button to the left, using the format described in the box <br/>
-  // 2) or, in the Dataset Preview table below: use the dropdown boxes to specify ordinal features, then rank them
-  // using the drag-and-drop list of unique categories.</p>);
-
-
-  this.classHelpText = (<p>Class has a discrete number of categories in the dataset, and the categories can be written with natural language to help users to understand the data. For example, if the dataset has 3 classes such as 0,1, and2, and each class represents tiger, dog, and cat, the classes can be named as "tiger", "dog", and "cat".
-   <br/><br/>
-   You can name the classes in the below way:<br/>
-   1) In the text input box opened by the button to the left, using the format described in the box <br/>
-
-  </p>);
 
     //Debug
     this.isDevBuild = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development');
@@ -541,13 +513,6 @@ class FileUpload extends Component {
        *  Must be kept in sync with ordinalFeaturesObject */
       ordinalFeaturesUserText: '',
       ordinalFeaturesUserTextModalOpen: false,
-
-
-      classUserText: '',
-      classUserTextModalOpen: false,
-
-
-      // oridinal
       /** {object} Object used as dictionary to track the features designated as ordinal by user via dataset preview UI.
        *  key: feature name from dataPreview
        *  value: string-array holding possibly-ordered unique values for the feature.
@@ -556,21 +521,15 @@ class FileUpload extends Component {
        *  Using objects as dictionary: https://pietschsoft.com/post/2015/09/05/javascript-basics-how-to-create-a-dictionary-with-keyvalue-pairs
        */
       ordinalFeaturesObject: {},
-      classObject: {},
       /** Holds previous versions of ordinal feature value orderings, so that they can be restored if 
        *  user has defined them, then changed feature type, then goes back to type ordinal.
        */
       ordinalFeaturesObjectPrev: {},
-      classObjectPrev: {},
-
       /** {string} The ordinal feature that is currently being ranked by sortable list, when sortable list is active. */
       ordinalFeatureToRank: undefined,
-      classToRank: undefined,
       /** {array} Array of unique (and possibly sorted) values for the ordinal feature currently being ranked. This gets
        *  modified while user is ranking the values, and then stored to state if user finalizes changes. */
       ordinalFeatureToRankValues: [],
-      classToRankValues: [],
-      
       allFeaturesMenuOpen: false,
       predictionType: this.defaultPredictionType,
       /** {string} Used in unit testing to test state retrieval */
@@ -618,7 +577,6 @@ class FileUpload extends Component {
     if(event.keyCode === 27 ) {
       this.handleOrdinalRankCancel();
       this.handleOrdinalFeaturesUserTextCancel();
-      this.
       this.handleCatFeaturesUserTextCancel();
     }
   }
@@ -765,77 +723,10 @@ handleCatFeaturesUserTextCancel() {
     });
   }
 
-
-
-
-
-
-
-
-
-/** Handler for accepting button to accept class user text element.
-   *  Examine and validate the contents. 
-   *  If valid, ingest the text and update the ordinal features.
-   *  If invalid, show an error message.
-   * @param {Event} e - DOM Event from user interacting with UI text field
-   * @returns {void} - no return value
-  */
-//  handleOrdinalFeaturesUserTextAccept(e) {
-  handleclassUserTextAccept(e) {
-  //Validate the whole text
-  // let result = this.ordinalFeaturesUserTextValidate();
-  let result = this.classUserTextValidate();
-  if( result.success ) {
-    // this.ordinalFeaturesUserTextIngest();
-    this.classUserTextIngest();
-    // this.setState({ordinalFeaturesUserTextModalOpen: false})
-    this.setState({classUserTextModalOpen: false})
-  }
-  else {
-    //On error, the modal window showing the text input will stay open, so user
-    // must either cancel or correct the error
-    // this.showErrorModal("Error in Ordinal Feature text entry", result.message);
-    this.showErrorModal("Error in Class text entry", result.message);
-    // console.log("Error validating ordinal feature user text: " + result.message);
-    console.log("Error validating class text: " + result.message);
-  }
-}
-
-/** Handle cancel but for ordinal user text modal. 
- *  Resets ordinalFeaturesUserText to state from ordinalFeaturesObject */
-// handleOrdinalFeaturesUserTextCancel() {
-handleclassUserTextCancel() {
-  // console.log("cancel button clicked");
-  this.setState({
-    // ordinalFeaturesUserText: this.ordinalFeaturesObjectToUserText(),
-    classUserText: this.classUserTextObjectToUserText(),
-    // ordinalFeaturesUserTextModalOpen: false,
-    classUserTextModalOpen: false,
-  })
-}
-
-/** Handle text change in the class user text input. 
- *  Simply stores the current value for use if user accepts the input. */
-// handleOrdinalFeaturesUserTextOnChange(e) {
-handleclassUserTextOnChange(e) {
-  this.setState({
-    // ordinalFeaturesUserText: e.target.value,
-    classUserText: e.target.value,
-  });
-}
-
-
-
-
-
-
-
-
   handlePredictionType(e, data) {
     this.setState({
       predictionType: data.value,
     });
-    localStorage.setItem("predictionType", data.value);
   }
 
   /**
@@ -1069,154 +960,32 @@ handleclassUserTextOnChange(e) {
     const { uploadDataset } = this.props;
     // only attempt upload if there is a selected file with a filename
     if(this.state.selectedFile && this.state.selectedFile.name) {
-
-
-
-
-
-      // console.log("localStorage.getItem('class')) ",localStorage.getItem('class'))
-      // // if "class" is not in the session storage
-      // if(!localStorage.getItem('class')) {
-
-      //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-
-      //   this.setState({uploadButtonDisabled:false});
-      // }
-
-
-
-
-      
-
       let data = this.generateFileData(); // should be FormData
-
-
-      var class_name_log = true
-      if (localStorage.getItem('class')===null) {
-            console.log("localStorage.getItem('class')",localStorage.getItem('class'))
-            class_name_log = false
-      }
-
-
       // if trying to create FormData results in error, don't attempt upload
       if (data.errorResp) {
         this.showErrorModal("Error with file metadata", data.errorResp);
         //Reenable upload button since this error messge is blocking
         this.setState({uploadButtonDisabled:false});
-      } else if(class_name_log===false && localStorage.getItem('predictionType')==="classification"){
-
-        console.log("localStorage.getItem('predictionType')",localStorage.getItem('predictionType'))
-        console.log("class_name_log in else if",class_name_log)
-        this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-        this.setState({uploadButtonDisabled:false});
-
-      }
-      else {
+      } else {
         // after uploading a dataset request new list of datasets to update the page
         uploadDataset(data).then(stuff => {
           //window.console.log('FileUpload props after download', this.props);
           //let resp = Object.keys(this.props.dataset.fileUploadResp);
           let resp = this.props.dataset.fileUploadResp;
           let errorRespObj = this.props.dataset.fileUploadError;
-          console.log("localStorage.getItem('predictionType')",localStorage.getItem('predictionType'))
 
-          console.log("resp",resp)
-          console.log("errorRespObj",errorRespObj)
-
-          console.log("localStorage.getItem('class')",localStorage.getItem('class'))
-          console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
-          
-
-          // var class_name_log = true
-          // if (localStorage.getItem('class')===null) {
-          //   console.log("localStorage.getItem('class')",localStorage.getItem('class'))
-          //   class_name_log = false
-          // }
-          
           // if no error message and successful upload (indicated by presence of dataset_id)
           // 'refresh' page when upload response from server is not an error and
           // redirect to dataset page, when error occurs set component state
           // to display popup containing server/error response
-          
-          // circling
-          // if (!errorRespObj && resp.dataset_id)
-
-          if (localStorage.getItem('predictionType')==="regression") {
-            class_name_log="regression"
-          }
-          
-          // 
-          if (!errorRespObj && resp.dataset_id && class_name_log) 
-          {
-
-            console.log("errorRespObj",errorRespObj)
-            console.log("resp.dataset_id",resp.dataset_id)
-            console.log("class_name_log",class_name_log)
-
-
+          if (!errorRespObj && resp.dataset_id) {
             this.props.fetchDatasets();
             window.location = '#/datasets';
             this.setState({uploadButtonDisabled:false});
-
-
-            localStorage.removeItem("selectedFile_name");
-            localStorage.setItem("selectedFile_name", this.state.selectedFile.name);
-
-            // get class from selectedFile_name
-            let class_string = localStorage.getItem("class");
-
-            
-
-            // combine class and this.state.selectedFile.name
-            // let class_and_file = class_string + "&" + this.state.selectedFile.name;
-
-            let class_and_file = class_string + "&" + this.state.selectedFile.name;
-
-            // if "class_and_file" is in localStorage, get the value
-            if (localStorage.getItem("class_and_file")) {
-              console.log("class_and_file is in localStorage");
-              let value = localStorage.getItem("class_and_file");
-              value = value +"*"+class_and_file
-              localStorage.setItem("class_and_file", value);
-
-              // remove "class" from localStorage
-              localStorage.removeItem("class");
-
-            } else {
-              // store class_and_file in localStorage
-              localStorage.setItem("class_and_file", class_and_file);
-              localStorage.removeItem("class");
-            }
-
-
-
-
-          } 
-          // else if (!localStorage.getItem('class')) {
-            
-          //   this.showErrorModal("Error with class name", "Please write a class name for your dataset");
-    
-          //   this.setState({uploadButtonDisabled:false});
-          // }
-
-          // if there is no 'class' in localStorage, 
-          // make the Upload dataset button disabled
-          // console.log(localStorage.getItem('class'));
-          // else if (true) {
-          //   console.log("localStorage.getItem('class')",localStorage.getItem('class'))
-          //   console.log("uploadButtonDisabled",this.state.uploadButtonDisabled)
-          //   this.setState({uploadButtonDisabled:true});
-          // }
-
-          else 
-          {
-            
+          } else {
             this.showErrorModal("Error Uploading Data", errorRespObj.errorResp.error || "Something went wrong");
             this.setState({uploadButtonDisabled:false});
-            
           }
-
-          
         });
       }
 
@@ -1540,20 +1309,6 @@ handleclassUserTextOnChange(e) {
     return result;
   }
 
-
-    /** From state, convert the lists of unique values for classes into a string with
-   * the ordinal feature name and its values, one per line.
-   * @returns {string} - multi-line string with one ordinal feature and its unique values, comma-separated, per line
-  */
-  classUserTextObjectToUserText() {
-    let result = "";
-    for(var feature in this.state.classUserTextObject) {
-      let values = this.state.classUserTextObject[feature];
-      result += feature + ',' + values.join() + '\n';
-    }
-    return result;
-  }
-
   /** Parse a single line of user text for specifying ordinal features. 
    *  Expects a comma-separated string of 2 or more field, with format 
    *    <feature name string>,<unique value 1>,<unique value 2>,...
@@ -1571,33 +1326,6 @@ handleclassUserTextOnChange(e) {
     });
     return {feature: feature, values: values}
   }
-
-
-    /** Parse a single line of user text for specifying ordinal features. 
-   *  Expects a comma-separated string of 2 or more field, with format 
-   *    <feature name string>,<unique value 1>,<unique value 2>,...
-   *  Leading and trailing whitespace is removed on the whole line and for each comma-separated item
-   * Does not do any validation
-   * @param {string} line - single line of user text for ordinal feature specification
-   * @returns {object} - {feature: <feature name string>, values: <string array of unique values>}
-  */
-    classUserTextParse(line) {
-    // let feature = line.split(",")[0].trim();
-    // let values = line.split(",").slice(1);
-    // line is class_0:A,class_1:B,class_2:C
-    let feature = line.split(":")[0].trim();
-    let values = line.split(":")[1].split(",");
-    //Remove leading and trailing white space from each element
-    values = values.map(function (el) {
-      return el.trim();
-    });
-    return {feature: feature, values: values}
-  }
-
-
-
-
-
 
   /** Take a SINGLE-line string for a SINGLE feature, of the format used in the UI box for a user to specify an ordinal feature and  
    *  the order of its unique values, and check whether it's valid. The contained feature name must exist and the specifed
@@ -1633,69 +1361,6 @@ handleclassUserTextOnChange(e) {
     return {success: true, message: ""}
   }
 
-
-
-
-
-
-
-
-  /** Take a SINGLE-line string for a SINGLE feature, of the format used in the UI box for a user to specify class and  
-   *  the order of its unique values, and check whether it's valid. The contained feature name must exist and the specifed
-   *  unqiue values must all exactly match (regardless of order) the unqiue values for the feature in the data.
-   * @param {string} string - the string holding the user's specification 
-   * @returns {object} - {success:[true|false], message: <relevant error message on failure>
-   */
-  //  ordinalFeatureUserTextLineValidate(string) {
-  classFeatureUserTextLineValidate(string) {
-      // console.log(string)
-    if( string.length === 0 ) {
-      return {success: true, message: ""}
-    }
-    //Parse the line
-    // let ordObj = this.ordinalFeaturesUserTextParse(string);
-    let ordObj = this.classUserTextParse(string);
-    //Make sure feature name is valid
-    // if( !this.validateFeatureName(ordObj.feature) ) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' was not found in the data."}
-    // }
-
-    //Make sure the feature name is not assigned as the dependent column
-    // if( this.getDependentColumn() === ordObj.feature ) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' is currently assigned as the Target Column."};
-    // }
-    //The remaining items are the unique values
-    // if( ordObj.values === undefined || ordObj.values.length === 0) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "' - no values specified"}
-    // }
-    //Make sure the passed list of unique values matches the unique values from data,
-    // ignoring order
-    // let dataValues = this.getUniqueValuesForFeature(ordObj.feature);
-    // if( dataValues.sort().join() !== ordObj.values.sort().join()) {
-    //   return {success: false, message: "Feature '" + ordObj.feature + "': categories do not match (regardless of order) the unique values in the data: " + dataValues + "."}
-    // }
-    //Otherwise we're good!
-    // return {success: true, message: ""}
-    // console.log(string)
-    // save experiment.data._id and string to the session stroage
-    // localStorage.setItem("data_id", this.experiment.data._id);
-    // this.state.selectedFile.name
-    // check if selectedFile_name is in the session storage
-    // if yes, then update the string
-    // if no, then create a new key-value pair
-
-    // remove selectedFile_name from session storage
-    // localStorage.removeItem("selectedFile_name");
-
-    // localStorage.setItem("selectedFile_name", this.state.selectedFile.name);
-    localStorage.setItem("class", string);
-    console.log("success to store data_id and class in session storage")
-    // current data name
-    // experiment.data._id
-    // localStorage.setItem("class", string);
-    return {success: true, message: string}
-  }
-
   /** Validate the whole text input for specify ordinal features 
    * Uses the current state var holding the ordinal features user text.
    * @returns {object} - {success: [true|false], message: <error message>}
@@ -1712,34 +1377,6 @@ handleclassUserTextOnChange(e) {
       if(line === "")
         return;
       let result = this.ordinalFeatureUserTextLineValidate(line);
-      if(result.success === false){
-        success = false;
-        message += result.message + "\n";
-      }
-    })
-    return {success: success, message: message}
-  }
-
-    /** Validate the whole text input for specify class 
-   * Uses the current state var holding the ordinal features user text.
-   * @returns {object} - {success: [true|false], message: <error message>}
-  */
-  // ordinalFeaturesUserTextValidate() {
-  classUserTextValidate() {
-    //Return true if empty
-    // if(this.state.ordinalFeaturesUserText === ""){
-    if(this.state.classUserText === ""){
-      return {success: true, message: ""}
-    }
-    let success = true;
-    let message = "";
-    //Check each line individually
-    // this.state.ordinalFeaturesUserText.split(/\r?\n/).map((line) => {
-    this.state.classUserText.split(/\r?\n/).map((line) => {
-      if(line === "")
-        return;
-      // let result = this.ordinalFeatureUserTextLineValidate(line);
-      let result = this.classFeatureUserTextLineValidate(line);
       if(result.success === false){
         success = false;
         message += result.message + "\n";
@@ -1770,36 +1407,6 @@ handleclassUserTextOnChange(e) {
     //console.log("ingest: ordinals: ");
     //console.log(this.state.ordinalFeaturesObject);
   }
-
-
-
-
-  /** Process the current class user text state variable to create
-   *  relevant state data variables.
-   *  Overrides any existing values in ordinalFeaturesObject
-   *  Operates only on state variables.
-   *  Does NOT perform any validation on the user text
-   * @returns {null} 
-   */
-   classUserTextIngest() {
-    // Get the lines before clearing ordinal features to default. Otherwise can
-    // end up clearing ordinalFeaturesUserText in some cases.
-    let lines = this.state.classUserText.split(/\r?\n/);
-    // this.ordinalFeaturesClearToDefault();
-    // this.ordinalFeaturesClearToDefault();
-    //Process each line individually
-    lines.map((line) => {
-      if(line != "") {
-        // let ordObj = this.ordinalFeaturesUserTextParse(line);
-        let ordObj = this.classUserTextParse(line);
-        // this.setFeatureType(ordObj.feature, this.featureTypeOrdinal, ordObj.values);       
-      }
-    })    
-    //console.log("ingest: ordinals: ");
-    //console.log(this.state.ordinalFeaturesObject);
-  }
-
-  
 
   /** Helper method to generate a segment with a button that opens
    *  Sortable List popups for ordering an ordinal feature.
@@ -2297,65 +1904,6 @@ handleclassUserTextOnChange(e) {
     return content;
   }
 
-  
-
-
-  getUserFeatureClassControls() {
-
-    let itemContent=(
-      <React.Fragment>
-        {'Numeric / Categorical'}
-        <div>(auto-detect)</div>
-      </React.Fragment>
-    )
-
-    let content = (
-      //---- Ordinal Feature Text Input ----
-      <div>
-      <Grid columns={3}>
-        <Grid.Row>
-        <Grid.Column>
-          <Form.Input>
-            <Button
-              id="class_text_input_open_button"
-              color='blue'
-              size='small'
-              fluid
-              inverted
-              // disabled={this.state.ordinalFeatureToRank !== undefined}
-              className="file-upload-button"
-              content="Set Class names"
-              onClick={() => this.setState({classUserTextModalOpen: !this.classUserTextModalOpen})}
-            />
-            <Popup
-              on="click"
-              position="right center"
-              header="Class Help"
-              content={
-                <div className="content">
-                {/* {this.ordFeatHelpText}*/}
-                {this.classHelpText}
-                </div>
-              }
-              trigger={
-                <Icon
-                  inverted
-                  size="large"
-                  color="blue"
-                  name="info circle"
-                />
-              }
-            />
-          </Form.Input>
-        </Grid.Column>
-        
-        </Grid.Row>
-      </Grid>
-      </div>
-    )
-    return content;
-  }
-
   /** Return the UI for ranking ordinal features via drag-and-drop 
    *  NOTE there was a lot of trouble getting styling of this sortable list to work
    *  properly in the Semantic UI Modal element, so do it just this simple way as
@@ -2534,59 +2082,6 @@ handleclassUserTextOnChange(e) {
     )
   }
 
-  getClassUserTextModal() {
-    return(
-      <div className="file-upload-centered-div">
-        <Segment raised compact>
-          <SceneHeader header="Class Specification"/>
-          <Segment className="file-upload-feature-text-info">
-            <p> For each class, enter one comma-separated line with the following format: <br/>
-              &emsp;[first category value:first class name],[second catergory value: second category value] ,...</p>
-            <p>For example:<br/>
-              &emsp;-1: dead, 1:survive<br/>
-              </p>
-            {/* <p>To populate this text box with all features and their unique values, close this window and use the button to set all feature types as ordinal. </p> */}
-            <br/>
-          </Segment>
-          <Segment>
-            <textarea
-              className="file-upload-feature-text-input"
-              id="Class_text_area_input"
-              label="Class"
-              // onChange={this.handleOrdinalFeaturesUserTextOnChange}
-              onChange={this.handleclassUserTextOnChange}
-              // placeholder={this.ordinalFeaturesObjectToUserText().length === 0 ? "(No Ordinal features have been specified.)" : "" }
-              placeholder={this.state.classUserText.length === 0 ? "(No Class has been specified.)" : "" }
-              // value={this.state.ordinalFeaturesUserText}
-              value={this.state.classUserText}
-              autoFocus
-              rows={10}
-            />
-          </Segment>
-          <Button
-            id="ordinal_features_user_text_accept_button"
-            className='file-upload-pseudo-dialog-button'
-            content="Accept"
-            icon='checkmark'
-            // onClick={this.handleOrdinalFeaturesUserTextAccept}
-            onClick={this.handleclassUserTextAccept}
-            color="blue"
-            inverted
-          />
-          <Button
-            id="ordinal_features_user_text_cancel_button" 
-            className='file-upload-pseudo-dialog-button'
-            color='red' 
-            // onClick={this.handleOrdinalFeaturesUserTextCancel}
-            onClick={this.handleclassUserTextCancel}
-            content="Cancel"
-            inverted
-          />
-        </Segment>
-      </div>
-    )
-  }
-
   handleErrorModalClose(){
     this.setState({
       showErrorModal: false,
@@ -2632,7 +2127,6 @@ handleclassUserTextOnChange(e) {
     let errorContent;
     let dataPrevTable = this.getDataTablePreview();
     let userFeatureTypeControls = this.getUserFeatureTypeControls();
-    let userFeatureClassControls = this.getUserFeatureClassControls();
     let userDatasetOptions = this.getUserDatasetOptions();
 
     // default to hidden until a file is selected, then display input areas
@@ -2958,13 +2452,6 @@ handleclassUserTextOnChange(e) {
     if(this.state.ordinalFeaturesUserTextModalOpen) {
       return this.getOrdinalFeaturesUserTextModal();
     }
-
-    //Show pseudo-modal window for class specifications.
-    if(this.state.classUserTextModalOpen) {
-      return this.getClassUserTextModal();
-    }
-
-
 
     //Show pseudo-modal window for textual input of categorical feature specifications.
     if(this.state.catFeaturesUserTextModalOpen) {
@@ -3414,22 +2901,12 @@ handleclassUserTextOnChange(e) {
             {/*dropdowns for selecting dep. feature and prediction type*/}
             {userDatasetOptions}
 
-
             {/*buttons for specifying feature types*/}
             <Form.Field
                 label="Features Types"
                 style={{marginTop: '1em'}}
-                // curdataname={experiment.data._id}
             />
             {userFeatureTypeControls}
-
-            {/*buttons for specifying feature and class*/}
-            <Form.Field
-                label="Class name"
-                style={{marginTop: '1em'}}
-                // curdataname={experiment.data._id}
-            />
-            {userFeatureClassControls}
 
             {/*upload button*/}
             <Divider inverted horizontal>
@@ -3439,10 +2916,7 @@ handleclassUserTextOnChange(e) {
             <Form.Field style={{float: 'right'}}>
               {/* Cancel button */}
               <Button 
-                // onClick={() => this.resetState()}
-                // when click on cancel button, this.resetState() will be called and "class" in session storage will be removed if the "class" exists in the session storage.
-                onClick={() => {this.resetState(); localStorage.removeItem("class");}}
-                
+                onClick={() => this.resetState()}
                 inverted               
                 className="file-upload-button"
                 color='red' 
@@ -3470,7 +2944,7 @@ handleclassUserTextOnChange(e) {
 
 
             
-            content={this.state.selectedFile == null ? "Upload your file." : "Set target, prediction type, feature types, and click the 'upload dataset' button. Please make sure that you set the class name."}
+            content={this.state.selectedFile == null ? "Upload your file." : "Set target, prediction type, feature types, and click the 'upload dataset' button."}
             
             // content={this.targetSelected  == null  ? "Set prediction type, feature types, and upload." : "Set target, prediction type, feature types, and upload."}
             // content="Upload a csv or tsv file"??

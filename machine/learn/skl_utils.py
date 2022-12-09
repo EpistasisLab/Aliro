@@ -37,11 +37,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder
 from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold, KFold
 from sklearn.metrics import SCORERS, roc_curve, auc, make_scorer, confusion_matrix
-
-from sklearn.manifold import TSNE
-from sklearn.model_selection import learning_curve
-from sklearn import decomposition
-
 import itertools
 import json
 import os
@@ -51,12 +46,10 @@ import shap
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-
+from sklearn import decomposition
 import matplotlib.colors as mcolors
 from matplotlib.patches import Patch
-
-
-
+from sklearn.manifold import TSNE
 
 mpl.use('Agg')
 
@@ -498,7 +491,6 @@ def generate_results(model, input_data,
     scores['dtree_train_score'] = dtree_train_score
 
     if mode == 'classification':
-        # this
         plot_confusion_matrix(tmpdir,
                               _id,
                               features,
@@ -506,14 +498,11 @@ def generate_results(model, input_data,
                               model.classes_,
                               cv_scores,
                               figure_export)
-       
-        # this
-        plot_pca_2d(tmpdir,_id,features,target)
+        # plot pca
         
+        plot_pca_2d(tmpdir,_id,features,target)
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
-        
-        # this
         plot_tsne(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
@@ -1088,14 +1077,15 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.yticks(range(num_bar), feature_names[indices])
     plt.ylim([-1, num_bar])
     h.tight_layout()
-    # plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/imp_score_' + _id + '.png')
     plt.close()
     return top_features, indices
 
 def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
-    # Plot learning curve
-    print("Plotting learning curve...")
+    from sklearn.model_selection import learning_curve
+    from matplotlib import pyplot as plt
+    import numpy as np
 
     
     features = np.array(features)
@@ -1137,7 +1127,7 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     
     plt.legend(loc='best')
     # plt.legend(loc="lower right")
-    # plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
 
   
     plt.close()
@@ -1146,9 +1136,6 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     # train_scores_std = np.std(train_scores, axis=1)
     # test_scores_mean = np.mean(test_scores, axis=1)
     # test_scores_std = np.std(test_scores, axis=1)
-
-    # if train_sizes.tolist() has nan, then replace it with 0
-    # check if all of train_sizes.tolist has nan
 
     if np.isnan(train_sizes.tolist()).all():
         #replace nan with -1
@@ -1159,11 +1146,6 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     if np.isnan(test_scores.tolist()).all():
         # replace nan with -1
         test_scores = np.nan_to_num(test_scores, nan=-1)
-
-    # if train_scores
-    print('train_sizes.tolist()',train_sizes.tolist())
-    print('train_scores', train_scores.tolist())
-    print('test_scores', test_scores.tolist())
 
     learning_curve_dict = {
         'train_sizes':train_sizes.tolist(),
@@ -1176,8 +1158,6 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
 
 def plot_pca_2d(tmpdir,_id,features,target):
-
-    print("plot_pca_2d")
     # import numpy as np
     # import matplotlib.pyplot as plt
 
@@ -1191,11 +1171,12 @@ def plot_pca_2d(tmpdir,_id,features,target):
 
     # np.random.seed(5)
 
-
+    # iris = datasets.load_iris()
+    # print(features)
     X = np.array(features)
     y = np.array(target)
     
-    # print(set(y))
+    print(set(y))
 
 
 
@@ -1203,10 +1184,19 @@ def plot_pca_2d(tmpdir,_id,features,target):
 
     plt.cla()
     pca = decomposition.PCA(n_components=2)
+    # pca = decomposition.PCA(n_components=2)
     pca.fit(X)
     X = pca.transform(X)
 
+    # plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap(["black", "green"]))
+
+    # plt.show()
     
+    
+    # version 1 
+    # colors = np.array(["black", "green"])
+    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
+
 
 
     # version 2
@@ -1215,10 +1205,13 @@ def plot_pca_2d(tmpdir,_id,features,target):
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
 
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
-    
+    # plot the legend where the colors are mapped to the classes
     plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
 
-
+    # cb = plt.colorbar()
+    # loc = np.arange(0,max(label),max(label)/float(len(colors)))
+    # cb.set_ticks(loc)
+    # cb.set_ticklabels(colors)
 
     
 
@@ -1227,10 +1220,6 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # write x axis as pc1 and y axis as pc2
     plt.xlabel('PC1')
     plt.ylabel('PC2')
-
-
-
-    plt.close()
 
 
 
@@ -1244,13 +1233,13 @@ def plot_pca_2d(tmpdir,_id,features,target):
     # ax.w_zaxis.set_ticklabels([])
 
     # plt.show()
-    # plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    # plt.close()
+    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
+    plt.close()
 
 
 
     path = tmpdir + _id + '/pcaJson_' + _id + '.json'
-    # import json
+    import json
     
 
 
@@ -1479,8 +1468,6 @@ def plot_tsne(tmpdir,_id,features,target):
     # print(X)
     # print(y)
 
-    print("Plotting t-SNE")
-
     tsne = TSNE(n_components=2, verbose=1, random_state=123)
     X_2d = tsne.fit_transform(X)
 
@@ -1506,7 +1493,7 @@ def plot_tsne(tmpdir,_id,features,target):
 
 
     # plt.show()
-    # plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
+    plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
     plt.close()
 
 
@@ -1514,14 +1501,9 @@ def plot_tsne(tmpdir,_id,features,target):
 
 
     # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
-    # import json
+    import json
     
-    # X_2d
-    print("X_2d",X_2d)
-    print("y",y)
 
-    # X_2d = [1]
-    # y = [1]
 
     # save X and y to json file
     tsne_dict = {
