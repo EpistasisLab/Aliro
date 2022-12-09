@@ -59,7 +59,7 @@ import arrayMove from 'array-move';
 
 
 
-class FileUpload extends Component {
+class FileUploadOrigin extends Component {
 
   
   
@@ -74,7 +74,7 @@ class FileUpload extends Component {
   get featureTypeDefault() {return this.featureTypeNumeric; }
 
   /**
-  * FileUpload reac component - UI form for uploading datasets
+  * FileUploadOrigin reac component - UI form for uploading datasets
   * @constructor
   */
   constructor(props) {
@@ -3018,8 +3018,8 @@ const mapStateToProps = (state) => ({
   dataset: state.dataset
 });
 
-export { FileUpload };
-export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUpload);
+export { FileUploadOrigin };
+export default connect(mapStateToProps, { fetchDatasets, uploadDataset })(FileUploadOrigin);
 
 
 
