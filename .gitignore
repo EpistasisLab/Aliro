@@ -61,4 +61,4 @@ MANIFEST
 .vscode
 
 .xz
-.exe
+*.exe
