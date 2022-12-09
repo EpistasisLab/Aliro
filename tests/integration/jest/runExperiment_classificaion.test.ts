@@ -22,8 +22,7 @@ describe('run experiment', () => {
 	it('run LogisticRegression experiment on banana', async () => {
 		console.log('run LogisticRegression experiment on banana')
 
-		// jest.setTimeout(util.JEST_TIMEOUT)
-		jest.setTimeout(util.JEST_TIMEOUT*10)
+		jest.setTimeout(util.JEST_TIMEOUT)
 		let algoName = 'LogisticRegression'
 		let algoParms = {
 			"penalty": "l1",
@@ -76,7 +75,7 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		// while (experimentResults._status === ('running') && count < 10) {
-			while (experimentResults._status === ('running') && count < 20) {
+		while (experimentResults._status === ('running') && count < 20) {
 			util.delay(10000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
@@ -104,8 +103,7 @@ describe('run experiment', () => {
 	it('run decisionTree experiment with invalid parms on banana', async () => {
 		console.log('run decisionTree experiment with invalid parms on banana')
 
-		// jest.setTimeout(util.JEST_TIMEOUT)
-		jest.setTimeout(util.JEST_TIMEOUT*2)
+		jest.setTimeout(util.JEST_TIMEOUT)
 
 		let algoName = 'LogisticRegression'
 		let algoParms = {
@@ -132,8 +130,6 @@ describe('run experiment', () => {
 	 	expect(algoId).toBeTruthy();
 
 	 	algoParms.dataset = datasetId
-
-		console.log("datasetId",datasetId)
 
 	 	// fetch previously run experiments
 		var prevExperiments = await labApi.fetchExperiments()

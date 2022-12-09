@@ -28,10 +28,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import React from 'react';
 import PropTypes from 'prop-types';
 import InvertedCard from '../../../InvertedCard';
-// import Gauge from '../../../Gauge';
-// import GaugeAll from '../../../GaugeAll';
-// import DonutChart from '../../../DonutChart';
-import ScatterPlot from '../../../ScatterPlot';
+import Gauge from '../../../Gauge';
+import GaugeAll from '../../../GaugeAll';
+import DonutChart from '../../../DonutChart';
+import BarPlot from '../../../BarPlot';
 import { Header, Icon, Popup} from 'semantic-ui-react';
 /**
 * Hijacking this component to do two things:
@@ -55,41 +55,24 @@ function foldcheck(fold) {
   return [iconname, iconcolor, iconmsg];
 }
 
-
-// <PCAJSON scoreName="PCA 2D"
-//                   Points={experiment.data.X_pca}
-//                   Labels={experiment.data.y_pca}
-//                   chartKey="pca_2d"
-//                   chartColor="#55D6BE"
-//                   type="classification"
-//                 />
-
-
-// function NoScore({ scoreName, train_sizes, Points, test_scores, chartKey, chartColor, type }) {
-  function NoScore({ scoreName, Points, Labels, chartKey, chartColor, type }) {
+function NoScore({ scoreName, scoreValue, chartKey, chartColor, scoreValueList, type }) {
   const getCardContent = () => {
-    // if(typeof(Labels) !== 'number' && !LabelsList.length) 
-    // {
-    //   if (scoreName.includes('AUC') ) {
-    //     return (
-    //       <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
-    //     );
-    //   } else {
-    //     return (
-    //       <Header inverted size="tiny" content={`${scoreName} is not available.`} />
-    //     );
-    //   }
-    // } 
-    
-    if (Points && Labels && type == "classification") {
-
-      console.log(scoreName+"i am here in no score");
-      console.log(scoreName+'labels', Labels);
+    if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
+      if (scoreName.includes('AUC') ) {
+        return (
+          <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
+        );
+      } else {
+        return (
+          <Header inverted size="tiny" content={`${scoreName} is not available.`} />
+        );
+      }
+    } else if (scoreValueList && type == "classification") {
 
       return (
 
         // <GaugeAll
-        //   expList={LabelsList}
+        //   expList={scoreValueList}
         //   chartKey={chartKey}
         //   chartColor={chartColor}
         //   min={0.5}
@@ -97,52 +80,42 @@ function foldcheck(fold) {
         // />
         
       
-      // <DonutChart
-      //   expList={LabelsList}
-      //   chartKey={chartKey}
-      //   chartColor={chartColor}
-      //   min={0.5}
-      //   max={1.0}
-      // />
-
-
-      // Points, Labels, chartKey, chartColor, type
-      <ScatterPlot 
-        Points={Points}
-        Labels ={Labels}
+      <DonutChart
+        expList={scoreValueList}
         chartKey={chartKey}
         chartColor={chartColor}
+        min={0.5}
+        max={1.0}
       />
       
 
       );
       
-    } 
-    // else if (LabelsList && type == "r2_or_vaf") {
-    //   return (
-    //     <GaugeAll
-    //       expList={LabelsList}
-    //       chartKey={chartKey}
-    //       chartColor={chartColor}
-    //       min={0}
-    //       max={1.0}
-    //     />
-    //   );
-    // } else if (LabelsList && type == "pearsonr") {
-    //   return (
-    //     <GaugeAll
-    //       expList={LabelsList}
-    //       chartKey={chartKey}
-    //       chartColor={chartColor}
-    //       min={-1.0}
-    //       max={1.0}
-    //     />
-    //   );
-    // }
+    } else if (scoreValueList && type == "r2_or_vaf") {
+      return (
+        <GaugeAll
+          expList={scoreValueList}
+          chartKey={chartKey}
+          chartColor={chartColor}
+          min={0}
+          max={1.0}
+        />
+      );
+    } else if (scoreValueList && type == "pearsonr") {
+      return (
+        <GaugeAll
+          expList={scoreValueList}
+          chartKey={chartKey}
+          chartColor={chartColor}
+          min={-1.0}
+          max={1.0}
+        />
+      );
+    }
 
   };
 
-  if(typeof(Labels) !== 'number' && !Points.length){
+  if(typeof(scoreValue) !== 'number' && !scoreValueList.length){
     return (
       <InvertedCard
         header={scoreName}
@@ -150,7 +123,7 @@ function foldcheck(fold) {
       />
     );
   } else {
-    let fold = Points[0][1]/Points[1][1];
+    let fold = scoreValueList[0][1]/scoreValueList[1][1];
     var icons = foldcheck(fold);
     let headericon = (
       <Popup
@@ -168,7 +141,11 @@ function foldcheck(fold) {
     );
 
     return (
-      
+      // <InvertedCard
+      //   header={scoreName}
+      //   headericon={headericon}
+      //   content={getCardContent()}
+      // />
       <InvertedCard
       header={scoreName}
       content={getCardContent()}
@@ -184,7 +161,7 @@ function foldcheck(fold) {
 
 NoScore.propTypes = {
   scoreName: PropTypes.string.isRequired,
-  Labels: PropTypes.oneOfType([
+  scoreValue: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string
   ]),
