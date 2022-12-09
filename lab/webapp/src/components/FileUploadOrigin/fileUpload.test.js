@@ -49,7 +49,7 @@ configure({ adapter: new Adapter() });
 //  or more direclty shallow(<my component>).dive().instance().state
 // I don't know which is better.
 //
-describe('basic testing of fileupload react component', () => {
+describe('basic testing of FileUploadOrigin react component', () => {
   let store = mockStore(initialState);
   let fullDom;
   let shallowDom;
@@ -79,7 +79,7 @@ describe('basic testing of fileupload react component', () => {
   })
 
   // test for existence
-  it('DONE - fileupload component, test for existence', () => {
+  it('DONE - FileUploadOrigin component, test for existence', () => {
     //console.log('jest console log!'); //this works, outputs to console at test script runtime
     // Find the component itself
     expect(fullDom.find(FileUploadOrigin)).toHaveLength(1);
@@ -99,9 +99,7 @@ describe('basic testing of fileupload react component', () => {
   // about the file being uploaded until a file with a testFilename has been selected
   it('DONE - check UI form is hidden w/o a file selection', () => {
     let formBody = shallowDom.find('#file-upload-form-input-area');
-    // expect(formBody.length).toEqual(1)
-    expect(formBody.length).toEqual(0)
-    
+    expect(formBody.length).toEqual(1)
 
     // check for CSS style which hides form
     expect(formBody.hasClass('file-upload-form-hide-inputs')).toEqual(true);
@@ -241,7 +239,7 @@ describe('series of tests with mock file blob', () => {
   // DO THIS TEST FIRST for this group of tets.
   // Load the simulated file blob. Handles async behavior. 
   it('DONE - load simulated file blob', done => {
-    // Mock the method FileUpload.handleSelectedFileCompletedStub for unit testing.
+    // Mock the method FileUploadOrigin.handleSelectedFileCompletedStub for unit testing.
     // It gets called when file blob
     // is loaded successfully, just for unit testing since the file loader
     // calls a callback when complete, and thus otherwise wouldn't be
