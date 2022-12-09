@@ -1,2 +1,2 @@
 Local sever: python3 -m http.server
-Address: localhost:8000/main.html#
+Address: localhost:8000/index.html#
