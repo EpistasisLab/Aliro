@@ -43,9 +43,9 @@ function DatasetActions({ dataset, recommender, toggleAI }) {
 
     // buildNewExpPopup
 
-    sessionStorage.setItem("addNewPopup", "true");
-    sessionStorage.setItem('aiTooglePopup', 'true');
-    sessionStorage.setItem('buildNewExpPopup', 'true');
+    localStorage.setItem("addNewPopup", "true");
+    localStorage.setItem('aiTooglePopup', 'true');
+    localStorage.setItem('buildNewExpPopup', 'true');
 
 
   };

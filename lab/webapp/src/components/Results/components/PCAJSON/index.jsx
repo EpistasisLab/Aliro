@@ -66,7 +66,7 @@ function foldcheck(fold) {
 
 
 // function NoScore({ scoreName, train_sizes, Points, test_scores, chartKey, chartColor, type }) {
-  function NoScore({ scoreName, Points, Labels, chartKey, chartColor, type, dataName  }) {
+  function NoScore({ scoreName, Points, Labels, chartKey, chartColor, type }) {
   const getCardContent = () => {
     // if(typeof(Labels) !== 'number' && !LabelsList.length) 
     // {
@@ -112,7 +112,6 @@ function foldcheck(fold) {
         Labels ={Labels}
         chartKey={chartKey}
         chartColor={chartColor}
-        dataname={dataName}
       />
       
 

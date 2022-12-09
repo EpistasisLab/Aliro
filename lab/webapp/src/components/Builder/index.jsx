@@ -153,7 +153,6 @@ class Builder extends Component {
                 // onClick={this.handleSubmitExperiment}
                 onClick={() => {
                   localStorage.setItem("algorithm-popup", "true");
-                
                   // param-popup
                   localStorage.setItem("param-popup", "true");
 
