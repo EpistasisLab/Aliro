@@ -84,7 +84,7 @@ describe('basic testing of fileupload react component', () => {
     // Find the component itself
     expect(fullDom.find(FileUploadOrigin)).toHaveLength(1);
     fullDom.setProps({ name: 'bar' });
-    expect(fullDom.name()).toEqual('Connect(FileUpload)');
+    expect(fullDom.name()).toEqual('Connect(FileUploadOrigin)');
     expect(fullDom.props().testProp).toEqual('hello');
     expect(fullDom.props().name).toEqual('bar');
   })
