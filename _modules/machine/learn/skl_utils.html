@@ -177,11 +177,6 @@
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">LabelEncoder</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_validate</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">KFold</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">SCORERS</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span><span class="p">,</span> <span class="n">make_scorer</span><span class="p">,</span> <span class="n">confusion_matrix</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">TSNE</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">learning_curve</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">decomposition</span>
-
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -191,12 +186,10 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">decomposition</span>
 <span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Patch</span>
-
-
-
+<span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">TSNE</span>
 
 <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
 
@@ -638,7 +631,6 @@
     <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;dtree_train_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtree_train_score</span>
 
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;classification&#39;</span><span class="p">:</span>
-        <span class="c1"># this</span>
         <span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span>
                               <span class="n">_id</span><span class="p">,</span>
                               <span class="n">features</span><span class="p">,</span>
@@ -646,14 +638,11 @@
                               <span class="n">model</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
                               <span class="n">cv_scores</span><span class="p">,</span>
                               <span class="n">figure_export</span><span class="p">)</span>
-       
-        <span class="c1"># this</span>
-        <span class="n">plot_pca_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">)</span>
+        <span class="c1"># plot pca</span>
         
+        <span class="n">plot_pca_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">)</span>
         <span class="c1"># plot_pca_3d(tmpdir,_id,features,target)</span>
         <span class="c1"># plot_pca_3d_iris(tmpdir,_id,features,target)</span>
-        
-        <span class="c1"># this</span>
         <span class="n">plot_tsne</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Pipeline&#39;</span><span class="p">:</span>
@@ -1228,14 +1217,15 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_bar</span><span class="p">),</span> <span class="n">feature_names</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bar</span><span class="p">])</span>
     <span class="n">h</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="c1"># plt.savefig(tmpdir + _id + &#39;/imp_score_&#39; + _id + &#39;.png&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/imp_score_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">top_features</span><span class="p">,</span> <span class="n">indices</span></div>
 
 <span class="k">def</span> <span class="nf">plot_learning_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">return_times</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
-    <span class="c1"># Plot learning curve</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotting learning curve...&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">learning_curve</span>
+    <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
     
     <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
@@ -1277,7 +1267,7 @@
     
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
     <span class="c1"># plt.legend(loc=&quot;lower right&quot;)</span>
-    <span class="c1"># plt.savefig(tmpdir + _id + &#39;/learning_curve_&#39; + _id + &#39;.png&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/learning_curve_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
 
   
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -1286,9 +1276,6 @@
     <span class="c1"># train_scores_std = np.std(train_scores, axis=1)</span>
     <span class="c1"># test_scores_mean = np.mean(test_scores, axis=1)</span>
     <span class="c1"># test_scores_std = np.std(test_scores, axis=1)</span>
-
-    <span class="c1"># if train_sizes.tolist() has nan, then replace it with 0</span>
-    <span class="c1"># check if all of train_sizes.tolist has nan</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">train_sizes</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="c1">#replace nan with -1</span>
@@ -1299,11 +1286,6 @@
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">test_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="c1"># replace nan with -1</span>
         <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">test_scores</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># if train_scores</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;train_sizes.tolist()&#39;</span><span class="p">,</span><span class="n">train_sizes</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;train_scores&#39;</span><span class="p">,</span> <span class="n">train_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;test_scores&#39;</span><span class="p">,</span> <span class="n">test_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 
     <span class="n">learning_curve_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;train_sizes&#39;</span><span class="p">:</span><span class="n">train_sizes</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
@@ -1316,8 +1298,6 @@
 
 
 <span class="k">def</span> <span class="nf">plot_pca_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">):</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plot_pca_2d&quot;</span><span class="p">)</span>
     <span class="c1"># import numpy as np</span>
     <span class="c1"># import matplotlib.pyplot as plt</span>
 
@@ -1331,11 +1311,12 @@
 
     <span class="c1"># np.random.seed(5)</span>
 
-
+    <span class="c1"># iris = datasets.load_iris()</span>
+    <span class="c1"># print(features)</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
     
-    <span class="c1"># print(set(y))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
 
 
 
@@ -1343,10 +1324,19 @@
 
     <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
     <span class="n">pca</span> <span class="o">=</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># pca = decomposition.PCA(n_components=2)</span>
     <span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
+    <span class="c1"># plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap([&quot;black&quot;, &quot;green&quot;]))</span>
+
+    <span class="c1"># plt.show()</span>
     
+    
+    <span class="c1"># version 1 </span>
+    <span class="c1"># colors = np.array([&quot;black&quot;, &quot;green&quot;])</span>
+    <span class="c1"># plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor=&#39;k&#39;)</span>
+
 
 
     <span class="c1"># version 2</span>
@@ -1355,10 +1345,13 @@
     <span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Set1</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">))</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">mcolors</span><span class="o">.</span><span class="n">ListedColormap</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
-    
+    <span class="c1"># plot the legend where the colors are mapped to the classes</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;class_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_classes</span><span class="p">)])</span>
 
-
+    <span class="c1"># cb = plt.colorbar()</span>
+    <span class="c1"># loc = np.arange(0,max(label),max(label)/float(len(colors)))</span>
+    <span class="c1"># cb.set_ticks(loc)</span>
+    <span class="c1"># cb.set_ticklabels(colors)</span>
 
     
 
@@ -1367,10 +1360,6 @@
     <span class="c1"># write x axis as pc1 and y axis as pc2</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;PC1&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;PC2&#39;</span><span class="p">)</span>
-
-
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 
@@ -1384,13 +1373,13 @@
     <span class="c1"># ax.w_zaxis.set_ticklabels([])</span>
 
     <span class="c1"># plt.show()</span>
-    <span class="c1"># plt.savefig(tmpdir + _id + &#39;/pca_&#39; + _id + &#39;.png&#39;)</span>
-    <span class="c1"># plt.close()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pca_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/pcaJson_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
-    <span class="c1"># import json</span>
+    <span class="kn">import</span> <span class="nn">json</span>
     
 
 
@@ -1619,8 +1608,6 @@
     <span class="c1"># print(X)</span>
     <span class="c1"># print(y)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotting t-SNE&quot;</span><span class="p">)</span>
-
     <span class="n">tsne</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
     <span class="n">X_2d</span> <span class="o">=</span> <span class="n">tsne</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -1646,7 +1633,7 @@
 
 
     <span class="c1"># plt.show()</span>
-    <span class="c1"># plt.savefig(tmpdir + _id + &#39;/tsne_&#39; + _id + &#39;.png&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/tsne_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
@@ -1654,14 +1641,9 @@
 
 
     <span class="c1"># path = tmpdir + _id + &#39;/tsneJson_&#39; + _id + &#39;.json&#39;</span>
-    <span class="c1"># import json</span>
+    <span class="kn">import</span> <span class="nn">json</span>
     
-    <span class="c1"># X_2d</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X_2d&quot;</span><span class="p">,</span><span class="n">X_2d</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
 
-    <span class="c1"># X_2d = [1]</span>
-    <span class="c1"># y = [1]</span>
 
     <span class="c1"># save X and y to json file</span>
     <span class="n">tsne_dict</span> <span class="o">=</span> <span class="p">{</span>
