@@ -5,7 +5,50 @@ Aliro is a platform to help researchers leverage supervised machine learning tec
 ## Installation
 Aliro is a multi-container docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
 
-### Requirements
+### Aliro Ed (Aliro on the Raspberry Pi 400) 
+We have built a custom Raspberry Pi OS Image containing Aliro (configured to be up and running as soon as you boot up the Operating System.)
+#### Requirements
+  - [Raspberry Pi 400](https://www.raspberrypi.com/products/raspberry-pi-400/)
+  - A computer running Windows 10 or higher
+  - A Card Reader
+    - If your computer does not have an integrated card reader, you will need a USB card reader.
+  - MicroSD Card
+    - Minimum capacity: 32GB
+    - **Note:** There are different speed classes for MicroSD Cards, Application Performance Class 1 (A1) and Application Performance 2 (A2). A2 cards are **highly recommended** as these are much faster than A1 cards.
+  - A copy of the [aliro-imager.exe](http://52.35.223.86/infAndDownloadpage.html)
+
+#### Installation
+1. Insert the MicroSD Card in your card reader.
+2. Double-click the **aliro-imager.exe** on you computer. If prompted to allow the application to run, select **Yes**. You may need to enter your computer's **Administrator** password to continue.
+3. Follow the prompts to proceed with the installation.
+![Aliro Imager Install](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
+4. Once installed, you can run the **Aliro Ed Imager** from the Start Menu.
+5. Click the **CHOOSE STORAGE** button and select your MicroSD Card from the popup menu
+![Aliro Imager Choose Storage](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
+6. Click the **WRITE** button to begin writing the Operatying System to your MicroSD Card.
+![Aliro Imager Write](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_write.png?raw=true "Aliro Imager Write")
+  - Note that this will format your MicroSD Card and all existing data will be erased. Click **Yes** at the prompt to proceed.
+  ![Aliro Imager Format](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_format.png?raw=true "Aliro Imager Format")
+  - This writing process may take several minutes, the progress will be shown on the **Aliro Ed Imager.**
+  ![Aliro Imager Finish](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_finish.png?raw=true "Aliro Imager Finish")
+7. Insert the MicroSD Card into your Raspberry Pi 400 and start it up.
+8. When the Operating System has finished starting up, double-click the Aliro-Ed Icon on the Destop or launch the Web Browser.
+
+Now that Aliro is up and running, you are ready to run experiments, Aliro Ed comes preloaded with the following datasets:
+  - [BNGBreastTumor.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/1201_BNG_breastTumor)
+  - [ESL.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/1027_ESL)
+  - [Iris.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/iris)
+  - [Titanic.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/titanic)
+  - Other datasets can be downloaded from the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/pmlb)
+
+You may also load your own datasets, please see the following sections below for further instructions:
+  - [Adding Data Sets](#adding-datasets)
+  - [Uploading Using the Website](#uploading-using-the-website)
+  - [Analyzing Data](#analyzing-data)
+  - [Downloading and Using Models](#downloading-and-using-models)
+
+### Aliro
+#### Requirements
   - Docker
     - Most recent stable release, minimum version is 17.06.0
       - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
@@ -15,7 +58,7 @@ Aliro is a multi-container docker project that uses ([Docker-Compose](https://do
   - Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
   	- [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
-### Installation
+#### Installation
 1. Download the production zip `Aliro-*.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/Aliro/releases/latest)  
     - Note that this is different from the source code zip file.
 2. Unzip the archive
