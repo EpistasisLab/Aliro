@@ -1,23 +1,51 @@
-FROM python:3.7.11-stretch
+# FROM python:3.7.11-stretch
+FROM python:3.7.16-slim-buster
 
 #nodejs
-RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
-    tar -xvf ~/node.tar.xz -C /opt/ && \
-    rm ~/node.tar.xz
-ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
+# RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
+#     tar -xvf ~/node.tar.xz -C /opt/ && \
+#     rm ~/node.tar.xz
+# ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
+
+RUN apt-get update --fix-missing && \
+    apt-get install -y wget xz-utils git \
+    openssh-client openssh-server telnet apache2 \
+    net-tools iputils-ping \
+    screen ngrep \
+    mercurial subversion \
+    build-essential cmake cpio mesa-common-dev \
+    dos2unix \
+    --no-install-recommends && \
+    ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+    && case "${dpkgArch##*-}" in \
+      amd64) ARCH='x64';; \
+      ppc64el) ARCH='ppc64le';; \
+      s390x) ARCH='s390x';; \
+      arm64) ARCH='arm64';; \
+      armhf) ARCH='armv7l';; \
+      i386) ARCH='x86';; \
+      *) echo "unsupported architecture"; exit 1 ;; \
+    esac \
+    && wget --quiet https://nodejs.org/dist/v16.18.1/node-v16.18.1-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /usr/local/ --strip-components=1 --no-same-owner && \
+    rm ~/node.tar.xz && \
+    ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get remove -y wget && \
+    apt-get clean
 
 ARG docker_filepath=docker/lab/files
 
-RUN apt-get update --fix-missing && apt-get install -y \
-    vim openssh-client openssh-server telnet apache2 \
-    net-tools iputils-ping xz-utils \
-    screen ngrep ca-cacert \
-    mercurial subversion \
-    build-essential cmake lsb-core cpio mesa-common-dev \
-    dos2unix \
-    --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# RUN apt-get update --fix-missing && apt-get install -y \
+#     vim openssh-client openssh-server telnet apache2 \
+#     net-tools iputils-ping xz-utils \
+#     screen ngrep ca-cacert \
+#     mercurial subversion \
+#     build-essential cmake lsb-core cpio mesa-common-dev \
+#     dos2unix \
+#     --no-install-recommends && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
 
 # setup python environment
 COPY ${docker_filepath}/requirements.txt /root/
