@@ -48,12 +48,10 @@ RUN pip install --no-cache-dir -r /root/mach_requirements_shap.txt
 WORKDIR /appsrc/lab
 COPY lab/package.json /appsrc/lab/
 RUN dos2unix /appsrc/lab/package.json
-# RUN npm install --silent --progress=false
-RUN npm install
+RUN npm install --silent --progress=false
 
 # install lab/webapp/node_modules to an anon volume
 WORKDIR /appsrc/lab/webapp
 COPY lab/webapp/package.json /appsrc/lab/webapp/
 RUN dos2unix /appsrc/lab/webapp/package.json
-# RUN npm install --silent --progress=false
-RUN npm install
+RUN npm install --silent --progress=false
