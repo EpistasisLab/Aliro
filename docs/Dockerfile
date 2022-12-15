@@ -1,4 +1,4 @@
-FROM python:3.7.11-stretch
+FROM python:3.7.16-buster
 
 COPY /docs/requirements.txt /
 RUN pip install -r /requirements.txt
