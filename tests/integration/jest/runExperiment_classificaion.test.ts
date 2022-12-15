@@ -76,7 +76,7 @@ describe('run experiment', () => {
 		var count = 0
 		console.log("starting timeout...")
 		// while (experimentResults._status === ('running') && count < 10) {
-		while (experimentResults._status === ('running') && count < 20) {
+		while (experimentResults._status === ('running') && count < 30) {
 			util.delay(10000)
 			count = count + 1
 			experimentResults = await labApi.fetchExperiment(submitResult._id)
