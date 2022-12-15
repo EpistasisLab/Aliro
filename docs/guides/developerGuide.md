@@ -111,6 +111,8 @@ The test results in html format can be found in the directory `.\target\test-rep
 
 Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with `docker-compose -f .\docker-compose-unit-test.yml build`
 
+Note: It is best to prune docker volumes with `docker volume prune -f` or `docker system prune -a -f --volumes` before running the unit and integration tests, otherwise there may be errors about not being able to upload duplicate datasets.
+
 ### Integration
 - Type: Docker, runs [Jest](https://jestjs.io/)
 - Usage: `docker-compose -f .\docker-compose-int-test.yml up --abort-on-container-exit --force-recreate`

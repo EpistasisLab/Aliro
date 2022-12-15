@@ -1,23 +1,39 @@
-FROM python:3.7.11-stretch
+# FROM python:3.7.11-stretch
+FROM python:3.7.16-slim-buster
 
 #nodejs
-RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
-    tar -xvf ~/node.tar.xz -C /opt/ && \
-    rm ~/node.tar.xz
-ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
+# RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
+#     tar -xvf ~/node.tar.xz -C /opt/ && \
+#     rm ~/node.tar.xz
+# ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
 
 ARG docker_filepath=docker/machine/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
-    vim openssh-client openssh-server graphviz \
+    wget openssh-client openssh-server graphviz \
     net-tools iputils-ping xz-utils \
-    screen ngrep ca-cacert \
+    screen ngrep \
     mercurial subversion \
-    build-essential cmake lsb-core cpio mesa-common-dev \
+    build-essential cmake cpio mesa-common-dev \
     libglib2.0-0 libxext6 libsm6 libxrender1 dos2unix \
     --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+    && case "${dpkgArch##*-}" in \
+      amd64) ARCH='x64';; \
+      ppc64el) ARCH='ppc64le';; \
+      s390x) ARCH='s390x';; \
+      arm64) ARCH='arm64';; \
+      armhf) ARCH='armv7l';; \
+      i386) ARCH='x86';; \
+      *) echo "unsupported architecture"; exit 1 ;; \
+    esac \
+    && wget --quiet https://nodejs.org/dist/v16.18.1/node-v16.18.1-linux-$ARCH.tar.xz -O ~/node.tar.xz && \
+    tar -xvf ~/node.tar.xz -C /usr/local/ --strip-components=1 --no-same-owner && \
+    rm ~/node.tar.xz && \
+    ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get remove -y wget && \
+    apt-get clean
 
 # setup python environment
 COPY ${docker_filepath}/requirements.txt /root/
