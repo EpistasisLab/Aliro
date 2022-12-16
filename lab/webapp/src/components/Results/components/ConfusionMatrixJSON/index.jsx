@@ -30,8 +30,9 @@ import PropTypes from 'prop-types';
 import InvertedCard from '../../../InvertedCard';
 import Gauge from '../../../Gauge';
 import GaugeAll from '../../../GaugeAll';
-import DonutChart from '../../../DonutChart';
-import BarChart from '../../../BarChart';
+// import DonutChart from '../../../DonutChart';
+// import LineChart from '../../../LineChart';
+import ConfusionMatrixJSONRender from '../../../ConfusionMatrixJSONRender';
 import BarPlot from '../../../BarPlot';
 import { Header, Icon, Popup} from 'semantic-ui-react';
 /**
@@ -56,84 +57,47 @@ function foldcheck(fold) {
   return [iconname, iconcolor, iconmsg];
 }
 
-function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,  type }) {
-
-  console.log('scoreName',scoreName);
-  console.log('scoreValueList',scoreValueList);
-  console.log('type',type);
-  
-
+function NoScore({ scoreName, cnf_data,chartKey, chartColor, type }) {
   const getCardContent = () => {
-    if(typeof(scoreValue) !== 'number' && !scoreValueList.length) {
-      if (scoreName.includes('AUC') ) {
-        return (
-          <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
-        );
-      } else {
-        return (
-          <Header inverted size="tiny" content={`${scoreName} is not available.`} />
-        );
-      }
-    } else if (scoreValueList && type == "classification") {
+    // if(typeof(scoreValue) !== 'number' && !scoreValueList.length) 
+    // {
+    //   if (scoreName.includes('AUC') ) {
+    //     return (
+    //       <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
+    //     );
+    //   } else {
+    //     return (
+    //       <Header inverted size="tiny" content={`${scoreName} is not available.`} />
+    //     );
+    //   }
+    // } 
+    
+    if (type == "classification") {
 
-      console.log("scoreValueList && type == classification")
+      console.log("i am here in no score ConfusionMatrixJSONRender");
 
       return (
 
-        // <GaugeAll
-        //   expList={scoreValueList}
-        //   chartKey={chartKey}
-        //   chartColor={chartColor}
-        //   min={0.5}
-        //   max={1.0}
-        // />
         
-      
-      // <DonutChart
-      //   expList={scoreValueList}
-      //   chartKey={chartKey}
-      //   chartColor={chartColor}
-      //   min={0.5}
-      //   max={1.0}
-      // />
 
-      <BarChart
-      expList={scoreValueList}
-      ylist={featureList}
-      chartKey={chartKey}
-      chartColor={chartColor}
-      min={0.5}
-      max={1.0}
-    />
+      <ConfusionMatrixJSONRender
+        
+        cnf_data={cnf_data}
+        chartKey={chartKey}
+        chartColor={chartColor}
+        min={0.5}
+        max={1.0}
+      />
       
 
       );
       
-    } else if (scoreValueList && type == "r2_or_vaf") {
-      return (
-        <GaugeAll
-          expList={scoreValueList}
-          chartKey={chartKey}
-          chartColor={chartColor}
-          min={0}
-          max={1.0}
-        />
-      );
-    } else if (scoreValueList && type == "pearsonr") {
-      return (
-        <GaugeAll
-          expList={scoreValueList}
-          chartKey={chartKey}
-          chartColor={chartColor}
-          min={-1.0}
-          max={1.0}
-        />
-      );
-    }
+    } 
+    
 
   };
 
-  if(typeof(scoreValue) !== 'number' && !scoreValueList.length){
+  if(typeof(scoreValue) !== 'number' ){
     return (
       <InvertedCard
         header={scoreName}
@@ -141,7 +105,7 @@ function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,
       />
     );
   } else {
-    let fold = scoreValueList[0][1]/scoreValueList[1][1];
+    let fold = train_scores[0][1]/train_scores[1][1];
     var icons = foldcheck(fold);
     let headericon = (
       <Popup
@@ -159,11 +123,7 @@ function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,
     );
 
     return (
-      // <InvertedCard
-      //   header={scoreName}
-      //   headericon={headericon}
-      //   content={getCardContent()}
-      // />
+      
       <InvertedCard
       header={scoreName}
       content={getCardContent()}
