@@ -42,6 +42,7 @@ import ImportanceScoreJSON from './components/ImportanceScoreJSON';
 import LearningCurve from './components/LearningCurve';
 import LearningCurveJSON from './components/LearningCurveJSON';
 import TestChart from './components/TestChart';
+import ConfusionMatrixJSON from './components/ConfusionMatrixJSON';
 import PCA from './components/PCA';
 import PCAJSON from './components/PCAJSON';
 import TSNE from './components/TSNE';
@@ -86,7 +87,7 @@ class Results extends Component {
     let expScores = experiment.data.scores;
 
     // console.log("experiment.data")
-    console.log(experiment.data)
+    console.log("experiment.data",experiment.data)
     // console.log(experiment.data['class_1'][0])
     // console.log(experiment.data['class_-1'][0])
 
@@ -204,11 +205,17 @@ class Results extends Component {
         } 
         
         else if(filename.includes('shap_summary_curve')) {
+          console.log("shap_summary_curve")
           let class_name = filename.split('_').slice(-2,-1);
           shapSummaryCurveDict[class_name] = file;
           shap_explainer=experiment.data.shap_explainer;
           shap_num_samples=experiment.data.shap_num_samples;
-        } 
+        }
+        else if (filename.includes('shap_summary_json')) {
+          console.log("shap_summary_json")
+          // shap_json = file;
+          // console.log("shap_json: ", shap_json)
+        }
         
       });
       // balanced accuracy
@@ -337,14 +344,7 @@ class Results extends Component {
                   type="classification"
                 />
 
-                {/* <TestChart scoreName="testChart"
-                  train_sizes={experiment.data.train_sizes}
-                  train_scores={experiment.data.train_scores}
-                  test_scores={experiment.data.test_scores}
-                  chartKey="test_chart"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */}
+                
 
                 
                 
@@ -384,7 +384,14 @@ class Results extends Component {
                 />
                 {/* <InteractiveConfusionMatrix /> */}
                 <ConfusionMatrix file={confusionMatrix} />
-                {/* <ConfusionMatrixJSON  */}
+                {/* <ConfusionMatrixJSON /> */}
+                {/* This TestChart is for interactive and responsive confusion matrix */}
+                <ConfusionMatrixJSON scoreName="Confusion Matrix"
+                  cnf_data={experiment.data.cnf_matrix}
+                  chartKey="test_chart"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
                 <ROCCurve file={rocCurve} />
                 <ShapSummaryCurve
                   fileDict={shapSummaryCurveDict}
