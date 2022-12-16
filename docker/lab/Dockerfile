@@ -110,6 +110,9 @@ RUN cp '/etc/profile.d/.env' '/etc/profile.d/tag.sh'
 RUN dos2unix /etc/profile.d/tag.sh
 RUN sed -i "s/TAG=/export TAG=/g" /etc/profile.d/tag.sh
 
+# clean up
+RUN apt-get remove -y wget xz-utils
+
 
 # Start the webserver
 CMD ["/bin/bash", "/root/start.sh"]

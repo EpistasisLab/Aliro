@@ -56,6 +56,10 @@ RUN npm install --silent --progress=false
 COPY ${docker_filepath}/entrypoint.sh /root/
 COPY ${docker_filepath}/wait-for-it.sh /root/
 RUN dos2unix /root/wait-for-it.sh && dos2unix /root/entrypoint.sh
+
+# clean up
+RUN apt-get remove -y wget xz-utils
+
 RUN ["chmod", "+x", "/root/wait-for-it.sh"]
 
 CMD ["/bin/bash", "/root/entrypoint.sh"]
