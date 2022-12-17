@@ -79,8 +79,7 @@ function NoScore({ scoreName, cnf_data,chartKey, chartColor, type }) {
       return (
 
         
-      // testheyjun
-      // testheyjun
+
       <ConfusionMatrixJSONRender
         
         cnf_data={cnf_data}
