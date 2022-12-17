@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: docker/lab/Dockerfile
+      x-bake:
+        platforms:
+          - linux/arm64
     tty: true
     stdin_open: true
     volumes:
@@ -23,6 +26,9 @@ services:
     build:
       context: .
       dockerfile: docker/machine/Dockerfile
+      x-bake:
+        platforms:
+          - linux/arm64
     tty: true
     stdin_open: true
     volumes:
@@ -41,6 +47,9 @@ services:
     build:
       context: .
       dockerfile: docker/dbmongo/Dockerfile
+      x-bake:
+        platforms:
+          - linux/arm64
     tty: true
     stdin_open: true
     ports:
