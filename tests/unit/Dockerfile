@@ -1,5 +1,8 @@
 FROM python:3.7.16-buster
 
+ARG ARCH
+ARG wheel_directory=docker/pywheels
+
 #nodejs
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && case "${dpkgArch##*-}" in \
@@ -36,13 +39,17 @@ COPY /tests/unit/requirements.txt /root/test_requirements.txt
 RUN pip install --no-cache-dir -r /root/test_requirements.txt
 
 ## machine and lab container
+COPY ${wheel_directory}/*.whl /root/wheel/
 COPY /docker/lab/files/requirements.txt /root/lab_requirements.txt
-RUN pip install --no-cache-dir -r /root/lab_requirements.txt
+RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/lab_requirements.txt
+COPY /docker/lab/files/requirements-surprise-${ARCH}.txt /root/surprise_requirements.txt
+RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/surprise_requirements.txt
 
 COPY /docker/machine/files/requirements.txt /root/mach_requirements.txt
-RUN pip install --no-cache-dir -r /root/mach_requirements.txt
-COPY /docker/machine/files/requirements_shap.txt /root/mach_requirements_shap.txt
-RUN pip install --no-cache-dir -r /root/mach_requirements_shap.txt
+RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/mach_requirements.txt
+# COPY /docker/machine/files/requirements_shap.txt /root/mach_requirements_shap.txt
+# RUN pip install --no-cache-dir -r /root/mach_requirements_shap.txt
+RUN rm -rf /root/wheel
 
 # install lab/node_modules to an anon volume
 WORKDIR /appsrc/lab
