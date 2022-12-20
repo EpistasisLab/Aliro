@@ -50,6 +50,10 @@ from sklearn import decomposition
 import matplotlib.colors as mcolors
 from matplotlib.patches import Patch
 from sklearn.manifold import TSNE
+from sklearn.model_selection import learning_curve
+
+
+
 
 mpl.use('Agg')
 
@@ -503,7 +507,7 @@ def generate_results(model, input_data,
         plot_pca_2d(tmpdir,_id,features,target)
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
-        plot_tsne(tmpdir,_id,features,target)
+        plot_tsne_2d(tmpdir,_id,features,target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
@@ -1082,10 +1086,27 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     return top_features, indices
 
 def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
+    """Make learning curve.
 
-    from sklearn.model_selection import learning_curve
-    from matplotlib import pyplot as plt
-    import numpy as np
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving experiment results
+    _id: string
+        Experiment ID in Aliro
+    model: user specified model
+    features: np.darray/pd.DataFrame
+        Features in training dataset
+    target: np.darray/pd.DataFrame
+        Target in training dataset
+    cv: int, cross-validation generator or an iterable 
+
+    Returns
+    -------
+    None
+    """
+
+    
 
     
     features = np.array(features)
@@ -1093,7 +1114,6 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     target = np.array(target)
     target[target == -1] = 0
     
-
 
     train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(model,features,target,None, np.linspace(0.1, 1.0, 5), cv,return_times=True)
     
@@ -1108,9 +1128,6 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
     plt.grid()
 
-    # print('train_scores_mean',train_scores_mean)
-    # print('test_scores_mean',test_scores_mean)
-    # print('train_sizes',train_sizes)
 
     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.1,
@@ -1126,16 +1143,12 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     plt.title('Learning curve')
     
     plt.legend(loc='best')
-    # plt.legend(loc="lower right")
     plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
 
   
     plt.close()
 
-    # train_scores_mean = np.mean(train_scores, axis=1)
-    # train_scores_std = np.std(train_scores, axis=1)
-    # test_scores_mean = np.mean(test_scores, axis=1)
-    # test_scores_std = np.std(test_scores, axis=1)
+
 
     if np.isnan(train_sizes.tolist()).all():
         #replace nan with -1
@@ -1158,25 +1171,30 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
 
 def plot_pca_2d(tmpdir,_id,features,target):
-    # import numpy as np
-    # import matplotlib.pyplot as plt
+    """Make PCA on 2D.
 
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving 2d pca plot and json file
+    _id: string
+        Experiment ID in Aliro
+    
+    features: np.darray/pd.DataFrame
+        Features in training dataset
+    target: np.darray/pd.DataFrame
+        Target in training dataset
 
-    # from sklearn import decomposition
-    # import matplotlib.colors as mcolors
-    # from matplotlib.patches import Patch
-
-
-    # from sklearn import datasets
-
-    # np.random.seed(5)
-
-    # iris = datasets.load_iris()
-    # print(features)
+    Returns
+    -------
+    None
+    """
     X = np.array(features)
     y = np.array(target)
     
     print(set(y))
+
+    
 
 
 
@@ -1188,18 +1206,8 @@ def plot_pca_2d(tmpdir,_id,features,target):
     pca.fit(X)
     X = pca.transform(X)
 
-    # plt.scatter(x,y, c = z, cmap = mcolors.ListedColormap(["black", "green"]))
-
-    # plt.show()
-    
-    
-    # version 1 
-    # colors = np.array(["black", "green"])
-    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
 
 
-
-    # version 2
     num_classes = len(set(y))
     # generate the number of colors equal to the number of classes
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
@@ -1207,40 +1215,14 @@ def plot_pca_2d(tmpdir,_id,features,target):
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
     # plot the legend where the colors are mapped to the classes
     plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
-
-    # cb = plt.colorbar()
-    # loc = np.arange(0,max(label),max(label)/float(len(colors)))
-    # cb.set_ticks(loc)
-    # cb.set_ticklabels(colors)
-
-    
-
    
 
     # write x axis as pc1 and y axis as pc2
     plt.xlabel('PC1')
     plt.ylabel('PC2')
 
-
-
-
-    # print("X")
-    # print(X)
-
-
-    # ax.w_xaxis.set_ticklabels([])
-    # ax.w_yaxis.set_ticklabels([])
-    # ax.w_zaxis.set_ticklabels([])
-
-    # plt.show()
     plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
-
-
-
-    path = tmpdir + _id + '/pcaJson_' + _id + '.json'
-    import json
-    
+    plt.close()    
 
 
     # save X and y to json file
@@ -1249,17 +1231,11 @@ def plot_pca_2d(tmpdir,_id,features,target):
         'y_pca': y.tolist()
     }
 
-    # with open(tmpdir + _id + '/p-c-a-Json_' + _id + '.json', 'w') as f:
-    #     json.dump(pca_dict, f)
-
-    # with open(tmpdir + _id + '/aaachoi_' + _id + '.json', 'w') as f:
-    #     json.dump(pca_dict, f)
     
+    # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="pca-json.json", content=pca_dict)
 
-    # 
-    # save pca_dict to json file with the path
 
 
 def plot_pca_3d(tmpdir,_id,features,target):
@@ -1440,48 +1416,41 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
     plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
     plt.close()
 
-def plot_tsne(tmpdir,_id,features,target):
+def plot_tsne_2d(tmpdir,_id,features,target):
 
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-    # from sklearn.manifold import TSNE
+    """Make tsne on 2D.
 
-    # X = np.array([[1, 1], [2, 1], [1, 0],
-    #               [4, 7], [3, 5], [3, 6]])
-    # y = np.array([0, 0, 0, 1, 1, 1])
+    Parameters
+    ----------
+    tmpdir: string
+        Temporary directory for saving 2d t-sne plot and json file
+    _id: string
+        Experiment ID in Aliro
+    
+    features: np.darray/pd.DataFrame
+        Features in training dataset
+    target: np.darray/pd.DataFrame
+        Target in training dataset
 
-    # tsne = TSNE(n_components=2, random_state=0)
-    # X_2d = tsne.fit_transform(X)
 
-    # plt.scatter(X_2d[:, 0], X_2d[:, 1])
-    # plt.show()
+    Returns
+    -------
+    None
+    """
 
- 
 
-    # X = np.array([[1, 1], [2, 1], [1, 0],
-    #               [4, 7], [3, 5], [3, 6]])
-    # y = np.array([0, 0, 0, 1, 1, 1])
 
-    X = features
-    y = target
-
-    # print(X)
-    # print(y)
 
     tsne = TSNE(n_components=2, verbose=1, random_state=123)
-    X_2d = tsne.fit_transform(X)
+    X_2d = tsne.fit_transform(features)
 
-    # df = pd.DataFrame()
-    # df["y"] = y
-    # df["comp-1"] = X_2d[:,0]
-    # df["comp-2"] = X_2d[:,1]
 
     # version 2
-    num_classes = len(set(y))
+    num_classes = len(set(target))
     # generate the number of colors equal to the number of classes
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
 
-    plt.scatter(X_2d[:,0], X_2d[:,1], c=y, cmap=mcolors.ListedColormap(colors))
+    plt.scatter(X_2d[:,0], X_2d[:,1], c=target, cmap=mcolors.ListedColormap(colors))
     # plot the legend where the colors are mapped to the classes
     plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
 
@@ -1499,32 +1468,16 @@ def plot_tsne(tmpdir,_id,features,target):
 
 
 
-
-    # path = tmpdir + _id + '/tsneJson_' + _id + '.json'
-    import json
-    
-
-
     # save X and y to json file
     tsne_dict = {
         'X_tsne': X_2d.tolist(),
-        'y_tsne': y.tolist()
+        'y_tsne': target.tolist()
     }
 
-    # print('tsne_dict',tsne_dict)
-
-    # with open(tmpdir + _id + '/t-sne-Json_' + _id + '.json', 'w') as f:
-    #     json.dump(tsne_dict, f)
-    # with open(tmpdir + _id + '/wwwchoi_' + _id + '.json', 'w') as f:
-    #     json.dump(tsne_dict, f)
 
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="tsne-json.json", content=tsne_dict)
-        
-    # save_json_fmt(outdir=tmpdir, _id=_id,
-    #               fname="value.json", content=metrics_dict)
-
- 
+         
  
 
     
