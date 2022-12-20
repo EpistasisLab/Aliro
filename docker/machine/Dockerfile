@@ -1,12 +1,6 @@
-# FROM python:3.7.11-stretch
 FROM python:3.7.16-slim-buster
 
-#nodejs
-# RUN wget --quiet https://nodejs.org/dist/v12.22.9/node-v12.22.9-linux-x64.tar.xz -O ~/node.tar.xz && \
-#     tar -xvf ~/node.tar.xz -C /opt/ && \
-#     rm ~/node.tar.xz
-# ENV PATH /opt/node-v12.22.9-linux-x64/bin:$PATH
-
+ARG wheel_directory=docker/pywheels
 ARG docker_filepath=docker/machine/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
@@ -36,11 +30,11 @@ RUN apt-get update --fix-missing && apt-get install -y \
     apt-get clean
 
 # setup python environment
+RUN mkdir /root/wheel
+COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
-RUN pip install --no-cache-dir -r /root/requirements.txt
-COPY ${docker_filepath}/requirements_shap.txt /root/
-RUN pip install --no-cache-dir -r /root/requirements_shap.txt
-
+RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/requirements.txt
+RUN rm -rf /root/wheel
 
 # setup node environment
 RUN npm install -g pm2 --silent --progress=false
