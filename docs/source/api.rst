@@ -136,6 +136,12 @@ These methods generate sklearn models and evaluate them.
 
 .. autofunction:: machine.learn.skl_utils.plot_confusion_matrix
 
+.. autofunction:: machine.learn.skl_utils.plot_learning_curve
+
+.. autofunction:: machine.learn.skl_utils.plot_pca_2d
+    
+.. autofunction:: machine.learn.skl_utils.plot_tsne_2d
+
 .. autofunction:: machine.learn.skl_utils.plot_roc_curve
 
 .. autofunction:: machine.learn.skl_utils.plot_imp_score
