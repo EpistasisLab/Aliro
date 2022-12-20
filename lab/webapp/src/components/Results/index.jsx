@@ -34,7 +34,7 @@ import AlgorithmDetails from './components/AlgorithmDetails';
 import RunDetails from './components/RunDetails'
 import MSEMAEDetails from './components/MSEMAEDetails';;
 import ConfusionMatrix from './components/ConfusionMatrix';
-import InteractiveConfusionMatrix from './components/ConfusionMatrix';
+import ConfusionMatrixJSON from './components/ConfusionMatrixJSON';
 import ROCCurve from './components/ROCCurve';
 import ShapSummaryCurve from './components/ShapSummaryCurve';
 import ImportanceScore from './components/ImportanceScore';
@@ -42,7 +42,6 @@ import ImportanceScoreJSON from './components/ImportanceScoreJSON';
 import LearningCurve from './components/LearningCurve';
 import LearningCurveJSON from './components/LearningCurveJSON';
 import TestChart from './components/TestChart';
-import ConfusionMatrixJSON from './components/ConfusionMatrixJSON';
 import PCA from './components/PCA';
 import PCAJSON from './components/PCAJSON';
 import TSNE from './components/TSNE';
@@ -382,9 +381,7 @@ class Results extends Component {
                   chartColor="#55D6BE"
                   type="classification"
                 />
-                {/* <InteractiveConfusionMatrix /> */}
-                <ConfusionMatrix file={confusionMatrix} />
-                {/* <ConfusionMatrixJSON /> */}
+                {/* <ConfusionMatrix file={confusionMatrix} /> */}
                 {/* This TestChart is for interactive and responsive confusion matrix */}
                 <ConfusionMatrixJSON scoreName="Confusion Matrix"
                   cnf_data={experiment.data.cnf_matrix}
