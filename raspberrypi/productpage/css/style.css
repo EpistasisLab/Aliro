@@ -480,7 +480,7 @@ to { opacity: 0; }
 }
 
 
-a#Downloadpage{
+a#Downloadpage, a#installationpage{
   
   color:#e3085d!important;
   /* visibility: hidden; */
