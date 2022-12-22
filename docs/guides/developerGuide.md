@@ -23,7 +23,10 @@ Install Docker and docker-compose as per the main installation requirements (see
 2. Set up your local Aliro configuration file. From the Aliro directory, copy `config\ai.env-template` to `config\ai.env`.
 
 
-3. Build the development service images by running `docker-compose build` from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.
+3. Ensure that the `.env` file contains the correct value for the **ARCH** variable. This variable needs to be set based on your development system, either to **x64** or **arm64**.
+
+
+4. Build the development service images by running `docker-compose build` from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.
 
 ### Starting and Stopping ###
 To start Aliro, from the Aliro directory run the command `docker-compose up`.  To stop Aliro, kill the process with `ctrl+c` and wait for the process to exit.

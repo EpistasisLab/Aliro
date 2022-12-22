@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: docs/Dockerfile
+      args:
+        - ARCH=${ARCH}
     working_dir: /appsrc/docs
     command: bash -c "make html"
     tty: true
