@@ -7,7 +7,7 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "electron": "21.2.0",
-    "electron-builder": "v21.2.0"
+    "electron-builder": "v23.6.0"
   },
   "scripts": {
     "postinstall": "install-app-deps",
