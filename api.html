@@ -1263,6 +1263,65 @@ similar shape to the <cite>y</cite> array.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="machine.learn.skl_utils.plot_learning_curve">
+<span class="sig-prename descclassname"><span class="pre">machine.learn.skl_utils.</span></span><span class="sig-name descname"><span class="pre">plot_learning_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_learning_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_learning_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make learning curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving experiment results</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
+<li><p><strong>model</strong> (<em>user specified model</em>) – </p></li>
+<li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+<li><p><strong>cv</strong> (<em>int</em><em>, </em><em>cross-validation generator</em><em> or </em><em>an iterable</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="machine.learn.skl_utils.plot_pca_2d">
+<span class="sig-prename descclassname"><span class="pre">machine.learn.skl_utils.</span></span><span class="sig-name descname"><span class="pre">plot_pca_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_pca_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_pca_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make PCA on 2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving 2d pca plot and json file</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
+<li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="machine.learn.skl_utils.plot_tsne_2d">
+<span class="sig-prename descclassname"><span class="pre">machine.learn.skl_utils.</span></span><span class="sig-name descname"><span class="pre">plot_tsne_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_tsne_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_tsne_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make tsne on 2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpdir</strong> (<em>string</em>) – Temporary directory for saving 2d t-sne plot and json file</p></li>
+<li><p><strong>_id</strong> (<em>string</em>) – Experiment ID in Aliro</p></li>
+<li><p><strong>features</strong> (<em>np.darray/pd.DataFrame</em>) – Features in training dataset</p></li>
+<li><p><strong>target</strong> (<em>np.darray/pd.DataFrame</em>) – Target in training dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="machine.learn.skl_utils.plot_roc_curve">
 <span class="sig-prename descclassname"><span class="pre">machine.learn.skl_utils.</span></span><span class="sig-name descname"><span class="pre">plot_roc_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_export</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/machine/learn/skl_utils.html#plot_roc_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#machine.learn.skl_utils.plot_roc_curve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot ROC Curve.
