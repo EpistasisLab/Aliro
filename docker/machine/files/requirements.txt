@@ -9,3 +9,4 @@ pydot==1.4.2
 requests==2.25.1
 xgboost==1.6.2
 joblib==1.2.0
+shap==0.37.0

@@ -34,12 +34,7 @@ We have built a custom Raspberry Pi OS Image containing Aliro (configured to be 
 7. Insert the MicroSD Card into your Raspberry Pi 400 and start it up.
 8. When the Operating System has finished starting up, double-click the Aliro-Ed Icon on the Destop or launch the Web Browser.
 
-Now that Aliro is up and running, you are ready to run experiments, Aliro Ed comes preloaded with the following datasets:
-  - [BNGBreastTumor.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/1201_BNG_breastTumor)
-  - [ESL.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/1027_ESL)
-  - [Iris.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/iris)
-  - [Titanic.tsv](https://github.com/EpistasisLab/pmlb/tree/master/datasets/titanic)
-  - Other datasets can be downloaded from the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/pmlb)
+Now that Aliro is up and running, you are ready to run experiments, Aliro Ed comes preloaded with some data sets for you to experiment with. Other datasets can be downloaded from the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/pmlb)
 
 You may also load your own datasets, please see the following sections below for further instructions:
   - [Adding Data Sets](#adding-datasets)

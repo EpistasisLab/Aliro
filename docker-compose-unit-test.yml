@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: tests/unit/Dockerfile
+      args:
+        - ARCH=${ARCH}
     working_dir: /appsrc
     command: bash -c "dos2unix tests/unit/unit_test_runner.sh && export PENNAI_UNIT_TESTS_JS_ONLY=$PENNAI_UNIT_TESTS_JS_ONLY && export PENNAI_UNIT_TESTS_PY_ONLY=$PENNAI_UNIT_TESTS_PY_ONLY && sh tests/unit/unit_test_runner.sh"
     tty: true
