@@ -5,8 +5,10 @@
 ### Requirements
 Install Docker and docker-compose as per the main installation requirements (see :ref:`user-guide`).
 - Docker setup
-  - **Hyper-V**: (Windows only) Please note that the **Hyper-V** backend is required for development. See [issue #371](https://github.com/EpistasisLab/Aliro/issues/371) for more information.
-  - Shared Drive: (Windows only)  Share the drive that will have the Aliro source code with the Docker desktop [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives)
+  - **Windows Only**
+    - If developing on the Windows filesystem (for example, in C:\Aliro) the **Hyper-V** backend is required and the Aliro source code directory needs tob be shared in the Docker Desktop settings. See [Docker Shared Drives](https://docs.docker.com/docker-for-windows/#shared-drives) for more information.
+    - If developing in WSL2, the WSL2 backend can be used when installing Docker Desktop and **WSL Integration** should be enabled on the Docker Desktop settings (Under **Resources > WSL Integration**)
+    - **NOTE:** Working with the source code on the Windows filesystem and using the WSL2 backend in Docker Desktop may cause problems, such as not being able to see experiment results due to a filepath mismatch (forward slash **/** versus backslash **\**)
 
 #### Optional dependencies for development/testing:
   - Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)
@@ -56,7 +58,7 @@ To reset the docker volumes, restart using the `--force-recreate` flag or run `d
 	- Note: `docker attach aliro_lab_1` will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.
 
 ### Web Development
-The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured to run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+F5 for the changes to be seen in the browser.  
+The frontend UI source is in `\lab\webapp` and is managed using [webpack](https://webpack.js.org/).  When developing the UI, webpack can be configured to run in [watch mode](https://webpack.js.org/configuration/watch/) to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with ctrl+F5 for the changes to be seen in the browser.
 
 There are two ways to enable watch mode:
 
@@ -79,25 +81,25 @@ To update or add NPM package dependencies:
 
 Package management for node is configured in three places: the main backend API (`lab\package.json`), the frontend UI (`lab\webapp\package.json`), and the machine container API (`machine\package.json`).
 
-Node package installation (`npm install`) takes palace as part of the `docker build` process.  If there are changes to a `package.json` file, then during the build those changes will be detected and the updated npm packages will be installed.  
+Node package installation (`npm install`) takes palace as part of the `docker build` process.  If there are changes to a `package.json` file, then during the build those changes will be detected and the updated npm packages will be installed.
 
 When not using the production docker-compose file, node packages are installed in docker anonymous volumes `lab/node_modules`, `lab/webapp/node_modules`, `machine/node_modules`.  When starting Aliro after the packages have been rebuilt, the `--renew-anon-volumes` flag should be used.
 
 
 ##  Architecture Overview
-Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.  
+Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.
 
 ![Aliro Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true "Aliro Architecture Diagram")
 
 ### Controller Engine (aka _The Server_)
-The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.  
+The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.
 ### Database
-A MongoDb database is used for persistent storage.  
+A MongoDb database is used for persistent storage.
 ### UI Component (aka _The Client_)
 The UI component (_Vizualization / UI Engine_ in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.
 
 ##  Code Documentation
-- Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.  
+- Sphinx documentation can be built in the context of a docker container with the command `docker-compose -f .\docker-compose-doc-builder.yml up --abort-on-container-exit`.
 
 ## Tests
 
@@ -212,7 +214,7 @@ Release procedure:
 2. **Push changes to github.**  Merge the master branch into the `production` branch and push the changes to github.
 
 3. **Build production docker images with `bash release/generate_production_release.sh`.** While in the prodution branch, build the production images and generate the user production .zip by running `bash release/generate_production_release.sh`.  This will:
-    * Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file  
+    * Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file
     * Create the production .zip named `target/production/Aliro-${VERSION}.zip`
     ```
     git checkout production
@@ -227,11 +229,11 @@ Release procedure:
     bash release/deploy_production_release.sh
     ```
 
-5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/Aliro-${VERSION}` and running `docker-compose up`.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version. 
+5. **Test DockerHub images and production code.**  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory `target/production/Aliro-${VERSION}` and running `docker-compose up`.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, 'TAG' matches the current version.
 
 6. **Create Github Release.**  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file `target/production/Aliro-${VERSION}.zip` as an archive asset.
 
-7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `a0` suffix (see [Pre-release versioning conventions](https://www.python.org/dev/peps/pep-0440/#pre-releases) and push the changes to git.  For example, `0.18` was just released, the new dev tag should be `0.19a0`. 
+7.  **Update the .env file in the master branch with the new dev version.**  Update the `.env` file in the master branch with the next version number and the `a0` suffix (see [Pre-release versioning conventions](https://www.python.org/dev/peps/pep-0440/#pre-releases) and push the changes to git.  For example, `0.18` was just released, the new dev tag should be `0.19a0`.
 
 ### Installing a production build
 1. Download a production build from github
