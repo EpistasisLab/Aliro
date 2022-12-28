@@ -150,8 +150,13 @@
 <ul class="simple">
 <li><p>Docker setup</p>
 <ul>
-<li><p><strong>Hyper-V</strong>: (Windows only) Please note that the <strong>Hyper-V</strong> backend is required for development. See <a class="reference external" href="https://github.com/EpistasisLab/Aliro/issues/371">issue #371</a> for more information.</p></li>
-<li><p>Shared Drive: (Windows only)  Share the drive that will have the Aliro source code with the Docker desktop <a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Docker Shared Drives</a></p></li>
+<li><p><strong>Windows Only</strong></p>
+<ul>
+<li><p>If developing on the Windows filesystem (for example, in C:Aliro) the <strong>Hyper-V</strong> backend is required and the Aliro source code directory needs tob be shared in the Docker Desktop settings. See <a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Docker Shared Drives</a> for more information.</p></li>
+<li><p>If developing in WSL2, the WSL2 backend can be used when installing Docker Desktop and <strong>WSL Integration</strong> should be enabled on the Docker Desktop settings (Under <strong>Resources &gt; WSL Integration</strong>)</p></li>
+<li><p><strong>NOTE:</strong> Working with the source code on the Windows filesystem and using the WSL2 backend in Docker Desktop may cause problems, such as not being able to see experiment results due to a filepath mismatch (forward slash <strong>/</strong> versus backslash <a href="#id1"><span class="problematic" id="id2">**</span></a>**)</p></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
