@@ -1,11 +1,34 @@
-document.getElementById("class1text").addEventListener("mouseover", mouseOverClass1);
-document.getElementById("class1text").addEventListener("mouseout", mouseOutClass1);
 
-document.getElementById("class2text").addEventListener("mouseover", mouseOverClass2);
-document.getElementById("class2text").addEventListener("mouseout", mouseOutClass2);
 
-document.getElementById("class3text").addEventListener("mouseover", mouseOverClass3);
-document.getElementById("class3text").addEventListener("mouseout", mouseOutClass3);
+
+
+// if (document.getElementById("class1text") is not null) 
+
+if (document.getElementById("class1text1") != null) {
+    document.getElementById("class1text1").addEventListener("mouseover", mouseOverClass1);
+    document.getElementById("class1text1").addEventListener("mouseout", mouseOutClass1);
+}
+
+if (document.getElementById("class1text2") != null) {
+    document.getElementById("class1text2").addEventListener("mouseover", mouseOverClass1);
+    document.getElementById("class1text2").addEventListener("mouseout", mouseOutClass1);
+}
+
+if (document.getElementById("class1text3") != null) {
+    document.getElementById("class1text3").addEventListener("mouseover", mouseOverClass1);
+    document.getElementById("class1text3").addEventListener("mouseout", mouseOutClass1);
+}
+
+
+
+// document.getElementById("class1text").addEventListener("mouseover", mouseOverClass1);
+// document.getElementById("class1text").addEventListener("mouseout", mouseOutClass1);
+
+// document.getElementById("class2text").addEventListener("mouseover", mouseOverClass2);
+// document.getElementById("class2text").addEventListener("mouseout", mouseOutClass2);
+
+// document.getElementById("class3text").addEventListener("mouseover", mouseOverClass3);
+// document.getElementById("class3text").addEventListener("mouseout", mouseOutClass3);
 
 
 

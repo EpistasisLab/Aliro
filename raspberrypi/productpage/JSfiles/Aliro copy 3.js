@@ -1,14 +1,3 @@
-
-
-var showScatter = true;
-var showBars = false;
-var showDecTree = false;  
-
-
-// var showScatter = false;
-// var showBars = true;
-// var showDecTree = false; 
-
 // this js file includes data in the code.
 
 
@@ -288,6 +277,9 @@ function locationByColorClass(class_cat) {
 
 }
 
+// if div id = intuition_exp is clicked, then run the function
+// the function descrption is below
+// when div id = intuition_exp is clicked, show div id addingnuance
 
 function oneDPlot_v2() {
 
@@ -303,16 +295,16 @@ function oneDPlot_v2() {
 
   
 
-  var svg = d3v4.select("#dataviz_area_div_scatterplot")
+  var svg = d3.select("#dataviz_area_div")
 
-  var x = d3v4.scaleLinear()
+  var x = d3.scaleLinear()
     .domain([0, 0])
     // get width from viewbox width
     .range([0, width]);
 
 
   // Add Y axis
-  var y = d3v4.scaleLinear()
+  var y = d3.scaleLinear()
     .domain([0, 10])
     // .domain([0, 0])
     .range([height, 0]);
@@ -324,14 +316,14 @@ function oneDPlot_v2() {
     .transition()
     .duration(2000)
     .attr("opacity", "1")
-    .call(d3v4.axisBottom(x));
+    .call(d3.axisBottom(x));
 
   y.domain([0, 10])
   svg.select(".myYaxis")
     .transition()
     .duration(2000)
     .attr("opacity", "0")
-    .call(d3v4.axisLeft(y));
+    .call(d3.axisLeft(y));
 
 
   svg.selectAll("circle")
@@ -358,16 +350,16 @@ function twoDPlot_v2() {
     width = 500 - margin.left - margin.right,
     height = 350 * 600 / 500 - margin.top - margin.bottom;
 
-  var svg = d3v4.select("#dataviz_area_div_scatterplot")
+  var svg = d3.select("#dataviz_area_div")
 
-  var x = d3v4.scaleLinear()
+  var x = d3.scaleLinear()
     .domain([0, 0])
     // get width from viewbox width
     .range([0, width]);
 
 
   // Add Y axis
-  var y = d3v4.scaleLinear()
+  var y = d3.scaleLinear()
     .domain([0, 10])
     // .domain([0, 0])
     .range([height, 0]);
@@ -379,14 +371,14 @@ function twoDPlot_v2() {
     .transition()
     .duration(2000)
     .attr("opacity", "1")
-    .call(d3v4.axisBottom(x));
+    .call(d3.axisBottom(x));
 
   y.domain([0, 10])
   svg.select(".myYaxis")
     .transition()
     .duration(2000)
     .attr("opacity", "1")
-    .call(d3v4.axisLeft(y));
+    .call(d3.axisLeft(y));
 
 
 
@@ -413,7 +405,7 @@ function twoDPlot_v2() {
 }
 
 function remove_boundaries_on2d_plot() {
-  var svg = d3v4.select("#dataviz_area_div_svg")
+  var svg = d3.select("#dataviz_area_div_svg")
   // make a box brom 0,0 to 123, 138 on the svg
 
   //seclt all class named boundaries
@@ -436,16 +428,16 @@ function drawing_boundaries_on_2d_plot() {
     width = 500 - margin.left - margin.right,
     height = 350 * 600 / 500 - margin.top - margin.bottom;
 
-  var svg = d3v4.select("#dataviz_area_div")
+  var svg = d3.select("#dataviz_area_div")
 
-  var x = d3v4.scaleLinear()
+  var x = d3.scaleLinear()
     .domain([0, 0])
     // get width from viewbox width
     .range([0, width]);
 
 
   // Add Y axis
-  var y = d3v4.scaleLinear()
+  var y = d3.scaleLinear()
     .domain([0, 10])
     // .domain([0, 0])
     .range([height, 0]);
@@ -457,14 +449,14 @@ function drawing_boundaries_on_2d_plot() {
     .transition()
     .duration(2000)
     .attr("opacity", "1")
-    .call(d3v4.axisBottom(x));
+    .call(d3.axisBottom(x));
 
   y.domain([0, 10])
   svg.select(".myYaxis")
     .transition()
     .duration(2000)
     .attr("opacity", "1")
-    .call(d3v4.axisLeft(y));
+    .call(d3.axisLeft(y));
 
 
 
@@ -485,7 +477,7 @@ function drawing_boundaries_on_2d_plot() {
 
 
 
-  var svg = d3v4.select("#dataviz_area_div_svg")
+  var svg = d3.select("#dataviz_area_div_svg")
   // make a box brom 0,0 to 123, 138 on the svg
 
   var data_class1 = [
@@ -570,9 +562,17 @@ function drawing_boundaries_on_2d_plot() {
 
 function show_or_block_each_part() {
 
+  // console.log("show_or_block is clicked");
+
+
+
+
+
+
+
 
   // from FSI to adding nuance
-  d3v4.select("#fromfsitoaddn").on("click", function () {
+  d3.select("#fromfsitoaddn").on("click", function () {
 
 
     // non "Adding nuance" div
@@ -592,7 +592,7 @@ function show_or_block_each_part() {
 
 
   // from adding nuance to FSI
-  d3v4.select("#fromaddntofsi").on("click", function () {
+  d3.select("#fromaddntofsi").on("click", function () {
 
 
     // none "Frist, some intuition" div
@@ -616,7 +616,7 @@ function show_or_block_each_part() {
 
 
   // from adding nuance to drawing boundaris
-  d3v4.select("#fromaddntodrawb").on("click", function () {
+  d3.select("#fromaddntodrawb").on("click", function () {
 
     // block "Adding nuance" div
     document.getElementById("drawingboundaries").style.display = "block";
@@ -635,7 +635,7 @@ function show_or_block_each_part() {
 
 
   // from drawing boundaris to adding nuance
-  d3v4.select("#fromdrawbtoaddn").on("click", function () {
+  d3.select("#fromdrawbtoaddn").on("click", function () {
 
     // block "Adding nuance" div
     document.getElementById("addingnuance").style.display = "block";
@@ -663,10 +663,15 @@ function show_or_block_each_part() {
 
 
 
-// scatter plot
+
 function onedplotToTwodPlot() {
 
 
+
+  // set the dimensions and margins of the graph
+  // var margin = {top: 30, right:30, bottom: 30, left: 0},
+  // width = 400 - margin.left - margin.right,
+  // height = 300 - margin.top - margin.bottom;
 
 
   var margin = { top: 30, right: 30, bottom: 30, left: 0 },
@@ -678,7 +683,7 @@ function onedplotToTwodPlot() {
   
 
   // append the svg object to the body of the page
-  // var svg = d3v4.select("#dataviz_area")
+  // var svg = d3.select("#dataviz_area")
   //   .append("svg")
   //     .attr("width", width + margin.left + margin.right)
   //     .attr("height", height + margin.top + margin.bottom)
@@ -687,13 +692,13 @@ function onedplotToTwodPlot() {
   //           "translate(" + margin.left + "," + margin.top + ")")
 
 
-  var svg = d3v4.select("#dataviz_area_div_scatterplot")
+  var svg = d3.select("#dataviz_area_div")
     .append("svg")
-    .attr("id", "dataviz_area_div_svg_scatterplot")
-    // .attr("width", width + margin.left + margin.right)
-    // .attr("height", height + margin.top + margin.bottom)
+    .attr("id", "dataviz_area_div_svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     // .attr("viewBox", `-25 -15 400 250`)
-    .attr("viewBox", `-25 -10 500 400`)
+    .attr("viewBox", `-25 -15 500 400`)
 
   // .attr("viewBox", "0 0 " + width + " " + height )
 
@@ -706,23 +711,23 @@ function onedplotToTwodPlot() {
   //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
 
 
-    // console.log(data) 
+    console.log(data) 
 
     // 0:Setosa, 
     // Virginica
     // Versicolor
 
     // Add X axis
-    var x = d3v4.scaleLinear()
+    var x = d3.scaleLinear()
       .domain([0, 0])
       // get width from viewbox width
       .range([0, width]);
 
     svg.append("g")
-      .attr("class", "myXaxis_scatter")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      .attr("class", "myXaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
       // .attr("transform", "translate(0," + height + ")")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3v4.axisBottom(x))
+      .call(d3.axisBottom(x))
       .attr("opacity", "0")
       .attr("stroke", "black")
       .append("text")
@@ -733,7 +738,7 @@ function onedplotToTwodPlot() {
       .text("petal-length");
 
     // Add Y axis
-    var y = d3v4.scaleLinear()
+    var y = d3.scaleLinear()
       // .domain([0, 9])
       .domain([0, 10])
       // .domain([0, 0])
@@ -741,16 +746,16 @@ function onedplotToTwodPlot() {
 
 
     // svg.append("g")
-    // .call(d3v4.axisLeft(y))
+    // .call(d3.axisLeft(y))
 
     svg.append("g")
-      .attr("class", "myYaxis_scatter")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      .attr("class", "myYaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
       // .attr("transform", "translate(0, 0)")
       // .attr("transform", "translate"+"(" + width +",0" + ")")
       // .attr("transform", "translate"+"(" + -width +",0" + ")")
       // .attr("transform", "translate(0," + width + ")")
       .attr("transform", "translate(0," + "0" + ")")
-      .call(d3v4.axisLeft(y))
+      .call(d3.axisLeft(y))
       .attr("opacity", "0")
       // make y axis white
       // .attr("fill", "white")
@@ -798,7 +803,7 @@ function onedplotToTwodPlot() {
     // .transition()
     // .duration(2000)
     // .attr("opacity", "1")
-    // .call(d3v4.axisBottom(x));
+    // .call(d3.axisBottom(x));
 
 
 
@@ -853,7 +858,7 @@ function onedplotToTwodPlot() {
 
     // console.log(num_circles);
 
-    // var tooltip = d3v4.select("#dataviz_area")
+    // var tooltip = d3.select("#dataviz_area")
     // .append("div")
     // .style("opacity", 0)
     // .attr("class", "tooltip")
@@ -866,24 +871,24 @@ function onedplotToTwodPlot() {
     // A function that change this tooltip when the user hover a point.
     // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
 
-    var project_x_axis_scatter = function (d) {
+    var project_x_axis = function (d) {
 
-      console.log("project_x_axis_scatter");
+      console.log("project_x_axis");
 
 
       x.domain([0, 9])
-      svg.select(".myXaxis_scatter")
+      svg.select(".myXaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
       y.domain([0, 10])
-      svg.select(".myYaxis_scatter")
+      svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "0")
-        .call(d3v4.axisLeft(y));
+        .call(d3.axisLeft(y));
 
 
 
@@ -920,7 +925,7 @@ function onedplotToTwodPlot() {
       //   .transition()
       //   .duration(2000)
       //   .attr("opacity", "1")
-      //   .call(d3v4.axisBottom(x));     
+      //   .call(d3.axisBottom(x));     
 
 
 
@@ -941,27 +946,26 @@ function onedplotToTwodPlot() {
     }
 
 
-    var project_y_axis_scatter = function (d) {
+    var project_y_axis = function (d) {
 
-      console.log("project_y_axis_scatter");
-   
+      // console.log("mouseover");
 
       remove_boundaries_on2d_plot();
 
 
       x.domain([0, 9])
-      svg.select(".myXaxis_scatter")
+      svg.select(".myXaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "0")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
       y.domain([0, 10])
-      svg.select(".myYaxis_scatter")
+      svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisLeft(y));
+        .call(d3.axisLeft(y));
 
 
 
@@ -998,7 +1002,7 @@ function onedplotToTwodPlot() {
       //   .transition()
       //   .duration(2000)
       //   .attr("opacity", "1")
-      //   .call(d3v4.axisBottom(x));     
+      //   .call(d3.axisBottom(x));     
 
 
 
@@ -1022,27 +1026,27 @@ function onedplotToTwodPlot() {
       console.log("mousemove");
       // tooltip
       //   .html("The exact value of<br>the Ground Living area is: " + d['sepal-length'])
-      //   .style("left", (d3v4.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
-      //   .style("top", (d3v4.mouse(this)[1]) + "px")
+      //   .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      //   .style("top", (d3.mouse(this)[1]) + "px")
     }
 
     // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
-    var twoDPlot_scatter = function (d) {
-      console.log("scatter 2d plot");
+    var twoDPlot = function (d) {
+      console.log("mouseleave");
 
       x.domain([0, 9])
-      svg.select(".myXaxis_scatter")
+      svg.select(".myXaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
       y.domain([0, 10])
-      svg.select(".myYaxis_scatter")
+      svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisLeft(y));
+        .call(d3.axisLeft(y));
 
 
 
@@ -1081,19 +1085,19 @@ function onedplotToTwodPlot() {
 
 
     // // svg.selectAll("circle")
-    // d3v4.select("#dataviz_area")
+    // d3.select("#dataviz_area")
     // .on("mouseover", project_y_axis )
     // // .on("mousemove", mousemove )
     // .on("mouseleave", twoDPlot );
 
 
 
-    // d3v4.select("#next")
+    // d3.select("#next")
     // .on("mouseover", mouseover )
     // .on("mouseleave", mouseleave );
 
     // click
-    // d3v4.select("#next")
+    // d3.select("#next")
     // .on("click", function() {
     //   console.log("click");
 
@@ -1105,23 +1109,23 @@ function onedplotToTwodPlot() {
 
 
 
-    d3v4.select("#projectxaxia_scatter")
+    d3.select("#projectxaxia")
       // .on("mousemove", mousemove )
-      .on("click", project_x_axis_scatter);
+      .on("click", project_x_axis);
 
 
-    d3v4.select("#projectyaxia_scatter")
+    d3.select("#projectyaxia")
       // .on("mousemove", mousemove )
-      .on("click", project_y_axis_scatter);
+      .on("click", project_y_axis);
 
 
 
-    d3v4.select("#twoDPlot_scatter")
+    d3.select("#twoDPlot")
       // .on("mouseover", function() {
       //   console.log("mouseover_next");
 
       // });
-      .on("click", twoDPlot_scatter);
+      .on("click", twoDPlot);
 
 
  // })
@@ -1145,7 +1149,7 @@ function onedplotToTwodPlot() {
 
 
 
-// function all_possible_corr() { }
+function all_possible_corr() { }
 
 
 
@@ -1155,10 +1159,14 @@ function onedplotToTwodPlot() {
 
 
 
-// box plot, second chart
-function boxplot_direct_from_y() {
+function boxplot() {
 
- 
+
+
+  // set the dimensions and margins of the graph
+  // var margin = {top: 30, right:30, bottom: 30, left: 0},
+  // width = 400 - margin.left - margin.right,
+  // height = 300 - margin.top - margin.bottom;
 
 
   var margin = { top: 30, right: 30, bottom: 30, left: 0 },
@@ -1166,41 +1174,823 @@ function boxplot_direct_from_y() {
     height = 350 * 600 / 500 - margin.top - margin.bottom;
 
 
-  
-
-  d3v4 = d3v4
-  console.log("inside!!!!_d3version4")
-  console.log(d3v4.version)
-
-  console.log("inside!!!!_d3v3")
-  console.log(d3v3.version)
-
-
-
-  
+  // append the svg object to the body of the page
+  // var svg = d3.select("#dataviz_area")
+  //   .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom)
+  //   .append("g")
+  //     .attr("transform",
+  //           "translate(" + margin.left + "," + margin.top + ")")
 
 
-  var svg = d3v4.select("#dataviz_area_div_boxplot")
+  {/* <g opacity="0.8" transform="translate(9, 127) rotate(0)">
+  <rect class="elevation-line" height="6" x="0" y="0" fill="rgba(65,153,43,1)" rx="3" ry="3" width="6"></rect>
+  </g> */}
+
+
+
+
+  var svg = d3.select("#dataviz_area_div")
     .append("svg")
-    .attr("id", "dataviz_area_div_svg_boxplot")
-    // .attr("width", width + margin.left + margin.right)
-    // .attr("height", height + margin.top + margin.bottom)
+    .attr("id", "dataviz_area_div_svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     // .attr("viewBox", `-25 -15 400 250`)
-    .attr("viewBox", `-25 -20 500 400`)
+    .attr("viewBox", `-25 -15 500 400`)
 
-  
+  // .attr("viewBox", "0 0 " + width + " " + height )
+
+  //Read the data
+  //  "data/datasets/pmlb_small/iris/iris_Comma.csv"
+  //  "data/datasets/pmlb_small/iris/iris_two_classes.csv"
+
+
+  //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
+
+
+    // console.log(data)
+
+    // 0:Setosa, 
+    // Virginica
+    // Versicolor
 
     // Add X axis
-    var x = d3v4.scaleLinear()
+    var x = d3.scaleLinear()
       .domain([0, 0])
       // get width from viewbox width
       .range([0, width]);
 
     svg.append("g")
-      .attr("class", "myXaxis_boxplot")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      .attr("class", "myXaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
       // .attr("transform", "translate(0," + height + ")")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3v4.axisBottom(x))
+      .call(d3.axisBottom(x))
+      .attr("opacity", "0")
+
+    // Add Y axis
+    var formatxAxis = d3.format('.0f');
+
+    // d3.format is integer
+    // d3.format(".2f") is float
+
+
+    var y = d3.scaleLinear()
+      // .domain([0, 9])
+      .domain([4, 8.5])
+      // .domain([0, 0])
+      .tickFormat(formatxAxis)
+      .range([height, 0]);
+
+
+    // svg.append("g")
+    // .call(d3.axisLeft(y))
+
+    svg.append("g")
+      .attr("class", "myYaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      // .attr("transform", "translate(0, 0)")
+      // .attr("transform", "translate"+"(" + width +",0" + ")")
+      // .attr("transform", "translate"+"(" + -width +",0" + ")")
+      // .attr("transform", "translate(0," + width + ")")
+      .attr("transform", "translate(0," + "0" + ")")
+      .call(d3.axisLeft(y))
+      
+      .attr("opacity", "1");
+      
+
+
+
+
+
+    // Add dots
+    svg.append('g')
+      .selectAll("dot")
+      .data(data)
+      .enter()
+      .append("rect")
+      // sepal-length', 'sepal-width', 'petal-length', 'petal-width
+
+
+      // best
+      // .attr("x", function (d) { return x(0)+165; } )
+      .attr("x", function (d) { return locationByColorClass(d['class']) })
+      .attr("y", function (d) { return y(d['sepal-length']); })
+
+      .attr("rx", 3)
+      .attr("ry", 3)
+      .attr("width", 5)
+      .attr("height", 5)
+      .attr("class", function (d) { return "class " + d['class'] })
+      .style("fill", "#69b3a2")
+      // opacity
+      .attr("opacity", "0.3")
+
+    // new X axis
+    // x.domain([0,9])
+    // svg.select(".myXaxis")
+    // .transition()
+    // .duration(2000)
+    // .attr("opacity", "1")
+    // .call(d3.axisBottom(x));
+
+
+
+
+
+    svg.selectAll("rect")
+      .transition()
+      .delay(function (d, i) { return (i * 3) })
+      .duration(1000)
+
+      // .attr("x", function (d) { return x(0)+165; } )
+      // .attr("y", function (d) { return y(d['sepal-length']); } )
+      .attr("x", function (d) { return locationByColorClass(d['class']) })
+      .attr("y", function (d) { return y(d['sepal-length']); })
+      .attr("rx", 0)
+      .attr("ry", 0)
+      .attr("width", 30)
+      .attr("height", 5)
+
+
+      // give color to the dots based on the class
+      .style("fill", function (d) { return colorClass(d['class']) })
+      .attr("opacity", "0.5")
+
+
+
+    var num_rect = svg.selectAll("rect").size();
+    console.log("num_rect: ", num_rect)
+    // 
+
+
+
+
+
+
+
+
+
+
+
+
+    var project_x_axis = function (d) {
+
+      console.log("project_x_axis");
+
+
+      x.domain([0, 9])
+      svg.select(".myXaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisBottom(x));
+
+      y.domain([0, 10])
+      svg.select(".myYaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "0")
+        .call(d3.axisLeft(y));
+
+
+
+
+
+      // make each circle access to the axis
+      svg.selectAll("circle")
+        .transition()
+        .delay(function (d, i) { return (i * 10) })
+        .duration(1000)
+
+        .attr("cx", function (d) { return x(d['petal-length']); })
+        .attr("cy", function (d) { return y(0); })
+
+        // give color to the dots based on the class
+        .style("fill", function (d) { return colorClass(d['class']) });
+
+
+
+      // console.log("mouseover");
+      // tooltip
+      //   .style("opacity", 1)
+
+
+
+
+
+      // console.log(trial_mouseover)
+      // if (trial_mouseover>5)
+      // {
+      //   // new X axis
+      //   x.domain([0,9])
+      //   svg.select(".myXaxis")
+      //   .transition()
+      //   .duration(2000)
+      //   .attr("opacity", "1")
+      //   .call(d3.axisBottom(x));     
+
+
+
+      //   svg.selectAll("circle")
+      //   .transition()
+      //   .delay(function(d,i){return(i*3)})
+      //   .duration(1000)
+
+      //   .attr("cx", function (d) { return x(d['petal-length']); } )
+      //   .attr("cy", function (d) { return y(d['sepal-length']); } )
+
+      //   // give color to the dots based on the class
+      //   .style("fill", function(d){ return colorClass(d['class']) });
+      // }
+
+
+
+    }
+
+
+    var project_y_axis = function (d) {
+
+      // console.log("mouseover");
+
+      remove_boundaries_on2d_plot();
+
+
+      x.domain([0, 9])
+      svg.select(".myXaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "0")
+        .call(d3.axisBottom(x));
+
+      y.domain([0, 10])
+      svg.select(".myYaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisLeft(y));
+
+
+
+
+
+      // make each circle access to the axis
+      svg.selectAll("circle")
+        .transition()
+        .delay(function (d, i) { return (i * 10) })
+        .duration(1000)
+
+        .attr("cx", function (d) { return x(0); })
+        .attr("cy", function (d) { return y(d['sepal-length']); })
+
+        // give color to the dots based on the class
+        .style("fill", function (d) { return colorClass(d['class']) });
+
+
+
+      // console.log("mouseover");
+      // tooltip
+      //   .style("opacity", 1)
+
+
+
+
+
+      // console.log(trial_mouseover)
+      // if (trial_mouseover>5)
+      // {
+      //   // new X axis
+      //   x.domain([0,9])
+      //   svg.select(".myXaxis")
+      //   .transition()
+      //   .duration(2000)
+      //   .attr("opacity", "1")
+      //   .call(d3.axisBottom(x));     
+
+
+
+      //   svg.selectAll("circle")
+      //   .transition()
+      //   .delay(function(d,i){return(i*3)})
+      //   .duration(1000)
+
+      //   .attr("cx", function (d) { return x(d['petal-length']); } )
+      //   .attr("cy", function (d) { return y(d['sepal-length']); } )
+
+      //   // give color to the dots based on the class
+      //   .style("fill", function(d){ return colorClass(d['class']) });
+      // }
+
+
+
+    }
+
+
+
+
+    var rotate_project_on_x_axis = function (d) {
+
+      console.log("rotate_project_on_x_axis");
+
+
+      // x.domain([0,9])
+      // svg.select(".myXaxis")
+      // .transition()
+      // .duration(2000)
+      // .attr("opacity", "1")
+      // .call(d3.axisBottom(x));     
+
+      // y.domain([0, 10])
+      // svg.select(".myYaxis")
+      // .transition()
+      // .duration(2000)
+      // .attr("opacity", "0")
+      // .call(d3.axisLeft(y));     
+
+
+      // x.domain([4,8.5])
+      x.domain([4, 8.5])
+      svg.select(".myXaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "0")
+        .call(d3.axisBottom(x));
+
+
+      svg.select(".myYaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "0")
+
+      // count the number of circles
+
+
+
+
+      // svg.selectAll("rect")
+      // .transition()
+      // .delay(function(d,i){return(i*10)})
+      // .duration(1000)
+      // // width and height of the rectangle 2
+      // .attr('width',2)
+      // .attr('height',2)
+      // .attr('rx',3)
+      // .attr('ry',3)
+
+
+
+      // calculate frequency of each class by data[1]['sepal-length']
+      var frequency_class1 = {};
+      var frequency_class2 = {};
+      var frequency_class3 = {};
+
+      for (var i = 0; i < data.length; i++) {
+        // data[i]['class'] == '0'
+
+
+        if (data[i]['class'] == '0') {
+          // add count to frequency_class1[data[i]['sepal-length']]
+          if (frequency_class1[data[i]['sepal-length']] == undefined) {
+            frequency_class1[data[i]['sepal-length']] = 1;
+          }
+          else {
+            frequency_class1[data[i]['sepal-length']] += 1;
+          }
+        }
+        else if (data[i]['class'] == '1') {
+          // add count to frequency_class2[data[i]['sepal-length']]
+          if (frequency_class2[data[i]['sepal-length']] == undefined) {
+            frequency_class2[data[i]['sepal-length']] = 1;
+          }
+          else {
+            frequency_class2[data[i]['sepal-length']] += 1;
+          }
+        }
+        else if (data[i]['class'] == '2') {
+          // add count to frequency_class3[data[i]['sepal-length']]
+          if (frequency_class3[data[i]['sepal-length']] == undefined) {
+            frequency_class3[data[i]['sepal-length']] = 1;
+          }
+          else {
+            frequency_class3[data[i]['sepal-length']] += 1;
+          }
+        }
+
+
+
+
+      }
+
+
+
+
+      // console.log(frequency_class1[4.3]);
+      console.log(frequency_class1);
+      // get all keys of frequency_class1
+      var keys_1 = Object.keys(frequency_class1);
+      console.log(frequency_class2);
+      var keys_2 = Object.keys(frequency_class2);
+      console.log(frequency_class3);
+      var keys_3 = Object.keys(frequency_class3);
+
+      //  set union keys_1, keys_2, keys_3
+      var keys = keys_1.concat(keys_2, keys_3);
+      keys = [...new Set(keys)];
+      // sort keys
+      keys.sort(function (a, b) { return a - b });
+      console.log("keys:", keys);
+      // show length of keys
+      console.log("length of keys:", keys.length);
+
+
+      //  print if frequency_class1
+
+      //show how many rectangles exist
+      console.log("number of rectangles:", svg.selectAll("rect").size());
+
+      // remove any rectangles if the keys.length is less than the number of rectangles
+      // that is, for example, if keys.length is 35, only 35 rectangles should be shown
+      // when rectangles are removed, make it transparent and removed
+
+      if (keys.length < svg.selectAll("rect").size()) {
+        console.log("remove rectangles");
+        svg.selectAll("rect")
+          .data(keys)
+          .exit()
+          .remove();
+        console.log("after number of rectangles:", svg.selectAll("rect").size());
+
+      }
+
+
+
+      // rotate 90 degree of rectangles 
+      svg.selectAll("rect")
+        // .attr('opacity',0)
+        .transition()
+        .delay(function (d, i) { return (i * 5) })
+        .duration(1000)
+
+        // .attr("cx", function (d) { return x(d['petal-length']); } )
+        // .attr("cy", function (d) { return y(0); } )
+
+        // // give color to the dots based on the class
+        // .style("fill", function(d){ return colorClass(d['class']) });
+        // .attr('transform', 'translate(400,100)rotate(90)')
+        .attr('transform', 'translate(300,100) rotate(90)')
+        // .attr('transform', 'translate(400,100)')
+        // .attr('transform', 'rotate(90)')
+        // .attr('transform', 'translate(100,400)rotate(-90)')  
+        // .attr('transform', 'rotate(-90)translate(10,200)')  
+        .attr('opacity', 0.5)
+        // .attr("x", function(d){ return x(0) });
+        .transition()
+        .delay(function (d, i) { return (i * 5) })
+        .duration(1000)
+        .attr("x", function (d) {
+          // console.log("x(6)")
+          // console.log(x(6))
+          return x(6);
+        })
+      // console.log("mouseover");
+      // tooltip
+      //   .style("opacity", 1)
+
+
+      // console.log(data[1]['petal-length']);
+      // console.log(data[1]['sepal-length']);
+
+
+      // console.log(data);
+      // console.log(data[1]['sepal-length']);
+
+
+
+
+      svg.selectAll("rect")
+        // // get each rectangle's class attribute
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 0" })
+        // .transition()
+        // .delay(function(d,i){return(i*10)})
+        // .duration(1000)
+
+        // // change each rectangle's height based on frequency_class3 dictionary
+        .attr("width", function (d, i) {
+
+          console.log(frequency_class1[keys_1[i]])
+          return 20 * frequency_class1[keys_1[i]]
+        })
+
+
+
+
+      svg.selectAll("rect")
+        // // get each rectangle's class attribute
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 1" })
+        // .transition()
+        // .delay(function(d,i){return(i*10)})
+        // .duration(1000)
+
+        // // change each rectangle's height based on frequency_class3 dictionary
+        .attr("width", function (d, i) {
+
+          console.log(frequency_class2[keys_2[i]])
+          return 20 * frequency_class2[keys_2[i]]
+
+        })
+
+
+
+
+
+      svg.selectAll("rect")
+        // // get each rectangle's class attribute
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 2" })
+        // .transition()
+        // .delay(function(d,i){return(i*10)})
+        // .duration(1000)
+
+        // // change each rectangle's height based on frequency_class3 dictionary
+        .attr("width", function (d, i) {
+
+          console.log(frequency_class3[keys_3[i]])
+          return 20 * frequency_class3[keys_3[i]]
+
+        })
+
+
+
+
+      // plot rectangles based on frequency_class1, frequency_class2, frequency_class3 
+      // each rectangle has height frequency_class1
+      // each rectangle has width 0.5
+      // each rectangle has x = data[i]['sepal-length']
+
+
+
+
+      // plot rectangles based on the frequency
+
+
+
+
+
+
+
+      // console.log(trial_mouseover)
+      // if (trial_mouseover>5)
+      // {
+      //   // new X axis
+      //   x.domain([0,9])
+      //   svg.select(".myXaxis")
+      //   .transition()
+      //   .duration(2000)
+      //   .attr("opacity", "1")
+      //   .call(d3.axisBottom(x));     
+
+
+
+      //   svg.selectAll("circle")
+      //   .transition()
+      //   .delay(function(d,i){return(i*3)})
+      //   .duration(1000)
+
+      //   .attr("cx", function (d) { return x(d['petal-length']); } )
+      //   .attr("cy", function (d) { return y(d['sepal-length']); } )
+
+      //   // give color to the dots based on the class
+      //   .style("fill", function(d){ return colorClass(d['class']) });
+      // }
+
+
+
+    }
+
+    var mousemove = function (d) {
+      console.log("mousemove");
+      // tooltip
+      //   .html("The exact value of<br>the Ground Living area is: " + d['sepal-length'])
+      //   .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      //   .style("top", (d3.mouse(this)[1]) + "px")
+    }
+
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var twoDPlot = function (d) {
+      console.log("mouseleave");
+
+      x.domain([0, 9])
+      svg.select(".myXaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisBottom(x));
+
+      y.domain([0, 10])
+      svg.select(".myYaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisLeft(y));
+
+
+
+      svg.selectAll("circle")
+        .transition()
+        .delay(function (d, i) { return (i * 3) })
+        .duration(1000)
+
+        .attr("cx", function (d) { return x(d['petal-length']); })
+        .attr("cy", function (d) { return y(d['sepal-length']); })
+
+        // give color to the dots based on the class
+        .style("fill", function (d) { return colorClass(d['class']) });
+
+      // tooltip
+      //   .transition()
+      //   .duration(200)
+      //   .style("opacity", 0)
+    }
+
+    // Add dots
+    // svg.append('g')
+    //   .selectAll("dot")
+    //   .data(data.filter(function(d,i){return i<100000})) // the .filter part is just to keep a few dots on the chart, not all of them
+    //   .enter()
+    //   .append("circle")
+    //     .attr("cx", function (d) { return x(d['petal-length']); } )
+    //     .attr("cy", function (d) { return y(d['sepal-length']); } )
+    //     .attr("r", 2)
+    //     .style("fill", "#69b3a2")
+    //     .style("opacity", 0.1)
+    //     .style("stroke", "white")
+    //   .on("mouseover", mouseover )
+    //   .on("mousemove", mousemove )
+    //   .on("mouseleave", mouseleave );
+
+
+    // // svg.selectAll("circle")
+    // d3.select("#dataviz_area")
+    // .on("mouseover", project_y_axis )
+    // // .on("mousemove", mousemove )
+    // .on("mouseleave", twoDPlot );
+
+
+
+    // d3.select("#next")
+    // .on("mouseover", mouseover )
+    // .on("mouseleave", mouseleave );
+
+    // click
+    // d3.select("#next")
+    // .on("click", function() {
+    //   console.log("click");
+
+
+    // });
+
+
+
+    // d3.select("#projectxaxia")
+    // // .on("mousemove", mousemove )
+    // .on("click", project_x_axis );
+
+
+    d3.select("#projectyaxia")
+      // .on("mousemove", mousemove )
+      .on("click", project_y_axis);
+
+
+
+    d3.select("#twoDPlot")
+      // .on("mouseover", function() {
+      //   console.log("mouseover_next");
+
+      // });
+      .on("click", twoDPlot);
+
+
+
+    d3.select("#rotateprojectxaxia")
+      // .on("mousemove", mousemove )
+      .on("click", rotate_project_on_x_axis);
+
+
+
+
+    // select all rectangles and make opacity 0
+    // svg.selectAll("rect")
+    // .transition()
+    // .delay(function(d,i){return(i*10)})
+    // .duration(1000)
+    // .attr('opacity',0)
+
+    // select all rectangles that have class attr is "class 0"
+
+
+    // .transition()
+    // .delay(function(d,i){return(i*10)})
+    // .duration(1000)
+
+
+
+
+
+    // d3.select("#rotateprojectxaxia")
+    // // .on("mousemove", mousemove )
+    // .on("click", project_x_axis );
+
+
+  //})
+
+  // if user mouse over the dot, show the class
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+function boxplot_direct_from_y() {
+
+
+
+  // set the dimensions and margins of the graph
+  // var margin = {top: 30, right:30, bottom: 30, left: 0},
+  // width = 400 - margin.left - margin.right,
+  // height = 300 - margin.top - margin.bottom;
+
+
+  var margin = { top: 30, right: 30, bottom: 30, left: 0 },
+    width = 500 - margin.left - margin.right,
+    height = 350 * 600 / 500 - margin.top - margin.bottom;
+
+
+  // append the svg object to the body of the page
+  // var svg = d3.select("#dataviz_area")
+  //   .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom)
+  //   .append("g")
+  //     .attr("transform",
+  //           "translate(" + margin.left + "," + margin.top + ")")
+
+  d3 = d3version4
+  console.log("inside!!!!_d3version4")
+  console.log(d3.version)
+
+  console.log("inside!!!!_d3v3")
+  console.log(d3v3.version)
+
+
+  var svg = d3.select("#dataviz_area_div")
+    .append("svg")
+    .attr("id", "dataviz_area_div_svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    // .attr("viewBox", `-25 -15 400 250`)
+    .attr("viewBox", `-25 -15 500 400`)
+
+  // .attr("viewBox", "0 0 " + width + " " + height )
+
+  //Read the data
+  //  "data/datasets/pmlb_small/iris/iris_Comma.csv"
+  //  "data/datasets/pmlb_small/iris/iris_two_classes.csv"
+
+
+  //d3.csv("data/datasets/pmlb_small/iris/iris_Comma.csv", function (data) {
+
+
+    // console.log(data)
+
+    // 0:Setosa, 
+    // Virginica
+    // Versicolor
+
+    // Add X axis
+    var x = d3.scaleLinear()
+      .domain([0, 0])
+      // get width from viewbox width
+      .range([0, width]);
+
+    svg.append("g")
+      .attr("class", "myXaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      // .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
       .attr("opacity", "0")
       
       // show white axis
@@ -1209,9 +1999,9 @@ function boxplot_direct_from_y() {
     // Add Y axis
 
     // scaleLinear show integer number
-    // var formatxAxis = d3v4.format('.0f');
+    // var formatxAxis = d3.format('.0f');
     
-    var y = d3v4.scaleLinear()
+    var y = d3.scaleLinear()
       // .domain([0, 10])
       .domain([4, 8.5])
       // .domain([0, 0])
@@ -1221,16 +2011,16 @@ function boxplot_direct_from_y() {
 
 
     // svg.append("g")
-    // .call(d3v4.axisLeft(y))
+    // .call(d3.axisLeft(y))
 
     svg.append("g")
-      .attr("class", "myYaxis_boxplot")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+      .attr("class", "myYaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
       // .attr("transform", "translate(0, 0)")
       // .attr("transform", "translate"+"(" + width +",0" + ")")
       // .attr("transform", "translate"+"(" + -width +",0" + ")")
       // .attr("transform", "translate(0," + width + ")")
       .attr("transform", "translate(0," + "0" + ")")
-      .call(d3v4.axisLeft(y))
+      .call(d3.axisLeft(y))
 
       
       .attr("opacity", "1")
@@ -1257,7 +2047,7 @@ function boxplot_direct_from_y() {
     // i=0;
     // while (i<=2) {
     //   svg.append("path")
-    //   .attr("d", d3v4.symbol().type(d3v4.symbolTriangle).size(100))
+    //   .attr("d", d3.symbol().type(d3.symbolTriangle).size(100))
     //   // .attr("transform", function(d) { return "translate(" + x(0) + "," + 120+i + ")"; })
     //   // .attr("transform", "rotate(90)")
     //   // rotate and translate
@@ -1278,7 +2068,7 @@ function boxplot_direct_from_y() {
 
 
 
-    // Add rect
+    // Add dots
     svg.append('g')
       .selectAll("dot")
       .data(data)
@@ -1308,7 +2098,7 @@ function boxplot_direct_from_y() {
     // .transition()
     // .duration(2000)
     // .attr("opacity", "1")
-    // .call(d3v4.axisBottom(x));
+    // .call(d3.axisBottom(x));
 
 
 
@@ -1356,7 +2146,7 @@ function boxplot_direct_from_y() {
 
     var project_x_axis = function (d) {
 
-      console.log("project_x_axis_boxplot");
+      console.log("project_x_axis");
 
 
       x.domain([0, 9])
@@ -1364,14 +2154,14 @@ function boxplot_direct_from_y() {
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
       y.domain([0, 10])
       svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "0")
-        .call(d3v4.axisLeft(y));
+        .call(d3.axisLeft(y));
 
 
 
@@ -1408,7 +2198,7 @@ function boxplot_direct_from_y() {
       //   .transition()
       //   .duration(2000)
       //   .attr("opacity", "1")
-      //   .call(d3v4.axisBottom(x));     
+      //   .call(d3.axisBottom(x));     
 
 
 
@@ -1429,7 +2219,7 @@ function boxplot_direct_from_y() {
     }
 
 
-    var project_y_axis_boxplot = function (d) {
+    var project_y_axis = function (d) {
 
       // console.log("mouseover");
 
@@ -1437,18 +2227,18 @@ function boxplot_direct_from_y() {
 
 
       x.domain([0, 9])
-      svg.select(".myXaxis_boxplot")
+      svg.select(".myXaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "0")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
       y.domain([0, 10])
-      svg.select(".myYaxis_boxplot")
+      svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
-        .call(d3v4.axisLeft(y));
+        .call(d3.axisLeft(y));
 
 
 
@@ -1485,7 +2275,7 @@ function boxplot_direct_from_y() {
       //   .transition()
       //   .duration(2000)
       //   .attr("opacity", "1")
-      //   .call(d3v4.axisBottom(x));     
+      //   .call(d3.axisBottom(x));     
 
 
 
@@ -1518,26 +2308,26 @@ function boxplot_direct_from_y() {
       // .transition()
       // .duration(2000)
       // .attr("opacity", "1")
-      // .call(d3v4.axisBottom(x));     
+      // .call(d3.axisBottom(x));     
 
       // y.domain([0, 10])
       // svg.select(".myYaxis")
       // .transition()
       // .duration(2000)
       // .attr("opacity", "0")
-      // .call(d3v4.axisLeft(y));     
+      // .call(d3.axisLeft(y));     
 
 
       // x.domain([4,8.5])
       x.domain([4, 8.5])
-      svg.select(".myXaxis_boxplot")
+      svg.select(".myXaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "0")
-        .call(d3v4.axisBottom(x));
+        .call(d3.axisBottom(x));
 
 
-      svg.select(".myYaxis_boxplot")
+      svg.select(".myYaxis")
         .transition()
         .duration(2000)
         .attr("opacity", "1")
@@ -1702,7 +2492,7 @@ function boxplot_direct_from_y() {
 
       svg.selectAll("rect")
         // // get each rectangle's class attribute
-        .filter(function (d, i) { return d3v4.select(this).attr("class") == "class 0" })
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 0" })
         // .transition()
         // .delay(function(d,i){return(i*10)})
         // .duration(1000)
@@ -1719,7 +2509,7 @@ function boxplot_direct_from_y() {
 
       svg.selectAll("rect")
         // // get each rectangle's class attribute
-        .filter(function (d, i) { return d3v4.select(this).attr("class") == "class 1" })
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 1" })
         // .transition()
         // .delay(function(d,i){return(i*10)})
         // .duration(1000)
@@ -1738,7 +2528,7 @@ function boxplot_direct_from_y() {
 
       svg.selectAll("rect")
         // // get each rectangle's class attribute
-        .filter(function (d, i) { return d3v4.select(this).attr("class") == "class 2" })
+        .filter(function (d, i) { return d3.select(this).attr("class") == "class 2" })
         // .transition()
         // .delay(function(d,i){return(i*10)})
         // .duration(1000)
@@ -1779,7 +2569,7 @@ function boxplot_direct_from_y() {
       //   .transition()
       //   .duration(2000)
       //   .attr("opacity", "1")
-      //   .call(d3v4.axisBottom(x));     
+      //   .call(d3.axisBottom(x));     
 
 
 
@@ -1803,18 +2593,18 @@ function boxplot_direct_from_y() {
       console.log("mousemove");
       // tooltip
       //   .html("The exact value of<br>the Ground Living area is: " + d['sepal-length'])
-      //   .style("left", (d3v4.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
-      //   .style("top", (d3v4.mouse(this)[1]) + "px")
+      //   .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      //   .style("top", (d3.mouse(this)[1]) + "px")
     }
 
     var mouseover = function (d) {
       console.log("mouseover y axis");
     }
 
-    var showboundaries_boxplot = function (d) {
+    var showboundaries = function (d) {
 
-      // check there are d3v4.symbolCircle or not
-      // if there are d3v4.symbolCircle, then change the candicate_points.
+      // check there are d3.symbolCircle or not
+      // if there are d3.symbolCircle, then change the candicate_points.
 
 
 
@@ -1834,10 +2624,10 @@ function boxplot_direct_from_y() {
 
       for (i = 0; i < candiate_points.length; i++) {
         svg.append("path")
-          .attr("d", d3v4.symbol().type(d3v4.symbolCircle).size(95))
+          .attr("d", d3.symbol().type(d3.symbolCircle).size(95))
           .attr("transform", function (d) {
-            console.log("x point", d3v4.mouse(this)[0])
-            console.log("y point", d3v4.mouse(this)[1])
+            console.log("x point", d3.mouse(this)[0])
+            console.log("y point", d3.mouse(this)[1])
             return "translate(" + candiate_points[i][0] + "," + candiate_points[i][1] + ")";
           })
           // show fade in effect
@@ -1917,11 +2707,11 @@ function boxplot_direct_from_y() {
 
       }
       // svg.append("path")
-      // // .attr("d", d3v4.symbol().type(d3v4.symbolDiamond).size(95))
-      // .attr("d", d3v4.symbol().type(d3v4.symbolCircle).size(95))
+      // // .attr("d", d3.symbol().type(d3.symbolDiamond).size(95))
+      // .attr("d", d3.symbol().type(d3.symbolCircle).size(95))
       // .attr("transform", function(d) { 
-      //   console.log("x point",d3v4.mouse(this)[0])
-      //   console.log("y point",d3v4.mouse(this)[1])
+      //   console.log("x point",d3.mouse(this)[0])
+      //   console.log("y point",d3.mouse(this)[1])
       //   return "translate(" + 1+ "," + 200 + ")"; 
       // })
       // .style("fill", "black")
@@ -1941,14 +2731,14 @@ function boxplot_direct_from_y() {
 
 
 
-    var showboundariesSecondBound_boxplot = function (d) {
+    var showboundariesSecondBound = function (d) {
 
       console.log("showboundariesSecondBound")
 
       // circle_symbol_indicator_first 
       // rect_indicator_first
       // make class circle_symbol_indicator_first and rect_indicator_first to fade away
-      d3v4.selectAll(".circle_symbol_indicator_first")
+      d3.selectAll(".circle_symbol_indicator_first")
         .transition()
         .duration(2000)
         .style("opacity", 0)
@@ -1957,7 +2747,7 @@ function boxplot_direct_from_y() {
         .style("stroke-width", 1)
 
 
-      d3v4.selectAll(".rect_indicator_first")
+      d3.selectAll(".rect_indicator_first")
         .transition()
         .duration(2000)
         .style("opacity", 0)
@@ -1970,7 +2760,7 @@ function boxplot_direct_from_y() {
 
 
 
-      d3v4.selectAll(".circle_symbol_indicator_second")
+      d3.selectAll(".circle_symbol_indicator_second")
         .transition()
         .duration(2000)
         .style("opacity", 0.5)
@@ -1981,7 +2771,7 @@ function boxplot_direct_from_y() {
         .style("stroke-width", 1)
 
 
-      d3v4.selectAll(".rect_indicator_second")
+      d3.selectAll(".rect_indicator_second")
         .transition()
         .duration(2000)
         .style("opacity", 0.5)
@@ -2005,7 +2795,7 @@ function boxplot_direct_from_y() {
         height = 350 * 600 / 500 - margin.top - margin.bottom;
 
 
-      var svg = d3v4.select("#dataviz_area_div_second_boxplot")
+      var svg = d3.select("#dataviz_area_div_second")
         .append("svg")
         .attr("id", "dataviz_area_div_svg_second")
         .attr("width", width + margin.left + margin.right)
@@ -2028,18 +2818,18 @@ function boxplot_direct_from_y() {
       var radius = Math.min(width, height) / 3;
 
 
-      var color = d3v4.scaleOrdinal()
+      var color = d3.scaleOrdinal()
         .range(["#98abc5", "#8a89a6", "#7b6888"]);
 
-      var arc = d3v4.arc()
+      var arc = d3.arc()
         .outerRadius(radius - 10)
         .innerRadius(0);
 
-      var labelArc = d3v4.arc()
+      var labelArc = d3.arc()
         .outerRadius(radius - 40)
         .innerRadius(radius - 40);
 
-      var pie = d3v4.pie()
+      var pie = d3.pie()
         .sort(null)
         .value(function (d) { return d; });
 
@@ -2094,7 +2884,7 @@ function boxplot_direct_from_y() {
         height = 350 * 600 / 500 - margin.top - margin.bottom;
 
       // remove all under svg id = dataviz_area_div_svg_second with fade out effect
-      d3v4.select("#dataviz_area_div_svg_second")
+      d3.select("#dataviz_area_div_svg_second")
         .selectAll("*")
         .transition()
         .duration(2000)
@@ -2102,17 +2892,17 @@ function boxplot_direct_from_y() {
         .remove()
 
       // remove svg id = dataviz_area_div_svg_second
-      d3v4.select("#dataviz_area_div_svg_second")
+      d3.select("#dataviz_area_div_svg_second")
         .remove()
 
 
-      // d3v4.select("#dataviz_area_div_svg_second").selectAll("*").remove();
+      // d3.select("#dataviz_area_div_svg_second").selectAll("*").remove();
 
 
 
 
 
-      var svg = d3v4.select("#dataviz_area_div_second_boxplot")
+      var svg = d3.select("#dataviz_area_div_second")
         .append("svg")
         .attr("id", "dataviz_area_div_svg_second")
         .attr("width", width + margin.left + margin.right)
@@ -2135,18 +2925,18 @@ function boxplot_direct_from_y() {
       var radius = Math.min(width, height) / 3;
 
 
-      var color = d3v4.scaleOrdinal()
+      var color = d3.scaleOrdinal()
         .range(["#98abc5", "#8a89a6", "#7b6888"]);
 
-      var arc = d3v4.arc()
+      var arc = d3.arc()
         .outerRadius(radius - 10)
         .innerRadius(0);
 
-      var labelArc = d3v4.arc()
+      var labelArc = d3.arc()
         .outerRadius(radius - 40)
         .innerRadius(radius - 40);
 
-      var pie = d3v4.pie()
+      var pie = d3.pie()
         .sort(null)
         .value(function (d) { return d; });
 
@@ -2190,7 +2980,7 @@ function boxplot_direct_from_y() {
         .style("opacity", 1)
 
       // make pie chart fade effecy when change the data of the pie chart
-      // d3v4.selectAll("#first_piechart")
+      // d3.selectAll("#first_piechart")
       // .transition()
       // .duration(2000)
       // .style("opacity", 0)
@@ -2275,16 +3065,16 @@ function boxplot_direct_from_y() {
         endAngle: Math.PI * 2
       };
 
-      var color = d3v4.scale.category20();
+      var color = d3.scale.category20();
 
-      var pie = d3v4.layout.pie()
+      var pie = d3.layout.pie()
         .sort(null);
 
-      var arc = d3v4.svg.arc()
+      var arc = d3.svg.arc()
         .innerRadius(radius - 100)
         .outerRadius(radius - 20);
 
-      var svg = d3v4.select('#Donut-chart').append('svg')
+      var svg = d3.select('#Donut-chart').append('svg')
         .attr('id', 'Donut-chart-render')
         .attr("width", '100%')
         .attr("height", '100%')
@@ -2309,10 +3099,10 @@ function boxplot_direct_from_y() {
         .duration(750)
         .attrTween("d", arcTween);
 
-      d3v4.selectAll("input").on("change", change);
+      d3.selectAll("input").on("change", change);
 
       var timeout = setTimeout(function () {
-        d3v4.select("input[value=\"oranges\"]").property("checked", true).each(change);
+        d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
       }, 2000);
 
       function change() {
@@ -2342,14 +3132,14 @@ function boxplot_direct_from_y() {
       }
 
       function arcTween(a) {
-        var i = d3v4.interpolate(this._current, a);
+        var i = d3.interpolate(this._current, a);
         this._current = i(0);
         return function (t) {
           return arc(i(t));
         };
       }
       function arcTweenOut(a) {
-        var i = d3v4.interpolate(this._current, { startAngle: Math.PI * 2, endAngle: Math.PI * 2, value: 0 });
+        var i = d3.interpolate(this._current, { startAngle: Math.PI * 2, endAngle: Math.PI * 2, value: 0 });
         this._current = i(0);
         return function (t) {
           return arc(i(t));
@@ -2369,100 +3159,105 @@ function boxplot_direct_from_y() {
     }
 
 
-    var thickyaxis_boxplot = function (d) {
+    var thickyaxis = function (d) {
       // make it thicker when mouse over on y axis class myYaxis
-      d3v4.select(".myYaxis_boxplot")
+      d3.select(".myYaxis")
         .style("stroke-width", 3)
         .style("opacity", 1)
     }
 
 
-    var normalyaxis_boxplot = function (d) {
+    var normalyaxis = function (d) {
       // make it thicker when mouse over on y axis class myYaxis
-      d3v4.select(".myYaxis_boxplot")
+      d3.select(".myYaxis")
         .style("stroke-width", 1)
         .style("opacity", 1)
     }
 
 
-// // for scatter plot
-//     var twoDPlot = function (d) {
-//       console.log("mouseleave_hello");
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var twoDPlot = function (d) {
+      console.log("mouseleave");
 
-//       x.domain([0, 9])
-//       svg.select(".myXaxis_scatter")
-//         .transition()
-//         .duration(2000)
-//         .attr("opacity", "1")
-//         .call(d3v4.axisBottom(x));
+      x.domain([0, 9])
+      svg.select(".myXaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisBottom(x));
 
-//       y.domain([0, 10])
-//       svg.select(".myYaxis_scatter")
-//         .transition()
-//         .duration(2000)
-//         .attr("opacity", "1")
-//         .call(d3v4.axisLeft(y));
-
-
-
-//       svg.selectAll("circle")
-//         .transition()
-//         .delay(function (d, i) { return (i * 3) })
-//         .duration(1000)
-
-//         .attr("cx", function (d) { return x(d['petal-length']); })
-//         .attr("cy", function (d) { return y(d['sepal-length']); })
-
-//         // give color to the dots based on the class
-//         .style("fill", function (d) { return colorClass(d['class']) });
-
-//       // tooltip
-//       //   .transition()
-//       //   .duration(200)
-//       //   .style("opacity", 0)
-//     }
+      y.domain([0, 10])
+      svg.select(".myYaxis")
+        .transition()
+        .duration(2000)
+        .attr("opacity", "1")
+        .call(d3.axisLeft(y));
 
 
 
+      svg.selectAll("circle")
+        .transition()
+        .delay(function (d, i) { return (i * 3) })
+        .duration(1000)
 
-    // d3v4.select("#projectyaxia_boxplot")
-    //   .on("click", project_y_axis_boxplot);
+        .attr("cx", function (d) { return x(d['petal-length']); })
+        .attr("cy", function (d) { return y(d['sepal-length']); })
+
+        // give color to the dots based on the class
+        .style("fill", function (d) { return colorClass(d['class']) });
+
+      // tooltip
+      //   .transition()
+      //   .duration(200)
+      //   .style("opacity", 0)
+    }
 
 
 
-    // d3v4.select("#twoDPlot")
-    //   .on("click", twoDPlot);
+
+    d3.select("#projectyaxia")
+      .on("click", project_y_axis);
 
 
 
-    // d3v4.select("#rotateprojectxaxia")
+    d3.select("#twoDPlot")
+      .on("click", twoDPlot);
+
+
+
+    // d3.select("#rotateprojectxaxia")
     // .on("click", rotate_project_on_x_axis );
 
 
 
-    d3v4.select("#rotateprojectxaxia_boxplot")
+    d3.select("#rotateprojectxaxia")
       .on("click", barchart);
 
 
 
     // mouse over on the class myYaxis 
-    d3v4.select(".myYaxis_boxplot")
-      .on("mouseover", thickyaxis_boxplot)
-      .on("mouseout", normalyaxis_boxplot)
-      .on("click", showboundaries_boxplot);
-      // .on("dblclick", showpiechart_v1);
+    d3.select(".myYaxis")
+      .on("mouseover", thickyaxis)
+      .on("mouseout", normalyaxis)
+      .on("click", showboundaries)
+      .on("dblclick", showpiechart_v1);
 
 
-    // d3v4.select("#show_piechart")
-    //   .on("click", showpiechart_v1);
+    d3.select("#show_piechart")
+      .on("click", showpiechart_v1);
 
-    // d3v4.select("#show_piechart_another")
+    d3.select("#show_piechart_another")
+      // .on()
+      // .on("click", showpiechart_v1 )
+      .on("click", showpiechart_v1_reset);
+    // .on("click", showpiechart_v2 );
+    // .on("click", showdonumchart );
+    // .on("click", test );
 
-    //   .on("click", showpiechart_v1_reset);
 
     // if select fbbfirsttosecondbound
-    d3v4.select("#fbbfirsttosecondbound_boxplot")
-      .on("click", showboundariesSecondBound_boxplot)
+    d3.select("#fbbfirsttosecondbound")
+      .on("click", showboundariesSecondBound)
     //  .on("click", showpiechart );
     // .on("click", test );
 
@@ -2491,7 +3286,7 @@ function boxplot_direct_from_y() {
 
 function decisiontree() {
 
-  d3v3=d3v3
+  d3=d3v3
 
   
   var label_names;
@@ -2583,9 +3378,6 @@ function decisiontree() {
     width = 700 - margin.left - margin.right,
     height = 350 * 600 / 500 - margin.top - margin.bottom;
 
-
-    // console.log("width-decT", width)
-    // console.log("height-decT", height)
   var i = 0,
     duration = 550,
     root;
@@ -2596,7 +3388,7 @@ function decisiontree() {
 
   var filetochoose = version2 ? file_namev2 : file_name
 
-  // d3v3.json(filetochoose, function (error, flare) {
+  // d3.json(filetochoose, function (error, flare) {
   //   if (error) throw error;
 
     
@@ -2604,14 +3396,14 @@ function decisiontree() {
   //   // console.log(getDepth(flare))
 
 
-  //   tree = d3v3.layout.tree()
+  //   tree = d3.layout.tree()
   //     .separation(function (a, b) { return ((a.parent == root) && (b.parent == root)) ? strokeness : strokeness; })
   //     .size([height, getDepth(flare) * width / 8]);
 
-  //   diagonal = d3v3.svg.diagonal()
+  //   diagonal = d3.svg.diagonal()
   //     .projection(function (d) { return [d.y, d.x]; });
 
-  //   // svg = d3v3.select("body").append("svg")
+  //   // svg = d3.select("body").append("svg")
   //   //   .attr("width", getDepth(flare) * width / 8 + margin.right + margin.left)
   //   //   .attr("height", height + margin.top + margin.bottom)
   //   //   .append("g")
@@ -2620,7 +3412,7 @@ function decisiontree() {
 
 
 
-  //   svg = d3v3.select("#dataviz_area_div")
+  //   svg = d3.select("#dataviz_area_div")
   //     .append("svg")
   //     .attr("id", "dataviz_area_div_svg")
   //     .attr("width", width + margin.left + margin.right)
@@ -2925,14 +3717,14 @@ function decisiontree() {
     // console.log(getDepth(flare))
 
 
-    tree = d3v3.layout.tree()
+    tree = d3.layout.tree()
       .separation(function (a, b) { return ((a.parent == root) && (b.parent == root)) ? strokeness : strokeness; })
       .size([height, getDepth(flare) * width / 8]);
 
-    diagonal = d3v3.svg.diagonal()
+    diagonal = d3.svg.diagonal()
       .projection(function (d) { return [d.y, d.x]; });
 
-    // svg = d3v3.select("body").append("svg")
+    // svg = d3.select("body").append("svg")
     //   .attr("width", getDepth(flare) * width / 8 + margin.right + margin.left)
     //   .attr("height", height + margin.top + margin.bottom)
     //   .append("g")
@@ -2943,21 +3735,19 @@ function decisiontree() {
     // viewBox = `0 -100 850 850` 
 
 
-    svg = d3v3.select("#dataviz_area_div")
+    svg = d3.select("#dataviz_area_div")
       .append("svg")
       .attr("id", "dataviz_area_div_svg")
-      // .attr("width", width + margin.left + margin.right)
-      // .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
       // .attr("viewBox", `-25 -15 400 250`)
       // .attr("viewBox", `-30 -30 500 400`)  
       // current
       // .attr("viewBox", `-90 -30 500 400`)
       // .attr("viewBox", `-90 -30 600 800`)  
-      // .attr("viewBox", `-90 -30 600 500`)  
-      // .attr("viewBox", `30 -80 600 600`)  
-      .attr("viewBox", `-90 -80 900 500`)  
-      // .attr("transform", "translate(180,50)");
+        // .attr("viewBox", `-90 -30 600 500`)  
+        .attr("viewBox", `30 -80 600 600`)  
         
 
 
@@ -2995,7 +3785,7 @@ function decisiontree() {
 
   // make the 
 
-  d3v3.select(self.frameElement).style("height", "480px");
+  d3.select(self.frameElement).style("height", "480px");
 
   function update(source, n_labels) {
 
@@ -3437,10 +4227,10 @@ function decisiontree() {
       .data(links, function (d) { return d.target.id; });
 
 
-    if (tree_branch) var link_stoke_scale = d3v3.scale.linear().domain([0, 100]).range([1.5, default_strokeness]);
-    else var link_stoke_scale = d3v3.scale.linear().domain([0, 100]).range([1.5, 8]);
+    if (tree_branch) var link_stoke_scale = d3.scale.linear().domain([0, 100]).range([1.5, default_strokeness]);
+    else var link_stoke_scale = d3.scale.linear().domain([0, 100]).range([1.5, 8]);
 
-    var color = d3v3.scale.linear()
+    var color = d3.scale.linear()
       .domain([0, 50, 100])
       .range(["rgb(2, 255, 219)", "blue"]);
 
@@ -3600,7 +4390,7 @@ function decisiontree() {
     var Size = 400
 
 
-    var svg1 = d3v3.select("body")
+    var svg1 = d3.select("body")
       .append("svg")
       .attr("width", Size)
       .attr("height", Size)
@@ -3651,7 +4441,7 @@ function decisiontree() {
 function decisiontree_Version2(){
 
 
-  d3v3=d3v3
+  d3=d3v3
 
   // var margin = {top: 20, right: 120, bottom: 20, left: 180},
   //   width = 960 - margin.right - margin.left,
@@ -3665,20 +4455,20 @@ var i = 0,
     duration = 750,
     root;
 
-var tree = d3v3.layout.tree()
+var tree = d3.layout.tree()
     .size([height, width]);
 
-var diagonal = d3v3.svg.diagonal()
+var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
-// var svg = d3v3.select("body").append("svg")
+// var svg = d3.select("body").append("svg")
 //     .attr("width", width + margin.right + margin.left)
 //     .attr("height", height + margin.top + margin.bottom)
 //   .append("g")
 //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-  var svg = d3v3.select("#dataviz_area_div")
+  var svg = d3.select("#dataviz_area_div")
   .append("svg")
   .attr("id", "dataviz_area_div_svg")
   .attr("width", width + margin.left + margin.right)
@@ -3693,8 +4483,8 @@ var diagonal = d3v3.svg.diagonal()
     .attr("viewBox", `30 -80 600 600`)  
 
 
-// d3v3.json("structure_iris_dc_2.json", function(error, flare) {
-//   d3v3.json("structure_iris_dc_2.json", function(error, flare) {
+// d3.json("structure_iris_dc_2.json", function(error, flare) {
+//   d3.json("structure_iris_dc_2.json", function(error, flare) {
 //   if (error) throw error;
 
 //   root = flare;
@@ -3771,7 +4561,7 @@ function loadDataIrisTree2(flare) {
 
 loadDataIrisTree2(iris_tree_Data2)
 
-d3v3.select(self.frameElement).style("height", "480px");
+d3.select(self.frameElement).style("height", "480px");
 
 function update(source) {
 
@@ -3871,64 +4661,6 @@ function click(d) {
   }
   update(d);
 }
-
-}
-
-
-function check_clickedid(clicked_id){
-
-  console.log("clicked_id: " + clicked_id)
-  
-    // check whehter clicked_id has catterplot, boxplot or dectree
-    if (clicked_id == "scatterplot_sec"){
-      showScatter = true;
-      showBars = false;
-      showDecTree = false;
-    }
-    else if (clicked_id == "boxplot_sec"){
-      showScatter = false;
-      showBars = true;
-      showDecTree = false;
-    }
-    else if (clicked_id == "dectree_sec"){
-      showScatter = false;
-      showBars = false;
-      showDecTree = true;
-    }
-    
-  
-    
-}
-
-function ShowOnechartOfthem(clicked_id){
-
-  // check whehter clicked_id has catterplot, boxplot or dectree
-  check_clickedid(clicked_id)
-
-  if (showScatter == true){
-
-    // scatterPlot
-    // show section id scatterPlot and hide the others
-    document.getElementById("scatterPlot").style.display = "block";
-    document.getElementById("boxPlot").style.display = "none";
-    document.getElementById("decTree").style.display = "none";
-
-    
-  }
-  else if (showBars == true){
-
-    document.getElementById("scatterPlot").style.display = "none";
-    document.getElementById("boxPlot").style.display = "block";
-    document.getElementById("decTree").style.display = "none";
-    
-  }
-  else if (showDecTree == true){
-
-    document.getElementById("scatterPlot").style.display = "none";
-    document.getElementById("boxPlot").style.display = "none";
-    document.getElementById("decTree").style.display = "block";
-    
-  }
 
 }
 

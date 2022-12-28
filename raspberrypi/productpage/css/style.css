@@ -159,7 +159,7 @@ visibility: hidden;
 }
 
 /* main background color */
-main {
+main, section {
 background: #e3085d;
 /* opacity: 0.1; */
 }
@@ -538,4 +538,43 @@ a{
   background-color: #F2EFE9;
   border-radius: 1rem;
 
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #6ff800;
+}
+
+.legends {
+  position: fixed;
+  top: 1px;
+  z-index: -1;
+  left: 5px;
+}
+
+.main {
+  position: relative;
+  top: 99px;
+  z-index: 5;
+}
+
+.tlink {
+  stroke: rgb(158, 156, 156);
+  font-family: Verdana;
+  font-size: 12px;
+  stroke-width: 0.04em;
 }

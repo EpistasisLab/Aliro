@@ -1,394 +1,1252 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Hyunjun Choi and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.101.0">
-    <title>Aliro Ed</title>
+    <head>
 
-    <!-- <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/"> -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Hyunjun Choi and Bootstrap contributors">
+        <meta name="generator" content="Hugo 0.101.0">
+        <title>Aliro Ed</title>
 
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <script src="Aliro.js"></script> -->
-    <script src="JSfiles/Aliro.js?newversion"></script>
-    
-    
-    <script type="text/javascript" src="JSfiles/jquery-1.7.1.min.js"></script>
-    
+        <!-- <link rel="canonical"
+        href="https://getbootstrap.com/docs/5.2/examples/album/"> -->
 
-    <!-- Own favicon -->
-    <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
-    <link rel="icon" href="Logo/rpi-imager.ico">
-    <!-- <link rel="icon" href="build/rpi-imager.icns"> -->
-      
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet"> -->
-<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="data/datasets/pmlb_small/iris/iris_Comma.js"></script>
+        <script src="JSfiles/Aliro.js"></script>
+        <script type="text/javascript" src="JSfiles/jquery-1.7.1.min.js"></script>
 
+        <!-- Own favicon -->
+        <!-- <link rel="icon" href="Logo/PENNAILOGO.png"> -->
+        <link rel="icon" href="Logo/rpi-imager.ico">
+        <style></style>
+        <!-- <link rel="icon" href="build/rpi-imager.icns"> -->
 
-<link rel="stylesheet" href="css/style.css">
-    
+        <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+        <!-- <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+        crossorigin="anonymous"> -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    
-  </head>
+        <link rel="stylesheet" href="css/style.css">
 
-  
+    </head>
 
-  <!-- <body onload="pingURL()"> -->
-  <body>
-      <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
-      <!-- <script src="JSfiles/video.js"></script> -->
-      
-    
-
-
-
-    
-<header>
-  <div class="collapse bg-dark" id="navbarHeader">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-8 col-md-7 py-4">
-          <h4 class="text-white">About</h4>
-          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-        </div>
-        <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">Contact</h4>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Follow on Twitter</a></li>
-            <li><a href="#" class="text-white">Like on Facebook</a></li>
-            <li><a href="#" class="text-white">Email me</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- <div id="topaliro" class="navbar navbar-dark bg-dark shadow-sm"> -->
-    <!-- Change navar-dar blight -->
-
-
-    <!-- <div class="navbar navbar-light bg-light shadow-sm"> -->
-    <div id="topaliro" id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
-    <div class="container">
-      <a href="./index.html" class="navbar-brand d-flex align-items-center">
+    <!-- <body onload="pingURL()"> -->
+    <body>
         
-        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> -->
-        <!-- <img src="Logo/PENNAILOGO.png" alt="PENNAILOGO" width="35" height="35"> -->
-        <!-- <img id="mainLogo" class="" src="Logo/PENNAILOGO.png" alt="PENNAILOGO" width="50" height="50"> -->
-        <!-- make the rpi-imager.ico gray -->
+        <script src="JSfiles/d3.v4.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
-        <!-- <img id="mainLogo" class="" src="./build/rpi-imager.icns" alt="PENNAILOGO" width="50" height="50"> -->
-        
-        <strong id="mainName">Aliro Ed</strong>
-
-      
-
-        
-
-      </a>
-      
-      <li class="nav-item">
-        <a id="Downloadpage" class="nav-link active" aria-current="page" href="./infAndDownloadpage.html">Download</a>
-      </li>
-      <li class="nav-item">
-        <a id="installationpage" class="nav-link active" aria-current="page" href="./installation.html">Installation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"></a>
-      </li>
-
-      <!-- <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
-      </li> -->
-      
-
-      
-      <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-
-      </button> -->
-
-
-      
-
-      
-    </div>
-  </div>
-</header>
-<!-- <main class="bg-dark"> -->
-  
-  <main class="">
-  
-
-   <!-- The video and make the video under other divs-->
-   <!-- <div class="videoContainer">
-    <div class="overlay"></div>
-    <video autoplay loop muted>
-        <source src="Videos/video.mp4" type="video/mp4">        
-    </video>
-   </div> -->
-
-  <!-- <video stop muted loop id="myVideo">
-    <source src="Videos/video.mp4" type="video/mp4">
-  </video> -->
-
-  <video loop muted autoplay oncanplay="this.play()" 
-       onloadedmetadata="this.muted = true" id="myVideo">
-    <source src="Videos/video.mp4" type="video/mp4">
-  </video>
-
-
-  <!-- Optional: some overlay text to describe the video -->
-  <!-- <div class="content">
-    <h1>Heading</h1>
-    <p>Lorem ipsum...</p>
-   
-    <button id="myBtn" onclick="myFunction()">Pause</button>
-  </div>  -->
-
-
-<svg height="100" width="250" class="blinking">
-  
-  <!-- <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" /> -->
-  <text id="blinkingtextcir" x="70" y="55" fill="red">Loading Aliro Ed...</text>
-  Sorry, your browser does not support inline SVG.  
-</svg> 
-
-  <div id="overlay" onclick="off()"></div>
-
-  <!-- <div style="padding:20px">
-    <button onload="on()">Temporary button: Turn on overlay effect</button>
-
-  </div> -->
-
-  <!-- intro with Carouse -->
-  <!-- Slideshow container -->
-  
-  <section class="py-5 text-center container">
-  <div class="slideshow-container">
-
-    <!-- <div class="mySlides row py-lg-5 bg-info"> -->
-      <div class="mySlides row py-lg-5 ">
-      <!-- <div class="numbertext ">1 / 3</div> -->
-      <!-- <img id="firstC" src="firstThumbnail_scatter.png" style="width:100%"> -->
-      <!-- <p>Hello!!!!</p> -->
-      <h1 class="fw-light text-white">What is Aliro Ed?</h1>
-       
-        <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">Aliro Ed is a software for users who are not familiar with machine learning. Users can experience machine learning tasks on Raspberry Pi 4 with Aliro Ed. 
-          Users can download the raspberry pi image from the Aliro Ed website.
-          Users can easily install and run Aliro Ed on Raspberry Pi 4 using this image.
-          Aliro Ed and the Raspberry Pi image provided in this website, are developed by the AI Research Center at the Computational Biomedicine Department Cedars-Sinai Medical Center, Los Angeles, CA, USA. Please click the following button for more information. </p>
-        <p>
-          <!-- <a id='infanddownload' href="./infAndDownloadpage.html" class="btn btn-primary my-2">Download</a> -->
-          <!-- move to download page -->
-          <a id='infanddownload' href="./infAndDownloadpage.html" class="btn btn-primary my-2">More Information</a>
-        </p>
-      <!-- <div class="text">Caption Text</div> -->
-    </div>
-    
-    <div class="mySlides row py-lg-5">
-      <h1 class="fw-light text-white">Visaul explanation of Decision Tree</h1>
-       
-        <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">
-          If you are interested in getting intuitions about machine learning, please click the below button in the card to see the visual explanation of decision tree.</p>
-        <!-- <p>
-          <a id='loadingbutton' href="#" class="btn btn-primary my-2">Loading Aliro Ed ...</a>
-        </p> -->
-    </div>
-
-
-
-    <!-- <div class="mySlides row py-lg-5">
-     
-      <h1 class="fw-light text-white">Are you ready to run Aliro?</h1>
-       
-      <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">
-        When Raspberry Pi is ready to run Aliro Ed, the below button shows "Alio is ready to run". Please click the button to run Aliro On Raspberry Pi 4</p>
-        <p>
-          <a id='loadingbutton' href="#" class="btn btn-primary my-2">Loading Aliro Ed ...</a>
-        </p>
-      
-    </div> -->
-
-    
-      
-
-   
-      <!-- <div class="mySlides row py-lg-5">
-      <h1 class="fw-light text-white">Aliro Ed_3</h1>
-       
-        <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">Aliro Ed is a new way to learn and teach.</p>
-        <p>
-          <a id='loadingbutton' href="#" class="btn btn-primary my-2">Loading Aliro Ed ...</a>
-        </p>
-    </div> -->
-
-    <!-- Next and previous buttons -->
-    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-    <a class="next" onclick="plusSlides(1)">&#10095;</a>
-  </div>
-  <br>
-
-  <!-- The dots/circles -->
-  <div style="text-align:center">
-    <span class="dot" onclick="currentSlide(1)"></span>
-    <span class="dot" onclick="currentSlide(2)"></span>
-    <!-- <span class="dot" onclick="currentSlide(3)"></span> -->
-    <!-- <span class="dot" onclick="currentSlide(4)"></span> -->
-  </div> 
-
-</section>
-
-
-
-
-
- 
-  <div class="album py-5">
-    <div class="container">
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <div class="card shadow-sm">
+        <script>
+            d3v4 = window.d3;
+            window.d3 = null
+            // show d3 version
+            // console.log("d3v4", d3v4.version);
+            // console.log("d3v4", d3v4);
             
-            
-           
-            <img src="firstThumbnail_scatter.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
+        </script>
 
-           
-              <div class="card-body bg-secondary">
-              <p class="card-text text-white">This card explains some intuition using scatterplot.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a href="int_ml_01.html">
-                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
-                  </a>
+        <!-- <script src="d3.v4.js"></script> -->
+        <!-- <script src="JSfiles/carousel.js"></script> -->
+        <!-- Color scale -->
+
+        <header>
+            <div class="collapse bg-dark" id="navbarHeader">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-7 py-4">
+                            <h4 class="text-white">About</h4>
+                            <p class="text-muted">Add some information about the album below, the author, or
+                                any other background context. Make it a few sentences long so folks can pick up
+                                some informative tidbits. Then, link them off to some social networking sites or
+                                contact information.</p>
+                        </div>
+                        <div class="col-sm-4 offset-md-1 py-4">
+                            <h4 class="text-white">Contact</h4>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="#" class="text-white">Follow on Twitter</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-white">Like on Facebook</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-white">Email me</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            
-            <img src=" thirdThumbnail_barchart.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
-            
-            <div class="card-body bg-secondary">
-              <p class="card-text text-white">This card explains boundaries to distinguish class.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a href="int_ml_02.html">
-                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
-                  </a>
-                  
+            <!-- <div id="topaliro" class="navbar navbar-dark bg-dark shadow-sm"> -->
+            <!-- Change navar-dar blight -->
+
+            <!-- <div class="navbar navbar-light bg-light shadow-sm"> -->
+            <div id="topaliro" class="navbar navbar-dark bg-info shadow-sm">
+                <div class="container">
+                    <a href="./index.html" class="navbar-brand d-flex align-items-center">
+
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path
+                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1
+                        2 2z"/><circle cx="12" cy="13" r="4"/></svg> -->
+                        <!-- <img src="Logo/PENNAILOGO.png" alt="PENNAILOGO" width="35" height="35"> -->
+                        <!-- <img id="mainLogo" class="" src="Logo/PENNAILOGO.png" alt="PENNAILOGO"
+                        width="50" height="50"> -->
+                        <!-- make the rpi-imager.ico gray -->
+
+                        <!-- <img id="mainLogo" class="" src="./build/rpi-imager.icns" alt="PENNAILOGO"
+                        width="50" height="50"> -->
+
+                        <strong id="mainName">Aliro Ed</strong>
+
+                    </a>
+
+                    <li class="nav-item">
+                        <a
+                            id="Downloadpage"
+                            class="nav-link active"
+                            aria-current="page"
+                            href="./infAndDownloadpage.html">Download</a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            id="installationpage"
+                            class="nav-link active"
+                            aria-current="page"
+                            href="./installation.html">Installation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"></a>
+                    </li>
+
+                    <!-- <li class="nav-item"> <a class="nav-link" href="#">Features</a> </li> <li
+                    class="nav-item"> <a class="nav-link" href="#">Pricing</a> </li> -->
+
+                    <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarHeader" aria-controls="navbarHeader"
+                    aria-expanded="false" aria-label="Toggle navigation"> <span
+                    class="navbar-toggler-icon"></span> </button> -->
+
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm">
-            <img src="thirdThumbnail_decision_tree.png" style="height: 100%; width: 100%" class="card-img-top" alt="...">
-            <div class="card-body bg-secondary">
-              <p class="card-text text-white">This card explains how decision tree works.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a href="int_ml_03_decision_tree.html">
-                    <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button>
-                  </a>
+        </header>
+        <!-- <main class="bg-dark"> -->
+
+        <main class="">
+
+            <!-- The video and make the video under other divs-->
+            <!-- <div class="videoContainer"> <div class="overlay"></div> <video autoplay
+            loop muted> <source src="Videos/video.mp4" type="video/mp4"> </video> </div> -->
+
+            <!-- <video stop muted loop id="myVideo"> <source src="Videos/video.mp4"
+            type="video/mp4"> </video> -->
+
+            <!-- <video
+                loop="loop"
+                muted="muted"
+                autoplay="autoplay"
+                oncanplay="this.play()"
+                onloadedmetadata="this.muted = true"
+                id="myVideo">
+                <source src="Videos/video.mp4" type="video/mp4">
+            </video> -->
+
+            <!-- Optional: some overlay text to describe the video -->
+            <!-- <div class="content"> <h1>Heading</h1> <p>Lorem ipsum...</p> <button
+            id="myBtn" onclick="myFunction()">Pause</button> </div> -->
+
+            <svg height="100" width="250" class="blinking">
+
+                <!-- <circle class="blinkingcir" cx="50" cy="50" r="0" fill="red" /> -->
+                <text id="blinkingtextcir" x="70" y="55" fill="red">Loading Aliro Ed...</text>
+                Sorry, your browser does not support inline SVG.
+            </svg>
+
+            <div id="overlay" onclick="off()"></div>
+
+            <!-- <div style="padding:20px"> <button onload="on()">Temporary button: Turn on
+            overlay effect</button> </div> -->
+
+            <!-- intro with Carouse -->
+            <!-- Slideshow container -->
+
+            <section class="py-4 text-center container">
+                <div class="slideshow-container">
+
+                    <!-- <div class="mySlides row py-lg-5 bg-info"> -->
+                    <div class="mySlides row py-lg-5 ">
+                        <!-- <div class="numbertext ">1 / 3</div> -->
+                        <!-- <img id="firstC" src="firstThumbnail_scatter.png" style="width:100%"> -->
+                        <!-- <p>Hello!!!!</p> -->
+                        <h1 class="fw-light text-white">What is Aliro Ed?</h1>
+
+                        <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">Aliro
+                            Ed is a software for users who are not familiar with machine learning. Users can
+                            experience machine learning tasks on Raspberry Pi 4 with Aliro Ed. Users can
+                            download the raspberry pi image from the Aliro Ed website. Users can easily
+                            install and run Aliro Ed on Raspberry Pi 4 using this image. Aliro Ed and the
+                            Raspberry Pi image provided in this website, are developed by the AI Research
+                            Center at the Computational Biomedicine Department Cedars-Sinai Medical Center,
+                            Los Angeles, CA, USA. Please click the following button for more information.
+                        </p>
+                        <p>
+                            <!-- <a id='infanddownload' href="./infAndDownloadpage.html" class="btn
+                            btn-primary my-2">Download</a> -->
+                            <!-- move to download page -->
+                            <a
+                                id='infanddownload'
+                                href="./infAndDownloadpage.html"
+                                class="btn btn-primary my-2">More Information</a>
+                        </p>
+                        <!-- <div class="text">Caption Text</div> -->
+                    </div>
+
+                    <div class="mySlides row py-lg-5">
+                        <h1 class="fw-light text-white">Visaul explanation of Decision Tree</h1>
+
+                        <p class="lead text-white" style="padding-left: 50px;padding-right: 50px;">
+                            If you are interested in getting intuitions about machine learning, please click
+                            the below button in the card to see the visual explanation of decision tree.</p>
+                        <!-- <p> <a id='loadingbutton' href="#" class="btn btn-primary my-2">Loading
+                        Aliro Ed ...</a> </p> -->
+                    </div>
+
+                    <!-- <div class="mySlides row py-lg-5"> <h1 class="fw-light text-white">Are you
+                    ready to run Aliro?</h1> <p class="lead text-white" style="padding-left:
+                    50px;padding-right: 50px;"> When Raspberry Pi is ready to run Aliro Ed, the
+                    below button shows "Alio is ready to run". Please click the button to run Aliro
+                    On Raspberry Pi 4</p> <p> <a id='loadingbutton' href="#" class="btn btn-primary
+                    my-2">Loading Aliro Ed ...</a> </p> </div> -->
+
+                    <!-- <div class="mySlides row py-lg-5"> <h1 class="fw-light text-white">Aliro
+                    Ed_3</h1> <p class="lead text-white" style="padding-left: 50px;padding-right:
+                    50px;">Aliro Ed is a new way to learn and teach.</p> <p> <a id='loadingbutton'
+                    href="#" class="btn btn-primary my-2">Loading Aliro Ed ...</a> </p> </div> -->
+
+                    <!-- Next and previous buttons -->
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
                 </div>
-              </div>
+                <!-- <br> -->
+
+                <!-- The dots/circles -->
+                <div style="text-align:center">
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <!-- <span class="dot" onclick="currentSlide(3)"></span> -->
+                    <!-- <span class="dot" onclick="currentSlide(4)"></span> -->
+                </div>
+
+            </section>
+
+            <br>
+
+            <div class="album py-3">
+                <div class="container">
+
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        <div class="col">
+                            <div class="card shadow-sm">
+
+                                <img
+                                    src="firstThumbnail_scatter.png"
+                                    style="height: 100%; width: 100%"
+                                    class="card-img-top"
+                                    alt="...">
+
+                                <div class="card-body bg-secondary">
+                                    <p class="card-text text-white">This card explains some intuition using scatterplot.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+
+                                            <a href="#scatterPlot">
+
+
+                                              <!-- <button
+                                                  id="scatterplot_sec"
+                                                  type="button"
+                                                  class="btn btn btn-primary"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Scatter Plot</button>
+                                              <button
+                                                  id="boxplot_sec"
+                                                  type="button"
+                                                  class="btn btn-danger"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Box Plot</button>
+                                              <button
+                                                  id="dectree_sec"
+                                                  type="button"
+                                                  class="btn btn-warning"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Decision Tree</button> -->
+
+                                                <button id="scatterplot_sec" type="button" class="btn btn-sm btn-outline-secondary bg-light" onclick="ShowOnechartOfthem(this.id)">View</button>
+                                                
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card shadow-sm">
+
+                                <img
+                                    src=" thirdThumbnail_barchart.png"
+                                    style="height: 100%; width: 100%"
+                                    class="card-img-top"
+                                    alt="...">
+
+                                <div class="card-body bg-secondary">
+                                    <p class="card-text text-white">This card explains boundaries to distinguish class.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a href="#boxPlot">
+                                                <!-- <button type="button" class="btn btn-sm btn-outline-secondary bg-light">View</button> -->
+                                                 <!-- <button
+                                                  id="scatterplot_sec"
+                                                  type="button"
+                                                  class="btn btn btn-primary"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Scatter Plot</button>
+                                              <button
+                                                  id="boxplot_sec"
+                                                  type="button"
+                                                  class="btn btn-danger"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Box Plot</button>
+                                              <button
+                                                  id="dectree_sec"
+                                                  type="button"
+                                                  class="btn btn-warning"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Decision Tree</button> -->
+
+                                                  <button id="boxplot_sec" type="button" class="btn btn-sm btn-outline-secondary bg-light" onclick="ShowOnechartOfthem(this.id)">View</button>
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <img
+                                    src="thirdThumbnail_decision_tree.png"
+                                    style="height: 100%; width: 100%"
+                                    class="card-img-top"
+                                    alt="...">
+                                <div class="card-body bg-secondary">
+                                    <p class="card-text text-white">This card explains how decision tree works.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a href="#decTree">
+                                                 <!-- <button
+                                                  id="scatterplot_sec"
+                                                  type="button"
+                                                  class="btn btn btn-primary"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Scatter Plot</button>
+                                              <button
+                                                  id="boxplot_sec"
+                                                  type="button"
+                                                  class="btn btn-danger"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Box Plot</button>
+                                              <button
+                                                  id="dectree_sec"
+                                                  type="button"
+                                                  class="btn btn-warning"
+                                                  onclick="ShowOnechartOfthem(this.id)"
+                                                  style="width:33%">Decision Tree</button> -->
+
+                                                  <button id="dectree_sec" type="button" class="btn btn-sm btn-outline-secondary bg-light" onclick="ShowOnechartOfthem(this.id)">View</button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
+        </main>
 
+        <div id="sections">
 
+            <!-- scatter plot -->
+            <section id="scatterPlot" class="" style="display:block">
 
-      </div>
+                <div id="overlay" onclick="off()"></div>
+
+                <section class="py-3 text-center container">
+                    <!-- <div class="row py-lg-5 bg-success"> -->
+                    <div class="row py-lg-3 bg-my">
+                        <div class="py-lg-3">
+                            <p>
+
+                                <button
+                                    id="scatterplot_sec"
+                                    type="button"
+                                    class="btn btn btn-primary"
+                                    onclick="ShowOnechartOfthem(this.id)"
+                                    style="width:33%">Scatter Plot</button>
+                                <button
+                                    id="boxplot_sec"
+                                    type="button"
+                                    class="btn btn-danger"
+                                    onclick="ShowOnechartOfthem(this.id)"
+                                    style="width:33%">Box Plot</button>
+                                <button
+                                    id="dectree_sec"
+                                    type="button"
+                                    class="btn btn-warning"
+                                    onclick="ShowOnechartOfthem(this.id)"
+                                    style="width:33%">Decision Tree</button>
+                            </p>
+
+                        </div>
+                        <div class="col-lg-6 col-md-8 mx-auto">
+                            <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
+                            <!-- <p class="lead text-muted">Something short and leading about the collection
+                            below—its contents, the creator, etc. Make it short and sweet, but not too short
+                            so folks don’t simply skip over it entirely.</p> -->
+
+                            <!-- make equal size buttons which on top of the div -->
+
+                            <!-- <p> <button id="scatterplot_sec" type="button" class="btn btn btn-primary"
+                            onclick="ShowOnechartOfthem(this.id)">Scatter Plot</button> <button
+                            id="boxplot_sec" type="button" class="btn btn-danger"
+                            onclick="ShowOnechartOfthem(this.id)">Box Plot</button> <button id="dectree_sec"
+                            type="button" class="btn btn-warning"
+                            onclick="ShowOnechartOfthem(this.id)">Decision Tree</button> </p> -->
+
+                            <p>
+
+                                <button id="projectxaxia_scatter" type="button" class="btn btn btn-primary">Project on X axis</button>
+                                <button id="projectyaxia_scatter" type="button" class="btn btn-danger">Project on Y axis</button>
+                                <button id="twoDPlot_scatter" type="button" class="btn btn-warning">Plot on 2D</button>
+
+                            </p>
+                            <!-- locage svg in the middle -->
+                            <div id="dataviz_area_div_scatterplot" class="col-lg-10 col-md-10 mx-auto">
+                                <!-- <svg id="dataviz_area"> </svg> -->
+                            </div>
+
+                        </div>
+                        <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                        -->
+                        <!-- <div class="col-sm-4"
+                        style="background-color:lavenderblush;">.col-sm-4</div> -->
+                        <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                        -->
+                        <!-- <div class="col-lg-4 col-md-4 mx-auto" style="background-color:#212529;">
+                        -->
+                        <div class="col-lg-4 col-md-4 mx-auto ">
+                            <div id="intuition_exp">
+
+                                <h2 class="text-start text-black">
+                                    First, some intuition
+                                </h2>
+                                <p class="text-start text-black">
+                                    Consider the situation where you want to decide if a dot belongs in
+                                    <strong id="class1text" style="color:#ffbe0b;">
+                                        Class_1 (Iris-setosa)</strong>
+                                    or
+                                    <strong id="class2text" style="color:#ff006e;">
+                                        Class_2 (Iris-versicolor)</strong>, or
+                                    <strong id="class3text" style="color:#8338ec;">
+                                        Class_3 (Iris-virginica)</strong>.
+                                </strong>
+                                Assigning a class to a data point is called
+                                <strong>classification</strong>
+                                task in machine learning terms.
+                            </p>
+
+                            <!-- class_1: Iris-setosa, class_2: Iris-versicolor, class_3: Iris-virginica -->
+                            <!-- sepal-length -->
+
+                            <p class="text-start text-black">In the left chart, the dots are the data
+                                points. The color of the dots represents the class of the data point. In this
+                                example, our task is to classify the data points into one of the three classes.
+                                Now, let's click the red button to project the data points on the Y axis. In the
+                                current chart, dots are projected on the
+                                <strong>sepal-length</strong>
+                                axis, which is Y axis. Can we find points on the Y axis that separate the dots
+                                into three classes? What about the X axis? Can we find points on the X axis that
+                                separate the dots into three classes? Each of the sepal-length and petal-length
+                                can be used to classify the data points into the three classes.
+                            </p>
+
+                            <p class="text-start text-black">
+
+                                Can we do better classify the data points into the three classes using only both
+                                of the two features? Let's move to the next page.
+                            </p>
+
+                            <!-- <p class="text-start text-white">However, we can better classify the data
+                            points into the three classes using only both of the two features. </p> -->
+
+                            <!-- <p class="text-start text-white"> Since San Francisco is relatively hilly,
+                            the elevation of a home may be a good way to distinguish the two cities. </p> <p
+                            class="text-start text-white"> Based on the home-elevation data to the right,
+                            you could argue that a home above 73 meters should be <strong>
+                            classified</strong> as one in San Francisco. </p> -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <!-- <li class="page-item"><a class="page-link" >Previous</a></li> -->
+                                    <li id="fromfsitoaddn" class="page-item">
+                                        <!-- <a class="page-link text-secondary dfboubutton">Next</a> -->
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <!-- when id="intuition_exp" is shown, addingnuance is not shown-->
+
+                        <div id="addingnuance" style="display:none;">
+
+                            <h2 class="text-start text-black">
+                                Using various kinds of features together
+                            </h2>
+                            <p class="text-start text-black">
+                                In this data set, we have two different features petal-length on X axis and
+                                sepal-length on Y axis.
+                            </p>
+                            <p class="text-start text-black">
+                                Using various kinds of
+                                <strong>features</strong>
+                                together allows for more nuance.
+                            </p>
+                            <p class="text-start text-black">
+                                So visualizing petal-length and sepal-length in a
+                                <strong>scatterplot</strong>
+                                helps us distinguish three different species of iris flowers.
+                            </p>
+                            <p class="text-start text-black">
+
+                                The dataset suggests that, among the three species, the
+                                <strong>
+                                    Iris-setosa</strong>
+                                has the smallest petal-length and sepal-length, the
+                                <strong>
+                                    Iris-versicolor</strong>
+                                has the medium petal-length and sepal-length, and the
+                                <strong>
+                                    Iris-virginica</strong>
+                                has the largest petal-length and sepal-length.
+                            </p>
+                            <!-- <p class="text-start text-white"> Definition of features </p> -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li id="fromaddntofsi" class="page-item">
+                                        <!-- <a class="page-link text-secondary dfboubutton">Previous</a> -->
+                                    </li>
+                                    <!-- <p class="text-secondary">.text-secondary</p> -->
+                                    <li id="fromaddntodrawb" class="page-item">
+                                        <!-- <a class="page-link text-secondary dfboubutton">Next</a> -->
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <div id="drawingboundaries" style="display:none;">
+                            <!-- visibility:visible" -->
+                            <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+                            <!-- <h2 class="text-start text-white"> Drawing boundaries </h2> <p
+                            class="text-start text-white"> You can visualize your elevation (>73 m) and
+                            price per square foot (>$19,116.7) observations as the boundaries of regions in
+                            your scatterplot. Homes plotted in the green and blue regions would be in San
+                            Francisco and New York, respectively. </p> <p class="text-start text-white">
+                            Identifying boundaries in data using math is the essence of statistical
+                            learning. </p> <p class="text-start text-white"> Of course, you’ll need
+                            additional information to distinguish homes with lower elevations <em>and</em>
+                            lower per-square-foot prices. </p> -->
+
+                            <h2 class="text-start text-black">
+                                Drawing boundaries
+                            </h2>
+                            <p class="text-start text-black">
+                                You can visualize your petal-length and sepal-length observations as the
+                                boundaries of regions in your scatterplot. Dots plotted in the three regions
+                                would be in the three species of iris flowers, respectively.
+                            </p>
+                            <p class="text-start text-black">
+                                Identifying boundaries in data using math is the essence of statistical
+                                learning.
+                            </p>
+                            <p class="text-start text-black">
+                                The boundaries are called
+                                <strong>decision boundaries</strong>.
+                            </p>
+                            <p class="text-start text-black">
+                                Visualizing decision boundaries in two dimensions and three dimensions could
+                                give us a better understanding of the given data set.</p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li id="fromdrawbtoaddn" class="page-item">
+                                        <a class="page-link   text-secondary dfboubutton">Previous</a>
+                                    </li>
+                                    <li id="fromdrawbto" class="page-item">
+                                        <!-- <a class="page-link text-secondary dfboubutton"
+                                        href="int_ml_02.html#">Next</a> -->
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Add a svg area, empty -->
+                    <!-- <svg id="dataviz_area" height=100% width=100%></svg> -->
+                    <!-- <svg id="dataviz_area" height=1000 width=100%></svg> -->
+
+                </div>
+            </section>
+
+        </section>
+
+        <!-- box plot -->
+        <section id="boxPlot" class="" style="display:none">
+
+            <div id="overlay" onclick="off()"></div>
+
+            <section class="py-3 text-center container">
+                <!-- <div class="row py-lg-5 bg-info"> -->
+                <div class="row py-lg-3 bg-my">
+                    <div class="py-lg-3">
+                        <p>
+
+                            <button
+                                id="scatterplot_sec"
+                                type="button"
+                                class="btn btn btn-primary"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Scatter Plot</button>
+                            <button
+                                id="boxplot_sec"
+                                type="button"
+                                class="btn btn-danger"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Box Plot</button>
+                            <button
+                                id="dectree_sec"
+                                type="button"
+                                class="btn btn-warning"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Decision Tree</button>
+                        </p>
+
+                    </div>
+                    <div class="col-lg-6 col-md-8 mx-auto">
+                        <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
+                        <!-- <p class="lead text-muted">Something short and leading about the collection
+                        below—its contents, the creator, etc. Make it short and sweet, but not too short
+                        so folks don’t simply skip over it entirely.</p> -->
+
+                        <!-- <p> <button id="scatterplot_sec" type="button" class="btn btn btn-primary"
+                        onclick="ShowOnechartOfthem(this.id)">Scatter Plot</button> <button
+                        id="boxplot_sec" type="button" class="btn btn-danger"
+                        onclick="ShowOnechartOfthem(this.id)">Box Plot</button> <button id="dectree_sec"
+                        type="button" class="btn btn-warning"
+                        onclick="ShowOnechartOfthem(this.id)">Decision Tree</button> </p> -->
+
+                        <p>
+                            <!-- If pingURL is working then change coler of button -->
+                            <!-- make button color white -->
+
+                            <!-- <a id="projectxaxia" class="btn btn-secondary my-2" >Project on X axis</a>
+                            <a id="projectyaxia" class="btn btn-secondary my-2">Project on Y axis</a> <a
+                            id="twoDPlot" class="btn btn-secondary my-2">Plot on 2D</a> -->
+
+                            <!-- <button id="rotateprojectxaxia" type="button" class="btn btn
+                            btn-primary">Rotate and Project on X axis</button> -->
+                            <button
+                                id="rotateprojectxaxia_boxplot"
+                                type="button"
+                                class="btn btn btn-primary">Transform into histogram</button>
+                            <!-- <button id="projectyaxia" type="button" class="btn btn-secondary">Function
+                            B</button> <button id="twoDPlot" type="button" class="btn
+                            btn-outline-warning">Function C</button> -->
+
+                        </p>
+                        <!-- locage svg in the middle -->
+                        <div id="dataviz_area_div_boxplot" class="col-lg-10 col-md-10 mx-auto">
+                            <!-- <svg id="dataviz_area"> </svg> -->
+                        </div>
+
+                        <div id="dataviz_area_div_second_boxplot" class="col-lg-10 col-md-10 mx-auto">
+                            <!-- <svg id="dataviz_area"> </svg> -->
+
+                        </div>
+
+                    </div>
+                    <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                    -->
+                    <!-- <div class="col-sm-4"
+                    style="background-color:lavenderblush;">.col-sm-4</div> -->
+                    <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                    -->
+                    <!-- <div class="col-lg-4 col-md-4 mx-auto" style="background-color:#212529;">
+                    -->
+                    <div class="col-lg-4 col-md-4 mx-auto">
+
+                        <div id="intuition_exp">
+
+                            <h2 class="text-start text-black">
+                                Better boundaries to distinguish classes
+                            </h2>
+                            <p class="text-start text-black">
+                                Let's transform our visualiztion into a histogram to see how frequently each
+                                species appears at each sepal-length. Please click the transformmation button.
+                            </p>
+                            <p class="text-start text-black">
+                                <strong id="class1text" style="color:#ffbe0b;">
+                                    Class_1 (Iris-setosa)</strong>
+                                has the lowest average of sepal-length,
+                                <strong id="class2text" style="color:#ff006e;">
+                                    Class_2 (Iris-versicolor)</strong>
+                                has the second lowest average of sepal-length, and
+                                <strong id="class3text" style="color:#8338ec;">
+                                    Class_3 (Iris-virginica)</strong>
+                                has the highest average of sepal-length.
+                            </p>
+                            <!-- <p class="text-start text-black"> Please click the Y axis. It will show an
+                            example to put boundaries </p> -->
+                            <p class="text-start text-black">Please click the Y axis. It will show an
+                                example to put boundaries to distinguish classes of iris flowers. Then please
+                                click the Different boundaries button. It will show an example to put different
+                                boundaries to distinguish classes of iris flowers.</p>
+
+                            <!-- <p class="text-start text-white"> Let’s&nbsp;say you had to determine
+                            whether a dot is in <strong style="color:#ffbe0b;"> Class_1</strong> or <strong
+                            style="color:#ff006e;"> in Class_2</strong> or <strong style="color:#8338ec;">
+                            in Class_3</strong>. In machine learning terms, categorizing data points is a
+                            <strong>classification</strong> task. </p> <p class="text-start text-white">
+                            Since San Francisco is relatively hilly, the elevation of a home may be a good
+                            way to distinguish the two cities. </p> <p class="text-start text-white"> Based
+                            on the home-elevation data to the right, you could argue that a home above 73
+                            meters should be <strong> classified</strong> as one in San Francisco. </p> -->
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+
+                                    <li id="fbbfirsttosecondbound_boxplot" class="page-item">
+                                        <a class="page-link text-secondary dfboubutton">Different boundaries</a>
+                                    </li>
+                                    <!-- <li id="show_piechart" class="page-item"><a class="page-link" >Show Pie
+                                    Chart</a></li> -->
+                                </ul>
+
+                                <!-- <ul class="pagination"> <li id="show_piechart" class="page-item"><a
+                                class="page-link text-secondary" >Show Pie Chart</a></li> </ul> <ul
+                                class="pagination"> <li id="show_piechart_another" class="page-item"><a
+                                class="page-link text-secondary" >Show another Pie Chart</a></li> </ul> -->
+
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                        <li id="fromdrawbto" class="page-item">
+                                            <!-- <a class="page-link text-secondary"
+                                            href="int_ml_03_decision_tree.html">Show decision tree</a> -->
+                                        </li>
+                                    </ul>
+                                </nav>
+
+                            </nav>
+
+                        </div>
+
+                        <!-- when id="intuition_exp" is shown, addingnuance is not shown-->
+
+                        <div id="addingnuance" style="display:none;">
+                            <!-- visibility:visible" -->
+                            <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+                            <h2 class="text-start">
+                                Adding nuance
+                            </h2>
+                            <p class="text-start">
+                                Adding another
+                                <strong>dimension</strong>
+                                allows for more nuance. For example, New York apartments can be extremely
+                                expensive per square foot.
+                            </p>
+                            <p class="text-start">
+                                So visualizing elevation
+                                <em>and</em>
+                                price per square foot in a
+                                <strong>scatterplot</strong>
+                                helps us distinguish lower-elevation homes.
+                            </p>
+                            <p class="text-start">
+                                The data suggests that, among homes at or below 73 meters, those that cost more
+                                than $19,116.7 per square meter are in New York City.
+                            </p>
+                            <p class="text-start">
+                                Dimensions in a data set are called
+                                <strong>features</strong>,
+                                <strong>predictors</strong>, or
+                                <strong>variables</strong>.
+                                <span class="footnote-anchor">1</span></p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <!-- <li id="fromaddntofsi" class="page-item"> <a class="page-link">Previous</a>
+                                    </li> <li id="fromaddntodrawb" class="page-item"> <a class="page-link">Next</a>
+                                    </li> -->
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <div id="drawingboundaries" style="display:none;">
+                            <!-- visibility:visible" -->
+                            <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+                            <h2 class="text-start">
+                                Drawing boundaries
+                            </h2>
+                            <p class="text-start">
+                                You can visualize your elevation (>73 m) and price per square foot (>$19,116.7)
+                                observations as the boundaries of regions in your scatterplot. Homes plotted in
+                                the green and blue regions would be in San Francisco and New York, respectively.
+                            </p>
+                            <p class="text-start">
+                                Identifying boundaries in data using math is the essence of statistical
+                                learning.
+                            </p>
+                            <p class="text-start">
+                                Of course, you’ll need additional information to distinguish homes with lower
+                                elevations
+                                <em>and</em>
+                                lower per-square-foot prices.
+                            </p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li id="fromdrawbtoaddn" class="page-item">
+                                        <a class="page-link">Previous</a>
+                                    </li>
+                                    <li id="fromdrawbto" class="page-item">
+                                        <a class="page-link">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Add a svg area, empty -->
+                    <!-- <svg id="dataviz_area" height=100% width=100%></svg> -->
+                    <!-- <svg id="dataviz_area" height=1000 width=100%></svg> -->
+
+                </div>
+            </section>
+
+            <!-- <div class="album py-5 bg-light"> <div class="container"> <button
+            type="button" class="btn btn-primary"
+            onclick="window.location.href='index.html'">Next</button> <button type="button"
+            class="btn btn-primary"
+            onclick="window.location.href='int_ml_02.html'">Next</button> </div> </div> -->
+
+            <!-- cards -->
+
+        </section>
+
+        <!-- decition tree for iris -->
+        <section id="decTree" class="" style="display:none">
+
+            <!-- <video autoplay muted loop id="myVideo"> <source src="Videos/video.mp4"
+            type="video/mp4"> </video> -->
+
+            <!-- <svg height="100" width="250" class="blinking"> <circle class="blinkingcir"
+            cx="50" cy="50" r="0" fill="red" /> <text id="blinkingtextcir" x="70" y="55"
+            fill="red">Loading Aliro Ed...</text> Sorry, your browser does not support
+            inline SVG. </svg> -->
+
+            <div id="overlay" onclick="off()"></div>
+
+            <section class="py-3 text-center container">
+                <div class="row py-lg-3 bg-my">
+                    <div class="py-lg-3">
+                        <p>
+
+                            <button
+                                id="scatterplot_sec"
+                                type="button"
+                                class="btn btn btn-primary"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Scatter Plot</button>
+                            <button
+                                id="boxplot_sec"
+                                type="button"
+                                class="btn btn-danger"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Box Plot</button>
+                            <button
+                                id="dectree_sec"
+                                type="button"
+                                class="btn btn-warning"
+                                onclick="ShowOnechartOfthem(this.id)"
+                                style="width:33%">Decision Tree</button>
+                        </p>
+
+                    </div>
+                    <div class="col-lg-6 col-md-8 mx-auto">
+                        <!-- <h1 class="fw-light">A visual introduction to Aliro Ed</h1> -->
+                        <!-- <p class="lead text-muted">Something short and leading about the collection
+                        below—its contents, the creator, etc. Make it short and sweet, but not too short
+                        so folks don’t simply skip over it entirely.</p> -->
+                        <!-- <p> <button id="scatterplot_sec" type="button" class="btn btn btn-primary"
+                        onclick="ShowOnechartOfthem(this.id)">Scatter Plot</button> <button
+                        id="boxplot_sec" type="button" class="btn btn-danger"
+                        onclick="ShowOnechartOfthem(this.id)">Box Plot</button> <button id="dectree_sec"
+                        type="button" class="btn btn-warning"
+                        onclick="ShowOnechartOfthem(this.id)">Decision Tree</button> </p> -->
+
+                        <p>
+                            <!-- If pingURL is working then change coler of button -->
+                            <!-- make button color white -->
+
+                            <!-- <a id="projectxaxia" class="btn btn-secondary my-2" >Project on X axis</a>
+                            <a id="projectyaxia" class="btn btn-secondary my-2">Project on Y axis</a> <a
+                            id="twoDPlot" class="btn btn-secondary my-2">Plot on 2D</a> -->
+
+                            <button id="rotateprojectxaxia" type="button" class="btn btn btn-primary">Rotate and Project on X axis</button>
+                            <button id="projectyaxia" type="button" class="btn btn-secondary">Function B</button>
+                            <button id="twoDPlot" type="button" class="btn btn-outline-warning">Function C</button>
+
+                        </p>
+                        <!-- locage svg in the middle -->
+                        <div id="dataviz_area_div" class="col-lg-10 col-md-10 mx-auto">
+                            <!-- <svg id="dataviz_area"> </svg> -->
+                        </div>
+
+                        <div id="dataviz_area_div_second" class="col-lg-10 col-md-10 mx-auto">
+                            <!-- <svg id="dataviz_area"> </svg> -->
+
+                        </div>
+
+                    </div>
+                    <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                    -->
+                    <!-- <div class="col-sm-4"
+                    style="background-color:lavenderblush;">.col-sm-4</div> -->
+                    <!-- <div class="col-sm-4" style="background-color:lavender;">.col-sm-4</div>
+                    -->
+                    <div class="col-lg-4 col-md-4 mx-auto">
+
+                        <div id="intuition_exp">
+
+                            <h2 class="text-start text-black">
+                                Decision tree with iris data</h2>
+                            <!-- <p class="text-start text-black"> Let’s&nbsp;say you had to determine
+                            whether a dot is in <strong style="color:#ffbe0b;"> Class_1</strong> or <strong
+                            style="color:#ff006e;"> in Class_2</strong> or <strong style="color:#8338ec;">
+                            in Class_3</strong>. In machine learning terms, categorizing data points is a
+                            <strong>classification</strong> task. </p> <p class="text-start text-black">
+                            Since San Francisco is relatively hilly, the elevation of a home may be a good
+                            way to distinguish the two cities. </p> <p class="text-start text-black"> Based
+                            on the home-elevation data to the right, you could argue that a home above 73
+                            meters should be <strong> classified</strong> as one in San Francisco. </p> -->
+                            <p id="mainDTcon" class="text-start text-black" style="display: block;">
+                                In this example, we are going to use the iris data set to build a decision tree.
+                                The iris data set contains 100 samples of three different species of iris
+                                flowers. There are four features in the dataset: sepal length, sepal width,
+                                petal length, and petal width. And we are going to use decision tree to
+                                distinguish three different species of iris flowers with four features.
+
+                                <br>
+                                    If petal-length is less than 2.45, 33% of data point is setosa. 67% of data
+                                    point has petal-length greater than 2.45. Let's look at the second split.
+                                </br>
+                            </p>
+
+                            <p id="mainDTfirst" class="text-start text-black" style="display:none">
+                                <!-- <p id= "mainDTfirst" class="text-start text-black"> -->
+                                46% of data point has petal-width greather than 1.75. 93% of data point in the
+                                thrid split has petal-length greater than 4.85. The number of setosa is 0. The
+                                number of versicolor is 0. The number of virginica is 43. 7% of data point has
+                                petal-length less than 4.85. The number of setosa is 0. The number of versicolor
+                                is 1. The number of virginica is 2. 11% of data point has petal-length greather
+                                than 4.95. The number of setosa is 0. The number of versicolor is 2. The number
+                                of virginica is 4. 89% of data point in the third split has petal-length less
+                                than 4.95. The number of setosa is 0. The number of versicolor is 47. The number
+                                of virginica is 1.
+
+                            </p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+
+                                    <li id="fbbfirsttosecondbound" class="page-item">
+                                        <a class="page-link">Different boundaries</a>
+                                    </li>
+                                    <!-- <li id="show_piechart" class="page-item"><a class="page-link" >Show Pie
+                                    Chart</a></li> -->
+                                </ul>
+                                <ul class="pagination">
+                                    <!-- <li class="page-item"><a class="page-link" >Previous</a></li> -->
+                                    <!-- <li id="fbbfirsttosecondbound" class="page-item"><a class="page-link"
+                                    >Next</a></li> -->
+                                    <li id="show_piechart" class="page-item">
+                                        <a class="page-link">Show Pie Chart</a>
+                                    </li>
+                                </ul>
+
+                                <ul class="pagination">
+                                    <!-- <li class="page-item"><a class="page-link" >Previous</a></li> -->
+                                    <!-- <li id="fbbfirsttosecondbound" class="page-item"><a class="page-link"
+                                    >Next</a></li> -->
+                                    <li id="show_piechart_another" class="page-item">
+                                        <a class="page-link">Show Another Pie Chart</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <!-- when id="intuition_exp" is shown, addingnuance is not shown-->
+
+                        <div id="addingnuance" style="display:none;">
+                            <!-- visibility:visible" -->
+                            <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+                            <h2 class="text-start">
+                                Adding nuance
+                            </h2>
+                            <p class="text-start">
+                                Adding another
+                                <strong>dimension</strong>
+                                allows for more nuance. For example, New York apartments can be extremely
+                                expensive per square foot.
+                            </p>
+                            <p class="text-start">
+                                So visualizing elevation
+                                <em>and</em>
+                                price per square foot in a
+                                <strong>scatterplot</strong>
+                                helps us distinguish lower-elevation homes.
+                            </p>
+                            <p class="text-start">
+                                The data suggests that, among homes at or below 73 meters, those that cost more
+                                than $19,116.7 per square meter are in New York City.
+                            </p>
+                            <p class="text-start">
+                                Dimensions in a data set are called
+                                <strong>features</strong>,
+                                <strong>predictors</strong>, or
+                                <strong>variables</strong>.
+                                <span class="footnote-anchor">1</span></p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li id="fromaddntofsi" class="page-item">
+                                        <a class="page-link">Previous</a>
+                                    </li>
+                                    <li id="fromaddntodrawb" class="page-item">
+                                        <a class="page-link">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <div id="drawingboundaries" style="display:none;">
+                            <!-- visibility:visible" -->
+                            <!-- document.getElementById("myP2").style.visibility = "hidden"; -->
+
+                            <h2 class="text-start">
+                                Drawing boundaries
+                            </h2>
+                            <p class="text-start">
+                                You can visualize your elevation (>73 m) and price per square foot (>$19,116.7)
+                                observations as the boundaries of regions in your scatterplot. Homes plotted in
+                                the green and blue regions would be in San Francisco and New York, respectively.
+                            </p>
+                            <p class="text-start">
+                                Identifying boundaries in data using math is the essence of statistical
+                                learning.
+                            </p>
+                            <p class="text-start">
+                                Of course, you’ll need additional information to distinguish homes with lower
+                                elevations
+                                <em>and</em>
+                                lower per-square-foot prices.
+                            </p>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li id="fromdrawbtoaddn" class="page-item">
+                                        <a class="page-link">Previous</a>
+                                    </li>
+                                    <li id="fromdrawbto" class="page-item">
+                                        <a class="page-link">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Add a svg area, empty -->
+                    <!-- <svg id="dataviz_area" height=100% width=100%></svg> -->
+                    <!-- <svg id="dataviz_area" height=1000 width=100%></svg> -->
+
+                </div>
+            </section>
+
+            <!-- <div class="album py-5 bg-light"> <div class="container"> <button
+            type="button" class="btn btn-primary"
+            onclick="window.location.href='index.html'">Next</button> <button type="button"
+            class="btn btn-primary"
+            onclick="window.location.href='int_ml_02.html'">Next</button> </div> </div> -->
+
+            <!-- cards -->
+
+        </section>
+
     </div>
-  </div>
 
-</main>
+    <footer id="bottomfooter" class="text-muted py-5">
+        <div class="container">
+            <p class="float-end mb-1">
+                <a id="backtotop" href="#">Back to top</a>
+            </p>
 
+            <p id="footertext" class="mb-1 footerCon">Developed by AI Research Center at the
+                Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles,
+                CA, USA.</p>
 
-<!-- <footer id="bottomfooter" class="text-muted py-5">
-  <div class="container" >
-    <p class="float-end mb-1">
-      <a id="backtotop" href="#">Back to top</a>
-    </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="./">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
-  </div>
-</footer> -->
-<footer id="bottomfooter" class="text-muted py-5">
-  <div class="container" >
-    <p class="float-end mb-1">
-      <a id="backtotop" href="#">Back to top</a>
-    </p>
-
-    <p id="footertext" class="mb-1 footerCon">Developed by AI Research Center at the Computational Biomedicine Department, Cedars-Sinai Medical Center, Los Angeles, CA, USA.</p>
-    
-  </div>
-</footer>
-
+        </div>
+    </footer>
 
     <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous"> -->
+    <!-- <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+    crossorigin="anonymous"> -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <!-- <script src="Aliro.js"></script> -->
     <script>
-      // file:///C:/Users/User/Desktop/python_work/SoftTCBCS/Aliro_ED/Aliro_ED/Aliro_ED_album_template/index.html
-      // change '#temp button color using d3
-      // d3.select("#temp").style("background-color", "red");
 
-      // d3.select('#temp').style('color', 'black');
-     
-      // console.log(pingURL())
-      // pingURL();
-      // // pingURL_DOWNLOAD()
-
-
-
-
+        // pingURL_DOWNLOAD() onedplotToTwodPlot() show_or_block_each_part()
     </script>
-      
-  
-      <script src="JSfiles/carousel.js"></script>
-      <script src="JSfiles/video.js"></script>
-      <script src="JSfiles/backgroundOverlayeffect.js"></script>
-    </body>
+
+    <script src="JSfiles/carousel.js"></script>
+    <script src="JSfiles/video.js"></script>
+    <script src="JSfiles/backgroundOverlayeffect.js"></script>
+
+    <script src="JSfiles/nond3works.js"></script>
+    <script src="JSfiles/backgroundOverlayeffect.js"></script>
+
+    <script src="JSfiles/d3.v3.js"></script>
+    <script src="JSfiles/backgroundOverlayeffect.js"></script>
+
+    <script>
+        d3v3 = window.d3;
+        window.d3 = null
+        // show d3 version
+        console.log("d3v3", d3v3.version);
+
+        pingURL_DOWNLOAD()
+
+        // scatterplot
+        onedplotToTwodPlot()
+        show_or_block_each_part()
+
+        //box
+        boxplot_direct_from_y()
+
+        //decision tree show d3 version
+        console.log("d3v3-tree", d3v3.version);
+
+        // maked button id rotateprojectxaxia unvisible
+        document
+            .getElementById("rotateprojectxaxia")
+            .style
+            .visibility = "hidden";
+        // projectyaxia
+        document
+            .getElementById("projectyaxia")
+            .style
+            .visibility = "hidden";
+        // twoDPlot
+        document
+            .getElementById("twoDPlot")
+            .style
+            .visibility = "hidden";
+
+        // fbbfirsttosecondbound
+        document
+            .getElementById("fbbfirsttosecondbound")
+            .style
+            .visibility = "hidden";
+
+        // show_piechart
+        document
+            .getElementById("show_piechart")
+            .style
+            .visibility = "hidden";
+
+        // show_piechart_another
+        document
+            .getElementById("show_piechart_another")
+            .style
+            .visibility = "hidden";
+
+        // boxplot_direct_from_y()
+        decisiontree()
+
+        // ShowOnechartOfthem()
+    </script>
+
+</body>
 </html>
