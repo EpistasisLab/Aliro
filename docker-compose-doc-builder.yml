@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: docs/Dockerfile
       args:
-        - ARCH=${ARCH}
+        - USE_WHEELS=${USE_WHEELS}
     working_dir: /appsrc/docs
     command: bash -c "make html"
     tty: true

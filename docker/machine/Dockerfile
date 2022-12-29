@@ -1,6 +1,7 @@
 FROM python:3.7.16-slim-buster
 
-ARG wheel_directory=docker/pywheels
+ARG USE_WHEELS
+ARG wheel_directory=docker/wheels
 ARG docker_filepath=docker/machine/files
 
 RUN apt-get update --fix-missing && apt-get install -y \
@@ -33,7 +34,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
 RUN mkdir /root/wheel
 COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
-RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/requirements.txt
+RUN if [ ${USE_WHEELS} -eq 1 ] ; then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; else pip install --no-cache-dir -r /root/requirements.txt ; fi
 RUN rm -rf /root/wheel
 
 # setup node environment

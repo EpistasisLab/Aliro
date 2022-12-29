@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: tests/unit/Dockerfile
       args:
-        - ARCH=${ARCH}
+        - USE_WHEELS=${USE_WHEELS}
     working_dir: /appsrc
     command: bash -c "dos2unix tests/unit/unit_test_runner.sh && export PENNAI_UNIT_TESTS_JS_ONLY=$PENNAI_UNIT_TESTS_JS_ONLY && export PENNAI_UNIT_TESTS_PY_ONLY=$PENNAI_UNIT_TESTS_PY_ONLY && sh tests/unit/unit_test_runner.sh"
     tty: true
@@ -15,5 +15,5 @@ services:
       - "./:/appsrc"
       - "/appsrc/lab/webapp/node_modules"
       - "/appsrc/lab/node_modules"
-      
-      
+
+

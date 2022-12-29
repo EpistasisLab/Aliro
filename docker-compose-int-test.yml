@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: docker/lab/Dockerfile
       args:
-        - ARCH=${ARCH}
+        - USE_WHEELS=${USE_WHEELS}
     tty: true
     stdin_open: true
     volumes:
@@ -46,6 +46,8 @@ services:
     build:
       context: .
       dockerfile: docker/machine/Dockerfile
+      args:
+        - USE_WHEELS=${USE_WHEELS}
     tty: true
     stdin_open: true
     volumes:
