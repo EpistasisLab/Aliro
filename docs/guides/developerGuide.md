@@ -25,8 +25,8 @@ Install Docker and docker-compose as per the main installation requirements (see
 2. Set up your local Aliro configuration file. From the Aliro directory, copy `config\ai.env-template` to `config\ai.env`.
 
 
-3. Ensure that the `.env` file contains the correct value for the **ARCH** variable. This variable needs to be set based on your development system, either to **x64** or **arm64**.
-
+3. Ensure that the `.env` file contains the correct value for the **USE_WHEELS** variable. Set this variable to either **1** or **0**. Setting this value to 1 will use the wheels in docker/wheels/ (these can be built using the wheel_builder images, as described in step 3a.
+    3a. If using **USE_WHEELS=1**, build the python wheels by running `docker-compose -f docker-compose-wheel-builder.yml up` from the Aliro directory. This will build the required wheels and placed them in the docker/wheels/ directory.
 
 4. Build the development service images by running `docker-compose build` from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.
 
