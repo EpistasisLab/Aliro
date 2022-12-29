@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  wheel_builder_lab:
+    image: "python:3.7.16-buster"
+    command: bash -c "pip wheel -r /appsrc/docker/lab/files/requirements.txt"
+    working_dir: /appsrc/wheels/lab
+    volumes:
+      - "./:/appsrc"
+
+  wheel_builder_machine:
+    image: "python:3.7.16-buster"
+    command: bash -c "pip wheel -r /appsrc/docker/machine/files/requirements.txt"
+    working_dir: /appsrc/wheels/machine
+    volumes:
+      - "./:/appsrc"
