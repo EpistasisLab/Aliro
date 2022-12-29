@@ -1,7 +1,7 @@
 FROM python:3.7.16-slim-buster
 
-ARG ARCH
-ARG wheel_directory=docker/pywheels
+ARG USE_WHEELS
+ARG wheel_directory=docker/wheels
 
 RUN apt-get update --fix-missing && \
     apt-get install -y wget xz-utils git \
@@ -47,10 +47,8 @@ ARG docker_filepath=docker/lab/files
 RUN mkdir /root/wheel
 COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
-COPY ${docker_filepath}/requirements-surprise-${ARCH}.txt /root/
-RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/requirements.txt
-RUN pip install --no-cache-dir --find-links=/root/wheel -r /root/requirements-surprise-${ARCH}.txt
-RUN rm -rf /root/wheel
+RUN if [ ${USE_WHEELS} -eq 1 ] ; then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; else pip install --no-cache-dir -r /root/requirements.txt ; fi
+RUN rm /root/wheel/*.whl
 
 ## Webserver
 
