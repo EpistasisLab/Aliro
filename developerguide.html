@@ -183,7 +183,11 @@
 <ol class="arabic simple">
 <li><p>Clone the Aliro project using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/Aliro.git</span></code></p></li>
 <li><p>Set up your local Aliro configuration file. From the Aliro directory, copy <code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
-<li><p>Ensure that the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file contains the correct value for the <strong>ARCH</strong> variable. This variable needs to be set based on your development system, either to <strong>x64</strong> or <strong>arm64</strong>.</p></li>
+<li><dl class="simple">
+<dt>Ensure that the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file contains the correct value for the <strong>USE_WHEELS</strong> variable. Set this variable to either <strong>1</strong> or <strong>0</strong>. Setting this value to 1 will use the wheels in docker/wheels/ (these can be built using the wheel_builder images, as described in step 3a.</dt><dd><p>3a. If using <strong>USE_WHEELS=1</strong>, build the python wheels by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">docker-compose-wheel-builder.yml</span> <span class="pre">up</span></code> from the Aliro directory. This will build the required wheels and placed them in the docker/wheels/ directory.</p>
+</dd>
+</dl>
+</li>
 <li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.</p></li>
 </ol>
 </section>
