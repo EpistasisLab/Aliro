@@ -47,11 +47,17 @@ ARG docker_filepath=docker/lab/files
 RUN mkdir /root/wheel
 COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
-RUN if [ ${USE_WHEELS} -eq 1 ] ; then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; else pip install --no-cache-dir -r /root/requirements.txt ; fi
+RUN if [ ${USE_WHEELS} -eq 1 ] ; \
+    then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; \
+    else pip install --no-cache-dir -r /root/requirements.txt ; \
+  fi
 RUN rm /root/wheel/*.whl
 
-## Webserver
+# these requirements need to be built, using wheels throws errors
+COPY ${docker_filepath}/requirements-build.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements-build.txt
 
+## Webserver
 RUN rm /etc/apache2/sites-enabled/*
 COPY ${docker_filepath}/ports.conf /etc/apache2/
 RUN cp  /etc/apache2/mods-available/rewrite* /etc/apache2/mods-enabled \
