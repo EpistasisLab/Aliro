@@ -23,7 +23,8 @@ services:
       context: .
       dockerfile: docker/lab/Dockerfile
       args:
-        - USE_WHEELS=${USE_WHEELS}
+        # - USE_WHEELS=${USE_WHEELS}
+        - USE_WHEELS=0
     tty: true
     stdin_open: true
     volumes:
@@ -47,7 +48,8 @@ services:
       context: .
       dockerfile: docker/machine/Dockerfile
       args:
-        - USE_WHEELS=${USE_WHEELS}
+        # - USE_WHEELS=${USE_WHEELS}
+        - USE_WHEELS=0
     tty: true
     stdin_open: true
     volumes:
