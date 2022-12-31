@@ -27,7 +27,7 @@ COPY /docker/machine/files/requirements.txt /root/mach_requirements.txt
 RUN pip install --no-cache-dir -r /root/mach_requirements.txt
 RUN if [ ${USE_WHEELS} -eq 1 ] ; \
         then pip install --no-index --find-links=/root/wheel -r /root/mach_requirements.txt ; \
-        else pip install --no-cache-dir -r /root/mach_requirements.txt ; 
+        else pip install --no-cache-dir -r /root/mach_requirements.txt ; \
     fi
 RUN rm /root/wheel/*.whl
 
