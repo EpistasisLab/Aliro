@@ -34,8 +34,15 @@ RUN apt-get update --fix-missing && apt-get install -y \
 RUN mkdir /root/wheel
 COPY ${wheel_directory}/*.whl /root/wheel/
 COPY ${docker_filepath}/requirements.txt /root/
-RUN if [ ${USE_WHEELS} -eq 1 ] ; then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; else pip install --no-cache-dir -r /root/requirements.txt ; fi
+RUN if [ ${USE_WHEELS} -eq 1 ] ; \
+    then pip install --no-index --find-links=/root/wheel -r /root/requirements.txt ; \
+    else pip install --no-cache-dir -r /root/requirements.txt ; \
+  fi
 RUN rm -rf /root/wheel
+
+# these requirements need to be built, using wheels throws errors
+COPY ${docker_filepath}/requirements-build.txt /root/
+RUN pip install --no-cache-dir -r /root/requirements-build.txt
 
 # setup node environment
 RUN npm install -g pm2 --silent --progress=false
