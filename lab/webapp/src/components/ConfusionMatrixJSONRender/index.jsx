@@ -238,6 +238,8 @@ class ConfusionMatrixJSONRender extends Component {
 
           // bold
           d3.select(this).style("font-weight", "bold");
+          console.log("Predicted label-mouse over")
+
         })
         // mouseout, change the text size to 10
         .on("mouseout", function(d) {
@@ -245,6 +247,7 @@ class ConfusionMatrixJSONRender extends Component {
 
           // remove bold
           d3.select(this).style("font-weight", "normal");
+          console.log("Predicted label-mouse out")
         })
         ;
         
@@ -286,12 +289,15 @@ class ConfusionMatrixJSONRender extends Component {
 
             // make it bold
             d3.select(this).style("font-weight", "bold");
+            console.log("True label-mouse over")
           })
           // mouseout, change the text size to 10
           .on("mouseout", function(d) {
             // d3.select(this).style("font-size", 10);
             // remove bold
             d3.select(this).style("font-weight", "normal");
+            console.log("True label-mouse out")
+            
           })
           ;
       
