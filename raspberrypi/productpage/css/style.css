@@ -1,99 +1,97 @@
 
 .bd-placeholder-img {
-font-size: 1.125rem;
-text-anchor: middle;
--webkit-user-select: none;
--moz-user-select: none;
-user-select: none;
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 @media (min-width: 768px) {
-.bd-placeholder-img-lg {
-    font-size: 3.5rem;
-}
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
 }
 
 .b-example-divider {
-height: 3rem;
-background-color: rgba(0, 0, 0, .1);
-border: solid rgba(0, 0, 0, .15);
-border-width: 1px 0;
-box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+    height: 3rem;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, .1), inset 0 0.125em 0.5em rgba(0, 0, 0, .15);
 }
 
 .b-example-vr {
-flex-shrink: 0;
-width: 1.5rem;
-height: 100vh;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh;
 }
 
 .bi {
-vertical-align: -.125em;
-fill: currentColor;
+    vertical-align: -.125em;
+    fill: currentColor;
 }
 
 .nav-scroller {
-position: relative;
-z-index: 2;
-height: 2.75rem;
-overflow-y: hidden;
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
 }
 
 .nav-scroller .nav {
-display: flex;
-flex-wrap: nowrap;
-padding-bottom: 1rem;
-margin-top: -1px;
-overflow-x: auto;
-text-align: center;
-white-space: nowrap;
--webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
 }
 
-
-a#infanddownload, #loadingbutton {
+#docslink,
+#githublink,
+#loadingbutton,
+#mltutorialbutton,
+#slacklink,
+a#infanddownload {
     /* --bs-btn-bg: #182435;
     --bs-btn-hover-bg: #849ab9; */
-    --bs-btn-bg: #f2efe9;
+    --bs-btn-bg: #f2efe9!important;
     /* --bs-btn-hover-bg: #e3085d; */
-    --bs-btn-hover-bg: #c6678f;
+    --bs-btn-hover-bg: #c6678f!important;
     /* change text color */
-    --bs-btn-color: #e3085d;
+    --bs-btn-color: #e3085d!important;
 
     /* change border color */
-    --bs-btn-border-color: #182435;
-    --bs-btn-hover-border-color: #f2efe9;
+    --bs-btn-border-color: #182435!important;
+    --bs-btn-hover-border-color: #f2efe9!important;
 }
 
 /* #infanddownload{
   visibility: hidden;
 } */
 
-a#downloadImage{
-  --bs-btn-bg: #182435;
-  --bs-btn-hover-bg: #849ab9;
+a#downloadImage {
+    --bs-btn-bg: #182435;
+    --bs-btn-hover-bg: #849ab9;
 }
 
-.navbar{
+.navbar {
     --bs-navbar-color: #1A1110!important;
 }
 
-
-
-
-
-#mainName{
+#mainName {
     /* color: #ffffff; */
     color: #e3085d;
     font-size: 2.5rem;
     font-weight: 700;
     font-family: 'Roboto', sans-serif;
-    
+
     /* text-shadow: 0 0 0.5rem #1A1110; */
 
 }
-
-
 
 .bg-info {
     --bs-bg-opacity: 0.3!important;
@@ -101,13 +99,11 @@ a#downloadImage{
     /* background-color: #e1970f!important; */
 }
 
-
-#topaliro, #bottomfooter{
-  /* --bs-bg-opacity: 0!important; */
-  background-color: #f2efe9!important;
+#bottomfooter,
+#topaliro {
+    /* --bs-bg-opacity: 0!important; */
+    background-color: #f2efe9!important;
 }
-
-
 
 /* make element rect look transparent */
 rect {
@@ -115,208 +111,209 @@ rect {
     stroke: none;
 }
 
+.card-body.bg-info {
 
-.card-body.bg-info{
-
-    --bs-bg-opacity: 0.1!important; 
+    --bs-bg-opacity: 0.1!important;
 
 }
 
-
-
 /*Filter styles*/
-.saturate { filter: saturate(3); }
-.grayscale { filter: grayscale(100%); }
-.contrast { filter: contrast(160%); }
-.brightness { filter: brightness(0.25); }
-.blur { filter: blur(3px); }
-.invert { filter: invert(100%); }
-.sepia { filter: sepia(100%); }
-.huerotate { filter: hue-rotate(180deg); }
-.rss.opacity { filter: opacity(50%); }
-
-
-
+.saturate {
+    filter: saturate(3);
+}
+.grayscale {
+    filter: grayscale(100%);
+}
+.contrast {
+    filter: contrast(160%);
+}
+.brightness {
+    filter: brightness(0.25);
+}
+.blur {
+    filter: blur(3px);
+}
+.invert {
+    filter: invert(100%);
+}
+.sepia {
+    filter: sepia(100%);
+}
+.huerotate {
+    filter: hue-rotate(180deg);
+}
+.rss.opacity {
+    filter: opacity(50%);
+}
 
 #changed {
     -webkit-filter : hue-rotate(180deg);
     filter : hue-rotate(180deg);
 }
 
-
-
-
 /* Style the video: 100% width and height to cover the entire window */
 #myVideo {
-position: fixed;
-right: 0;
-bottom: 0;
-min-width: 100%;
-min-height: 100%;
-z-index: -1;
-background: rgba(0, 0, 0, 0.50);
-visibility: hidden;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.50);
+    visibility: hidden;
 }
 
 /* main background color */
-main, section {
-background: #e3085d;
-/* opacity: 0.1; */
+main,
+section {
+    background: #e3085d;
+    /* opacity: 0.1; */
 }
 
 /* Add some content at the bottom of the video/page */
 .content {
-position: fixed;
-bottom: 0;
-background: rgba(0, 0, 0, 0.5);
-color: #f1f1f1;
-width: 100%;
-padding: 20px;
+    position: fixed;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #f1f1f1;
+    width: 100%;
+    padding: 20px;
 }
 
 /* Style the button used to pause/play the video */
 #myBtn {
-width: 200px;
-font-size: 18px;
-padding: 10px;
-border: none;
-background: #000;
-color: #fff;
-cursor: pointer;
+    width: 200px;
+    font-size: 18px;
+    padding: 10px;
+    border: none;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
 }
 
 #myBtn:hover {
-background: #ddd;
-color: black;
-} 
-
-
-
-
-
-
-/* div class="row py-lg-5 bg-info" */
-.row.py-lg-5.bg-info{
-/* make edge round */
-border-radius: 1rem;
+    background: #ddd;
+    color: black;
 }
 
-
-
-
-
-
-
-
+/* div class="row py-lg-5 bg-info" */
+.row.py-lg-5.bg-info {
+    /* make edge round */
+    border-radius: 1rem;
+}
 
 /* carousel */
-* {box-sizing:border-box}
+* {
+    box-sizing: border-box;
+}
 
 /* Slideshow container */
 .slideshow-container {
-  max-width: 1000px;
-  position: relative;
-  margin: auto;
+    max-width: 1000px;
+    position: relative;
+    margin: auto;
 }
 
 /* Hide the images by default */
 .mySlides {
-  display: none;
+    display: none;
 }
 
 /* Next & previous buttons */
-.prev, .next {
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  width: auto;
-  margin-top: -22px;
-  padding: 16px;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  transition: 0.6s ease;
-  border-radius: 0 3px 3px 0;
-  user-select: none;
+.next,
+.prev {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
 }
 
 /* Position the "next button" to the right */
 .next {
-  right: 0;
-  border-radius: 3px 0 0 3px;
+    right: 0;
+    border-radius: 3px 0 0 3px;
 }
 .prev {
     left: 0;
     border-radius: 3px 0 0 3px;
-  }
+}
 
 /* On hover, add a black background color with a little bit see-through */
-.prev:hover, .next:hover {
-  /* background-color: rgba(0,0,0,0.8); */
+.next:hover,
+.prev:hover {
+    /* background-color: rgba(0,0,0,0.8); */
 }
 
 /* Caption text */
 .text {
-  color: #f2f2f2;
-  font-size: 15px;
-  padding: 8px 12px;
-  position: absolute;
-  bottom: 8px;
-  width: 100%;
-  text-align: center;
+    color: #f2f2f2;
+    font-size: 15px;
+    padding: 8px 12px;
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    text-align: center;
 }
 
 /* Number text (1/3 etc) */
 .numbertext {
-  color: #f2f2f2;
-  font-size: 12px;
-  padding: 8px 12px;
-  position: absolute;
-  top: 0;
+    color: #f2f2f2;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
 }
 
 /* The dots/bullets/indicators */
 .dot {
-  cursor: pointer;
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.6s ease;
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
 }
 
-.active, .dot:hover {
-  background-color: #717171;
-  /* background-color: #ffffff; */
+.active,
+.dot:hover {
+    background-color: #717171;
+    /* background-color: #ffffff; */
 }
 
 /* Fading animation */
 .fade {
-  animation-name: fade;
-  animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
 }
 
 @keyframes fade {
-  from {opacity: .4}
-  to {opacity: 1}
+    from {
+        opacity: 0.4;
+    }
+    to {
+        opacity: 1;
+    }
 }
-
-
-
 
 /* domain is axis */
 .domain {
-  /* fill: rgb(255, 255, 255); */
-  stroke: rgb(0, 0, 0);
+    /* fill: rgb(255, 255, 255); */
+    stroke: rgb(0, 0, 0);
 
-  /* shape-rendering: crispEdges; */
+    /* shape-rendering: crispEdges; */
 }
 
-
-
-#mainLogo{
+#mainLogo {
     /* -webkit-filter: invert(20%); */
 
     /* make it black */
@@ -324,24 +321,19 @@ border-radius: 1rem;
     /* make it white */
     /* -webkit-filter: invert(120%); */
 
-
-
 }
-
-
 
 /* .card-body.bg-secondary{
     background-color: #103445!important;
     
 } */
 
-.card-body.bg-secondary{
-  /* background-color: #0d131b!important; */
-  /* background-color: #137833!important; */
-  background-color: #73877B!important;
-  
-}
+.card-body.bg-secondary {
+    /* background-color: #0d131b!important; */
+    /* background-color: #137833!important; */
+    background-color: #73877B!important;
 
+}
 
 .bg-danger {
     /* --bs-bg-opacity: 1!important; */
@@ -349,155 +341,132 @@ border-radius: 1rem;
     /* background-color: #e1970f!important; */
 }
 
-
-
-
-
-
-
-
 .videoContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  
-  border-radius: 5px;
-  background-attachment: scroll;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    border-radius: 5px;
+    background-attachment: scroll;
+    overflow: hidden;
 }
 .videoContainer video {
-  min-width: 100%;
-  min-height: 100%;
-  position: relative;
-  z-index: 1;
+    min-width: 100%;
+    min-height: 100%;
+    position: relative;
+    z-index: 1;
 }
 .videoContainer .overlay {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 2;
-  background: green;
-  opacity: 0.5;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background: green;
+    opacity: 0.5;
 }
-
-
-
-
-
 
 #overlay {
-  pointer-events:none;
-  position: fixed;
-  display: none;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* background-color: rgba(0,0,0,0.3); */
-/*background-color: rgba(0,0,0,0.4);*/
-  /* background-color: rgba(255, 255, 255, 0.3); */
-  z-index: 1;
-  cursor: pointer;
+    pointer-events: none;
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* background-color: rgba(0,0,0,0.3); */
+    /*background-color: rgba(0,0,0,0.4);*/
+    /* background-color: rgba(255, 255, 255, 0.3); */
+    z-index: 1;
+    cursor: pointer;
 }
 
+.nav-item {
+    color: transparent!important;
+    background-color: transparent!important;
+    /* -webkit-text-fill-color: rgb(255, 255, 255)!important; */
+    /* -webkit-text-fill-color: rgb(255, 255, 255); */
+    list-style-type: none;
 
-.nav-item{
-  color: transparent!important;
-  background-color: transparent!important;
-  /* -webkit-text-fill-color: rgb(255, 255, 255)!important; */
-  /* -webkit-text-fill-color: rgb(255, 255, 255); */
-  list-style-type: none;
-  
-  /* change font size */
-  font-size: 1.2rem;
-
-}
-
-.active, .dot:hover {
-  background-color: transparent!important;
-  /* mouseover color change */
+    /* change font size */
+    font-size: 1.2rem;
 
 }
 
+.active,
+.dot:hover {
+    background-color: transparent!important;
+    /* mouseover color change */
 
+}
 
+/* Style buttons */
+.btn-download {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    cursor: pointer;
+    font-size: 20px;
+    /* make left aligned */
 
- /* Style buttons */
- .btn-download {
-  background-color: DodgerBlue;
-  border: none;
-  color: white;
-  padding: 12px 30px;
-  cursor: pointer;
-  font-size: 20px;
-  /* make left aligned */
-  
 }
 
 /* Darker background on mouse-over */
 .btn-download:hover {
-  background-color: RoyalBlue;
-} 
+    background-color: RoyalBlue;
+}
 
-
-
-.all-scroll {cursor: all-scroll;}
+.all-scroll {
+    cursor: all-scroll;
+}
 
 #downloadA {
-  background: darkslategray!important;
-  color: white!important;
+    background: darkslategray!important;
+    color: white!important;
 }
-
-
 
 #downloadLi {
-  --bs-btn-bg: #182435;
-  --bs-btn-hover-bg: #849ab9;
+    --bs-btn-bg: #182435;
+    --bs-btn-hover-bg: #849ab9;
 }
-
-
-
-
- 
-
-
 
 .blinking {
-  animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
-  position:absolute;  
-  /* transform translate to the right side of web page */
-  transform: translate(550%, -90%);
-  /* transform: translate(0, 0); */
+    animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+    position: absolute;
+    /* transform translate to the right side of web page */
+    transform: translate(550%, -90%);
+    /* transform: translate(0, 0); */
 }
 
-@keyframes blinker {  
-from { opacity: 1; }
-to { opacity: 0; }
+@keyframes blinker {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
+a#Downloadpage,
+a#installationpage {
 
-a#Downloadpage, a#installationpage{
-  
-  color:#e3085d!important;
-  /* visibility: hidden; */
+    color: #e3085d!important;
+    /* visibility: hidden; */
 
 }
 
-
-
-#blinkingtextcir{
-  visibility: hidden;
+#blinkingtextcir {
+    visibility: hidden;
 }
 
 body {
 
-  background-color: #4a4a4d !important;
+    background-color: #4a4a4d !important;
 }
-
 
 /* #backtotop{
   color:rgb(255, 255, 255)
@@ -507,74 +476,254 @@ body {
   background-color: #0d131b!important;
 } */
 
-#footertex{
-  color:#e3085d!important;
+#footertex {
+    color: #e3085d!important;
 }
-
-
-
-
-
 
 /* div class="row py-lg-5 bg-info" */
-.row.py-lg-5.bg-success{
-  /* make edge round */
-  border-radius: 1rem;
-  }
+.row.py-lg-5.bg-success {
+    /* make edge round */
+    border-radius: 1rem;
+}
 
-
-a{
-  text-decoration: none!important;
+a {
+    text-decoration: none!important;
 
 }
 
-
-.dfboubutton{
-  cursor:pointer;
+.dfboubutton {
+    cursor: pointer;
 }
 
-
-.bg-my{
-  background-color: #F2EFE9;
-  border-radius: 1rem;
+.bg-my {
+    background-color: #F2EFE9;
+    border-radius: 1rem;
 
 }
 
 .node {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
 }
 
 .node text {
-  font: 10px sans-serif;
+    font: 10px sans-serif;
 }
 
 .link {
-  fill: none;
-  stroke: #6ff800;
+    fill: none;
+    stroke: #6ff800;
 }
 
 .legends {
-  position: fixed;
-  top: 1px;
-  z-index: -1;
-  left: 5px;
+    position: fixed;
+    top: 1px;
+    z-index: -1;
+    left: 5px;
 }
 
 .main {
-  position: relative;
-  top: 99px;
-  z-index: 5;
+    position: relative;
+    top: 99px;
+    z-index: 5;
 }
 
 .tlink {
-  stroke: rgb(158, 156, 156);
-  font-family: Verdana;
-  font-size: 12px;
-  stroke-width: 0.04em;
+    stroke: rgb(158, 156, 156);
+    font-family: Verdana;
+    font-size: 12px;
+    stroke-width: 0.04em;
 }
+
+.ContentScroll {
+
+    height: 65%;
+    width: 95%;
+    /* height:  100%; */
+    /* width:  100%; */
+    overflow-y: auto;
+    /* border: 1px solid red;  */
+}
+
+/* section {
+  height: 100%;
+  width: 100%;
+} */
+
+#boxDiv,
+#decDiv,
+#scatterDiv {
+    /* height: 650px; */
+}
+
+#maintestheader {
+    /* make font color from left orange to right puple */
+    /* font-size: 72px;
+    background: -webkit-linear-gradient(left, red , yellow);
+    background: -o-linear-gradient(right, red, yellow);
+    background: -moz-linear-gradient(right, red, yellow);
+    background: linear-gradient(to right, red , yellow); */
+
+    font-size: 72px;
+    background: -webkit-linear-gradient(left, #f6bd60 , #f7ede2);
+    background: -o-linear-gradient(right, #f6bd60 , #f7ede2);
+    background: -moz-linear-gradient(right, #f6bd60 , #f7ede2);
+    background: linear-gradient(to right, #f6bd60 , #f7ede2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* make font color red */
+    /* color: #e3085d; */
+}
+
+.gradheaders {
+    /* make font color from left orange to right puple */
+    /* font-size: 72px;
+  background: -webkit-linear-gradient(left, red , yellow);
+  background: -o-linear-gradient(right, red, yellow);
+  background: -moz-linear-gradient(right, red, yellow);
+  background: linear-gradient(to right, red , yellow); */
+
+    font-size: 50px;
+    background: -webkit-linear-gradient(left, #f6bd60 , #f7ede2);
+    background: -o-linear-gradient(right, #f6bd60 , #f7ede2);
+    background: -moz-linear-gradient(right, #f6bd60 , #f7ede2);
+    background: linear-gradient(to right, #f6bd60 , #f7ede2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* make font color red */
+    /* color: #e3085d; */
+}
+
+#projectxaxia_scatter:focus {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#projectyaxia_scatter:focus {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#rotateprojectxaxia_boxplot:focus {
+    font-weight: bold;
+    text-decoration: underline;
+ 
+
+}
+
+
+
+button#twoDPlot_scatter:focus {
+    /* background-color: orange!important; */
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* if button#scatterplot_sec is clicked, font-weight:bold, text-decoration:underline */
+
+/* button.scatterplotClass:focus {
+
+    font-weight: bold;
+
+    text-decoration: underline;
+} */
+
+
+#twoDPlot_scatter{
+  /* font color white */
+  color: white!important;
+
+}
+
+
+/* 
+button#scatterplot_sec-one:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#scatterplot_sec-two:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#scatterplot_sec-three:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+
+button#boxplot_sec-one:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#boxplot_sec-two:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#boxplot_sec-three:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+
+button#dectree_sec-one:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#dectree_sec-two:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+}
+
+button#dectree_sec-three:focus {
+
+  font-weight: bold;
+
+  text-decoration: underline;
+} */
+
+
+
+
+
+
+.btn-lg{
+  /* make button color red */
+  background-color: #8f214b!important;
+}
+
+.btn-lg:hover{
+  /* make button color red */
+  background-color: #e3085d!important;
+}
+
+
+
+

@@ -60,6 +60,7 @@ share/python-wheels/
 MANIFEST
 .vscode
 
-.xz
-.exe
+*.xz
+*.exe
+*.mp4
 run*Test.sh

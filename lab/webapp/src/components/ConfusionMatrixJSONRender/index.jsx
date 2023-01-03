@@ -3,8 +3,6 @@
 Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
 
 Aliro is maintained by:
-    - Hyunjun Choi (hyunjun.choi@cshs.org)
-    - 
     - Heather Williams (hwilli@upenn.edu)
     - Weixuan Fu (weixuanf@upenn.edu)
     - William La Cava (lacava@upenn.edu)
@@ -33,169 +31,6 @@ import React, { Component } from 'react';
 
 import d3 from 'd3';
 
-
-
-// working version
-// class ConfusionMatrixJSONRender extends Component {
-
-
-//   // train_sizes={train_sizes}
-//   // train_scores={train_scores}
-//   // test_scores={test_scores}
-//   // chartKey={chartKey}
-//   // chartColor={chartColor}
-//   // min={0.5}
-//   // max={1.0}
-
-//   componentDidMount() {
-//     const { train_sizes, train_scores, test_scores, chartKey, chartColor, min, max } = this.props;
-//     train_sizes && train_scores &&  test_scores && this.renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max);
-//   }
-// /*
-// colors: {
-//   'test_score': '#0072b2',  ---- light blue
-//   'train_score': '#f0e442'  ---- light yellow
-//   '#55D6BE' ----- light sea green
-// }
-
-// use anonymous function to 'disable' interaction
-// look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
-// */
-
-//   // renderChart(expList, chartKey, chartColor, min, max) {
-//   renderChart(train_sizes, train_scores, test_scores, chartKey, chartColor, min, max) {
-
-//     window.console.log('here in renderChart for ConfusionMatrixJSONRender');
-//     // window.console.log('train_sizes: ', train_sizes);
-//     // window.console.log('train_scores.length: ', train_scores.length);
-//     // window.console.log('train_scores: ', train_scores);
-//     // window.console.log('test_scores: ', test_scores);
-
-//     // // 
-//     // min = 0;
-//     // // max is last element in train_sizes
-//     max = train_sizes[train_sizes.length - 1];
-//     max = max + 0.1 * max;
-
-//     window.console.log('max: ', max);
-//     var total_train_scores=[];
-//     var total_test_scores=[];
-//     for (var i = 0; i < train_scores.length; i++) {
-      
-//       // calculate averge of train_sizes[i]
-//       // divide by train_scores[i].length
-
-//       var sum_train_scores = 0;
-//       var sum_test_scores = 0;
-//       for (var j = 0; j < train_scores[i].length; j++) {
-//         sum_train_scores += train_scores[i][j];
-//         sum_test_scores += test_scores[i][j];
-//       }
-//       var avg_sum_train_scores = sum_train_scores / train_scores[i].length;
-//       var avg_sum_test_scores = sum_test_scores / test_scores[i].length;
-
-//       total_train_scores.push(avg_sum_train_scores);
-//       total_test_scores.push(avg_sum_test_scores);
-      
-
-//     }
-
-    
-//     var json = [];
-//     for (var i = 0; i < train_sizes.length; i++) {
-//       json.push({x: train_sizes[i], Training_score: total_train_scores[i], Cross_validation_score: total_test_scores[i]});
-//     }
-
-//     // window.console.log('json: ', json);
-
-//     // window.console.log('chartKey: ', chartKey);
-
-//     var chart = c3.generate({
-//       bindto: `.${chartKey}`,
-      
-//       data: {
-//         json: json,
-
-//         keys: {
-//           x: 'x',
-//           value: ['Training_score', 'Cross_validation_score'],
-//       }
-      
-//     },
-//       axis: {
-//         y: {
-//           min: 0,
-//           max: 1,
-//           label: 'Score'
-
-//         },
-//         x: {
-//           min: 0,
-//           max: max,
-//           label: 'Training examples',
-//           tick: {
-//             multiline:false,
-//             culling: false // <-- THIS!
-//           }
-
-//       }
-//     },
-//     grid: {
-//       y: {
-//         show: true,
-//         color : '#fff!important'
-//       },
-//       x: {
-//         show: true,
-//         color : '#fff!important'
-//       }
-//     },
-
-//     tooltip: {
-//       format: {
-//         title: function (d) { return 'Training examples: ' + d; }
-//       }
-//     }
-
-
-    
-
-
-//   });
-
-//     // if document element has testuser text, then make it unvisiable 
-
-
-    
-
-
-
-//   }
-
-//   render() {
-//     return (
-//       <div className={`ConfusionMatrixJSONRender ${this.props.chartKey}`} />
-//     );
-//   }
-// }
-
-// ConfusionMatrixJSONRender.defaultProps = {
-//   chartColor: '#60B044'
-// };
-
-// export default ConfusionMatrixJSONRender;
-
-
-
-
-
-
-
-
-
-
-
-// test version
 class ConfusionMatrixJSONRender extends Component {
   componentDidMount() {
     console.log("hello");
@@ -205,16 +40,7 @@ class ConfusionMatrixJSONRender extends Component {
   }
 
  
-/*
-colors: {
-  'test_score': '#0072b2',  ---- light blue
-  'train_score': '#f0e442'  ---- light yellow
-  '#55D6BE' ----- light sea green
-}
 
-use anonymous function to 'disable' interaction
-look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
-*/
 
   renderChart(cnf_data, chartKey, chartColor, min, max) {
     // console.log('here in renderChart for ConfusionMatrixJSONRender');
@@ -314,6 +140,9 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
           // use dark red and  dark blue
           .range(["#afacbd", "#092180"]);
           // .range(["white", "#55D6BE"]);
+          
+          // [#afacbd, 7D5BA6] 
+          
           // .range()
 
     
@@ -405,11 +234,17 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
         .text("Predicted label")
         // mouseover, change the text size to 20
         .on("mouseover", function(d) {
-          d3.select(this).style("font-size", 20);
+          // d3.select(this).style("font-size", 20);
+
+          // bold
+          d3.select(this).style("font-weight", "bold");
         })
         // mouseout, change the text size to 10
         .on("mouseout", function(d) {
-          d3.select(this).style("font-size", 10);
+          // d3.select(this).style("font-size", 10);
+
+          // remove bold
+          d3.select(this).style("font-weight", "normal");
         })
         ;
         
@@ -447,11 +282,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
           .attr("id", "true_label")
           // mouseover, change the text size to 20
           .on("mouseover", function(d) {
-            d3.select(this).style("font-size", 20);
+            // d3.select(this).style("font-size", 20);
+
+            // make it bold
+            d3.select(this).style("font-weight", "bold");
           })
           // mouseout, change the text size to 10
           .on("mouseout", function(d) {
-            d3.select(this).style("font-size", 10);
+            // d3.select(this).style("font-size", 10);
+            // remove bold
+            d3.select(this).style("font-weight", "normal");
           })
           ;
       
@@ -462,14 +302,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     }
 
     var matrix = cnf_data;  
-
-    // console.log("cnf_data in line",cnf_data);
-   
-
-
-    // print curreht class name
-    // window.console.log('TestLine current class name: ', `.${chartKey}`);
-
     
 
     var div = d3.select(`.${chartKey}`)
@@ -494,98 +326,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     
     
 
-    // var rect = svg.selectAll("rect")
-    // .data(matrix)
-    // .enter()
-    // .append("rect")
-    // .attr("width", 100)
-    // .attr("height", 100)
-    // // make width and height related to current div size
-    // // .attr("width", function(d, i) {
-    // //   return d3.select(`.${chartKey}`).node().getBoundingClientRect().width/10;
-    // // })
-    // // .attr("height", function(d, i) {
-    // //   return d3.select(`.${chartKey}`).node().getBoundingClientRect().height/10;
-    // // })
-    // .attr("x", function(d, i) {
-    //   console.log('d: ', d);
-      
-    //   console.log('d[0][0]: ', d[0]);
-    //   console.log('d[0][1]: ', d[1]);
-    //   // loop based on size of d
-    //   for (var i = 0; i < d.length; i++) {
-    //     // console.log('d[i]: ', d[i]);
-    //   // make 1 row 2 column
-    //     tempcount+=1;
-    //     console.log('tempcount', tempcount);
-    //   }
-      
-    //   return i * 100;
-
-    // } )
-    // .attr("y", function(d, i) {
-
-    //   return i * 100;
-    // }
-    // )
-    // .attr('id', function(d, i) {
-    //   return 'rect_' + d;
-    // }
-    // )
-    // .attr('fill', function(d, i) {
-      
-    //   console.log('fill_d: ', d);
-    //   // choose color based on value d
-      
-    //   if (d > 150) {
-    //     return 'green';
-    //   }
-    //   return 'red';
-    // } 
-    // )
-    // // make it show more than background color
-    // .attr('opacity', 0.5)
-    // // add mouseover event
-    // // .on("mouseover", function(d, i) {
-    // //   // change color
-    // //   d3.select(this).attr('fill', 'blue');
-    // //   console.log('number',d)
-    // //   // show this d as string on the rect
-    // //   d3.select(this).text(d);
-    // //   // make the text color white
-    // //   d3.select(this).attr('fill', 'white');
-
-    // //   d3.select(this).text('This is some information about whatever')
-    // //           .attr('x', 50)
-    // //           .attr('y', 150)
-    // //           .attr('fill', 'white')
-
-    // // })
-    // .append('text').text('test');
-
-
-    // need to generalize this to work for any size matrix
-  
-    // var tp = matrix[0][0];
-    // var fn = matrix[0][1];
-    // var fp = matrix[1][0];
-    // var tn = matrix[1][1];
-
-    // var p = tp + fn;
-    // var n = fp + tn;
-
-    // var accuracy = (tp+tn)/(p+n);
-    // var f1 = 2*tp/(2*tp+fp+fn);
-    // var precision = tp/(tp+fp);
-    // var recall = tp/(tp+fn);
-
-    // accuracy = Math.round(accuracy * 100) / 100
-    // f1 = Math.round(f1 * 100) / 100
-    // precision = Math.round(precision * 100) / 100
-    // recall = Math.round(recall * 100) / 100
-
-    // var computedData = [];
-    // computedData.push({"F1":f1, "PRECISION":precision,"RECALL":recall,"ACCURACY":accuracy});
     
 
     // get length of matrix
@@ -610,12 +350,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
             start_color : '#ffffff',
             end_color : '#e67e22'
     });
-    // testMatrix();
 
-		// rendering the table
-    // var table = tabulate(computedData, ["F1", "PRECISION","RECALL","ACCURACY"]);
-
-  
 
   }
 
