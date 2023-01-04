@@ -182,7 +182,7 @@
 
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">basedir</span><span class="o">=</span><span class="n">basedir</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Experiment class for Aliro.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Experiment class for Aliro.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -205,7 +205,7 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Experiment.get_input"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_input">[docs]</a>    <span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get input data based on experiment ID (_id) from Aliro API.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get input data based on experiment ID (_id) from Aliro API.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -218,7 +218,7 @@
         <span class="k">return</span> <span class="n">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpdir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.get_model"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.Experiment.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Build scikit learn method based on arguments from Aliro API.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build scikit learn method based on arguments from Aliro API.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -247,7 +247,7 @@
 
 
 <div class="viewcode-block" id="get_projects"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_projects">[docs]</a><span class="k">def</span> <span class="nf">get_projects</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Get all machine learning algorithm&#39;s information from Aliro API This</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all machine learning algorithm&#39;s information from Aliro API This</span>
 <span class="sd">    information should be the same with projects.json.</span>
 
 <span class="sd">    Returns</span>
@@ -261,7 +261,7 @@
 
 
 <div class="viewcode-block" id="parse_args"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.parse_args">[docs]</a><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Parse arguments for machine learning algorithm.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse arguments for machine learning algorithm.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -325,7 +325,7 @@
 
 
 <div class="viewcode-block" id="get_input_data"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_input_data">[docs]</a><span class="k">def</span> <span class="nf">get_input_data</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Get input dataset information from Aliro API.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get input dataset information from Aliro API.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -431,7 +431,7 @@
 
 
 <div class="viewcode-block" id="get_file_data"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_file_data">[docs]</a><span class="k">def</span> <span class="nf">get_file_data</span><span class="p">(</span><span class="n">file_id</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Attempt to retrieve dataset file. If the file is corrupt or an error</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Attempt to retrieve dataset file. If the file is corrupt or an error</span>
 <span class="sd">    response is returned, it will rasie an ValueError.</span>
 
 <span class="sd">    Parameters</span>
@@ -458,7 +458,7 @@
 
 
 <div class="viewcode-block" id="check_column"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.check_column">[docs]</a><span class="k">def</span> <span class="nf">check_column</span><span class="p">(</span><span class="n">column_name</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; check if a column exists in Pandas DataFrame.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; check if a column exists in Pandas DataFrame.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    column_name: string</span>
@@ -478,7 +478,7 @@
 
 
 <div class="viewcode-block" id="bool_type"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.bool_type">[docs]</a><span class="k">def</span> <span class="nf">bool_type</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert argument to boolean type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert argument to boolean type.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    val: string</span>
@@ -498,7 +498,7 @@
 
 
 <div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert nono argument to None.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert nono argument to None.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    val: string</span>
@@ -517,7 +517,7 @@
 
 
 <div class="viewcode-block" id="get_type"><a class="viewcode-back" href="../../../api.html#machine.learn.io_utils.get_type">[docs]</a><span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="n">param_type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return convertion function for input type.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return convertion function for input type.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

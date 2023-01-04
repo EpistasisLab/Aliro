@@ -203,7 +203,7 @@
 
 
 <div class="viewcode-block" id="AI"><a class="viewcode-back" href="../../api.html#ai.ai.AI">[docs]</a><span class="k">class</span> <span class="nc">AI</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;AI managing agent for Aliro.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;AI managing agent for Aliro.</span>
 
 <span class="sd">    Responsible for:</span>
 <span class="sd">    - checking for user requests for recommendations,</span>
@@ -237,7 +237,7 @@
                 <span class="n">use_knowledgebase</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">term_condition</span><span class="o">=</span><span class="s1">&#39;n_recs&#39;</span><span class="p">,</span>
                 <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes AI managing agent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes AI managing agent.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;RANDOM_SEED&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RANDOM_SEED&#39;</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
@@ -350,7 +350,7 @@
     <span class="c1">## Init methods</span>
     <span class="c1">##-----------------</span>
 <div class="viewcode-block" id="AI.initialize_recommenders"><a class="viewcode-back" href="../../api.html#ai.ai.AI.initialize_recommenders">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_recommenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initilize classification and regression recommenders</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -403,7 +403,7 @@
 
 
 <div class="viewcode-block" id="AI.load_knowledgebase"><a class="viewcode-back" href="../../api.html#ai.ai.AI.load_knowledgebase">[docs]</a>    <span class="k">def</span> <span class="nf">load_knowledgebase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Bootstrap the recommenders with the knowledgebase.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bootstrap the recommenders with the knowledgebase.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;loading pmlb knowledgebase&#39;</span><span class="p">)</span>
 
         <span class="n">kb</span> <span class="o">=</span> <span class="n">knowledgebase_utils</span><span class="o">.</span><span class="n">load_default_knowledgebases</span><span class="p">(</span><span class="n">dedupe</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -447,7 +447,7 @@
     <span class="c1">## Utility methods</span>
     <span class="c1">##-----------------</span>
 <div class="viewcode-block" id="AI.get_results_metafeatures"><a class="viewcode-back" href="../../api.html#ai.ai.AI.get_results_metafeatures">[docs]</a>    <span class="k">def</span> <span class="nf">get_results_metafeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a pandas dataframe of metafeatures associated with the datasets</span>
 <span class="sd">        in results_data.</span>
 
@@ -491,7 +491,7 @@
     <span class="c1">## Loop methods</span>
     <span class="c1">##-----------------</span>
 <div class="viewcode-block" id="AI.check_results"><a class="viewcode-back" href="../../api.html#ai.ai.AI.check_results">[docs]</a>    <span class="k">def</span> <span class="nf">check_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Checks to see if new experiment results have been posted since the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks to see if new experiment results have been posted since the</span>
 <span class="sd">        previous time step. If so, set them to self.new_data and return True.</span>
 
 <span class="sd">        :returns: Boolean - True if new results were found</span>
@@ -514,7 +514,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="AI.update_recommender"><a class="viewcode-back" href="../../api.html#ai.ai.AI.update_recommender">[docs]</a>    <span class="k">def</span> <span class="nf">update_recommender</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update recommender models based on new experiment results in</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update recommender models based on new experiment results in</span>
 <span class="sd">        self.new_data, and then clear self.new_data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s1">&#39;new_data&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">):</span>
@@ -538,7 +538,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="AI.check_requests"><a class="viewcode-back" href="../../api.html#ai.ai.AI.check_requests">[docs]</a>    <span class="k">def</span> <span class="nf">check_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check to see if any new AI requests have been submitted.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check to see if any new AI requests have been submitted.</span>
 <span class="sd">        If so, add them to self.request_queue.</span>
 
 <span class="sd">        :returns: Boolean - True if new AI requests have been submitted</span>
@@ -589,7 +589,7 @@
     <span class="c1">## Syncronous actions an AI request can take</span>
     <span class="c1">##-----------------</span>
 <div class="viewcode-block" id="AI.generate_recommendations"><a class="viewcode-back" href="../../api.html#ai.ai.AI.generate_recommendations">[docs]</a>    <span class="k">def</span> <span class="nf">generate_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasetId</span><span class="p">,</span> <span class="n">numOfRecs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate ml recommendation payloads for the given dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate ml recommendation payloads for the given dataset.</span>
 
 <span class="sd">        :param datasetId</span>
 <span class="sd">        :param numOfRecs</span>
@@ -627,7 +627,7 @@
 
 
 <div class="viewcode-block" id="AI.transfer_rec"><a class="viewcode-back" href="../../api.html#ai.ai.AI.transfer_rec">[docs]</a>    <span class="k">def</span> <span class="nf">transfer_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_payload</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Attempt to send a recommendation to the lab server.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attempt to send a recommendation to the lab server.</span>
 <span class="sd">        If any error other then a no capacity error occurs, throw an exception.</span>
 
 <span class="sd">        :param rec_payload: dictionary - the payload describing the experiment</span>
@@ -665,7 +665,7 @@
     <span class="c1">## Save/load ai state</span>
     <span class="c1">##-----------------</span>
 <div class="viewcode-block" id="AI.save_state"><a class="viewcode-back" href="../../api.html#ai.ai.AI.save_state">[docs]</a>    <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save ML+P scores in pickle or to DB</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save ML+P scores in pickle or to DB</span>
 
 <span class="sd">        TODO: test that this still works</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -680,7 +680,7 @@
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AI.load_state"><a class="viewcode-back" href="../../api.html#ai.ai.AI.load_state">[docs]</a>    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Loads pickled score file and recommender model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads pickled score file and recommender model.</span>
 
 <span class="sd">        TODO: test that this still works</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -699,7 +699,7 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Handles command line arguments and runs Aliro.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles command line arguments and runs Aliro.&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Aliro is a recommendation system for data science. &#39;</span><span class="p">,</span>
             <span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

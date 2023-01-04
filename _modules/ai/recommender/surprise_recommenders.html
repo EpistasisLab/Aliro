@@ -200,7 +200,7 @@
 
 
 <div class="viewcode-block" id="SurpriseRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SurpriseRecommender">[docs]</a><span class="k">class</span> <span class="nc">SurpriseRecommender</span><span class="p">(</span><span class="n">BaseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class to support generic recommenders from the Surprise library.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to support generic recommenders from the Surprise library.</span>
 <span class="sd">    Not intended to be used as a standalone class.</span>
 
 <span class="sd">    Parameters</span>
@@ -222,7 +222,7 @@
             <span class="n">serialized_rec_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">serialized_rec_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot; set default recommender specific parameters; might be overwritten by loading serialized recommender&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; set default recommender specific parameters; might be overwritten by loading serialized recommender&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;SurpriseRecommender&#39;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Do not instantiate the SurpriseRecommender class &#39;</span>
             <span class="s1">&#39;directly; use one of the method-specific classes instead.&#39;</span><span class="p">)</span>
@@ -254,7 +254,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">min_epochs</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">=</span> <span class="mi">100</span>
 
-        <span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">ml_type</span><span class="p">,</span>
             <span class="n">metric</span><span class="p">,</span>
@@ -274,7 +274,7 @@
 
     <span class="k">def</span> <span class="nf">_reconstruct_training_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">source</span><span class="o">=</span><span class="s1">&#39;pennai&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Used for loading pickled recomenders to set results_df</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used for loading pickled recomenders to set results_df</span>
 <span class="sd">        without training.</span>
 <span class="sd">        :param results_data: DataFrame with columns corresponding to:</span>
 <span class="sd">                &#39;dataset&#39;</span>
@@ -340,7 +340,7 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_df_hash</span>
 
 <div class="viewcode-block" id="SurpriseRecommender.load"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SurpriseRecommender.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knowledgebase</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load a saved recommender state.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a saved recommender state.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">knowledgebase</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;A knowledgebase needs to be provided to load &#39;</span>
             <span class="s1">&#39;Surprise Recommenders from file. Not loading.&#39;</span><span class="p">)</span>
@@ -352,7 +352,7 @@
                     <span class="n">source</span><span class="o">=</span><span class="s1">&#39;knowledgebase&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurpriseRecommender.update"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SurpriseRecommender.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;pennai&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations based on overall performance in</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations based on overall performance in</span>
 <span class="sd">        results_data.</span>
 
 <span class="sd">        :param results_data: DataFrame with columns corresponding to:</span>
@@ -370,7 +370,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_model</span><span class="p">(</span><span class="n">results_data</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_update_training_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Appends results_data to self.results_df. Sets the trainset for</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Appends results_data to self.results_df. Sets the trainset for</span>
 <span class="sd">        the surprise recommender.</span>
 
 <span class="sd">        :param results_data: DataFrame with columns corresponding to:</span>
@@ -410,7 +410,7 @@
                 <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainset</span><span class="o">.</span><span class="n">n_users</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">results_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stores new results and updates algo.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stores new results and updates algo.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;updating &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">+</span><span class="s1">&#39; model&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_training_data</span><span class="p">(</span><span class="n">results_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_fit</span><span class="p">)</span>
@@ -424,7 +424,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;model &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">algo_name</span><span class="o">+</span><span class="s1">&#39; updated&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SurpriseRecommender.recommend"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SurpriseRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset_mf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -467,7 +467,7 @@
         <span class="k">return</span> <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">score_rec</span></div>
 
     <span class="k">def</span> <span class="nf">_get_top_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">predictions</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Return the top-N recommendation for each user from a set of predictions.</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return the top-N recommendation for each user from a set of predictions.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            predictions(list of Prediction objects): The list of predictions, as</span>
@@ -517,7 +517,7 @@
         <span class="k">return</span> <span class="n">ml_rec</span><span class="p">,</span> <span class="n">p_rec</span><span class="p">,</span> <span class="n">score_rec</span></div>
 
 <div class="viewcode-block" id="CoClusteringRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.CoClusteringRecommender">[docs]</a><span class="k">class</span> <span class="nc">CoClusteringRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates recommendations via CoClustering, see</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates recommendations via CoClustering, see</span>
 <span class="sd">    https://surprise.readthedocs.io/en/stable/co_clustering.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">set_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -529,19 +529,19 @@
     <span class="c1">#     # set n clusters for ML equal to # of ML methods</span>
     <span class="c1">#     self.</span>
     <span class="k">def</span> <span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">results_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stores new results and updates algo.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stores new results and updates algo.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algo</span><span class="o">.</span><span class="n">n_cltr_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_p</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_update_model</span><span class="p">(</span><span class="n">results_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="KNNWithMeansRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.KNNWithMeansRecommender">[docs]</a><span class="k">class</span> <span class="nc">KNNWithMeansRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates recommendations via KNNWithMeans, see</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates recommendations via KNNWithMeans, see</span>
 <span class="sd">    https://surprise.readthedocs.io/en/stable/knn_inspired.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">set_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algo</span> <span class="o">=</span> <span class="n">KNNWithMeans</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="KNNDatasetRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.KNNDatasetRecommender">[docs]</a><span class="k">class</span> <span class="nc">KNNDatasetRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates recommendations via KNN with clusters defined over datasets, see</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates recommendations via KNN with clusters defined over datasets, see</span>
 <span class="sd">    https://surprise.readthedocs.io/en/stable/knn_inspired.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">set_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -552,7 +552,7 @@
         <span class="k">return</span> <span class="s1">&#39;KNN-Dataset&#39;</span></div>
 
 <div class="viewcode-block" id="KNNMLRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.KNNMLRecommender">[docs]</a><span class="k">class</span> <span class="nc">KNNMLRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates recommendations via KNN with clusters defined over algorithms, see</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates recommendations via KNN with clusters defined over algorithms, see</span>
 <span class="sd">    https://surprise.readthedocs.io/en/stable/knn_inspired.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">set_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -562,7 +562,7 @@
         <span class="k">return</span> <span class="s1">&#39;KNN-ML&#39;</span></div>
 
 <div class="viewcode-block" id="SlopeOneRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SlopeOneRecommender">[docs]</a><span class="k">class</span> <span class="nc">SlopeOneRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates recommendations via SlopeOne, see</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates recommendations via SlopeOne, see</span>
 <span class="sd">    https://surprise.readthedocs.io/en/stable/slope_one.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">set_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -570,7 +570,7 @@
 
 
 <div class="viewcode-block" id="SVDRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.surprise_recommenders.SVDRecommender">[docs]</a><span class="k">class</span> <span class="nc">SVDRecommender</span><span class="p">(</span><span class="n">SurpriseRecommender</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;SVD recommender.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SVD recommender.</span>
 <span class="sd">    see https://surprise.readthedocs.io/en/stable/matrix_factorization.html</span>
 <span class="sd">    Recommends machine learning algorithms and parameters using the SVD algorithm.</span>
 
@@ -601,7 +601,7 @@
     <span class="c1">#             random_state=random_state)</span>
 
     <span class="k">def</span> <span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">results_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stores new results and updates SVD.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stores new results and updates SVD.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;updating SVD model&#39;</span><span class="p">)</span>
         <span class="c1"># shuffle the results data the first time</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_fit</span><span class="p">:</span>

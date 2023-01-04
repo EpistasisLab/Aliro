@@ -225,7 +225,7 @@
 
 
 <div class="viewcode-block" id="balanced_accuracy"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.balanced_accuracy">[docs]</a><span class="k">def</span> <span class="nf">balanced_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Default scoring function of classification: balanced accuracy.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default scoring function of classification: balanced accuracy.</span>
 <span class="sd">    Balanced accuracy computes each class&#39; accuracy on a per-class basis using a</span>
 <span class="sd">    one-vs-rest encoding, then computes an unweighted average of the class accuracies.</span>
 
@@ -263,7 +263,7 @@
 
 
 <span class="k">def</span> <span class="nf">pearsonr</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Scoring function: Calculates a Pearson correlation coefficient.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scoring function: Calculates a Pearson correlation coefficient.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -288,7 +288,7 @@
 <span class="n">SCORERS</span><span class="p">[</span><span class="s1">&#39;pearsonr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">pearsonr</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">get_column_names_from_ColumnTransformer</span><span class="p">(</span><span class="n">column_transformer</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get column names after applying Column Transformations</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get column names after applying Column Transformations</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -323,7 +323,7 @@
                      <span class="n">encoding_strategy</span><span class="o">=</span><span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">,</span>
                      <span class="n">param_grid</span><span class="o">=</span><span class="p">{}</span>
                      <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate reaults for applying a model on dataset in Aliro.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate reaults for applying a model on dataset in Aliro.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -697,7 +697,7 @@
 
 
 <div class="viewcode-block" id="get_col_idx"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.get_col_idx">[docs]</a><span class="k">def</span> <span class="nf">get_col_idx</span><span class="p">(</span><span class="n">feature_names_list</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get unique indexes of columns based on list of column names.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get unique indexes of columns based on list of column names.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    feature_names_list: list</span>
@@ -714,7 +714,7 @@
 
 
 <div class="viewcode-block" id="setup_model_params"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.setup_model_params">[docs]</a><span class="k">def</span> <span class="nf">setup_model_params</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Assign value to a parameter in a model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign value to a parameter in a model.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model: scikit-learn Estimator</span>
@@ -736,7 +736,7 @@
 
 
 <div class="viewcode-block" id="compute_imp_score"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.compute_imp_score">[docs]</a><span class="k">def</span> <span class="nf">compute_imp_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">random_state</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute permuation importance scores for features.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute permuation importance scores for features.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -782,7 +782,7 @@
 
 
 <div class="viewcode-block" id="save_json_fmt"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.save_json_fmt">[docs]</a><span class="k">def</span> <span class="nf">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save results into json format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save results into json format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -811,7 +811,7 @@
         <span class="n">class_names</span><span class="p">,</span>
         <span class="n">cv_scores</span><span class="p">,</span>
         <span class="n">figure_export</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make plot for confusion matrix.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make plot for confusion matrix.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -874,7 +874,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_example_subset</span><span class="p">(</span><span class="n">y_predictions</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">select_class</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a subset of positive and negative example indices for a given class</span>
 <span class="sd">    along with misclassified labels.</span>
 <span class="sd">    Parameters</span>
@@ -914,7 +914,7 @@
         <span class="n">target</span><span class="p">,</span>
         <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate SHAP Analysis for Classification models</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1036,7 +1036,7 @@
         <span class="n">link</span><span class="p">,</span>
         <span class="n">save_path</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a combined SHAP Summary and Decision Plot</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1094,7 +1094,7 @@
 <span class="c1"># After switching to dynamic charts, possibly disable outputting graphs</span>
 <span class="c1"># from this function</span>
 <div class="viewcode-block" id="plot_roc_curve"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_roc_curve">[docs]</a><span class="k">def</span> <span class="nf">plot_roc_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">,</span> <span class="n">figure_export</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot ROC Curve.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1189,7 +1189,7 @@
 
 
 <div class="viewcode-block" id="plot_imp_score"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_imp_score">[docs]</a><span class="k">def</span> <span class="nf">plot_imp_score</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">imp_score_type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Plot importance scores for features.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot importance scores for features.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    tmpdir: string</span>
@@ -1226,7 +1226,7 @@
     <span class="k">return</span> <span class="n">top_features</span><span class="p">,</span> <span class="n">indices</span></div>
 
 <div class="viewcode-block" id="plot_learning_curve"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_learning_curve">[docs]</a><span class="k">def</span> <span class="nf">plot_learning_curve</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">return_times</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make learning curve.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make learning curve.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1311,7 +1311,7 @@
 
 
 <div class="viewcode-block" id="plot_pca_2d"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_pca_2d">[docs]</a><span class="k">def</span> <span class="nf">plot_pca_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make PCA on 2D.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make PCA on 2D.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1558,7 +1558,7 @@
 
 <div class="viewcode-block" id="plot_tsne_2d"><a class="viewcode-back" href="../../../api.html#machine.learn.skl_utils.plot_tsne_2d">[docs]</a><span class="k">def</span> <span class="nf">plot_tsne_2d</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span><span class="n">_id</span><span class="p">,</span><span class="n">features</span><span class="p">,</span><span class="n">target</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;Make tsne on 2D.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make tsne on 2D.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1628,7 +1628,7 @@
                   <span class="n">indices</span><span class="p">,</span>
                   <span class="n">random_state</span><span class="p">,</span>
                   <span class="n">mode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make dot plot for based on decision tree.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make dot plot for based on decision tree.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1691,7 +1691,7 @@
 
 
 <span class="k">def</span> <span class="nf">plot_cv_pred</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv_scores</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot Cross-Validated Predictions and Residuals.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1766,7 +1766,7 @@
                  <span class="n">target_name</span><span class="p">,</span>
                  <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
                  <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;export model as a pickle file and generate a scripts for using the pickled model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;export model as a pickle file and generate a scripts for using the pickled model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1816,7 +1816,7 @@
         <span class="n">target_name</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
         <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate all library import calls for use in stand alone python scripts.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate all library import calls for use in stand alone python scripts.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1843,19 +1843,19 @@
         <span class="n">fold</span> <span class="o">=</span> <span class="s2">&quot;StratifiedKFold&quot;</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;regression&#39;</span><span class="p">:</span>
         <span class="n">fold</span> <span class="o">=</span> <span class="s2">&quot;KFold&quot;</span>
-    <span class="n">exported_codes_1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;# Python version: </span><span class="si">{python_version}</span><span class="s2"></span>
+    <span class="n">exported_codes_1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;# Python version: </span><span class="si">{python_version}</span>
 <span class="s2"># Results were generated with numpy v</span><span class="si">{numpy_version}</span><span class="s2">,</span>
 <span class="s2"># pandas v</span><span class="si">{pandas_version}</span><span class="s2"> and scikit-learn v</span><span class="si">{skl_version}</span><span class="s2">.</span>
-<span class="s2"># random seed = </span><span class="si">{random_state}</span><span class="s2"></span>
-<span class="s2"># Training dataset filename = </span><span class="si">{dataset}</span><span class="s2"></span>
-<span class="s2"># Pickle filename = </span><span class="si">{pickle_file_name}</span><span class="s2"></span>
-<span class="s2"># Model in the pickle file: </span><span class="si">{model}</span><span class="s2"></span>
+<span class="s2"># random seed = </span><span class="si">{random_state}</span>
+<span class="s2"># Training dataset filename = </span><span class="si">{dataset}</span>
+<span class="s2"># Pickle filename = </span><span class="si">{pickle_file_name}</span>
+<span class="s2"># Model in the pickle file: </span><span class="si">{model}</span>
 <span class="s2">import numpy as np</span>
 <span class="s2">import pandas as pd</span>
 <span class="s2">import joblib</span>
 <span class="s2">from sklearn.utils import check_X_y</span>
 <span class="s2">from sklearn.metrics import make_scorer, confusion_matrix</span>
-<span class="s2">from sklearn.model_selection import cross_validate, </span><span class="si">{fold}</span><span class="s2"></span>
+<span class="s2">from sklearn.model_selection import cross_validate, </span><span class="si">{fold}</span>
 
 <span class="s2"># NOTE: Edit variables below with appropriate values</span>
 <span class="s2"># path to your pickle file, below is the downloaded pickle file</span>
@@ -1864,7 +1864,7 @@
 <span class="s2">dataset = &#39;</span><span class="si">{dataset}</span><span class="s2">&#39;</span>
 <span class="s2"># target column name</span>
 <span class="s2">target_column = &#39;</span><span class="si">{target_name}</span><span class="s2">&#39;</span>
-<span class="s2">seed = </span><span class="si">{random_state}</span><span class="s2"></span>
+<span class="s2">seed = </span><span class="si">{random_state}</span>
 
 <span class="s2"># load fitted model</span>
 <span class="s2">pickle_model = joblib.load(pickle_file)</span>
@@ -1899,11 +1899,11 @@
 <span class="s2">        this_class_sensitivity = 0.</span>
 <span class="s2">        this_class_specificity = 0.</span>
 <span class="s2">        if sum(y_true == this_class) != 0:</span>
-<span class="s2">            this_class_sensitivity = </span><span class="se">\\</span><span class="s2"></span>
-<span class="s2">                float(sum((y_pred == this_class) &amp; (y_true == this_class))) /</span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">            this_class_sensitivity = </span><span class="se">\\</span>
+<span class="s2">                float(sum((y_pred == this_class) &amp; (y_true == this_class))) /</span><span class="se">\\</span>
 <span class="s2">                float(sum((y_true == this_class)))</span>
-<span class="s2">            this_class_specificity = </span><span class="se">\\</span><span class="s2"></span>
-<span class="s2">                float(sum((y_pred != this_class) &amp; (y_true != this_class))) /</span><span class="se">\\</span><span class="s2"></span>
+<span class="s2">            this_class_specificity = </span><span class="se">\\</span>
+<span class="s2">                float(sum((y_pred != this_class) &amp; (y_true != this_class))) /</span><span class="se">\\</span>
 <span class="s2">                float(sum((y_true != this_class)))</span>
 <span class="s2">        this_class_accuracy = (this_class_sensitivity +</span>
 <span class="s2">                               this_class_specificity) / 2.</span>

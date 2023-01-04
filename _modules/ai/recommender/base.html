@@ -193,7 +193,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__qualname__</span>
 
 <div class="viewcode-block" id="BaseRecommender"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender">[docs]</a><span class="k">class</span> <span class="nc">BaseRecommender</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">MC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base recommender for Aliro</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base recommender for Aliro</span>
 
 <span class="sd">    The BaseRecommender is not intended to be used directly; it is a skeleton </span>
 <span class="sd">    class defining the interface for future recommenders within the Aliro </span>
@@ -252,7 +252,7 @@
             <span class="n">serialized_rec_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">serialized_rec_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize recommendation system.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ml_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span> <span class="s1">&#39;regressor&#39;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ml_type must be &quot;classifier&quot; or &quot;regressor&quot;&#39;</span><span class="p">)</span>
 
@@ -352,7 +352,7 @@
 
 
     <span class="k">def</span> <span class="nf">_default_serialized_rec_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate the default name of the serialized instance of this</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the default name of the serialized instance of this</span>
 <span class="sd">        recommender</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -368,7 +368,7 @@
     <span class="k">def</span> <span class="nf">_generate_serialized_rec_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
         <span class="n">serialized_rec_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">serialized_rec_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Generate the path to save/load serialized recommender</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Generate the path to save/load serialized recommender</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -385,7 +385,7 @@
 
 
 <div class="viewcode-block" id="BaseRecommender.update"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;pennai&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update ML / Parameter recommendations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -428,13 +428,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_trained_dataset_models_from_df</span><span class="p">(</span><span class="n">results_data</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_hash_simple_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides sha256 hash for a dictionary with hashable items.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides sha256 hash for a dictionary with hashable items.&quot;&quot;&quot;</span>
         <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
         <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BaseRecommender.recommend"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_recs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a model and parameter values expected to do best on dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -452,7 +452,7 @@
         <span class="c1">#         {dataset_id:dataset_mf[&#39;_id&#39;].values[0]})</span>
 
 <div class="viewcode-block" id="BaseRecommender.load"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">knowledgebase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load a saved recommender state.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a saved recommender state.</span>
 
 <span class="sd">        :param filename: string or None</span>
 <span class="sd">            Name of file to load</span>
@@ -524,7 +524,7 @@
 
 
 <div class="viewcode-block" id="BaseRecommender.save"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save the current recommender.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current recommender.</span>
 
 <span class="sd">        :param filename: string or None</span>
 <span class="sd">            Name of file to load</span>
@@ -560,7 +560,7 @@
 
 <div class="viewcode-block" id="BaseRecommender.update_and_save"><a class="viewcode-back" href="../../../api.html#ai.recommender.base.BaseRecommender.update_and_save">[docs]</a>    <span class="k">def</span> <span class="nf">update_and_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">,</span> <span class="n">results_mf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;pennai&#39;</span><span class="p">,</span>
             <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;runs self.update() and self.save.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;runs self.update() and self.save.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -618,7 +618,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;param_2_hash:</span><span class="si">{}</span><span class="s1"> objects&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">param_2_hash</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">_update_trained_dataset_models_from_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_data</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;stores the trained_dataset_models to aid in filtering repeats.&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;stores the trained_dataset_models to aid in filtering repeats.&#39;&#39;&#39;</span>
         <span class="n">results_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;dataset-algorithm-parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                                        <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span>
                                        <span class="n">results_data</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span>
@@ -635,7 +635,7 @@
 
     <span class="k">def</span> <span class="nf">_update_trained_dataset_models_from_rec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">,</span> <span class="n">ml_rec</span><span class="p">,</span>
             <span class="n">phash_rec</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;update the recommender&#39;s memory with the new algorithm-parameter</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;update the recommender&#39;s memory with the new algorithm-parameter</span>
 <span class="sd">        combos that it recommended&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">dataset_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># datahash = self.dataset_id_to_hash[dataset_id]</span>
