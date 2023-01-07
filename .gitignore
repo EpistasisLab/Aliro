@@ -61,4 +61,6 @@ MANIFEST
 .vscode
 
 .xz
-.exe
+*.exe
+*.mp4
+
