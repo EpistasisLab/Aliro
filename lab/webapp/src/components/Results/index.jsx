@@ -523,7 +523,15 @@ class Results extends Component {
                   finishTime={experiment.data.finished}
                   launchedBy={experiment.data.launched_by}
                 />
-                <ImportanceScore file={importanceScore} />
+                {/* <ImportanceScore file={importanceScore} /> */}
+                <ImportanceScoreJSON
+                  scoreName="Feature Importance"
+                  scoreValueList={experiment.data.feature_importances}
+                  featureList={experiment.data.feature_names}
+                  chartKey="importance_score"
+                  chartColor="#55D6BE"
+                  type="regression"
+                />
 
               </Grid.Column>
               <Grid.Column>

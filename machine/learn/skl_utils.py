@@ -42,7 +42,7 @@ import json
 import os
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-import shap 
+import shap
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
@@ -51,8 +51,6 @@ import matplotlib.colors as mcolors
 from matplotlib.patches import Patch
 from sklearn.manifold import TSNE
 from sklearn.model_selection import learning_curve
-
-
 
 
 mpl.use('Agg')
@@ -78,10 +76,12 @@ if 'DT_MAX_DEPTH' in os.environ:
 # Number of samples used for SHAP Explainers
 max_samples_kernel_explainer = 50
 if 'MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER' in os.environ:
-    max_samples_kernel_explainer = int(os.environ['MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER'])
+    max_samples_kernel_explainer = int(
+        os.environ['MACHINE_SHAP_SAMPLES_KERNEL_EXPLAINER'])
 max_samples_other_explainer = 100
 if 'MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER' in os.environ:
-    max_samples_other_explainer = int(os.environ['MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER'])
+    max_samples_other_explainer = int(
+        os.environ['MACHINE_SHAP_SAMPLES_OTHER_EXPLAINER'])
 
 
 def balanced_accuracy(y_true, y_pred):
@@ -147,6 +147,7 @@ def pearsonr(y_true, y_pred):
 SCORERS['balanced_accuracy'] = make_scorer(balanced_accuracy)
 SCORERS['pearsonr'] = make_scorer(pearsonr)
 
+
 def get_column_names_from_ColumnTransformer(column_transformer, feature_names):
     """Get column names after applying Column Transformations
 
@@ -160,12 +161,12 @@ def get_column_names_from_ColumnTransformer(column_transformer, feature_names):
     -------
     new_feature_names: list of strings
         Feature names generated after column transformations
-    """   
+    """
     new_feature_names = []
     for transformer_in_columns in column_transformer.transformers_:
-        _, transformer, col_indices  = transformer_in_columns
+        _, transformer, col_indices = transformer_in_columns
         feature_columns = [feature_names[i] for i in col_indices]
-        try: ## Only works for OneHotEncoder transforms
+        try:  # Only works for OneHotEncoder transforms
             names = transformer.get_feature_names(feature_columns)
             new_feature_names += list(names)
         except:
@@ -245,22 +246,20 @@ def generate_results(model, input_data,
     num_classes = input_data[target_name].unique().shape[0]
     features = input_data.drop(target_name, axis=1).values
     target = input_data[target_name].values
-   
-    target_arr =  np.array(target)
-    len_target=len(target_arr)
+
+    target_arr = np.array(target)
+    len_target = len(target_arr)
     classes = list(set(target))
 
-    class_perc={}
+    class_perc = {}
 
     for OneClass in classes:
-        occ = np.count_nonzero(target_arr==OneClass)
-        class_perc["class_"+str(OneClass)]= occ/len_target
-    
-    
-    # show percentage of each class 
+        occ = np.count_nonzero(target_arr == OneClass)
+        class_perc["class_"+str(OneClass)] = occ/len_target
+
+    # show percentage of each class
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="class_percentage.json", content=class_perc)
-    
 
     features, target = check_X_y(
         features, target, dtype=None, order="C", force_all_finite=True)
@@ -302,9 +301,9 @@ def generate_results(model, input_data,
         model = make_pipeline(ct, model)
 
     scores = {}
-    #print('Args used in model:', model.get_params())
+    # print('Args used in model:', model.get_params())
     if mode == "classification":
-        if(num_classes > 2):
+        if (num_classes > 2):
             scoring = ["balanced_accuracy",
                        "precision_macro",
                        "recall_macro",
@@ -312,7 +311,7 @@ def generate_results(model, input_data,
             scores['roc_auc_score'] = 'not supported for multiclass'
             scores['train_roc_auc_score'] = 'not supported for multiclass'
         else:
-            
+
             # https://en.wikipedia.org/wiki/Confusion_matrix
             # scoring = ["balanced_accuracy",
             #            "precision",
@@ -324,7 +323,6 @@ def generate_results(model, input_data,
                        "recall",
                        "f1",
                        "roc_auc"]
-
 
         metric = "accuracy"
     else:
@@ -339,7 +337,7 @@ def generate_results(model, input_data,
         warnings.simplefilter('ignore')
         if param_grid:
             print("param_grid")
-            
+
             if isinstance(model, Pipeline):
                 parameters = {}
                 for key, val in param_grid.items():
@@ -356,7 +354,7 @@ def generate_results(model, input_data,
                                verbose=0,
                                error_score=-float('inf'),
                                return_train_score=True)
-            
+
             clf.fit(features, target)
             cv_results = clf.cv_results_
             # rename params name from pipeline object
@@ -374,11 +372,9 @@ def generate_results(model, input_data,
             model = clf.best_estimator_
         else:
             print("param_grid else")
-            plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
+            plot_learning_curve(tmpdir, _id, model, features,
+                                target, cv, return_times=True)
             model.fit(features, target)
-
-        
-
 
         # # plot learning curve
         # plot_learning_curve(tmpdir,_id, model,features,target,cv,return_times=True)
@@ -393,8 +389,6 @@ def generate_results(model, input_data,
             return_train_score=True,
             return_estimator=True
         )
-    
-
 
     for s in scoring:
         train_scores = cv_scores['train_' + s]
@@ -439,27 +433,29 @@ def generate_results(model, input_data,
         'feature_importance_type': imp_score_type
     }
 
-    print("feature_importances",feature_importances)
+    print("feature_importances", feature_importances)
 
-    top_feature_importances={}
+    top_feature_importances = {}
     # if size of feature_importances is greater than 10, then
     # only top 10 features whose feature_importances are greater than 0 are returned
     if len(feature_importances['feature_importances']) > 10:
         for i in range(len(feature_importances['feature_importances'])):
             if feature_importances['feature_importances'][i] >= 0:
-                top_feature_importances[feature_importances['feature_names'][i]] = feature_importances['feature_importances'][i]
-    
+                top_feature_importances[feature_importances['feature_names']
+                                        [i]] = feature_importances['feature_importances'][i]
+
         # sort the dictionary in descending order of feature_importances
-        top_feature_importances = dict(sorted(top_feature_importances.items(), key=lambda item: item[1], reverse=True))
+        top_feature_importances = dict(
+            sorted(top_feature_importances.items(), key=lambda item: item[1], reverse=True))
         # get top 10 features
-        top_feature_importances = dict(list(top_feature_importances.items())[:10])
+        top_feature_importances = dict(
+            list(top_feature_importances.items())[:10])
 
         # print("top_feature_importances",top_feature_importances)
 
         # add  'feature_importance_type': imp_score_type to top_feature_importances
         # top_feature_importances['feature_importance_type'] = imp_score_type
 
-        
         # make top_feature_importances format like feature_importances
         top_feature_importances = {
             'feature_names': list(top_feature_importances.keys()),
@@ -470,9 +466,6 @@ def generate_results(model, input_data,
         # print("new_top_feature_importances",top_feature_importances)
 
         feature_importances = top_feature_importances
-         
-
-
 
     save_json_fmt(
         outdir=tmpdir,
@@ -503,34 +496,35 @@ def generate_results(model, input_data,
                               cv_scores,
                               figure_export)
         # plot pca
-        
-        plot_pca_2d(tmpdir,_id,features,target)
+
+        plot_pca_2d(tmpdir, _id, features, target)
         # plot_pca_3d(tmpdir,_id,features,target)
         # plot_pca_3d_iris(tmpdir,_id,features,target)
-        plot_tsne_2d(tmpdir,_id,features,target)
+        plot_tsne_2d(tmpdir, _id, features, target)
 
         if type(model).__name__ == 'Pipeline':
             step_names = [step[0] for step in model.steps]
             column_transformer = model[step_names[0]]
             classifier_model = model[step_names[1]]
-            modified_feature_names = get_column_names_from_ColumnTransformer(column_transformer, feature_names)
+            modified_feature_names = get_column_names_from_ColumnTransformer(
+                column_transformer, feature_names)
             modified_features = column_transformer.transform(features.copy())
             plot_shap_analysis_curve(tmpdir,
-                                    _id,
-                                    classifier_model,
-                                    modified_features,
-                                    modified_feature_names,
-                                    classifier_model.classes_,
-                                    target)
+                                     _id,
+                                     classifier_model,
+                                     modified_features,
+                                     modified_feature_names,
+                                     classifier_model.classes_,
+                                     target)
         else:
             plot_shap_analysis_curve(tmpdir,
-                                    _id,
-                                    model,
-                                    features.copy(), # Send a copy of features as it may get modified
-                                    feature_names,
-                                    model.classes_,
-                                    target)
-        
+                                     _id,
+                                     model,
+                                     features.copy(),  # Send a copy of features as it may get modified
+                                     feature_names,
+                                     model.classes_,
+                                     target)
+
         if num_classes == 2:
             plot_roc_curve(
                 tmpdir,
@@ -539,8 +533,6 @@ def generate_results(model, input_data,
                 target,
                 cv_scores,
                 figure_export)
-
-
 
     else:  # regression
         if figure_export:
@@ -806,9 +798,8 @@ def plot_shap_analysis_curve(
     # convert target to Pandas Series type if not already
     y_test = pd.Series(target)
 
-    
     # Sample 100 examples for Tree Explainer / Linear Explainer
-    if model_name in ['decisiontreeclassifier','randomforestclassifier','logisticregression','linearsvc']:
+    if model_name in ['decisiontreeclassifier', 'randomforestclassifier', 'logisticregression', 'linearsvc']:
         max_num_samples = max_samples_other_explainer
     elif model_name == 'gradientboostingclassifier' and len(class_names) == 2:
         max_num_samples = max_samples_other_explainer
@@ -816,7 +807,8 @@ def plot_shap_analysis_curve(
     else:
         max_num_samples = max_samples_kernel_explainer
     num_samples = min(max_num_samples, len(features))
-    sampled_row_indices = np.random.choice(features.shape[0], size=num_samples, replace=False)
+    sampled_row_indices = np.random.choice(
+        features.shape[0], size=num_samples, replace=False)
     features = features[sampled_row_indices]
     y_test = y_test[sampled_row_indices].reset_index(drop=True)
 
@@ -846,7 +838,8 @@ def plot_shap_analysis_curve(
         # KernelExplainer
         explainer = shap.KernelExplainer(model.predict_proba, features)
         # l1_reg not set to 'auto' to subside warnings
-        shap_values = explainer.shap_values(features, l1_reg='num_features(10)')
+        shap_values = explainer.shap_values(
+            features, l1_reg='num_features(10)')
         expected_values = explainer.expected_value
 
     # Generate predictions for the final features
@@ -860,15 +853,18 @@ def plot_shap_analysis_curve(
     # Handle the case of multi-class SHAP outputs
     if isinstance(shap_values, list):
         for i, class_name in enumerate(class_names):
-            save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_' + str(class_name) + '_.png'
-            examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, i)
+            save_path = tmpdir + _id + '/shap_summary_curve' + \
+                _id + '_' + str(class_name) + '_.png'
+            examples_subset_index, misclassified = get_example_subset(
+                y_predictions, y_test, i)
             combine_summary_decision_curve(
                 shap_values[i], expected_values[i], features, feature_names,
                 n_features, examples_subset_index, misclassified, link, save_path
             )
     else:
         save_path = tmpdir + _id + '/shap_summary_curve' + _id + '_0_.png'
-        examples_subset_index, misclassified = get_example_subset(y_predictions, y_test, class_names[1])
+        examples_subset_index, misclassified = get_example_subset(
+            y_predictions, y_test, class_names[1])
         combine_summary_decision_curve(
             shap_values, expected_values, features, feature_names,
             n_features, examples_subset_index, misclassified, link, save_path
@@ -878,7 +874,7 @@ def plot_shap_analysis_curve(
     shap_summary_dict = {
         'shap_explainer': explainer.__class__.__name__,
         'shap_num_samples': num_samples,
-        #'shap_values': shap_values
+        # 'shap_values': shap_values
     }
 
     save_json_fmt(outdir=tmpdir, _id=_id,
@@ -938,7 +934,8 @@ def combine_summary_decision_curve(
                        shap_value[examples_subset_index],
                        features[examples_subset_index, :],
                        feature_names=list(feature_names),
-                       feature_display_range=slice(None, -(n_features + 1), -1),
+                       feature_display_range=slice(
+                           None, -(n_features + 1), -1),
                        ignore_warnings=True,
                        highlight=misclassified,
                        show=False,
@@ -988,7 +985,7 @@ def plot_roc_curve(tmpdir, _id, X, y, cv_scores, figure_export):
             probas_ = est.predict_proba(X[test])[:, 1]
         except AttributeError:
             probas_ = est.decision_function(X[test])
-        #print(SCORERS['roc_auc'](est, X[train], y[train]))
+        # print(SCORERS['roc_auc'](est, X[train], y[train]))
         # Compute ROC curve and area the curve
 
         classes_encoded = np.array(
@@ -1085,7 +1082,8 @@ def plot_imp_score(tmpdir, _id, coefs, feature_names, imp_score_type):
     plt.close()
     return top_features, indices
 
-def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
+
+def plot_learning_curve(tmpdir, _id, model, features, target, cv, return_times=True):
     """Make learning curve.
 
     Parameters
@@ -1106,17 +1104,14 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
     None
     """
 
-    
-
-    
     features = np.array(features)
 
     target = np.array(target)
     target[target == -1] = 0
-    
 
-    train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(model,features,target,None, np.linspace(0.1, 1.0, 5), cv,return_times=True)
-    
+    train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(
+        model, features, target, None, np.linspace(0.1, 1.0, 5), cv, return_times=True)
+
     plt.xlabel("Training examples")
     plt.ylabel("Score")
     plt.ylim([-0.05, 1.05])
@@ -1128,30 +1123,26 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
 
     plt.grid()
 
-
     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.1,
                      color="r")
     plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
                      test_scores_mean + test_scores_std, alpha=0.1, color="b")
 
+    plt.plot(train_sizes, np.mean(train_scores, axis=1),
+             'r', label=r'Training score')
+    plt.plot(train_sizes, np.mean(test_scores, axis=1),
+             'b', label=r'Cross-validation score')
 
-    
-    plt.plot(train_sizes,np.mean(train_scores,axis=1),'r',label=r'Training score')
-    plt.plot(train_sizes,np.mean(test_scores,axis=1),'b',label=r'Cross-validation score')
-    
     plt.title('Learning curve')
-    
+
     plt.legend(loc='best')
     plt.savefig(tmpdir + _id + '/learning_curve_' + _id + '.png')
 
-  
     plt.close()
 
-
-
     if np.isnan(train_sizes.tolist()).all():
-        #replace nan with -1
+        # replace nan with -1
         train_sizes = np.nan_to_num(train_sizes, nan=-1)
     if np.isnan(train_scores.tolist()).all():
         # replace nan with -1
@@ -1161,16 +1152,16 @@ def plot_learning_curve(tmpdir,_id,model,features,target,cv,return_times=True):
         test_scores = np.nan_to_num(test_scores, nan=-1)
 
     learning_curve_dict = {
-        'train_sizes':train_sizes.tolist(),
+        'train_sizes': train_sizes.tolist(),
         'train_scores': train_scores.tolist(),
         'test_scores': test_scores.tolist()
-        
+
     }
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="learning_curve.json", content=learning_curve_dict)
 
 
-def plot_pca_2d(tmpdir,_id,features,target):
+def plot_pca_2d(tmpdir, _id, features, target):
     """Make PCA on 2D.
 
     Parameters
@@ -1179,7 +1170,7 @@ def plot_pca_2d(tmpdir,_id,features,target):
         Temporary directory for saving 2d pca plot and json file
     _id: string
         Experiment ID in Aliro
-    
+
     features: np.darray/pd.DataFrame
         Features in training dataset
     target: np.darray/pd.DataFrame
@@ -1191,14 +1182,8 @@ def plot_pca_2d(tmpdir,_id,features,target):
     """
     X = np.array(features)
     y = np.array(target)
-    
+
     print(set(y))
-
-    
-
-
-
-
 
     plt.cla()
     pca = decomposition.PCA(n_components=2)
@@ -1206,24 +1191,21 @@ def plot_pca_2d(tmpdir,_id,features,target):
     pca.fit(X)
     X = pca.transform(X)
 
-
-
     num_classes = len(set(y))
     # generate the number of colors equal to the number of classes
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
 
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap=mcolors.ListedColormap(colors))
     # plot the legend where the colors are mapped to the classes
-    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
-   
+    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i))
+               for i in range(num_classes)])
 
     # write x axis as pc1 and y axis as pc2
     plt.xlabel('PC1')
     plt.ylabel('PC2')
 
     plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()    
-
+    plt.close()
 
     # save X and y to json file
     pca_dict = {
@@ -1231,19 +1213,15 @@ def plot_pca_2d(tmpdir,_id,features,target):
         'y_pca': y.tolist()
     }
 
-    
     # save json file
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="pca-json.json", content=pca_dict)
 
 
-
-def plot_pca_3d(tmpdir,_id,features,target):
+def plot_pca_3d(tmpdir, _id, features, target):
     # import numpy as np
     # import matplotlib.pyplot as plt
 
-
-    
     # from sklearn import datasets
 
     # np.random.seed(5)
@@ -1254,11 +1232,8 @@ def plot_pca_3d(tmpdir,_id,features,target):
     y = np.array(target)
     y[y == -1] = 0
 
-
     # print(X)
     # print(y)
-
-
 
     fig = plt.figure(1, figsize=(4, 3))
     plt.clf()
@@ -1266,7 +1241,6 @@ def plot_pca_3d(tmpdir,_id,features,target):
     ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
     # ax = fig.add_subplot(111, projection="2d", elev=48, azim=134)
     ax.set_position([0, 0, 0.95, 1])
-
 
     plt.cla()
     pca = decomposition.PCA(n_components=3)
@@ -1284,10 +1258,9 @@ def plot_pca_3d(tmpdir,_id,features,target):
     #         bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
     #     )
 
-
-    classes_y=list(set(y))
+    classes_y = list(set(y))
     for each_classes_y in classes_y:
-        name_label=(str(each_classes_y), each_classes_y)
+        name_label = (str(each_classes_y), each_classes_y)
         name = name_label[0]
         label = name_label[1]
         ax.text3D(
@@ -1310,7 +1283,6 @@ def plot_pca_3d(tmpdir,_id,features,target):
     #         horizontalalignment="center",
     #         bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
     #     )
-    
 
     # Reorder the labels to have colors matching the cluster results
     # y = np.choose(y, [1, 2, 0]).astype(float)
@@ -1323,14 +1295,10 @@ def plot_pca_3d(tmpdir,_id,features,target):
     # y = np.choose(y, [0, 1]).astype(float)
     print(y)
 
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
+    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y,
+               cmap=plt.cm.nipy_spectral, edgecolor="k")
     # ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y)
     # show which color is which class label based on scatter plot
-
-
-
-
-
 
     print("X")
     print(X)
@@ -1348,13 +1316,10 @@ def plot_pca_3d(tmpdir,_id,features,target):
     plt.close()
 
 
-
-def plot_pca_3d_iris(tmpdir,_id,features,target):
-
+def plot_pca_3d_iris(tmpdir, _id, features, target):
 
     # import numpy as np
     # import matplotlib.pyplot as plt
-
 
     from sklearn import decomposition
     from sklearn import datasets
@@ -1369,12 +1334,8 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
 
     # print(y)
 
-
-
     # print(X)
     # print(y)
-
-
 
     fig = plt.figure(1, figsize=(4, 3))
     plt.clf()
@@ -1382,7 +1343,6 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
     ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
     # ax = fig.add_subplot(111, projection="2d", elev=48, azim=134)
     ax.set_position([0, 0, 0.95, 1])
-
 
     plt.cla()
     pca = decomposition.PCA(n_components=3)
@@ -1400,13 +1360,10 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
             bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
         )
 
-
     # Reorder the labels to have colors matching the cluster results
     y = np.choose(y, [1, 2, 0]).astype(float)
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.nipy_spectral, edgecolor="k")
-
-   
-
+    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y,
+               cmap=plt.cm.nipy_spectral, edgecolor="k")
 
     ax.w_xaxis.set_ticklabels([])
     ax.w_yaxis.set_ticklabels([])
@@ -1416,8 +1373,8 @@ def plot_pca_3d_iris(tmpdir,_id,features,target):
     plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
     plt.close()
 
-def plot_tsne_2d(tmpdir,_id,features,target):
 
+def plot_tsne_2d(tmpdir, _id, features, target):
     """Make tsne on 2D.
 
     Parameters
@@ -1426,7 +1383,7 @@ def plot_tsne_2d(tmpdir,_id,features,target):
         Temporary directory for saving 2d t-sne plot and json file
     _id: string
         Experiment ID in Aliro
-    
+
     features: np.darray/pd.DataFrame
         Features in training dataset
     target: np.darray/pd.DataFrame
@@ -1438,35 +1395,27 @@ def plot_tsne_2d(tmpdir,_id,features,target):
     None
     """
 
-
-
-
     tsne = TSNE(n_components=2, verbose=1, random_state=123)
     X_2d = tsne.fit_transform(features)
-
 
     # version 2
     num_classes = len(set(target))
     # generate the number of colors equal to the number of classes
     colors = plt.cm.Set1(np.linspace(0, 1, num_classes))
 
-    plt.scatter(X_2d[:,0], X_2d[:,1], c=target, cmap=mcolors.ListedColormap(colors))
+    plt.scatter(X_2d[:, 0], X_2d[:, 1], c=target,
+                cmap=mcolors.ListedColormap(colors))
     # plot the legend where the colors are mapped to the classes
-    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i)) for i in range(num_classes)])
-
+    plt.legend(handles=[Patch(color=colors[i], label="class_"+str(i))
+               for i in range(num_classes)])
 
     # write x axis as pc1 and y axis as pc2
     plt.xlabel('comp-1')
     plt.ylabel('comp-2')
 
-
-
     # plt.show()
     plt.savefig(tmpdir + _id + '/tsne_' + _id + '.png')
     plt.close()
-
-
-
 
     # save X and y to json file
     tsne_dict = {
@@ -1474,13 +1423,9 @@ def plot_tsne_2d(tmpdir,_id,features,target):
         'y_tsne': target.tolist()
     }
 
-
     save_json_fmt(outdir=tmpdir, _id=_id,
                   fname="tsne-json.json", content=tsne_dict)
-         
- 
 
-    
 
 def plot_dot_plot(tmpdir, _id, features,
                   target,
@@ -1596,8 +1541,8 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.set_xlabel('Predicted Values')
     ax.set_ylabel('Residuals')
     ax.axhline(y=0.0,
-                  color="red",
-                  linestyle='dashed')
+               color="red",
+               linestyle='dashed')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_resi_' + _id + '.png')
     plt.close()
@@ -1610,13 +1555,26 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     ax.set_title("Q-Q Plot for Normalized Residuals")
     x = np.linspace(*ax.get_xlim())
     ax.plot(x, x,
-               color="red",
-               linestyle='dashed')
+            color="red",
+            linestyle='dashed')
     ax.set_xlabel('Theoretical Quantiles')
     ax.set_ylabel('Ordered Normalized Residuals')
     plt.tight_layout()
     plt.savefig(tmpdir + _id + '/reg_cv_qq_' + _id + '.png')
     plt.close()
+
+    reg_cv_pred_resi_qq = {
+        'y': y.tolist(),
+        'pred_y': pred_y.tolist(),
+        'resi_y': resi_y.tolist(),
+
+        'z': z.tolist(),
+        'series1_zero': series1[0][0].tolist(),
+        'series1_one': series1[0][1].tolist(),
+    }
+
+    save_json_fmt(outdir=tmpdir, _id=_id,
+                  fname="reg_cv_pred_resi_qq.json", content=reg_cv_pred_resi_qq)
 
 
 def export_model(tmpdir,
@@ -1677,7 +1635,7 @@ def generate_export_codes(
         mode="classification",
         random_state=42):
     """Generate all library import calls for use in stand alone python scripts.
-    
+
     Parameters
     ----------
     pickle_file_name: string
@@ -1856,5 +1814,3 @@ predict_target = model.predict(input_data.values)
 """
 
     return exported_codes_1, exported_codes_2
-
-
