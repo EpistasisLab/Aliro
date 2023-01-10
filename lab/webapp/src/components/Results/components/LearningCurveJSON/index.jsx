@@ -58,18 +58,7 @@ function foldcheck(fold) {
 
 function NoScore({ scoreName, train_sizes, train_scores, test_scores, chartKey, chartColor, type }) {
   const getCardContent = () => {
-    // if(typeof(scoreValue) !== 'number' && !scoreValueList.length) 
-    // {
-    //   if (scoreName.includes('AUC') ) {
-    //     return (
-    //       <Header inverted size="tiny" content={`${scoreName} is only available for binary classification.`} />
-    //     );
-    //   } else {
-    //     return (
-    //       <Header inverted size="tiny" content={`${scoreName} is not available.`} />
-    //     );
-    //   }
-    // } 
+
     
     if (train_sizes && train_scores && test_scores && type == "classification") {
 

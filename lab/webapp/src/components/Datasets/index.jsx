@@ -70,22 +70,6 @@ class Datasets extends Component {
     const { datasets, recommender, isFetching, error, fetchDatasets, fetchRecommender } = this.props;
 
 
-
-     
-    
-
-    // React.createElement('div', null, `Hello ${this.props.toWhat}`);
-    console.log("Hello!!!!!!!!!!!!!")
-
-    
-
-    
-    
-
-
-
-        
-
     if(isFetching) {
       return (
         <Loader active inverted size="large" content="Retrieving your datasets..." />
@@ -105,8 +89,6 @@ class Datasets extends Component {
 
     if (document.getElementById("aiTooglePopupready") == null) {
   
-      console.log("aiTooglePopupready!!!")
-
       // create a new div element id with aiTooglePopupready
       var temp=document.createElement("div");
       document.body.appendChild(temp);

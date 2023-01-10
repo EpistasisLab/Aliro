@@ -451,19 +451,11 @@ def generate_results(model, input_data,
         top_feature_importances = dict(
             list(top_feature_importances.items())[:10])
 
-        # print("top_feature_importances",top_feature_importances)
-
-        # add  'feature_importance_type': imp_score_type to top_feature_importances
-        # top_feature_importances['feature_importance_type'] = imp_score_type
-
-        # make top_feature_importances format like feature_importances
         top_feature_importances = {
             'feature_names': list(top_feature_importances.keys()),
             'feature_importances': list(top_feature_importances.values()),
             'feature_importance_type': imp_score_type
         }
-
-        # print("new_top_feature_importances",top_feature_importances)
 
         feature_importances = top_feature_importances
 
@@ -495,7 +487,6 @@ def generate_results(model, input_data,
                               model.classes_,
                               cv_scores,
                               figure_export)
-        # plot pca
 
         plot_pca_2d(tmpdir, _id, features, target)
         # plot_pca_3d(tmpdir,_id,features,target)
@@ -1209,6 +1200,7 @@ def plot_pca_2d(tmpdir, _id, features, target):
 
     # save X and y to json file
     pca_dict = {
+
         'X_pca': X.tolist(),
         'y_pca': y.tolist()
     }
@@ -1307,64 +1299,6 @@ def plot_pca_3d(tmpdir, _id, features, target):
     ax.set_xlabel('PC1')
     ax.set_ylabel('PC2')
     ax.set_zlabel('PC3')
-    ax.w_xaxis.set_ticklabels([])
-    ax.w_yaxis.set_ticklabels([])
-    ax.w_zaxis.set_ticklabels([])
-
-    # plt.show()
-    plt.savefig(tmpdir + _id + '/pca_' + _id + '.png')
-    plt.close()
-
-
-def plot_pca_3d_iris(tmpdir, _id, features, target):
-
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-
-    from sklearn import decomposition
-    from sklearn import datasets
-
-    np.random.seed(5)
-
-    iris = datasets.load_iris()
-    X = iris.data
-    y = iris.target
-
-    # print(X)
-
-    # print(y)
-
-    # print(X)
-    # print(y)
-
-    fig = plt.figure(1, figsize=(4, 3))
-    plt.clf()
-
-    ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
-    # ax = fig.add_subplot(111, projection="2d", elev=48, azim=134)
-    ax.set_position([0, 0, 0.95, 1])
-
-    plt.cla()
-    pca = decomposition.PCA(n_components=3)
-    # pca = decomposition.PCA(n_components=2)
-    pca.fit(X)
-    X = pca.transform(X)
-
-    for name, label in [("Setosa", 0), ("Versicolour", 1), ("Virginica", 2)]:
-        ax.text3D(
-            X[y == label, 0].mean(),
-            X[y == label, 1].mean() + 1.5,
-            X[y == label, 2].mean(),
-            name,
-            horizontalalignment="center",
-            bbox=dict(alpha=0.5, edgecolor="w", facecolor="w"),
-        )
-
-    # Reorder the labels to have colors matching the cluster results
-    y = np.choose(y, [1, 2, 0]).astype(float)
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y,
-               cmap=plt.cm.nipy_spectral, edgecolor="k")
-
     ax.w_xaxis.set_ticklabels([])
     ax.w_yaxis.set_ticklabels([])
     ax.w_zaxis.set_ticklabels([])

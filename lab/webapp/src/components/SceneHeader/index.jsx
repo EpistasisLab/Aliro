@@ -61,16 +61,6 @@ function SceneHeader({
       fileIcon.parentNode.removeChild(fileIcon); 
     }
 
-    console.log("clearing file icons at the first page");
-
-    
-
-
-    
-
-
-
-
   }
   
   if (window.location.href.includes("upload_") == false) {

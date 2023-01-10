@@ -538,6 +538,16 @@ class Results extends Component {
                 <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
                 <RegFigure file={reg_cv_qq} />
+
+                {/* <PCAJSON scoreName="PCA 2D"
+                  Points={experiment.data.X_pca}
+                  Labels={experiment.data.y_pca}
+                  chartKey="pca_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+
               </Grid.Column>
               <Grid.Column>
                 <MSEMAEDetails

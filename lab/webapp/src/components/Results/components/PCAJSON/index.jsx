@@ -83,27 +83,12 @@ function foldcheck(fold) {
     
     if (Points && Labels && type == "classification") {
 
-      console.log("i am here in no score");
-      console.log('labels', Labels);
+      // console.log("i am here in no score");
+      // console.log('labels', Labels);
 
       return (
 
-        // <GaugeAll
-        //   expList={LabelsList}
-        //   chartKey={chartKey}
-        //   chartColor={chartColor}
-        //   min={0.5}
-        //   max={1.0}
-        // />
         
-      
-      // <DonutChart
-      //   expList={LabelsList}
-      //   chartKey={chartKey}
-      //   chartColor={chartColor}
-      //   min={0.5}
-      //   max={1.0}
-      // />
 
 
       // Points, Labels, chartKey, chartColor, type
@@ -118,27 +103,7 @@ function foldcheck(fold) {
       );
       
     } 
-    // else if (LabelsList && type == "r2_or_vaf") {
-    //   return (
-    //     <GaugeAll
-    //       expList={LabelsList}
-    //       chartKey={chartKey}
-    //       chartColor={chartColor}
-    //       min={0}
-    //       max={1.0}
-    //     />
-    //   );
-    // } else if (LabelsList && type == "pearsonr") {
-    //   return (
-    //     <GaugeAll
-    //       expList={LabelsList}
-    //       chartKey={chartKey}
-    //       chartColor={chartColor}
-    //       min={-1.0}
-    //       max={1.0}
-    //     />
-    //   );
-    // }
+    
 
   };
 
