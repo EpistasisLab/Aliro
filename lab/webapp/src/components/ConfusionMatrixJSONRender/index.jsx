@@ -198,7 +198,6 @@ import d3 from 'd3';
 // test version
 class ConfusionMatrixJSONRender extends Component {
   componentDidMount() {
-    console.log("hello");
  
     const { cnf_data,chartKey, chartColor, min, max } = this.props;
     this.renderChart(cnf_data, chartKey, chartColor, min, max);

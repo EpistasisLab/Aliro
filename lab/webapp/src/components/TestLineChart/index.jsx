@@ -196,7 +196,6 @@ import d3 from 'd3';
 // test version
 class TestLineChart extends Component {
   componentDidMount() {
-    console.log("hello");
     // train_sizes={train_sizes}
     // train_scores={train_scores}
     // test_scores={test_scores}

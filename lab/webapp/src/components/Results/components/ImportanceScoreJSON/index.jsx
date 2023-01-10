@@ -80,22 +80,6 @@ function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,
 
       return (
 
-        // <GaugeAll
-        //   expList={scoreValueList}
-        //   chartKey={chartKey}
-        //   chartColor={chartColor}
-        //   min={0.5}
-        //   max={1.0}
-        // />
-        
-      
-      // <DonutChart
-      //   expList={scoreValueList}
-      //   chartKey={chartKey}
-      //   chartColor={chartColor}
-      //   min={0.5}
-      //   max={1.0}
-      // />
 
       <BarChart
       expList={scoreValueList}
@@ -109,27 +93,26 @@ function NoScore({ scoreName, scoreValueList, featureList, chartKey, chartColor,
 
       );
       
-    } else if (scoreValueList && type == "r2_or_vaf") {
+    } else if (scoreValueList && type == "regression") {
+
+      console.log("scoreValueList && type == regression")
+
       return (
-        <GaugeAll
-          expList={scoreValueList}
-          chartKey={chartKey}
-          chartColor={chartColor}
-          min={0}
-          max={1.0}
-        />
+
+
+      <BarChart
+      expList={scoreValueList}
+      ylist={featureList}
+      chartKey={chartKey}
+      chartColor={chartColor}
+      min={0.5}
+      max={1.0}
+    />
+      
+
       );
-    } else if (scoreValueList && type == "pearsonr") {
-      return (
-        <GaugeAll
-          expList={scoreValueList}
-          chartKey={chartKey}
-          chartColor={chartColor}
-          min={-1.0}
-          max={1.0}
-        />
-      );
-    }
+      
+    } 
 
   };
 

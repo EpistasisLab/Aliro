@@ -523,13 +523,31 @@ class Results extends Component {
                   finishTime={experiment.data.finished}
                   launchedBy={experiment.data.launched_by}
                 />
-                <ImportanceScore file={importanceScore} />
+                {/* <ImportanceScore file={importanceScore} /> */}
+                <ImportanceScoreJSON
+                  scoreName="Feature Importance"
+                  scoreValueList={experiment.data.feature_importances}
+                  featureList={experiment.data.feature_names}
+                  chartKey="importance_score"
+                  chartColor="#55D6BE"
+                  type="regression"
+                />
 
               </Grid.Column>
               <Grid.Column>
                 <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
                 <RegFigure file={reg_cv_qq} />
+
+                {/* <PCAJSON scoreName="PCA 2D"
+                  Points={experiment.data.X_pca}
+                  Labels={experiment.data.y_pca}
+                  chartKey="pca_2d"
+                  chartColor="#55D6BE"
+                  type="classification"
+                /> */}
+
+
               </Grid.Column>
               <Grid.Column>
                 <MSEMAEDetails

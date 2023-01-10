@@ -41,9 +41,6 @@ configSocket(store);
 *
 */
 
-
-console.log("This is main page!!!")
-
 render(
   <Root store={store} />,
   document.getElementById('app')

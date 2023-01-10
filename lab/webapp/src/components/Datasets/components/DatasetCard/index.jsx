@@ -45,7 +45,7 @@ const DatasetCard = ({ dataset, recommender, toggleAI }) => {
 			icon_type = "line graph";
 	}
 
-  console.log("DatasetCard refresh");
+  // console.log("DatasetCard refresh");
 
   if (document.getElementById("aiTooglePopup") == null && document.getElementById("aiTooglePopupready") != null) {
   
