@@ -140,11 +140,11 @@ html_static_path = ['_static']
 # html_sidebars = {}
 
 # favicon path
-html_favicon = '_static/logo_blank_small.png'
-html_logo = '_static/logo_blank_small.png'
+# html_favicon = '_static/logo_blank_small.png'
+# html_logo = '_static/logo_blank_small.png'
 
-# html_favicon = '_static/aliro_brain_logo.png'
-# html_logo = '_static/aliro_brain_logo.png'
+html_favicon = '_static/aliro_brain_logo.png'
+html_logo = '_static/aliro_brain_logo.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

@@ -1,6 +1,6 @@
-[![Logo](./docs/source/_static/logo_blank_small.png)]()
+<!-- [![Logo](./docs/source/_static/logo_blank_small.png)]() -->
 
-<!-- [![Logo](./docs/source/_static/aliro_brain_logo.png)]() -->
+[![Logo](./docs/source/_static/aliro_brain_logo.png)]()
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/Aliro/badge.svg)](https://coveralls.io/github/EpistasisLab/Aliro)
 
