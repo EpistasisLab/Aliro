@@ -90,7 +90,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 source_suffix = ['.rst', '.md']
-#source_suffix = '.rst'
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
@@ -142,6 +142,9 @@ html_static_path = ['_static']
 # favicon path
 html_favicon = '_static/logo_blank_small.png'
 html_logo = '_static/logo_blank_small.png'
+
+# html_favicon = '_static/aliro_brain_logo.png'
+# html_logo = '_static/aliro_brain_logo.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

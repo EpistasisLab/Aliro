@@ -1,31 +1,31 @@
 [![Logo](./docs/source/_static/logo_blank_small.png)]()
 
+<!-- [![Logo](./docs/source/_static/aliro_brain_logo.png)]() -->
+
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/EpistasisLab/Aliro/blob/master/LICENSE) [![Aliro CI/CD](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml/badge.svg)](https://github.com/EpistasisLab/Aliro/actions/workflows/aliro_tests.yml) [![Coverage Status](https://coveralls.io/repos/github/EpistasisLab/Aliro/badge.svg)](https://coveralls.io/github/EpistasisLab/Aliro)
 
-Aliro: AI-Driven Data Science
-==================================
+# Aliro: AI-Driven Data Science
 
 **Aliro** is an easy-to-use data science assistant.
-It allows researchers without machine learning or coding expertise to run supervised machine learning analysis through a clean web interface. 
-It provides results visualization and reproducible scripts so that the analysis can be taken anywhere. 
-And, it has an *AI* assistant that can choose the analysis to run for you.   Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used.   Aliro comes with an initial knowledgebase generated from the [PMLB benchmark suite](https://github.com/EpistasisLab/penn-ml-benchmarks).
+It allows researchers without machine learning or coding expertise to run supervised machine learning analysis through a clean web interface.
+It provides results visualization and reproducible scripts so that the analysis can be taken anywhere.
+And, it has an _AI_ assistant that can choose the analysis to run for you. Dataset profiles are generated and added to a knowledgebase as experiments are run, and the AI assistant learns from this to give more informed recommendations as it is used. Aliro comes with an initial knowledgebase generated from the [PMLB benchmark suite](https://github.com/EpistasisLab/penn-ml-benchmarks).
 
-[**Documentation**](https://epistasislab.github.io/Aliro/) 
+[**Documentation**](https://epistasislab.github.io/Aliro/)
 
 [**Latest Production Release**](https://github.com/EpistasisLab/Aliro/releases/latest)
 
 Browse the repo:
- - [User Guide](./docs/guides/userGuide.md)
- - [Developer Guide](./docs/guides/developerGuide.md) 
 
-About the Project
-=================
+- [User Guide](./docs/guides/userGuide.md)
+- [Developer Guide](./docs/guides/developerGuide.md)
+
+# About the Project
 
 Aliro is actively developed by the Center for Artificial Intelligence Research (CAIR) in the [Department of Computational Biomedicine](https://www.cedars-sinai.edu/research/departments-institutes/computational-biomedicine.html) at [Cedars-Sinai Medical Center](https://www.cedars-sinai.org/) in Los Angeles.
 Contributors include Hyunjun Choi, Miguel Hernandez, Nick Matsumoto, Jay Moran, Paul Wang, and Jason Moore (PI).
 
-Cite
-====
+# Cite
 
 An up-to-date paper describing AI methodology is available in [Bioinformatics](https://doi.org/10.1093/bioinformatics/btaa698) and [arxiv](http://arxiv.org/abs/1905.09205).
 Here's the biblatex:
