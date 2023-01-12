@@ -1,12 +1,12 @@
 /* ~This file is part of the Aliro library~
 
-Copyright (C) 2017 Epistasis Lab, University of Pennsylvania
+Copyright (C) 2023 Epistasis Lab, Cedars-Sinai Medical Center
 
 Aliro is maintained by:
-    - Heather Williams (hwilli@upenn.edu)
-    - Weixuan Fu (weixuanf@upenn.edu)
-    - William La Cava (lacava@upenn.edu)
-    - Michael Stauffer (stauffer@upenn.edu)
+    - Jun Choi (hyunjun.choi@cshs.org)
+    - Miguel Hernandez (miguel.e.hernandez@cshs.org)
+    - Nick Matsumoto (nicholas.matsumoto@cshs.org)
+    - Jay Moran (jay.moran@cshs.org)
     - and many other generous open source contributors
 
 This program is free software: you can redistribute it and/or modify
