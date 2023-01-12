@@ -37,20 +37,20 @@ def calculate_version():
 package_version = calculate_version()
 
 setup(
-    name='pennaipy',
+    name='aliropy',
     version=package_version,
     author='Heather Williams, Weixuan Fu, William La Cava',
     author_email='hwilli@pennmedicine.upenn.edu, weixuanf@upenn.edu, lacava@upenn.edu',
-    packages=['pennai',
-                'pennai.metalearning',
-                'pennai.sklearn',
-                'pennai.recommender',
-                'pennai.sklearn.config'],
-    package_dir={'pennai': 'ai',
-                'pennai.metalearning': 'ai/metalearning',
-                'pennai.sklearn': 'ai/sklearn',
-                'pennai.recommender': 'ai/recommender',
-                'pennai.sklearn.config': 'ai/sklearn/config'},
+    packages=['aliro',
+                'aliro.metalearning',
+                'aliro.sklearn',
+                'aliro.recommender',
+                'aliro.sklearn.config'],
+    package_dir={'aliro': 'ai',
+                'aliro.metalearning': 'ai/metalearning',
+                'aliro.sklearn': 'ai/sklearn',
+                'aliro.recommender': 'ai/recommender',
+                'aliro.sklearn.config': 'ai/sklearn/config'},
     url='https://github.com/epistasislab/Aliro',
     license='GNU/GPLv3',
     test_suite='nose.collector',
@@ -60,6 +60,7 @@ setup(
 A system that intelligently manages machine learning workflows for data science
 
 Contact: Heather Williams (hwilli@upenn.edu), Weixuan Fu (weixuanf@upenn.edu), William La Cava (lacava@upenn.edu)
+Contact: Nick Matsumoto (nicholas.matsumoto@cshs.org), Jay Moran (jay.moran@cshs.org), Jun Choi (hyunjun.choi@cshs.org)
 
 This project is hosted at https://github.com/epistasislab/Aliro
 ''',
