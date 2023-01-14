@@ -27,7 +27,8 @@ We have built a custom Raspberry Pi OS Image containing Aliro (configured to be 
 2. Double-click the **aliro-imager.exe** on you computer. If prompted to allow the application to run, select **Yes**. You may need to enter your computer's **Administrator** password to continue.
 3. Follow the prompts to proceed with the installation.  
    ![Aliro Imager Install](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
-4. Once installed, you can run the **AliroEd Imager** from the Start Menu.
+4. Once installed, you can run the **AliroEd Imager** from the Start Menu. When the program starts up you will see this screen:  
+   ![Aliro_Imager_Start](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
 5. Click the **CHOOSE STORAGE** button and select your MicroSD Card from the popup menu.  
    ![Aliro Imager Choose Storage](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
 6. Click the **WRITE** button to begin writing the Operatying System to your MicroSD Card.  
