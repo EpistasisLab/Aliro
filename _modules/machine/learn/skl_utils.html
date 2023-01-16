@@ -1492,6 +1492,8 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1"># save X and y to json file</span>
+    <span class="c1"># X_tsne is 2d array, which is 2d t-sne plot.</span>
+    <span class="c1"># y_tsne is 1d array, which is class label.</span>
     <span class="n">tsne_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;X_tsne&#39;</span><span class="p">:</span> <span class="n">X_2d</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="s1">&#39;y_tsne&#39;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -1637,14 +1639,42 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">tmpdir</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;/reg_cv_qq_&#39;</span> <span class="o">+</span> <span class="n">_id</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="n">reg_cv_pred_resi_qq</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s1">&#39;pred_y&#39;</span><span class="p">:</span> <span class="n">pred_y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s1">&#39;resi_y&#39;</span><span class="p">:</span> <span class="n">resi_y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+    <span class="c1"># observed (y) vs predicted (pred_y)</span>
+    <span class="c1"># combine y, pred_y</span>
+    <span class="c1"># Cross-Validated Predictions</span>
 
-        <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s1">&#39;series1_zero&#39;</span><span class="p">:</span> <span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-        <span class="s1">&#39;series1_one&#39;</span><span class="p">:</span> <span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+    <span class="n">CVP_2d</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">pred_y</span><span class="o">.</span><span class="n">tolist</span><span class="p">())))</span>
+    <span class="c1"># same length as pred_y but it has 1</span>
+    <span class="n">CVP_2d_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pred_y</span><span class="p">))</span>
+
+    <span class="c1"># pred_y vs resi_y</span>
+    <span class="c1"># Cross-Validated Residuals</span>
+    <span class="n">CVR_2d</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pred_y</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">resi_y</span><span class="o">.</span><span class="n">tolist</span><span class="p">())))</span>
+    <span class="n">CVR_2d_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pred_y</span><span class="p">))</span>
+
+    <span class="c1"># series1[0][0] vs series1[0][1]</span>
+    <span class="c1"># Q-Q Plot for Normalized Residuals</span>
+    <span class="n">QQNR_2d</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+    <span class="n">QQNR_2d_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">reg_cv_pred_resi_qq</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;CVP_2d&#39;</span><span class="p">:</span> <span class="n">CVP_2d</span><span class="p">,</span>
+        <span class="s1">&#39;CVP_2d_class&#39;</span><span class="p">:</span> <span class="n">CVP_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+
+        <span class="s1">&#39;CVR_2d&#39;</span><span class="p">:</span> <span class="n">CVR_2d</span><span class="p">,</span>
+        <span class="s1">&#39;CVR_2d_class&#39;</span><span class="p">:</span> <span class="n">CVR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+
+        <span class="s1">&#39;QQNR_2d&#39;</span><span class="p">:</span> <span class="n">QQNR_2d</span><span class="p">,</span>
+        <span class="s1">&#39;QQNR_2d_class&#39;</span><span class="p">:</span> <span class="n">QQNR_2d_class</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+
+
+        <span class="c1"># &#39;y&#39;: y.tolist(),</span>
+        <span class="c1"># &#39;pred_y&#39;: pred_y.tolist(),</span>
+        <span class="c1"># &#39;resi_y&#39;: resi_y.tolist(),</span>
+
+        <span class="c1"># &#39;z&#39;: z.tolist(),</span>
+        <span class="c1"># &#39;series1_zero&#39;: series1[0][0].tolist(),</span>
+        <span class="c1"># &#39;series1_one&#39;: series1[0][1].tolist(),</span>
     <span class="p">}</span>
 
     <span class="n">save_json_fmt</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span>
