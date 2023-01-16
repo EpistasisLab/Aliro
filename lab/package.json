@@ -33,7 +33,7 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "serve-favicon": "^2.3.0",
-    "socket.io": "^2.4.0",
+    "socket.io": "^2.5.0",
     "ws": "^5.2.3"
   },
   "devDependencies": {
