@@ -535,17 +535,36 @@ class Results extends Component {
 
               </Grid.Column>
               <Grid.Column>
-                <RegFigure file={reg_cv_pred} />
+                {/* <RegFigure file={reg_cv_pred} />
                 <RegFigure file={reg_cv_resi} />
-                <RegFigure file={reg_cv_qq} />
+                <RegFigure file={reg_cv_qq} /> */}
 
-                {/* <PCAJSON scoreName="PCA 2D"
-                  Points={experiment.data.X_pca}
-                  Labels={experiment.data.y_pca}
-                  chartKey="pca_2d"
+                <PCAJSON scoreName="Cross-Validated Predictions"
+                  Points={experiment.data.CVP_2d}
+                  Labels={experiment.data.CVP_2d_class}
+                  chartKey="CVP"
                   chartColor="#55D6BE"
                   type="classification"
-                /> */}
+                />
+
+                <PCAJSON scoreName="Cross-Validated Residuals"
+                  Points={experiment.data.CVR_2d}
+                  Labels={experiment.data.CVR_2d_class}
+                  chartKey="CVR"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+
+
+                <PCAJSON scoreName="Q-Q Plot for Normalized Residuals"
+                  Points={experiment.data.QQNR_2d}
+                  Labels={experiment.data.QQNR_2d_class}
+                  chartKey="QQNR"
+                  chartColor="#55D6BE"
+                  type="classification"
+                />
+
+
 
 
               </Grid.Column>

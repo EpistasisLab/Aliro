@@ -1352,6 +1352,8 @@ def plot_tsne_2d(tmpdir, _id, features, target):
     plt.close()
 
     # save X and y to json file
+    # X_tsne is 2d array, which is 2d t-sne plot.
+    # y_tsne is 1d array, which is class label.
     tsne_dict = {
         'X_tsne': X_2d.tolist(),
         'y_tsne': target.tolist()
@@ -1497,14 +1499,42 @@ def plot_cv_pred(tmpdir, _id, X, y, cv_scores):
     plt.savefig(tmpdir + _id + '/reg_cv_qq_' + _id + '.png')
     plt.close()
 
-    reg_cv_pred_resi_qq = {
-        'y': y.tolist(),
-        'pred_y': pred_y.tolist(),
-        'resi_y': resi_y.tolist(),
+    # observed (y) vs predicted (pred_y)
+    # combine y, pred_y
+    # Cross-Validated Predictions
 
-        'z': z.tolist(),
-        'series1_zero': series1[0][0].tolist(),
-        'series1_one': series1[0][1].tolist(),
+    CVP_2d = list(map(list, zip(y.tolist(), pred_y.tolist())))
+    # same length as pred_y but it has 1
+    CVP_2d_class = np.zeros(len(pred_y))
+
+    # pred_y vs resi_y
+    # Cross-Validated Residuals
+    CVR_2d = list(map(list, zip(pred_y.tolist(), resi_y.tolist())))
+    CVR_2d_class = np.zeros(len(pred_y))
+
+    # series1[0][0] vs series1[0][1]
+    # Q-Q Plot for Normalized Residuals
+    QQNR_2d = list(map(list, zip(series1[0][0], series1[0][1])))
+    QQNR_2d_class = np.zeros(len(series1[0][0]))
+
+    reg_cv_pred_resi_qq = {
+        'CVP_2d': CVP_2d,
+        'CVP_2d_class': CVP_2d_class.tolist(),
+
+        'CVR_2d': CVR_2d,
+        'CVR_2d_class': CVR_2d_class.tolist(),
+
+        'QQNR_2d': QQNR_2d,
+        'QQNR_2d_class': QQNR_2d_class.tolist(),
+
+
+        # 'y': y.tolist(),
+        # 'pred_y': pred_y.tolist(),
+        # 'resi_y': resi_y.tolist(),
+
+        # 'z': z.tolist(),
+        # 'series1_zero': series1[0][0].tolist(),
+        # 'series1_one': series1[0][1].tolist(),
     }
 
     save_json_fmt(outdir=tmpdir, _id=_id,

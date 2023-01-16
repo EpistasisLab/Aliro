@@ -2,7 +2,6 @@
 release/*.sh text eol=lf
 tests/**/*.sh text eol=lf
 .env text eol=lf
-
 data/recommenders/scikitlearn/KNNDatasetRecommender_classifier_accuracy_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
 data/recommenders/scikitlearn/KNNMLRecommender_classifier_accuracy_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
 data/recommenders/scikitlearn/KNNMetaRecommender_classifier_accuracy_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
@@ -10,3 +9,6 @@ data/recommenders/scikitlearn/KNNWithMeansRecommender_classifier_accuracy_pmlb.p
 data/recommenders/scikitlearn/SVDRecommender_classifier_accuracy_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
 data/recommenders/scikitlearn/SVDRecommender_regressor_nmse_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
 data/recommenders/scikitlearn/SlopeOneRecommender_classifier_accuracy_pmlb.pkl.gz filter=lfs diff=lfs merge=lfs -text
+
+
+docs/source/_static/*.png filter=lfs diff=lfs merge=lfs -text
