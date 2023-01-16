@@ -4,7 +4,7 @@ Analysis Quickstart
 This guide shows you how to construct your own experiment, construct an AI experiment, and view and download results.
 It assumes you have already installed Aliro (see :ref:`user-guide`). 
 
-.. image:: _static/landing_page.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/landing_page.png
     :width: 400
     :alt: Dataset elements on the landing page. 
     :align: center
@@ -18,7 +18,7 @@ Click on the name of the dataset to see information about it, including a data p
 Uploading a dataset
 ===================
 
-.. image:: _static/dataset_upload.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/dataset_upload.png
     :width: 600
     :alt: Dataset Upload. 
     :align: center
@@ -37,7 +37,7 @@ Building your own experiment
 Click `Build New Experiment` at the bottom of your dataset box. 
 This takes you to the experiment building page. 
 
-.. image:: _static/build_experiment.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/build_experiment.png
     :width: 600
     :alt: Experiment building page. 
     :align: center
@@ -56,7 +56,7 @@ The AI will then run one or more experiments for which it chooses its own algori
 Progress can be viewed from the Experiments page.
 To configure the AI settings (for example, the number of experiments to run or time limits), see the configuration file in `config/ai.env`. 
 
-.. image:: _static/ai_requested.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/ai_requested.png
     :width: 400
     :alt: Experiment building page. 
     :align: center
@@ -65,7 +65,7 @@ To configure the AI settings (for example, the number of experiments to run or t
 Experiments 
 ===========
 
-.. image:: _static/experiments.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/experiments.png
     :width: 600
     :alt: Experiment building page. 
     :align: center
@@ -85,7 +85,7 @@ Clicking on any experiment will navigate to the **Results** page.
 Results
 =======
 
-.. image:: _static/results.png
+.. image:: https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/results.png
     :width: 600
     :alt: The Results page. 
     :align: center
