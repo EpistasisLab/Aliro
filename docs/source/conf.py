@@ -143,7 +143,6 @@ html_static_path = ['_static']
 # html_favicon = '_static/logo_blank_small.png'
 # html_logo = '_static/logo_blank_small.png'
 
-[![Logo](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png)]
 html_favicon = 'https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png'
 html_logo = 'https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png'
 
