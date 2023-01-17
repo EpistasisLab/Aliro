@@ -22,9 +22,9 @@
   "homepage": "https://github.com/EpistasisLab/Aliro",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "body-parser": "^1.15.0",
+    "body-parser": "^1.20.1",
     "compression": "^1.6.2",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "lodash": "^4.17.21",
     "mongodb": "^2.2.35",
     "mongoskin": "^2.1.0",
