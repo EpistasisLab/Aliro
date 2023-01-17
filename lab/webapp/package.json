@@ -62,7 +62,7 @@
     "jest-html-reporter": "^2.8.2",
     "jest-junit": "^6.4.0",
     "jest-react-native": "^18.0.0",
-    "react-native": "^0.62.2",
+    "react-native": "^0.71.0",
     "react-test-renderer": "^16.13.1",
     "redux-logger": "^3.0.6",
     "redux-mock-store": "^1.5.4",
