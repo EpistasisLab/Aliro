@@ -151,30 +151,46 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     var columns =[];
     var xs = {};
 
+    var xArray_float = [];
+    var yArray_float = [];
+
     for (var i = 0; i < labelSetLength; i++) {
       // create x and y array for each label
       var xArray = [];
       var yArray = [];
-      // add labelSet[i] to xArray and yArray
-
-      // convert labelSet[i] to string
-
 
       xArray.push(labelSet[i].toString()+'_x');
       // yArray.push(labelSet[i].toString()+'_y');
       // yArray.push(labelSet[i].toString());
-      yArray.push('class_'+labelSet[i].toString());
+      // yArray.push('class_'+labelSet[i].toString());
+      // yArray.push('Points');
 
 
       // xs[labelSet[i].toString()+'_y'] = labelSet[i].toString()+'_x';
       // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      // xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      // xs['Points'] = labelSet[i].toString()+'_x';
+
+      if (chartKey.includes('pca') || chartKey.includes('tsne')) {
+        yArray.push('class_'+labelSet[i].toString());
+        xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+
+      }
+
+      if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includes('QQNR')) {
+        yArray.push('Points');
+        xs['Points'] = labelSet[i].toString()+'_x';
+
+      }
       // xs[labelSet[i]] = labelSet[i]+'_x';
 
       for (var j = 0; j < Points.length; j++) {
         if (Labels[j] == labelSet[i]) {
           xArray.push(Points[j][0]);
           yArray.push(Points[j][1]);
+
+          xArray_float.push(Points[j][0]);
+          yArray_float.push(Points[j][1]);
         }
       }
 
@@ -191,6 +207,88 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
     // console.log('xsSorted: ', xsSorted);
 
+
+
+    if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
+
+      console.log('inside of cvp, cvr, qqnr');
+
+      console.log('xArray_float: ', xArray_float);
+
+      // minimum value of xArray_float
+      console.log('Math.min.apply(null, xArray_float): ', Math.min.apply(null, xArray_float));
+
+      // maximum value of xArray_float
+      console.log('Math.max.apply(null, xArray_float): ', Math.max.apply(null, xArray_float));
+
+
+    
+    // minimum value of xArray_float
+    var xMin = Math.min.apply(null, xArray_float);
+
+    // maximum value of xArray_float
+    var xMax = Math.max.apply(null, xArray_float);
+    
+
+    
+
+
+  // ['line_x', 1,100],
+  // ['line_y', 1,100]
+
+  // ['line_x', xMin,xMax],
+  // ['line_y', xMin,xMax]
+
+    var temp_x = ['line_x', xMin,xMax];
+    var temp_y = ['Slope', xMin,xMax];
+
+    columns.push(temp_x);
+    columns.push(temp_y);
+
+    // Slope
+    xsSorted['Slope'] = 'line_x';
+
+    }
+
+
+
+    if (chartKey.includes('CVR')) {
+
+      console.log('inside of cvp, cvr, qqnr');
+
+      console.log('xArray_float: ', xArray_float);
+
+      // minimum value of xArray_float
+      console.log('Math.min.apply(null, xArray_float): ', Math.min.apply(null, xArray_float));
+
+      // maximum value of xArray_float
+      console.log('Math.max.apply(null, xArray_float): ', Math.max.apply(null, xArray_float));
+
+
+    
+      // minimum value of xArray_float
+      var xMin = Math.min.apply(null, xArray_float);
+
+      // maximum value of xArray_float
+      var xMax = Math.max.apply(null, xArray_float);
+      
+
+      
+
+
+      var temp_x = ['line_x', xMin,xMax];
+      var temp_y = ['ResidualZeroLine', 0,0];
+
+      columns.push(temp_x);
+      columns.push(temp_y);
+
+
+      xsSorted['ResidualZeroLine'] = 'line_x';
+
+    }
+
+
+
     xs = xsSorted;
 
 
@@ -198,12 +296,11 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     console.log('columns: ', columns);
 
 
-    
 
 
 
 
-
+if (chartKey.includes('pca') || chartKey.includes('tsne')) {
 
   var chart = c3.generate({
     bindto: `.${chartKey}`,
@@ -218,23 +315,133 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     tooltip: {
       // format: {
       //   title: function (d,name) { return  d,name; },
-        
-        
 
-        
       // }
       // do not show tooltip
       show: false
     }
   });
+}
 
-  // add dashed linear red line (y=x) for CVP and CVR
+
+
+// scatter plot and dashed line for 1:1
+// var chart = c3.generate({
+//   data: {
+
+      
+      
+//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'line_y':"line_x"},
+      
+//       columns: [
+//           ["2_x", 1,1,3,4,2],
+//           ['class_2', 300, 200, 160, 400, 250, 250],
+//           ['1_x', 200, 130, 90, 240, 130, 220],
+//           ['class_1', 200, 120, 150, 140, 160, 150],
+//           ['0_x', 90, 70, 20, 50, 60, 120],
+//           ['class_0', 200, 120, 150, 140, 160, 150],
+//           ['line_x', 1,100],
+//           ['line_y', 1,100]
+          
+//       ],
+//       type: 'scatter',
+      
+//       types: {
+          
+          
+//           line_y: 'line'
+          
+          
+//       },
+//       regions: {
+//         'line_y': [{'style':'dashed'}], // currently 'dashed' style only
+        
+//       },
+//       colors: {
+//     line_y: '#FF0000'
+// }
+      
+//   }
+// });
+
+else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
+
+  var chart = c3.generate({
+    bindto: `.${chartKey}`,
+    data: {
+        
+        xs: xsSorted,
+        columns: columns,
+        type: 'scatter',
+          
+        types: {
+            
+            
+            Slope: 'line'
+
+        },
+        regions: {
+          'Slope': [{'style':'dashed'}], // currently 'dashed' style only
+          
+        },
+        colors: {
+          // red
+          Slope: '#FF0000'
+      }
+    },
+    axis: axis,
+    // set tooltip based on your setting 
+    tooltip: {
+      // format: {
+      //   title: function (d,name) { return  d,name; },
+
+      // }
+      // do not show tooltip
+      show: false
+    }
+  });
+}
+
+
+else if (chartKey.includes('CVR')) {
+
+  var chart = c3.generate({
+    bindto: `.${chartKey}`,
+    data: {
+        
+        xs: xsSorted,
+        columns: columns,
+        type: 'scatter',
+          
+        types: {
+            
+            
+          ResidualZeroLine: 'line'
+
+        },
+        regions: {
+          'ResidualZeroLine': [{'style':'dashed'}], // currently 'dashed' style only
+          
+        },
+        colors: {
+          // red
+          ResidualZeroLine: '#FF0000'
+      }
+    },
+    axis: axis,
+    // set tooltip based on your setting 
+    tooltip: {
+      // format: {
+      //   title: function (d,name) { return  d,name; },
+
+      // }
+      // do not show tooltip
+      show: false
+    }
+  });
+}
   
 
-
-   
-
-    
 
 
 
