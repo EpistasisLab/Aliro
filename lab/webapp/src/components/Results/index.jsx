@@ -536,7 +536,7 @@ class Results extends Component {
               </Grid.Column>
               <Grid.Column>
                 {/* <RegFigure file={reg_cv_pred} /> */}
-                <RegFigure file={reg_cv_resi} />
+                {/* <RegFigure file={reg_cv_resi} /> */}
                 {/* <RegFigure file={reg_cv_qq} /> */}
 
                 <PCAJSON scoreName="Cross-Validated Predictions"

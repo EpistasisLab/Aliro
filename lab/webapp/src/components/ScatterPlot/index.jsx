@@ -159,21 +159,29 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       var xArray = [];
       var yArray = [];
 
-
-      // add labelSet[i] to xArray and yArray
-
-      // convert labelSet[i] to string
-
-
       xArray.push(labelSet[i].toString()+'_x');
       // yArray.push(labelSet[i].toString()+'_y');
       // yArray.push(labelSet[i].toString());
-      yArray.push('class_'+labelSet[i].toString());
+      // yArray.push('class_'+labelSet[i].toString());
+      // yArray.push('Points');
 
 
       // xs[labelSet[i].toString()+'_y'] = labelSet[i].toString()+'_x';
       // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      // xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+      // xs['Points'] = labelSet[i].toString()+'_x';
+
+      if (chartKey.includes('pca') || chartKey.includes('tsne')) {
+        yArray.push('class_'+labelSet[i].toString());
+        xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
+
+      }
+
+      if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includes('QQNR')) {
+        yArray.push('Points');
+        xs['Points'] = labelSet[i].toString()+'_x';
+
+      }
       // xs[labelSet[i]] = labelSet[i]+'_x';
 
       for (var j = 0; j < Points.length; j++) {
@@ -232,15 +240,17 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
   // ['line_y', xMin,xMax]
 
     var temp_x = ['line_x', xMin,xMax];
-    var temp_y = ['line_y', xMin,xMax];
+    var temp_y = ['Slope', xMin,xMax];
 
     columns.push(temp_x);
     columns.push(temp_y);
 
-
-    xsSorted['line_y'] = 'line_x';
+    // Slope
+    xsSorted['Slope'] = 'line_x';
 
     }
+
+
 
     if (chartKey.includes('CVR')) {
 
@@ -267,13 +277,13 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
 
       var temp_x = ['line_x', xMin,xMax];
-      var temp_y = ['line_y', 0,0];
+      var temp_y = ['ResidualZeroLine', 0,0];
 
       columns.push(temp_x);
       columns.push(temp_y);
 
 
-      xsSorted['line_y'] = 'line_x';
+      xsSorted['ResidualZeroLine'] = 'line_x';
 
     }
 
@@ -282,8 +292,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     xs = xsSorted;
 
 
-    // console.log('xs: ', xs);
-    // console.log('columns: ', columns);
+    console.log('xs: ', xs);
+    console.log('columns: ', columns);
 
 
 
@@ -354,7 +364,7 @@ if (chartKey.includes('pca') || chartKey.includes('tsne')) {
 //   }
 // });
 
-else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includes('QQNR')) {
+else if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 
   var chart = c3.generate({
     bindto: `.${chartKey}`,
@@ -367,16 +377,55 @@ else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includ
         types: {
             
             
-            line_y: 'line'
+            Slope: 'line'
 
         },
         regions: {
-          'line_y': [{'style':'dashed'}], // currently 'dashed' style only
+          'Slope': [{'style':'dashed'}], // currently 'dashed' style only
           
         },
         colors: {
           // red
-          line_y: '#FF0000'
+          Slope: '#FF0000'
+      }
+    },
+    axis: axis,
+    // set tooltip based on your setting 
+    tooltip: {
+      // format: {
+      //   title: function (d,name) { return  d,name; },
+
+      // }
+      // do not show tooltip
+      show: false
+    }
+  });
+}
+
+
+else if (chartKey.includes('CVR')) {
+
+  var chart = c3.generate({
+    bindto: `.${chartKey}`,
+    data: {
+        
+        xs: xsSorted,
+        columns: columns,
+        type: 'scatter',
+          
+        types: {
+            
+            
+          ResidualZeroLine: 'line'
+
+        },
+        regions: {
+          'ResidualZeroLine': [{'style':'dashed'}], // currently 'dashed' style only
+          
+        },
+        colors: {
+          // red
+          ResidualZeroLine: '#FF0000'
       }
     },
     axis: axis,
