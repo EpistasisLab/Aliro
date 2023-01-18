@@ -151,13 +151,20 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     var columns =[];
     var xs = {};
 
+    var xArray_float = [];
+    var yArray_float = [];
+
     for (var i = 0; i < labelSetLength; i++) {
       // create x and y array for each label
       var xArray = [];
       var yArray = [];
+
+
       // add labelSet[i] to xArray and yArray
 
       // convert labelSet[i] to string
+
+      if (chartKey.includes('pca') || chartKey.includes('tsne')) {
 
 
       xArray.push(labelSet[i].toString()+'_x');
@@ -171,10 +178,16 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
       // xs[labelSet[i]] = labelSet[i]+'_x';
 
+      }
+      
+
       for (var j = 0; j < Points.length; j++) {
         if (Labels[j] == labelSet[i]) {
           xArray.push(Points[j][0]);
           yArray.push(Points[j][1]);
+
+          xArray_float.push(Points[j][0]);
+          yArray_float.push(Points[j][1]);
         }
       }
 
@@ -191,19 +204,104 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
     // console.log('xsSorted: ', xsSorted);
 
-    xs = xsSorted;
 
 
-    console.log('xs: ', xs);
-    console.log('columns: ', columns);
+    if (chartKey.includes('CVP') || chartKey.includes('QQNR')) {
 
+      console.log('inside of cvp, cvr, qqnr');
+
+      console.log('xArray_float: ', xArray_float);
+
+      // minimum value of xArray_float
+      console.log('Math.min.apply(null, xArray_float): ', Math.min.apply(null, xArray_float));
+
+      // maximum value of xArray_float
+      console.log('Math.max.apply(null, xArray_float): ', Math.max.apply(null, xArray_float));
+
+
+    
+    // minimum value of xArray_float
+    var xMin = Math.min.apply(null, xArray_float);
+
+    // maximum value of xArray_float
+    var xMax = Math.max.apply(null, xArray_float);
+    
 
     
 
 
+  // ['line_x', 1,100],
+  // ['base_line', 1,100]
+
+  // ['line_x', xMin,xMax],
+  // ['base_line', xMin,xMax]
+
+    var temp_x = ['line_x', xMin,xMax];
+    var temp_y = ['base_line', xMin,xMax];
+
+    columns.push(temp_x);
+    columns.push(temp_y);
+
+
+    xsSorted['base_line'] = 'line_x';
+
+    }
+
+    if (chartKey.includes('CVR')) {
+
+      console.log('inside of cvp, cvr, qqnr');
+
+      console.log('xArray_float: ', xArray_float);
+
+      // minimum value of xArray_float
+      console.log('Math.min.apply(null, xArray_float): ', Math.min.apply(null, xArray_float));
+
+      // maximum value of xArray_float
+      console.log('Math.max.apply(null, xArray_float): ', Math.max.apply(null, xArray_float));
+
+
+    
+      // minimum value of xArray_float
+      var xMin = Math.min.apply(null, xArray_float);
+
+      // maximum value of xArray_float
+      var xMax = Math.max.apply(null, xArray_float);
+      
+
+      
+
+
+    // ['line_x', 1,100],
+    // ['base_line', 1,100]
+
+    // ['line_x', xMin,xMax],
+    // ['base_line', xMin,xMax]
+
+      var temp_x = ['line_x', xMin,xMax];
+      var temp_y = ['base_line', 0,0];
+
+      columns.push(temp_x);
+      columns.push(temp_y);
+
+
+      xsSorted['base_line'] = 'line_x';
+
+    }
 
 
 
+    xs = xsSorted;
+
+
+    // console.log('xs: ', xs);
+    // console.log('columns: ', columns);
+
+
+
+
+
+
+if (chartKey.includes('pca') || chartKey.includes('tsne')) {
 
   var chart = c3.generate({
     bindto: `.${chartKey}`,
@@ -218,23 +316,92 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     tooltip: {
       // format: {
       //   title: function (d,name) { return  d,name; },
-        
-        
 
-        
       // }
       // do not show tooltip
       show: false
     }
   });
+}
 
-  // add dashed linear red line (y=x) for CVP and CVR
+
+
+else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includes('QQNR')) {
+
+  var chart = c3.generate({
+    bindto: `.${chartKey}`,
+    data: {
+        
+        xs: xsSorted,
+        columns: columns,
+        type: 'scatter',
+          
+        types: {
+            
+            
+            base_line: 'line'
+
+        },
+        regions: {
+          'base_line': [{'style':'dashed'}], // currently 'dashed' style only
+          
+        },
+        colors: {
+          // red
+          base_line: '#FF0000'
+      }
+    },
+    axis: axis,
+    // set tooltip based on your setting 
+    tooltip: {
+      // format: {
+      //   title: function (d,name) { return  d,name; },
+
+      // }
+      // do not show tooltip
+      show: false
+    }
+  });
+}
   
+// scatter plot and dashed line for 1:1
+// var chart = c3.generate({
+//   data: {
 
-
-   
-
-    
+      
+      
+//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'base_line':"line_x"},
+      
+//       columns: [
+//           ["2_x", 1,1,3,4,2],
+//           ['class_2', 300, 200, 160, 400, 250, 250],
+//           ['1_x', 200, 130, 90, 240, 130, 220],
+//           ['class_1', 200, 120, 150, 140, 160, 150],
+//           ['0_x', 90, 70, 20, 50, 60, 120],
+//           ['class_0', 200, 120, 150, 140, 160, 150],
+//           ['line_x', 1,100],
+//           ['base_line', 1,100]
+          
+//       ],
+//       type: 'scatter',
+      
+//       types: {
+          
+          
+//           base_line: 'line'
+          
+          
+//       },
+//       regions: {
+//         'base_line': [{'style':'dashed'}], // currently 'dashed' style only
+        
+//       },
+//       colors: {
+//     base_line: '#FF0000'
+// }
+      
+//   }
+// });
 
 
 
