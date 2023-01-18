@@ -151,6 +151,8 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     var columns =[];
     var xs = {};
 
+    var columns_line=[];
+
     for (var i = 0; i < labelSetLength; i++) {
       // create x and y array for each label
       var xArray = [];
@@ -180,7 +182,13 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
       columns.push(xArray);
       columns.push(yArray);
+
+      columns_line.push(xArray);
+      columns_line.push(xArray);
     }
+
+
+    // xArray
 
     // console.log('xs: ', xs);
     // Sort xs by the key
@@ -199,7 +207,28 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
 
     
-
+  // https://c3js.org/samples/chart_combination.html
+  //   var chart = c3.generate({
+  //     data: {
+          
+  //         columns: [
+              
+  //             ['data3', 300, 200, 160, 400, 250, 250],
+  //             ['data4', 200, 130, 90, 240, 130, 220],
+  //             ['data5', 200, 120, 150, 140, 160, 150],
+  //             ['data6', 90, 70, 20, 50, 60, 120],
+  //         ],
+          
+  //         types: {
+              
+  //             data3: 'scatter',
+  //             data4: 'line',
+  //             data5: 'scatter',
+  //             data6: 'area',
+  //         },
+          
+  //     }
+  // });
 
 
 
@@ -210,7 +239,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     data: {
         
         xs: xsSorted,
-        columns: columns,
+        columns: [[columns]],
         type: 'scatter'
     },
     axis: axis,
