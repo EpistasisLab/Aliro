@@ -164,8 +164,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
       // convert labelSet[i] to string
 
-      if (chartKey.includes('pca') || chartKey.includes('tsne')) {
-
 
       xArray.push(labelSet[i].toString()+'_x');
       // yArray.push(labelSet[i].toString()+'_y');
@@ -177,9 +175,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
       xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
       // xs[labelSet[i]] = labelSet[i]+'_x';
-
-      }
-      
 
       for (var j = 0; j < Points.length; j++) {
         if (Labels[j] == labelSet[i]) {
@@ -231,19 +226,19 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
 
   // ['line_x', 1,100],
-  // ['base_line', 1,100]
+  // ['line_y', 1,100]
 
   // ['line_x', xMin,xMax],
-  // ['base_line', xMin,xMax]
+  // ['line_y', xMin,xMax]
 
     var temp_x = ['line_x', xMin,xMax];
-    var temp_y = ['base_line', xMin,xMax];
+    var temp_y = ['line_y', xMin,xMax];
 
     columns.push(temp_x);
     columns.push(temp_y);
 
 
-    xsSorted['base_line'] = 'line_x';
+    xsSorted['line_y'] = 'line_x';
 
     }
 
@@ -271,20 +266,14 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
       
 
 
-    // ['line_x', 1,100],
-    // ['base_line', 1,100]
-
-    // ['line_x', xMin,xMax],
-    // ['base_line', xMin,xMax]
-
       var temp_x = ['line_x', xMin,xMax];
-      var temp_y = ['base_line', 0,0];
+      var temp_y = ['line_y', 0,0];
 
       columns.push(temp_x);
       columns.push(temp_y);
 
 
-      xsSorted['base_line'] = 'line_x';
+      xsSorted['line_y'] = 'line_x';
 
     }
 
@@ -326,6 +315,45 @@ if (chartKey.includes('pca') || chartKey.includes('tsne')) {
 
 
 
+// scatter plot and dashed line for 1:1
+// var chart = c3.generate({
+//   data: {
+
+      
+      
+//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'line_y':"line_x"},
+      
+//       columns: [
+//           ["2_x", 1,1,3,4,2],
+//           ['class_2', 300, 200, 160, 400, 250, 250],
+//           ['1_x', 200, 130, 90, 240, 130, 220],
+//           ['class_1', 200, 120, 150, 140, 160, 150],
+//           ['0_x', 90, 70, 20, 50, 60, 120],
+//           ['class_0', 200, 120, 150, 140, 160, 150],
+//           ['line_x', 1,100],
+//           ['line_y', 1,100]
+          
+//       ],
+//       type: 'scatter',
+      
+//       types: {
+          
+          
+//           line_y: 'line'
+          
+          
+//       },
+//       regions: {
+//         'line_y': [{'style':'dashed'}], // currently 'dashed' style only
+        
+//       },
+//       colors: {
+//     line_y: '#FF0000'
+// }
+      
+//   }
+// });
+
 else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includes('QQNR')) {
 
   var chart = c3.generate({
@@ -339,16 +367,16 @@ else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includ
         types: {
             
             
-            base_line: 'line'
+            line_y: 'line'
 
         },
         regions: {
-          'base_line': [{'style':'dashed'}], // currently 'dashed' style only
+          'line_y': [{'style':'dashed'}], // currently 'dashed' style only
           
         },
         colors: {
           // red
-          base_line: '#FF0000'
+          line_y: '#FF0000'
       }
     },
     axis: axis,
@@ -364,44 +392,7 @@ else if (chartKey.includes('CVP') || chartKey.includes('CVR') || chartKey.includ
   });
 }
   
-// scatter plot and dashed line for 1:1
-// var chart = c3.generate({
-//   data: {
 
-      
-      
-//       xs: {'class_0':"0_x", 'class_1':"1_x", 'class_2':"2_x",'base_line':"line_x"},
-      
-//       columns: [
-//           ["2_x", 1,1,3,4,2],
-//           ['class_2', 300, 200, 160, 400, 250, 250],
-//           ['1_x', 200, 130, 90, 240, 130, 220],
-//           ['class_1', 200, 120, 150, 140, 160, 150],
-//           ['0_x', 90, 70, 20, 50, 60, 120],
-//           ['class_0', 200, 120, 150, 140, 160, 150],
-//           ['line_x', 1,100],
-//           ['base_line', 1,100]
-          
-//       ],
-//       type: 'scatter',
-      
-//       types: {
-          
-          
-//           base_line: 'line'
-          
-          
-//       },
-//       regions: {
-//         'base_line': [{'style':'dashed'}], // currently 'dashed' style only
-        
-//       },
-//       colors: {
-//     base_line: '#FF0000'
-// }
-      
-//   }
-// });
 
 
 
