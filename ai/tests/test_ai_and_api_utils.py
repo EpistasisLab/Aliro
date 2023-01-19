@@ -49,11 +49,11 @@ import lab_api_mocker as mocker
 @patch('requests.request', side_effect=mocker.mocked_requests_request)
 @patch('requests.post', side_effect=mocker.mocked_requests_post)
 def test_ai_init_args(mock_request, mock_post):
-	lab_connection_args = {}
-	pennai = AI(
-		rec_class=None,
-		api_path='http://lab:5080',
-		user="testuser",
+    lab_connection_args = {}
+    pennai = AI(
+        rec_class=None,
+        api_path='http://lab:5080',
+        user="testuser",
         verbose=True, 
         n_recs=1, 
         warm_start=False,
@@ -79,8 +79,8 @@ def test_ai_init_knowledgebase(mock_request, mock_post):
 @patch('requests.request', side_effect=mocker.mocked_requests_request)
 @patch('requests.post', side_effect=mocker.mocked_requests_post)
 def test_ai_init(mock_request, mock_post):
-	lab_connection_args = {}
-	pennai = AI()
+    lab_connection_args = {}
+    pennai = AI()
 
 @patch('requests.request', side_effect=mocker.mocked_requests_request)
 @patch('requests.post', side_effect=mocker.mocked_requests_post)
