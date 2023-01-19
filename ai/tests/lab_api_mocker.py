@@ -1019,8 +1019,8 @@ api_experiments_data = [
     }
 ]
 
-api_experiment_ai_on = 	[{
-    	"_id": "562a12bd612a17b20f99a143"
+api_experiment_ai_on =  [{
+        "_id": "562a12bd612a17b20f99a143"
     }]
 
 api_launch_experiment_running = {
@@ -1050,8 +1050,8 @@ api_launch_experiment_running = {
 
 # invalid response; should return a dict, not a list
 api_launch_experiment_invalid = [
-	{
-    	"_id": "562a12bd612a17b20f99a143"
+    {
+        "_id": "562a12bd612a17b20f99a143"
     }]
 
 api_launch_experiment_no_capacity = {
