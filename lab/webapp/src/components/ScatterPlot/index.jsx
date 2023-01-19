@@ -35,31 +35,15 @@ import c3 from 'c3';
 import d3 from 'd3';
 
     
-// working version
 class ScatterPlot extends Component {
 
-
-  // Points={Points}
-  // Labels ={Labels}
-  // chartKey={chartKey}
-  // chartColor={chartColor}
 
   componentDidMount() {
     const { Points, Labels, chartKey, chartColor } = this.props;
     Points && Labels && this.renderChart(Points, Labels, chartKey, chartColor);
   }
-/*
-colors: {
-  'test_score': '#0072b2',  ---- light blue
-  'train_score': '#f0e442'  ---- light yellow
-  '#55D6BE' ----- light sea green
-}
 
-use anonymous function to 'disable' interaction
-look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
-*/
 
-  // renderChart(expList, chartKey, chartColor, min, max) {
   renderChart(Points, Labels, chartKey, chartColor) {
 
 
@@ -157,21 +141,12 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     var yArray_float = [];
 
     for (var i = 0; i < labelSetLength; i++) {
-      // create x and y array for each label
+      
       var xArray = [];
       var yArray = [];
 
       xArray.push(labelSet[i].toString()+'_x');
-      // yArray.push(labelSet[i].toString()+'_y');
-      // yArray.push(labelSet[i].toString());
-      // yArray.push('class_'+labelSet[i].toString());
-      // yArray.push('Points');
-
-
-      // xs[labelSet[i].toString()+'_y'] = labelSet[i].toString()+'_x';
-      // xs[labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      // xs['class_'+labelSet[i].toString()] = labelSet[i].toString()+'_x';
-      // xs['Points'] = labelSet[i].toString()+'_x';
+      
 
       if (chartKey.includes('pca') || chartKey.includes('tsne')) {
         yArray.push('class_'+labelSet[i].toString());
@@ -184,7 +159,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
         xs['Points'] = labelSet[i].toString()+'_x';
 
       }
-      // xs[labelSet[i]] = labelSet[i]+'_x';
+
 
       for (var j = 0; j < Points.length; j++) {
         if (Labels[j] == labelSet[i]) {
@@ -206,8 +181,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     Object.keys(xs).sort().forEach(function(key) {
       xsSorted[key] = xs[key];
     });
-
-    // console.log('xsSorted: ', xsSorted);
 
 
 
@@ -237,7 +210,6 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
 
   // ['line_x', 1,100],
   // ['line_y', 1,100]
-
   // ['line_x', xMin,xMax],
   // ['line_y', xMin,xMax]
 
@@ -462,172 +434,6 @@ ScatterPlot.defaultProps = {
 
 export default ScatterPlot;
 
-
-
-
-
-
-
-
-
-
-
-// test version
-// class ScatterPlot extends Component {
-//   componentDidMount() {
-//     const { expList, chartKey, chartColor, min, max } = this.props;
-//     expList && this.renderChart(expList, chartKey, chartColor, min, max);
-//   }
-// /*
-// colors: {
-//   'test_score': '#0072b2',  ---- light blue
-//   'train_score': '#f0e442'  ---- light yellow
-//   '#55D6BE' ----- light sea green
-// }
-
-// use anonymous function to 'disable' interaction
-// look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
-// */
-
-//   renderChart(expList, chartKey, chartColor, min, max) {
-//     // window.console.log('exp list: ');
-//     // window.console.log('exp list: ', expList);
-//     // print d3 version
-//     window.console.log('d3 version: ', d3.version);
-//     // print c3 version
-//     window.console.log('c3 version: ', c3.version);
-
-
-
-//     // make expList like[['1',0.2],['2',0.3],['3',0.5]]
-//     // expList = [['1',0.2],['2',0.3],['3',0.5]];
-
-//     // print expList
-//     window.console.log('expList: ', expList);
-
-//     // print chartKey
-//     window.console.log('chartKey: ', chartKey);
-
-//     // var chart = c3.generate({
-//     //   bindto: `.${chartKey}`,
-//     //   data: {
-          
-
-//     //       columns:expList
-//     //       ,
-          
-//     //       type : 'ScatterPlot',
-//     //       // colors: {
-//     //       //   columns[0][0]: '#ff0000',
-//     //       //   columns[1][0]: '#00ff00'
-//     //       // }
-//     //       // ,
-//     //       onclick: function (d, i) { console.log("onclick", d, i); },
-//     //       onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-//     //       onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-//     //   },
-//     //   ScatterPlot: {
-//     //       // title: "Iris Petal Width"
-//     //       title: ""
-//     //       // title: expList
-//     //   }
-//     // });
-
-
-
-
-//      // make confusion matrix [[10,20],[30,40]] using d3.js
-//     var matrix = [[10,20],[30,40]];
-   
-
-
-//     // print curreht class name
-//     window.console.log('current class name: ', `.${chartKey}`);
-
-    
-
-//       var div = d3.select(`.${chartKey}`)
-//       // add svg to div 
-//       var svg = div.append("svg")
-
-//       var rect = svg.selectAll("rect")
-//       .data(matrix)
-//       .enter()
-//       .append("rect")
-//       .attr("width", 100)
-//       .attr("height", 100)
-//       // make width and height related to current div size
-//       // .attr("width", function(d, i) {
-//       //   return d3.select(`.${chartKey}`).node().getBoundingClientRect().width/10;
-//       // })
-//       // .attr("height", function(d, i) {
-//       //   return d3.select(`.${chartKey}`).node().getBoundingClientRect().height/10;
-//       // })
-//       .attr("x", function(d, i) {
-//         return i * 50;
-//       } )
-//       .attr("y", function(d, i) {
-//         return i * 50;
-//       }
-//       )
-//       .attr('id', function(d, i) {
-//         return 'rect_' + i;
-//       }
-//       )
-//       .attr('fill', function(d, i) {
-//         return 'red';
-//       } 
-//       )
-//       // make it show more than background color
-//       .attr('opacity', 0.5)
-//       // add mouseover event
-//       .on("mouseover", function(d, i) {
-//         // change color
-//         d3.select(this).attr('fill', 'blue');
-//         console.log('number',d)
-//         // show this d as string on the rect
-//         d3.select(this).text(d);
-//         // make the text color white
-//         d3.select(this).attr('fill', 'white');
-
-//         d3.select(this).text('This is some information about whatever')
-//                 .attr('x', 50)
-//                 .attr('y', 150)
-//                 .attr('fill', 'white')
-
-//       })
-//       .append('text').text('test');
-//       // add data value to each rect text
-
-
-//       // matrix 
-//       //  20  30
-//       //  40  50
-
-//       // add the matrix value to rect 
-
-//       // var text = svg.selectAll("text")
-//       // .data(matrix)
-//       // .enter()
-//       // .append("text")
-
-
-  
-
-//   }
-
-//   render() {
-//     return (
-//       <div className={`ScatterPlot ${this.props.chartKey}`} />
-//     );
-//   }
-// }
-
-// ScatterPlot.defaultProps = {
-//   chartColor: '#60B044'
-// };
-
-// export default ScatterPlot;
 
 
 
