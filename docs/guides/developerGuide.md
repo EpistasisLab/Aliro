@@ -89,7 +89,7 @@ When not using the production docker-compose file, node packages are installed i
 ##  Architecture Overview
 Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.
 
-![Aliro Architecture Diagram](https://raw.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true "Aliro Architecture Diagram")
+![Aliro Architecture Diagram](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true "Aliro Architecture Diagram")
 
 ### Controller Engine (aka _The Server_)
 The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.
