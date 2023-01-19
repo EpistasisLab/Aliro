@@ -273,6 +273,7 @@ look here - https://github.com/c3js/c3/issues/493#issuecomment-456686654
     return (
       <div className={`ScatterPlot ${this.props.chartKey}`} />
     );
+        
   }
 }
 
