@@ -34,8 +34,7 @@ import c3 from 'c3';
 
 import d3 from 'd3';
 
-
-
+    
 // working version
 class ScatterPlot extends Component {
 
