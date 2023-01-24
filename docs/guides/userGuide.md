@@ -1,16 +1,43 @@
 # User Guide
 
+## Contents
+
+- [About](#About)
+- [Aliro](#Aliro)
+- [AliroEd](#AliroEd)
+- [Using Aliro](#Using-Aliro)
+
+## About
+
 Aliro is a platform to help researchers leverage supervised machine learning techniques to analyze data without needing an extensive data science background, and can also assist more experienced users with tasks such as choosing appropriate models for data. Users interact with Aliro via a web interface that allows them to execute machine learning experiments and explore generated models, and has an AI recommendation engine that will automatically choose appropriate models and parameters. Dataset profiles are generated and added to a knowledgebase as experiments are run, and the recommendation engine learns from this to give more informed recommendations as it is used. This allows the AI recommender to become tailored to specific data environments. Aliro comes with an initial knowledgebase generated from the PMLB benchmark suite.
 
-## Installation
+## Aliro
 
-Aliro is a multi-container docker project that uses ([Docker-Compose](https://docs.docker.com/compose/)).
+### Requirements
 
-### AliroEd (Aliro on the Raspberry Pi 400)
+- Docker
+  - Most recent stable release, minimum version is 17.06.0
+    - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
+    - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - **Runtime Memory**: (Mac and Windows only) If using **Windows** or **Mac**, we recommend docker VM to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)). By default, docker VM on Windows or Mac starts with 2G runtime memory.
+  - **File Sharing**: (Windows only) Share the drive that will contain the Aliro directory with Docker by opening Docker Desktop, navigating to Resources->File Sharing and sharing the drive. [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
+- Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
+  - [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
 
-We have built a custom Raspberry Pi OS Image containing Aliro (configured to be up and running as soon as you boot up the Operating System.)
+### Installation
 
-#### Requirements
+1. Download the production zip `Aliro-*.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/Aliro/releases/latest)
+   - Note that this is different from the source code zip file.
+2. Unzip the archive
+
+
+## AliroEd
+
+### Aliro on the Raspberry Pi 400
+
+We have built a custom Raspberry Pi OS Image containing **Aliro** (configured to be up and running as soon as you boot up the Operating System.)
+
+### Requirements
 
 - [Raspberry Pi 400](https://www.raspberrypi.com/products/raspberry-pi-400/)
 - A computer running Windows 10 or higher
@@ -21,14 +48,14 @@ We have built a custom Raspberry Pi OS Image containing Aliro (configured to be 
   - **Note:** There are different speed classes for MicroSD Cards, Application Performance Class 1 (A1) and Application Performance 2 (A2). A2 cards are **highly recommended** as these are much faster than A1 cards.
 - A copy of the [aliro-imager.exe](http://52.35.223.86/infAndDownloadpage.html)
 
-#### Installation
+### Installation
 
 1. Insert the MicroSD Card in your card reader.
 2. Double-click the **aliro-imager.exe** on you computer. If prompted to allow the application to run, select **Yes**. You may need to enter your computer's **Administrator** password to continue.
 3. Follow the prompts to proceed with the installation.  
    ![Aliro Imager Install](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true "Aliro Imager Install")
 4. Once installed, you can run the **AliroEd Imager** from the Start Menu. When the program starts up you will see this screen:  
-   ![Aliro_Imager_Start](https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
+   ![Aliro Imager Start](https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true "Aliro Imager Start")
 5. Click the **CHOOSE STORAGE** button and select your MicroSD Card from the popup menu.  
    ![Aliro Imager Choose Storage](https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true "Aliro Imager Choose Storage")
 6. Click the **WRITE** button to begin writing the Operatying System to your MicroSD Card.  
@@ -51,25 +78,6 @@ You may also load your own datasets, please see the following sections below for
 - [Analyzing Data](#analyzing-data)
 - [Downloading and Using Models](#downloading-and-using-models)
 
-### Aliro
-
-#### Requirements
-
-- Docker
-  - Most recent stable release, minimum version is 17.06.0
-    - [Official Docker Website Getting Started](https://docs.docker.com/engine/getstarted/step_one/)
-    - [Official Docker Installation for Windows](https://docs.docker.com/docker-for-windows/install/)
-  - **Runtime Memory**: (Mac and Windows only) If using **Windows** or **Mac**, we recommend docker VM to be configured with at least 6GB of runtime memory ([Mac configuration](https://docs.docker.com/docker-for-mac/#advanced), [Windows configuration](https://docs.docker.com/docker-for-windows/#advanced)). By default, docker VM on Windows or Mac starts with 2G runtime memory.
-  - **File Sharing**: (Windows only) Share the drive that will contain the Aliro directory with Docker by opening Docker Desktop, navigating to Resources->File Sharing and sharing the drive. [Docker Desktop File Sharing](https://docs.docker.com/docker-for-windows/#file-sharing)
-- Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations
-  - [Linux Docker-Compose Installation](https://docs.docker.com/compose/install/)
-
-#### Installation
-
-1. Download the production zip `Aliro-*.zip` from the asset section of the [latest release](https://github.com/EpistasisLab/Aliro/releases/latest)
-   - Note that this is different from the source code zip file.
-2. Unzip the archive
-
 ## Using Aliro
 
 ### Starting and Stopping
@@ -82,7 +90,7 @@ To reset the datasets and experiments in the server, start Aliro with the comman
 
 Once the webserver is up, connect to <http://localhost:5080/> to access the website. You should see the **Datasets** page. If it is your first time starting Aliro, there should be a message instructing one to add new datasets.
 
-### Adding Datasets
+#### Adding Datasets
 
 One can add new datasets using a UI form within the website or manually add new datasets to the data directory. Datasets have the following restrictions:
 
@@ -92,7 +100,10 @@ One can add new datasets using a UI form within the website or manually add new 
 - Only the label column or categorical or ordinal features can contain string values.
 - Files must be smaller then 8mb
 
-Some example datasets can be found in the classification section of the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets) github repository.
+Some example datasets can be found in the
+[classification section](https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets)
+of the [Penn Machine Learning Benchmarks](https://github.com/EpistasisLab/pmlb)
+github repository.
 
 #### Uploading Using the Website
 
@@ -108,12 +119,12 @@ The coresponding configuration file must be in the same directory as the dataset
 
 - Example configuration file:
 
-```
+```json
 {
-	"target_column":"my_custom_target_column_name",
-  "prediction_type":"classification",
-	"categorical_features" : ["cat1", "cat2"],
-	"ordinal_features" : {"ord" : ["first", "second", "third"]}
+    "target_column":"my_custom_target_column_name",
+    "prediction_type":"classification",
+    "categorical_features" : ["cat1", "cat2"],
+    "ordinal_features" : {"ord" : ["first", "second", "third"]}
 }
 ```
 

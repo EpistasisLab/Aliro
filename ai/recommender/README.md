@@ -52,18 +52,18 @@ For a new recommender, these two classes, along with the class constructor, must
 ## Building your own recommender
 
 To build your own recommender, start with the `recommender/base.py` file.
-From there, implement `update()` and `recommend()` strategies. 
+From there, implement `update()` and `recommend()` strategies.
 The base class provides `self.ml_p`, a dataframe of available algorithm
-configurations. 
+configurations.
 It also maintains a parameter hash table (`self.param_htable`) that facilitates the
-unique identification of parameter dictionaries. 
-Check out the base class API [documentation]() to get started. 
-
+unique identification of parameter dictionaries.
+Check out the base class API
+[documentation](https://epistasislab.github.io/Aliro/api.html) to get started. 
 To use the recommender with the AI class, you need to make the following changes to
 `ai/ai.py`:
 
  1. Import your recommender:
-   
+
     ```python
     from ai.recommender.my_recommender import MyFancyRecommender
     ```
