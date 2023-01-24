@@ -146,15 +146,25 @@
 <h2>Developer Installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h2>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
-<p>Install Docker and docker-compose as per the main installation requirements (see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
+<p>Install Docker and docker-compose as per the main installation requirements
+(see <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>).</p>
 <ul class="simple">
 <li><p>Docker setup</p>
 <ul>
 <li><p><strong>Windows Only</strong></p>
 <ul>
-<li><p>If developing on the Windows filesystem (for example, in C:Aliro) the <strong>Hyper-V</strong> backend is required and the Aliro source code directory needs tob be shared in the Docker Desktop settings. See <a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Docker Shared Drives</a> for more information.</p></li>
-<li><p>If developing in WSL2, the WSL2 backend can be used when installing Docker Desktop and <strong>WSL Integration</strong> should be enabled on the Docker Desktop settings (Under <strong>Resources &gt; WSL Integration</strong>)</p></li>
-<li><p><strong>NOTE:</strong> Working with the source code on the Windows filesystem and using the WSL2 backend in Docker Desktop may cause problems, such as not being able to see experiment results due to a filepath mismatch (forward slash <strong>/</strong> versus backslash <a href="#id1"><span class="problematic" id="id2">**</span></a>**)</p></li>
+<li><p>If developing on the Windows filesystem (for example, in C:Aliro) the
+<strong>Hyper-V</strong> backend is required and the Aliro source code directory needs
+to be shared in the Docker Desktop settings. See
+<a class="reference external" href="https://docs.docker.com/docker-for-windows/#shared-drives">Shared Drives</a>
+for more information.</p></li>
+<li><p>If developing in WSL2, the WSL2 backend can be used when installing
+Docker Desktop and <strong>WSL Integration</strong> should be enabled on the Docker
+Desktop settings (Under <strong>Resources &gt; WSL Integration</strong>)</p></li>
+<li><p><strong>NOTE:</strong> Working with the source code on the Windows filesystem and
+using the WSL2 backend in Docker Desktop may cause problems, such as not
+being able to see experiment results due to a filepath mismatch (forward
+slash <strong>/</strong> versus backslash <a href="#id1"><span class="problematic" id="id2">**</span></a>**)</p></li>
 </ul>
 </li>
 </ul>
@@ -163,13 +173,15 @@
 <section id="optional-dependencies-for-development-testing">
 <h4>Optional dependencies for development/testing:<a class="headerlink" href="#optional-dependencies-for-development-testing" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Python and pyton test runners (in most cases unnecessary. needed only to run unit tests locally outside of docker)</p>
+<li><p>Python and pyton test runners (in most cases unnecessary. needed only to run
+unit tests locally outside of docker)</p>
 <ul>
 <li><p><a class="reference external" href="https://www.python.org/downloads/">Python 3.*</a></p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://nose.readthedocs.io/en/latest/plugins/cover.html">coverage</a> via <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span> <span class="pre">coverage</span></code></p></li>
+<li><p><a class="reference external" href="https://nose.readthedocs.io/en/latest/plugins/cover.html">coverage</a> via
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span> <span class="pre">coverage</span></code></p></li>
 <li><p>Node.js (can be helpful for local development)</p>
 <ul>
 <li><p><a class="reference external" href="https://nodejs.org/en/">https://nodejs.org/en/</a></p></li>
@@ -181,60 +193,91 @@
 <section id="building-docker-images">
 <h3>Building Docker Images<a class="headerlink" href="#building-docker-images" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li><p>Clone the Aliro project using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/Aliro.git</span></code></p></li>
-<li><p>Set up your local Aliro configuration file. From the Aliro directory, copy <code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
-<li><dl class="simple">
-<dt>Ensure that the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file contains the correct value for the <strong>USE_WHEELS</strong> variable. Set this variable to either <strong>1</strong> or <strong>0</strong>. Setting this value to 1 will use the wheels in docker/wheels/ (these can be built using the wheel_builder images, as described in step 3a.</dt><dd><p>3a. If using <strong>USE_WHEELS=1</strong>, build the python wheels by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">docker-compose-wheel-builder.yml</span> <span class="pre">up</span></code> from the Aliro directory. This will build the required wheels and placed them in the docker/wheels/ directory.</p>
-</dd>
-</dl>
-</li>
-<li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from the Aliro directory.  It will take several minutes for the images to be built the first time this is run.</p></li>
+<li><p>Clone the Aliro project using
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;github.com:EpistasisLab/Aliro.git</span></code></p></li>
+<li><p>Set up your local Aliro configuration file. From the Aliro directory, copy
+<code class="docutils literal notranslate"><span class="pre">config\ai.env-template</span></code> to <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code>.</p></li>
+<li><p>Ensure that the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file contains the correct value for the
+<strong>USE_WHEELS</strong> variable, Either <strong>1</strong> or <strong>0</strong>. <strong>USE_WHEELS=1</strong> will use the
+wheels in the <code class="docutils literal notranslate"><span class="pre">docker/wheels/</span></code> directory. To build the python wheels, run
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">docker-compose-wheel-builder.yml</span> <span class="pre">up</span></code> from the Aliro
+directory.</p></li>
+<li><p>Build the development service images by running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> from
+the Aliro directory. It will take several minutes for the images to be built
+the first time this is run.</p></li>
 </ol>
 </section>
 <section id="starting-and-stopping">
 <h3>Starting and Stopping<a class="headerlink" href="#starting-and-stopping" title="Permalink to this headline">¶</a></h3>
-<p>To start Aliro, from the Aliro directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  To stop Aliro, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the process to exit.</p>
-<p>Aliro can be run with multiple machine instances using the <code class="docutils literal notranslate"><span class="pre">docker-compose-multi-machine.yml</span></code> docker compose file, as per: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-f</span> <span class="pre">./docker-compose-multi-machine.yml</span></code></p>
-<p>To reset the docker volumes, restart using the <code class="docutils literal notranslate"><span class="pre">--force-recreate</span></code> flag or run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code> after the server has been stopped.</p>
+<p>To start Aliro, from the Aliro directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.<span class="raw-html-m2r"><br></span>
+To stop Aliro, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the process to exit.</p>
+<p>Aliro can be run with multiple machine instances using the
+<code class="docutils literal notranslate"><span class="pre">docker-compose-multi-machine.yml</span></code> docker compose file, by running
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-f</span> <span class="pre">./docker-compose-multi-machine.yml</span></code></p>
+<p>To reset the docker volumes, restart using the <code class="docutils literal notranslate"><span class="pre">--force-recreate</span></code> flag or run
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code> after the server has been stopped.</p>
 </section>
 </section>
 <section id="development-notes">
 <h2>Development Notes<a class="headerlink" href="#development-notes" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p>After any code changes are pulled, <strong>ALWAYS</strong> rerun <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> and when you first reload the webpage first do a hard refresh with ctrl+F5 instead of just F5 to clear any deprecated code out of the browser cache.</p></li>
-<li><p>Whenever there are updates to any of the npm libraries as configured with <code class="docutils literal notranslate"><span class="pre">package.json</span></code> files, the images should be rebuilt and the renew-anon-volumes flag should be used when starting Aliro <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code>.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> to rebuild the images for all services (lab, machine, dbmongo) if their dockerfiles or the contents of their build directories have changed. See <a class="reference external" href="https://docs.docker.com/compose/reference/build/">docker build docs,</a></p></li>
+<li><p>After any code changes are pulled, <strong>ALWAYS</strong> rerun <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code>
+and when you first reload the webpage first do a hard refresh with ctrl+F5
+instead of just F5 to clear any deprecated code out of the browser cache.</p></li>
+<li><p>Whenever there are updates to any of the npm libraries as configured with
+<code class="docutils literal notranslate"><span class="pre">package.json</span></code> files, the images should be rebuilt and the renew-anon-volumes
+flag should be used when starting Aliro
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code> to rebuild the images for all services (lab,
+machine, dbmongo) if their dockerfiles or the contents of their build
+directories have changed. See
+<a class="reference external" href="https://docs.docker.com/compose/reference/build/">docker build docs,</a></p></li>
 <li><p>To get the cpu and memory status of the running containers use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">stats</span></code></p></li>
 <li><p>To clear out all files not checked into git, use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clean</span> <span class="pre">-xdf</span></code></p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span> <span class="pre">--no-cache</span> <span class="pre">lab</span></code> to rebuild the image for the lab services without using the cache (meaning the image will be rebuilt regardless of any changes being detected)</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span> <span class="pre">--no-cache</span> <span class="pre">lab</span></code> to rebuild the image for the lab
+services without using the cache (meaning the image will be rebuilt regardless
+of any changes being detected)</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">rm</span> <span class="pre">$(docker</span> <span class="pre">ps</span> <span class="pre">-a</span> <span class="pre">-q)</span></code> to remove all docker containers</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">rmi</span> <span class="pre">$(docker</span> <span class="pre">images</span> <span class="pre">-q)</span></code> to remove all docker images</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;container_name&quot;</span> <span class="pre">/bin/bash</span></code> to attach to a running container with a bash prompt</p></li>
-<li><p>To manually start the AI service, attach to the lab container with bash and start the AI service:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;aliro_lab_1&quot; /bin/bash
-cd $PROJECT_ROOT/
-python -m ai.ai -v -n 2
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;container_name&quot;</span> <span class="pre">/bin/bash</span></code> to attach to a running
+container with a bash prompt</p></li>
+<li><p>To manually start the AI service, attach to the lab container with bash and
+start the AI service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span><span class="s2">&quot;aliro_lab_1&quot;</span><span class="w"> </span>/bin/bash
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$PROJECT_ROOT</span>/
+python<span class="w"> </span>-m<span class="w"> </span>ai.ai<span class="w"> </span>-v<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;aliro_lab_1&quot;</span> <span class="pre">/bin/bash</span></code> returns ‘Error: no such container’, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ps</span></code> to get the name of the lab container</p></li>
-<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">aliro_lab_1</span></code> will attach to the lab container, but if the last command run by the startup script was not bash it will appear to hang.</p></li>
+<li><p>Note: If <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">&quot;aliro_lab_1&quot;</span> <span class="pre">/bin/bash</span></code> returns
+<strong>‘Error: no such container’</strong>, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ps</span></code> to get the name of
+the lab container</p></li>
+<li><p>Note: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">attach</span> <span class="pre">aliro_lab_1</span></code> will attach to the lab container, but if
+the last command run by the startup script was not bash it will appear to
+hang.</p></li>
 </ul>
 </li>
 </ul>
 <section id="web-development">
 <h3>Web Development<a class="headerlink" href="#web-development" title="Permalink to this headline">¶</a></h3>
-<p>The frontend UI source is in <code class="docutils literal notranslate"><span class="pre">\lab\webapp</span></code> and is managed using <a class="reference external" href="https://webpack.js.org/">webpack</a>.  When developing the UI, webpack can be configured to run in <a class="reference external" href="https://webpack.js.org/configuration/watch/">watch mode</a> to cause bundle.js to be automatically be recompiled when new changes to the web code are detected.  After the code has been recompiled users will need to <a class="reference external" href="https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache">hard refresh</a> with ctrl+F5 for the changes to be seen in the browser.</p>
+<p>The frontend UI source is in <code class="docutils literal notranslate"><span class="pre">\lab\webapp</span></code> and is managed using
+<a class="reference external" href="https://webpack.js.org/">webpack</a>. When developing the UI, webpack can be
+configured to run in <a class="reference external" href="https://webpack.js.org/configuration/watch/">watch mode</a>
+to cause bundle.js to be automatically be recompiled when new changes to the
+web code are detected.  After the code has been recompiled users will need to
+<a class="reference external" href="https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache">hard refresh</a> with
+ctrl+F5 for the changes to be seen in the browser.</p>
 <p>There are two ways to enable watch mode:</p>
 <ul>
 <li><p>To enable watch mode after Aliro has been started, do the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker exec -it &quot;aliro_lab_1&quot; /bin/bash
-cd $PROJECT_ROOT/lab/webapp
-npm run build-dev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span><span class="s2">&quot;aliro_lab_1&quot;</span><span class="w"> </span>/bin/bash
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$PROJECT_ROOT</span>/lab/webapp
+npm<span class="w"> </span>run<span class="w"> </span>build-dev
 </pre></div>
 </div>
 </li>
-<li><p>To automatically start in watch mode, add the line <code class="docutils literal notranslate"><span class="pre">WEBDEV=1</span></code> to the configuration file <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code></p></li>
+<li><p>To automatically start in watch mode, add the line <code class="docutils literal notranslate"><span class="pre">WEBDEV=1</span></code> to the
+configuration file <code class="docutils literal notranslate"><span class="pre">config\ai.env</span></code></p></li>
 </ul>
 </section>
 <section id="npm-package-management">
@@ -242,22 +285,37 @@ npm run build-dev
 <p>To update or add NPM package dependencies:</p>
 <ul class="simple">
 <li><p>Update the appropriate <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file</p></li>
-<li><p>Rebuild the images (<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">build</span></code> etc.)</p></li>
-<li><p>Refresh anonymous volumes when restarting Aliro with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code></p></li>
+<li><p>Rebuild the images (<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">build</span></code>,
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">build</span></code>, etc.)</p></li>
+<li><p>Refresh anonymous volumes when restarting Aliro with
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">--renew-anon-volumes</span></code> or <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-V</span></code></p></li>
 </ul>
 <hr class="docutils" />
-<p>Package management for node is configured in three places: the main backend API (<code class="docutils literal notranslate"><span class="pre">lab\package.json</span></code>), the frontend UI (<code class="docutils literal notranslate"><span class="pre">lab\webapp\package.json</span></code>), and the machine container API (<code class="docutils literal notranslate"><span class="pre">machine\package.json</span></code>).</p>
-<p>Node package installation (<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">install</span></code>) takes palace as part of the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> process.  If there are changes to a <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file, then during the build those changes will be detected and the updated npm packages will be installed.</p>
-<p>When not using the production docker-compose file, node packages are installed in docker anonymous volumes <code class="docutils literal notranslate"><span class="pre">lab/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">lab/webapp/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">machine/node_modules</span></code>.  When starting Aliro after the packages have been rebuilt, the <code class="docutils literal notranslate"><span class="pre">--renew-anon-volumes</span></code> flag should be used.</p>
+<p>Package management for node is configured in three places: the main backend API
+(<code class="docutils literal notranslate"><span class="pre">lab\package.json</span></code>), the frontend UI (<code class="docutils literal notranslate"><span class="pre">lab\webapp\package.json</span></code>), and the
+machine container API (<code class="docutils literal notranslate"><span class="pre">machine\package.json</span></code>).</p>
+<p>Node package installation (<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">install</span></code>) takes place as part of the
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> process. If there are changes to a <code class="docutils literal notranslate"><span class="pre">package.json</span></code> file, then
+during the build those changes will be detected and the updated npm packages
+will be installed.</p>
+<p>When not using the production docker-compose file, node packages are installed
+in docker anonymous volumes <code class="docutils literal notranslate"><span class="pre">lab/node_modules</span></code>, <code class="docutils literal notranslate"><span class="pre">lab/webapp/node_modules</span></code>,
+<code class="docutils literal notranslate"><span class="pre">machine/node_modules</span></code>.  When starting Aliro after the packages have been
+rebuilt, the <code class="docutils literal notranslate"><span class="pre">--renew-anon-volumes</span></code> flag should be used.</p>
 </section>
 </section>
 <section id="architecture-overview">
 <h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h2>
-<p>Aliro is designed as a multi-component docker architecture that uses a variety of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.  The project contains multiple docker containers that are orchestrated by a docker-compose file.</p>
+<p>Aliro is designed as a multi-component docker architecture that uses a variety
+of technologies including Docker, Python, Node.js, scikit-learn and MongoDb.
+The project contains multiple docker containers that are orchestrated by a
+docker-compose file.</p>
 <a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true"><img alt="Aliro Architecture Diagram" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/pennai_architecture.png?raw=true" /></a>
 <section id="controller-engine-aka-the-server">
 <h3>Controller Engine (aka <em>The Server</em>)<a class="headerlink" href="#controller-engine-aka-the-server" title="Permalink to this headline">¶</a></h3>
-<p>The central component is the controller engine, a server written in Node.js.  This component is responsible for managing communication between the other components using a rest API.</p>
+<p>The central component is the controller engine, a server written in Node.js
+This component is responsible for managing communication between the other
+components using a rest API.</p>
 </section>
 <section id="database">
 <h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
@@ -265,13 +323,30 @@ npm run build-dev
 </section>
 <section id="ui-component-aka-the-client">
 <h3>UI Component (aka <em>The Client</em>)<a class="headerlink" href="#ui-component-aka-the-client" title="Permalink to this headline">¶</a></h3>
-<p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web application written in javascript that uses the React library to create the user interface and the Redux library to manage server state.  It allows users to upload datasets for analysis, request AI recommendations for a dataset, manually run machine learning experiments, and displays experiment results in an intuitive way.  The AI engine is written in Python.  As users make requests to perform analysis on datasets, the AI engine will generate new machine learning experiment recommendations and communicate them to the controller engine.  The AI engine contains a knowledgebase of previously run experiments, results and dataset metafeatures that it uses to inform the recommendations it makes.  Knowledgable users can write their own custom recommendation system.  The machine learning component is responsible for running machine learning experiments on datasets. It has a node.js server that is used to communicate with the controller engine, and uses python to execute scikit learn algorithms on datasets and communicate results back to the central server.  A Aliro instance can support multiple instances of machine learning engines, enabling multiple experiments to be run in parallel.</p>
+<p>The UI component (<em>Vizualization / UI Engine</em> in the diagram above) is a web
+application written in javascript that uses the React library to create the
+user interface and the Redux library to manage server state. It allows users
+to upload datasets for analysis, request AI recommendations for a dataset,
+manually run machine learning experiments, and displays experiment results in
+an intuitive way. The AI engine is written in Python. As users make requests
+to perform analysis on datasets, the AI engine will generate new machine
+learning experiment recommendations and communicate them to the controller
+engine. The AI engine contains a knowledgebase of previously run experiments,
+results and dataset metafeatures that it uses to inform the recommendations it
+makes. Knowledgable users can write their own custom recommendation system.
+The machine learning component is responsible for running machine learning
+experiments on datasets. It has a node.js server that is used to communicate
+with the controller engine, and uses python to execute scikit learn algorithms
+on datasets and communicate results back to the central server. A Aliro
+instance can support multiple instances of machine learning engines, enabling
+multiple experiments to be run in parallel.</p>
 </section>
 </section>
 <section id="code-documentation">
 <h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Sphinx documentation can be built in the context of a docker container with the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-doc-builder.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code>.</p></li>
+<li><p>Sphinx documentation can be built in the context of a docker container with
+the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-doc-builder.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code>.</p></li>
 </ul>
 </section>
 <section id="tests">
@@ -280,28 +355,48 @@ npm run build-dev
 <h3>Local Test Instructions<a class="headerlink" href="#local-test-instructions" title="Permalink to this headline">¶</a></h3>
 <p>The unit and integration tests can be run locally using the followng commands:</p>
 <ul class="simple">
-<li><p>Unit (both javascript and python): <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">-V</span></code></p>
+<li><p>Unit (both javascript and python):
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">-V</span></code></p>
 <ul>
-<li><p>Run only webapp/javascript unit tests: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-js-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
-<li><p>Run only python unit tests: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-py-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
+<li><p>Run only webapp/javascript unit tests:
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-js-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
+<li><p>Run only python unit tests:
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">--env-file</span> <span class="pre">./config/unit-test-py-only.env</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p></li>
 </ul>
 </li>
-<li><p>Integration: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
+<li><p>Integration:
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
 </ul>
-<p><em>NOTE</em> It is best to run local unit tests using the above command. An optional way is to attach a shell to a running container instance via <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">Aliro-dev_lab_1</span> <span class="pre">/bin/bash</span></code> and then manually run the unit test runner <code class="docutils literal notranslate"><span class="pre">.\tests\unit\unit_test_runner.sh</span></code>. This is faster than running via <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and a new container instance. <em>However</em>, this method can produce different react component snapshots, and possibly other differences, so if you use this method for rapid development of tests, always follow up with running via the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> commands above to assure compatibility with how the tests are run for CI tests.</p>
-<p>The test results in html format can be found in the directory <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html</span></code></p>
-<p>Note: If the npm packages have been updated, the unit tests docker image need to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
-<p>Note: It is best to prune docker volumes with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">volume</span> <span class="pre">prune</span> <span class="pre">-f</span></code> or <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">system</span> <span class="pre">prune</span> <span class="pre">-a</span> <span class="pre">-f</span> <span class="pre">--volumes</span></code> before running the unit and integration tests, otherwise there may be errors about not being able to upload duplicate datasets.</p>
+<p><em>NOTE</em> It is best to run local unit tests using the above command. An optional
+way is to attach a shell to a running container instance via
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span> <span class="pre">-it</span> <span class="pre">Aliro-dev_lab_1</span> <span class="pre">/bin/bash</span></code> and then manually run the unit test
+runner <code class="docutils literal notranslate"><span class="pre">.\tests\unit\unit_test_runner.sh</span></code>. This is faster than running via
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and a new container instance. <em>However</em>, this method can
+produce different react component snapshots, and possibly other differences,
+so if you use this method for rapid development of tests, always follow up with
+running via the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> commands above to assure compatibility with
+how the tests are run for CI tests.</p>
+<p>The test results in html format can be found in the directory
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html</span></code></p>
+<p>Note: If the npm packages have been updated, the unit tests docker image need
+to be rebuild with <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">build</span></code></p>
+<p>Note: It is best to prune docker volumes with
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">volume</span> <span class="pre">prune</span> <span class="pre">-f</span></code> or <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">system</span> <span class="pre">prune</span> <span class="pre">-a</span> <span class="pre">-f</span> <span class="pre">--volumes</span></code> before
+running the unit and integration tests, otherwise there may be errors about not
+being able to upload duplicate datasets.</p>
 </section>
 <section id="integration">
 <h3>Integration<a class="headerlink" href="#integration" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Type: Docker, runs <a class="reference external" href="https://jestjs.io/">Jest</a></p></li>
-<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
+<li><p>Usage:
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-int-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span> <span class="pre">--force-recreate</span></code></p></li>
 <li><p>Results:</p>
 <ul>
-<li><p>The results will in xcode format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\int_jest_xunit.xml</span></code></p></li>
-<li><p>The results will in html format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html\int_jest_test_report.html</span></code></p></li>
+<li><p>The results in xcode format will be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\int_jest_xunit.xml</span></code></p></li>
+<li><p>The results in html format will be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\html\int_jest_test_report.html</span></code></p></li>
 </ul>
 </li>
 <li><p>Docs: See <a class="reference external" href="https://github.com/EpistasisLab/Aliro/blob/master/tests/integration/readme.md">Documentation</a> for details.</p></li>
@@ -309,22 +404,29 @@ npm run build-dev
 </section>
 <section id="unit">
 <h3>Unit<a class="headerlink" href="#unit" title="Permalink to this headline">¶</a></h3>
-<p>There are several unit test suites for the various components of Aliro.  The unit test suites can be run together in the context of a docker environment or directly on the host system, or an individual test suite can be run by itself.</p>
+<p>There are several unit test suites for the various components of Aliro. The
+unit test suites can be run together in the context of a docker environment or
+directly on the host system, or an individual test suite can be run by itself.</p>
 <p>The default location of the test output is the <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\</span></code> directory.</p>
 <section id="docker-unit-test-runner">
 <h4>Docker unit test runner<a class="headerlink" href="#docker-unit-test-runner" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Type: Runs all the unit tests in the context of a docker container and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
+<li><p>Type: Runs all the unit tests in the context of a docker container and puts
+the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
 <li><p>Dependencies: Docker-compose</p></li>
-<li><p>Usage: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p>
+<li><p>Usage:
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">.\docker-compose-unit-test.yml</span> <span class="pre">up</span> <span class="pre">--abort-on-container-exit</span></code></p>
 <ul>
-<li><p>To run only javascript or python tests, see the <a class="reference external" href="#local-test-instructions">further details above</a></p></li>
+<li><p>To run only javascript or python tests, see the
+<a class="reference external" href="#local-test-instructions">further details above</a></p></li>
 </ul>
 </li>
 <li><p>Results:</p>
 <ul>
-<li><p>The results will in xcode format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\nose_xunit.xml</span></code></p></li>
-<li><p>The xml cobertura coverage report will be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\cobertura\nose_cover.xml</span></code></p></li>
+<li><p>The results will in xcode format be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\nose_xunit.xml</span></code></p></li>
+<li><p>The xml cobertura coverage report will be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\cobertura\nose_cover.xml</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -332,7 +434,8 @@ npm run build-dev
 <section id="host-unit-test-runner">
 <h4>Host unit test runner<a class="headerlink" href="#host-unit-test-runner" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Type: Bash script that runs all the python unit tests on the host system and puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
+<li><p>Type: Bash script that runs all the python unit tests on the host system and
+puts the test results and code coverage reports in the <code class="docutils literal notranslate"><span class="pre">.\target</span></code> directory</p></li>
 <li><p>Dependencies: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span> <span class="pre">coverage</span></code></p>
 <ul>
 <li><p>Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
@@ -342,8 +445,10 @@ npm run build-dev
 <li><p>Usage: <code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">.\tests\unit_test_runner.sh</span></code></p></li>
 <li><p>Results:</p>
 <ul>
-<li><p>The results will in xcode format be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\nose_xunit.xml</span></code></p></li>
-<li><p>The xml cobertura coverage report will be in <code class="docutils literal notranslate"><span class="pre">.\target\test-reports\cobertura\nose_cover.xml</span></code></p></li>
+<li><p>The results will in xcode format be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\nose_xunit.xml</span></code></p></li>
+<li><p>The xml cobertura coverage report will be in
+<code class="docutils literal notranslate"><span class="pre">.\target\test-reports\cobertura\nose_cover.xml</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -356,7 +461,7 @@ npm run build-dev
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
 <li><p>Prereqs: install nose <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></code></p></li>
 <li><p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nosetests</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">v</span> <span class="n">ai</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_recommender</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nosetests<span class="w"> </span>-s<span class="w"> </span>-v<span class="w"> </span>ai/tests/test_recommender.py
 </pre></div>
 </div>
 </li>
@@ -368,7 +473,7 @@ npm run build-dev
 <li><p>Type: Python <a class="reference external" href="https://pypi.org/project/nose/">nose</a></p></li>
 <li><p>Prereqs: install nose <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></code></p></li>
 <li><p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nosetests</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">v</span> <span class="n">ai</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_ai</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nosetests<span class="w"> </span>-s<span class="w"> </span>-v<span class="w"> </span>ai/tests/test_ai.py
 </pre></div>
 </div>
 </li>
@@ -379,8 +484,8 @@ npm run build-dev
 <ul>
 <li><p>Type: Python</p></li>
 <li><p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">.</span>\<span class="n">ai</span>\<span class="n">metalearning</span>
-<span class="n">python</span> <span class="n">tests_dataset_describe</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>.<span class="se">\a</span>i<span class="se">\m</span>etalearning
+python<span class="w"> </span>tests_dataset_describe.py
 </pre></div>
 </div>
 </li>
@@ -389,7 +494,8 @@ npm run build-dev
 <section id="machine">
 <h5>Machine<a class="headerlink" href="#machine" title="Permalink to this headline">¶</a></h5>
 <ul>
-<li><p>Type: Python via <a class="reference external" href="https://pypi.org/project/nose/">nose</a> and Javascript via <a class="reference external" href="https://mochajs.org/">mocha</a></p></li>
+<li><p>Type: Python via <a class="reference external" href="https://pypi.org/project/nose/">nose</a> and Javascript via
+<a class="reference external" href="https://mochajs.org/">mocha</a></p></li>
 <li><p>Prereqs:</p>
 <ul class="simple">
 <li><p>install nose <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></code></p></li>
@@ -397,13 +503,13 @@ npm run build-dev
 </ul>
 </li>
 <li><p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># test Python codes</span>
-<span class="n">nosetests</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">v</span> <span class="n">machine</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">learn_tests</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># test Python codes</span>
+nosetests<span class="w"> </span>-s<span class="w"> </span>-v<span class="w"> </span>machine/test/learn_tests.py
 <span class="c1"># test Javascript codes</span>
-<span class="n">cd</span> <span class="n">machine</span>
-<span class="n">npm</span> <span class="n">install</span>
+<span class="nb">cd</span><span class="w"> </span>machine
+npm<span class="w"> </span>install
 <span class="c1"># note the path of test.js need to be updated in Windows environment</span>
-<span class="n">mocha</span> <span class="o">./</span><span class="n">test</span><span class="o">/</span><span class="n">test</span><span class="o">.</span><span class="n">js</span> <span class="c1"># or `npm test`</span>
+mocha<span class="w"> </span>./test/test.js<span class="w"> </span><span class="c1"># or `npm test`</span>
 </pre></div>
 </div>
 </li>
@@ -419,41 +525,74 @@ npm run build-dev
 <p>To create a production release:</p>
 <ul class="simple">
 <li><p>the source should be added to the <code class="docutils literal notranslate"><span class="pre">production</span></code> branch with a tagged commit</p></li>
-<li><p>the production docker images should be added to DockerHub with appropriate tags</p></li>
+<li><p>the production docker images should be added to DockerHub with appropriate
+tags</p></li>
 <li><p>a github release should be created</p></li>
 <li><p>a user production .zip should be addded as an asset to the github release</p></li>
 </ul>
-<p>Release procedure:</p>
+<section id="release-procedure">
+<h4>Release procedure<a class="headerlink" href="#release-procedure" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic">
-<li><p><strong>Test production build.</strong> In the master branch with all changes applied, run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">build</span></code> followed by <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">up</span> <span class="pre">-V</span></code>.  This should start an instance of Aliro using the production build environment.  Test that it works as expected.</p></li>
-<li><p><strong>Update the ``.env`` file with a new version number.</strong> In the master branch, update the TAG environment variable in <code class="docutils literal notranslate"><span class="pre">.env</span></code> to the current production version as per <a class="reference external" href="https://semver.org/">semantic versioning</a> and the python package version specification <a class="reference external" href="https://www.python.org/dev/peps/pep-0440">PEP440</a>.  Development images should have a tag indicating it is a <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">pre-release</a> (for example, <code class="docutils literal notranslate"><span class="pre">a0</span></code>).</p></li>
-<li><p><strong>Push changes to github.</strong>  Merge the master branch into the <code class="docutils literal notranslate"><span class="pre">production</span></code> branch and push the changes to github.</p></li>
-<li><p><strong>Build production docker images with ``bash release/generate_production_release.sh``.</strong> While in the prodution branch, build the production images and generate the user production .zip by running <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/generate_production_release.sh</span></code>.  This will:</p>
+<li><p><strong>Test production build.</strong> In the master branch with all changes applied,
+run <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">build</span></code> followed by
+<code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">./docker-compose-production.yml</span> <span class="pre">up</span> <span class="pre">-V</span></code>. This should start an
+instance of Aliro using the production build environment.  Test that it works
+as expected.</p></li>
+<li><p><strong>Update the ``.env`` file with a new version number.</strong> In the master branch,
+update the TAG environment variable in <code class="docutils literal notranslate"><span class="pre">.env</span></code> to the current production version
+as per <a class="reference external" href="https://semver.org/">semantic versioning</a> and the python package
+version specification <a class="reference external" href="https://www.python.org/dev/peps/pep-0440">PEP440</a>.
+Development images should have a tag indicating it is a
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">pre-release</a>
+(for example, <code class="docutils literal notranslate"><span class="pre">a0</span></code>).</p></li>
+<li><p><strong>Push changes to github.</strong>  Merge the master branch into the <code class="docutils literal notranslate"><span class="pre">production</span></code>
+branch and push the changes to github.</p></li>
+<li><p><strong>Build production docker images with
+``bash release/generate_production_release.sh``.</strong> While in the prodution branch,
+build the production images and generate the user production .zip by running
+<code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/generate_production_release.sh</span></code>.  This will:</p>
 <ul>
-<li><p>Create local lab, machine, and dbmongo production docker images with the tag defined in the .env file</p></li>
+<li><p>Create local lab, machine, and dbmongo production docker images with the
+tag defined in the .env file</p></li>
 <li><p>Create the production .zip named <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">production</span>
-<span class="n">bash</span> <span class="n">release</span><span class="o">/</span><span class="n">generate_production_release</span><span class="o">.</span><span class="n">sh</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>production
+bash<span class="w"> </span>release/generate_production_release.sh
 </pre></div>
 </div>
 </li>
 </ul>
 </li>
-<li><p><strong>Push docker images to DockerHub and tag the production git branch by running ``deploy_production_release.sh``.</strong>  While in the produciton branch, run <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/deploy_production_release.sh</span></code>.  This will:</p>
+<li><p><strong>Push docker images to DockerHub and tag the production git branch by
+running ``deploy_production_release.sh``.</strong>  While in the produciton branch, run
+<code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">release/deploy_production_release.sh</span></code>.  This will:</p>
 <ul>
 <li><p>Push the production lab, machine and dbmongo production docker images to dockerHub</p></li>
 <li><p>Tag the production git branch with the version defined in <code class="docutils literal notranslate"><span class="pre">.env</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">production</span>
-<span class="n">bash</span> <span class="n">release</span><span class="o">/</span><span class="n">deploy_production_release</span><span class="o">.</span><span class="n">sh</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>production
+bash<span class="w"> </span>release/deploy_production_release.sh
 </pre></div>
 </div>
 </li>
 </ul>
 </li>
-<li><p><strong>Test DockerHub images and production code.</strong>  Test that the production release works with the newly uploaded DockerHub images by navigating to the directory <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.  This should start an instance of Aliro that loads the newest images from DockerHub.  Test that this works as expected.  Check that in the enviromental variables section of the admin page, ‘TAG’ matches the current version.</p></li>
-<li><p><strong>Create Github Release.</strong>  If the test is successful, create a github release using the github web interface.  Base the release on the tagged production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code> as an archive asset.</p></li>
-<li><p><strong>Update the .env file in the master branch with the new dev version.</strong>  Update the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the master branch with the next version number and the <code class="docutils literal notranslate"><span class="pre">a0</span></code> suffix (see <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">Pre-release versioning conventions</a> and push the changes to git.  For example, <code class="docutils literal notranslate"><span class="pre">0.18</span></code> was just released, the new dev tag should be <code class="docutils literal notranslate"><span class="pre">0.19a0</span></code>.</p></li>
+<li><p><strong>Test DockerHub images and production code.</strong> Test that the production
+release works with the newly uploaded DockerHub images by navigating to the
+directory <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}</span></code> and running <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>.
+This should start an instance of Aliro that loads the newest images from
+DockerHub. Test that this works as expected. Check that in the enviromental
+variables section of the admin page, ‘TAG’ matches the current version.</p></li>
+<li><p><strong>Create Github Release.</strong>  If the test is successful, create a github
+release using the github web interface.  Base the release on the tagged
+production commit.  Attach the file <code class="docutils literal notranslate"><span class="pre">target/production/Aliro-${VERSION}.zip</span></code>
+as an archive asset.</p></li>
+<li><p><strong>Update the .env file in the master branch with the new dev version.</strong>
+Update the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the master branch with the next version number and
+the <code class="docutils literal notranslate"><span class="pre">a0</span></code> suffix (see
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0440/#pre-releases">Pre-release versioning conventions</a>)
+and push the changes to git.  For example, <code class="docutils literal notranslate"><span class="pre">0.18</span></code> was just released, the new
+dev tag should be <code class="docutils literal notranslate"><span class="pre">0.19a0</span></code>.</p></li>
 </ol>
+</section>
 </section>
 <section id="installing-a-production-build">
 <h3>Installing a production build<a class="headerlink" href="#installing-a-production-build" title="Permalink to this headline">¶</a></h3>
@@ -465,7 +604,8 @@ npm run build-dev
 <section id="running-from-production-build">
 <h3>Running from production build<a class="headerlink" href="#running-from-production-build" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li><p>From the Aliro directory, run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> to start the Aliro server.</p></li>
+<li><p>From the Aliro directory, run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> to start the
+Aliro server.</p></li>
 </ol>
 </section>
 </section>
@@ -525,7 +665,10 @@ npm run build-dev
 </ul>
 </li>
 <li><a class="reference internal" href="#production-builds">Production Builds</a><ul>
-<li><a class="reference internal" href="#generating-and-publishing-production-builds">Generating and publishing production builds</a></li>
+<li><a class="reference internal" href="#generating-and-publishing-production-builds">Generating and publishing production builds</a><ul>
+<li><a class="reference internal" href="#release-procedure">Release procedure</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#installing-a-production-build">Installing a production build</a></li>
 <li><a class="reference internal" href="#running-from-production-build">Running from production build</a></li>
 </ul>

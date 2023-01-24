@@ -142,15 +142,63 @@
             
   <section id="user-guide">
 <span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="#About">About</a></p></li>
+<li><p><a class="reference external" href="#Aliro">Aliro</a></p></li>
+<li><p><a class="reference external" href="#AliroEd">AliroEd</a></p></li>
+<li><p><a class="reference external" href="#Using-Aliro">Using Aliro</a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>About<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>Aliro is a platform to help researchers leverage supervised machine learning techniques to analyze data without needing an extensive data science background, and can also assist more experienced users with tasks such as choosing appropriate models for data. Users interact with Aliro via a web interface that allows them to execute machine learning experiments and explore generated models, and has an AI recommendation engine that will automatically choose appropriate models and parameters. Dataset profiles are generated and added to a knowledgebase as experiments are run, and the recommendation engine learns from this to give more informed recommendations as it is used. This allows the AI recommender to become tailored to specific data environments. Aliro comes with an initial knowledgebase generated from the PMLB benchmark suite.</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Aliro is a multi-container docker project that uses (<a class="reference external" href="https://docs.docker.com/compose/">Docker-Compose</a>).</p>
-<section id="aliroed-aliro-on-the-raspberry-pi-400">
-<h3>AliroEd (Aliro on the Raspberry Pi 400)<a class="headerlink" href="#aliroed-aliro-on-the-raspberry-pi-400" title="Permalink to this headline">¶</a></h3>
-<p>We have built a custom Raspberry Pi OS Image containing Aliro (configured to be up and running as soon as you boot up the Operating System.)</p>
+</section>
+<section id="id3">
+<h2>Aliro<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <section id="requirements">
-<h4>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Docker</p>
+<ul>
+<li><p>Most recent stable release, minimum version is 17.06.0</p>
+<ul>
+<li><p><a class="reference external" href="https://docs.docker.com/engine/getstarted/step_one/">Official Docker Website Getting Started</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/docker-for-windows/install/">Official Docker Installation for Windows</a></p></li>
+</ul>
+</li>
+<li><p><strong>Runtime Memory</strong>: (Mac and Windows only) If using <strong>Windows</strong> or <strong>Mac</strong>, we recommend docker VM to be configured with at least 6GB of runtime memory (<a class="reference external" href="https://docs.docker.com/docker-for-mac/#advanced">Mac configuration</a>, <a class="reference external" href="https://docs.docker.com/docker-for-windows/#advanced">Windows configuration</a>). By default, docker VM on Windows or Mac starts with 2G runtime memory.</p></li>
+<li><p><strong>File Sharing</strong>: (Windows only) Share the drive that will contain the Aliro directory with Docker by opening Docker Desktop, navigating to Resources-&gt;File Sharing and sharing the drive. <a class="reference external" href="https://docs.docker.com/docker-for-windows/#file-sharing">Docker Desktop File Sharing</a></p></li>
+</ul>
+</li>
+<li><p>Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations</p>
+<ul>
+<li><p><a class="reference external" href="https://docs.docker.com/compose/install/">Linux Docker-Compose Installation</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Download the production zip <code class="docutils literal notranslate"><span class="pre">Aliro-*.zip</span></code> from the asset section of the <a class="reference external" href="https://github.com/EpistasisLab/Aliro/releases/latest">latest release</a></p>
+<ul class="simple">
+<li><p>Note that this is different from the source code zip file.</p></li>
+</ul>
+</li>
+<li><p>Unzip the archive</p></li>
+</ol>
+</section>
+</section>
+<section id="id4">
+<h2>AliroEd<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="aliro-on-the-raspberry-pi-400">
+<h3>Aliro on the Raspberry Pi 400<a class="headerlink" href="#aliro-on-the-raspberry-pi-400" title="Permalink to this headline">¶</a></h3>
+<p>We have built a custom Raspberry Pi OS Image containing <strong>Aliro</strong> (configured to be up and running as soon as you boot up the Operating System.)</p>
+</section>
+<section id="id5">
+<h3>Requirements<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.raspberrypi.com/products/raspberry-pi-400/">Raspberry Pi 400</a></p></li>
 <li><p>A computer running Windows 10 or higher</p></li>
@@ -168,8 +216,8 @@
 <li><p>A copy of the <a class="reference external" href="http://52.35.223.86/infAndDownloadpage.html">aliro-imager.exe</a></p></li>
 </ul>
 </section>
-<section id="id2">
-<h4>Installation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<section id="id6">
+<h3>Installation<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p>Insert the MicroSD Card in your card reader.</p></li>
 <li><p>Double-click the <strong>aliro-imager.exe</strong> on you computer. If prompted to allow the application to run, select <strong>Yes</strong>. You may need to enter your computer’s <strong>Administrator</strong> password to continue.</p></li>
@@ -177,7 +225,7 @@
 <a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true"><img alt="Aliro Imager Install" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_install.png?raw=true" /></a>
 </li>
 <li><p>Once installed, you can run the <strong>AliroEd Imager</strong> from the Start Menu. When the program starts up you will see this screen:<span class="raw-html-m2r"><br></span></p>
-<a class="reference external image-reference" href="https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true"><img alt="Aliro_Imager_Start" src="https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true" /></a>
+<a class="reference external image-reference" href="https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true"><img alt="Aliro Imager Start" src="https://media.githubusercontent.com/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_start.png?raw=true" /></a>
 </li>
 <li><p>Click the <strong>CHOOSE STORAGE</strong> button and select your MicroSD Card from the popup menu.<span class="raw-html-m2r"><br></span></p>
 <a class="reference external image-reference" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true"><img alt="Aliro Imager Choose Storage" src="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_imager_choose_storage.png?raw=true" /></a>
@@ -208,45 +256,8 @@
 </ul>
 </section>
 </section>
-<section id="aliro">
-<h3>Aliro<a class="headerlink" href="#aliro" title="Permalink to this headline">¶</a></h3>
-<section id="id3">
-<h4>Requirements<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><p>Docker</p>
-<ul>
-<li><p>Most recent stable release, minimum version is 17.06.0</p>
-<ul>
-<li><p><a class="reference external" href="https://docs.docker.com/engine/getstarted/step_one/">Official Docker Website Getting Started</a></p></li>
-<li><p><a class="reference external" href="https://docs.docker.com/docker-for-windows/install/">Official Docker Installation for Windows</a></p></li>
-</ul>
-</li>
-<li><p><strong>Runtime Memory</strong>: (Mac and Windows only) If using <strong>Windows</strong> or <strong>Mac</strong>, we recommend docker VM to be configured with at least 6GB of runtime memory (<a class="reference external" href="https://docs.docker.com/docker-for-mac/#advanced">Mac configuration</a>, <a class="reference external" href="https://docs.docker.com/docker-for-windows/#advanced">Windows configuration</a>). By default, docker VM on Windows or Mac starts with 2G runtime memory.</p></li>
-<li><p><strong>File Sharing</strong>: (Windows only) Share the drive that will contain the Aliro directory with Docker by opening Docker Desktop, navigating to Resources-&gt;File Sharing and sharing the drive. <a class="reference external" href="https://docs.docker.com/docker-for-windows/#file-sharing">Docker Desktop File Sharing</a></p></li>
-</ul>
-</li>
-<li><p>Docker-Compose (Version 1.22.0 or greater, Linux only) - Separate installation is only needed for linux, docker-compose is bundled with windows and mac docker installations</p>
-<ul>
-<li><p><a class="reference external" href="https://docs.docker.com/compose/install/">Linux Docker-Compose Installation</a></p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="id4">
-<h4>Installation<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<ol class="arabic simple">
-<li><p>Download the production zip <code class="docutils literal notranslate"><span class="pre">Aliro-*.zip</span></code> from the asset section of the <a class="reference external" href="https://github.com/EpistasisLab/Aliro/releases/latest">latest release</a></p>
-<ul class="simple">
-<li><p>Note that this is different from the source code zip file.</p></li>
-</ul>
-</li>
-<li><p>Unzip the archive</p></li>
-</ol>
-</section>
-</section>
-</section>
-<section id="using-aliro">
-<h2>Using Aliro<a class="headerlink" href="#using-aliro" title="Permalink to this headline">¶</a></h2>
+<section id="id7">
+<h2>Using Aliro<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <section id="starting-and-stopping">
 <h3>Starting and Stopping<a class="headerlink" href="#starting-and-stopping" title="Permalink to this headline">¶</a></h3>
 <p>To start Aliro, from the command line, navigate to the Aliro directory run the command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code>. To stop Aliro, kill the process with <code class="docutils literal notranslate"><span class="pre">ctrl+c</span></code> and wait for the server to shut down. It may take a few minutes to build the first time Aliro is run.</p>
@@ -255,9 +266,8 @@
 <section id="user-interface">
 <h3>User Interface<a class="headerlink" href="#user-interface" title="Permalink to this headline">¶</a></h3>
 <p>Once the webserver is up, connect to <a class="reference external" href="http://localhost:5080/">http://localhost:5080/</a> to access the website. You should see the <strong>Datasets</strong> page. If it is your first time starting Aliro, there should be a message instructing one to add new datasets.</p>
-</section>
 <section id="adding-datasets">
-<h3>Adding Datasets<a class="headerlink" href="#adding-datasets" title="Permalink to this headline">¶</a></h3>
+<h4>Adding Datasets<a class="headerlink" href="#adding-datasets" title="Permalink to this headline">¶</a></h4>
 <p>One can add new datasets using a UI form within the website or manually add new datasets to the data directory. Datasets have the following restrictions:</p>
 <ul class="simple">
 <li><p>Datasets must have the extension .csv or .tsv</p></li>
@@ -266,9 +276,13 @@
 <li><p>Only the label column or categorical or ordinal features can contain string values.</p></li>
 <li><p>Files must be smaller then 8mb</p></li>
 </ul>
-<p>Some example datasets can be found in the classification section of the <a class="reference external" href="https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets">Penn Machine Learning Benchmarks</a> github repository.</p>
-<section id="id6">
-<h4>Uploading Using the Website<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>Some example datasets can be found in the
+<a class="reference external" href="https://github.com/EpistasisLab/penn-ml-benchmarks/tree/master/datasets">classification section</a>
+of the <a class="reference external" href="https://github.com/EpistasisLab/pmlb">Penn Machine Learning Benchmarks</a>
+github repository.</p>
+</section>
+<section id="id9">
+<h4>Uploading Using the Website<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>To upload new datasets from the website, click the “Add new Datasets” button on the Datasets page to navigate to the upload form. Select a file using the form’s file browser and enter the corresponding information about the dataset: the name of the dependent column, a JSON of key/value pairs of ordinal features, for example <code class="docutils literal notranslate"><span class="pre">{&quot;ord&quot;</span> <span class="pre">:</span> <span class="pre">[&quot;first&quot;,</span> <span class="pre">&quot;second&quot;,</span> <span class="pre">&quot;third&quot;]}</span></code>, and a comma separated list of categorical column names without quotes, such as <code class="docutils literal notranslate"><span class="pre">cat1,</span> <span class="pre">cat2</span></code>. Once uploaded, the dataset should be available to use within the system.</p>
 </section>
 <section id="adding-initial-datasets-to-the-data-directory">
@@ -279,23 +293,23 @@
 <ul class="simple">
 <li><p>Example configuration file:</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;target_column&quot;</span><span class="p">:</span><span class="s2">&quot;my_custom_target_column_name&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;prediction_type&quot;</span><span class="p">:</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;categorical_features&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span> <span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;ordinal_features&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ord&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="s2">&quot;third&quot;</span><span class="p">]}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;target_column&quot;</span><span class="p">:</span><span class="s2">&quot;my_custom_target_column_name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;prediction_type&quot;</span><span class="p">:</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;categorical_features&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cat1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cat2&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;ordinal_features&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ord&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;second&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;third&quot;</span><span class="p">]}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="id7">
-<h3>Analyzing Data<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<section id="id10">
+<h3>Analyzing Data<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>To run a classification machine learning experiment, from the click ‘Build New Experiment’, choose the desired algorithm and experiment parameters and click ‘Launch Experiment’. To start the AI, from the <strong>Datasets</strong> page click the AI toggle. The AI will start issuing experiments according to the parameters in <code class="docutils literal notranslate"><span class="pre">config/ai.config</span></code>. This file can be modified to change the recommendation engine being used and how may recommendations the AI will give. By default, the AI will make 10 recommendations.</p>
 <p>From the <strong>Datasets</strong> page, click ‘completed experiments’ to navigate to the <strong>Experiments</strong> page for that dataset filtered for the completed experiments. If an experiment completed successfully, use the ‘Actions’ dropdown to download the fitted model for that experiment and a python script that can be used to run the model on other datasets. Click elsewhere on the row to navigate to the experiment <strong>Results</strong> page.</p>
 </section>
-<section id="id8">
-<h3>Downloading and Using Models<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<section id="id11">
+<h3>Downloading and Using Models<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>A pickled version of the fitted model and an example script for using that model can be downloded for any completed experiment from the <strong>Experiments</strong> page.</p>
 <p>Please see the <a class="reference external" href="https://github.com/EpistasisLab/Aliro/blob/production/docs/PennAI_Demo/Demo_of_using_exported_scripts_from_PennAI.ipynb">jupiter notebook script demo</a> for instructions on using the scripts and model exported from Aliro to reproduce the findings on the results page and classify new datasets.</p>
 </section>
@@ -317,29 +331,29 @@
             <div class="page_toc">
                 <ul>
 <li><a class="reference internal" href="#">User Guide</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#aliroed-aliro-on-the-raspberry-pi-400">AliroEd (Aliro on the Raspberry Pi 400)</a><ul>
+<li><a class="reference internal" href="#contents">Contents</a></li>
+<li><a class="reference internal" href="#id2">About</a></li>
+<li><a class="reference internal" href="#id3">Aliro</a><ul>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
-<li><a class="reference internal" href="#id2">Installation</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#aliro">Aliro</a><ul>
-<li><a class="reference internal" href="#id3">Requirements</a></li>
-<li><a class="reference internal" href="#id4">Installation</a></li>
+<li><a class="reference internal" href="#id4">AliroEd</a><ul>
+<li><a class="reference internal" href="#aliro-on-the-raspberry-pi-400">Aliro on the Raspberry Pi 400</a></li>
+<li><a class="reference internal" href="#id5">Requirements</a></li>
+<li><a class="reference internal" href="#id6">Installation</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#using-aliro">Using Aliro</a><ul>
+<li><a class="reference internal" href="#id7">Using Aliro</a><ul>
 <li><a class="reference internal" href="#starting-and-stopping">Starting and Stopping</a></li>
-<li><a class="reference internal" href="#user-interface">User Interface</a></li>
-<li><a class="reference internal" href="#adding-datasets">Adding Datasets</a><ul>
-<li><a class="reference internal" href="#id6">Uploading Using the Website</a></li>
+<li><a class="reference internal" href="#user-interface">User Interface</a><ul>
+<li><a class="reference internal" href="#adding-datasets">Adding Datasets</a></li>
+<li><a class="reference internal" href="#id9">Uploading Using the Website</a></li>
 <li><a class="reference internal" href="#adding-initial-datasets-to-the-data-directory">Adding Initial Datasets to the Data Directory</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">Analyzing Data</a></li>
-<li><a class="reference internal" href="#id8">Downloading and Using Models</a></li>
+<li><a class="reference internal" href="#id10">Analyzing Data</a></li>
+<li><a class="reference internal" href="#id11">Downloading and Using Models</a></li>
 </ul>
 </li>
 </ul>
