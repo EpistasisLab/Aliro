@@ -54,50 +54,6 @@ MIN_COLS = 2
 MIN_ROW_PER_CLASS = 2
 
 
-def check_dataframe(df, target_column):
-
-    error_message = ""
-    nan_trigger = False
-
-    # which columns contain NaN in df
-    nan_cols = df.columns[df.isnull().any()].tolist()
-    if len(nan_cols) > 0:
-        # print("NaN columns: ", nan_cols)
-        nan_trigger = True
-
-        error_message += "NaN is found in " + str(nan_cols) + " \n"
-        # add nextline to error_message
-
-    # remove Specie column from df
-    df_non_target = df.drop(columns=target_column, axis=1)
-
-    inf_trigger = False
-    inf_list = []
-
-    # find column by colum which columns contain infinity or -infinity in df
-    for col in df_non_target.columns:
-        if np.isinf(df[col]).any():
-            inf_trigger = True
-            inf_list.append(col)
-
-    if inf_trigger:
-        error_message += "Infinity or -infinity is found in " + \
-            str(inf_list) + " \n"
-
-    str_trigger = False
-    # find which columns contain string in df
-    # print(df.columns[df.dtypes == object].tolist())
-    str_cols = df.columns[df.dtypes == object].tolist()
-    if len(str_cols) > 0:
-        # print("String columns: ", str_cols)
-        str_trigger = True
-
-        error_message += "String is found in " + \
-            str(str_cols) + " \n"
-
-    return error_message
-
-
 def validate_data_from_server(file_id, prediction_type, target_field, categories=None, ordinals=None, **kwargs):
     # Read the data set into memory
     raw_data = get_file_from_server(file_id)
@@ -207,7 +163,7 @@ def validate_data(df, prediction_type="classification", target_column=None, cate
         # classification
         if (prediction_type == "classification"):
             # target column of classification problem does not need to be numeric
-            num_df_non_target = num_df.drop(columns=target_column, axis=1)
+            num_df = num_df.drop(columns=target_column, axis=1)
 
             # Check rows per class
             counts = df.groupby(target_column).count()
@@ -220,23 +176,16 @@ def validate_data(df, prediction_type="classification", target_column=None, cate
                 return False, msg
 
         # check that non-cat feature columns contain only numeric data
-        # if (len(num_df_non_target.columns)) > 0:
-        #     try:
-        #         check_array(num_df_non_target, dtype=np.float64,
-        #                     order="C", force_all_finite=True)
-
-        #     except Exception as e:
-        #         logger.warn("sklearn.check_array() validation " + str(e))
-        #         return False, "sklearn.check_array() validation " + str(e)
-
         if (len(num_df.columns)) > 0:
+            try:
+                check_array(num_df, dtype=np.float64,
+                            order="C", force_all_finite=True)
 
-            error_message = check_dataframe(num_df, target_column)
+            except Exception as e:
+                logger.warn("sklearn.check_array() validation " + str(e))
+                return False, "sklearn.check_array() validation " + str(e)
 
-            if error_message != "":
-
-                logger.warn(str(error_message))
-                return False, str(error_message)
+        # check t
 
     return True, None
 
