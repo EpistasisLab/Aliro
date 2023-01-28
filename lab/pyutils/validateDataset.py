@@ -65,7 +65,7 @@ def check_dataframe(df, target_column):
         # print("NaN columns: ", nan_cols)
         nan_trigger = True
 
-        error_message += "NaN is found in " + str(nan_cols) + " \n"
+        error_message += "NaN is found in " + str(nan_cols) + ","
         # add nextline to error_message
 
     # remove Specie column from df
@@ -82,7 +82,7 @@ def check_dataframe(df, target_column):
 
     if inf_trigger:
         error_message += "Infinity or -infinity is found in " + \
-            str(inf_list) + " \n"
+            str(inf_list) + ","
 
     str_trigger = False
     # find which columns contain string in df
@@ -93,7 +93,7 @@ def check_dataframe(df, target_column):
         str_trigger = True
 
         error_message += "String is found in " + \
-            str(str_cols) + " \n"
+            str(str_cols)
 
     return error_message
 
