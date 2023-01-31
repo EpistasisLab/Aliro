@@ -2297,7 +2297,7 @@ handleCatFeaturesUserTextCancel() {
 
     
 
-    console.log("clearing file icons");
+    // console.log("clearing file icons");
 
     // // generate number from 1 to 5
     // for (var i = 1; i <= 5; i++) {
@@ -2437,11 +2437,21 @@ handleCatFeaturesUserTextCancel() {
     // UI elements that get checked below before the main return statement.
     // This is outside the main return statement scope because of the use
     // of the pseudo-modal windows just below.
+
     if(this.state.showErrorModal){
+      var errorModalContent = this.state.errorModalContent.split("*");
+
       return(
       <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog"> 
         <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
-        <Modal.Content>{this.state.errorModalContent}</Modal.Content>
+
+        {/* <Modal.Content>{this.state.errorModalContent}</Modal.Content> */}
+
+        <Modal.Content>{errorModalContent.map((item, index) => {
+          return <p key={index}>{item}</p>
+        })}</Modal.Content>
+
+      {/* <Modal.Content>{listItems}</Modal.Content> */}
       </Modal>
       )
     }
@@ -2985,27 +2995,7 @@ handleCatFeaturesUserTextCancel() {
         
         </Form>
 
-        {/* show any file icon which could be dragable on web */}
         
-        {/* {<>      
-
-
-            <div id="mydiv">
-              <div id="mydivheader"></div>
-             
-          </div>
-
-          
-          </> 
-        }
-         */}
-
-
-         {/* {
-          // make div for dragable file icons
-          <div id="mydiv_draggable_icons">
-          </div>
-         } */}
        
         {dataPrevTable}
       </div>

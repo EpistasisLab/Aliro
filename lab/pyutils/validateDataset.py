@@ -67,8 +67,8 @@ def check_dataframe(df, target_column):
     # find columns contain missing value(NaN) in df
     nan_cols = df.columns[df.isnull().any()].tolist()
     if len(nan_cols) > 0:
-        error_message += "Process missing values in " + \
-            str(nan_cols) + ","
+        error_message += "*Please process missing value in " + \
+            str(nan_cols)+"." + "*"
 
     # remove Specie column from df
     df_non_target = df.drop(columns=target_column, axis=1)
@@ -88,13 +88,13 @@ def check_dataframe(df, target_column):
             inf_list.append(col)
 
     if len(inf_list) > 0:
-        error_message += "Infinity or -infinity is found in " + \
-            str(inf_list) + ","
+        error_message += "*Please process infinity or -infinity in " + \
+            str(inf_list)+"." + "*"
 
     # str_trigger = False
     if len(str_cols) > 0:
-        error_message += "Process string in " + \
-            str(str_cols)
+        error_message += "*Please process string in " + \
+            str(str_cols)+"."
 
     return error_message
 
