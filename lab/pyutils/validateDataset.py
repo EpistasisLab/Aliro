@@ -240,7 +240,7 @@ def validate_data(df, prediction_type="classification", target_column=None, cate
 
 def validate_data_updated(df, prediction_type="classification", target_column=None, categories=None, ordinals=None):
     '''
-    Check that a datafile is valid
+    Check that a df is valid
     This function checks for the following:
         - prediction_type is valid
         - number of rows and columns is valid
@@ -305,8 +305,8 @@ def validate_data_updated(df, prediction_type="classification", target_column=No
                 logger.warn(msg)
                 return False, msg
 
-    # In the below code, i check whether features and target column contain only numeric data or not.
-    # check whether each column contains only numeric data or not
+    # In the below code,the check_dataframe() checks whether features and target column contain only processed data.
+    # check whether each column contains only processed data or not
     # missing values are not allowed in df
     # strings are not allowed in df
     # inf or -inf are not allowed in df
