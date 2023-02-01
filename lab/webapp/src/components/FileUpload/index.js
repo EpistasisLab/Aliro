@@ -2445,13 +2445,9 @@ handleCatFeaturesUserTextCancel() {
       <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog"> 
         <Modal.Header>{this.state.errorModalHeader}</Modal.Header>
 
-        {/* <Modal.Content>{this.state.errorModalContent}</Modal.Content> */}
+        <Modal.Content>{this.state.errorModalContent}</Modal.Content>
 
-        <Modal.Content>{errorModalContent.map((item, index) => {
-          return <p key={index}>{item}</p>
-        })}</Modal.Content>
 
-      {/* <Modal.Content>{listItems}</Modal.Content> */}
       </Modal>
       )
     }
