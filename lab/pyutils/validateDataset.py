@@ -70,9 +70,9 @@ def check_dataframe(df, target_column):
         error_message += "*Please process missing value in " + \
             str(nan_cols)+"." + "*"
 
-    # remove Specie column from df
+    # remove Species column from df
     df_non_target = df.drop(columns=target_column, axis=1)
-    inf_list = []
+    inf_cols_list = []
 
     # find column by colum which columns contain infinity or -infinity in df
 
@@ -80,16 +80,17 @@ def check_dataframe(df, target_column):
     # object dtype for storing strings in pandas
     # if column contains string and numeric data, its dtype is object.
     str_cols = df.columns[df.dtypes == object].tolist()
+
     non_str_cols = df_non_target.columns.difference(str_cols)
 
     for col in non_str_cols:
 
         if np.isinf(df[col]).any():
-            inf_list.append(col)
+            inf_cols_list.append(col)
 
-    if len(inf_list) > 0:
+    if len(inf_cols_list) > 0:
         error_message += "*Please process infinity or -infinity in " + \
-            str(inf_list)+"." + "*"
+            str(inf_cols_list)+"." + "*"
 
     # str_trigger = False
     if len(str_cols) > 0:
@@ -286,22 +287,6 @@ def validate_data_updated(df, prediction_type="classification", target_column=No
                         "' cannot be an ordinal feature")
             return False, "Target column '" + target_column + "' cannot be an ordinal feature"
 
-    # check that cat columns can be encoded
-    # if categories or ordinals:
-    #     try:
-    #         encode_data(df, target_column, categories,
-    #                     ordinals, "OneHotEncoder")
-    #         encode_data(df, target_column, categories,
-    #                     ordinals, "OrdinalEncoder")
-    #     except Exception as e:
-    #         logger.warn("encode_data() failed, " + str(e))
-    #         return False, "encode_data() failed, " + str(e)
-
-    #     if categories:
-    #         num_df = num_df.drop(columns=categories)
-    #     if ordinals:
-    #         num_df = num_df.drop(columns=list(ordinals.keys()))
-
     # check only check if target is specified
     if target_column:
 
@@ -320,18 +305,7 @@ def validate_data_updated(df, prediction_type="classification", target_column=No
                 logger.warn(msg)
                 return False, msg
 
-        # check that non-cat feature columns contain only numeric data
-        # if (len(num_df_non_target.columns)) > 0:
-        #     try:
-        #         check_array(num_df_non_target, dtype=np.float64,
-        #                     order="C", force_all_finite=True)
-
-        #     except Exception as e:
-        #         logger.warn("sklearn.check_array() validation " + str(e))
-        #         return False, "sklearn.check_array() validation " + str(e)
-
-    # In the below code, i check whether features and target column contain only numeric data or not. Therefore, i need to remove the above code to check whether non-cat feature columns contain only numeric data or not.
-
+    # In the below code, i check whether features and target column contain only numeric data or not.
     # check whether each column contains only numeric data or not
     # missing values are not allowed in df
     # strings are not allowed in df
