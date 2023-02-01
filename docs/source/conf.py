@@ -51,8 +51,8 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'Aliro'
-copyright = '2018, Penn'
-author = 'University of Pennsylvania'
+copyright = '2023, Cedars-Sinai Medical Center'
+author = 'Cedars-Sinai Medical Center'
 
 # read version from .env
 env = Env()
