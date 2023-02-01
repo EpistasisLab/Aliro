@@ -2451,7 +2451,6 @@ handleCatFeaturesUserTextCancel() {
           return <p key={index}>{item}</p>
         })}</Modal.Content>
 
-      {/* <Modal.Content>{listItems}</Modal.Content> */}
       </Modal>
       )
     }
