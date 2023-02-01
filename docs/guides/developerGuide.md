@@ -414,3 +414,7 @@ dev tag should be `0.19a0`.
 
 1. From the Aliro directory, run the command `docker-compose up` to start the
 Aliro server.
+
+
+<!-- ## Aliro Lab API -->
+<!-- <iframe src="lab_api.html" width="100%" height="100%"></iframe> -->

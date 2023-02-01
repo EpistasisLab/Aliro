@@ -3,6 +3,8 @@ FROM python:3.7.16-buster
 ARG USE_WHEELS
 ARG wheel_directory=docker/wheels
 
+RUN pip install --upgrade pip
+
 COPY /docs/requirements.txt /
 RUN pip install -r /requirements.txt
 
