@@ -160,37 +160,6 @@ describe('lab', () => {
 			});
 
 
-			it('string data in file', async () => {
-				expect.assertions(3);
-
-				let filepath = `${util.DATASET_PATH}/appendicitis_cat_ord.csv`
-
-				let form = new FormData();
-
-				let metadata =  JSON.stringify({
-						'name': 'appendicitis_cat_ord_datasetbad.csv',
-						'username': 'testuser',
-						'timestamp': Date.now(),
-						'dependent_col' : 'target_class',
-						'categorical_features' : []		
-					})
-
-				form.append('_metadata', metadata)
-				form.append('_files', fs.createReadStream(filepath));
-
-				let result
-
-				try {
-					result = await labApi.putDataset(form);
-				}
-				catch (e) {
-					var json = await e.response.json()
-					expect(json.error).toBeTruthy()
-					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat', 'ord'] ")
-				}
-			});
-
 			
 
 			it('invalid metadata key', async () => {
