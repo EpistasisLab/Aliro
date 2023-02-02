@@ -62,7 +62,8 @@ def check_dataframe(df, target_column):
     inf or -inf are not allowed in df.
     '''
 
-    error_message = "Found error in data:"
+    # error_message = "Found error in data:"
+    error_message = ""
 
     # find columns contain missing value(NaN) in df
     nan_cols = df.columns[df.isnull().any()].tolist()
@@ -96,15 +97,18 @@ def check_dataframe(df, target_column):
         error_message += "* 'STRING' in " + \
             str(str_cols)+" "
 
-    return error_message
+    if error_message != "":
+        raise ValueError(error_message)
+
+    return True
 
 
 def validate_data_from_server(file_id, prediction_type, target_field, categories=None, ordinals=None, **kwargs):
     # Read the data set into memory
     raw_data = get_file_from_server(file_id)
     df = pd.read_csv(StringIO(raw_data), sep=None, engine='python', **kwargs)
-    # return validate_data(df, prediction_type, target_field, categories, ordinals)
-    return validate_data_updated(df, prediction_type, target_field, categories, ordinals)
+    return validate_data(df, prediction_type, target_field, categories, ordinals)
+    # return validate_data_updated(df, prediction_type, target_field, categories, ordinals)
 
 
 def validate_data_from_filepath(file_id, prediction_type, target_field, categories=None, ordinals=None, **kwargs):
@@ -146,8 +150,10 @@ def encode_data(df, target_column, categories, ordinals, encoding_strategy="OneH
     else:
         return df
 
+# original validate_data function
 
-def validate_data(df, prediction_type="classification", target_column=None, categories=None, ordinals=None):
+
+def validate_data_origin(df, prediction_type="classification", target_column=None, categories=None, ordinals=None):
     '''
     Check that a datafile is valid
 
@@ -232,12 +238,12 @@ def validate_data(df, prediction_type="classification", target_column=None, cate
                 logger.warn("sklearn.check_array() validation " + str(e))
                 return False, "sklearn.check_array() validation " + str(e)
 
-        # check t
-
     return True, None
 
+# updated validate_data function
 
-def validate_data_updated(df, prediction_type="classification", target_column=None, categories=None, ordinals=None):
+
+def validate_data(df, prediction_type="classification", target_column=None, categories=None, ordinals=None):
     '''
     Check that a df is valid
     This function checks for the following:
@@ -304,16 +310,17 @@ def validate_data_updated(df, prediction_type="classification", target_column=No
                 logger.warn(msg)
                 return False, msg
 
-    # In the below code,the check_dataframe() checks whether features and target column contain only processed data.
-    # check whether each column contains only processed data or not
-    # missing values are not allowed in df
-    # strings are not allowed in df
-    # inf or -inf are not allowed in df
-    if (len(df.columns)) > 0:
-        error_message = check_dataframe(df, target_column)
-        if error_message != "Found error in data:":
-            logger.warn(str(error_message))
-            return False, str(error_message)
+        # In the below code,the check_dataframe() checks whether features and target column contain only processed data.
+        # check whether each column contains only processed data or not
+        # missing values are not allowed in df
+        # strings are not allowed in df
+        # inf or -inf are not allowed in df
+        if (len(df.columns)) > 0:
+            try:
+                check_dataframe(df, target_column)
+            except ValueError as e:
+                logger.warn("check_dataframe() validation " + str(e))
+                return False, "check_dataframe() validation " + str(e)
 
     return True, None
 

@@ -15,13 +15,13 @@ describe('lab', () => {
 		describe.each`
 			testname					| filename						| prediction_type		| target			| categorical	| ordinal
 			${'numeric'}				| ${'appendicitis_2.csv'}		| ${'classification'}	| ${'target_class'}	| ${[]}			| ${{}}
-			${'categorical'}			| ${'appendicitis_cat.csv'}		| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${{}}
-			${'categorical_ordinal'}	| ${'appendicitis_cat_ord.csv'}	| ${'classification'}	| ${'target_class'}	|${["cat"]}		| ${ {"ord" : ["first", "second", "third"]}}
 			${'regression'}				| ${'192_vineyard.csv'}			| ${'regression'}		| ${'target'}		|${[]}			| ${{}}
 			`("putDatasetGood", ({testname, filename, prediction_type, target, categorical, ordinal}) => {
 				it(`${testname}`, async () => {
 					jest.setTimeout(15000)
 					let filepath = `${util.DATASET_PATH}/${filename}`
+
+					console.log('test!!!')
 
 					console.log(`${testname} ${filename} ${prediction_type}, ${target}, ${categorical} ${ordinal}`)
 					let form = new FormData();
@@ -94,6 +94,7 @@ describe('lab', () => {
 				}
 			});
 
+			// appendicitis_cat.csv
 			it('string data in file', async () => {
 				expect.assertions(3);
 
@@ -121,9 +122,45 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, sklearn.check_array() validation could not convert string to float: 'b'")
+					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat'] ")
 				}
 			});
+
+
+			// aappendicitis_cat_ord.csv
+			it('string data in file', async () => {
+				expect.assertions(3);
+
+				let filepath = `${util.DATASET_PATH}/appendicitis_cat_ord.csv`
+
+				let form = new FormData();
+
+				let metadata =  JSON.stringify({
+						'name': 'appendicitis_cat_ord_datasetbad.csv',
+						'username': 'testuser',
+						'timestamp': Date.now(),
+						'dependent_col' : 'target_class',
+						'categorical_features' : []		
+					})
+
+				form.append('_metadata', metadata)
+				form.append('_files', fs.createReadStream(filepath));
+
+				let result
+
+				try {
+					result = await labApi.putDataset(form);
+				}
+				catch (e) {
+					var json = await e.response.json()
+					expect(json.error).toBeTruthy()
+					expect(e.response.status).toEqual(400)
+					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat', 'ord'] ")
+				}
+			});
+
+
+			
 
 			it('invalid metadata key', async () => {
 				expect.assertions(3);
