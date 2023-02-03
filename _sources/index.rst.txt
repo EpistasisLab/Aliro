@@ -18,6 +18,7 @@ And, it has an *AI* assistant that can choose the analysis to run for you.
    quickstart
    userguide
    developerguide
+   lab_api
    ai
    recommenders
    api

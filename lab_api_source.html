@@ -1,0 +1,933 @@
+<!DOCTYPE HTML><html><head><title>Aliro API</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 7.8.0"><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+  $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+
+  $('[data-toggle]').click(function() {
+    var selector = $(this).data('target') + ' pre code';
+    $(selector).each(function(i, block) {
+      hljs.highlightBlock(block);
+    });
+  });
+
+  // open modal on hashes like #_action_get
+  $(window).bind('hashchange', function(e) {
+    var anchor_id = document.location.hash.substr(1); //strip #
+    var element = $('#' + anchor_id);
+
+    // do we have such element + is it a modal?  --> show it
+    if (element.length && element.hasClass('modal')) {
+      element.modal('show');
+    }
+  });
+
+  // execute hashchange on first page load
+  $(window).trigger('hashchange');
+
+  // remove url fragment on modal hide
+  $('.modal').on('hidden.bs.modal', function() {
+    try {
+      if (history && history.replaceState) {
+          history.replaceState({}, '', '#');
+      }
+    } catch(e) {}
+  });
+});
+    </script><style>
+      .hljs {
+  background: transparent;
+}
+.parent {
+  color: #999;
+}
+.list-group-item > .badge {
+  float: none;
+  margin-right: 6px;
+}
+.panel-title > .methods {
+  float: right;
+}
+.badge {
+  border-radius: 0;
+  text-transform: uppercase;
+  width: 70px;
+  font-weight: normal;
+  color: #f3f3f6;
+  line-height: normal;
+}
+.badge_get {
+  background-color: #63a8e2;
+}
+.badge_post {
+  background-color: #6cbd7d;
+}
+.badge_put {
+  background-color: #22bac4;
+}
+.badge_delete {
+  background-color: #d26460;
+}
+.badge_patch {
+  background-color: #ccc444;
+}
+.list-group,
+.panel-group {
+  margin-bottom: 0;
+}
+.panel-group .panel+.panel-white {
+  margin-top: 0;
+}
+.panel-group .panel-white {
+  border-bottom: 1px solid #F5F5F5;
+  border-radius: 0;
+}
+.panel-white:last-child {
+  border-bottom-color: white;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel-white .panel-heading {
+  background: white;
+}
+.tab-pane ul {
+  padding-left: 2em;
+}
+.tab-pane h1 {
+  font-size: 1.3em;
+}
+.tab-pane h2 {
+  font-size: 1.2em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+}
+.tab-pane h3 {
+  font-size: 1.1em;
+}
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+#sidebar {
+  margin-top: 30px;
+  padding-right: 5px;
+  overflow: auto;
+  height: 90%;
+}
+.top-resource-description {
+  border-bottom: 1px solid #ddd;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description {
+  border-bottom: 1px solid #fcfcfc;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description p:last-child {
+  margin: 0;
+}
+.list-group .badge {
+  float: left;
+}
+.method_description {
+  margin-left: 85px;
+}
+.method_description p:last-child {
+  margin: 0;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item:hover {
+  background-color: #f5f5f5;
+}
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+.items {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+}
+.examples {
+  margin-left: 0.5em;
+}
+.resource-modal li > ul {
+  margin-bottom: 1em;
+}
+.required {
+  color: #f00;
+}
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>Aliro API <small>version v1</small></h1><p>http://localhost:5080/api/{version}</p><ul><li><strong>version</strong>: <em><span class="required">required</span>(v1)</em></li></ul></div><div class="panel panel-default"><div class="panel-heading"><h3 id="projects" class="panel-title">/projects</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_projects"><span class="parent"></span>/projects</a> <span class="methods"><a href="#projects_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_projects" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#projects_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all projects</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="projects_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/projects</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all projects</p></div><ul class="nav nav-tabs"><li class="active"><a href="#projects_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="projects_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "562237f33774694c5a4814bb",
+    "name":"calinski-harabasz",
+    "schema": {
+      "algorithm": {
+        "type": "enum",
+        "default": "kmeans",
+        "values": ["kmeans", "linkage", "gmdistribution"]
+      },
+      "k": {
+        "type": "int",
+        "default": 3
+      }
+    }
+  },
+  {
+    "_id": "56297e87d1a19b9c0e21c70a",
+    "name":"bayesian-optimisation",
+    "schema": {
+      "x": {
+        "type": "float",
+        "default": 2
+      },
+      "y": {
+        "type": "float",
+        "default": 7
+      }
+    }
+  }
+]
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_projects__projectid_"><span class="parent">/projects</span>/{projectId}</a> <span class="methods"><a href="#projects__projectid__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_projects__projectid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#projects__projectid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific project by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="projects__projectid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/projects</span>/{projectId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific project by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#projects__projectid__get_request" data-toggle="tab">Request</a></li><li><a href="#projects__projectid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="projects__projectid__get_request"><h3>URI Parameters</h3><ul><li><strong>projectId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="projects__projectid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "56297e87d1a19b9c0e21c70a",
+  "name":"bayesian-optimisation",
+  "schema": {
+    "x": {
+      "type": "float",
+      "default": 2
+    },
+    "y": {
+      "type": "float",
+      "default": 7
+    }
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_projects__projectid__experiment"><span class="parent">/projects/{projectId}</span>/experiment</a> <span class="methods"><a href="#projects__projectid__experiment_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_projects__projectid__experiment" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#projects__projectid__experiment_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Submit a single experiment</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="projects__projectid__experiment_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/projects/{projectId}</span>/experiment</h4></div><div class="modal-body"><div class="alert alert-info"><p>Submit a single experiment</p></div><ul class="nav nav-tabs"><li class="active"><a href="#projects__projectid__experiment_post_request" data-toggle="tab">Request</a></li><li><a href="#projects__projectid__experiment_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="projects__projectid__experiment_post_request"><h3>URI Parameters</h3><ul><li><strong>projectId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="projects__projectid__experiment_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "562a12bd612a17b20f99a143"
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "Project ID 562237f33774694c5a4814bb does not exist"
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "Experiment failed to run"
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/501" target="_blank">501</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "No machine capacity available"
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_projects__projectid__batch"><span class="parent">/projects/{projectId}</span>/batch</a> <span class="methods"><a href="#projects__projectid__batch_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_projects__projectid__batch" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#projects__projectid__batch_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Submit a batch of experiments</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="projects__projectid__batch_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/projects/{projectId}</span>/batch</h4></div><div class="modal-body"><div class="alert alert-info"><p>Submit a batch of experiments</p></div><ul class="nav nav-tabs"><li class="active"><a href="#projects__projectid__batch_post_request" data-toggle="tab">Request</a></li><li><a href="#projects__projectid__batch_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="projects__projectid__batch_post_request"><h3>URI Parameters</h3><ul><li><strong>projectId</strong>: <em><span class="required">required</span>(string)</em></li></ul><h3>Query Parameters</h3><ul><li><strong>retry</strong>: <em><span class="required">required</span>(integer - default: 3600 - minimum: 1)</em><p>Time (s) between retries after single failed experiment submission</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>60</code></pre></div></li></ul></div><div class="tab-pane" id="projects__projectid__batch_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "status": "Started"
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "Project ID 562237f33774694c5a4814bb does not exist"
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="experiments" class="panel-title">/experiments</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_experiments"><span class="parent"></span>/experiments</a> <span class="methods"><a href="#experiments_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_experiments" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#experiments_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all experiments</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="experiments_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/experiments</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all experiments</p></div><ul class="nav nav-tabs"><li class="active"><a href="#experiments_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="experiments_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "562aa755023155351a2ff061",
+    "_options": {
+      "y": 8.59954833984375,
+      "x": 0.07110595703125
+    },
+    "_project_id": "56297e87d1a19b9c0e21c70a",
+    "_machine_id": "5628fb1b17de50be077be348",
+    "_files": [],
+    "_status": "success",
+    "_started": "2015-10-23T21:32:05.995Z",
+    "_finished": "2015-10-23T21:32:31.107Z",
+    "_scores": {
+      "value": 97.4392476647487
+    }
+  },
+  {
+    "_id": "562aa731023155351a2ff060",
+    "_options": {
+      "y": 15,
+      "x": -5
+    },
+    "_project_id": "56297e87d1a19b9c0e21c70a",
+    "_machine_id": "5628fb1b17de50be077be348",
+    "_files": [],
+    "_status": "success",
+    "_started": "2015-10-23T21:31:29.322Z",
+    "_finished": "2015-10-23T21:31:58.435Z",
+    "_scores": {
+      "value" :12.87494045337280
+    }
+  }
+]
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_experiments__experimentid_"><span class="parent">/experiments</span>/{experimentId}</a> <span class="methods"><a href="#experiments__experimentid__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_experiments__experimentid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#experiments__experimentid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific experiment by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="experiments__experimentid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/experiments</span>/{experimentId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific experiment by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#experiments__experimentid__get_request" data-toggle="tab">Request</a></li><li><a href="#experiments__experimentid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="experiments__experimentid__get_request"><h3>URI Parameters</h3><ul><li><strong>experimentId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="experiments__experimentid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "562aa731023155351a2ff060",
+  "_options": {
+    "y": 15,
+    "x": -5
+  },
+  "_project_id": "56297e87d1a19b9c0e21c70a",
+  "_machine_id": "5628fb1b17de50be077be348",
+  "_files": [],
+  "_status": "success",
+  "_started": "2015-10-23T21:31:29.322Z",
+  "_finished": "2015-10-23T21:31:58.435Z",
+  "_scores": {
+    "value" :12.87494045337280
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_experiments__experimentid__model"><span class="parent">/experiments/{experimentId}</span>/model</a> <span class="methods"><a href="#experiments__experimentid__model_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_experiments__experimentid__model" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#experiments__experimentid__model_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve the trained python model produced by a specific experiment by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="experiments__experimentid__model_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/experiments/{experimentId}</span>/model</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve the trained python model produced by a specific experiment by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#experiments__experimentid__model_get_request" data-toggle="tab">Request</a></li><li><a href="#experiments__experimentid__model_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="experiments__experimentid__model_get_request"><h3>URI Parameters</h3><ul><li><strong>experimentId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="experiments__experimentid__model_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: binary/octet-stream</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "5b634f2a36e5380032a7c55b",
+  "filename": "model_5b634f2236e5380032a7c55a.pkl",
+  "mimetype": "application/octet-stream",
+  "timestamp": 1533234986515
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "&#39;model_&#39; file for experiment 5b634c99093afb003174b306 does not exist"
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_experiments__experimentid__script"><span class="parent">/experiments/{experimentId}</span>/script</a> <span class="methods"><a href="#experiments__experimentid__script_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_experiments__experimentid__script" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#experiments__experimentid__script_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve the python script used to run the model produced by a specific experiment by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="experiments__experimentid__script_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/experiments/{experimentId}</span>/script</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve the python script used to run the model produced by a specific experiment by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#experiments__experimentid__script_get_request" data-toggle="tab">Request</a></li><li><a href="#experiments__experimentid__script_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="experiments__experimentid__script_get_request"><h3>URI Parameters</h3><ul><li><strong>experimentId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="experiments__experimentid__script_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: binary/octet-stream</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "5b634f2a36e5380032a7c55b",
+  "filename": "script_5b634f2236e5380032a7c55a.python",
+  "mimetype": "application/octet-stream",
+  "timestamp": 1533234986515
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "&#39;script_&#39; file for experiment 5b634c99093afb003174b306 does not exist"
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="environment" class="panel-title">/environment</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_environment"><span class="parent"></span>/environment</a> <span class="methods"><a href="#environment_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_environment" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#environment_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve environment variables</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="environment_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/environment</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve environment variables</p></div><ul class="nav nav-tabs"><li class="active"><a href="#environment_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="environment_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "AI_AUTOSTART": "1",
+  "AI_RECOMMENDER": "svd",
+  "AI_NUMRECOMMEND": "5",
+  "AI_VERBOSE": "1",
+  "AI_PMLB_KNOWLEDGEBASE": "1",
+  "AI_TERM_COND": "n_recs",
+  "AI_MAX_TIME": "-NOT SET-",
+  "STARTUP_DATASET_PATH": "/appsrc/data/datasets/user",
+  "EXP_TIMEOUT": "5",
+  "DT_MAX_DEPTH": "6"
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="machines" class="panel-title">/machines</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_machines"><span class="parent"></span>/machines</a> <span class="methods"><a href="#machines_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_machines" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#machines_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all machines</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="machines_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/machines</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all machines</p></div><ul class="nav nav-tabs"><li class="active"><a href="#machines_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="machines_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "5628fb1b17de50be077be348",
+    "address": "http://cl21.uni.ac.uk:5081",
+    "hostname": "cl21",
+    "os": {
+      "type": "Darwin",
+      "platform": "darwin",
+      "arch": "x64",
+      "release": "13.4.0"
+    },
+    "cpus": ["Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz", "Intel(R) Core(TM) i7-3635QM CPU @ 2.40GHz"],
+    "mem": "8GB",
+    "gpus": [],
+    "projects": {
+      "562cfff058bcb96a113cb946": {
+        "cwd": "./test",
+        "command": "node",
+        "args": ["rand.js","-optParams"],
+        "options": "plain",
+        "capacity": "0.3",
+        "results": "./test/experiments"
+      }
+    }
+  },
+  {
+    "_id": "563356d5616ea83042a60711",
+    "address": "http://gpu2.uni.ac.uk:5081",
+    "cpus": ["Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz"],
+    "gpus": ["NVIDIA Corporation GK110B [GeForce GTX Titan Black] (rev a1)"],
+    "hostname": "gpu2",
+    "mem": "23.53GB",
+    "os": {
+      "type": "Linux",
+      "platform": "linux",
+      "arch": "x64",
+      "release": "3.19.0-31-generic"
+    },
+    "projects": {
+      "562143a0f78b4abe2220ac1d": {
+        "cwd": "/home/user/FGMachine/test",
+        "command": "node",
+        "args": ["rand.js","-optParameter"],
+        "options": "plain",
+        "capacity": 0.9,
+        "results": "/home/user/FGMachine/test/experiments"
+      }
+    }
+  }
+]
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_machines__machineid_"><span class="parent">/machines</span>/{machineId}</a> <span class="methods"><a href="#machines__machineid__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_machines__machineid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#machines__machineid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific machine by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="machines__machineid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/machines</span>/{machineId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific machine by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#machines__machineid__get_request" data-toggle="tab">Request</a></li><li><a href="#machines__machineid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="machines__machineid__get_request"><h3>URI Parameters</h3><ul><li><strong>machineId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="machines__machineid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "563356d5616ea83042a60711",
+  "address": "http://gpu2.uni.ac.uk:5081",
+  "cpus": ["Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz", "Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz"],
+  "gpus": ["NVIDIA Corporation GK110B [GeForce GTX Titan Black] (rev a1)"],
+  "hostname": "gpu2",
+  "mem": "23.53GB",
+  "os": {
+    "type": "Linux",
+    "platform": "linux",
+    "arch": "x64",
+    "release": "3.19.0-31-generic"
+  },
+  "projects": {
+    "562143a0f78b4abe2220ac1d": {
+      "cwd": "/home/user/FGMachine/test",
+      "command": "node",
+      "args": ["rand.js","-optParameter"],
+      "options": "plain",
+      "capacity": 0.9,
+      "results": "/home/user/FGMachine/test/experiments"
+    }
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_machines__machineid__projects"><span class="parent">/machines/{machineId}</span>/projects</a> <span class="methods"><a href="#machines__machineid__projects_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_machines__machineid__projects" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#machines__machineid__projects_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Registers machine projects</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="machines__machineid__projects_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/machines/{machineId}</span>/projects</h4></div><div class="modal-body"><div class="alert alert-info"><p>Registers machine projects</p></div><ul class="nav nav-tabs"><li class="active"><a href="#machines__machineid__projects_post_request" data-toggle="tab">Request</a></li></ul><div class="tab-content"><div class="tab-pane active" id="machines__machineid__projects_post_request"><h3>URI Parameters</h3><ul><li><strong>machineId</strong>: <em><span class="required">required</span>(string)</em></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  [ { name: &#39;BernoulliNB&#39;,
+          command: &#39;python&#39;,
+          cwd: &#39;machine/learn/BernoulliNB&#39;,
+          args: [Object],
+          options: &#39;double-dash&#39;,
+          capacity: &#39;1&#39;,
+          results: &#39;machine/learn/BernoulliNB/tmp&#39; },
+        { name: &#39;DecisionTreeClassifier&#39;,
+          command: &#39;python&#39;,
+          cwd: &#39;machine/learn/DecisionTreeClassifier&#39;,
+          args: [Object],
+          options: &#39;double-dash&#39;,
+          capacity: &#39;1&#39;,
+          results: &#39;machine/learn/DecisionTreeClassifier/tmp&#39; },
+        { name: &#39;DecisionTreeRegressor&#39;,
+          command: &#39;python&#39;,
+          cwd: &#39;machine/learn/DecisionTreeRegressor&#39;,
+          args: [Object],
+          options: &#39;double-dash&#39;,
+          capacity: &#39;1&#39;,
+          results: &#39;machine/learn/DecisionTreeRegressor/tmp&#39; }
+  ]
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="files" class="panel-title">/files</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_files__fileid_"><span class="parent">/files</span>/{fileId}</a> <span class="methods"><a href="#files__fileid__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_files__fileid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#files__fileid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific file by ID</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="files__fileid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/files</span>/{fileId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific file by ID</p></div><ul class="nav nav-tabs"><li class="active"><a href="#files__fileid__get_request" data-toggle="tab">Request</a></li><li><a href="#files__fileid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="files__fileid__get_request"><h3>URI Parameters</h3><ul><li><strong>fileId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="files__fileid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: binary/octet-stream</p><p><strong>Type</strong>: any</p></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="datasets" class="panel-title">/datasets</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_datasets"><span class="parent"></span>/datasets</a> <span class="methods"><a href="#datasets_get"><span class="badge badge_get">get</span></a> <a href="#datasets_put"><span class="badge badge_put">put</span></a></span></h4></div><div id="panel_datasets" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#datasets_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>get all datasets</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#datasets_put'" class="list-group-item"><span class="badge badge_put">put</span><div class="method_description"><p>Register a new datafile</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="datasets_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/datasets</h4></div><div class="modal-body"><div class="alert alert-info"><p>get all datasets</p></div><ul class="nav nav-tabs"><li class="active"><a href="#datasets_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="datasets_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+[
+    {
+        "_id": "5bf4841c9fc83c002cdbf5e6",
+        "name": "appendicitis",
+        "username": "testuser",
+        "files": [
+            {
+                "_id": "5bf4841c9fc83c002cdbf5e8",
+                "filename": "appendicitis.csv",
+                "mimetype": "text/csv",
+                "prediction_type": "classification",
+                "dependent_col": "class",
+                "timestamp": 1542751267786
+            }
+        ],
+        "metafeatures": {
+            "class_prob_max": 0.8018867924528302,
+            "class_prob_mean": 0.5,
+            "class_prob_median": 0.5,
+            "class_prob_min": 0.19811320754716982,
+            "class_prob_std": 0.4269323961881042,
+            "corr_with_dependent_abs_25p": null,
+            "corr_with_dependent_abs_75p": null,
+            "corr_with_dependent_abs_kurtosis": null,
+            "corr_with_dependent_abs_max": null,
+            "corr_with_dependent_abs_mean": null,
+            "corr_with_dependent_abs_median": null,
+            "corr_with_dependent_abs_min": null,
+            "corr_with_dependent_abs_skew": null,
+            "corr_with_dependent_abs_std": null,
+            "diversity_fraction": 0.822528983974963,
+            "entropy_dependent": 0.49777562247179563,
+            "kurtosis_kurtosis": 4.452150103293069,
+            "kurtosis_max": 5.319422971587894,
+            "kurtosis_mean": 1.337358676553602,
+            "kurtosis_median": 0.8241556149720961,
+            "kurtosis_min": -0.064662454053662,
+            "kurtosis_skew": 2.049814018854758,
+            "kurtosis_std": 1.7321483030218767,
+            "n_categorical": 0,
+            "n_classes": 2,
+            "n_columns": 8,
+            "n_numerical": 7,
+            "n_rows": 106,
+            "pca_fraction_95": 0.42857142857142855,
+            "ratio_rowcol": 13.25,
+            "skew_kurtosis": -0.8072038717745542,
+            "skew_max": 2.0405760464786686,
+            "skew_mean": 0.23121482439885738,
+            "skew_median": 0.20576966206912586,
+            "skew_min": -1.2122210852887918,
+            "skew_skew": 0.24606691449283033,
+            "skew_std": 1.1148468812633117,
+            "symbols_kurtosis": null,
+            "symbols_max": null,
+            "symbols_mean": null,
+            "symbols_min": null,
+            "symbols_skew": null,
+            "symbols_std": null,
+            "symbols_sum": null
+        }
+    },
+    {
+        "_id": "5bf4841c9fc83c002cdbf5e7",
+        "name": "breast-cancer",
+        "username": "testuser",
+        "files": [
+            {
+                "_id": "5bf484209fc83c002cdbf5e9",
+                "filename": "breast-cancer.csv",
+                "mimetype": "text/csv",
+                "prediction_type": "classification",
+                "dependent_col": "class",
+                "timestamp": 1542751267784
+            }
+        ],
+        "metafeatures": {
+            "class_prob_max": 0.7027972027972028,
+            "class_prob_mean": 0.5,
+            "class_prob_median": 0.5,
+            "class_prob_min": 0.2972027972027972,
+            "class_prob_std": 0.28679855460713116,
+            "corr_with_dependent_abs_25p": null,
+            "corr_with_dependent_abs_75p": null,
+            "corr_with_dependent_abs_kurtosis": null,
+            "corr_with_dependent_abs_max": null,
+            "corr_with_dependent_abs_mean": null,
+            "corr_with_dependent_abs_median": null,
+            "corr_with_dependent_abs_min": null,
+            "corr_with_dependent_abs_skew": null,
+            "corr_with_dependent_abs_std": null,
+            "diversity_fraction": 0.9188139686566354,
+            "entropy_dependent": 0.6084755754298137,
+            "kurtosis_kurtosis": -0.9900395306465448,
+            "kurtosis_max": 0.8659367562086295,
+            "kurtosis_mean": -0.5426446947254934,
+            "kurtosis_median": -0.46945225008620817,
+            "kurtosis_min": -1.9979453284763162,
+            "kurtosis_skew": -0.33196932701980525,
+            "kurtosis_std": 0.9494527294484085,
+            "n_categorical": 0,
+            "n_classes": 2,
+            "n_columns": 10,
+            "n_numerical": 9,
+            "n_rows": 286,
+            "pca_fraction_95": 0.6666666666666666,
+            "ratio_rowcol": 28.6,
+            "skew_kurtosis": -1.0280919230938976,
+            "skew_max": 1.4018277144361688,
+            "skew_mean": 0.48891123538860953,
+            "skew_median": 0.5036443477138223,
+            "skew_min": -0.14799309687736134,
+            "skew_skew": 0.5406178378373523,
+            "skew_std": 0.5328794145891989,
+            "symbols_kurtosis": null,
+            "symbols_max": null,
+            "symbols_mean": null,
+            "symbols_min": null,
+            "symbols_skew": null,
+            "symbols_std": null,
+            "symbols_sum": null
+        }
+    }
+]
+}
+</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="datasets_put"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put</span> <span class="parent"></span>/datasets</h4></div><div class="modal-body"><div class="alert alert-info"><p>Register a new datafile</p></div><ul class="nav nav-tabs"><li class="active"><a href="#datasets_put_request" data-toggle="tab">Request</a></li><li><a href="#datasets_put_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="datasets_put_request"><h3>Body</h3><p><strong>Media type</strong>: multipart/form-data</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+"_files": "file binary",
+"_metadata":
+  {
+    "name": "datasetName",
+    "username": "testuser",
+    "dependent_col": "class",
+    "prediction_type": "classification",
+    "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+    "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]}
+  }
+}
+</code></pre></div></div><div class="tab-pane" id="datasets_put_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+    message: "Files uploaded",
+    dataset_id: dataset_id
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+error: "Missing parameter _metadata.name"
+}
+</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_datasets__datasetid_"><span class="parent">/datasets</span>/{datasetId}</a> <span class="methods"><a href="#datasets__datasetid__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_datasets__datasetid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#datasets__datasetid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Get a particular dataset</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="datasets__datasetid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/datasets</span>/{datasetId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Get a particular dataset</p></div><ul class="nav nav-tabs"><li class="active"><a href="#datasets__datasetid__get_request" data-toggle="tab">Request</a></li><li><a href="#datasets__datasetid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="datasets__datasetid__get_request"><h3>URI Parameters</h3><ul><li><strong>datasetId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="datasets__datasetid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>files { -id - The id of the label encoded file object -raw-id - (optional) The raw file, if label encoded filename - human readable filename mimetype - dependent_col - name of the target column categorical_features - (optional) list of categorical features ordinal_features - (optional) map of ordinal features. key is the feature name, value is an exhaustive ordered list of the values that feature can take } metafeatures - the dataset profile for this dataset</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "5bf4841c9fc83c002cdbf5e6",
+  "name": "appendicitis",
+  "username": "testuser",
+  "files": [
+      {
+          "_id": "5bf4841c9fc83c002cdbf5e8",
+          "filename": "appendicitis_categorical.csv",
+          "mimetype": "text/csv",
+          "prediction_type": "classification",
+          "dependent_col": "class",
+          "categorical_features" : ["cat_feat_1", "cat_feat_2"],
+          "ordinal_features" : {"ord_feat_1" : ["MALE", "FEMALE"], "ord_feat_2" : ["FIRST", "SECOND", "THIRD"]},
+          "timestamp": 1542751267786
+      }
+  ],
+  "metafeatures": {
+      "class_prob_max": 0.8018867924528302,
+      "class_prob_mean": 0.5,
+      "class_prob_median": 0.5,
+      "class_prob_min": 0.19811320754716982,
+      "class_prob_std": 0.4269323961881042,
+      "corr_with_dependent_abs_25p": null,
+      "corr_with_dependent_abs_75p": null,
+      "corr_with_dependent_abs_kurtosis": null,
+      "corr_with_dependent_abs_max": null,
+      "corr_with_dependent_abs_mean": null,
+      "corr_with_dependent_abs_median": null,
+      "corr_with_dependent_abs_min": null,
+      "corr_with_dependent_abs_skew": null,
+      "corr_with_dependent_abs_std": null,
+      "diversity_fraction": 0.822528983974963,
+      "entropy_dependent": 0.49777562247179563,
+      "kurtosis_kurtosis": 4.452150103293069,
+      "kurtosis_max": 5.319422971587894,
+      "kurtosis_mean": 1.337358676553602,
+      "kurtosis_median": 0.8241556149720961,
+      "kurtosis_min": -0.064662454053662,
+      "kurtosis_skew": 2.049814018854758,
+      "kurtosis_std": 1.7321483030218767,
+      "n_categorical": 0,
+      "n_classes": 2,
+      "n_columns": 8,
+      "n_numerical": 7,
+      "n_rows": 106,
+      "pca_fraction_95": 0.42857142857142855,
+      "ratio_rowcol": 13.25,
+      "skew_kurtosis": -0.8072038717745542,
+      "skew_max": 2.0405760464786686,
+      "skew_mean": 0.23121482439885738,
+      "skew_median": 0.20576966206912586,
+      "skew_min": -1.2122210852887918,
+      "skew_skew": 0.24606691449283033,
+      "skew_std": 1.1148468812633117,
+      "symbols_kurtosis": null,
+      "symbols_max": null,
+      "symbols_mean": null,
+      "symbols_min": null,
+      "symbols_skew": null,
+      "symbols_std": null,
+      "symbols_sum": null
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="webhooks" class="panel-title">/webhooks</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_webhooks"><span class="parent"></span>/webhooks</a> <span class="methods"><a href="#webhooks_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_webhooks" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#webhooks_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Create a new webhook</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="webhooks_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/webhooks</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create a new webhook</p></div><ul class="nav nav-tabs"><li class="active"><a href="#webhooks_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="webhooks_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "status": "Registered",
+  "options": {
+    "url": "http://gpu2.uni.ac.uk:5000/webhook",
+    "objects": "experiments",
+    "object_id": "562aa731023155351a2ff060",
+    "event": "finished"
+  }
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "error": "Invalid or empty URL"
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="preferences" class="panel-title">/preferences</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_preferences"><span class="parent"></span>/preferences</a> <span class="methods"><a href="#preferences_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_preferences" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#preferences_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>get algorithm preferences for each user (note- does not include {version} in the baseUri)</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="preferences_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/preferences</h4></div><div class="modal-body"><div class="alert alert-info"><p>get algorithm preferences for each user (note- does not include {version} in the baseUri)</p></div><ul class="nav nav-tabs"><li class="active"><a href="#preferences_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="preferences_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "5ba41716dfe741699222870f",
+    "username": "testuser",
+    "firstname": "Test",
+    "lastname": "User",
+    "algorithms": [
+        {
+            "_id": "5ba41716dfe7416992228714",
+            "name": "DecisionTreeClassifier",
+            "description": "Classifier that assigns a class to a sample based on a chained series of yes/no queries about the sample&#39;s features.",
+            "url": "http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html",
+            "schema": {
+                "criterion": {
+                    "description": "The function to measure the quality of a split. Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.",
+                    "type": "enum",
+                    "default": "gini",
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            "Gini impurity",
+                            "Information gain"
+                        ],
+                        "values": [
+                            "gini",
+                            "entropy"
+                        ]
+                    }
+                },
+                "max_depth": {
+                    "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
+                    "type": "int",
+                    "default": 2,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            2,
+                            4,
+                            6,
+                            8
+                        ]
+                    }
+                },
+                "min_samples_split": {
+                    "description": "The minimum number of samples required to split an internal node.",
+                    "type": "int",
+                    "default": 5,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            5,
+                            10,
+                            20
+                        ]
+                    }
+                },
+                "min_samples_leaf": {
+                    "description": "The minimum number of samples required to be at a leaf node.",
+                    "type": "int",
+                    "default": 5,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            5,
+                            10,
+                            20
+                        ]
+                    }
+                }
+            },
+            "category": "classification"
+        },
+        {
+            "_id": "5ba41716dfe7416992228717",
+            "name": "GradientBoostingClassifier",
+            "description": "An ensemble of decision trees that are iteratively trained on the dataset to minimize classification accuracy.",
+            "url": "http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html",
+            "schema": {
+                "n_estimators": {
+                    "description": "The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.",
+                    "type": "int",
+                    "default": 100,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            100,
+                            250
+                        ]
+                    }
+                },
+                "learning_rate": {
+                    "description": "Learning rate shrinks the contribution of each tree by learning_rate. There is a trade-off between learning_rate and n_estimators.",
+                    "type": "float",
+                    "default": 0.1,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            0.01,
+                            0.1,
+                            1
+                        ]
+                    }
+                },
+                "max_depth": {
+                    "description": "Maximum depth of the individual regression estimators. The maximum depth limits the number of nodes in the tree. Tune this parameter for best performance; the best value depends on the interaction of the in variables.",
+                    "type": "int",
+                    "default": 1,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            1,
+                            5,
+                            10
+                        ]
+                    }
+                },
+                "min_samples_split": {
+                    "description": "The minimum number of samples required to split an internal node.",
+                    "type": "int",
+                    "default": 5,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            5,
+                            10,
+                            20
+                        ]
+                    }
+                },
+                "min_samples_leaf": {
+                    "description": "The minimum number of samples required to be at a leaf node.",
+                    "type": "int",
+                    "default": 5,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            5,
+                            10,
+                            20
+                        ]
+                    }
+                },
+                "subsample": {
+                    "description": "The fraction of samples to be used for fitting the individual base learners. If smaller than 1.0 this results in Stochastic Gradient Boosting. subsample interacts with the parameter n_estimators. Choosing subsample &lt; 1.0 leads to a reduction of variance and an increase in bias.",
+                    "type": "float",
+                    "default": 1,
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            0.5,
+                            1
+                        ]
+                    }
+                },
+                "max_features": {
+                    "description": "The number of features to consider when looking for the best split.",
+                    "type": "string",
+                    "default": "sqrt",
+                    "ui": {
+                        "style": "radio",
+                        "choices": [
+                            "Square root",
+                            "Log2"
+                        ],
+                        "values": [
+                            "sqrt",
+                            "log2"
+                        ]
+                    }
+                }
+            },
+            "category": "classification"
+        },
+        {
+        "_id": "5da8d68c4590b0868cbf574e",
+        "name": "DecisionTreeRegressor",
+        "path": "sklearn.tree",
+        "categorical_encoding_strategy": "OrdinalEncoder",
+        "description": "A Decision Tree Regressor",
+        "url": "https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html",
+        "category": "regression",
+        "schema": {
+            "criterion": {
+                "description": "The function to measure the quality of a split. ",
+                "type": "string",
+                "default": "mse",
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        "Mean Squared Error",
+                        "Mean Absolute Error"
+                    ],
+                    "values": [
+                        "mse",
+                        "mae"
+                    ]
+                }
+            },
+            "max_depth": {
+                "description": "The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.",
+                "type": [
+                    "int",
+                    "none"
+                ],
+                "default": 3,
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        3,
+                        5,
+                        10
+                    ]
+                }
+            },
+            "min_samples_split": {
+                "description": "The minimum number of samples required to split an internal node.",
+                "type": [
+                    "int",
+                    "float"
+                ],
+                "default": 2,
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        2,
+                        5,
+                        10,
+                        20
+                    ]
+                }
+            },
+            "min_samples_leaf": {
+                "description": "The minimum number of samples required to be at a leaf node.",
+                "type": [
+                    "int",
+                    "float"
+                ],
+                "default": 1,
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        1,
+                        5,
+                        10,
+                        20
+                    ]
+                }
+            },
+            "min_weight_fraction_leaf": {
+                "description": "The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.",
+                "type": "float",
+                "default": 0,
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        0,
+                        0.05,
+                        0.1,
+                        0.15,
+                        0.2,
+                        0.25,
+                        0.3,
+                        0.35,
+                        0.4,
+                        0.45
+                    ]
+                }
+            },
+            "max_features": {
+                "description": "The number of features to consider when looking for the best split.",
+                "type": [
+                    "int",
+                    "float",
+                    "string",
+                    "none"
+                ],
+                "default": "sqrt",
+                "ui": {
+                    "style": "radio",
+                    "choices": [
+                        "Square root",
+                        "Log2",
+                        "None"
+                    ],
+                    "values": [
+                        "sqrt",
+                        "log2",
+                        "None"
+                    ]
+                }
+            }
+        }
+    ]
+  }
+]
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="recommender" class="panel-title">/recommender</h3></div><div class="panel-body"><div class="top-resource-description"><p>Get ai recommender configuration</p></div><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_recommender"><span class="parent"></span>/recommender</a> <span class="methods"><a href="#recommender_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_recommender" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#recommender_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="recommender_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/recommender</h4></div><div class="modal-body"><ul class="nav nav-tabs"></ul><div class="tab-content"></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_recommender_status"><span class="parent">/recommender</span>/status</a> <span class="methods"><a href="#recommender_status_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_recommender_status" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#recommender_status_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Update ai recommender status</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="recommender_status_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/recommender</span>/status</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update ai recommender status</p></div><ul class="nav nav-tabs"><li class="active"><a href="#recommender_status_post_request" data-toggle="tab">Request</a></li><li><a href="#recommender_status_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="recommender_status_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "status": "running"
+}</code></pre></div></div><div class="tab-pane" id="recommender_status_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: any</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "AI status set to RUNNING": null
+}</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#projects">/projects</a></li><li><a href="#experiments">/experiments</a></li><li><a href="#environment">/environment</a></li><li><a href="#machines">/machines</a></li><li><a href="#files">/files</a></li><li><a href="#datasets">/datasets</a></li><li><a href="#webhooks">/webhooks</a></li><li><a href="#preferences">/preferences</a></li><li><a href="#recommender">/recommender</a></li></ul></div></div></div></div></body></html>

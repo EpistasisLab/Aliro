@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Recommenders &#8212; Aliro 0.20.a0 documentation</title>
+    <title>Lab API &#8212; Aliro 0.20.a0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=0.7.0-1" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -18,8 +18,8 @@
     <link rel="shortcut icon" href="https://media.githubusercontent.com/media/EpistasisLab/Aliro/master/docs/source/_static/aliro_brain_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="AI Overview" href="ai.html" /> 
+    <link rel="next" title="AI Overview" href="ai.html" />
+    <link rel="prev" title="Developer Guide" href="developerguide.html" /> 
   </head><body data-dark_mode_code_blocks="true">
 
 <div id="top_nav">
@@ -125,9 +125,9 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Analysis Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developerguide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lab_api.html">Lab API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Lab API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai.html">AI Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Recommenders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recommenders.html">Recommenders</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide_sklearn_api.html">User Guide of PennAIpy</a></li>
 </ul>
@@ -141,147 +141,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="recommenders">
-<h1>Recommenders<a class="headerlink" href="#recommenders" title="Permalink to this headline">¶</a></h1>
-<p>A recommender is responsible for deciding what ML-parameter combination will be run when the AI button is clicked.</p>
-<section id="recommendation-basics">
-<h2>Recommendation Basics<a class="headerlink" href="#recommendation-basics" title="Permalink to this headline">¶</a></h2>
-<p>A recommender should inherit from the BaseRecommender class, which contains the minimum methods needed.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">update(self,</span> <span class="pre">results_data,</span> <span class="pre">results_mf=None)</span></code>: takes in new results as they are generated. Most recommenders use this to maintain an internal state.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">recommend(self,</span> <span class="pre">dataset_id=None,</span> <span class="pre">n_recs=1,</span> <span class="pre">dataset_mf=None)</span></code>: Returns an ML choice, its parameter values, and the internal score of its recommendation for <code class="docutils literal notranslate"><span class="pre">dataset_id</span></code>.</p></li>
-</ul>
-<p>For a new recommender, these two classes, along with the class constructor, must be implemented.</p>
-</section>
-<section id="current-recommenders">
-<h2>Current Recommenders<a class="headerlink" href="#current-recommenders" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p><strong>RandomRecommender</strong></p>
-<blockquote>
-<div><p>Recommends random machine learning algorithms and parameters from the possible algorithms
-fetched from the server.</p>
-<p>RandomRecommender samples uniform randomly from the ML methods, then uniform randomly samples the parameters of the chosen algorithm.</p>
-</div></blockquote>
-</li>
-<li><p><strong>AverageRecommender</strong></p>
-<blockquote>
-<div><p>Recommends machine learning algorithms and parameters based on their average performance
-across all evaluated datasets.</p>
-<p>AverageRecommender maintains an internal moving average of each ML-paramter combination across all datasets.</p>
-<p>It can only recommend ML-paramter combinations that it has results for.</p>
-<p>On startup, it is best topreload some results so that AverageRecommender has some minimum knowledge base. Otherwise it won’t be able to make a recommendation until results have been generated.</p>
-</div></blockquote>
-</li>
-<li><p><strong>KNNMetaRecommender</strong></p>
-<blockquote>
-<div><p>This is a collaborative filtering approach.
-The recommender tries to recommend MLs that have performed well on similar datasets.</p>
-<p>KNNMetaRecommender maintains and internal list of the best MLs on each dataset that has been seen.
-When a new recommendation request comes in, the neighborhood of the dataset is calculated in metafeature space, and recommendations are made in order of nearest to farthest dataset using the best ML methods for that dataset (excluding the current one).</p>
-<p>In the case of repeat recommendations, this recommender defaults to random recommendations.</p>
-</div></blockquote>
-</li>
-<li><p><strong>SVDRecommender</strong></p>
-<blockquote>
-<div><p>This recommender uses an online version of the SVD recommender system from the <a class="reference external" href="https://surprise.readthedocs.io/en/stable/matrix_factorization.html">Surprise package</a>.
-See their documentation for details.</p>
-<p>Note: Any other recommenders in that folder are not currently supported or
-maintained.</p>
-</div></blockquote>
-</li>
-</ul>
-</section>
-<section id="building-your-own-recommender">
-<h2>Building your own recommender<a class="headerlink" href="#building-your-own-recommender" title="Permalink to this headline">¶</a></h2>
-<p>To build your own recommender, start with the <code class="docutils literal notranslate"><span class="pre">recommender/base.py</span></code> file.
-From there, implement <code class="docutils literal notranslate"><span class="pre">update()</span></code> and <code class="docutils literal notranslate"><span class="pre">recommend()</span></code> strategies.
-The base class provides <code class="docutils literal notranslate"><span class="pre">self.ml_p</span></code>, a dataframe of available algorithm
-configurations.
-It also maintains a parameter hash table (<code class="docutils literal notranslate"><span class="pre">self.param_htable</span></code>) that facilitates the
-unique identification of parameter dictionaries.
-Check out the base class API
-<a class="reference external" href="https://epistasislab.github.io/Aliro/api.html">documentation</a> to get started.
-To use the recommender with the AI class, you need to make the following changes to
-<code class="docutils literal notranslate"><span class="pre">ai/ai.py</span></code>:</p>
-<ol class="arabic">
-<li><p>Import your recommender:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ai.recommender.my_recommender</span> <span class="kn">import</span> <span class="n">MyFancyRecommender</span>
-</pre></div>
-</div>
-</li>
-<li><p>To use your recommender via command-line calls of the ai, add it as an argument
-to the argument parser:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rec&#39;</span><span class="p">,</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;REC&#39;</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">,</span>
-        <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">,</span><span class="s1">&#39;average&#39;</span><span class="p">,</span><span class="s1">&#39;exhaustive&#39;</span><span class="p">,</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span><span class="s1">&#39;knn&#39;</span><span class="p">,</span><span class="s1">&#39;svd&#39;</span><span class="p">,</span><span class="s1">&#39;myrec&#39;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Recommender algorithm options.&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p>Add it as an option to <code class="docutils literal notranslate"><span class="pre">name_to_rec</span></code> in <code class="docutils literal notranslate"><span class="pre">main()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># dictionary of default recommenders to choose from at the command line.</span>
-<span class="n">name_to_rec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random&#39;</span><span class="p">:</span> <span class="n">RandomRecommender</span><span class="p">,</span>
-        <span class="s1">&#39;average&#39;</span><span class="p">:</span> <span class="n">AverageRecommender</span><span class="p">,</span>
-        <span class="s1">&#39;knn&#39;</span><span class="p">:</span> <span class="n">KNNMetaRecommender</span><span class="p">,</span>
-        <span class="s1">&#39;svd&#39;</span><span class="p">:</span> <span class="n">SVDRecommender</span><span class="p">,</span>
-        <span class="s1">&#39;myrec&#39;</span><span class="p">:</span> <span class="n">MyFancyRecommender</span>
-        <span class="p">}</span>
-</pre></div>
-</div>
-</li>
-</ol>
-<p>That should be all the required changes.</p>
-<section id="running-your-recommender">
-<h3>Running your recommender<a class="headerlink" href="#running-your-recommender" title="Permalink to this headline">¶</a></h3>
-<p>You should now be able to start the AI with your recommender.
-The easiest way to do so is to add your recommender to the <code class="docutils literal notranslate"><span class="pre">config/ai.env</span></code> file.
-Edit this file so that <code class="docutils literal notranslate"><span class="pre">AI_RECOMMENDER=myrec</span></code>.</p>
-<p>Then when Aliro is launched, it will run with your recommender.</p>
-<p>For more control and for testing, launch Aliro with <code class="docutils literal notranslate"><span class="pre">AI_AUTOSTART=0</span></code> set in the
-<code class="docutils literal notranslate"><span class="pre">config/ai.env</span></code> file.
-Then, attach to the <code class="docutils literal notranslate"><span class="pre">aliro_lab_1</span></code> docker container with the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="s2">&quot;aliro_lab_1&quot;</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
-</pre></div>
-</div>
-<p>Change to the project root:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $PROJECT_ROOT
-</pre></div>
-</div>
-<p>Then you can launch the AI with your recommender as</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">ai</span><span class="o">.</span><span class="n">ai</span> <span class="o">-</span><span class="n">rec</span> <span class="n">myrec</span>
-</pre></div>
-</div>
-<p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ai.ai</span> <span class="pre">-h</span></code> to see additional options.</p>
-</section>
-</section>
-</section>
+  <section id="lab-api">
+<h1>Lab API<a class="headerlink" href="#lab-api" title="Permalink to this headline">¶</a></h1>
+<iframe src="lab_api_source.html" width="100%" height="1200px"></iframe></section>
 
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-    
-        <div id="show_right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon"><</span><span>Page contents<span></a></p>
-        </div>
-
-        <div id="right_sidebar">
-            <p><a class="toggle_right_sidebar" href="#"><span class="icon">></span><span>Page contents:<span></a></p>
-            <div class="page_toc">
-                <ul>
-<li><a class="reference internal" href="#">Recommenders</a><ul>
-<li><a class="reference internal" href="#recommendation-basics">Recommendation Basics</a></li>
-<li><a class="reference internal" href="#current-recommenders">Current Recommenders</a></li>
-<li><a class="reference internal" href="#building-your-own-recommender">Building your own recommender</a><ul>
-<li><a class="reference internal" href="#running-your-recommender">Running your recommender</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-            </div>
-        </div>
     
 
       <div class="clearer"></div>
@@ -290,14 +158,14 @@ Then, attach to the <code class="docutils literal notranslate"><span class="pre"
         <div class="button_nav">
             <div class="left">
                 
-                <a href="ai.html">
-                    <span class="icon"><</span><span>AI Overview</span></a>
+                <a href="developerguide.html">
+                    <span class="icon"><</span><span>Developer Guide</span></a>
                 
             </div>
 
             <div class="right">
                 
-                    <a href="api.html"><span>API</span><span class="icon">></span></a>
+                    <a href="ai.html"><span>AI Overview</span><span class="icon">></span></a>
                 
             </div>
         </div>
