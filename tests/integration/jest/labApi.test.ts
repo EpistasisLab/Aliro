@@ -122,7 +122,7 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat'] ")
+					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat'] * Please refer to https://epistasislab.github.io/Aliro/userguide.html#adding-datasets for more information.")
 				}
 			});
 
@@ -155,7 +155,7 @@ describe('lab', () => {
 					var json = await e.response.json()
 					expect(json.error).toBeTruthy()
 					expect(e.response.status).toEqual(400)
-					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat', 'ord'] ")
+					expect(json.error).toEqual("Unable to upload file. Error: Datafile validation failed, check_dataframe() validation * 'STRING' in ['cat', 'ord'] * Please refer to https://epistasislab.github.io/Aliro/userguide.html#adding-datasets for more information.")
 				}
 			});
 
