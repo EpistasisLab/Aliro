@@ -2439,7 +2439,10 @@ handleCatFeaturesUserTextCancel() {
     // of the pseudo-modal windows just below.
 
     if(this.state.showErrorModal){
+      
       var errorModalContent = this.state.errorModalContent.split("*");
+      // length of errorModalContent 
+      var errorModalContentLength = errorModalContent.length;
 
       return(
       <Modal style={{ marginTop:'0' }} open={this.state.showErrorModal} onClose={this.handleErrorModalClose} closeIcon id="error_modal_dialog"> 
@@ -2451,6 +2454,9 @@ handleCatFeaturesUserTextCancel() {
           
           if (index==0)
           {
+            return <p key={index}>{item}</p>;
+          }
+          else if(index==errorModalContentLength-1){
             return <p key={index}>{item}</p>;
           }
           else{

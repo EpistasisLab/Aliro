@@ -98,6 +98,8 @@ def check_dataframe(df, target_column):
             str(str_cols)+" "
 
     if error_message != "":
+        # https://epistasislab.github.io/Aliro/userguide.html#adding-datasets
+        error_message += "* Please refer to https://epistasislab.github.io/Aliro/userguide.html#adding-datasets for more information."
         raise ValueError(error_message)
 
     return True
@@ -197,10 +199,10 @@ def validate_data_origin(df, prediction_type="classification", target_column=Non
     # check that cat columns can be encoded
     if categories or ordinals:
         try:
-            encode_data(df, target_column, categories,
-                        ordinals, "OneHotEncoder")
-            encode_data(df, target_column, categories,
-                        ordinals, "OrdinalEncoder")
+            df = encode_data(df, target_column, categories,
+                             ordinals, "OneHotEncoder")
+            df = encode_data(df, target_column, categories,
+                             ordinals, "OrdinalEncoder")
         except Exception as e:
             logger.warn("encode_data() failed, " + str(e))
             return False, "encode_data() failed, " + str(e)
