@@ -1,0 +1,36 @@
+# GET http://localhost:5080/openai/config
+
+# ###
+
+# GET http://localhost:5080/openai/config/63f15d30bde4dc90f91cff8e
+
+# ###
+
+# POST http://localhost:5080/openai/config
+# Content-Type: application/json
+
+# {
+#     "org_id" : "org_id2",
+#     "api_key" : "api_key2"
+# }
+
+###
+
+GET http://localhost:5080/openai/models
+
+###
+
+POST http://localhost:5080/openai/completions
+Content-Type: application/json
+
+{
+    "model" : "code-davinci-002",
+    "prompt" : "This is a test",
+    "max_tokens" : 7,
+    "temperature" : 0,
+    "top_p" : 1,
+    "n" : 1,
+    "stream" : false,
+    "logprobs" : null,
+    "stop" : "\n"
+}

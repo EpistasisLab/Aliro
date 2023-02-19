@@ -51,7 +51,7 @@ var emitEvent = require("./socketServer").emitEvent;
 var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromFileIdAsync;
 var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
 const assert = require("assert");
-
+const openaiRouter = require('./routes/openai');
 
 /***************
 * Enums
@@ -128,6 +128,7 @@ app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
 
+app.use('/openai', openaiRouter);
 
 /* API */
 
