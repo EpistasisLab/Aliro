@@ -1,22 +1,22 @@
-# GET http://localhost:5080/openai/config
-
-# ###
-
-# GET http://localhost:5080/openai/config/63f15d30bde4dc90f91cff8e
-
-# ###
-
-# POST http://localhost:5080/openai/config
-# Content-Type: application/json
-
-# {
-#     "org_id" : "org_id2",
-#     "api_key" : "api_key2"
-# }
+GET http://localhost:5080/openai/v1/config
 
 ###
 
-GET http://localhost:5080/openai/models
+GET http://localhost:5080/openai/v1/config/63f587be3fe4f78ae709f3d5
+
+###
+
+POST http://localhost:5080/openai/v1/config
+Content-Type: application/json
+
+{
+    "org_id" : "org_id2",
+    "api_key" : "api_key2"
+}
+
+###
+
+GET http://localhost:5080/openai/v1/models
 
 ###
 
@@ -24,13 +24,32 @@ POST http://localhost:5080/openai/completions
 Content-Type: application/json
 
 {
-    "model" : "code-davinci-002",
-    "prompt" : "This is a test",
-    "max_tokens" : 7,
-    "temperature" : 0,
-    "top_p" : 1,
-    "n" : 1,
-    "stream" : false,
-    "logprobs" : null,
-    "stop" : "\n"
+    "model" : "text-davinci-001",
+    "prompt" : "Hello"
+}
+
+###
+    # "max_tokens" : 7,
+    # "temperature" : 0,
+    # "top_p" : 1,
+    # "n" : 1,
+    # "stream" : false,
+    # "logprobs" : null,
+    # "stop" : "\n"
+
+###
+
+GET http://localhost:5080/chat/v1/chat
+
+###
+
+GET http://localhost:5080/chat/v1/chat/63f588e572700eab5420867a
+
+###
+
+POST http://localhost:5080/chat/v1/chat
+Content-Type: application/json
+
+{
+    "title" : "test title"
 }

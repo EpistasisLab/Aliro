@@ -52,6 +52,7 @@ var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromF
 var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
 const assert = require("assert");
 const openaiRouter = require('./routes/openai');
+const chatRouter = require('./routes/chat');
 
 /***************
 * Enums
@@ -128,9 +129,10 @@ app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500
 app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
 
-app.use('/openai', openaiRouter);
+app.use('/openai/v1', openaiRouter);
+app.use('/chat/v1', chatRouter);
 
-/* API */
+/* Lab API */
 
 // Registers webhooks
 app.post("/api/v1/webhooks", jsonParser, (req, res) => {

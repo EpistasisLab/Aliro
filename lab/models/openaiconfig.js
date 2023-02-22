@@ -1,0 +1,14 @@
+const mongoose = require('mongoose');
+
+const openaiconfigSchema = new mongoose.Schema({
+    org_id: {
+        type: String,
+        required: true
+    },
+    api_key: {
+        type: String,
+        required: true
+    },
+});
+
+module.exports = mongoose.model('OpenAIConfig', openaiconfigSchema);
