@@ -2164,39 +2164,28 @@ handleCatFeaturesUserTextCancel() {
 
 
     var styles = `
-
     #mydivs_home {
-
       content: "";
       display: table;
       clear: both;
       
     
     }
-
     #mydiv, #mydiv2, #mydiv3, #mydiv4, #mydiv5 {
       position: absolute;
-
       background-color: #fff0;
       border: 1px solid #fff0;;
       text-align: center;
   
-
-
       float: left;
   
       padding: 10px;
-
       
-
-
-
     }
     
     #mydivheader, #mydivheader2, #mydivheader3, #mydivheader4, #mydivheader5 {
       padding: 10px;
       cursor: move;
-
       background-color: #fff0;
       color: #fff0;
       float: left;

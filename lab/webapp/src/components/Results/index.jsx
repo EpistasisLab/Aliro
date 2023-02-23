@@ -55,6 +55,7 @@ import NoScore from './components/NoScore';
 import { Header, Grid, Loader, Dropdown, Menu} from 'semantic-ui-react';
 import { formatDataset } from 'utils/formatter';
 import ClassRate from './components/ClassRate';
+import ChatGPT from '../ChatGPT';
 
 class Results extends Component {
   constructor(props) {
@@ -268,15 +269,9 @@ class Results extends Component {
 
 
 
-      // print class_percentage
-      // console.log("class_percentage", class_percentage)
-
-      // print experiment.data
-      // console.log("experiment.data['class_1']", experiment.data['class_1'])
-
-
-
       return (
+        
+        
         <div>
           <Grid columns={2} stackable>
             <Grid.Row>
@@ -447,7 +442,16 @@ class Results extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+
+          {/* GPT Space */}
+          <ChatGPT/>
+
+
+
         </div>
+
+        
+
       );
     } else if(experiment.data.prediction_type == "regression") { // regression
       let importanceScore, reg_cv_pred, reg_cv_resi, reg_cv_qq;
@@ -600,6 +604,11 @@ class Results extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+          
+          {/* GPT Space */}
+          <ChatGPT/>
+          
+
         </div>
       );
     }
