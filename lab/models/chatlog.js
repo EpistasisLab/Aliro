@@ -11,6 +11,9 @@ const chatlogSchema = new mongoose.Schema({
     message_type: {
         type: String,
     },
+    source_code: {
+        type: String,
+    },
     who: {
         type: String,
     },
@@ -21,4 +24,4 @@ const chatlogSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Chatlog', chatSchema);
+module.exports = mongoose.model('Chatlog', chatlogSchema);

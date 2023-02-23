@@ -99,6 +99,7 @@ router.get('/models', async (req, res) => {
 
 // get model by model name
 router.get('/models/:model', async (req, res) => {
+    // Should I let the OpenAI api handle this?
     // if (req.params.model == null) {
     //     return res.status(400).json({ message: 'No model provided' });
     // }

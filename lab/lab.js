@@ -52,7 +52,7 @@ var generateFeaturesFromFileIdAsync = require("./pyutils").generateFeaturesFromF
 var validateDatafileByFileIdAsync = require("./pyutils").validateDatafileByFileIdAsync;
 const assert = require("assert");
 const openaiRouter = require('./routes/openai');
-const chatRouter = require('./routes/chat');
+const chatapiRouter = require('./routes/chatapi');
 
 /***************
 * Enums
@@ -130,7 +130,7 @@ app.set('appPath', path.join(path.normalize(__dirname), 'webapp/dist'));
 app.use(express.static(app.get('appPath')));
 
 app.use('/openai/v1', openaiRouter);
-app.use('/chat/v1', chatRouter);
+app.use('/chatapi/v1', chatapiRouter);
 
 /* Lab API */
 
