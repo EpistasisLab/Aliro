@@ -10,7 +10,7 @@ async function getConfigById(req, res, next) {
     try {
         config = await OpenAIConfig.findById(req.params.id);
         if (config == null) {
-            return res.status(404).json({ message: 'Cannot find config' });
+            return res.status(404).json({ message: 'Cannot find config: ' + req.params.id });
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -39,7 +39,7 @@ async function getChatById(req, res, next) {
     try {
         chat = await Chat.findById(req.params.id);
         if (chat == null) {
-            return res.status(404).json({ message: 'Cannot find chat' });
+            return res.status(404).json({ message: 'Cannot find chat: ' + req.params.id });
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
@@ -49,8 +49,24 @@ async function getChatById(req, res, next) {
     next();
 }
 
+async function getChatlogById(req, res, next) {
+    let chatlog;
+    try {
+        chatlog = await Chatlog.findById(req.params.id);
+        if (chatlog == null) {
+            return res.status(404).json({ message: 'Cannot find chatlog: ' + req.params.id });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
+    res.chatlog = chatlog;
+    next();
+}
+
 module.exports = {
     getConfigById,
     logOpenAIRequest,
-    getChatById
+    getChatById,
+    getChatlogById
 };
