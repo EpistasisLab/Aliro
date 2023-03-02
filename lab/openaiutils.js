@@ -3,6 +3,7 @@ const OpenAILog = require('./models/openailog');
 const OpenAIConfig = require('./models/openaiconfig');7
 const db = require('./dbgoose').db;
 const Chat = require('./models/chat');
+const Chatlog = require('./models/chatlog');
 
 
 async function getConfigById(req, res, next) {

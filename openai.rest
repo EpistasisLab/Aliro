@@ -1,28 +1,33 @@
-GET http://localhost:5080/openai/v1/config
+GET http://localhost:5080/openai/v1/configs
 
 ###
 
-GET http://localhost:5080/openai/v1/config/63f7f8539fc302b562bb2c1x
+GET http://localhost:5080/openai/v1/configs/63ffa8f9fe67714b24cf5106
 
 ###
 
-POST http://localhost:5080/openai/v1/config
+POST http://localhost:5080/openai/v1/configs
 Content-Type: application/json
 
 {
-    "org_id" : "user_org_id",
-    "api_key" : "user_api_key"
+    "api_key" : "1a2b3c4d5e6f7g8h9i0j",
+    "org_id" : "Personal"
 }
 
 ###
 
-PATCH http://localhost:5080/openai/v1/config/63fd413b8d911988c43725c3
-Content-Type: application/xml
+PATCH http://localhost:5080/openai/v1/configs/63ffa8f9fe67714b24cf5106
+Content-Type: application/json
 
 {
-    "org_id_test" : "user_org_id_test",
-    "api_key_test" : "user_api_key_test"
+    "org_id" : "user_org_id_test",
+    "api_key" : "user_api_key_test"
 }
+
+###
+
+DELETE http://localhost:5080/openai/v1/configs/63ffa8f9fe67714b24cf5106
+
 ###
 
 GET http://localhost:5080/openai/v1/models
@@ -33,7 +38,7 @@ POST http://localhost:5080/openai/v1/completions
 Content-Type: application/json
 
 {
-    "model" : "text-davinci-001",
+    "model" : "code-davinci-001",
     "prompt" : "Test",
     "max_tokens" : 7,
     "temperature" : 0,
