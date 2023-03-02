@@ -1,0 +1,221 @@
+<!DOCTYPE HTML><html><head><title>OpenAI Wrapper API</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 7.8.0"><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+  $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+
+  $('[data-toggle]').click(function() {
+    var selector = $(this).data('target') + ' pre code';
+    $(selector).each(function(i, block) {
+      hljs.highlightBlock(block);
+    });
+  });
+
+  // open modal on hashes like #_action_get
+  $(window).bind('hashchange', function(e) {
+    var anchor_id = document.location.hash.substr(1); //strip #
+    var element = $('#' + anchor_id);
+
+    // do we have such element + is it a modal?  --> show it
+    if (element.length && element.hasClass('modal')) {
+      element.modal('show');
+    }
+  });
+
+  // execute hashchange on first page load
+  $(window).trigger('hashchange');
+
+  // remove url fragment on modal hide
+  $('.modal').on('hidden.bs.modal', function() {
+    try {
+      if (history && history.replaceState) {
+          history.replaceState({}, '', '#');
+      }
+    } catch(e) {}
+  });
+});
+    </script><style>
+      .hljs {
+  background: transparent;
+}
+.parent {
+  color: #999;
+}
+.list-group-item > .badge {
+  float: none;
+  margin-right: 6px;
+}
+.panel-title > .methods {
+  float: right;
+}
+.badge {
+  border-radius: 0;
+  text-transform: uppercase;
+  width: 70px;
+  font-weight: normal;
+  color: #f3f3f6;
+  line-height: normal;
+}
+.badge_get {
+  background-color: #63a8e2;
+}
+.badge_post {
+  background-color: #6cbd7d;
+}
+.badge_put {
+  background-color: #22bac4;
+}
+.badge_delete {
+  background-color: #d26460;
+}
+.badge_patch {
+  background-color: #ccc444;
+}
+.list-group,
+.panel-group {
+  margin-bottom: 0;
+}
+.panel-group .panel+.panel-white {
+  margin-top: 0;
+}
+.panel-group .panel-white {
+  border-bottom: 1px solid #F5F5F5;
+  border-radius: 0;
+}
+.panel-white:last-child {
+  border-bottom-color: white;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel-white .panel-heading {
+  background: white;
+}
+.tab-pane ul {
+  padding-left: 2em;
+}
+.tab-pane h1 {
+  font-size: 1.3em;
+}
+.tab-pane h2 {
+  font-size: 1.2em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+}
+.tab-pane h3 {
+  font-size: 1.1em;
+}
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+#sidebar {
+  margin-top: 30px;
+  padding-right: 5px;
+  overflow: auto;
+  height: 90%;
+}
+.top-resource-description {
+  border-bottom: 1px solid #ddd;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description {
+  border-bottom: 1px solid #fcfcfc;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description p:last-child {
+  margin: 0;
+}
+.list-group .badge {
+  float: left;
+}
+.method_description {
+  margin-left: 85px;
+}
+.method_description p:last-child {
+  margin: 0;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item:hover {
+  background-color: #f5f5f5;
+}
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+.items {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+}
+.examples {
+  margin-left: 0.5em;
+}
+.resource-modal li > ul {
+  margin-bottom: 1em;
+}
+.required {
+  color: #f00;
+}
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>OpenAI Wrapper API <small>version v1</small></h1><p>http://localhost:5080/openai/{version}</p><ul><li><strong>version</strong>: <em><span class="required">required</span>(v1)</em></li></ul></div><div class="panel panel-default"><div class="panel-heading"><h3 id="configs" class="panel-title">/configs</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_configs"><span class="parent"></span>/configs</a> <span class="methods"><a href="#configs_get"><span class="badge badge_get">get</span></a> <a href="#configs_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_configs" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#configs_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve all OpenAI API configuration settings.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#configs_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>Create an OpenAI configuration setting.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="configs_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/configs</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve all OpenAI API configuration settings.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#configs_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="configs_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: array of object</p><p><strong>Items</strong>: Config</p><div class="items"><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul></div><p><strong>Example</strong>:</p><div class="examples"><pre><code>[
+  {
+    "_id": "63f7bc2da70e99abe4e83b9c",
+    "api_key": "1a2b3c4d5e6f7g8h9i0j",
+    "org_id": "Personal",
+    "__v": 0
+  }
+]</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="configs_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/configs</h4></div><div class="modal-body"><div class="alert alert-info"><p>Create an OpenAI configuration setting.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#configs_post_request" data-toggle="tab">Request</a></li><li><a href="#configs_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="configs_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "api_key": "1a2b3c4d5e6f7g8h9i0j",
+  "org_id": "Personal"
+}</code></pre></div></div><div class="tab-pane" id="configs_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "63f7bc2da70e99abe4e83b9c",
+  "api_key": "1a2b3c4d5e6f7g8h9i0j",
+  "org_id": "Personal",
+  "__v": 0
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Config already exists"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_configs__configid_"><span class="parent">/configs</span>/{configId}</a> <span class="methods"><a href="#configs__configid__get"><span class="badge badge_get">get</span></a> <a href="#configs__configid__patch"><span class="badge badge_patch">patch</span></a> <a href="#configs__configid__delete"><span class="badge badge_delete">delete</span></a></span></h4></div><div id="panel_configs__configid_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#configs__configid__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retrieve a specific OpenAI API configuration setting.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#configs__configid__patch'" class="list-group-item"><span class="badge badge_patch">patch</span><div class="method_description"><p>Update a specific OpenAI API configuration setting.</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#configs__configid__delete'" class="list-group-item"><span class="badge badge_delete">delete</span><div class="method_description"><p>Delete a specific OpenAI API configuration setting.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="configs__configid__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/configs</span>/{configId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve a specific OpenAI API configuration setting.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#configs__configid__get_request" data-toggle="tab">Request</a></li><li><a href="#configs__configid__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="configs__configid__get_request"><h3>URI Parameters</h3><ul><li><strong>configId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="configs__configid__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "63f7bc2da70e99abe4e83b9c",
+  "api_key": "1a2b3c4d5e6f7g8h9i0j",
+  "org_id": "Personal",
+  "__v": 0
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Cannot find config: 1a2b3c4d5e6f7g8h9i0j"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="configs__configid__patch"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_patch">patch</span> <span class="parent">/configs</span>/{configId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Update a specific OpenAI API configuration setting.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#configs__configid__patch_request" data-toggle="tab">Request</a></li><li><a href="#configs__configid__patch_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="configs__configid__patch_request"><h3>URI Parameters</h3><ul><li><strong>configId</strong>: <em><span class="required">required</span>(string)</em></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "api_key": "1a2b3c4d5e6f7g8h9i0j",
+  "org_id": "Personal"
+}</code></pre></div></div><div class="tab-pane" id="configs__configid__patch_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>api_key</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>org_id</strong>: <em>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "_id": "63f7bc2da70e99abe4e83b9c",
+  "api_key": "1a2b3c4d5e6f7g8h9i0j",
+  "org_id": "Personal",
+  "__v": 0
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Cannot find config: 1a2b3c4d5e6f7g8h9i0j"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="configs__configid__delete"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete</span> <span class="parent">/configs</span>/{configId}</h4></div><div class="modal-body"><div class="alert alert-info"><p>Delete a specific OpenAI API configuration setting.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#configs__configid__delete_request" data-toggle="tab">Request</a></li><li><a href="#configs__configid__delete_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="configs__configid__delete_request"><h3>URI Parameters</h3><ul><li><strong>configId</strong>: <em><span class="required">required</span>(string)</em></li></ul></div><div class="tab-pane" id="configs__configid__delete_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Deleted config: 1a2b3c4d5e6f7g8h9i0j"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Cannot find config: 1a2b3c4d5e6f7g8h9i0j"
+}</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "message": "Failed to connect to database"
+}</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="models" class="panel-title">/models</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_models"><span class="parent"></span>/models</a> <span class="methods"><a href="#models_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_models" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#models_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>see <a href="https://platform.openai.com/docs/api-reference/models/list">https://platform.openai.com/docs/api-reference/models/list</a></p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="models_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/models</h4></div><div class="modal-body"><div class="alert alert-info"><p>see <a href="https://platform.openai.com/docs/api-reference/models/list">https://platform.openai.com/docs/api-reference/models/list</a></p></div><ul class="nav nav-tabs"></ul><div class="tab-content"></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_models__model_"><span class="parent">/models</span>/{model}</a> <span class="methods"><a href="#models__model__get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_models__model_" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#models__model__get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>see <a href="https://platform.openai.com/docs/api-reference/models/retrieve">https://platform.openai.com/docs/api-reference/models/retrieve</a></p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="models__model__get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/models</span>/{model}</h4></div><div class="modal-body"><div class="alert alert-info"><p>see <a href="https://platform.openai.com/docs/api-reference/models/retrieve">https://platform.openai.com/docs/api-reference/models/retrieve</a></p></div><ul class="nav nav-tabs"><li class="active"><a href="#models__model__get_request" data-toggle="tab">Request</a></li></ul><div class="tab-content"><div class="tab-pane active" id="models__model__get_request"><h3>URI Parameters</h3><ul><li><strong>model</strong>: <em><span class="required">required</span>(string)</em></li></ul></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="completions" class="panel-title">/completions</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_completions"><span class="parent"></span>/completions</a> <span class="methods"><a href="#completions_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_completions" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#completions_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>see <a href="https://platform.openai.com/docs/api-reference/completions/create">https://platform.openai.com/docs/api-reference/completions/create</a></p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="completions_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/completions</h4></div><div class="modal-body"><div class="alert alert-info"><p>see <a href="https://platform.openai.com/docs/api-reference/completions/create">https://platform.openai.com/docs/api-reference/completions/create</a></p></div><ul class="nav nav-tabs"></ul><div class="tab-content"></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="edits" class="panel-title">/edits</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_edits"><span class="parent"></span>/edits</a> <span class="methods"><a href="#edits_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_edits" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#edits_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>see <a href="https://platform.openai.com/docs/api-reference/edits/create">https://platform.openai.com/docs/api-reference/edits/create</a></p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="edits_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/edits</h4></div><div class="modal-body"><div class="alert alert-info"><p>see <a href="https://platform.openai.com/docs/api-reference/edits/create">https://platform.openai.com/docs/api-reference/edits/create</a></p></div><ul class="nav nav-tabs"></ul><div class="tab-content"></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#configs">/configs</a></li><li><a href="#models">/models</a></li><li><a href="#completions">/completions</a></li><li><a href="#edits">/edits</a></li></ul></div></div></div></div></body></html>
