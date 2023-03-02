@@ -4,12 +4,13 @@ const Chat = require('../models/chat');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
 const getChatById = require('../openaiutils').getChatById;
+const getChatlogById = require('../openaiutils').getChatlogById;
 
 /* 
 ** Chat Logs API 
 */
 // Create one chat log entry
-router.post('/chatlog', async (req, res) => {
+router.post('/chatlogs', async (req, res) => {
     if (req.body._chat_id == null) {
         return res.status(400).json({ message: 'Must provide a _chat_id' });
     }
@@ -18,6 +19,9 @@ router.post('/chatlog', async (req, res) => {
     }
     if (req.body.message_type == null) {
         return res.status(400).json({ message: 'Must provide a message_type' });
+    }
+    if (req.body.who == null) {
+        return res.status(400).json({ message: 'Must provide a who' });
     }
 
     const chatlog = new ChatLog({
@@ -37,11 +41,12 @@ router.post('/chatlog', async (req, res) => {
 });
 
 // Update one chat log entry
-router.patch('/chatlog/:id', getChatById, async (req, res) => {
+router.patch('/chatlogs/:id', getChatlogById, async (req, res) => {
     // we should not allowed to update the _chat_id, as this would move this log to another chat
-    // if (req.body._chat_id != null) {
-    //     res.chatlog._chat_id = req.body._chat_id;
-    // }
+    // But we should return an error if the _chat_id is different from the one in the db
+    if (req.body._chat_id != null && req.body._chat_id != res.chatlog._chat_id) {
+        return res.status(400).json({ message: 'Cannot update _chat_id' });
+    }
     if (req.body.message != null) {
         res.chatlog.message = req.body.message;
     }
@@ -66,7 +71,7 @@ router.patch('/chatlog/:id', getChatById, async (req, res) => {
 // // Get all chat logs by chat_id from the chat collection
 // // Test if there is no need to get a chat by id, I need to see if the
 // // res.chat will be available in the response after res.send(chatlog)
-// router.get('/chatlog/:chat_id', getChatById, async (req, res) => {
+// router.get('/chatlogs/:chat_id', getChatById, async (req, res) => {
 //     try {
 //         const chatlog = await ChatLog.find({ _chat_id: res.chat._id });
 //         res.send(chatlog);
@@ -80,7 +85,7 @@ router.patch('/chatlog/:id', getChatById, async (req, res) => {
 ** Chat API 
 */
 // Create one chat
-router.post('/chat', async (req, res) => {
+router.post('/chats', async (req, res) => {
     // a chat should always happen within the context of a dataset
     if (req.body._dataset_id == null) {
         return res.status(400).json({ message: 'Must provide a _dataset_id' });
@@ -90,7 +95,7 @@ router.post('/chat', async (req, res) => {
         return res.status(400).json({ message: 'Must provide a title' });
     }
 
-    // we can prevent chats with a duplicat title by checking here
+    // we can prevent chats with a duplicate title by checking here
     // but chatGPT currently allows duplicates. We can revisit this later.
 
     const chat = new Chat({
@@ -109,7 +114,7 @@ router.post('/chat', async (req, res) => {
 
 // Get all chats
 // This endpoint will not return the chatlogs
-router.get('/chat', async (req, res) => {
+router.get('/chats', async (req, res) => {
     try {
         const chat = await Chat.find();
         res.send(chat);
@@ -119,7 +124,7 @@ router.get('/chat', async (req, res) => {
 });
 
 // Get one chat
-router.get('/chat/:id', getChatById, (req, res) => {
+router.get('/chats/:id', getChatById, (req, res) => {
     // get all chatlogs associated with this chat
     ChatLog.find({ _chat_id: res.chat._id }, function (err, chatlogs) {
         if (err) {
@@ -131,7 +136,7 @@ router.get('/chat/:id', getChatById, (req, res) => {
 
 
 // Update one chat
-router.patch('/chat/:id', getChatById, async (req, res) => {
+router.patch('/chats/:id', getChatById, async (req, res) => {
     if (req.body.title != null) {
         res.chat.title = req.body.title;
     }
@@ -141,6 +146,7 @@ router.patch('/chat/:id', getChatById, async (req, res) => {
     if (req.body._experiment_id != null) {
         res.chat._experiment_id = req.body._experiment_id;
     }
+
     try {
         const updatedChat = await res.chat.save();
         res.send(updatedChat);
@@ -150,58 +156,16 @@ router.patch('/chat/:id', getChatById, async (req, res) => {
 });
 
 // Delete one chat
-router.delete('/chat/:id', getChatById, async (req, res) => {
+router.delete('/chats/:id', getChatById, async (req, res) => {
     try {
         await res.chat.remove();
         // remove all chatlogs associated with this chat
         await ChatLog.deleteMany({ _chat_id: res.chat._id });
 
-        res.send({ message: 'Deleted chat' });
+        res.send({ message: 'Deleted chat ' + res.chat._id });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
-
-// // Get one chat log entry by id
-// async function getChatLogById(req, res, next) {
-//     let chatlog;
-//     try {
-//         chatlog = await ChatLog.findById(req.params.id);
-//         if (chatlog == null) {
-//             return res.status(404).json({ message: 'Cannot find chatlog' });
-//         }
-//     } catch (err) {
-//         return res.status(500).json({ message: err.message });
-//     }
-
-//     console.log('getChatLogById:', chatlog);
-
-//     res.chatlog = chatlog;
-//     next();
-// }
-
-// Update one chat log entry
-router.patch('/chatlog/:id', getChatById, async (req, res) => {
-    // _chat_id should not be updated
-    if (req.body.message != null) {
-        res.chatlog.message = req.body.message;
-    }
-    if (req.body.message_type != null) {
-        res.chatlog.message_type = req.body.message_type;
-    }
-    if (req.body.source_code != null) {
-        res.chatlog.source_code = req.body.source_code;
-    }
-    if (req.body.who != null) {
-        res.chatlog.who = req.body.who;
-    }
-    try {
-        const updatedChatLog = await res.chatlog.save();
-        res.send(updatedChatLog);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
-
 
 module.exports = router;

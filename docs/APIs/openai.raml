@@ -1,0 +1,116 @@
+#%RAML 1.0
+---
+title: OpenAI Wrapper API
+version: v1
+baseUri: http://localhost:5080/openai/{version}
+mediaType: application/json
+types:
+  Config: !include DataTypes/config.raml
+
+/configs:
+  get:
+    description: Retrieve all OpenAI API configuration settings.
+    responses:
+      200:
+        body:
+          application/json:
+            type: Config[]
+            example: !include Examples/Configs/GetAll.raml
+      500:
+        body:
+          application/json:
+            type: object
+            example: { message: 'Failed to connect to database' }
+  post:
+    description: Create an OpenAI configuration setting.
+    body:
+      application/json:
+        type: Config
+        example: !include Examples/Configs/Create.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: Config
+            example: !include Examples/Configs/GetOne.raml
+      400:
+        body:
+          application/json:
+            type: object
+            example: { message: 'Config already exists' }
+      500:
+        body:
+          application/json:
+            type: object
+            example: { message: 'Failed to connect to database' }
+  /{configId}:
+    get:
+      description: Retrieve a specific OpenAI API configuration setting.
+      responses:
+        200:
+          body:
+            application/json:
+              type: Config
+              example: !include Examples/Configs/GetOne.raml
+        404:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Cannot find config: 1a2b3c4d5e6f7g8h9i0j' }
+        500:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Failed to connect to database' }
+    patch:
+      description: Update a specific OpenAI API configuration setting.
+      body:
+        application/json:
+          type: Config
+          example: !include Examples/Configs/Create.raml
+      responses:
+        200:
+          body:
+            application/json:
+              type: Config
+              example: !include Examples/Configs/GetOne.raml
+        404:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Cannot find config: 1a2b3c4d5e6f7g8h9i0j' }
+        500:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Failed to connect to database' }
+    delete:
+      description: Delete a specific OpenAI API configuration setting.
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Deleted config: 1a2b3c4d5e6f7g8h9i0j' }
+        404:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Cannot find config: 1a2b3c4d5e6f7g8h9i0j' }
+        500:
+          body:
+            application/json:
+              type: object
+              example: { message: 'Failed to connect to database' }
+/models:
+  get:
+    description: see https://platform.openai.com/docs/api-reference/models/list
+  /{model}:
+    get:
+      description: see https://platform.openai.com/docs/api-reference/models/retrieve
+/completions:
+  post:
+    description: see https://platform.openai.com/docs/api-reference/completions/create
+/edits:
+  post:
+    description: see https://platform.openai.com/docs/api-reference/edits/create
