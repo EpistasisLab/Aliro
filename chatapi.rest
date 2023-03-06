@@ -1,41 +1,19 @@
-POST http://localhost:5080/chatapi/v1/chats
+POST http://localhost:5080/chatapi/v1/chat
 Content-Type: application/json
 
 {
-    "title" : "Another Chat with experiment id",
-    "_experiment_id": "63f6e4987c5f93004a3e3ca8",
+    "title" : "Hello",
+    "_experient_id": "63f6e4987c5f93004a3e3ca8",
     "_dataset_id": "63f6e4947c5f93004a3e3ca7"
 }
 
 ###
 
-GET http://localhost:5080/chatapi/v1/chats
-
-###
-
-GET http://localhost:5080/chatapi/v1/chats/63ffb16342f8d8282acbcc8d
-
-###
-
-PATCH http://localhost:5080/chatapi/v1/chats/63ffb16342f8d8282acbcc6d
+POST http://localhost:5080/chatapi/v1/chatlog/
 Content-Type: application/json
 
 {
-    "title" : "Chat with no experiment id",
-    "_experiment_id": "63f6e4987c5f93004a3e3ca8",
-    "_dataset_id": "63f6e4947c5f93004a3e3ca7"
-}
-
-###
-
-DELETE http://localhost:5080/chatapi/v1/chats/63ffb16342f8d8282acbcc8d
-
-###
-POST http://localhost:5080/chatapi/v1/chatlogs
-Content-Type: application/json
-
-{
-    "_chat_id" : "63ffb16342f8d8282acbcc8d",
+    "_chat_id" : "63f6e54fc76ccd8396386d03",
     "message" : "Hello there from cyberspace!",
     "message_type" : "text",
     "who" : "openai"
@@ -43,11 +21,10 @@ Content-Type: application/json
 
 ###
 
-PATCH http://localhost:5080/chatapi/v1/chatlogs/63ffc80142f8d8282acbccb6
-Content-Type: application/json
+GET http://localhost:5080/chatapi/v1/chat
 
-{
-    "message" : "Hello from cyberspace!",
-    "message_type" : "text",
-    "who" : "openai"
-}
+###
+
+GET http://localhost:5080/chatapi/v1/chat/63f6e54fc76ccd8396386d03
+
+###

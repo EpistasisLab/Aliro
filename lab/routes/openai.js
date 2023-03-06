@@ -17,7 +17,7 @@ const openai = new OpenAIApi(configuration);
 ** OpenAI Config Settings API 
 */
 // Create a config
-router.post('/configs', async (req, res) => {
+router.post('/config', async (req, res) => {
     // Check if config already exists
     let existing;
     try {
@@ -27,10 +27,6 @@ router.post('/configs', async (req, res) => {
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
-    }
-
-    if (req.body.api_key == null) {
-        return res.status(400).json({ message: 'No api key provided' });
     }
 
     const config = new OpenAIConfig({
@@ -46,7 +42,7 @@ router.post('/configs', async (req, res) => {
 });
 
 // Get all configs
-router.get('/configs', async (req, res) => {
+router.get('/config', async (req, res) => {
     try {
         const config = await OpenAIConfig.find();
         res.send(config);
@@ -56,12 +52,12 @@ router.get('/configs', async (req, res) => {
 });
 
 // Get one config
-router.get('/configs/:id', getConfigById, (req, res) => {
+router.get('/config/:id', getConfigById, (req, res) => {
     res.send(res.config);
 });
 
 // Update one config
-router.patch('/configs/:id', getConfigById, async (req, res) => {
+router.patch('/config/:id', getConfigById, async (req, res) => {
     if (req.body.org_id != null) {
         res.config.org_id = req.body.org_id;
     }
@@ -77,10 +73,10 @@ router.patch('/configs/:id', getConfigById, async (req, res) => {
 });
 
 // Delete one config
-router.delete('/configs/:id', getConfigById, async (req, res) => {
+router.delete('/config/:id', getConfigById, async (req, res) => {
     try {
         await res.config.remove();
-        res.send({ message: 'Deleted config: ' + req.params.id });
+        res.send({ message: 'Deleted config' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
