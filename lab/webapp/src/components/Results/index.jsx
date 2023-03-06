@@ -310,7 +310,7 @@ class Results extends Component {
 
 
 
-          <Grid columns={4} stackable>
+          <Grid columns={3} stackable>
             <Grid.Row>
               <Grid.Column>
                 <AlgorithmDetails
@@ -440,20 +440,8 @@ class Results extends Component {
                 {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
 
               </Grid.Column>
-              
-              {/* GPT Space */}
-              <Grid.Column>
-                <ChatGPT/>
-              </Grid.Column>
-
             </Grid.Row>
           </Grid>
-
-          {/* GPT Space */}
-          {/* <Grid columns={4} stackable="stackable">
-              <ChatGPT/>
-          </Grid> */}
-
 
           {/* GPT Space */}
           <ChatGPT/>
@@ -528,7 +516,7 @@ class Results extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-          <Grid columns={4} stackable>
+          <Grid columns={3} stackable>
             <Grid.Row>
               <Grid.Column>
 
@@ -614,18 +602,8 @@ class Results extends Component {
                 />
 
               </Grid.Column>
-
-              {/* GPT Space */}
-              <Grid.Column>
-                <ChatGPT/>
-              </Grid.Column>
             </Grid.Row>
           </Grid>
-
-          {/* GPT Space */}
-          {/* <Grid columns={4} stackable="stackable">
-              <ChatGPT/>
-          </Grid> */}
           
           {/* GPT Space */}
           <ChatGPT/>
