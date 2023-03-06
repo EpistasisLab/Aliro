@@ -165,7 +165,7 @@ class Results extends Component {
     // --- get lists of scores ---
     if(experiment.data.prediction_type == "classification") { // classification
 
-      // console.log("experiment.data", experiment.data)
+      console.log("experiment.data", experiment.data)
       // console.log("X_pca", experiment.data.X_pca)
       // console.log("y_pca", experiment.data.y_pca)
 
@@ -181,6 +181,8 @@ class Results extends Component {
           confusionMatrix = file;
         } else if(filename.includes('roc_curve')) {
           rocCurve = file;
+          // save to local storage
+          localStorage.setItem('rocCurve',rocCurve);
         } else if(filename.includes('imp_score')) {
           importanceScore = file;
         } else if(filename.includes('learning_curve')) {
@@ -213,7 +215,14 @@ class Results extends Component {
           shapSummaryCurveDict[class_name] = file;
           shap_explainer=experiment.data.shap_explainer;
           shap_num_samples=experiment.data.shap_num_samples;
-          
+
+          // save to local storage
+          localStorage.setItem('shapSummaryCurveDict',JSON.stringify(shapSummaryCurveDict));
+          localStorage.setItem('shap_explainer',shap_explainer);
+          localStorage.setItem('shap_num_samples',shap_num_samples);
+
+
+
         }
         else if (filename.includes('shap_summary_json')) {
           console.log("shap_summary_json")
@@ -268,179 +277,41 @@ class Results extends Component {
       });
 
 
+
+
+      console.log('balancedAccList',balancedAccList)
+      // save to local storage
+      localStorage.setItem('balancedAccList', JSON.stringify(balancedAccList));
+      
+      console.log('precisionList',precisionList)
+      // save to local storage
+      localStorage.setItem('precisionList', JSON.stringify(precisionList));
+      
+      // save to local storage
+      console.log('aucList',aucList)
+      localStorage.setItem('aucList', JSON.stringify(aucList));
+
+      // save to local storage
+      console.log('recallList',recallList)
+      localStorage.setItem('recallList', JSON.stringify(recallList));
+
+      // save to local storage
+      console.log('f1List',f1List)
+      localStorage.setItem('f1List', JSON.stringify(f1List));
+
+      // save to local storage
+      console.log('class_percentage',class_percentage)
+      localStorage.setItem('class_percentage', JSON.stringify(class_percentage));
+
+
+
+
       return (
         
         
         <div>
-          <Grid columns={2} stackable>
-            <Grid.Row>
-              <Grid.Column>
-                <SceneHeader
-                  header={`Results: ${formatDataset(experiment.data.dataset_name)}`}
-                  subheader={`Experiment: #${experiment.data._id}`}
-                />
-              </Grid.Column>
-              <Grid.Column>
-                <Menu compact inverted floated='right' color='grey'>
-                  <Dropdown
-                    text='Download'
-                    simple item
-                    disabled={['cancelled', 'fail'].includes(experiment.data.status)}
-                  >
-                    <Dropdown.Menu>
-                        <Dropdown.Item
-                          key="model"
-                          icon="download"
-                          text="Model"
-                          onClick={() => downloadModel(experiment.data._id)}
-                        />,
-                        <Dropdown.Item
-                          key="script"
-                          icon="download"
-                          text="Script"
-                          onClick={() => downloadScript(experiment.data._id)}
-                        />
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Menu>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
 
-
-
-          <Grid columns={3} stackable>
-            <Grid.Row>
-              <Grid.Column>
-                <AlgorithmDetails
-                  algorithm={experiment.data.algorithm}
-                  params={experiment.data.params}
-                />
-                <RunDetails
-                  startTime={experiment.data.started}
-                  finishTime={experiment.data.finished}
-                  launchedBy={experiment.data.launched_by}
-                />
-                {/* <ImportanceScore file={importanceScore} /> */}
-                <ImportanceScoreJSON
-                  scoreName="Feature Importance"
-                  scoreValueList={experiment.data.feature_importances}
-                  featureList={experiment.data.feature_names}
-                  chartKey="importance_score"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                {/* <LearningCurve file={learningCurve}/> */}
-                <LearningCurveJSON scoreName="Learning Curve"
-                  train_sizes={experiment.data.train_sizes}
-                  train_scores={experiment.data.train_scores}
-                  test_scores={experiment.data.test_scores}
-                  chartKey="learning_curve"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-
-                
-
-                
-                
-                {/* <PCA file={pca}/> */}
-                <PCAJSON scoreName="PCA 2D"
-                  Points={experiment.data.X_pca}
-                  Labels={experiment.data.y_pca}
-                  chartKey="pca_2d"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                {/* <TSNE file={tsne}/> */}
-                {/* <TSNEJSON file={tsne_json}/> */}
-                {/* <TSNEJSON scoreName="TSNE 2D"
-                  Points={experiment.data.X_tsne}
-                  Labels={experiment.data.y_tsne}
-                  chartKey="tsne_2d"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */}
-              </Grid.Column>
-              <Grid.Column>
-                {/* <NoScore
-                  scoreName="Class Rate"
-                  scoreValueList={class_percentage}
-                  chartKey="test"
-                  chartColor="#55D6BE"
-                  type="classification"
-                /> */}
-
-                <ClassRate
-                  scoreName="Class Rate"
-                  scoreValueList={class_percentage}
-                  chartKey="test"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                {/* <ConfusionMatrix file={confusionMatrix} /> */}
-                {/* This TestChart is for interactive and responsive confusion matrix */}
-                <ConfusionMatrixJSON scoreName="Confusion Matrix"
-                  cnf_data={experiment.data.cnf_matrix}
-                  chartKey="test_chart"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                <ROCCurve file={rocCurve} />
-                <ShapSummaryCurve
-                  fileDict={shapSummaryCurveDict}
-                  shap_explainer={shap_explainer}
-                  shap_num_samples={shap_num_samples} />
-                <TSNEJSON scoreName="TSNE 2D"
-                  Points={experiment.data.X_tsne}
-                  Labels={experiment.data.y_tsne}
-                  chartKey="tsne_2d"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-              </Grid.Column>
-              <Grid.Column>
-                <Score
-                  scoreName="Balanced Accuracy"
-                  scoreValueList={balancedAccList}
-                  chartKey="all"
-                  chartColor="#7D5BA6"
-                  type="classification"
-                />
-                <Score
-                  scoreName="AUC"
-                  scoreValueList={aucList}
-                  chartKey="auc_scores"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                <Score
-                  scoreName="Precision"
-                  scoreValueList={precisionList}
-                  chartKey="precision_scores"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                <Score
-                  scoreName="Recall"
-                  scoreValueList={recallList}
-                  chartKey="recall_scores"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-                <Score
-                  scoreName="F1 Score"
-                  scoreValueList={f1List}
-                  chartKey="f1_scores"
-                  chartColor="#55D6BE"
-                  type="classification"
-                />
-
-                {/* https://en.wikipedia.org/wiki/Confusion_matrix */}
-
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
+          
 
           {/* GPT Space */}
           {/* <Grid columns={4} stackable="stackable">
@@ -449,7 +320,7 @@ class Results extends Component {
 
 
           {/* GPT Space */}
-          {/* <ChatGPT/> */}
+          <ChatGPT experiment={experiment}/>
 
 
 
@@ -616,7 +487,7 @@ class Results extends Component {
           </Grid> */}
           
           {/* GPT Space */}
-          {/* <ChatGPT/> */}
+          <ChatGPT experiment={experiment}/>
           
 
         </div>

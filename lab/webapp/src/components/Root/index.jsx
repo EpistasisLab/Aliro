@@ -41,11 +41,19 @@ import Builder from '../Builder';
 import Results from '../Results';
 import Admin from '../Admin';
 import NotFound from '../NotFound';
+import ChatGPT from '../ChatGPT';
+import ResultsV2 from '../ResultsV2';
 
 /**
 * Use react router to delineate different parts of website; essentially links
 */
 function Root({ store }) {
+
+  console.log("store", store)
+
+  console.log("hashHistory", hashHistory)
+
+  
 
   // var [eventsEnabled, setEventsEnabled] = React.useState(true)
   // var [open, setOpen] = React.useState(true)
@@ -59,10 +67,12 @@ function Root({ store }) {
           <Route path="datasets/:id" component={Dataset} />
           <Route path="experiments" component={Experiments} />
           <Route path="builder" component={Builder} />
-          <Route path="results/:id" component={Results} />
+          
+          {/* <Route path="results/:id" component={Results} /> */}
+          <Route path="results/:id" component={ResultsV2} />
+          {/* <Route path="results/:id" component={ChatGPT} /> */}
           <Route path="admin" component={Admin} />
           <Route path="*" component={NotFound} />
-          
         </Route>
       </Router>
     </Provider>

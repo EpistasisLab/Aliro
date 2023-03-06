@@ -19,7 +19,7 @@ And, it has an _AI_ assistant that can choose the analysis to run for you. Datas
 
 [**Latest Production Release**](https://github.com/EpistasisLab/Aliro/releases/latest)
 
-Browse the repo here:
+Browse the repo:
 
 - [User Guide](./docs/guides/userGuide.md)
 - [Developer Guide](./docs/guides/developerGuide.md)
