@@ -29,7 +29,8 @@ import Score from '../ResultsV2/components/Score';
 
 
 // Primary Chat Window
-const ChatBox = ({chatLog, setChatLog, setChatInput, handleSubmit, chatInput, experiment}) => <section className="chatbox">
+const ChatBox = ({chatLog, setChatLog, setChatInput, handleSubmit, chatInput, experiment}) => 
+<section className="chatbox">
     <div className="chat-log">
         {
             chatLog.map((message, index) => (
@@ -82,6 +83,15 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
     // eda charts
     const [showEDAElement, setshowEDAElement] = useState(false);
 
+    // message.user is me?
+    const [isMe, setIsMe] = useState(false);
+
+    // if message.user is me, set isMe to true
+    if(message.user === "me"){
+        setIsMe(true);
+    }
+
+    
 
 
     // alert:"training the algorithm"
@@ -96,20 +106,20 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
     useEffect(() => {
         setTimeout(function () {
             setshowAlertTrDone(true);
-        }, 5000);
+        }, 7000);
       }, []);
     
     // ai message: Do you want to see the model performance?
     useEffect(() => {
         setTimeout(function () {
             setshowAIQmodelper(true);
-        }, 5500);
+        }, 8000);
       }, []);
     
     useEffect(() => {
         setTimeout(function () {
           setshowMLpElement(true);
-        }, 7000);
+        }, 10000);
       }, []);
 
 
@@ -117,14 +127,14 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
     useEffect(() => {
         setTimeout(function () {
             setshowAIQEDA(true);
-        }, 8000);
+        }, 13000);
       }, []);
 
     
     useEffect(() => {
         setTimeout(function () {
             setshowEDAElement(true);
-        }, 12000);
+        }, 15000);
     }, []);
 
 
@@ -306,505 +316,534 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
 
     
     
-
-
+        // if message.user is gpt, Return below
+    
     return (
-        <>
-            {/* ml algorithms */}
-            <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
-                <div className="chat-message-center">
-                        <div className="avatar alirogpt">
-                            <div>AI</div>
-                        </div>
+        // if message.user is me , do not plint below
+        // if message.user is gpt, print below
 
-                    {/* for normal chat */}
-                    {
-                        // message.user = 'me'
-                    }
-                    
-                    <div className="message">
-                        Select algorithm
-
-                    </div>
-                    {
-                        booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
-                    }
-                    {/* for buttons */}
-                    {
-                        booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && buttons.map(
-                            (item, index) =>
-                            
-                            // when index is 0
-                            index === "" ? (
-                                // console.log("index is 0",item)
-                                <div>{item}: </div>
-                            ) : (
-
-                                
-
-                            <div
-                                className="chat-button"
-                                //style="margin-right: 10px;"
-                                style={{'margin-right':"10px"}}
-                                key={index}
-                                onClick={selectButton}
-                                data-messageid={message.messageid}
-                                >
-                                {item.includes('(suggested)') ? (
-                                    <span>
-                                    {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
-                                    {item.replace('(suggested)', '')}
-                                    </span>
-                                ) : item}
-                            </div>
-
-                        )
-                        )
-
-                        // show image
-                    } 
-                    
-
-                    
-
-                </div>
-            </div>
-            {/* <div style={{ display: (showing ? 'block' : 'none') }}>This is visible</div> */}
-
-
-            {/* hyperparameters */}
-            <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
-                <div className="chat-message-center">
-                <div className="avatar alirogpt">
-                            <div>AI</div>
-                        </div>
-
-                    {/* for normal chat */}
-                    {
-                        // message.user = 'me'
-                    }
-                    
-                    <div className="message">
-                        Select hyperparameters
-
-                    </div>
-                    {
-                        booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
-                    }
-                    {/* for buttons */}
-                    {
-                        booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && hypOne.map(
-                            (item, index) =>
-                            
-                            // when index is 0
-                            index === "" ? (
-                                // console.log("index is 0",item)
-                                <div>{item}: </div>
-                            ) : (
-
-                                
-
-                            <div
-                                className="chat-button"
-                                //style="margin-right: 10px;"
-                                style={{'margin-right':"10px"}}
-                                key={index}
-                                onClick={selectButton}
-                                data-messageid={message.messageid}
-                                >
-                                {item.includes('(suggested)') ? (
-                                    <span>
-                                    {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
-                                    {item.replace('(suggested)', '')}
-                                    </span>
-                                ) : item}
-                            </div>
-
-                        )
-                        )
-
-                        // show image
-                    } 
-                    
-
-                    
-
-                    </div>
-            </div>
-
-
-            {/* alert: training machine learning */}
-            <div>
-                {showAlert ? (
-                <div className="chat-message false">
-                    <div className="chat-message-center">
-                        <div className="avatar alirogpt">
-                            <div>AI</div>
-                        </div>
-                        <div className="message">Training the algorithm...</div>
-
-                        
-                        
-                    </div>
-                </div>
-                ) : (
-                <div></div>
-                )}{" "}
-            </div>
-
-
-            {/* alert: training machine learning is done */}
-            <div>
-                {showAlertTrDone ? (
-                <div className="chat-message false">
-                    <div className="chat-message-center">
-                        <div className="avatar alirogpt">
-                            <div>AI</div>
-                        </div>
-                        <div className="message">Training the algorithm is done. </div>
-
-                        
-                        
-                    </div>
-                </div>
-                ) : (
-                <div></div>
-                )}{" "}
-            </div>
-
-
-
-            {/* ai message: Do you want to see the model performance? */}
-
-            <div>
-                {showAIQmodelper? (<div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
-                <div className="chat-message-center">
-                    <div className="avatar alirogpt">
-                                <div>AI</div>
-                    </div>
-
-                    {/* for normal chat */}
-                    {
-                        // message.user = 'me'
-                    }
-                    
-                    <div className="message">
-                    Do you want to check the model performance?
-
-                    </div>
-                    {
-                        booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
-                    }
-                    {/* for buttons */}
-                    {
-                        booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && yesOrNo.map(
-                            (item, index) =>
-                            
-                            // when index is 0
-                            index === "" ? (
-                                // console.log("index is 0",item)
-                                <div>{item}: </div>
-                            ) : (
-
-                                
-
-                            <div
-                                className="chat-button"
-                                //style="margin-right: 10px;"
-                                style={{'margin-right':"10px"}}
-                                key={index}
-                                onClick={selectButton}
-                                data-messageid={message.messageid}
-                                >
-                                {item.includes('(suggested)') ? (
-                                    <span>
-                                    {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
-                                    {item.replace('(suggested)', '')}
-                                    </span>
-                                ) : item}
-                            </div>
-
-                        )
-                        )
-
-                        // show image
-                    } 
-                    
-
-                    
-
-                    </div>
-            </div>) : (
-                <div></div>
-                )}{" "}
-            </div>
-
-
-
-            
-
-
-
-
-            {/* ai message: Let's see the model performance */}
-
-            {/* <div>
-                {showMLpElement ? (
-                <div className="chat-message false">
-                    <div className="chat-message-center">
-                        <div className="avatar alirogpt">
-                            <div>AI</div>
-                        </div>
-                        <div className="message">Let's see the model performance and other information.</div>
-
-                        
-                        
-                    </div>
-                </div>
-                ) : (
-                <div></div>
-                )}{" "}
-            </div> */}
-            
-
-
-            
-
-
-            {/* Charts for ml performance*/}
-
-            <div>
-                {showMLpElement ? (
-                <div className="message chartchat">
-                            <Grid columns={2} stackable="stackable">
-                                <Grid.Row>
-                                    <Grid.Column>
-                                        <AlgorithmDetails
-                                            algorithm={experiment.data.algorithm}
-                                            params={experiment.data.params}/>
-                                        <RunDetails
-                                            startTime={experiment.data.started}
-                                            finishTime={experiment.data.finished}
-                                            launchedBy={experiment.data.launched_by}/>
-                                        
-                                        
-                                        
-                                        <LearningCurveJSON
-                                            scoreName="Learning Curve"
-                                            train_sizes={experiment.data.train_sizes}
-                                            train_scores={experiment.data.train_scores}
-                                            test_scores={experiment.data.test_scores}
-                                            chartKey="learning_curve_chat"
-                                            chartColor="#55D6BE"
-                                            type="classification"/>
-                                        
-
-                                        <ConfusionMatrixJSON
-                                            scoreName="Confusion Matrix"
-                                            cnf_data={experiment.data.cnf_matrix}
-                                            chartKey="test_chart_chat"
-                                            chartColor="#55D6BE"
-                                            type="classification"/>
-                                        
-                                        
-                                    </Grid.Column>
-                                    
-                                    <Grid.Column>
-                                    <Score
-                                        scoreName="Balanced Accuracy"
-                                        scoreValueList={balancedAccList}
-                                        chartKey="all"
-                                        chartColor="#7D5BA6"
-                                        type="classification"
-                                        />
-                                        <Score
-                                        scoreName="AUC"
-                                        scoreValueList={aucList}
-                                        chartKey="auc_scores"
-                                        chartColor="#55D6BE"
-                                        type="classification"
-                                        />
-                                        <Score
-                                        scoreName="Precision"
-                                        scoreValueList={precisionList}
-                                        chartKey="precision_scores"
-                                        chartColor="#55D6BE"
-                                        type="classification"
-                                        />
-                                        <Score
-                                        scoreName="Recall"
-                                        scoreValueList={recallList}
-                                        chartKey="recall_scores"
-                                        chartColor="#55D6BE"
-                                        type="classification"
-                                        />
-                                        <Score
-                                        scoreName="F1 Score"
-                                        scoreValueList={f1List}
-                                        chartKey="f1_scores"
-                                        chartColor="#55D6BE"
-                                        type="classification"
-                                        />
-                                    </Grid.Column>
-                                </Grid.Row>
-                                
-                            </Grid>
-                        </div>
-                ) : (
-                <div></div>
-                )}{" "}
-            </div>
-
-
-
-
-
-            {/* ai message: Do you want to check other charts for dataset? */}
-
-            <div>
-                {showAIQEDA? (<div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
-                <div className="chat-message-center">
-                    <div className="avatar alirogpt">
-                                <div>AI</div>
-                    </div>
-
-                    {/* for normal chat */}
-                    {
-                        // message.user = 'me'
-                    }
-                    
-                    <div className="message">
-                    Do you want to see other information related to dataset?
-
-                    </div>
-                    {
-                        booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
-                    }
-                    {/* for buttons */}
-                    {
-                        booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && yesOrNo2.map(
-                            (item, index) =>
-                            
-                            // when index is 0
-                            index === "" ? (
-                                // console.log("index is 0",item)
-                                <div>{item}: </div>
-                            ) : (
-
-                                
-
-                            <div
-                                className="chat-button"
-                                //style="margin-right: 10px;"
-                                style={{'margin-right':"10px"}}
-                                key={index}
-                                onClick={selectButton}
-                                data-messageid={message.messageid}
-                                >
-                                {item.includes('(suggested)') ? (
-                                    <span>
-                                    {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
-                                    {item.replace('(suggested)', '')}
-                                    </span>
-                                ) : item}
-                            </div>
-
-                        )
-                        )
-
-                        // show image
-                    } 
-                    
-
-                    
-
-                    </div>
-            </div>) : (
-                <div></div>
-                )}{" "}
-
-                
-            </div>
-
-
-            {showEDAElement ? (
-
+        // isMe is true then print <div> me </div>
 
         
+        <>
+        {/* ml algorithms */}
+        <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
+            <div className="chat-message-center">
+                    <div className="avatar alirogpt">
+                        <div>AI</div>
+                    </div>
 
-        <div className="message chartchat">                
-            <Grid columns={2} stackable="stackable">                   
-                <Grid.Row>
-                    <Grid.Column>
+                {/* for normal chat */}
+                {
+                    // message.user = 'me'
+                }
+                
+                <div className="message">
+                    Select algorithm
+
+                </div>
+                {
+                    booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
+                }
+                {/* for buttons */}
+                {
+                    booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && buttons.map(
+                        (item, index) =>
                         
-                        <ImportanceScoreJSON
-                            scoreName="Feature Importance"
-                            scoreValueList={experiment.data.feature_importances}
-                            featureList={experiment.data.feature_names}
-                            chartKey="importance_score_chat"
-                            chartColor="#55D6BE"
-                            type="classification"/>
+                        // when index is 0
+                        index === "" ? (
+                            // console.log("index is 0",item)
+                            <div>{item}: </div>
+                        ) : (
+
+                            
+
+                        <div
+                            className="chat-button"
+                            //style="margin-right: 10px;"
+                            style={{'margin-right':"10px"}}
+                            key={index}
+                            onClick={selectButton}
+                            data-messageid={message.messageid}
+                            >
+                            {item.includes('(suggested)') ? (
+                                <span>
+                                {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
+                                {item.replace('(suggested)', '')}
+                                </span>
+                            ) : item}
+                        </div>
+
+                    )
+                    )
+
+                    // show image
+                } 
+                
+
+                
+
+            </div>
+        </div>
+        {/* <div style={{ display: (showing ? 'block' : 'none') }}>This is visible</div> */}
+
+
+        {/* hyperparameters */}
+        <div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
+            <div className="chat-message-center">
+            <div className="avatar alirogpt">
+                        <div>AI</div>
+                    </div>
+
+                {/* for normal chat */}
+                {
+                    // message.user = 'me'
+                }
+                
+                <div className="message">
+                    Select hyperparameters
+
+                </div>
+                {
+                    booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
+                }
+                {/* for buttons */}
+                {
+                    booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && hypOne.map(
+                        (item, index) =>
                         
-                        
-                        <PCAJSON
-                            scoreName="PCA 2D"
-                            Points={experiment.data.X_pca}
-                            Labels={experiment.data.y_pca}
-                            chartKey="pca_2d_chat"
-                            chartColor="#55D6BE"
-                            type="classification"/>
-                        
-                        <TSNEJSON
-                            scoreName="TSNE 2D"
-                            Points={experiment.data.X_tsne}
-                            Labels={experiment.data.y_tsne}
-                            chartKey="tsne_2d_chat"
-                            chartColor="#55D6BE"
-                            type="classification"/>
-                        
-                    </Grid.Column>
+                        // when index is 0
+                        index === "" ? (
+                            // console.log("index is 0",item)
+                            <div>{item}: </div>
+                        ) : (
+
+                            
+
+                        <div
+                            className="chat-button"
+                            //style="margin-right: 10px;"
+                            style={{'margin-right':"10px"}}
+                            key={index}
+                            onClick={selectButton}
+                            data-messageid={message.messageid}
+                            >
+                            {item.includes('(suggested)') ? (
+                                <span>
+                                {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
+                                {item.replace('(suggested)', '')}
+                                </span>
+                            ) : item}
+                        </div>
+
+                    )
+                    )
+
+                    // show image
+                } 
+                
+
+                
+
+                </div>
+        </div>
+
+
+        {/* alert: training machine learning */}
+        <div>
+            {showAlert ? (
+            <div className="chat-message false">
+                <div className="chat-message-center">
+                    <div className="avatar alirogpt">
+                        <div>AI</div>
+                    </div>
+                    <div className="message">Training the algorithm...</div>
+
                     
-                    <Grid.Column>
-                        
-                        <ClassRate
-                            scoreName="Class Rate"
-                            scoreValueList={class_percentage}
-                            chartKey="class_rate_chat"
-                            chartColor="#55D6BE"
-                            type="classification"
-                        />
-                        
-                        
-                            <ShapSummaryCurve
-                            fileDict={shapSummaryCurveDict}
-                            shap_explainer={shap_explainer}
-                            shap_num_samples={shap_num_samples} />
-
-
-                        
-
-                    </Grid.Column>
                     
-                </Grid.Row>
-            </Grid>
+                </div>
+            </div>
+            ) : (
+            <div></div>
+            )}{" "}
+        </div>
+
+
+        {/* alert: training machine learning is done */}
+        <div>
+            {showAlertTrDone ? (
+            <div className="chat-message false">
+                <div className="chat-message-center">
+                    <div className="avatar alirogpt">
+                        <div>AI</div>
+                    </div>
+                    <div className="message">Training the algorithm is done. </div>
+
+                    
+                    
+                </div>
+            </div>
+            ) : (
+            <div></div>
+            )}{" "}
         </div>
 
 
 
+        {/* ai message: Do you want to see the model performance? */}
+
+        <div>
+            {showAIQmodelper? (<div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
+            <div className="chat-message-center">
+                <div className="avatar alirogpt">
+                            <div>AI</div>
+                </div>
+
+                {/* for normal chat */}
+                {
+                    // message.user = 'me'
+                }
+                
+                <div className="message">
+                Do you want to check the model performance?
+
+                </div>
+                {
+                    booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
+                }
+                {/* for buttons */}
+                {
+                    booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && yesOrNo.map(
+                        (item, index) =>
+                        
+                        // when index is 0
+                        index === "" ? (
+                            // console.log("index is 0",item)
+                            <div>{item}: </div>
+                        ) : (
+
+                            
+
+                        <div
+                            className="chat-button"
+                            //style="margin-right: 10px;"
+                            style={{'margin-right':"10px"}}
+                            key={index}
+                            onClick={selectButton}
+                            data-messageid={message.messageid}
+                            >
+                            {item.includes('(suggested)') ? (
+                                <span>
+                                {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
+                                {item.replace('(suggested)', '')}
+                                </span>
+                            ) : item}
+                        </div>
+
+                    )
+                    )
+
+                    // show image
+                } 
+                
+
+                
+
+                </div>
+        </div>) : (
+            <div></div>
+            )}{" "}
+        </div>
+
+
+
+        
+
+
+
+
+        {/* ai message: Let's see the model performance */}
+
+        {/* <div>
+            {showMLpElement ? (
+            <div className="chat-message false">
+                <div className="chat-message-center">
+                    <div className="avatar alirogpt">
+                        <div>AI</div>
+                    </div>
+                    <div className="message">Let's see the model performance and other information.</div>
+
+                    
+                    
+                </div>
+            </div>
             ) : (
             <div></div>
             )}{" "}
+        </div> */}
+        
+
+
+        
+
+
+        {/* Charts for ml performance*/}
+
+        <div>
+            {showMLpElement ? (
+            <div className="message chartchat">
+                        <Grid columns={2} stackable="stackable">
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <AlgorithmDetails
+                                        algorithm={experiment.data.algorithm}
+                                        params={experiment.data.params}/>
+                                    <RunDetails
+                                        startTime={experiment.data.started}
+                                        finishTime={experiment.data.finished}
+                                        launchedBy={experiment.data.launched_by}/>
+                                    
+                                    
+                                    
+                                    <LearningCurveJSON
+                                        scoreName="Learning Curve"
+                                        train_sizes={experiment.data.train_sizes}
+                                        train_scores={experiment.data.train_scores}
+                                        test_scores={experiment.data.test_scores}
+                                        chartKey="learning_curve_chat"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    
+
+                                    <ConfusionMatrixJSON
+                                        scoreName="Confusion Matrix"
+                                        cnf_data={experiment.data.cnf_matrix}
+                                        chartKey="test_chart_chat"
+                                        chartColor="#55D6BE"
+                                        type="classification"/>
+                                    
+                                    
+                                </Grid.Column>
+                                
+                                <Grid.Column>
+                                <Score
+                                    scoreName="Balanced Accuracy"
+                                    scoreValueList={balancedAccList}
+                                    chartKey="all"
+                                    chartColor="#7D5BA6"
+                                    type="classification"
+                                    />
+                                    <Score
+                                    scoreName="AUC"
+                                    scoreValueList={aucList}
+                                    chartKey="auc_scores"
+                                    chartColor="#55D6BE"
+                                    type="classification"
+                                    />
+                                    <Score
+                                    scoreName="Precision"
+                                    scoreValueList={precisionList}
+                                    chartKey="precision_scores"
+                                    chartColor="#55D6BE"
+                                    type="classification"
+                                    />
+                                    <Score
+                                    scoreName="Recall"
+                                    scoreValueList={recallList}
+                                    chartKey="recall_scores"
+                                    chartColor="#55D6BE"
+                                    type="classification"
+                                    />
+                                    <Score
+                                    scoreName="F1 Score"
+                                    scoreValueList={f1List}
+                                    chartKey="f1_scores"
+                                    chartColor="#55D6BE"
+                                    type="classification"
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                            
+                        </Grid>
+                    </div>
+            ) : (
+            <div></div>
+            )}{" "}
+        </div>
 
 
 
 
+
+        {/* ai message: Do you want to check other charts for dataset? */}
+
+        <div>
+            {showAIQEDA? (<div className={`chat-message ${message.user === "gpt" && "alirogpt"}`}>
+            <div className="chat-message-center">
+                <div className="avatar alirogpt">
+                            <div>AI</div>
+                </div>
+
+                {/* for normal chat */}
+                {
+                    // message.user = 'me'
+                }
+                
+                <div className="message">
+                Do you want to see other information related to dataset?
+
+                </div>
+                {
+                    booleanForSuccess === true && booleanForMessage === true && <div>{chat_message}</div>
+                }
+                {/* for buttons */}
+                {
+                    booleanForSuccess === true && booleanForMessage === false && booleanForButtons === true && yesOrNo2.map(
+                        (item, index) =>
+                        
+                        // when index is 0
+                        index === "" ? (
+                            // console.log("index is 0",item)
+                            <div>{item}: </div>
+                        ) : (
+
+                            
+
+                        <div
+                            className="chat-button"
+                            //style="margin-right: 10px;"
+                            style={{'margin-right':"10px"}}
+                            key={index}
+                            onClick={selectButton}
+                            data-messageid={message.messageid}
+                            >
+                            {item.includes('(suggested)') ? (
+                                <span>
+                                {/* <FontAwesomeIcon icon={faThumbsUp} style={{"float":"left","margin-right":"5px"}}/> */}
+                                {item.replace('(suggested)', '')}
+                                </span>
+                            ) : item}
+                        </div>
+
+                    )
+                    )
+
+                    // show image
+                } 
+                
+
+                
+
+                </div>
+        </div>) : (
+            <div></div>
+            )}{" "}
+
+            
+        </div>
+
+
+        {showEDAElement ? (
 
 
     
 
+    <div className="message chartchat">                
+        <Grid columns={2} stackable="stackable">                   
+            <Grid.Row>
+                <Grid.Column>
+                    
+                    <ImportanceScoreJSON
+                        scoreName="Feature Importance"
+                        scoreValueList={experiment.data.feature_importances}
+                        featureList={experiment.data.feature_names}
+                        chartKey="importance_score_chat"
+                        chartColor="#55D6BE"
+                        type="classification"/>
+                    
+                    
+                    <PCAJSON
+                        scoreName="PCA 2D"
+                        Points={experiment.data.X_pca}
+                        Labels={experiment.data.y_pca}
+                        chartKey="pca_2d_chat"
+                        chartColor="#55D6BE"
+                        type="classification"/>
+                    
+                    <TSNEJSON
+                        scoreName="TSNE 2D"
+                        Points={experiment.data.X_tsne}
+                        Labels={experiment.data.y_tsne}
+                        chartKey="tsne_2d_chat"
+                        chartColor="#55D6BE"
+                        type="classification"/>
+                    
+                </Grid.Column>
+                
+                <Grid.Column>
+                    
+                    <ClassRate
+                        scoreName="Class Rate"
+                        scoreValueList={class_percentage}
+                        chartKey="class_rate_chat"
+                        chartColor="#55D6BE"
+                        type="classification"
+                    />
+                    
+                    
+                        <ShapSummaryCurve
+                        fileDict={shapSummaryCurveDict}
+                        shap_explainer={shap_explainer}
+                        shap_num_samples={shap_num_samples} />
+
+
+                    
+
+                </Grid.Column>
+                
+            </Grid.Row>
+        </Grid>
+    </div>
+
+
+
+        ) : (
+        <div></div>
+        )}{" "}
+
+
+
+
+
+
+
+
 
         </>
+
+
+
+
     )
+
+    // else, return below
+    // return (
+    //     <div className={`chat-message ${message.user === "gpt" && "chatgpt"}`}>
+    //         <div className="chat-message-center">
+    //             <div className={`avatar ${message.user === "gpt" && "chatgpt"}`}>
+    //                 {
+    //                     message.user === "gpt"
+    //                         ? <AISVGLogo/>
+    //                         : <div>You</div>
+    //                 }
+    //             </div>
+    //             <div className="message">
+    //                 {message.message}
+    //             </div>
+    //         </div>
+    //     </div>
+    // )
+
 }
 
 export default ChatBox

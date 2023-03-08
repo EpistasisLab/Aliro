@@ -96,6 +96,7 @@ export default function ChatGPT({experiment}) {
                 message: `${chatInput}`
             }
         ];
+        console.log("chatLogNew", chatLogNew)
         setChatInput("");
         setChatLog(chatLogNew);
         // fetch response to the api combining the chat log array of messages and
