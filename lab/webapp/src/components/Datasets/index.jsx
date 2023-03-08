@@ -189,15 +189,9 @@ const mapDispatchToProps = {
     fetchRecommender
 }
 
-// if id hey is mouseover, show console.log("Hello!!!!!!!!!!!!!")
-// document.getElementById("hey").addEventListener("mouseover", function(){
-// console.log("Hello!!!!!!!!!!!!!") });
-
 const mapStateToProps = (state) => (
     {datasets: getSortedDatasets(state), recommender: state.recommender.data, isFetching: state.datasets.isFetching, error: state.datasets.error}
 );
 
-export {
-    Datasets
-};
+export {Datasets};
 export default connect(mapStateToProps, mapDispatchToProps)(Datasets);

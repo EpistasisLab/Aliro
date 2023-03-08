@@ -573,7 +573,7 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
 
 
             {/* ai message: Let's see the EDA */}
-            <div>
+            {/* <div>
                 {showEDAElement ? (
                 <div className="chat-message false">
                     <div className="chat-message-center">
@@ -588,7 +588,7 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
                 ) : (
                 <div></div>
                 )}{" "}
-            </div>
+            </div> */}
 
 
 
@@ -671,6 +671,12 @@ const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) =
                 ) : (
                 <div></div>
                 )}{" "}
+            </div> */}
+
+
+            {/* <div>
+                <p>Hello</p>
+                <Builder />
             </div> */}
 
 

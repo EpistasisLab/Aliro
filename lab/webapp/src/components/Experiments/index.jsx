@@ -212,7 +212,5 @@ const mapStateToProps = (state, props) => ({
     sortAll: getSortAll(state, props)
 });
 
-export {
-    Experiments
-};
+export { Experiments };
 export default withRouter(connect(mapStateToProps, actions)(Experiments));

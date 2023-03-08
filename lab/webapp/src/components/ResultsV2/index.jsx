@@ -500,5 +500,20 @@ const mapStateToProps = (state) => ({
   experiment: state.experiments.selected
 });
 
+// const mapStateToProps = (state, props) => (
+//   {
+    
+//     experiment: state.experiments.selected,
+//     dataset: state.datasets.byId[props.location.query.dataset],
+//     defaultAlgorithms: state.preferences.data.algorithms,
+//     availableAlgorithms: state.preferences.data.algorithms.filter(function(algo) {
+//         return algo.category==state.datasets.byId[props.location.query.dataset].files[0].prediction_type
+//      }),
+//     currentAlgorithm: state.builder.currentAlgorithm,
+//     currentParams: state.builder.currentParams,
+//     isSubmitting: state.builder.isSubmitting,
+//     error: state.builder.error
+//   }
+// );
 export { Results };
 export default connect(mapStateToProps, actions)(Results);

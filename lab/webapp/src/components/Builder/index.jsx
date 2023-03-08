@@ -44,8 +44,8 @@ import { hashHistory } from 'react-router';
 class Builder extends Component {
  
   constructor(props) {
-    // console.log("props: ", props);
-    // console.log("this.state", this.state)
+    console.log("props in Builder: ", props);
+    
     super(props);
     this.state = { dataset: null };
     this.handleSubmitExperiment = this.handleSubmitExperiment.bind(this);
@@ -111,6 +111,19 @@ class Builder extends Component {
       setCurrentAlgorithm,
       setParamValue
     } = this.props;
+
+    // console.log("this.props in Builder: ", this.props);
+
+    console.log("========================================")
+    console.log("availableAlgorithms in Builder: ", availableAlgorithms);
+    console.log("currentAlgorithm in Builder: ", currentAlgorithm);
+    console.log("currentParams in Builder: ", currentParams);
+    console.log("isSubmitting in Builder: ", isSubmitting);
+    console.log("error in Builder: ", error);
+    console.log("setCurrentAlgorithm in Builder: ", setCurrentAlgorithm);
+    console.log("setParamValue in Builder: ", setParamValue);
+
+    console.log("========================================")
 
 
 
@@ -221,8 +234,14 @@ const mapStateToProps = (state, props) => (
   defaultAlgorithms: state.preferences.data.algorithms,
   availableAlgorithms: state.preferences.data.algorithms.filter(function(algo) {
 
-    console.log('state in mapstatetoprops', state)
-    console.log('props.location.query.dataset', props.location.query.dataset)
+
+    console.log("state in Builder", state)
+    console.log("props.location in Builder", props.location)
+    console.log("props.match in Builder", props.match)
+    console.log("props.history", props.history)
+
+
+
 
       return algo.category==state.datasets.byId[props.location.query.dataset].files[0].prediction_type
    }),
