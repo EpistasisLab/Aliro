@@ -841,7 +841,7 @@ a#addNewDatasetBtnCross i {
     background-color: #444654;
   }
   .chat-message-center {
-    /* max-width: 640px; */
+    /* max-width: 1300px; */
     margin-left: auto;
     margin-right: auto;
     display: flex;
@@ -874,6 +874,10 @@ a#addNewDatasetBtnCross i {
   .message {
     padding-left: 40px;
     padding-right: 40px;
+  }
+
+  .chartchat {
+    padding-top: 20px;
   }
   
   @keyframes App-logo-spin {
