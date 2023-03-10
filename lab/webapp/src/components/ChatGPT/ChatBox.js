@@ -27,10 +27,9 @@ import Score from '../ResultsV2/components/Score';
 
 
 
-
 // Primary Chat Window
 const ChatBox = ({chatLog, setChatLog, setChatInput, handleSubmit, chatInput, experiment}) => 
-<section className="chatbox">
+<section className="chatbox" id={`experimentid_${experiment}`}>
     <div className="chat-log">
         {
             chatLog.map((message, index) => (
@@ -56,6 +55,9 @@ const ChatBox = ({chatLog, setChatLog, setChatInput, handleSubmit, chatInput, ex
         </form>
     </div>
 </section>
+
+//access docker container
+// docker exec -it 5e9b7f9b9b7f bash
 
 // Individual Chat Message
 const ChatMessage = ({message, chatLog, setChatLog, setChatInput, experiment}) => {
