@@ -47,12 +47,61 @@ export default function ChatGPT({experiment}) {
     const [models, setModels] = useState([]);
     const [temperature, setTemperature] = useState(0.5);
     const [currentModel, setCurrentModel] = useState("gpt-3.5-turbo");
-    const [chatLog, setChatLog] = useState();
+    const [chatLog, setChatLog] = useState([
+        {
+            messageid : 0,
+            user: "assistant",
+            messageType:"text",
+            message: "Select your algorithm:",
+            buttons: ["Decision Tree Classifier", "Gradient Boosting Classifier","K Neighbors Classifier", "SVC", "Logistic Regression", "Random Forest Classifer"],
+            selected: experiment.data.algorithm
+        },
+        {
+            messageid : 1,
+            user: "assistant",
+            messageType:"text",
+            message: "Hyperparameters:"+JSON.stringify(experiment.data.params)
+        },
+        {
+            messageid : 2,
+            user: "assistant",
+            messageType:"text",
+            message: "Starting Training... "+JSON.stringify(experiment.data.started)
+        },
+        {
+            messageid : 3,
+            user: "assistant",
+            messageType:"text",
+            message: "Finished Training! "+JSON.stringify(experiment.data.finished)
+        },
+        {
+            messageid : 3,
+            user: "assistant",
+            messageType:"text",
+            message: "Here are some information about your model:"
+        },
+        {
+            messageid : 4,
+            user: "assistant",
+            messageType:"showMLpElement"
+        },
+        {
+            messageid : 5,
+            user: "assistant",
+            messageType:"text",
+            message: "Here are some information about your dataset:"
+        },
+        {
+            messageid : 6,
+            user: "assistant",
+            messageType:"showEDAElement"
+        }
+    ]);
     const [chatID, setChatID] = useState();
 
 
 
-    getCurrentChat(experiment);
+    
     // clear chats
     function clearChat() {
         setChatLog([]);
@@ -71,54 +120,35 @@ export default function ChatGPT({experiment}) {
                 if(chat.length === 0){
                     console.log("create new chat");
                     createNewChat(experiment);
-                    setChatLog([]);
                 }else{
                     setChatID(chat[0]._id);
                     fetch("http://localhost:5080/chatapi/v1/chats/"+chat[0]._id)
                         .then(res => res.json())
                         .then(data => {
                             console.log("chat logs", data);
-                            setChatLog(data.chatlogs);
+                            setChatLog( [
+                                ...chatLog, ...data.chatlogs
+                            ]);
                         });
                 }
         });
     }
-    formatPrompt(experiment);
-    async function formatPrompt(experiment,prompt){
-        /**
-         * assume you are a data scientist. You are given a model mod and dataframe df with the following performance:
-         * {"params": {
-                "criterion": "gini",
-                "max_depth": 3,
-                "min_samples_split": 2,
-                "min_samples_leaf": 1,
-                "min_weight_fraction_leaf": 0,
-                "max_features": "sqrt"
-            },
-            "algorithm": "DecisionTreeClassifier",
-            "scores": {
-                "roc_auc_score": "not supported for multiclass",
-                "train_roc_auc_score": "not supported for multiclass",
-                "train_score": 0.9794444444444445,
-                "test_score": 0.9549999999999998,
-                "accuracy_score": 0.9549999999999998,
-                "exp_table_score": 0.9549999999999998,
-                "train_balanced_accuracy_score": 0.9794444444444445,
-                "balanced_accuracy_score": 0.9549999999999998,
-                "train_precision_score": 0.9733009645824623,
-                "precision_score": 0.9488095238095239,
-                "train_recall_score": 0.9725925925925925,
-                "recall_score": 0.9400000000000001,
-                "train_f1_score": 0.97257547205857,
-                "f1_score": 0.9389730639730638,
-                "dtree_train_score": 1
-            },
-            feature_importance_type,
-            features_names: ['sepal-length', 'sepal-width', 'petal-length', 'petal-width'],
-            feature_importances: [0.         0.         0.42105263 0.57894737]
-            }
+    // useEffect(() => {
+    //     getCurrentChat(experiment);
+    // }, [experiment]);
+    // useEffect(() => {
+    //     formatPrompt(experiment,"what is the most important feature?", chatID);
+    // }, [chatID]);
+    
+    async function formatPrompt(experiment,prompt, chatID){
 
-         */
+        console.log(chatID);
+       
+        // combine feature_importances and feature_names into a dictionary
+        var feature_importances = {};
+        for (var i = 0; i < experiment.data.feature_importances.length; i++) {
+            feature_importances[experiment.data.feature_names[i]] = experiment.data.feature_importances[i];
+        }
         const { Configuration, OpenAIApi } = require("openai");
 
         const configuration = new Configuration({
@@ -129,18 +159,16 @@ export default function ChatGPT({experiment}) {
 
         const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
-        messages: [{role: "user", content: "Hello world"}],
+        messages: [{role: "user", content: `assume you are a data scientist. You are given a model mod and dataframe df with the following performance:
+        {"params": `+ JSON.stringify(experiment.data.params) +`,
+           "algorithm": "`+ experiment.data.algorithm +`",
+           "scores": `+ JSON.stringify(experiment.data.scores) +`,
+           feature_importance_type : "`+ experiment.data.feature_importance_type +`",
+           feature_importances: `+ JSON.stringify(feature_importances) +`
+           }\n you are asked: `+ prompt}]
         });
-        console.log(completion.data.choices[0].message);
-
-        console.log(chatID);
-
-        console.log(experiment.data.params);
-        console.log(experiment.data.algorithm);
-        console.log(experiment.data.scores);
-        console.log(experiment.data.feature_importance_type);
-        console.log(experiment.data.feature_importances);
-        console.log(experiment.data.feature_names);
+        console.log("openai request: ", completion);
+        return completion.data.choices[0].message;
     }
 
 
@@ -176,28 +204,28 @@ export default function ChatGPT({experiment}) {
         let chatLogNew = [
             ...chatLog, {
                 user: "me",
+                messageType: "text",
                 message: `${chatInput}`
             }
         ];
         console.log("chatLogNew", chatLogNew)
         setChatInput("");
         setChatLog(chatLogNew);
-        // fetch response to the api combining the chat log array of messages and
-        // seinding it as a message to localhost:3000 as a post
-        const messages = chatLogNew
-            .map((message) => message.message)
-            .join("\n");
+        window.scrollTo(0, document.body.scrollHeight);
+        
+        let data = await formatPrompt(experiment,`${chatInput}`, chatID);
 
-
-        const data = await response.json();
         setChatLog([
             ...chatLogNew, {
-                user: "gpt",
-                message: `${data.message}`
+                user: "assistant",
+                messageType: "text",
+                message: data.content.split(/\n/).map(line => <div key={line}>{line}</div>)
             }
         ]);
-        var scrollToTheBottomChatLog = document.getElementsByClassName("chat-log")[0];
-        scrollToTheBottomChatLog.scrollTop = scrollToTheBottomChatLog.scrollHeight;
+
+        // scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
+        
     }
 
     function handleTemp(temp) {
