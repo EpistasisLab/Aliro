@@ -152,14 +152,14 @@ export default function ChatGPT({experiment}) {
         const { Configuration, OpenAIApi } = require("openai");
 
         const configuration = new Configuration({
-        apiKey: "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",
+        apiKey: OPENAI_API_KEY,
         });
        
         const openai = new OpenAIApi(configuration);
 
         const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
-        messages: [{role: "user", content: `assume you are a data scientist. You are given a model mod and dataframe df with the following performance:
+        messages: [{role: "user", content: `assume you are a data scientist that only programs in python. You are given a model mod and dataframe df with the following performance:
         {"params": `+ JSON.stringify(experiment.data.params) +`,
            "algorithm": "`+ experiment.data.algorithm +`",
            "scores": `+ JSON.stringify(experiment.data.scores) +`,
@@ -214,6 +214,18 @@ export default function ChatGPT({experiment}) {
         window.scrollTo(0, document.body.scrollHeight);
         
         let data = await formatPrompt(experiment,`${chatInput}`, chatID);
+        const regex = /```([^`]*)```/g;
+        const matches = data.content.matchAll(regex);
+        
+        for (const match of matches) {
+            //check if the first 6 characters are python
+            if(match[1].substring(0,6) === "python"){
+                //remove the first 6 characters
+                match[1] = match[1].substring(6);
+            }
+          console.log("python code:",match[1]);
+          
+        }
 
         setChatLog([
             ...chatLogNew, {
