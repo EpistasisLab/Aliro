@@ -1,10 +1,14 @@
 const express = require('express');
+const chat = require('../models/chat');
 const router = express.Router();
 const Chat = require('../models/chat');
+const chatlog = require('../models/chatlog');
 const ChatLog = require('../models/chatlog');
 const db = require('../dbgoose').db;
 const getChatById = require('../openaiutils').getChatById;
 const getChatlogById = require('../openaiutils').getChatlogById;
+const getChatsByExperimentId = require('../openaiutils').getChatsByExperimentId;
+const getChatsByDatasetId = require('../openaiutils').getChatsByDatasetId;
 
 /* 
 ** Chat Logs API 
@@ -34,6 +38,10 @@ router.post('/chatlogs', async (req, res) => {
 
     try {
         const newChatLog = await chatlog.save();
+        // insert the newChatLog._id into the chatlogs array in the chat
+        const chat = await Chat.findById(req.body._chat_id);
+        const updatedChat = await chat.updateOne({ $push: { chatlogs: newChatLog._id } });
+
         res.status(201).json(newChatLog);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -87,9 +95,9 @@ router.patch('/chatlogs/:id', getChatlogById, async (req, res) => {
 // Create one chat
 router.post('/chats', async (req, res) => {
     // a chat should always happen within the context of a dataset
-    if (req.body._dataset_id == null) {
-        return res.status(400).json({ message: 'Must provide a _dataset_id' });
-    }
+    // if (req.body._dataset_id == null) {
+    //     return res.status(400).json({ message: 'Must provide a _dataset_id' });
+    // }
 
     if (req.body.title == null) {
         return res.status(400).json({ message: 'Must provide a title' });
@@ -125,15 +133,20 @@ router.get('/chats', async (req, res) => {
 
 // Get one chat
 router.get('/chats/:id', getChatById, (req, res) => {
-    // get all chatlogs associated with this chat
-    ChatLog.find({ _chat_id: res.chat._id }, function (err, chatlogs) {
-        if (err) {
-            res.status(500).json({ message: err.message });
-        }
-        res.send({ chat: res.chat, chatlogs: chatlogs });
-    });
+    res.send(res.chat);
 });
 
+// Get all chats by experiment_id
+router.get('/chats/experiment/:id', getChatsByExperimentId, (req, res) => {
+    res.send(res.chats);
+});
+
+// Get all chats by dataset_id
+router.get('/chats/dataset/:id', getChatsByDatasetId, async (req, res) => {
+    // get all chatlogs associated with this chat using the populate method
+    // await Chat.populate(res.chats, { path: '_chat_id' });
+    res.send(res.chats);
+});
 
 // Update one chat
 router.patch('/chats/:id', getChatById, async (req, res) => {
