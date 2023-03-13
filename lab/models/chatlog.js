@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const chatlogSchema = new mongoose.Schema({
     _chat_id: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'Chat'
     },
     message: {
         type: String,
