@@ -25,7 +25,7 @@ router.post('/configs', async (req, res) => {
     try {
         existing = await OpenAIConfig.find({})
         if (existing.length > 0) {
-            return res.status(400).json({ message: 'Config already exists' });
+            return res.status(400).json({ message: 'Config already exists', config_id: existing[0]._id });
         }
     } catch (err) {
         return res.status(500).json({ message: err.message });
