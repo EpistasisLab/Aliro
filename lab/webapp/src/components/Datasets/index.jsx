@@ -1,6 +1,6 @@
 /* ~This file is part of the Aliro library~
 
-Copyright (C) 2023 Epistasis Lab,
+Copyright (C) 2023 Epistasis Lab, 
 Center for Artificial Intelligence Research and Education (CAIRE),
 Department of Computational Biomedicine (CBM),
 Cedars-Sinai Medical Center.
