@@ -277,22 +277,24 @@ function Navbar({ preferences }) {
             </Menu.Item>
           </Link>
 
-          {/* <a onClick = {testFunc}>  */}
-          <Link to="" className="link" activeClassName="active" onClick = {togglePop}>
-          {/* <Link to="" className="link" activeClassName="active" onClick = {checkAPIkey}> */}
-          {/* <Link to="" className="link" activeClassName="active" onClick = {toggleChatGPT}> */}
-            <Menu.Item name="Expert">
-              <Icon name="chat" />
-              <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
-                {'Expert'}
+
+          { window.location.href.includes('results') ? <Link to="" className="link" activeClassName="active" onClick = {togglePop}>
+            {/* <Link to="" className="link" activeClassName="active" onClick = {checkAPIkey}> */}
+            {/* <Link to="" className="link" activeClassName="active" onClick = {toggleChatGPT}> */}
+              <Menu.Item name="Expert">
+                <Icon name="chat" />
                 
-              </MediaQuery>
-            </Menu.Item>
-          </Link>
-          {/* </a> */}
-          <div>
-            {openaiApiState ? <PopUpAPI toggle={togglePop} /> : null}
-          </div>
+                <MediaQuery minWidth={DeviceWatcher.breakpoints.MIN_TABLET}>
+                  {'Expert'}
+                </MediaQuery>
+              </Menu.Item>
+            </Link> : null}
+            
+
+            <div>
+              {openaiApiState ? <PopUpAPI toggle={togglePop} /> : null}
+            </div>
+          
 
           
           <Link to="experiments" className="link" activeClassName="active">
@@ -340,7 +342,6 @@ function Navbar({ preferences }) {
 
           }
 
-          {/* jay's idea */}
           
 
 

@@ -876,6 +876,20 @@ a#addNewDatasetBtnCross i {
     padding-right: 40px;
   }
 
+  /* div.message.buttons {
+    flex-direction: row;
+  } */
+  .buttons {
+    padding-left: 40px;
+    padding-right: 40px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+  }
+
   .chartchat {
     padding-top: 20px;
   }
@@ -1376,3 +1390,117 @@ body {
   .c3 path, .c3 line {
     fill: none;
   }
+
+
+
+
+  
+.message {
+  overflow: hidden;
+}
+
+.balon1 {
+  float: right;
+  background: #35cce6;
+  border-radius: 10px;
+}
+
+.balon2 {
+  float: left;
+  background: #f4f7f9;
+  border-radius: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.modal {
+  /* position: fixed; */
+  z-index: 1;
+  /* width: 100%;
+  height: 100%; */
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.modal_content {
+  background-color: #2185d0;
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  /* width: 80%; */
+  /* transform: translate(-50%, 100%); */
+  transform: translate(-50%, 150%);
+
+  /* make mode_content located in the middle of window */
+
+  /* width: 40%; */
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.close {
+  color: black;
+  float: right;
+}
+
+.close:hover {
+  color: cyan;
+  cursor: pointer;
+}
+
+/* input.popUPAPI:-internal-autofill-selected {
+  color: white!important;
+  background-color: #2185d0!important;
+} */
+
+
+#chatgpt-space-candidate {
+  position: 'fixed';
+  overflowY: 'auto';
+  maxHeight: 'auto';
+  display:'none';
+  backgroundColor: '#343541';
+}
+
+
+
+/* make id twocol occupy half of weidth in the page*/
+/* make  id twocol located right in the page */
+/* in the page there are four colums but right two column is occupied by the twocol */
+/* prevent other card from changing size when twocol getting bigger */
+
+#twocol {
+  width: 50%;
+  float: right;
+  
+}
+
+
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.left-column {
+  background-color: blue;
+  width: 50%;
+  height: 100%;
+}
+
+.right-column {
+  background-color: red;
+  width: 50%;
+  height: 100%;
+}
