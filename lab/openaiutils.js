@@ -38,7 +38,8 @@ async function logOpenAIRequest(params, response) {
 async function getChatById(req, res, next) {
     let chat;
     try {
-        chat = await Chat.findById(req.params.id);
+        // chat = await Chat.findById(req.params.id);
+        chat = await Chat.findById(req.params.id).populate('chatlogs');
         if (chat == null) {
             return res.status(404).json({ message: 'Cannot find chat: ' + req.params.id });
         }
@@ -65,9 +66,43 @@ async function getChatlogById(req, res, next) {
     next();
 }
 
+async function getChatsByExperimentId(req, res, next) {
+    let chats;
+    try {
+        // find all chats with this experiment id
+        chats = await Chat.find({ experiment_id: req.params.id }).populate('chatlogs');
+        if (chats == null) {
+            return res.status(404).json({ message: 'Cannot find chats by experiment id: ' + req.params.id });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
+    res.chats = chats;
+    next();
+}
+
+async function getChatsByDatasetId(req, res, next) {
+    let chats;
+    try {
+        // find all chats with this experiment id
+        chats = await Chat.find({ dataset_id: req.params.id }).populate('chatlogs');
+        if (chats == null) {
+            return res.status(404).json({ message: 'Cannot find chats by dataset id: ' + req.params.id });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
+    res.chats = chats;
+    next();
+}
+
 module.exports = {
     getConfigById,
     logOpenAIRequest,
     getChatById,
-    getChatlogById
+    getChatlogById,
+    getChatsByExperimentId,
+    getChatsByDatasetId
 };

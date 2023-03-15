@@ -102,6 +102,29 @@ types:
             application/json:
               type: object
               example: { message: 'Failed to connect to database' }
+/connections:
+  post:
+    description: Check if the connection to the OpenAI API is open.
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            example: { connected: true }
+      400:
+        body:
+          application/json:
+            type: object
+            example: { message: 'No api key available' }
+      500:
+        body:
+          application/json:
+            type: object
+            example: { message: 'Internal Server Error' }
+/chat:
+  /completions:
+    post:
+      description: see https://platform.openai.com/docs/api-reference/chat/create
 /models:
   get:
     description: see https://platform.openai.com/docs/api-reference/models/list
