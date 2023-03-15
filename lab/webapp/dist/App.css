@@ -740,16 +740,20 @@ a#addNewDatasetBtnCross i {
 /* App.css */
 
 .ChatGPT {
-    display: flex;
+    /* display: flex; */
     background-color: #282c34;
     color: white;
     /* align-items:flex-end; */
   }
   
   .sidemenu {
-    width: 260px;
-    padding: 10px;
+    /* width: 260px; */
+    /* padding: 10px; */
+    margin-right: 10px;
     background-color: #202123;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
   /* under 640px do this */
   @media (max-width: 640px) {
@@ -863,6 +867,7 @@ a#addNewDatasetBtnCross i {
     font-size: 14px;
     color: #444654;
   }
+
   .avatar.alirogpt {
     background: #0da37f;
     border-radius: 50%;
@@ -1503,4 +1508,42 @@ body {
   background-color: red;
   width: 50%;
   height: 100%;
+}
+
+
+
+
+
+/* ====================== blocks and slider ====================================*/
+
+.containerChartsChats{
+  /* background: beige; */
+  /* width: 50%; */
+  height: 100vh;
+  display: flex;
+  
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* flex-flow: column nowrap; */
+
+  /* main axis */
+  justify-content: space-between; 
+
+  /* cross axis */
+  align-items: center;
+  align-content: center;
+
+}
+
+.chartschat {
+  width: 50%;
+  height: 100vh;
+}
+
+.chartsbaseleft{
+  /* background: #ef9a9a; */
+}
+
+.chatbaseright {
+  /* background: #ce93d8; */
 }

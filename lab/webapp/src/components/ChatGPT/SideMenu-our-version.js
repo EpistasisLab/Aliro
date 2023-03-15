@@ -1,13 +1,8 @@
-import React from 'react'
-
-function addAnotherChatBoxTag() {
-  console.log('test')
-
-  // add 1 to chatTempId using  setChatTempId
-  setChatTempId(chatTempId + 1)
-}
+import React from 'react';
+import FileUploadMultiple from './FileUploadMultiple';
 
 const SideMenu = ({
+    const SideMenu = ({
     clearChat,
     currentModel,
     setCurrentModel,
@@ -15,32 +10,61 @@ const SideMenu = ({
     setTemperature,
     temperature,
 
-    addChatBox,
-    chatTempId,
-    setChatTempId
-
+    chatLog,
+    setChatLog,
+    setChatInput,
+    handleSubmit,
+    chatInput
 }) => <aside className="sidemenu">
-    {
-    /* <div className="side-menu-button" onClick={clearChat}>
-        <span>+</span>
-        New Chat
-    </div> */
-    }
-    <div className="side-menu-button" onClick={() => setChatTempId(chatTempId + 1)}>
+
+    <FileUploadMultiple
+        chatInput={chatInput}
+        chatLog={chatLog}
+        setChatLog={setChatLog}
+        setChatInput={setChatInput}
+        handleSubmit={handleSubmit}/>
+
+  
+
+    <a href="http://52.35.223.86/storage/test.ipynb" download="test.ipynb">
+
+        {/* <img src="test.jpg" alt="W3Schools.com" width="104" height="142"/> */}
+        <div className="side-menu-button mt-5 "
+            onClick={() => {
+            
+                console.log("download code")
+            
+            }}
+            style={{
+                display: "visible"
+            }}>
+             Download code
+
+        </div>
+
+    </a>
+
+
+
+
+
+    <div
+        className="side-menu-button"
+        onClick={clearChat}
+        style={{
+            display: "none"
+            // display: "visible"
+
+        }}>
         <span>+</span>
         New Chat
     </div>
-    {
-        Array(chatTempId).fill().map((_, i) => <div className="side-menu-button" key={i}>
-            <span>+</span>
-            {i}
-        </div>)
-    }      
 
-
-
-    
-    <div className="models" style={{display:  'none' }}>
+    {/* make below div unvisible */}
+    <div className="models" style={{
+            display: "none"
+            // display: "visible"
+        }}>
         <label className="side-label">Model</label>
         <select
             // active if model is select is currentModel
@@ -49,9 +73,9 @@ const SideMenu = ({
             }}>
             {
                 models && models.length
-                    ? models.map((model, index) => (
-                        <option key={model.id} value={model.id}>{model.id}</option>
-                    ))
+                    ? models.map(
+                        (model, index) => (<option key={model.id} value={model.id}>{model.id}</option>)
+                    )
                     : <option key={"text-davinci-003"} value={"text-davinci-003"}>{"text-davinci-003"}</option>
             }
         </select>
@@ -83,6 +107,7 @@ const SideMenu = ({
             logical, 1 is the most creative.
         </span>
     </div>
+
 </aside>
 
 const Button = ({onClick, text}) => <div className="button-picker" onClick={onClick}>

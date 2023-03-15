@@ -1,46 +1,18 @@
 import React from 'react'
 
-function addAnotherChatBoxTag() {
-  console.log('test')
-
-  // add 1 to chatTempId using  setChatTempId
-  setChatTempId(chatTempId + 1)
-}
-
 const SideMenu = ({
     clearChat,
     currentModel,
     setCurrentModel,
     models,
     setTemperature,
-    temperature,
-
-    addChatBox,
-    chatTempId,
-    setChatTempId
-
+    temperature
 }) => <aside className="sidemenu">
-    {
-    /* <div className="side-menu-button" onClick={clearChat}>
-        <span>+</span>
-        New Chat
-    </div> */
-    }
-    <div className="side-menu-button" onClick={() => setChatTempId(chatTempId + 1)}>
+    <div className="side-menu-button" onClick={clearChat}>
         <span>+</span>
         New Chat
     </div>
-    {
-        Array(chatTempId).fill().map((_, i) => <div className="side-menu-button" key={i}>
-            <span>+</span>
-            {i}
-        </div>)
-    }      
-
-
-
-    
-    <div className="models" style={{display:  'none' }}>
+    <div className="models">
         <label className="side-label">Model</label>
         <select
             // active if model is select is currentModel
