@@ -13,7 +13,7 @@ GET http://localhost:5080/chatapi/v1/chats
 
 ###
 
-GET http://localhost:5080/chatapi/v1/chats/640bd81a6bdb19ecccdf84e0
+GET http://localhost:5080/chatapi/v1/chats/6411113943d572a8f55e5208
 
 ###
 
@@ -35,7 +35,7 @@ POST http://localhost:5080/chatapi/v1/chatlogs
 Content-Type: application/json
 
 {
-    "_chat_id" : "640bd8a6f2acdea7ae408c33",
+    "_chat_id" : "6411113943d572a8f55e5208",
     "message" : "Hello there from my desk!",
     "message_type" : "text",
     "who" : "user"

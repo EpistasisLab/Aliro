@@ -155,46 +155,53 @@ router.post('/chat/completions', async (req, res) => {
     res.send(response);
 });
 
+// It is likely that we don't need this GET
+// The POST below can handle checking and opening the connection.
 // get openai connections
-router.get('/connections', async (req, res) => {
-    try {
-        let response = await openai.listModels();
-        response = { 'connected': true };
-        res.send(response);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+// router.get('/connections', async (req, res) => {
+//     try {
+//         let response = await openai.listModels();
+//         response = { 'connected': true };
+//         res.send(response);
+//     } catch (err) {
+//         res.status(500).json({ message: err.message });
+//     }
+// });
 
 // make a connection to openai
 router.post('/connections', async (req, res) => {
     try {
         // get the api key from the db
         let config = await OpenAIConfig.find({});
+        // check if config is empty
         // check that we have an api key
-        if (config[0]['api_key'] == null) {
+        if (config.length == 0 || config[0]['api_key'] == null) {
             return res.status(400).json({ message: 'No api key available' });
         }
         // set the api key
         configuration = new Configuration({
             apiKey: config[0]['api_key']
         });
-        configuration.apiKey = config.api_key;
+        // configuration.apiKey = config.api_key;
         // check if we have the org_id
         if (config[0]['org_id'] != null) {
             org_id = config[0]['org_id'];
             // set the organization id
-            configuration.organization = config.org_id;
+            configuration.organization = org_id;
         }
         
         // open the connection
-        openai = new OpenAIApi(configuration);
+        openai = new OpenAIApi(configuration, (err) => {
+            if (err) {
+                return res.status(400).json({ message: 'Connection failed' });
+            }
+        });
         // test the connection
         let response = await openai.listModels();
         if (response == null) {
             return res.status(400).json({ message: 'Connection failed' });
         }
-        response = { 'connected': true };
+        response = { connected: true };
         res.send(response);
     } catch (err) {
         res.status(500).json({ message: err.message });

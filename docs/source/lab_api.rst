@@ -3,4 +3,4 @@ Lab API
 
 .. raw:: html
 
-   <iframe src="lab_api_source.html" width="100%" height="1200px"></iframe>
+   <embed src="lab_api_source.html" width="100%" height="1800px" style="border:none;" />

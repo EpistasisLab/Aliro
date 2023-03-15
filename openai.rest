@@ -16,7 +16,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5080/openai/v1/connections
+# GET http://localhost:5080/openai/v1/connections
 
 ###
 
@@ -24,11 +24,11 @@ POST http://localhost:5080/openai/v1/connections
 
 ###
 
-PATCH http://localhost:5080/openai/v1/configs/640baca649d3cec186545122
+PATCH http://localhost:5080/openai/v1/configs/6410d54b7dadb5992301e6f0
 Content-Type: application/json
 
 {
-    "api_key" : "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",
+    "api_key" : "your_api_key",
     "org_id" : "Personal"
 }
 
