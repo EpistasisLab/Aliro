@@ -1,10 +1,14 @@
 import React from 'react'
 
-function addAnotherChatBoxTag() {
-  console.log('test')
+function test() {
+  fetch("/openai/v1/configs")
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+    })
 
-  // add 1 to chatTempId using  setChatTempId
-  setChatTempId(chatTempId + 1)
+
+
 }
 
 const SideMenu = ({
@@ -26,7 +30,7 @@ const SideMenu = ({
         New Chat
     </div> */
     }
-    <div className="side-menu-button" onClick={() => setChatTempId(chatTempId + 1)}>
+    <div className="side-menu-button" onClick={test}>
         <span>+</span>
         New Chat
     </div>
